@@ -14,8 +14,13 @@
       },
       "spec": {
         "owner": "artist-relations-team",
+        "type": "website",
+        "lifecycle": "production",
         "parameters": {
           "required": ["name", "description", "repoUrl"],
+          "backstage:permissions": {
+            "tags": ["one", "two"]
+          },
           "properties": {
             "name": {
               "title": "Name",
@@ -41,6 +46,9 @@
             "action": "fetch:plain",
             "parameters": {
               "url": "./template"
+            },
+            "backstage:permissions": {
+              "tags": ["one", "two"]
             }
           },
           {
@@ -88,21 +96,106 @@
               "description": "The user (or group) owner of the template",
               "minLength": 1
             },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the template.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            },
             "parameters": {
               "oneOf": [
                 {
                   "type": "object",
-                  "description": "The JSONSchema describing the inputs for the template."
+                  "description": "The JSONSchema describing the inputs for the template.",
+                  "properties": {
+                    "backstage:permissions": {
+                      "type": "object",
+                      "description": "Object used for authorizing the parameter",
+                      "properties": {
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 },
                 {
                   "type": "array",
                   "description": "A list of separate forms to collect parameters.",
                   "items": {
                     "type": "object",
-                    "description": "The JSONSchema describing the inputs for the template."
+                    "description": "The JSONSchema describing the inputs for the template.",
+                    "properties": {
+                      "backstage:permissions": {
+                        "type": "object",
+                        "description": "Object used for authorizing the parameter",
+                        "properties": {
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               ]
+            },
+            "presentation": {
+              "type": "object",
+              "description": "A way to redefine the presentation of the scaffolder.",
+              "properties": {
+                "buttonLabels": {
+                  "type": "object",
+                  "description": "A way to redefine the labels for actionable buttons.",
+                  "properties": {
+                    "backButtonText": {
+                      "type": "string",
+                      "description": "A button which return the user to one step back."
+                    },
+                    "createButtonText": {
+                      "type": "string",
+                      "description": "A button which start the execution of the template."
+                    },
+                    "reviewButtonText": {
+                      "type": "string",
+                      "description": "A button which open the review step to verify the input prior to start the execution."
+                    }
+                  }
+                }
+              }
+            },
+            "EXPERIMENTAL_recovery": {
+              "type": "object",
+              "description": "A task recovery section.",
+              "properties": {
+                "EXPERIMENTAL_strategy": {
+                  "type": "string",
+                  "description": "Recovery strategy for your task (none or startOver). By default none"
+                }
+              }
+            },
+            "EXPERIMENTAL_formDecorators": {
+              "type": "array",
+              "description": "A list of decorators and their inputs that the form should trigger before submitting the job",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The form hook ID"
+                  },
+                  "input": {
+                    "type": "object",
+                    "description": "A object describing the inputs to the form hook."
+                  }
+                }
+              }
             },
             "steps": {
               "type": "array",
@@ -131,6 +224,18 @@
                   "if": {
                     "type": ["string", "boolean"],
                     "description": "A templated condition that skips the step when evaluated to false. If the condition is true or not defined, the step is executed. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
+                  },
+                  "backstage:permissions": {
+                    "type": "object",
+                    "description": "Object used for authorizing the step",
+                    "properties": {
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -169,6 +274,33 @@
                         "description": "A key representing a visual icon to be displayed in the UI.",
                         "examples": ["dashboard"],
                         "minLength": 1
+                      }
+                    }
+                  }
+                },
+                "text": {
+                  "type": "array",
+                  "description": "A list of Markdown text blobs, like output data from the template.",
+                  "items": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "A user friendly display name for the text.",
+                        "examples": ["Output Content"],
+                        "minLength": 1
+                      },
+                      "icon": {
+                        "type": "string",
+                        "description": "A key representing a visual icon to be displayed in the UI.",
+                        "examples": ["dashboard"],
+                        "minLength": 1
+                      },
+                      "content": {
+                        "type": "string",
+                        "description": "The text blob to display in the UI, rendered as Markdown.",
+                        "examples": ["**hey** _I'm_ Markdown"]
                       }
                     }
                   }

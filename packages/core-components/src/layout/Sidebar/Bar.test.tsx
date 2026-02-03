@@ -21,16 +21,11 @@ import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
-import {
-  Sidebar,
-  SidebarExpandButton,
-  SidebarItem,
-  SidebarSearchField,
-  SidebarPinStateProvider,
-  SidebarSubmenu,
-  SidebarSubmenuItem,
-} from '.';
+import { Sidebar } from './Bar';
+import { SidebarExpandButton, SidebarItem, SidebarSearchField } from './Items';
+import { SidebarPinStateProvider } from './SidebarPinStateContext';
+import { SidebarSubmenu } from './SidebarSubmenu';
+import { SidebarSubmenuItem } from './SidebarSubmenuItem';
 
 async function renderScalableSidebar() {
   await renderInTestApp(

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ComponentClass, Component, ErrorInfo } from 'react';
-import { Button } from '../../components/Button';
+import Typography from '@material-ui/core/Typography';
+import { PropsWithChildren, ComponentClass, Component, ErrorInfo } from 'react';
+import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 type SlackChannel = {
   name: string;
@@ -24,10 +27,10 @@ type SlackChannel = {
 };
 
 /** @public */
-export type ErrorBoundaryProps = {
+export type ErrorBoundaryProps = PropsWithChildren<{
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
-};
+}>;
 
 type State = {
   error?: Error;
@@ -36,19 +39,28 @@ type State = {
 
 const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
   const { slackChannel } = props;
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   if (!slackChannel) {
     return null;
   } else if (typeof slackChannel === 'string') {
-    return <>Please contact {slackChannel} for help.</>;
+    return (
+      <Typography>{t('errorBoundary.title', { slackChannel })}</Typography>
+    );
   } else if (!slackChannel.href) {
-    return <>Please contact {slackChannel.name} for help.</>;
+    return (
+      <Typography>
+        {t('errorBoundary.title', {
+          slackChannel: slackChannel.name,
+        })}
+      </Typography>
+    );
   }
 
   return (
-    <Button to={slackChannel.href} variant="contained">
+    <LinkButton to={slackChannel.href} variant="contained">
       {slackChannel.name}
-    </Button>
+    </LinkButton>
   );
 };
 
@@ -67,7 +79,7 @@ export const ErrorBoundary: ComponentClass<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // eslint-disable-next-line no-console
-    console.error(`ErrorBoundary, error: ${error}, info: ${errorInfo}`);
+    console.error(`ErrorBoundary, error: ${error}`, { error, errorInfo });
     this.setState({ error, errorInfo });
   }
 

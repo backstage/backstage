@@ -46,7 +46,7 @@ describe('BatchSearchEngineIndexer', () => {
 
   it('should work end-to-end', async () => {
     const indexer = new ConcreteBatchIndexer({ batchSize: 1 });
-    await TestPipeline.withSubject(indexer)
+    await TestPipeline.fromIndexer(indexer)
       .withDocuments([document, document, document])
       .execute();
     expect(indexSpy).toHaveBeenCalledTimes(3);

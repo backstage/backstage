@@ -112,7 +112,8 @@ describe('ScmAuth', () => {
     await expect(
       azureAuth.getCredentials({ url: 'http://example.com' }),
     ).resolves.toMatchObject({
-      token: 'vso.build vso.code vso.graph vso.project vso.profile',
+      token:
+        '499b84ac-1321-427f-aa17-267ca6975798/vso.build 499b84ac-1321-427f-aa17-267ca6975798/vso.code 499b84ac-1321-427f-aa17-267ca6975798/vso.graph 499b84ac-1321-427f-aa17-267ca6975798/vso.project 499b84ac-1321-427f-aa17-267ca6975798/vso.profile',
     });
     await expect(
       azureAuth.getCredentials({
@@ -121,14 +122,14 @@ describe('ScmAuth', () => {
       }),
     ).resolves.toMatchObject({
       token:
-        'vso.build vso.code vso.graph vso.project vso.profile vso.code_manage',
+        '499b84ac-1321-427f-aa17-267ca6975798/vso.build 499b84ac-1321-427f-aa17-267ca6975798/vso.code 499b84ac-1321-427f-aa17-267ca6975798/vso.graph 499b84ac-1321-427f-aa17-267ca6975798/vso.project 499b84ac-1321-427f-aa17-267ca6975798/vso.profile 499b84ac-1321-427f-aa17-267ca6975798/vso.code_manage',
     });
 
     const bitbucketAuth = ScmAuth.forBitbucket(mockAuthApi);
     await expect(
       bitbucketAuth.getCredentials({ url: 'http://example.com' }),
     ).resolves.toMatchObject({
-      token: 'account team pullrequest snippet issue',
+      token: 'account team pullrequest snippet issue project',
     });
     await expect(
       bitbucketAuth.getCredentials({
@@ -137,7 +138,7 @@ describe('ScmAuth', () => {
       }),
     ).resolves.toMatchObject({
       token:
-        'account team pullrequest snippet issue pullrequest:write snippet:write issue:write',
+        'account team pullrequest snippet issue project pullrequest:write snippet:write issue:write',
     });
   });
 
@@ -174,10 +175,15 @@ describe('ScmAuth', () => {
     await expect(
       azureAuth.getCredentials({
         url: 'http://example.com',
-        additionalScope: { customScopes: { azure: ['vso.org'] } },
+        additionalScope: {
+          customScopes: {
+            azure: ['499b84ac-1321-427f-aa17-267ca6975798/vso.org'],
+          },
+        },
       }),
     ).resolves.toMatchObject({
-      token: 'vso.build vso.code vso.graph vso.project vso.profile vso.org',
+      token:
+        '499b84ac-1321-427f-aa17-267ca6975798/vso.build 499b84ac-1321-427f-aa17-267ca6975798/vso.code 499b84ac-1321-427f-aa17-267ca6975798/vso.graph 499b84ac-1321-427f-aa17-267ca6975798/vso.project 499b84ac-1321-427f-aa17-267ca6975798/vso.profile 499b84ac-1321-427f-aa17-267ca6975798/vso.org',
     });
 
     const bitbucketAuth = ScmAuth.forBitbucket(mockAuthApi);
@@ -189,7 +195,8 @@ describe('ScmAuth', () => {
         },
       }),
     ).resolves.toMatchObject({
-      token: 'account team pullrequest snippet issue snippet:write issue:write',
+      token:
+        'account team pullrequest snippet issue project snippet:write issue:write',
     });
   });
 

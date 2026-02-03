@@ -22,20 +22,17 @@ import {
 } from '@backstage/catalog-model';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import {
-  DialogContentText,
-  List,
-  ListItem,
-  ListItemIcon,
-  makeStyles,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import { makeStyles } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
 import { EntityRefLink } from '../../EntityRefLink';
 import { KeyValueListItem, ListItemText } from './common';
-import { EntityKindIcon } from './EntityKindIcon';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles({
   root: {
@@ -90,9 +87,6 @@ function EntityList(props: { entities: Entity[]; header?: [string, string] }) {
       {props.header && <KeyValueListItem key="header" entry={props.header} />}
       {props.entities.map(entity => (
         <ListItem key={stringifyEntityRef(entity)}>
-          <ListItemIcon>
-            <EntityKindIcon kind={entity.kind} />
-          </ListItemIcon>
           <ListItemText primary={<EntityRefLink entityRef={entity} />} />
         </ListItem>
       ))}
@@ -102,6 +96,7 @@ function EntityList(props: { entities: Entity[]; header?: [string, string] }) {
 
 function Contents(props: { entity: Entity }) {
   const { entity } = props;
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const { loading, error, location, originLocation, colocatedEntities } =
     useColocated(entity);
@@ -113,12 +108,14 @@ function Contents(props: { entity: Entity }) {
 
   if (!location && !originLocation) {
     return (
-      <Alert severity="warning">Entity had no location information.</Alert>
+      <Alert severity="warning">
+        {t('inspectEntityDialog.colocatedPage.alertNoLocation')}
+      </Alert>
     );
   } else if (!colocatedEntities?.length) {
     return (
       <Alert severity="info">
-        There were no other entities on this location.
+        {t('inspectEntityDialog.colocatedPage.alertNoEntity')}
       </Alert>
     );
   }
@@ -140,13 +137,19 @@ function Contents(props: { entity: Entity }) {
       {atLocation.length > 0 && (
         <EntityList
           entities={atLocation}
-          header={['At the same location', location!]}
+          header={[
+            t('inspectEntityDialog.colocatedPage.locationHeader'),
+            location!,
+          ]}
         />
       )}
       {atOrigin.length > 0 && (
         <EntityList
           entities={atOrigin}
-          header={['At the same origin', originLocation!]}
+          header={[
+            t('inspectEntityDialog.colocatedPage.originHeader'),
+            originLocation!,
+          ]}
         />
       )}
     </>
@@ -155,13 +158,14 @@ function Contents(props: { entity: Entity }) {
 
 export function ColocatedPage(props: { entity: Entity }) {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <>
-      <DialogContentText variant="h2">Colocated</DialogContentText>
+      <DialogContentText variant="h2">
+        {t('inspectEntityDialog.colocatedPage.title')}
+      </DialogContentText>
       <DialogContentText>
-        These are the entities that are colocated with this entity - as in, they
-        originated from the same data source (e.g. came from the same YAML
-        file), or from the same origin (e.g. the originally registered URL).
+        {t('inspectEntityDialog.colocatedPage.description')}
       </DialogContentText>
       <div className={classes.root}>
         <Contents entity={props.entity} />

@@ -26,16 +26,20 @@ import {
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { Box, DialogContentText, makeStyles } from '@material-ui/core';
+import { useApi, useApp, useRouteRef } from '@backstage/core-plugin-api';
+import Box from '@material-ui/core/Box';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
-import useAsync from 'react-use/lib/useAsync';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
 import { humanizeEntityRef } from '../../EntityRefLink';
 import { entityRouteRef } from '../../../routes';
 import { EntityKindIcon } from './EntityKindIcon';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles(theme => ({
   node: {
@@ -107,6 +111,7 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
   const entityRoute = useRouteRef(entityRouteRef);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
+  const app = useApp();
   const idRef = useRef<SVGTextElement | null>(null);
 
   useLayoutEffect(() => {
@@ -123,9 +128,12 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
     }
   }, [width, height]);
 
+  const hasKindIcon = app.getSystemIcon(
+    `kind:${node.kind.toLocaleLowerCase('en-US')}`,
+  );
   const padding = 10;
   const iconSize = height;
-  const paddedIconWidth = iconSize + padding;
+  const paddedIconWidth = hasKindIcon ? iconSize + padding : 0;
   const paddedWidth = paddedIconWidth + width + padding * 2;
   const paddedHeight = height + padding * 2;
 
@@ -160,17 +168,19 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
         height={paddedHeight}
         rx={10}
       />
-      <EntityKindIcon
-        kind={node.kind}
-        y={padding}
-        x={padding}
-        width={iconSize}
-        height={iconSize}
-        className={classNames(
-          classes.text,
-          node.root ? 'secondary' : 'primary',
-        )}
-      />
+      {hasKindIcon && (
+        <EntityKindIcon
+          kind={node.kind}
+          y={padding}
+          x={padding}
+          width={iconSize}
+          height={iconSize}
+          className={classNames(
+            classes.text,
+            node.root ? 'secondary' : 'primary',
+          )}
+        />
+      )}
       <text
         ref={idRef}
         className={classNames(
@@ -190,6 +200,7 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
 
 export function AncestryPage(props: { entity: Entity }) {
   const { loading, error, nodes, edges } = useAncestry(props.entity);
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   if (loading) {
     return <Progress />;
   } else if (error) {
@@ -198,15 +209,17 @@ export function AncestryPage(props: { entity: Entity }) {
 
   return (
     <>
-      <DialogContentText variant="h2">Ancestry</DialogContentText>
+      <DialogContentText variant="h2">
+        {t('inspectEntityDialog.ancestryPage.title')}
+      </DialogContentText>
       <DialogContentText gutterBottom>
-        This is the ancestry of entities above the current one - as in, the
-        chain(s) of entities down to the current one, where{' '}
-        <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
-          processors emitted
-        </Link>{' '}
-        child entities that ultimately led to the current one existing. Note
-        that this is a completely different mechanism from relations.
+        {t('inspectEntityDialog.ancestryPage.description', {
+          processorsLink: (
+            <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
+              {t('inspectEntityDialog.ancestryPage.processorsLink')}
+            </Link>
+          ),
+        })}
       </DialogContentText>
       <Box mt={4}>
         <DependencyGraph

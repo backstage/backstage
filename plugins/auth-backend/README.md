@@ -34,8 +34,8 @@ Follow this link, [Create new OAuth App](https://github.com/settings/application
 1. Set Application Name to `backstage-dev` or something along those lines.
 1. You can set the Homepage URL to whatever you want to.
 1. The Authorization Callback URL should match the redirect URI set in Backstage.
-   1. Set this to `http://localhost:7007/api/auth/github` for local development.
-   1. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/github` for non-local deployments.
+   1. Set this to `http://localhost:7007/api/auth/github/handler/frame` for local development.
+   1. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/github/handler/frame` for non-local deployments.
 
 ```bash
 export AUTH_GITHUB_CLIENT_ID=x
@@ -91,9 +91,9 @@ export AUTH_GITLAB_CLIENT_SECRET=x
 
 Add a new Okta application using the following URI conventions:
 
-Login redirect URI's: `http://localhost:7007/api/auth/okta/handler/frame`
-Logout redirect URI's: `http://localhost:7007/api/auth/okta/logout`
-Initiate login URI's: `http://localhost:7007/api/auth/okta/start`
+Login redirect URIs: `http://localhost:7007/api/auth/okta/handler/frame`
+Logout redirect URIs: `http://localhost:7007/api/auth/okta/logout`
+Initiate login URIs: `http://localhost:7007/api/auth/okta/start`
 
 Then configure the following environment variables to be used in the `app-config.yaml` file:
 
@@ -158,6 +158,21 @@ To try out SAML, you can use the mock identity provider:
 
 [How to add an auth provider](https://github.com/backstage/backstage/blob/master/docs/auth/add-auth-provider.md)
 
+## Token issuers
+
+[Configuring token issuers](https://github.com/backstage/backstage/blob/master/docs/auth/index.md)
+
 ## Links
 
 - [The Backstage homepage](https://backstage.io)
+
+## Configuring Token Expiration in App Config
+
+If you need to change Backstage token expiration from the default value of one hour you can do so through configuration. Note that this is **not** the session duration, but rather the duration that the short-term cryptographic tokens are valid for. The expiration can not be set lower than 10 minutes or above 24 hours.
+
+This is what the configuration looks like:
+
+```
+auth:
+   backstageTokenExpiration: { minutes: <user_defined_value> }
+```

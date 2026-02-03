@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import {
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Switch,
-  Tooltip,
-} from '@material-ui/core';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
 import { FeatureFlag } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
+import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
 
 type Props = {
   flag: FeatureFlag;
@@ -30,16 +30,39 @@ type Props = {
   toggleHandler: Function;
 };
 
-export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
-  <ListItem divider button onClick={() => toggleHandler(flag.name)}>
-    <ListItemIcon>
-      <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
-        <Switch color="primary" checked={enabled} name={flag.name} />
-      </Tooltip>
-    </ListItemIcon>
-    <ListItemText
-      primary={flag.name}
-      secondary={`Registered in ${flag.pluginId} plugin`}
-    />
-  </ListItem>
-);
+const getSecondaryText = (
+  flag: FeatureFlag,
+  t: TranslationFunction<typeof userSettingsTranslationRef.T>,
+) => {
+  if (flag.description) {
+    return flag.description;
+  }
+  return flag.pluginId
+    ? t('featureFlags.flagItem.subtitle.registeredInPlugin', {
+        pluginId: flag.pluginId,
+      })
+    : t('featureFlags.flagItem.subtitle.registeredInApplication');
+};
+
+export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => {
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+
+  return (
+    <ListItem divider button onClick={() => toggleHandler(flag.name)}>
+      <ListItemIcon>
+        <Tooltip
+          placement="top"
+          arrow
+          title={
+            enabled
+              ? t('featureFlags.flagItem.title.disable')
+              : t('featureFlags.flagItem.title.enable')
+          }
+        >
+          <Switch color="primary" checked={enabled} name={flag.name} />
+        </Tooltip>
+      </ListItemIcon>
+      <ListItemText primary={flag.name} secondary={getSecondaryText(flag, t)} />
+    </ListItem>
+  );
+};

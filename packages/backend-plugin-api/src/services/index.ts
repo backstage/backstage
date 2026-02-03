@@ -15,5 +15,5 @@
  */
 
 export * from './definitions';
-export * from './helpers';
 export * from './system';
+export * from './utilities';

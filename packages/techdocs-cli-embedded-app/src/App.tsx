@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Navigate, Route } from 'react-router';
+import { Navigate, Route } from 'react-router-dom';
 
 import {
   DefaultTechDocsHome,
@@ -37,6 +36,7 @@ import * as plugins from './plugins';
 import { configLoader } from './config';
 import { Root } from './components/Root';
 import { techDocsPage, TechDocsThemeToggle } from './components/TechDocsPage';
+import { TechDocsLiveReload } from './LiveReloadAddon';
 
 const app = createApp({
   apis,
@@ -52,6 +52,14 @@ const ThemeToggleAddon = techdocsPlugin.provide(
     name: 'ThemeToggleAddon',
     component: TechDocsThemeToggle,
     location: TechDocsAddonLocations.Header,
+  }),
+);
+
+const LiveReloadAddon = techdocsPlugin.provide(
+  createTechDocsAddonExtension({
+    name: 'LiveReloadAddon',
+    component: TechDocsLiveReload,
+    location: TechDocsAddonLocations.Content,
   }),
 );
 
@@ -72,6 +80,7 @@ const routes = (
     >
       {techDocsPage}
       <TechDocsAddons>
+        <LiveReloadAddon />
         <ThemeToggleAddon />
       </TechDocsAddons>
     </Route>

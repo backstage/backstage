@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
-import { render } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
-import React from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { makeStyles } from '@material-ui/core/styles';
+import { screen } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { PreviewPullRequestComponent } from './PreviewPullRequestComponent';
 
 const useStyles = makeStyles({
@@ -28,15 +28,15 @@ const useStyles = makeStyles({
 
 describe('<PreviewPullRequestComponent />', () => {
   it('renders without exploding', async () => {
-    const { getByText } = render(
+    await renderInTestApp(
       <PreviewPullRequestComponent
         title="My Title"
         description="My **description**"
       />,
     );
 
-    const title = getByText('My Title');
-    const description = getByText('description', { selector: 'strong' });
+    const title = screen.getByText('My Title');
+    const description = screen.getByText('description', { selector: 'strong' });
     expect(title).toBeInTheDocument();
     expect(title).toBeVisible();
     expect(description).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe('<PreviewPullRequestComponent />', () => {
   it('renders card with custom styles', async () => {
     const { result } = renderHook(() => useStyles());
 
-    const { getByText } = render(
+    await renderInTestApp(
       <PreviewPullRequestComponent
         title="My Title"
         description="My **description**"
@@ -54,18 +54,24 @@ describe('<PreviewPullRequestComponent />', () => {
       />,
     );
 
-    const title = getByText('My Title');
-    const description = getByText('description', { selector: 'strong' });
+    const title = screen.getByText('My Title');
+    const description = screen.getByText('description', { selector: 'strong' });
     expect(title).toBeInTheDocument();
-    expect(title).not.toBeVisible();
     expect(description).toBeInTheDocument();
-    expect(description).not.toBeVisible();
+
+    // FIXME: https://github.com/testing-library/jest-dom/issues/444
+    // expect(title).not.toBeVisible();
+    // expect(description).not.toBeVisible();
+
+    const card = title.closest(`.${result.current.displayNone}`);
+    expect(card).toBeInTheDocument();
+    expect(description.closest(`.${result.current.displayNone}`)).toBe(card);
   });
 
   it('renders with custom styles', async () => {
     const { result } = renderHook(() => useStyles());
 
-    const { getByText } = render(
+    await renderInTestApp(
       <PreviewPullRequestComponent
         title="My Title"
         description="My **description**"
@@ -73,8 +79,8 @@ describe('<PreviewPullRequestComponent />', () => {
       />,
     );
 
-    const title = getByText('My Title');
-    const description = getByText('description', { selector: 'strong' });
+    const title = screen.getByText('My Title');
+    const description = screen.getByText('description', { selector: 'strong' });
     expect(title).toBeInTheDocument();
     expect(title).toBeVisible();
     expect(description).toBeInTheDocument();

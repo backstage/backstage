@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import {
-  ReadTreeResponse,
-  SearchResponse,
-  UrlReader,
-} from '@backstage/backend-common';
 import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import os from 'os';
-import path from 'path';
-import { Readable } from 'stream';
+import os from 'node:os';
+import path from 'node:path';
+import { Readable } from 'node:stream';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import {
   getDocFilesFromRepository,
   getLocationForEntity,
   parseReferenceAnnotation,
   transformDirLocation,
 } from './helpers';
+import {
+  UrlReaderService,
+  UrlReaderServiceSearchResponse,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadTreeResponse,
+} from '@backstage/backend-plugin-api';
 
 jest.mock('@backstage/catalog-model', () => ({
   ...jest.requireActual('@backstage/catalog-model'),
@@ -62,7 +65,7 @@ const metadataBase = {
 
 const goodAnnotation = {
   annotations: {
-    'backstage.io/techdocs-ref':
+    [TECHDOCS_ANNOTATION]:
       'url:https://github.com/backstage/backstage/blob/master/subfolder/',
   },
 };
@@ -79,7 +82,7 @@ const mockEntityWithAnnotation: Entity = {
 
 const badAnnotation = {
   annotations: {
-    'backstage.io/techdocs-ref': 'bad-annotation',
+    [TECHDOCS_ANNOTATION]: 'bad-annotation',
   },
 };
 
@@ -100,7 +103,7 @@ afterEach(() => jest.resetAllMocks());
 describe('parseReferenceAnnotation', () => {
   it('should parse annotation', () => {
     const parsedLocationAnnotation = parseReferenceAnnotation(
-      'backstage.io/techdocs-ref',
+      TECHDOCS_ANNOTATION,
       mockEntityWithAnnotation,
     );
     expect(parsedLocationAnnotation.type).toBe('url');
@@ -110,15 +113,18 @@ describe('parseReferenceAnnotation', () => {
   });
 
   it('should throw error without annotation', () => {
+    const logMsgRegex = new RegExp(
+      `No ${TECHDOCS_ANNOTATION} annotation provided`,
+    );
     expect(() => {
-      parseReferenceAnnotation('backstage.io/techdocs-ref', entityBase);
-    }).toThrow(/No location annotation/);
+      parseReferenceAnnotation(TECHDOCS_ANNOTATION, entityBase);
+    }).toThrow(logMsgRegex);
   });
 
   it('should throw error with bad annotation', () => {
     expect(() => {
       parseReferenceAnnotation(
-        'backstage.io/techdocs-ref',
+        TECHDOCS_ANNOTATION,
         mockEntityWithBadAnnotation,
       );
     }).toThrow(/Unable to parse/);
@@ -144,14 +150,14 @@ describe('transformDirLocation', () => {
         metadata: {
           name: 'test',
           annotations: {
-            'backstage.io/techdocs-ref': techdocsRef,
+            [TECHDOCS_ANNOTATION]: techdocsRef,
           },
         },
       };
 
       const result = transformDirLocation(
         entity,
-        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity),
         scmIntegrations,
       );
 
@@ -177,14 +183,14 @@ describe('transformDirLocation', () => {
         metadata: {
           name: 'test',
           annotations: {
-            'backstage.io/techdocs-ref': techdocsRef,
+            [TECHDOCS_ANNOTATION]: techdocsRef,
           },
         },
       };
 
       const result = transformDirLocation(
         entity,
-        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity),
         scmIntegrations,
       );
 
@@ -204,7 +210,7 @@ describe('transformDirLocation', () => {
       metadata: {
         name: 'test',
         annotations: {
-          'backstage.io/techdocs-ref': 'dir:..',
+          [TECHDOCS_ANNOTATION]: 'dir:..',
         },
       },
     };
@@ -212,7 +218,7 @@ describe('transformDirLocation', () => {
     expect(() =>
       transformDirLocation(
         entity,
-        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity),
         scmIntegrations,
       ),
     ).toThrow(
@@ -232,7 +238,7 @@ describe('transformDirLocation', () => {
       metadata: {
         name: 'test',
         annotations: {
-          'backstage.io/techdocs-ref': 'dir:.',
+          [TECHDOCS_ANNOTATION]: 'dir:.',
         },
       },
     };
@@ -240,7 +246,7 @@ describe('transformDirLocation', () => {
     expect(() =>
       transformDirLocation(
         entity,
-        parseReferenceAnnotation('backstage.io/techdocs-ref', entity),
+        parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity),
         scmIntegrations,
       ),
     ).toThrow(/Unable to resolve location type other/);
@@ -260,7 +266,7 @@ describe('getLocationForEntity', () => {
       metadata: {
         name: 'test',
         annotations: {
-          'backstage.io/techdocs-ref': 'dir:.',
+          [TECHDOCS_ANNOTATION]: 'dir:.',
         },
       },
     };
@@ -287,12 +293,19 @@ describe('getLocationForEntity', () => {
 
 describe('getDocFilesFromRepository', () => {
   it('should read a remote directory using UrlReader.readTree', async () => {
-    class MockUrlReader implements UrlReader {
+    class MockUrlReader implements UrlReaderService {
       async read() {
         return Buffer.from('mock');
       }
 
-      async readTree(): Promise<ReadTreeResponse> {
+      async readUrl(
+        _url: string,
+        _options?: UrlReaderServiceReadUrlOptions | undefined,
+      ): Promise<UrlReaderServiceReadUrlResponse> {
+        throw new Error('Method not implemented.');
+      }
+
+      async readTree(): Promise<UrlReaderServiceReadTreeResponse> {
         return {
           dir: async () => {
             return '/tmp/testfolder';
@@ -307,7 +320,7 @@ describe('getDocFilesFromRepository', () => {
         };
       }
 
-      async search(): Promise<SearchResponse> {
+      async search(): Promise<UrlReaderServiceSearchResponse> {
         return {
           etag: '',
           files: [],

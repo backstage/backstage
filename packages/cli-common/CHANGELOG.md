@@ -1,5 +1,119 @@
 # @backstage/cli-common
 
+## 0.1.18-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/errors@1.2.7
+
+## 0.1.17
+
+### Patch Changes
+
+- ae4dd5d: Move some of the symlink resolution to `isChildPath`
+
+## 0.1.16
+
+### Patch Changes
+
+- 5cfb2a4: Added new `run`, `runOutput`, and `runCheck` utilities to help run child processes in a safe and portable way.
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+- 2bae83a: Bumped dev dependencies `@types/node`
+
+## 0.1.16-next.2
+
+### Patch Changes
+
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/errors@1.2.7
+
+## 0.1.16-next.1
+
+### Patch Changes
+
+- 5cfb2a4: Added new `run`, `runOutput`, and `runCheck` utilities to help run child processes in a safe and portable way.
+
+## 0.1.16-next.0
+
+### Patch Changes
+
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+
+## 0.1.15
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+
+## 0.1.14
+
+### Patch Changes
+
+- 142abb0: The monorepo root check in `findPaths` will now accept a shorthand `workspaces` config in `package.json`, no longer requiring `workspaces.packages`.
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- 142abb0: The monorepo root check in `findPaths` will now accept a shorthand `workspaces` config in `package.json`, no longer requiring `workspaces.packages`.
+
+## 0.1.13
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+
+## 0.1.12
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.1.12-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+
+## 0.1.11
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- 8015ff1258: Tweaked wording to use inclusive terminology
+
+## 0.1.10
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
 ## 0.1.9
 
 ### Patch Changes

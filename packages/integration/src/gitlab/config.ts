@@ -54,6 +54,11 @@ export type GitLabIntegrationConfig = {
    * If no baseUrl is provided, it will default to `https://${host}`
    */
   baseUrl: string;
+
+  /**
+   * Signing key to sign commits
+   */
+  commitSigningKey?: string;
 };
 
 /**
@@ -67,7 +72,7 @@ export function readGitLabIntegrationConfig(
 ): GitLabIntegrationConfig {
   const host = config.getString('host');
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
-  const token = config.getOptionalString('token');
+  const token = config.getOptionalString('token')?.trim();
   let baseUrl = config.getOptionalString('baseUrl');
   if (apiBaseUrl) {
     apiBaseUrl = trimEnd(apiBaseUrl, '/');
@@ -95,7 +100,13 @@ export function readGitLabIntegrationConfig(
     );
   }
 
-  return { host, token, apiBaseUrl, baseUrl };
+  return {
+    host,
+    token,
+    apiBaseUrl,
+    baseUrl,
+    commitSigningKey: config.getOptionalString('commitSigningKey'),
+  };
 }
 
 /**

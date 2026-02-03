@@ -19,7 +19,7 @@ import {
   deserializeError as deserializeErrorInternal,
   serializeError as serializeErrorInternal,
 } from 'serialize-error';
-import { isError } from '../errors';
+import { isError } from '../errors/assertion';
 
 /**
  * The serialized form of an Error.
@@ -60,6 +60,14 @@ export function serializeError(
 
   if (!options?.includeStack) {
     delete result.stack;
+
+    if (
+      result.cause &&
+      typeof result.cause === 'object' &&
+      'stack' in result.cause
+    ) {
+      delete result.cause.stack;
+    }
   }
 
   return result;

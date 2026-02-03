@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import { useRandomJoke } from './Context';
 
 export const Actions = () => {

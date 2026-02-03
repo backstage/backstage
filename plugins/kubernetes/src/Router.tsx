@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
-import { KubernetesContent } from './components/KubernetesContent';
-import { Button } from '@material-ui/core';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
-
-const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
-const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
-  'backstage.io/kubernetes-label-selector';
+import { KubernetesContent } from './KubernetesContent';
+import Button from '@material-ui/core/Button';
+import {
+  KUBERNETES_ANNOTATION,
+  KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION,
+} from '@backstage/plugin-kubernetes-common';
 
 export const isKubernetesAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[KUBERNETES_ANNOTATION]) ||

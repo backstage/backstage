@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { BackstageTheme } from '@backstage/theme';
-import { RenderLabelProps } from './types';
+import { DependencyGraphTypes as Types } from './types';
 
 /** @public */
 export type DependencyGraphDefaultLabelClassKey = 'text';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     text: {
       fill: theme.palette.textContrast,
     },
@@ -32,7 +30,7 @@ const useStyles = makeStyles(
 );
 
 /** @public */
-export function DefaultLabel({ edge: { label } }: RenderLabelProps) {
+export function DefaultLabel({ edge: { label } }: Types.RenderLabelProps) {
   const classes = useStyles();
   return (
     <text className={classes.text} textAnchor="middle">

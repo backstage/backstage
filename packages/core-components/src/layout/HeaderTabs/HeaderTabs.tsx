@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// TODO(blam): Remove this implementation when the Tabs are ready
-// This is just a temporary solution to implementing tabs for now
-
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import TabUI, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ElementType,
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+
+// TODO(blam): Remove this implementation when the Tabs are ready
+// This is just a temporary solution to implementing tabs for now
 
 /** @public */
 export type HeaderTabsClassKey =
@@ -38,10 +44,10 @@ const useStyles = makeStyles(
       minWidth: 0,
     },
     defaultTab: {
-      padding: theme.spacing(3, 3),
       ...theme.typography.caption,
+      padding: theme.spacing(3, 3),
       textTransform: 'uppercase',
-      fontWeight: 'bold',
+      fontWeight: theme.typography.fontWeightBold,
       color: theme.palette.text.secondary,
     },
     selected: {
@@ -60,7 +66,7 @@ const useStyles = makeStyles(
 export type Tab = {
   id: string;
   label: string;
-  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+  tabProps?: TabProps<ElementType, { component?: ElementType }>;
 };
 
 type HeaderTabsProps = {
@@ -81,11 +87,11 @@ export function HeaderTabs(props: HeaderTabsProps) {
   const styles = useStyles();
 
   const handleChange = useCallback(
-    (_: React.ChangeEvent<{}>, index: number) => {
+    (_: ChangeEvent<{}>, index: number) => {
       if (selectedIndex === undefined) {
         setSelectedTab(index);
       }
-      if (onChange && selectedIndex !== index) onChange(index);
+      if (onChange) onChange(index);
     },
     [selectedIndex, onChange],
   );
@@ -97,29 +103,28 @@ export function HeaderTabs(props: HeaderTabsProps) {
   }, [selectedIndex]);
 
   return (
-    <div className={styles.tabsWrapper}>
+    <Box className={styles.tabsWrapper}>
       <Tabs
-        selectionFollowsFocus
         indicatorColor="primary"
         textColor="inherit"
         variant="scrollable"
         scrollButtons="auto"
-        aria-label="scrollable auto tabs example"
+        aria-label="tabs"
         onChange={handleChange}
         value={selectedTab}
       >
         {tabs.map((tab, index) => (
           <TabUI
-            {...tab.tabProps}
             data-testid={`header-tab-${index}`}
             label={tab.label}
             key={tab.id}
             value={index}
             className={styles.defaultTab}
             classes={{ selected: styles.selected, root: styles.tabRoot }}
+            {...tab.tabProps}
           />
         ))}
       </Tabs>
-    </div>
+    </Box>
   );
 }

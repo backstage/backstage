@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import Star from '@material-ui/icons/Star';
-import React from 'react';
 import { ProviderSettingsItem } from './ProviderSettingsItem';
 import {
   githubAuthApiRef,
@@ -23,79 +23,120 @@ import {
   oktaAuthApiRef,
   microsoftAuthApiRef,
   bitbucketAuthApiRef,
+  bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
   oneloginAuthApiRef,
+  openshiftAuthApiRef,
 } from '@backstage/core-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
-type Props = {
+/** @public */
+export const DefaultProviderSettings = (props: {
   configuredProviders: string[];
+}) => {
+  const { configuredProviders } = props;
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+  return (
+    <>
+      {configuredProviders.includes('google') && (
+        <ProviderSettingsItem
+          title="Google"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Google',
+          })}
+          apiRef={googleAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('microsoft') && (
+        <ProviderSettingsItem
+          title="Microsoft"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Microsoft',
+          })}
+          apiRef={microsoftAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('github') && (
+        <ProviderSettingsItem
+          title="GitHub"
+          description={t('defaultProviderSettings.description', {
+            provider: 'GitHub',
+          })}
+          apiRef={githubAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('gitlab') && (
+        <ProviderSettingsItem
+          title="GitLab"
+          description={t('defaultProviderSettings.description', {
+            provider: 'GitLab',
+          })}
+          apiRef={gitlabAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('okta') && (
+        <ProviderSettingsItem
+          title="Okta"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Okta',
+          })}
+          apiRef={oktaAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('bitbucket') && (
+        <ProviderSettingsItem
+          title="Bitbucket"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Bitbucket',
+          })}
+          apiRef={bitbucketAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('onelogin') && (
+        <ProviderSettingsItem
+          title="OneLogin"
+          description={t('defaultProviderSettings.description', {
+            provider: 'OneLogin',
+          })}
+          apiRef={oneloginAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('atlassian') && (
+        <ProviderSettingsItem
+          title="Atlassian"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Atlassian',
+          })}
+          apiRef={atlassianAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('bitbucketServer') && (
+        <ProviderSettingsItem
+          title="Bitbucket Server"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Bitbucket Server',
+          })}
+          apiRef={bitbucketServerAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('openshift') && (
+        <ProviderSettingsItem
+          title="OpenShift"
+          description="Provides authentication towards OpenShift APIs and identities"
+          apiRef={openshiftAuthApiRef}
+          icon={Star}
+        />
+      )}
+    </>
+  );
 };
-
-export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
-  <>
-    {configuredProviders.includes('google') && (
-      <ProviderSettingsItem
-        title="Google"
-        description="Provides authentication towards Google APIs and identities"
-        apiRef={googleAuthApiRef}
-        icon={Star}
-      />
-    )}
-    {configuredProviders.includes('microsoft') && (
-      <ProviderSettingsItem
-        title="Microsoft"
-        description="Provides authentication towards Microsoft APIs and identities"
-        apiRef={microsoftAuthApiRef}
-        icon={Star}
-      />
-    )}
-    {configuredProviders.includes('github') && (
-      <ProviderSettingsItem
-        title="GitHub"
-        description="Provides authentication towards GitHub APIs"
-        apiRef={githubAuthApiRef}
-        icon={Star}
-      />
-    )}
-    {configuredProviders.includes('gitlab') && (
-      <ProviderSettingsItem
-        title="GitLab"
-        description="Provides authentication towards GitLab APIs"
-        apiRef={gitlabAuthApiRef}
-        icon={Star}
-      />
-    )}
-    {configuredProviders.includes('okta') && (
-      <ProviderSettingsItem
-        title="Okta"
-        description="Provides authentication towards Okta APIs"
-        apiRef={oktaAuthApiRef}
-        icon={Star}
-      />
-    )}
-    {configuredProviders.includes('bitbucket') && (
-      <ProviderSettingsItem
-        title="Bitbucket"
-        description="Provides authentication towards Bitbucket APIs"
-        apiRef={bitbucketAuthApiRef}
-        icon={Star}
-      />
-    )}
-    {configuredProviders.includes('onelogin') && (
-      <ProviderSettingsItem
-        title="OneLogin"
-        description="Provides authentication towards OneLogin APIs"
-        apiRef={oneloginAuthApiRef}
-        icon={Star}
-      />
-    )}
-    {configuredProviders.includes('atlassian') && (
-      <ProviderSettingsItem
-        title="Atlassian"
-        description="Provides authentication towards Atlassian APIs"
-        apiRef={atlassianAuthApiRef}
-        icon={Star}
-      />
-    )}
-  </>
-);

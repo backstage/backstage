@@ -13,42 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import { SidebarItem } from '@backstage/core-components';
 import { IconComponent } from '@backstage/core-plugin-api';
 import {
   SearchModal,
-  SearchModalChildrenProps,
+  SearchModalProps,
   SearchModalProvider,
   useSearchModal,
 } from '../SearchModal';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchTranslationRef } from '../../translation';
 
 /**
  * Props for {@link SidebarSearchModal}.
  *
  * @public
  */
-export type SidebarSearchModalProps = {
+export type SidebarSearchModalProps = Pick<
+  SearchModalProps,
+  'children' | 'resultItemComponents'
+> & {
   icon?: IconComponent;
-  children?: (props: SearchModalChildrenProps) => JSX.Element;
 };
 
 const SidebarSearchModalContent = (props: SidebarSearchModalProps) => {
   const { state, toggleModal } = useSearchModal();
   const Icon = props.icon ? props.icon : SearchIcon;
+  const { t } = useTranslationRef(searchTranslationRef);
 
   return (
     <>
       <SidebarItem
         className="search-icon"
         icon={Icon}
-        text="Search"
+        text={t('sidebarSearchModal.title')}
         onClick={toggleModal}
       />
       <SearchModal
         {...state}
         toggleModal={toggleModal}
+        resultItemComponents={props.resultItemComponents}
         children={props.children}
       />
     </>

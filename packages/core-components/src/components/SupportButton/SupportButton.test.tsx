@@ -14,60 +14,127 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { configApiRef } from '@backstage/core-plugin-api';
 import {
-  render,
-  act,
-  RenderResult,
-  waitFor,
-  fireEvent,
-  screen,
-} from '@testing-library/react';
-import { wrapInTestApp, renderInTestApp } from '@backstage/test-utils';
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { SupportButton } from './SupportButton';
+
+const configApi = mockApis.config({
+  data: {
+    app: {
+      support: {
+        url: 'https://github.com',
+        items: [
+          {
+            title: 'Github',
+            icon: 'github',
+            links: [{ title: 'Github Issues', url: '/issues' }],
+          },
+        ],
+      },
+    },
+  },
+});
+
+const noSupportConfigApi = mockApis.config({
+  data: {
+    app: {},
+  },
+});
 
 const SUPPORT_BUTTON_ID = 'support-button';
 const POPOVER_ID = 'support-button-popover';
 
 describe('<SupportButton />', () => {
   it('renders without exploding', async () => {
-    let renderResult: RenderResult;
-
-    await act(async () => {
-      renderResult = render(wrapInTestApp(<SupportButton />));
-    });
-
-    await waitFor(() =>
-      expect(renderResult.getByTestId(SUPPORT_BUTTON_ID)).toBeInTheDocument(),
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <SupportButton />
+      </TestApiProvider>,
     );
+    await expect(
+      screen.findByTestId(SUPPORT_BUTTON_ID),
+    ).resolves.toBeInTheDocument();
   });
 
   it('supports passing a title', async () => {
-    await renderInTestApp(<SupportButton title="Custom title" />);
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <SupportButton title="Custom title" />
+      </TestApiProvider>,
+    );
     fireEvent.click(screen.getByTestId(SUPPORT_BUTTON_ID));
     expect(screen.getByText('Custom title')).toBeInTheDocument();
   });
 
+  it('supports passing link items through props', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <SupportButton
+          items={[
+            {
+              title: 'Documentation',
+              icon: 'description',
+              links: [{ title: 'Show docs', url: '/docs' }],
+            },
+          ]}
+        />
+      </TestApiProvider>,
+    );
+
+    const supportButton = screen.getByTestId(SUPPORT_BUTTON_ID);
+    expect(supportButton).toBeInTheDocument();
+
+    fireEvent.click(supportButton);
+
+    const documentationItem = screen.getByText('Documentation');
+    expect(documentationItem).toBeInTheDocument();
+  });
+
+  it('shows items from support config', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <SupportButton />
+      </TestApiProvider>,
+    );
+
+    const supportButton = screen.getByTestId(SUPPORT_BUTTON_ID);
+    expect(supportButton).toBeInTheDocument();
+
+    fireEvent.click(supportButton);
+
+    const defaultGithubSupportConfig = screen.getByText('Github Issues');
+    expect(defaultGithubSupportConfig).toBeInTheDocument();
+  });
+
   it('shows popover on click', async () => {
-    let renderResult: RenderResult;
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, configApi]]}>
+        <SupportButton />
+      </TestApiProvider>,
+    );
 
+    await expect(
+      screen.findByTestId(SUPPORT_BUTTON_ID),
+    ).resolves.toBeInTheDocument();
     await act(async () => {
-      renderResult = render(wrapInTestApp(<SupportButton />));
+      fireEvent.click(screen.getByTestId(SUPPORT_BUTTON_ID));
     });
 
-    let button: HTMLElement;
+    await expect(screen.findByTestId(POPOVER_ID)).resolves.toBeInTheDocument();
+  });
 
-    await waitFor(() => {
-      expect(renderResult.getByTestId(SUPPORT_BUTTON_ID)).toBeInTheDocument();
-      button = renderResult.getByTestId(SUPPORT_BUTTON_ID);
-    });
+  it('hides button if config is missing', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[configApiRef, noSupportConfigApi]]}>
+        <SupportButton />
+      </TestApiProvider>,
+    );
 
-    await act(async () => {
-      fireEvent.click(button);
-    });
-
-    await waitFor(() => {
-      expect(renderResult.getByTestId(POPOVER_ID)).toBeInTheDocument();
-    });
+    await expect(screen.findByTestId(SUPPORT_BUTTON_ID)).rejects.toThrow();
   });
 });

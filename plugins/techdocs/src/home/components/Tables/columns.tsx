@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Link, SubvalueCell, TableColumn } from '@backstage/core-components';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
@@ -30,11 +29,26 @@ function customTitle(entity: Entity): string {
  * @public
  */
 export const columnFactories = {
+  createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow> {
+    const nameCol = columnFactories.createNameColumn();
+    return {
+      ...nameCol,
+      field: 'entity.metadata.title',
+      hidden: options?.hidden,
+    };
+  },
   createNameColumn(): TableColumn<DocsTableRow> {
     return {
       title: 'Document',
       field: 'entity.metadata.name',
       highlight: true,
+      searchable: true,
+      defaultSort: 'asc',
+      customSort: (row1, row2) => {
+        const title1 = customTitle(row1.entity).toLocaleLowerCase();
+        const title2 = customTitle(row2.entity).toLocaleLowerCase();
+        return title1.localeCompare(title2);
+      },
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={
@@ -57,6 +71,12 @@ export const columnFactories = {
       ),
     };
   },
+  createKindColumn(): TableColumn<DocsTableRow> {
+    return {
+      title: 'Kind',
+      field: 'entity.kind',
+    };
+  },
   createTypeColumn(): TableColumn<DocsTableRow> {
     return {
       title: 'Type',
@@ -64,3 +84,11 @@ export const columnFactories = {
     };
   },
 };
+
+export const defaultColumns: TableColumn<DocsTableRow>[] = [
+  columnFactories.createTitleColumn({ hidden: true }),
+  columnFactories.createNameColumn(),
+  columnFactories.createOwnerColumn(),
+  columnFactories.createKindColumn(),
+  columnFactories.createTypeColumn(),
+];

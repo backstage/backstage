@@ -14,65 +14,49 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { fireEvent } from '@testing-library/react';
 import {
-  renderWithEffects,
   TestApiRegistry,
-  wrapInTestApp,
+  renderInTestApp,
+  mockApis,
 } from '@backstage/test-utils';
 import { DismissableBanner } from './DismissableBanner';
-import { ApiProvider, WebStorage } from '@backstage/core-app-api';
-import { storageApiRef, StorageApi } from '@backstage/core-plugin-api';
+import { ApiProvider } from '@backstage/core-app-api';
+import { storageApiRef } from '@backstage/core-plugin-api';
+import { screen } from '@testing-library/react';
 
 describe('<DismissableBanner />', () => {
-  let apis: TestApiRegistry;
-  const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
-  const createWebStorage = (): StorageApi => {
-    return WebStorage.create({
-      errorApi: mockErrorApi,
-    });
-  };
-
-  beforeEach(() => {
-    apis = TestApiRegistry.from([storageApiRef, createWebStorage()]);
-  });
+  const apis = TestApiRegistry.from([storageApiRef, mockApis.storage()]);
 
   it('renders the message and the popover', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <DismissableBanner
-            variant="info"
-            // setting={mockSetting}
-            message="test message"
-            id="catalog_page_welcome_banner"
-          />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <DismissableBanner
+          variant="info"
+          // setting={mockSetting}
+          message="test message"
+          id="catalog_page_welcome_banner"
+        />
+      </ApiProvider>,
     );
-    const element = await rendered.findByText('test message');
+    const element = await screen.findByText('test message');
     expect(element).toBeInTheDocument();
   });
 
   it('gets placed in local storage on dismiss', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <DismissableBanner
-            variant="info"
-            // setting={mockSetting}
-            message="test message"
-            id="catalog_page_welcome_banner"
-          />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <DismissableBanner
+          variant="info"
+          // setting={mockSetting}
+          message="test message"
+          id="catalog_page_welcome_banner"
+        />
+      </ApiProvider>,
     );
     const webstore = apis.get(storageApiRef);
     const notifications = webstore?.forBucket('notifications');
-    const button = await rendered.findByTitle(
-      'Permanently dismiss this message',
-    );
+    const button = await screen.findByTitle('Permanently dismiss this message');
     fireEvent.click(button);
     const dismissedBanners =
       notifications?.snapshot<string[]>('dismissedBanners').value ?? [];

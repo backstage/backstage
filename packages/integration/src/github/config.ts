@@ -27,7 +27,7 @@ const GITHUB_RAW_BASE_URL = 'https://raw.githubusercontent.com';
  *
  * @public
  */
-export type GitHubIntegrationConfig = {
+export type GithubIntegrationConfig = {
   /**
    * The host of the target that this matches on, e.g. "github.com"
    */
@@ -92,7 +92,7 @@ export type GithubAppConfig = {
   /**
    * Webhook secret can be configured at https://github.com/organizations/$org/settings/apps/$AppName
    */
-  webhookSecret: string;
+  webhookSecret?: string;
   /**
    * Found at https://github.com/organizations/$org/settings/apps/$AppName
    */
@@ -109,6 +109,10 @@ export type GithubAppConfig = {
    * https://docs.github.com/en/rest/reference/apps#list-installations-for-the-authenticated-app--code-samples
    */
   allowedInstallationOwners?: string[];
+  /**
+   * If true, then an installation token will be issued for access when no other token is available.
+   */
+  publicAccess?: boolean;
 };
 
 /**
@@ -117,22 +121,23 @@ export type GithubAppConfig = {
  * @param config - The config object of a single integration
  * @public
  */
-export function readGitHubIntegrationConfig(
+export function readGithubIntegrationConfig(
   config: Config,
-): GitHubIntegrationConfig {
+): GithubIntegrationConfig {
   const host = config.getOptionalString('host') ?? GITHUB_HOST;
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   let rawBaseUrl = config.getOptionalString('rawBaseUrl');
-  const token = config.getOptionalString('token');
+  const token = config.getOptionalString('token')?.trim();
   const apps = config.getOptionalConfigArray('apps')?.map(c => ({
     appId: c.getNumber('appId'),
     clientId: c.getString('clientId'),
     clientSecret: c.getString('clientSecret'),
-    webhookSecret: c.getString('webhookSecret'),
+    webhookSecret: c.getOptionalString('webhookSecret'),
     privateKey: c.getString('privateKey'),
     allowedInstallationOwners: c.getOptionalStringArray(
       'allowedInstallationOwners',
     ),
+    publicAccess: c.getOptionalBoolean('publicAccess'),
   }));
 
   if (!isValidHost(host)) {
@@ -163,11 +168,11 @@ export function readGitHubIntegrationConfig(
  * @param configs - All of the integration config objects
  * @public
  */
-export function readGitHubIntegrationConfigs(
+export function readGithubIntegrationConfigs(
   configs: Config[],
-): GitHubIntegrationConfig[] {
+): GithubIntegrationConfig[] {
   // First read all the explicit integrations
-  const result = configs.map(readGitHubIntegrationConfig);
+  const result = configs.map(readGithubIntegrationConfig);
 
   // If no explicit github.com integration was added, put one in the list as
   // a convenience

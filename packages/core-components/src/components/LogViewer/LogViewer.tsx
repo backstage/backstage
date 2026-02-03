@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { useApp } from '@backstage/core-plugin-api';
 
 const RealLogViewer = lazy(() =>
@@ -34,6 +34,10 @@ export interface LogViewerProps {
    */
   text: string;
   /**
+   * Determines if the overflow text should be wrapped or shown via a single line in a horizontal scrollbar.
+   */
+  textWrap?: boolean;
+  /**
    * Styling overrides for classes within the LogViewer component.
    */
   classes?: {
@@ -44,6 +48,7 @@ export interface LogViewerProps {
 /**
  * A component that displays logs in a scrollable text area.
  *
+ * @remarks
  * The LogViewer has support for search and filtering, as well as displaying
  * text content with ANSI color escape codes.
  *

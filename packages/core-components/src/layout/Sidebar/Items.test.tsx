@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  mockApis,
+  TestApiProvider,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import { createEvent, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import HomeIcon from '@material-ui/icons/Home';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
-import { renderHook } from '@testing-library/react-hooks';
-import { hexToRgb, makeStyles } from '@material-ui/core/styles';
+import { renderHook } from '@testing-library/react';
+import { makeStyles } from '@material-ui/core/styles';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles({
   spotlight: {
@@ -31,27 +35,48 @@ const useStyles = makeStyles({
   },
 });
 
+const handleSidebarItemClick = jest.fn();
+const analyticsApiMock = mockApis.analytics();
+
 async function renderSidebar() {
   const { result } = renderHook(() => useStyles());
 
   await renderInTestApp(
-    <Sidebar>
-      <SidebarSearchField onSearch={() => {}} to="/search" />
-      <SidebarItem text="Home" icon={HomeIcon} to="./" />
-      <SidebarItem
-        icon={CreateComponentIcon}
-        onClick={() => {}}
-        text="Create..."
-        className={result.current.spotlight}
-      />
-      <SidebarExpandButton />
-    </Sidebar>,
+    <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
+      <Sidebar>
+        <SidebarSearchField onSearch={() => {}} to="/search" />
+        <SidebarItem text="Home" icon={HomeIcon} to="./" />
+        <SidebarItem
+          icon={CreateComponentIcon}
+          onClick={handleSidebarItemClick}
+          text="Create..."
+          className={result.current.spotlight}
+        />
+        <SidebarItem
+          icon={CreateComponentIcon}
+          to="/docs"
+          onClick={handleSidebarItemClick}
+          text="Docs"
+          className={result.current.spotlight}
+        />
+        <SidebarItem
+          icon={CreateComponentIcon}
+          to="/explore"
+          onClick={handleSidebarItemClick}
+          text="Explore"
+          className={result.current.spotlight}
+          noTrack
+        />
+        <SidebarExpandButton />
+      </Sidebar>
+    </TestApiProvider>,
   );
   await userEvent.hover(screen.getByTestId('sidebar-root'));
 }
 
 describe('Items', () => {
   beforeEach(async () => {
+    jest.clearAllMocks();
     await renderSidebar();
   });
 
@@ -71,9 +96,41 @@ describe('Items', () => {
     it('should render a button with custom style', async () => {
       expect(
         await screen.findByRole('button', { name: /create/i }),
-      ).toHaveStyle(`background-color: ${hexToRgb('2b2a2a')}`);
+      ).toHaveStyle(`background-color: rgba(0, 0, 0, 0)`); // transparent
+    });
+
+    it('should send button clicks to analytics', async () => {
+      await userEvent.click(
+        await screen.findByRole('button', { name: /create/i }),
+      );
+      expect(handleSidebarItemClick).toHaveBeenCalledTimes(1);
+      expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
+        action: 'click',
+        subject: 'Create...',
+        context: { routeRef: 'unknown', pluginId: 'root', extension: 'App' },
+        attributes: { to: '/' },
+      });
+    });
+
+    it('should send link clicks to analytics', async () => {
+      await userEvent.click(await screen.findByRole('link', { name: /docs/i }));
+      expect(handleSidebarItemClick).toHaveBeenCalledTimes(1);
+      expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
+        action: 'click',
+        subject: 'Docs',
+        context: { routeRef: 'unknown', pluginId: 'root', extension: 'App' },
+        attributes: { to: '/docs' },
+      });
+    });
+
+    it('should not send clicks to analytics when tracking is disabled', async () => {
+      await userEvent.click(
+        await screen.findByRole('link', { name: /explore/i }),
+      );
+      expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
     });
   });
+
   describe('SidebarSearchField', () => {
     it('should be defaultPrevented when enter is pressed', async () => {
       const searchEvent = createEvent.keyDown(

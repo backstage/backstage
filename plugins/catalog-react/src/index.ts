@@ -27,13 +27,10 @@ export * from './apis';
 export * from './components';
 export * from './hooks';
 export * from './filters';
+export type { EntityRouteParamsOptions } from './routes';
 export { entityRouteParams, entityRouteRef } from './routes';
-export * from './testUtils';
 export * from './types';
 export * from './overridableComponents';
-export {
-  getEntityRelations,
-  getEntitySourceLocation,
-  isOwnerOf,
-} from './utils';
+export { getEntityRelations, getEntitySourceLocation } from './utils';
 export type { EntitySourceLocation } from './utils';
+export * from './deprecated';

@@ -30,15 +30,8 @@ import {
   ExternalRouteRef,
   SubRouteRef,
 } from '@backstage/core-plugin-api';
-
-// Joins a list of paths together, avoiding trailing and duplicate slashes
-function joinPaths(...paths: string[]): string {
-  const normalized = paths.join('/').replace(/\/\/+/g, '/');
-  if (normalized !== '/' && normalized.endsWith('/')) {
-    return normalized.slice(0, -1);
-  }
-  return normalized;
-}
+import { joinPaths } from './helpers';
+import mapValues from 'lodash/mapValues';
 
 /**
  * Resolves the absolute route ref that our target route ref is pointing pointing to, as well
@@ -90,7 +83,7 @@ function resolveTargetRef(
 
   // Find the path that our target route is bound to
   const resolvedPath = routePaths.get(targetRef);
-  if (!resolvedPath) {
+  if (resolvedPath === undefined) {
     return [undefined, ''];
   }
 
@@ -160,35 +153,42 @@ function resolveBasePath(
   // we need to traverse to reach our target except for the very last one. None of these
   // paths are allowed to require any parameters, as the caller would have no way of knowing
   // what parameters those are.
-  const diffPath = joinPaths(
-    ...refDiffList.slice(0, -1).map(ref => {
-      const path = routePaths.get(ref);
-      if (!path) {
-        throw new Error(`No path for ${ref}`);
-      }
-      if (path.includes(':')) {
-        throw new Error(
-          `Cannot route to ${targetRef} with parent ${ref} as it has parameters`,
-        );
-      }
-      return path;
-    }),
-  );
+  const diffPaths = refDiffList.slice(0, -1).map(ref => {
+    const path = routePaths.get(ref);
+    if (path === undefined) {
+      throw new Error(`No path for ${ref}`);
+    }
+    if (path.includes(':')) {
+      throw new Error(
+        `Cannot route to ${targetRef} with parent ${ref} as it has parameters`,
+      );
+    }
+    return path;
+  });
 
-  return parentPath + diffPath;
+  return `${joinPaths(parentPath, ...diffPaths)}/`;
 }
 
 export class RouteResolver {
+  private readonly routePaths: Map<RouteRef, string>;
+  private readonly routeParents: Map<RouteRef, RouteRef | undefined>;
+  private readonly routeObjects: BackstageRouteObject[];
+  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly appBasePath: string; // base path without a trailing slash
+
   constructor(
-    private readonly routePaths: Map<RouteRef, string>,
-    private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
-    private readonly routeObjects: BackstageRouteObject[],
-    private readonly routeBindings: Map<
-      ExternalRouteRef,
-      RouteRef | SubRouteRef
-    >,
-    private readonly appBasePath: string, // base path without a trailing slash
-  ) {}
+    routePaths: Map<RouteRef, string>,
+    routeParents: Map<RouteRef, RouteRef | undefined>,
+    routeObjects: BackstageRouteObject[],
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    appBasePath: string, // base path without a trailing slash
+  ) {
+    this.routePaths = routePaths;
+    this.routeParents = routeParents;
+    this.routeObjects = routeObjects;
+    this.routeBindings = routeBindings;
+    this.appBasePath = appBasePath;
+  }
 
   resolve<Params extends AnyParams>(
     anyRouteRef:
@@ -235,7 +235,23 @@ export class RouteResolver {
       );
 
     const routeFunc: RouteFunc<Params> = (...[params]) => {
-      return basePath + generatePath(targetPath, params);
+      // We selectively encode some some known-dangerous characters in the
+      // params. The reason that we don't perform a blanket `encodeURIComponent`
+      // here is that this encoding was added defensively long after the initial
+      // release of this code. There's likely to be many users of this code that
+      // already encode their parameters knowing that this code didn't do this
+      // for them in the past. Therefore, we are extra careful NOT to include
+      // the percent character in this set, even though that might seem like a
+      // bad idea.
+      const encodedParams =
+        params &&
+        mapValues(params, value => {
+          if (typeof value === 'string') {
+            return value.replaceAll(/[&?#;\/]/g, c => encodeURIComponent(c));
+          }
+          return value;
+        });
+      return joinPaths(basePath, generatePath(targetPath, encodedParams));
     };
     return routeFunc;
   }

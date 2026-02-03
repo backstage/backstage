@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { EmptyState } from './EmptyState';
 import Button from '@material-ui/core/Button';
 import { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';
@@ -22,13 +21,16 @@ import { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';
 export default {
   title: 'Feedback/EmptyState',
   component: EmptyState,
+  tags: ['!manifest'],
 };
 
 const containerStyle = { width: '100%', height: '100vh' };
 
 export const MissingAnnotation = () => (
   <div style={containerStyle}>
-    <MissingAnnotationEmptyState annotation="backstage.io/example" />
+    <MissingAnnotationEmptyState
+      annotation={['backstage.io/foo', 'backstage.io/bar']}
+    />
   </div>
 );
 
@@ -73,6 +75,22 @@ export const WithAction = () => (
           DOCS
         </Button>
       }
+    />
+  </div>
+);
+
+export const CustomImage = () => (
+  <div style={containerStyle}>
+    <EmptyState
+      title="Custom image example"
+      missing={{
+        customImage: (
+          <img
+            src="https://backstage.io/animations/backstage-software-catalog-icon-1.gif"
+            alt="Backstage example"
+          />
+        ),
+      }}
     />
   </div>
 );

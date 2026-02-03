@@ -15,8 +15,9 @@
  */
 
 import Grid from '@material-ui/core/Grid';
-import React, { PropsWithChildren, useState } from 'react';
-import { MemoryRouter } from 'react-router';
+import Typography from '@material-ui/core/Typography';
+import { PropsWithChildren, useState } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { CardTab, TabbedCard } from './TabbedCard';
 
 const cardContentStyle = { height: 200, width: 500 };
@@ -35,6 +36,7 @@ export default {
       </Grid>
     ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {
@@ -89,7 +91,7 @@ export const WithControlledTabValue = () => {
 
   return (
     <Wrapper>
-      <span>Selected tab is {selectedTab}</span>
+      <Typography component="span">Selected tab is {selectedTab}</Typography>
 
       <TabbedCard
         value={selectedTab}

@@ -15,8 +15,8 @@
  */
 
 import { railsArgumentResolver } from './railsArgumentResolver';
-import { sep as separatorPath } from 'path';
-import os from 'os';
+import { sep as separatorPath } from 'node:path';
+import os from 'node:os';
 
 describe('railsArgumentResolver', () => {
   describe('when provide the parameter', () => {
@@ -28,6 +28,12 @@ describe('railsArgumentResolver', () => {
       [{ skipBundle: true }, ['--skip-bundle']],
       [{ skipWebpackInstall: true }, ['--skip-webpack-install']],
       [{ skipTest: true }, ['--skip-test']],
+      [{ skipActionCable: true }, ['--skip-action-cable']],
+      [{ skipActionMailer: true }, ['--skip-action-mailer']],
+      [{ skipActionMailbox: true }, ['--skip-action-mailbox']],
+      [{ skipActiveStorage: true }, ['--skip-active-storage']],
+      [{ skipActionText: true }, ['--skip-action-text']],
+      [{ skipActiveRecord: true }, ['--skip-active-record']],
       [{ force: true }, ['--force']],
       [{ webpacker: 'vue' }, ['--webpack', 'vue']],
       [{ database: 'postgresql' }, ['--database', 'postgresql']],

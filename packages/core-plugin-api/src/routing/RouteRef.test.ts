@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { AnyParams, RouteRef } from './types';
+import { AnyParams, RouteRef, ParamKeys } from './types';
 import { createRouteRef } from './RouteRef';
+import { RouteResolutionApi, RouteFunc } from '@backstage/frontend-plugin-api';
 
 describe('RouteRef', () => {
   it('should be created', () => {
@@ -23,7 +24,9 @@ describe('RouteRef', () => {
       id: 'my-route-ref',
     });
     expect(routeRef.params).toEqual([]);
-    expect(String(routeRef)).toBe('routeRef{type=absolute,id=my-route-ref}');
+    expect(String(routeRef)).toMatch(
+      /^routeRef\{type=absolute,id=my-route-ref\}$/,
+    );
   });
 
   it('should be created with params', () => {
@@ -54,7 +57,7 @@ describe('RouteRef', () => {
     validateType<undefined>(_2);
     // @ts-expect-error
     validateType<{ x: string; z: string }>(_2);
-    // extra z, we validate this at runtime instead
+    // @ts-expect-error
     validateType<{ x: string; y: string; z: string }>(_2);
     validateType<{ x: string; y: string }>(_2);
 
@@ -70,5 +73,62 @@ describe('RouteRef', () => {
 
     // To avoid complains about missing expectations and unused vars
     expect([_1, _2, _3, _4].join('')).toEqual(expect.any(String));
+  });
+
+  it('should properly infer param keys', () => {
+    function validateType<T>(_test: T) {}
+
+    validateType<ParamKeys<{ x: string; y: string }>>(['x', 'y']);
+
+    // @ts-expect-error
+    validateType<ParamKeys<{}>>(['foo']);
+    validateType<ParamKeys<{}>>([]);
+
+    // @ts-expect-error
+    validateType<ParamKeys<{ [key in string]: string }>>([1]);
+    validateType<ParamKeys<{ [key in string]: string }>>(['foo']);
+
+    // @ts-expect-error
+    validateType<ParamKeys<{ [key in string]: string } | undefined>>([1]);
+    validateType<ParamKeys<{ [key in string]: string } | undefined>>(['foo']);
+
+    // @ts-expect-error
+    validateType<ParamKeys<undefined>>(['foo']);
+    validateType<ParamKeys<undefined>>([]);
+
+    expect(true).toBeDefined();
+  });
+
+  describe('with new frontend system', () => {
+    const routeResolutionApi = { resolve: jest.fn() } as RouteResolutionApi;
+
+    function expectType<T>(): <U>(
+      v: U,
+    ) => [T, U] extends [U, T] ? { ok(): void } : { invalid: U } {
+      return () => ({ ok() {} } as any);
+    }
+
+    it('should resolve routes correctly', () => {
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(createRouteRef({ id: '1' })),
+      ).ok();
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(createRouteRef({ id: '1' })),
+      ).ok();
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(createRouteRef({ id: '1', params: [] })),
+      ).ok();
+
+      expectType<RouteFunc<{ x: string }> | undefined>()(
+        routeResolutionApi.resolve(createRouteRef({ id: '1', params: ['x'] })),
+      ).ok();
+      expectType<RouteFunc<{ x: string; y: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createRouteRef({ id: '1', params: ['x', 'y'] }),
+        ),
+      ).ok();
+
+      expect(1).toBe(1);
+    });
   });
 });

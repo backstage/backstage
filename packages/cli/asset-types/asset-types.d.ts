@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
 /// <reference types="node" />
 /// <reference types="react" />
@@ -40,6 +40,11 @@ declare module '*.jpeg' {
   export default src;
 }
 
+declare module '*.md' {
+  const src: string;
+  export default src;
+}
+
 declare module '*.png' {
   const src: string;
   export default src;
@@ -50,17 +55,14 @@ declare module '*.webp' {
   export default src;
 }
 
-declare module '*.yaml' {
+declare module '*.ico' {
   const src: string;
   export default src;
 }
 
-declare module '*.icon.svg' {
-  import { ComponentType } from 'react';
-  import { SvgIconProps } from '@material-ui/core';
-
-  const Icon: ComponentType<SvgIconProps>;
-  export default Icon;
+declare module '*.yaml' {
+  const src: string;
+  export default src;
 }
 
 declare module '*.svg' {

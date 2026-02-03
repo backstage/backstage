@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
+export * from './deprecated';
 export * from './testUtils';

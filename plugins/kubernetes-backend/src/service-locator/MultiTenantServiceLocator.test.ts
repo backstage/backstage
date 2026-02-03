@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { ServiceLocatorRequestContext } from '@backstage/plugin-kubernetes-node';
 import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
 
 describe('MultiTenantConfigClusterLocator', () => {
@@ -24,7 +24,10 @@ describe('MultiTenantConfigClusterLocator', () => {
       getClusters: async () => [],
     });
 
-    const result = await sut.getClustersByEntity({} as Entity);
+    const result = await sut.getClustersByEntity(
+      {} as Entity,
+      {} as ServiceLocatorRequestContext,
+    );
 
     expect(result).toStrictEqual({ clusters: [] });
   });
@@ -36,22 +39,23 @@ describe('MultiTenantConfigClusterLocator', () => {
           {
             name: 'cluster1',
             url: 'http://localhost:8080',
-            authProvider: 'serviceAccount',
-            serviceAccountToken: '12345',
+            authMetadata: {},
           },
         ];
       },
     });
 
-    const result = await sut.getClustersByEntity({} as Entity);
+    const result = await sut.getClustersByEntity(
+      {} as Entity,
+      {} as ServiceLocatorRequestContext,
+    );
 
     expect(result).toStrictEqual({
       clusters: [
         {
           name: 'cluster1',
-          serviceAccountToken: '12345',
           url: 'http://localhost:8080',
-          authProvider: 'serviceAccount',
+          authMetadata: {},
         },
       ],
     });
@@ -63,33 +67,34 @@ describe('MultiTenantConfigClusterLocator', () => {
         return [
           {
             name: 'cluster1',
-            serviceAccountToken: 'token',
             url: 'http://localhost:8080',
-            authProvider: 'serviceAccount',
+            authMetadata: {},
           },
           {
             name: 'cluster2',
             url: 'http://localhost:8081',
-            authProvider: 'google',
+            authMetadata: {},
           },
         ];
       },
     });
 
-    const result = await sut.getClustersByEntity({} as Entity);
+    const result = await sut.getClustersByEntity(
+      {} as Entity,
+      {} as ServiceLocatorRequestContext,
+    );
 
     expect(result).toStrictEqual({
       clusters: [
         {
           name: 'cluster1',
-          serviceAccountToken: 'token',
           url: 'http://localhost:8080',
-          authProvider: 'serviceAccount',
+          authMetadata: {},
         },
         {
           name: 'cluster2',
           url: 'http://localhost:8081',
-          authProvider: 'google',
+          authMetadata: {},
         },
       ],
     });

@@ -78,11 +78,12 @@ export interface AnsiChunk {
 
 export class AnsiLine {
   text: string;
+  readonly lineNumber: number;
+  readonly chunks: AnsiChunk[];
 
-  constructor(
-    readonly lineNumber: number = 1,
-    readonly chunks: AnsiChunk[] = [],
-  ) {
+  constructor(lineNumber: number = 1, chunks: AnsiChunk[] = []) {
+    this.lineNumber = lineNumber;
+    this.chunks = chunks;
     this.text = chunks
       .map(c => c.text)
       .join('')
@@ -117,7 +118,7 @@ export class AnsiProcessor {
       return this.lines;
     }
 
-    if (text.startsWith(this.text)) {
+    if (this.text && text.startsWith(this.text)) {
       const lastLineIndex = this.lines.length > 0 ? this.lines.length - 1 : 0;
       const lastLine = this.lines[lastLineIndex] ?? new AnsiLine();
       const lastChunk = lastLine.lastChunk();
@@ -130,7 +131,7 @@ export class AnsiProcessor {
       lastLine.replaceLastChunk(newLines[0]?.chunks);
 
       this.lines[lastLineIndex] = lastLine;
-      this.lines.push(...newLines.slice(1));
+      this.lines = this.lines.concat(newLines.slice(1));
     } else {
       this.lines = this.processLines(text);
     }

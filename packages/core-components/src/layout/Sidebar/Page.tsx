@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-
-import React, {
+import Box from '@material-ui/core/Box';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import {
+  ReactNode,
+  MutableRefObject,
   createContext,
   useCallback,
   useContext,
@@ -25,31 +28,33 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { SidebarConfigContext, SidebarConfig } from './config';
-import { BackstageTheme } from '@backstage/theme';
+
+import { SidebarConfig, SidebarConfigContext } from './config';
 import { LocalStorage } from './localStorage';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { SidebarPinStateProvider } from './SidebarPinStateContext';
 
 export type SidebarPageClassKey = 'root';
 
-const useStyles = makeStyles<
-  BackstageTheme,
-  { sidebarConfig: SidebarConfig; isPinned: boolean }
->(
+type StyleProps = { sidebarConfig: SidebarConfig; isPinned: boolean };
+
+const useStyles = makeStyles<Theme, StyleProps>(
   theme => ({
     root: {
       width: '100%',
       transition: 'padding-left 0.1s ease-out',
       isolation: 'isolate',
       [theme.breakpoints.up('sm')]: {
-        paddingLeft: props =>
+        paddingLeft: (props: StyleProps) =>
           props.isPinned
             ? props.sidebarConfig.drawerWidthOpen
             : props.sidebarConfig.drawerWidthClosed,
       },
       [theme.breakpoints.down('xs')]: {
-        paddingBottom: props => props.sidebarConfig.mobileSidebarHeight,
+        paddingBottom: (props: StyleProps) =>
+          props.sidebarConfig.mobileSidebarHeight,
+      },
+      '@media print': {
+        padding: '0px !important',
       },
     },
     content: {
@@ -69,12 +74,12 @@ const useStyles = makeStyles<
  * @public
  */
 export type SidebarPageProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type PageContextType = {
   content: {
-    contentRef?: React.MutableRefObject<HTMLElement | null>;
+    contentRef?: MutableRefObject<HTMLElement | null>;
   };
 };
 
@@ -104,10 +109,9 @@ export function SidebarPage(props: SidebarPageProps) {
     LocalStorage.setSidebarPinState(isPinned);
   }, [isPinned]);
 
-  const isMobile = useMediaQuery<BackstageTheme>(
-    theme => theme.breakpoints.down('xs'),
-    { noSsr: true },
-  );
+  const isMobile = useMediaQuery<Theme>(theme => theme.breakpoints.down('xs'), {
+    noSsr: true,
+  });
 
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
 
@@ -122,7 +126,7 @@ export function SidebarPage(props: SidebarPageProps) {
       }}
     >
       <PageContext.Provider value={pageContext}>
-        <div className={classes.root}>{props.children}</div>
+        <Box className={classes.root}>{props.children}</Box>
       </PageContext.Provider>
     </SidebarPinStateProvider>
   );

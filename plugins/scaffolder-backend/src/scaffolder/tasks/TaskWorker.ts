@@ -14,82 +14,202 @@
  * limitations under the License.
  */
 
-import { TaskContext, TaskBroker, WorkflowRunner } from './types';
-import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
-import { Logger } from 'winston';
-import { TemplateActionRegistry } from '../actions';
+import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
+import { assertError, InputError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { assertError } from '@backstage/errors';
-import { TemplateFilter } from '../../lib/templating/SecureTemplater';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  TaskBroker,
+  TaskContext,
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
+import PQueue from 'p-queue';
+import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
+import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
+import { WorkflowRunner } from './types';
+import { setTimeout } from 'node:timers/promises';
+import { JsonObject } from '@backstage/types';
+import { Config } from '@backstage/config';
+
+const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 
 /**
  * TaskWorkerOptions
- *
- * @public
  */
 export type TaskWorkerOptions = {
   taskBroker: TaskBroker;
   runners: {
     workflowRunner: WorkflowRunner;
   };
+  concurrentTasksLimit: number;
+  permissions?: PermissionEvaluator;
+  logger?: LoggerService;
+  auditor?: AuditorService;
+  config?: Config;
+  gracefulShutdown?: boolean;
 };
 
 /**
  * CreateWorkerOptions
- *
- * @public
  */
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
-  logger: Logger;
+  logger: LoggerService;
+  auditor?: AuditorService;
+  config?: Config;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
+  /**
+   * The number of tasks that can be executed at the same time by the worker
+   * @defaultValue 10
+   * @example
+   * ```
+   * {
+   *   concurrentTasksLimit: 1,
+   *   // OR
+   *   concurrentTasksLimit: Infinity
+   * }
+   * ```
+   */
+  concurrentTasksLimit?: number;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  permissions?: PermissionEvaluator;
+  gracefulShutdown?: boolean;
 };
 
 /**
  * TaskWorker
- *
- * @public
  */
 export class TaskWorker {
-  private constructor(private readonly options: TaskWorkerOptions) {}
+  private taskQueue: PQueue;
+  private logger: LoggerService | undefined;
+  private auditor: AuditorService | undefined;
+  private parameterAuditTransform: ParameterAuditTransform;
+  private stopWorkers: boolean;
+
+  private readonly options: TaskWorkerOptions & {
+    parameterAuditTransform: ParameterAuditTransform;
+  };
+
+  private constructor(
+    options: TaskWorkerOptions & {
+      parameterAuditTransform: ParameterAuditTransform;
+    },
+  ) {
+    this.options = options;
+    this.stopWorkers = false;
+    this.logger = options.logger;
+    this.auditor = options.auditor;
+    this.taskQueue = new PQueue({
+      concurrency: options.concurrentTasksLimit,
+    });
+    this.parameterAuditTransform = options.parameterAuditTransform;
+  }
 
   static async create(options: CreateWorkerOptions): Promise<TaskWorker> {
     const {
       taskBroker,
       logger,
+      auditor,
+      config,
       actionRegistry,
       integrations,
       workingDirectory,
       additionalTemplateFilters,
+      concurrentTasksLimit = 10, // from 1 to Infinity
+      additionalTemplateGlobals,
+      permissions,
+      gracefulShutdown,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
       actionRegistry,
       integrations,
       logger,
+      auditor,
       workingDirectory,
       additionalTemplateFilters,
+      additionalTemplateGlobals,
+      permissions,
+      config,
     });
 
     return new TaskWorker({
       taskBroker: taskBroker,
       runners: { workflowRunner },
+      concurrentTasksLimit,
+      permissions,
+      auditor,
+      config,
+      gracefulShutdown,
+      parameterAuditTransform: createParameterTruncator(config),
     });
+  }
+
+  async recoverTasks() {
+    try {
+      await this.options.taskBroker.recoverTasks?.();
+    } catch (err) {
+      this.logger?.error(stringifyError(err));
+    }
   }
 
   start() {
     (async () => {
-      for (;;) {
-        const task = await this.options.taskBroker.claim();
-        await this.runOneTask(task);
+      while (!this.stopWorkers) {
+        await setTimeout(10000);
+        await this.recoverTasks();
+      }
+    })();
+    (async () => {
+      while (!this.stopWorkers) {
+        await this.onReadyToClaimTask();
+        if (!this.stopWorkers) {
+          const task = await this.options.taskBroker.claim();
+          void this.taskQueue.add(() => this.runOneTask(task));
+        }
       }
     })();
   }
 
+  async stop() {
+    this.stopWorkers = true;
+    if (this.options?.gracefulShutdown) {
+      while (this.taskQueue.size > 0) {
+        await setTimeout(1000);
+      }
+    }
+  }
+
+  protected onReadyToClaimTask(): Promise<void> {
+    if (this.taskQueue.pending < this.options.concurrentTasksLimit) {
+      return Promise.resolve();
+    }
+    return new Promise(resolve => {
+      // "next" event emits when a task completes
+      // https://github.com/sindresorhus/p-queue#next
+      this.taskQueue.once('next', () => {
+        resolve();
+      });
+    });
+  }
+
   async runOneTask(task: TaskContext) {
+    const auditorEvent = await this.auditor?.createEvent({
+      eventId: 'task',
+      severityLevel: 'medium',
+      meta: {
+        actionType: 'execution',
+        createdBy: task.createdBy,
+        taskId: task.taskId,
+        taskParameters: this.parameterAuditTransform(task.spec.parameters),
+        templateRef: task.spec.templateInfo?.entityRef,
+      },
+    });
+
     try {
       if (task.spec.apiVersion !== 'scaffolder.backstage.io/v1beta3') {
         throw new Error(
@@ -102,11 +222,65 @@ export class TaskWorker {
       );
 
       await task.complete('completed', { output });
+      await auditorEvent?.success();
     } catch (error) {
       assertError(error);
+      await auditorEvent?.fail({
+        error,
+      });
       await task.complete('failed', {
         error: { name: error.name, message: error.message },
       });
     }
   }
+}
+
+type ParameterAuditTransform = (parameters: JsonObject) => JsonObject;
+
+/**
+ * Truncates task parameters for audit logging using the configured max length.
+ * @internal
+ */
+export function createParameterTruncator(
+  config?: Config,
+): ParameterAuditTransform {
+  const maxLength =
+    config?.getOptionalNumber('scaffolder.auditor.taskParameterMaxLength') ??
+    DEFAULT_TASK_PARAMETER_MAX_LENGTH;
+
+  if (!Number.isSafeInteger(maxLength) || maxLength < -1) {
+    throw new InputError(
+      `Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got ${maxLength}. Must be a positive integer or -1 to disable truncation.`,
+    );
+  }
+
+  if (maxLength === -1) {
+    return (parameters: JsonObject) => parameters;
+  }
+
+  return (parameters: JsonObject) => {
+    function truncate(value: unknown): unknown {
+      if (typeof value === 'string') {
+        if (value.length > maxLength) {
+          return value.slice(0, maxLength).concat('...<truncated>');
+        }
+        return value;
+      }
+      if (Array.isArray(value)) {
+        return value.map(truncate);
+      }
+      if (value && typeof value === 'object') {
+        const result: Record<string, unknown> = {};
+        for (const k in value as object) {
+          if (Object.hasOwn(value, k)) {
+            result[k] = truncate((value as any)[k]);
+          }
+        }
+        return result;
+      }
+      return value;
+    }
+
+    return truncate(parameters) as JsonObject;
+  };
 }

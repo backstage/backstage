@@ -9,7 +9,9 @@ to support a wide variety of search engines, while providing a simple developer
 experience for plugin developers, and a good out-of-the-box experience for
 Backstage end-users.
 
-<img data-zoomable src="../../assets/search/architecture.drawio.svg" alt="Search Architecture" />
+<!-- todo: Needs zoomable plugin -->
+
+![Search Architecture](../../assets/search/architecture.drawio.svg)
 
 At a base-level, we want to support the following:
 

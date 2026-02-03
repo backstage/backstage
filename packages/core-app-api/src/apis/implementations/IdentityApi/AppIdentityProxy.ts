@@ -18,7 +18,11 @@ import {
   IdentityApi,
   ProfileInfo,
   BackstageUserIdentity,
+  ErrorApi,
+  DiscoveryApi,
+  FetchApi,
 } from '@backstage/core-plugin-api';
+import { startCookieAuthRefresh } from './startCookieAuthRefresh';
 
 function mkError(thing: string) {
   return new Error(
@@ -50,6 +54,8 @@ export class AppIdentityProxy implements IdentityApi {
   private waitForTarget: Promise<CompatibilityIdentityApi>;
   private resolveTarget: (api: CompatibilityIdentityApi) => void = () => {};
   private signOutTargetUrl = '/';
+
+  #cookieAuthSignOut?: () => Promise<void>;
 
   constructor() {
     this.waitForTarget = new Promise<CompatibilityIdentityApi>(resolve => {
@@ -124,6 +130,40 @@ export class AppIdentityProxy implements IdentityApi {
 
   async signOut(): Promise<void> {
     await this.waitForTarget.then(target => target.signOut());
-    location.href = this.signOutTargetUrl;
+
+    await this.#cookieAuthSignOut?.();
+
+    this.navigateToUrl(this.signOutTargetUrl);
+  }
+
+  private navigateToUrl(url: string): void {
+    window.location.href = url;
+  }
+
+  enableCookieAuth(ctx: {
+    errorApi: ErrorApi;
+    fetchApi: FetchApi;
+    discoveryApi: DiscoveryApi;
+  }) {
+    if (this.#cookieAuthSignOut) {
+      return;
+    }
+
+    const stopRefresh = startCookieAuthRefresh(ctx);
+
+    this.#cookieAuthSignOut = async () => {
+      stopRefresh();
+
+      // It is fine if we do NOT worry yet about deleting cookies for OTHER backends like techdocs
+      const appBaseUrl = await ctx.discoveryApi.getBaseUrl('app');
+      try {
+        await fetch(`${appBaseUrl}/.backstage/auth/v1/cookie`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+      } catch {
+        // Ignore the error for those who use static serving of the frontend
+      }
+    };
   }
 }

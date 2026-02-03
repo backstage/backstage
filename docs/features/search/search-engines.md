@@ -4,66 +4,77 @@ title: Search Engines
 description: Choosing and configuring your search engine for Backstage
 ---
 
-Backstage supports 3 search engines by default, an in-memory engine called Lunr,
-ElasticSearch and Postgres. You can configure your own search engines by
-implementing the provided interface as mentioned in the
-[search backend documentation.](./getting-started.md#Backend)
-
-Provided search engine implementations have their own way of constructing
-queries, which may be something you want to modify. Alterations to the querying
-logic of a search engine can be made by providing your own implementation of a
-QueryTranslator interface. This modification can be done without touching
-provided search engines by using the exposed setter to set the modified query
-translator into the instance.
-
-```typescript
-const searchEngine = new LunrSearchEngine({ logger: env.logger });
-searchEngine.setTranslator(new MyNewAndBetterQueryTranslator());
-```
+Backstage supports 3 search engines by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres)
+and [Elasticsearch](#elasticsearch).
 
 ## Lunr
 
-Lunr search engine is enabled by default for your backstage instance if you have
-not done additional changes to the scaffolded app.
+Lunr search engine is enabled by default for your Backstage instance if you have not done additional changes to the scaffolded app.
 
-Lunr can be instantiated like this:
+As Lunr is built into the Search backend plugin it can be added like this:
 
-```typescript
-// app/backend/src/plugins/search.ts
-const searchEngine = new LunrSearchEngine({ logger: env.logger });
-const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-search-backend
 ```
+
+Then add the following line:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend'));
+/* highlight-add-end */
+
+backend.start();
+```
+
+:::note Note
+
+Lunr is appropriate as a zero-config search engine when developing
+other parts of Backstage locally, however its use is highly discouraged when
+running Backstage in production. When deploying Backstage, use one of the
+other search engines instead.
+
+:::
 
 ## Postgres
 
-The Postgres based search engine only requires that postgres being configured as
+The Postgres based search engine only requires that Postgres being configured as
 the database engine for Backstage. Therefore it targets setups that want to
-avoid maintaining another external service like elastic search. The search
+avoid maintaining another external service like Elasticsearch. The search
 provides decent results and performs well with ten thousands of indexed
-documents. The connection to postgres is established via the database manager
+documents. The connection to Postgres is established via the database manager
 also used by other plugins.
 
 > **Important**: The search plugin requires at least Postgres 12!
 
-To use the `PgSearchEngine`, make sure that you have a Postgres database
-configured and make the following changes to your backend:
+First we need to add the plugin:
 
-1. Add a dependency on `@backstage/plugin-search-backend-module-pg` to your
-   backend's `package.json`.
-2. Initialize the search engine. It is recommended to initialize it with a
-   fallback to the lunr search engine if you are running Backstage for
-   development locally with SQLite:
-
-```typescript
-// In packages/backend/src/plugins/search.ts
-
-// Initialize a connection to a search engine.
-const searchEngine = (await PgSearchEngine.supported(env.database))
-  ? await PgSearchEngine.fromConfig(env.config, { database: env.database })
-  : new LunrSearchEngine({ logger: env.logger });
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-search-backend-module-pg
 ```
 
-## Optional Configuration
+Then add the following line:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+// search plugin
+backend.add(import('@backstage/plugin-search-backend'));
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend-module-pg'));
+/* highlight-add-end */
+
+backend.start();
+```
+
+### Optional Configuration
 
 The following is an example of the optional configuration that can be applied when using Postgres as the search backend. Currently this is mostly for just the highlight feature:
 
@@ -91,87 +102,52 @@ search:
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
 
-## ElasticSearch
+## Elasticsearch
 
-Backstage supports ElasticSearch search engine connections, indexing and
-querying out of the box. Available configuration options enable usage of either
-AWS or Elastic.co hosted solutions, or a custom self-hosted solution.
+Backstage supports Elasticsearch (and OpenSearch) search engine connections,
+indexing and querying out of the box. Available configuration options enable
+usage of either AWS or Elastic.co hosted solutions, or a custom self-hosted solution.
 
-Similarly to Lunr above, ElasticSearch can be set up like this:
+Similarly to Postgres above, Elasticsearch can be set up as follows.
 
-```typescript
-// app/backend/src/plugins/search.ts
-const searchEngine = await ElasticSearchSearchEngine.initialize({
-  logger: env.logger,
-  config: env.config,
-});
-const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
+First we need to add the plugin:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-search-backend-module-elasticsearch
 ```
 
-For the engine to be available, your backend package needs a dependency on
-package `@backstage/plugin-search-backend-module-elasticsearch`.
+Then add the following line:
 
-ElasticSearch needs some additional configuration before it is ready to use
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+// search plugin
+backend.add(import('@backstage/plugin-search-backend'));
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend-module-elasticsearch'));
+/* highlight-add-end */
+
+backend.start();
+```
+
+Elasticsearch needs some additional configuration before it is ready to use
 within your instance. The configuration options are documented in the
 [configuration schema definition file.](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-elasticsearch/config.d.ts)
 
-The underlying functionality uses either the official ElasticSearch client
-version 7.x (meaning that ElasticSearch version 7 is the only one confirmed to
-be supported), or the OpenSearch client, when the `aws` provider is configured.
+The underlying functionality uses either the official Elasticsearch client
+version 7.x (meaning that Elasticsearch version 7 is the only one confirmed to
+be supported), or the OpenSearch client, when the `aws` or `opensearch` provider
+is configured.
 
-Should you need to create your own bespoke search experiences that require more
-than just a query translator (such as faceted search or Relay pagination), you
-can access the configuration of the search engine in order to create new elastic
-search clients. The version of the client need not be the same as one used
-internally by the elastic search engine plugin. For example:
+### Example configurations
 
-```typescript
-import { isOpenSearchCompatible } from '@backstage/plugin-search-backend-module-elasticsearch';
-import { Client as ElasticClient } from '@elastic/elastic-search';
-import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
+#### AWS
 
-const client = searchEngine.newClient(options => {
-  // In reality, you would only import / instantiate one of the following, but
-  // for illustrative purposes, here are both:
-  if (isOpenSearchCompatible(options)) {
-    return new OpenSearchClient(options);
-  } else {
-    return new ElasticClient(options);
-  }
-});
-```
-
-#### Set custom index template
-
-The elasticsearch engine gives you the ability to set a custom index template if needed.
-
-> Index templates define settings, mappings, and aliases that can be applied automatically to new indices.
-
-```typescript
-// app/backend/src/plugins/search.ts
-const searchEngine = await ElasticSearchSearchEngine.initialize({
-  logger: env.logger,
-  config: env.config,
-});
-
-searchEngine.setIndexTemplate({
-  name: '<name-of-your-custom-template>',
-  body: {
-    index_patterns: ['<your-index-pattern>'],
-    template: {
-      mappings: {},
-      settings: {},
-    },
-  },
-});
-```
-
-## Example configurations
-
-### AWS
-
-Using AWS hosted ElasticSearch the only configuration option needed is the URL
-to the ElasticSearch service. The implementation assumes that environment
+Using AWS hosted Elasticsearch the only configuration option needed is the URL
+to the Elasticsearch service. The implementation assumes that environment
 variables for AWS access key id and secret access key are defined in accordance
 to the
 [default AWS credential chain.](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html).
@@ -183,10 +159,10 @@ search:
     node: https://my-backstage-search-asdfqwerty.eu-west-1.es.amazonaws.com
 ```
 
-### Elastic.co
+#### Elastic.co
 
-Elastic Cloud hosted ElasticSearch uses a Cloud ID to determine the instance of
-hosted ElasticSearch to connect to. Additionally, username and password needs to
+Elastic Cloud hosted Elasticsearch uses a Cloud ID to determine the instance of
+hosted Elasticsearch to connect to. Additionally, username and password needs to
 be provided either directly or using environment variables like defined in
 [Backstage documentation.](https://backstage.io/docs/conf/writing#includes-and-dynamic-data)
 
@@ -200,17 +176,29 @@ search:
       password: changeme
 ```
 
-### Others
+#### OpenSearch
 
-Other ElasticSearch instances can be connected to by using standard
-ElasticSearch authentication methods and exposed URL, provided that the cluster
+OpenSearch can be self hosted for example with the [official docker image](https://hub.docker.com/r/opensearchproject/opensearch). The configuration requires only the node and authentication.
+
+```yaml
+search:
+  elasticsearch:
+    provider: opensearch
+    node: http://0.0.0.0:9200
+    auth:
+      username: opensearch
+      password: changeme
+```
+
+#### Others
+
+Other Elasticsearch instances can be connected to by using standard
+Elasticsearch authentication methods and exposed URL, provided that the cluster
 supports that. The configuration options needed are the URL to the node and
 authentication information. Authentication can be handled by either providing
 username/password or an API key. For more information how to create an API key,
 see
 [Elastic documentation on API keys](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html).
-
-#### Configuration examples
 
 ##### With username and password
 
@@ -233,15 +221,13 @@ search:
       apiKey: base64EncodedKey
 ```
 
-### Elastic search batch size
+### Elasticsearch batch size
 
-Default batch size of the elastic search engine is set to 1000. If you are using a lower spec computing resources (like AWS small instance),
+Default batch size of the Elasticsearch engine is set to 1000. If you are using a lower spec computing resources (like AWS small instance),
 you may get an error caused by limited `thread_pool` configuration. ( `429 Too Many Requests /_bulk` )
 
 In this case you need to decrease the batch size to index the resources to prevent this kind of error. You can easily decrease
-or increase the batch size in your `app-config.yaml` using the `batchSize` option provided for elasticsearch configuration.
-
-#### Configuration example
+or increase the batch size in your `app-config.yaml` using the `batchSize` option provided for Elasticsearch configuration.
 
 **Set batch size to 100**
 
@@ -252,3 +238,118 @@ search:
 ```
 
 > You can also increase the batch size if you are using a large ES instance.
+
+### Elasticsearch batch key field
+
+By default, during bulk uploads with the Elasticsearch indexer, each document is assigned an auto-generated `_id` unless a `batchKeyField` is explicitly set. This configuration is optional and most users won’t need to customize it. However, if your use case involves frequent lookups or updates to existing documents, setting `batchKeyField` can be beneficial. It allows you to define a consistent identifier for each document, helping to streamline updates and prevent duplicate entries. Be aware that if the value provided for `batchKeyField` is not unique across documents, Elasticsearch will overwrite any existing document with the same `_id`.
+
+**Using `batchKeyField` (Custom `_id`)**
+
+```yaml
+search:
+  elasticsearch:
+    batchKeyField: document_id
+```
+
+**Default Behavior (Auto-generated `_id`)**
+
+```yaml
+search:
+  elasticsearch:
+    # No batchKeyField specified — Elasticsearch will autogenerate _id
+```
+
+### Elasticsearch Index Name Customization
+
+By default, the Elasticsearch indexer creates index names based on their type, a separator, and the current date as a postfix. You can configure a custom prefix for all indices by adding the following section to your app configuration.
+
+An example of a default index name would look like this:  
+`software-catalog-index__20250219`
+
+To prefix all indices with a custom string (e.g., `custom-prefix`), use the following configuration:
+
+```yaml
+search:
+  elasticsearch:
+    indexPrefix: custom-prefix-
+```
+
+After applying this setting, an index name would look like this: `custom-prefix-software-catalog-index__20250219`
+
+### Elasticsearch query config
+
+By default the default settings for the Elasticsearch queries is used. If you need to tweak the fuzziness of the query results you can do this with 2 parameters, `fuzziness` and `prefixLength`.
+
+Fuzziness allows you to define the maximum Levenshtein distance, AUTO is the default and widely accepted standard.
+`prefixLength` allows you to control the minimum number of characters that must match exactly at the beginning of the query term. This defaults to 0
+[More info](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html)
+
+```yaml
+search:
+  elasticsearch:
+    queryOptions:
+      fuzziness: AUTO
+      prefixLength: 3;
+```
+
+### Custom Authentication Extension Point
+
+For enterprise environments that require dynamic authentication mechanisms such as bearer tokens with automatic rotation, the Elasticsearch module provides an authentication extension point. This is useful when:
+
+- Using OAuth2/OIDC identity providers for service authentication
+- Tokens need to be refreshed automatically (e.g., tokens that expire hourly)
+- Integrating with internal identity services
+- Running Elasticsearch/OpenSearch clusters secured by token-based authentication
+
+To use custom authentication, create a backend module that provides an auth provider:
+
+```ts title="packages/backend/src/modules/elasticsearchAuth.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { elasticsearchAuthExtensionPoint } from '@backstage/plugin-search-backend-module-elasticsearch';
+
+export default createBackendModule({
+  pluginId: 'search',
+  moduleId: 'elasticsearch-custom-auth',
+  register(env) {
+    env.registerInit({
+      deps: {
+        elasticsearchAuth: elasticsearchAuthExtensionPoint,
+      },
+      async init({ elasticsearchAuth }) {
+        elasticsearchAuth.setAuthProvider({
+          async getAuthHeaders() {
+            // Fetch token from your identity service
+            const token = await myTokenService.getToken();
+            return { Authorization: `Bearer ${token}` };
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+Then register this module in your backend:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+backend.add(import('@backstage/plugin-search-backend'));
+backend.add(import('@backstage/plugin-search-backend-module-elasticsearch'));
+
+/* highlight-add-start */
+backend.add(import('./modules/elasticsearchAuth'));
+/* highlight-add-end */
+
+backend.start();
+```
+
+The `getAuthHeaders` method is called before each request, allowing for just-in-time token retrieval and automatic rotation. When an auth provider is configured, it takes precedence over any static authentication in `app-config.yaml`.
+
+:::note Note
+
+Custom authentication is supported for the `elastic`, `opensearch`, and default providers. The `aws` provider uses AWS SigV4 request signing and does not support custom auth providers.
+
+:::

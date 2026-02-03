@@ -1,5 +1,995 @@
 # @backstage/core-plugin-api
 
+## 1.12.2-next.0
+
+### Patch Changes
+
+- 53b6549: Plugins in the new frontend system now have a `pluginId` field rather than `id` to better align with naming conventions used throughout the frontend and backend systems. The old field is still present but marked as deprecated. All internal code has been updated to prefer `pluginId` while maintaining backward compatibility by falling back to `id` when needed.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.12.1
+
+### Patch Changes
+
+- 358c6f7: The `useApp` and `useRouteRef` functions are now forwards compatible with the new frontend system. Along with the previous route reference changes this means that there is no longer a need to use `compatWrapper` from `@backstage/core-compat-api` to make code based on `@backstage/core-plugin-api` compatible with `@backstage/frontend-plugin-api` APIs.
+- 97cd16f: Reversed the relationship between the old `@backstage/core-plugin-api` and the new `@backstage/frontend-plugin-api`. Previously, the a lot of API definitions and utilities where defined in the old and re-exported from the old, but this change flips that around so that they now reside in the new package and are re-exported from the old. The external API of both packages remain the same, but this is a step towards being able to add further compatibility with the new frontend system built into the old.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 1.12.1-next.0
+
+### Patch Changes
+
+- 358c6f7: The `useApp` and `useRouteRef` functions are now forwards compatible with the new frontend system. Along with the previous route reference changes this means that there is no longer a need to use `compatWrapper` from `@backstage/core-compat-api` to make code based on `@backstage/core-plugin-api` compatible with `@backstage/frontend-plugin-api` APIs.
+- 97cd16f: Reversed the relationship between the old `@backstage/core-plugin-api` and the new `@backstage/frontend-plugin-api`. Previously, the a lot of API definitions and utilities where defined in the old and re-exported from the old, but this change flips that around so that they now reside in the new package and are re-exported from the old. The external API of both packages remain the same, but this is a step towards being able to add further compatibility with the new frontend system built into the old.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.12.0
+
+### Minor Changes
+
+- 83439b1: All route references are now forwards compatible with the new frontend system, i.e. `@backstage/frontend-plugin-api`. This means they no longer need to be converted with `convertLegacyRouteRef` or `convertLegacyRouteRefs` from `@backstage/core-compat-api`.
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 1.11.2-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+
+## 1.11.2-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.11.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
+## 1.11.0
+
+### Minor Changes
+
+- 5114627: Make `openshiftAuthApiRef` available in `@backstage/core-plugin-api`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.2
+
+## 1.10.9
+
+### Patch Changes
+
+- f6ffea6: Add optional message field for auth providers. This is intended to be a user friendly message that displays in the OAuth request dialog. A default message will be displayed if one is not provided.
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 1.10.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
+## 1.10.8
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- 0169b23: Internal tweak to avoid circular dependencies
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.10.7
+
+### Patch Changes
+
+- 73f6cc3: The `TranslationApi` now supports interpolation of JSX elements by passing them directly as values to the translation function. If any of the provided interpolation values are JSX elements, the translation function will return a JSX element instead of a string.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.10.7-next.0
+
+### Patch Changes
+
+- 73f6cc3: The `TranslationApi` now supports interpolation of JSX elements by passing them directly as values to the translation function. If any of the provided interpolation values are JSX elements, the translation function will return a JSX element instead of a string.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.10.6
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.10.6-next.0
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.10.5
+
+### Patch Changes
+
+- 327d21e: Failure to lazy load an extension will now always result in an error being thrown to be forwarded to error boundaries, rather than being rendered using the `BootErrorPage` app component.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.10.4
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.11
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.10.4-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.10.3
+
+### Patch Changes
+
+- b40eb41: Move `Expand` and `ExpandRecursive` to `@backstage/types`
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.10
+
+## 1.10.3-next.0
+
+### Patch Changes
+
+- b40eb41: Move `Expand` and `ExpandRecursive` to `@backstage/types`
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/version-bridge@1.0.10
+
+## 1.10.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 1.10.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 1.10.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/errors@1.2.5
+  - @backstage/version-bridge@1.0.10
+
+## 1.10.0
+
+### Minor Changes
+
+- bfd4bec: **BREAKING PRODUCERS**: The `IconComponent` no longer accepts `fontSize="default"`. This has effectively been removed from Material-UI since its last two major versions, and has not worked properly for them in a long time.
+
+  This change should not have an effect on neither users of MUI4 nor MUI5/6, since the updated interface should still let you send the respective `SvgIcon` types into interfaces where relevant (e.g. as app icons).
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 39001f4: Fixing issue with types for `ParamKeys` leading to type mismatches across versions
+- Updated dependencies
+  - @backstage/version-bridge@1.0.10
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.10.0-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- bfd4bec: **BREAKING PRODUCERS**: The `IconComponent` no longer accepts `fontSize="default"`. This has effectively been removed from Material-UI since its last two major versions, and has not worked properly for them in a long time.
+
+  This change should not have an effect on neither users of MUI4 nor MUI5/6, since the updated interface should still let you send the respective `SvgIcon` types into interfaces where relevant (e.g. as app icons).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.9
+
+## 1.9.4
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.9.4-next.0
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.9.3
+
+### Patch Changes
+
+- 35fbe09: A new `defaultTarget` option has been added to `createExternalRouteRef`. This allows one to specify a default target of the route by name, for example `'catalog.catalogIndex'`, which will be used if the target route is present in the app and there is no explicit route binding.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.9.3-next.0
+
+### Patch Changes
+
+- 35fbe09: Added a new `defaultTarget` option to `createExternalRouteRef`. I lets you specify a default target of the route by name, for example `'catalog.catalogIndex'`, which will be used if the target route is present in the app and there is no explicit route binding.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.9.2
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.8
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.9.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.9.0
+
+### Minor Changes
+
+- f919be9: Added a utility API for VMware Cloud auth; the API ref is available in the
+  `@backstage/core-plugin-api` and `@backstage/frontend-plugin-api` packages, the
+  implementation is in `@backstage/core-app-api` and a factory has been added to
+  `@backstage/app-defaults`.
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- e586f79: Throw a more specific exception `NotImplementedError` when an API implementation cannot be found.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.9.0-next.1
+
+### Minor Changes
+
+- f919be9: Added a utility API for VMware Cloud auth; the API ref is available in the
+  `@backstage/core-plugin-api` and `@backstage/frontend-plugin-api` packages, the
+  implementation is in `@backstage/core-app-api` and a factory has been added to
+  `@backstage/app-defaults`.
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.3-next.0
+
+### Patch Changes
+
+- e586f79: Throw a more specific exception `NotImplementedError` when an API implementation cannot be found.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.2
+
+### Patch Changes
+
+- 6878b1d: Removed unnecessary `i18next` dependency.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.2-next.0
+
+### Patch Changes
+
+- 6878b1d: Removed unnecessary `i18next` dependency.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.1
+
+### Patch Changes
+
+- 03d0b6d: Removed the alpha `convertLegacyRouteRef` utility, which as been moved to `@backstage/core-compat-api`
+- 0c93dc3: The `createTranslationRef` function from the `/alpha` subpath can now also accept a nested object structure of default translation messages, which will be flatted using `.` separators.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.1-next.1
+
+### Patch Changes
+
+- 0c93dc37b2: The `createTranslationRef` function from the `/alpha` subpath can now also accept a nested object structure of default translation messages, which will be flatted using `.` separators.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- 03d0b6dcdc: Removed the alpha `convertLegacyRouteRef` utility, which as been moved to `@backstage/core-compat-api`
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.0
+
+### Minor Changes
+
+- 1e5b7d993a: `IconComponent` can now have a `fontSize` of `inherit`, which is useful for in-line icons.
+- cb6db75bc2: Introduced `AnyRouteRefParams` as a replacement for `AnyParams`, which is now deprecated.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- cb6db75bc2: Deprecated several types related to the routing system that are scheduled to be removed, as well as several fields on the route ref types themselves.
+- 68fc9dc60e: Added a new `/alpha` export `convertLegacyRouteRef`, which is a temporary utility to allow existing route refs to be used with the new experimental packages.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.7
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 1e5b7d993a: `IconComponent` can now have a `fontSize` of `inherit`, which is useful for in-line icons.
+- cb6db75bc2: Introduced `AnyRouteRefParams` as a replacement for `AnyParams`, which is now deprecated.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- cb6db75bc2: Deprecated several types related to the routing system that are scheduled to be removed, as well as several fields on the route ref types themselves.
+- 68fc9dc60e: Added a new `/alpha` export `convertLegacyRouteRef`, which is a temporary utility to allow existing route refs to be used with the new experimental packages.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.7.0
+
+### Minor Changes
+
+- 322bbcae24: Removed the exprimental plugin configuration API. The `__experimentalReconfigure()` from the plugin options as well as the `__experimentalConfigure()` method on plugin instances have both been removed.
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 322bbcae24: Removed the exprimental plugin configuration API. The `__experimentalReconfigure()` from the plugin options as well as the `__experimentalConfigure()` method on plugin instances have both been removed.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.6.0
+
+### Minor Changes
+
+- 18619f793c94: Added the optional `expiresAt` field that may now be part of a `BackstageIdentityResponse`.
+- 6e30769cc627: Introduced experimental support for internationalization.
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.6.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/version-bridge@1.0.5-next.0
+
+## 1.6.0-next.2
+
+### Minor Changes
+
+- 6e30769cc627: Introduced experimental support for internationalization.
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.6.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 18619f793c94: Added the optional `expiresAt` field that may now be part of a `BackstageIdentityResponse`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.5.3
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- 13426ebd1235: Change `IconComponent` type to be compatible with Material UI v5 icons.
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.5.3-next.1
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.5.3-next.0
+
+### Patch Changes
+
+- 13426ebd1235: Change `IconComponent` type to be compatible with Material UI v5 icons.
+- Updated dependencies
+  - @backstage/config@1.0.8
+
+## 1.5.2
+
+### Patch Changes
+
+- 12adfbc8fe2d: Fixed a bug that prevented accurate plugin and route data from being applied to `navigate` analytics events when users visited pages constructed with `<EntityLayout>`, `<TabbedLayout>`, and similar components that are used to gather one or more routable extensions under a given path.
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+
+## 1.5.2-next.0
+
+### Patch Changes
+
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
+## 1.5.1
+
+### Patch Changes
+
+- 760f521b979: Add component name as data attribute for all components
+- 2898b6c8d52: Minor type tweaks for TypeScript 5.0
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/version-bridge@1.0.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- 2898b6c8d52: Minor type tweaks for TypeScript 5.0
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.5.0
+
+### Minor Changes
+
+- ab750ddc4f2: The GitLab auth provider can now be used to get OpenID tokens.
+
+### Patch Changes
+
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.5.0-next.2
+
+### Minor Changes
+
+- ab750ddc4f2: The GitLab auth provider can now be used to get OpenID tokens.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.4.0
+
+### Minor Changes
+
+- db10b6ef65: Added a Bitbucket Server Auth Provider and added its API to the app defaults
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.3.0
+
+### Minor Changes
+
+- bca8e8b393: Allow defining application level feature flags. See [Feature Flags documentation](https://backstage.io/docs/plugins/feature-flags#in-the-application) for reference.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- bca8e8b393: Allow defining application level feature flags. See [Feature Flags documentation](https://backstage.io/docs/plugins/feature-flags#in-the-application) for reference.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.2.0
+
+### Minor Changes
+
+- 9a1864976a: Added a new `display` property to the `AlertMessage` which can accept the values `permanent` or `transient`.
+
+  Here's a rough example of how to trigger an alert using the new `display` property:
+
+  ```ts
+  import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+  const ExampleTransient = () => {
+    const alertApi = useApi(alertApiRef);
+    alertApi.post({
+      message: 'Example of Transient Alert',
+      severity: 'success',
+      display: 'transient',
+    });
+  };
+  ```
+
+### Patch Changes
+
+- d56127c712: useRouteRef - Limit re-resolving to location pathname changes only
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
+## 1.2.0-next.2
+
+### Minor Changes
+
+- 9a1864976a: Added a new `display` property to the `AlertMessage` which can accept the values `permanent` or `transient`.
+
+  Here's a rough example of how to trigger an alert using the new `display` property:
+
+  ```ts
+  import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+  const ExampleTransient = () => {
+    const alertApi = useApi(alertApiRef);
+    alertApi.post({
+      message: 'Example of Transient Alert',
+      severity: 'success',
+      display: 'transient',
+    });
+  };
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/version-bridge@1.0.2
+
+## 1.1.0
+
+### Minor Changes
+
+- a228f113d0: The app `Router` component now accepts an optional `basename` property.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/version-bridge@1.0.2
+  - @backstage/types@1.0.1
+  - @backstage/config@1.0.4
+
+## 1.1.0-next.0
+
+### Minor Changes
+
+- a228f113d0: The app `Router` component now accepts an optional `basename` property.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.1
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.6
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/config@1.0.2
+
+## 1.0.6-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+
+## 1.0.6-next.2
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+
+## 1.0.6-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+
+## 1.0.6-next.0
+
+### Patch Changes
+
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- ef9ab322de: Minor API signatures cleanup
+
+## 1.0.5
+
+### Patch Changes
+
+- 80da5162c7: Introduced a new experimental feature that allows you to declare plugin-wide options for your plugin by defining
+  `__experimentalConfigure` in your `createPlugin` options. See https://backstage.io/docs/plugins/customization.md for more information.
+
+  This is an experimental feature and it will have breaking changes in the future.
+
+- 87649a06bf: Add a note that the `fetchApi` utility should not be used on sign-in page implementations and similar.
+
 ## 1.0.5-next.0
 
 ### Patch Changes
@@ -204,7 +1194,7 @@
 
 ### Patch Changes
 
-- 784d8078ab: Removed direct and transitive MUI dependencies.
+- 784d8078ab: Removed direct and transitive Material UI dependencies.
 - Updated dependencies
   - @backstage/config@0.1.12
 

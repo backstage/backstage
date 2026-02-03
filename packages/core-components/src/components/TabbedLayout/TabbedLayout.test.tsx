@@ -15,9 +15,8 @@
  */
 import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
-import React from 'react';
-import { Route, Routes } from 'react-router';
 import { TabbedLayout } from './TabbedLayout';
+import { Link, Route, Routes } from 'react-router-dom';
 
 describe('TabbedLayout', () => {
   it('renders simplest case', async () => {
@@ -48,35 +47,34 @@ describe('TabbedLayout', () => {
     });
 
     expect(error).toEqual([
-      expect.stringMatching(
-        /Child of TabbedLayout must be an TabbedLayout.Route/,
+      expect.stringContaining(
+        'Error: Child of TabbedLayout must be an TabbedLayout.Route',
       ),
-      expect.stringMatching(
-        /The above error occurred in the <TabbedLayout> component/,
+      expect.objectContaining({
+        type: 'unhandled-exception',
+      }),
+      expect.stringContaining(
+        'Error: Child of TabbedLayout must be an TabbedLayout.Route',
+      ),
+      expect.objectContaining({
+        type: 'unhandled-exception',
+      }),
+      expect.stringContaining(
+        'The above error occurred in the <TabbedLayout> component',
       ),
     ]);
   });
 
   it('navigates when user clicks different tab', async () => {
     const { getByText, queryByText, queryAllByRole } = await renderInTestApp(
-      <Routes>
-        <Route
-          path="/*"
-          element={
-            <TabbedLayout>
-              <TabbedLayout.Route path="/" title="tabbed-test-title">
-                <div>tabbed-test-content</div>
-              </TabbedLayout.Route>
-              <TabbedLayout.Route
-                path="/some-other-path"
-                title="tabbed-test-title-2"
-              >
-                <div>tabbed-test-content-2</div>
-              </TabbedLayout.Route>
-            </TabbedLayout>
-          }
-        />
-      </Routes>,
+      <TabbedLayout>
+        <TabbedLayout.Route path="/" title="tabbed-test-title">
+          <div>tabbed-test-content</div>
+        </TabbedLayout.Route>
+        <TabbedLayout.Route path="/some-other-path" title="tabbed-test-title-2">
+          <div>tabbed-test-content-2</div>
+        </TabbedLayout.Route>
+      </TabbedLayout>,
     );
 
     const secondTab = queryAllByRole('tab')[1];
@@ -88,6 +86,43 @@ describe('TabbedLayout', () => {
     expect(queryByText('tabbed-test-content')).not.toBeInTheDocument();
 
     expect(getByText('tabbed-test-title-2')).toBeInTheDocument();
-    expect(queryByText('tabbed-test-content-2')).toBeInTheDocument();
+    expect(getByText('tabbed-test-content-2')).toBeInTheDocument();
+  });
+
+  it('navigates when user clicks the same tab', async () => {
+    const { getByText, queryByText, queryAllByRole } = await renderInTestApp(
+      <TabbedLayout>
+        <TabbedLayout.Route path="/" title="tabbed-test-title">
+          <div>
+            tabbed-test-content
+            <div>
+              <Link to="test">tabbed-test-sub-link</Link>
+              <Routes>
+                <Route
+                  path="test"
+                  element={<div>tabbed-test-sub-content</div>}
+                />
+              </Routes>
+            </div>
+          </div>
+        </TabbedLayout.Route>
+        <TabbedLayout.Route path="/some-other-path" title="tabbed-test-title-2">
+          <div>tabbed-test-content-2</div>
+        </TabbedLayout.Route>
+      </TabbedLayout>,
+    );
+
+    const subLink = getByText('tabbed-test-sub-link');
+    expect(subLink).toBeInTheDocument();
+    act(() => {
+      fireEvent.click(subLink);
+    });
+
+    expect(queryByText('tabbed-test-sub-content')).toBeInTheDocument();
+    const [firstTab] = queryAllByRole('tab');
+    act(() => {
+      fireEvent.click(firstTab);
+    });
+    expect(queryByText('tabbed-test-sub-content')).not.toBeInTheDocument();
   });
 });

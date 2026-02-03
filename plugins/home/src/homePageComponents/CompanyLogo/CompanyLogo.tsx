@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import React from 'react';
+import { ReactNode } from 'react';
 
 type CompanyLogoProps = {
-  logo?: React.ReactNode;
+  logo?: ReactNode;
   className?: string;
 };
 

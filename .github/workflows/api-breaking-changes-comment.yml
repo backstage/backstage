@@ -1,0 +1,127 @@
+name: API Breaking Changes (comment)
+
+on:
+  workflow_run:
+    workflows:
+      - 'API Breaking Changes (Trigger)'
+    types:
+      - completed
+
+jobs:
+  setup:
+    name: Add values from previous step
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      # "If you specify the access for any of these scopes, all of those that are not specified are set to none."
+      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+      actions: read # Access cache
+    outputs:
+      git-ref: ${{ steps.event.outputs.GIT_REF }}
+      pr-number: ${{ steps.event.outputs.PR_NUMBER }}
+      action: ${{ steps.event.outputs.ACTION }}
+      comment-cache-key: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+
+      - name: 'Download artifacts'
+        # Fetch output (zip archive) from the workflow run that triggered this workflow.
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "preview-spec"
+            })[0];
+            if (matchArtifact === undefined) {
+              throw TypeError('Build Artifact not found!');
+            }
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/preview-spec.zip`, Buffer.from(download.data));
+
+      - name: 'Accept event from first stage'
+        run: unzip preview-spec.zip event.json
+
+      - name: Read Event into ENV
+        id: event
+        run: |
+          echo PR_NUMBER=$(jq '.number | tonumber' < event.json) >> $GITHUB_OUTPUT
+          echo ACTION=$(jq --raw-output '.action | tostring | [scan("\\w+")][0]' < event.json) >> $GITHUB_OUTPUT
+          echo GIT_REF=$(jq --raw-output '.pull_request.head.sha | tostring | [scan("\\w+")][0]' < event.json) >> $GITHUB_OUTPUT
+
+      - name: Fetch Command and Calculate Hash
+        id: hash
+        run: |
+          unzip preview-spec.zip comment.md
+          ls
+          echo "COMMENT_FILE_HASH=$(md5sum comment.md | awk '{ print $1 }')" >> $GITHUB_OUTPUT
+
+      - name: Cache Comment
+        if: ${{ steps.event.outputs.ACTION != 'closed' }}
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: comment.md
+          key: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}
+
+      - name: DEBUG - Print Job Outputs
+        if: ${{ runner.debug }}
+        run: |
+          echo "PR number: ${{ steps.event.outputs.PR_NUMBER }}"
+          echo "Git Ref: ${{ steps.event.outputs.GIT_REF }}"
+          echo "Action: ${{ steps.event.outputs.ACTION }}"
+          echo "Hash: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}"
+          cat event.json
+
+  add-comment:
+    name: Write comment about issues
+    needs:
+      - setup
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Fetch cached Manifests File
+        id: cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: comment.md
+          key: ${{ needs.setup.outputs.comment-cache-key }}
+
+      # Identify comment to be updated
+      - name: Find comment for API Changes
+        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
+        id: find-comment
+        with:
+          issue-number: ${{ needs.setup.outputs.pr-number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: api-breaking-changes-comment
+          direction: last
+
+      - name: Create or Update Comment with API Changes
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ needs.setup.outputs.pr-number }}
+          body-path: comment.md
+          edit-mode: replace

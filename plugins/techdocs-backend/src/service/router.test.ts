@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  errorHandler,
-  getVoidLogger,
-  PluginCacheManager,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
+  DocsBuildStrategy,
   GeneratorBuilder,
   PreparerBuilder,
   PublisherBase,
@@ -32,17 +27,13 @@ import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
-import { DocsBuildStrategy } from './DocsBuildStrategy';
+import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('@backstage/catalog-client');
-jest.mock('@backstage/config');
 jest.mock('./CachedEntityLoader');
 jest.mock('./DocsSynchronizer');
 jest.mock('../cache/TechDocsCache');
 
-const MockedConfigReader = ConfigReader as jest.MockedClass<
-  typeof ConfigReader
->;
 const MockDocsSynchronizer = DocsSynchronizer as jest.MockedClass<
   typeof DocsSynchronizer
 >;
@@ -75,7 +66,7 @@ const getMockHttpResponseFor = (content: string): Buffer => {
 const createApp = async (options: RouterOptions) => {
   const app = express();
   app.use(await createRouter(options));
-  app.use(errorHandler());
+  app.use(mockErrorHandler());
   return app;
 };
 
@@ -111,13 +102,8 @@ describe('createRouter', () => {
     hasDocsBeenGenerated: jest.fn(),
     publish: jest.fn(),
   };
-  const discovery: jest.Mocked<PluginEndpointDiscovery> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
-  const cache: jest.Mocked<PluginCacheManager> = {
-    getClient: jest.fn(),
-  };
+  const discovery = mockServices.discovery.mock();
+
   const docsBuildStrategy: jest.Mocked<DocsBuildStrategy> = {
     shouldBuild: jest.fn(),
   };
@@ -125,19 +111,29 @@ describe('createRouter', () => {
     preparers,
     generators,
     publisher,
-    config: new ConfigReader({}),
-    logger: getVoidLogger(),
+    config: new ConfigReader({
+      techdocs: {
+        cache: {
+          ttl: 1,
+        },
+      },
+    }),
+    logger: mockServices.logger.mock(),
     discovery,
-    cache,
+    cache: mockServices.cache.mock(),
     docsBuildStrategy,
+    auth: mockServices.auth(),
+    httpAuth: mockServices.httpAuth(),
   };
   const recommendedOptions = {
     publisher,
     config: new ConfigReader({}),
-    logger: getVoidLogger(),
+    logger: mockServices.logger.mock(),
     discovery,
-    cache,
+    cache: mockServices.cache.mock(),
     docsBuildStrategy,
+    auth: mockServices.auth(),
+    httpAuth: mockServices.httpAuth(),
   };
 
   beforeEach(() => {
@@ -149,9 +145,6 @@ describe('createRouter', () => {
     discovery.getBaseUrl.mockImplementation(async type => {
       return `http://backstage.local/api/${type}`;
     });
-    MockedConfigReader.prototype.getOptionalNumber.mockImplementation(key =>
-      key === 'techdocs.cache.ttl' ? 1 : undefined,
-    );
     MockTechDocsCache.get.mockResolvedValue(undefined);
     MockTechDocsCache.set.mockResolvedValue();
   });
@@ -231,7 +224,7 @@ data: "Invalid configuration. docsBuildStrategy.shouldBuild returned 'true', but
 `,
         );
 
-        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(0);
+        expect(MockDocsSynchronizer.prototype.doSync).toHaveBeenCalledTimes(0);
       });
 
       it('should execute synchronization', async () => {
@@ -249,8 +242,8 @@ data: "Invalid configuration. docsBuildStrategy.shouldBuild returned 'true', but
           .set('accept', 'text/event-stream')
           .send();
 
-        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(1);
-        expect(MockDocsSynchronizer.prototype.doSync).toBeCalledWith({
+        expect(MockDocsSynchronizer.prototype.doSync).toHaveBeenCalledTimes(1);
+        expect(MockDocsSynchronizer.prototype.doSync).toHaveBeenCalledWith({
           responseHandler: {
             log: expect.any(Function),
             error: expect.any(Function),
@@ -313,7 +306,7 @@ data: {"updated":true}
         .send();
 
       expect(response.status).toBe(200);
-      expect(docsRouter).toBeCalled();
+      expect(docsRouter).toHaveBeenCalled();
     });
 
     it('should return assets from cache', async () => {
@@ -328,17 +321,21 @@ data: {"updated":true}
         .send();
 
       expect(response.status).toBe(200);
-      expect(MockTechDocsCache.get).toBeCalled();
+      expect(MockTechDocsCache.get).toHaveBeenCalled();
     });
 
     it('should check entity access when permissions are enabled', async () => {
-      MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(key =>
-        key === 'permission.enabled' ? true : undefined,
-      );
       const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
       publisher.docsRouter.mockReturnValue(docsRouter);
 
-      const app = await createApp(outOfTheBoxOptions);
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        config: new ConfigReader({
+          permission: {
+            enabled: true,
+          },
+        }),
+      });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
 
@@ -347,15 +344,18 @@ data: {"updated":true}
         .send();
 
       expect(response.status).toBe(200);
-      expect(MockCachedEntityLoader.prototype.load).toBeCalled();
+      expect(MockCachedEntityLoader.prototype.load).toHaveBeenCalled();
     });
 
     it('should not return assets without corresponding entity access', async () => {
-      MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(key =>
-        key === 'permission.enabled' ? true : undefined,
-      );
-
-      const app = await createApp(outOfTheBoxOptions);
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        config: new ConfigReader({
+          permission: {
+            enabled: true,
+          },
+        }),
+      });
 
       MockCachedEntityLoader.prototype.load.mockResolvedValue(undefined);
 
@@ -387,8 +387,8 @@ describe('createEventStream', () => {
   it('should return correct event stream', async () => {
     // called in beforeEach
 
-    expect(res.writeHead).toBeCalledTimes(1);
-    expect(res.writeHead).toBeCalledWith(200, {
+    expect(res.writeHead).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledWith(200, {
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
       'Content-Type': 'text/event-stream',
@@ -400,45 +400,45 @@ describe('createEventStream', () => {
 
     handlers.log('A Message');
 
-    expect(res.write).toBeCalledTimes(1);
-    expect(res.write).toBeCalledWith(`event: log
+    expect(res.write).toHaveBeenCalledTimes(1);
+    expect(res.write).toHaveBeenCalledWith(`event: log
 data: "A Message"
 
 `);
-    expect(res.flush).toBeCalledTimes(1);
+    expect(res.flush).toHaveBeenCalledTimes(1);
   });
 
   it('should write log', async () => {
     handlers.log('A Message');
 
-    expect(res.write).toBeCalledTimes(1);
-    expect(res.write).toBeCalledWith(`event: log
+    expect(res.write).toHaveBeenCalledTimes(1);
+    expect(res.write).toHaveBeenCalledWith(`event: log
 data: "A Message"
 
 `);
-    expect(res.end).toBeCalledTimes(0);
+    expect(res.end).toHaveBeenCalledTimes(0);
   });
 
   it('should write error and end the connection', async () => {
     handlers.error(new Error('Some Error'));
 
-    expect(res.write).toBeCalledTimes(1);
-    expect(res.write).toBeCalledWith(`event: error
+    expect(res.write).toHaveBeenCalledTimes(1);
+    expect(res.write).toHaveBeenCalledWith(`event: error
 data: "Some Error"
 
 `);
-    expect(res.end).toBeCalledTimes(1);
+    expect(res.end).toHaveBeenCalledTimes(1);
   });
 
   it('should finish and end the connection', async () => {
     handlers.finish({ updated: true });
 
-    expect(res.write).toBeCalledTimes(1);
-    expect(res.write).toBeCalledWith(`event: finish
+    expect(res.write).toHaveBeenCalledTimes(1);
+    expect(res.write).toHaveBeenCalledWith(`event: finish
 data: {"updated":true}
 
 `);
 
-    expect(res.end).toBeCalledTimes(1);
+    expect(res.end).toHaveBeenCalledTimes(1);
   });
 });

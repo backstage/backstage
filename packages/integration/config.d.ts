@@ -30,8 +30,105 @@ export interface Config {
       /**
        * Token used to authenticate requests.
        * @visibility secret
+       * @deprecated Use `credentials` instead.
        */
       token?: string;
+
+      /**
+       * The credential to use for requests.
+       *
+       * If no credential is specified anonymous access is used.
+       *
+       * @deepVisibility secret
+       * @deprecated Use `credentials` instead.
+       */
+      credential?: {
+        clientId?: string;
+        clientSecret?: string;
+        tenantId?: string;
+        personalAccessToken?: string;
+      };
+
+      /**
+       * The credentials to use for requests. If multiple credentials are specified the first one that matches the organization is used.
+       * If no organization matches the first credential without an organization is used.
+       *
+       * If no credentials are specified at all, either a default credential (for Azure DevOps) or anonymous access (for Azure DevOps Server) is used.
+       * @deepVisibility secret
+       */
+      credentials?: {
+        organizations?: string[];
+        clientId?: string;
+        clientSecret?: string;
+        tenantId?: string;
+        personalAccessToken?: string;
+        managedIdentityClientId?: string;
+      }[];
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
+    }>;
+
+    /** Integration configuration for Azure Blob Storage */
+    azureBlobStorage?: Array<{
+      /**
+       * The name of the Azure Storage Account, e.g., "mystorageaccount".
+       */
+      accountName?: string;
+
+      /**
+       * The primary or secondary key for the Azure Storage Account.
+       * Only required if connectionString or SAS token are not specified.
+       * @visibility secret
+       */
+      accountKey?: string;
+
+      /**
+       * A Shared Access Signature (SAS) token for limited access to resources.
+       * @visibility secret
+       */
+      sasToken?: string;
+
+      /**
+       * A full connection string for the Azure Storage Account.
+       * This includes the account name, key, and endpoint details.
+       * @visibility secret
+       */
+      connectionString?: string;
+
+      /**
+       * Optional endpoint suffix for custom domains or sovereign clouds.
+       * e.g., "core.windows.net" for public Azure or "core.usgovcloudapi.net" for US Government cloud.
+       */
+      endpointSuffix?: string;
+
+      /**
+       * Optional endpoint URL for custom domain. Uses default if not provided.
+       * @visibility frontend
+       */
+      endpoint?: string;
+      /**
+       * Optional credential to use for Azure Active Directory authentication.
+       * @deepVisibility secret
+       */
+      aadCredential?: {
+        /**
+         * The client ID of the Azure AD application.
+         */
+        clientId: string;
+
+        /**
+         * The tenant ID for Azure AD.
+         */
+        tenantId: string;
+
+        /**
+         * The client secret for the Azure AD application.
+         */
+        clientSecret: string;
+      };
     }>;
 
     /**
@@ -64,6 +161,11 @@ export interface Config {
        * @visibility secret
        */
       appPassword?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Bitbucket Cloud */
@@ -72,12 +174,33 @@ export interface Config {
        * The username to use for authenticated requests.
        * @visibility secret
        */
-      username: string;
+      username?: string;
+      /**
+       * Token used to authenticate requests.
+       * @visibility secret
+       */
+      token?: string;
       /**
        * Bitbucket Cloud app password used to authenticate requests.
        * @visibility secret
+       * @deprecated Use `token` instead.
        */
-      appPassword: string;
+      appPassword?: string;
+      /**
+       * OAuth client ID for Bitbucket Cloud.
+       * @visibility secret
+       */
+      clientId?: string;
+      /**
+       * OAuth client secret for Bitbucket Cloud.
+       * @visibility secret
+       */
+      clientSecret?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Bitbucket Server */
@@ -107,6 +230,11 @@ export interface Config {
        * @visibility frontend
        */
       apiBaseUrl?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Gerrit */
@@ -122,10 +250,20 @@ export interface Config {
        */
       baseUrl?: string;
       /**
+       * The gitiles base url.
+       * @visibility frontend
+       */
+      gitilesBaseUrl: string;
+      /**
        * The base url for cloning repos.
        * @visibility frontend
        */
       cloneUrl?: string;
+      /**
+       * Disable the edit url feature.
+       * @visibility frontend
+       */
+      disableEditUrl?: boolean;
       /**
        * The username to use for authenticated requests.
        * @visibility secret
@@ -137,6 +275,11 @@ export interface Config {
        * @visibility secret
        */
       password?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for GitHub */
@@ -164,7 +307,6 @@ export interface Config {
 
       /**
        * GitHub Apps configuration
-       * @visibility backend
        */
       apps?: Array<{
         /**
@@ -180,7 +322,7 @@ export interface Config {
          * The secret used for webhooks
          * @visibility secret
          */
-        webhookSecret: string;
+        webhookSecret?: string;
         /**
          * The client ID to use
          */
@@ -190,6 +332,18 @@ export interface Config {
          * @visibility secret
          */
         clientSecret: string;
+        /**
+         * List of installation owners allowed to be used by this GitHub app. The GitHub UI does not provide a way to list the installations.
+         * However you can list the installations with the GitHub API. You can find the list of installations here:
+         * https://api.github.com/app/installations
+         * The relevant documentation for this is here.
+         * https://docs.github.com/en/rest/reference/apps#list-installations-for-the-authenticated-app--code-samples
+         */
+        allowedInstallationOwners?: string[];
+        /**
+         * If true, then an installation token will be issued for access when no other token is available.
+         */
+        publicAccess?: boolean;
       }>;
     }>;
 
@@ -227,13 +381,17 @@ export interface Config {
        * @visibility frontend
        */
       baseUrl?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Google Cloud Storage */
     googleGcs?: {
       /**
        * Service account email used to authenticate requests.
-       * @visibility backend
        */
       clientEmail?: string;
       /**
@@ -265,7 +423,6 @@ export interface Config {
 
       /**
        * Account access key used to authenticate requests.
-       * @visibility backend
        */
       accessKeyId?: string;
       /**
@@ -276,15 +433,62 @@ export interface Config {
 
       /**
        * ARN of the role to be assumed
-       * @visibility backend
        */
       roleArn?: string;
 
       /**
        * External ID to use when assuming role
-       * @visibility backend
        */
       externalId?: string;
+    }>;
+
+    /** Integration configuration for Gitea */
+    gitea?: Array<{
+      /**
+       * The hostname of the given Gitea instance
+       * @visibility frontend
+       */
+      host: string;
+      /**
+       * The base url for the Gitea instance.
+       * @visibility frontend
+       */
+      baseUrl?: string;
+
+      /**
+       * The username to use for authenticated requests.
+       * @visibility secret
+       */
+      username?: string;
+      /**
+       * Gitea password used to authenticate requests. This can be either a password
+       * or a generated access token.
+       * @visibility secret
+       */
+      password?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
+    }>;
+    /** Integration configuration for Harness Code */
+    harness?: Array<{
+      /**
+       * The hostname of the given Harness Code instance
+       * @visibility frontend
+       */
+      host: string;
+      /**
+       * The apikey to use for authenticated requests.
+       * @visibility secret
+       */
+      apiKey?: string;
+      /**
+       * Harness Code token used to authenticate requests. This can be either a generated access token.
+       * @visibility secret
+       */
+      token?: string;
     }>;
   };
 }

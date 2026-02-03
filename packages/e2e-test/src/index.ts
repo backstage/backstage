@@ -18,7 +18,6 @@ import { program } from 'commander';
 import chalk from 'chalk';
 import { registerCommands } from './commands';
 import { version } from '../package.json';
-import { exitWithError } from './lib/helpers';
 
 async function main(argv: string[]) {
   program.name('e2e-test').version(version);
@@ -36,23 +35,12 @@ async function main(argv: string[]) {
   program.parse(argv);
 }
 
-process.on('unhandledRejection', (rejection: unknown) => {
-  // Try to avoid exiting if the unhandled error is coming from jsdom, i.e. zombie.
-  // Those are typically errors on the page that should be benign, at least in the
-  // context of this test. We have other ways of asserting that the page is being
-  // rendered correctly.
-  if (
-    rejection instanceof Error &&
-    rejection?.stack?.includes('node_modules/jsdom/lib')
-  ) {
-    console.log(`Ignored error inside jsdom, ${rejection?.stack ?? rejection}`);
+main(process.argv).catch(err => {
+  process.stdout.write(`${err.name}: ${err.stack || err.message}\n`);
+
+  if (typeof err.code === 'number') {
+    process.exit(err.code);
   } else {
-    if (rejection instanceof Error) {
-      exitWithError(rejection);
-    } else {
-      exitWithError(new Error(`Unknown rejection: '${rejection}'`));
-    }
+    process.exit(1);
   }
 });
-
-main(process.argv).catch(exitWithError);

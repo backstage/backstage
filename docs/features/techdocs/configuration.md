@@ -1,7 +1,6 @@
 ---
 id: configuration
 title: TechDocs Configuration Options
-# prettier-ignore
 description: Reference documentation for configuring TechDocs using app-config.yaml
 ---
 
@@ -20,7 +19,7 @@ techdocs:
     # spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
     # You want to change this to 'local' if you are running Backstage using your own custom Docker setup and want to avoid running
     # into Docker in Docker situation. Read more here
-    # https://backstage.io/docs/features/techdocs/getting-started#disable-docker-in-docker-situation-optional
+    # https://backstage.io/docs/features/techdocs/getting-started/#disabling-docker-in-docker-situation-optional
 
     runIn: 'docker'
 
@@ -49,9 +48,18 @@ techdocs:
       # will be broken in these scenarios.
       legacyCopyReadmeMdToIndexMd: false
 
-  # techdocs.builder can be either 'local' or 'external.
+      # (Optional) Configures the default plugins which should be added
+      # automatically to every mkdocs.yaml file. This simplifies the usage as
+      # e.g. styling plugins can be added once for all.
+      # Make sure that the defined plugins are installed locally / in the Docker
+      # image.
+      # By default, only the techdocs-core plugin will be added (except if
+      # omitTechdocsCorePlugin: true).
+      defaultPlugins: ['techdocs-core']
+
+  # techdocs.builder can be either 'local' or 'external'.
   # Using the default build strategy, if builder is set to 'local' and you open a TechDocs page,
-  # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwords.
+  # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwards.
   # This is the "Basic" setup of the TechDocs Architecture.
   # Using the default build strategy, if builder is set to 'external' (or anything other than 'local'), techdocs-backend
   # will only fetch the docs and will NOT try to generate and publish.
@@ -106,10 +114,22 @@ techdocs:
       # If not set, the default location will be the root of the storage bucket
       bucketRootPath: '/'
 
-      # (Optional) An API key is required to write to a storage bucket.
-      # If not set, environment variables or aws config file will be used to authenticate.
-      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
-      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+      # (Optional) The AWS account ID where the storage bucket is located.
+      # Credentials for the account ID must be configured in the 'aws' app config section.
+      # See the integration-aws-node package for details on how to configure credentials in
+      # the 'aws' app config section.
+      # https://www.npmjs.com/package/@backstage/integration-aws-node
+      # If account ID is not set and no credentials are set, environment variables or aws config file will be used to authenticate.
+      # https://www.npmjs.com/package/@aws-sdk/credential-provider-node
+      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html
+      accountId: ${TECHDOCS_AWSS3_ACCOUNT_ID}
+
+      # (Optional) AWS credentials to use to write to the storage bucket.
+      # This configuration section is now deprecated.
+      # Configuring the account ID is now preferred, with credentials in the 'aws' app config section.
+      # If credentials are not set and no account ID is set, environment variables or aws config file will be used to authenticate.
+      # https://www.npmjs.com/package/@aws-sdk/credential-provider-node
+      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html
       credentials:
         accessKeyId: ${TECHDOCS_AWSS3_ACCESS_KEY_ID_CREDENTIAL}
         secretAccessKey: ${TECHDOCS_AWSS3_SECRET_ACCESS_KEY_CREDENTIAL}
@@ -121,8 +141,13 @@ techdocs:
 
       # (Optional) Endpoint URI to send requests to.
       # If not set, the default endpoint is built from the configured region.
-      # https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
+      # https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/s3clientconfig.html#endpoint
       endpoint: ${AWS_ENDPOINT}
+
+      # (Optional) HTTPS proxy to use for S3 Requests
+      # Defaults to using no proxy
+      # This allows docs to be published and read from behind a proxy
+      httpsProxy: ${HTTPS_PROXY}
 
       # (Optional) Whether to use path style URLs when communicating with S3.
       # Defaults to false.
@@ -140,6 +165,12 @@ techdocs:
     azureBlobStorage:
       # (Required) Azure Blob Storage Container Name
       containerName: 'techdocs-storage'
+
+      # (Optional) Azure blob storage connection string.
+      # Can be useful for local testing through azurite
+      # Defaults to undefined
+      # if provided, takes higher priority, 'techdocs.publisher.azureBlobStorage.credentials' will become irrelevant
+      connectionString: ''
 
       # (Required) An account name is required to write to a storage blob container.
       # https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
@@ -171,7 +202,7 @@ techdocs:
 
     # (Optional) The time (in milliseconds) that the TechDocs backend will wait
     # for a cache service to respond before continuing on as though the cached
-    # object was not found (e.g. when the cache sercice is unavailable). The
+    # object was not found (e.g. when the cache service is unavailable). The
     # default value is 1000
     readTimeout: 500
 ```

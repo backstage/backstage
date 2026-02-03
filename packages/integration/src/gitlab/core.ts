@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
+import fetch from 'cross-fetch';
 import {
   getGitLabIntegrationRelativePath,
   GitLabIntegrationConfig,
 } from './config';
-import fetch from 'cross-fetch';
-import { InputError } from '@backstage/errors';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
@@ -29,7 +28,7 @@ import { InputError } from '@backstage/errors';
  *
  * Converts
  * from: https://gitlab.example.com/a/b/blob/master/c.yaml
- * to:   https://gitlab.example.com/a/b/raw/master/c.yaml
+ * to:   https://gitlab.com/api/v4/projects/projectId/repository/c.yaml?ref=master
  * -or-
  * from: https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
  * to:   https://gitlab.com/api/v4/projects/projectId/repository/files/filepath?ref=branch
@@ -41,65 +40,34 @@ import { InputError } from '@backstage/errors';
 export async function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<string> {
-  // TODO(Rugvip): From the old GitlabReaderProcessor; used
-  // the existence of /-/blob/ to switch the logic. Don't know if this
-  // makes sense and it might require some more work.
-
-  if (url.includes('/-/blob/')) {
-    const projectID = await getProjectId(url, config);
-    return buildProjectUrl(url, projectID, config).toString();
-  }
-  return buildRawUrl(url).toString();
+  const projectID = await getProjectId(url, config, token);
+  return buildProjectUrl(url, projectID, config).toString();
 }
 
 /**
  * Gets the request options necessary to make requests to a given provider.
  *
  * @param config - The relevant provider config
+ * @param token - An optional auth token to use for communicating with GitLab. By default uses the integration token
  * @public
  */
-export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
-  headers: Record<string, string>;
-} {
-  const { token = '' } = config;
-  return {
-    headers: {
-      'PRIVATE-TOKEN': token,
-    },
-  };
-}
+export function getGitLabRequestOptions(
+  config: GitLabIntegrationConfig,
+  token?: string,
+): { headers: Record<string, string> } {
+  const headers: Record<string, string> = {};
 
-// Converts
-// from: https://gitlab.example.com/groupA/teams/repoA/blob/master/c.yaml
-// to:   https://gitlab.example.com/groupA/teams/repoA/raw/master/c.yaml
-export function buildRawUrl(target: string): URL {
-  try {
-    const url = new URL(target);
-
-    const splitPath = url.pathname.split('/').filter(Boolean);
-
-    // Check blob existence
-    const blobIndex = splitPath.indexOf('blob', 2);
-    if (blobIndex < 2 || blobIndex === splitPath.length - 1) {
-      throw new InputError('Wrong GitLab URL');
-    }
-
-    // Take repo path
-    const repoPath = splitPath.slice(0, blobIndex);
-    const restOfPath = splitPath.slice(blobIndex + 1);
-
-    if (!restOfPath.join('/').match(/\.(yaml|yml)$/)) {
-      throw new InputError('Wrong GitLab URL');
-    }
-
-    // Replace 'blob' with 'raw'
-    url.pathname = [...repoPath, 'raw', ...restOfPath].join('/');
-
-    return url;
-  } catch (e) {
-    throw new InputError(`Incorrect url: ${target}, ${e}`);
+  const accessToken = token || config.token;
+  if (accessToken) {
+    // OAuth, Personal, Project, and Group access tokens can all be passed via
+    // a bearer authorization header
+    // https://docs.gitlab.com/api/rest/authentication/#personalprojectgroup-access-tokens
+    headers.Authorization = `Bearer ${accessToken}`;
   }
+
+  return { headers };
 }
 
 // Converts
@@ -113,7 +81,10 @@ export function buildProjectUrl(
   try {
     const url = new URL(target);
 
-    const branchAndFilePath = url.pathname.split('/-/blob/')[1];
+    const branchAndFilePath = url.pathname
+      .split('/blob/')
+      .slice(1)
+      .join('/blob/');
     const [branch, ...filePath] = branchAndFilePath.split('/');
     const relativePath = getGitLabIntegrationRelativePath(config);
 
@@ -140,15 +111,18 @@ export function buildProjectUrl(
 export async function getProjectId(
   target: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<number> {
   const url = new URL(target);
 
-  if (!url.pathname.includes('/-/blob/')) {
-    throw new Error('Please provide full path to yaml file from GitLab');
+  if (!url.pathname.includes('/blob/')) {
+    throw new Error(
+      `Failed converting ${url.pathname} to a project id. Url path must include /blob/.`,
+    );
   }
 
   try {
-    let repo = url.pathname.split('/-/blob/')[0];
+    let repo = url.pathname.split('/-/blob/')[0].split('/blob/')[0];
 
     // Get gitlab relative path
     const relativePath = getGitLabIntegrationRelativePath(config);
@@ -168,12 +142,18 @@ export async function getProjectId(
 
     const response = await fetch(
       repoIDLookup.toString(),
-      getGitLabRequestOptions(config),
+      getGitLabRequestOptions(config, token),
     );
 
     const data = await response.json();
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error(
+          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
+        );
+      }
+
       throw new Error(
         `GitLab Error '${data.error}', ${data.error_description}`,
       );

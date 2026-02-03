@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
+import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { RefreshOptions, RefreshService } from './types';
 
 export class DefaultRefreshService implements RefreshService {
-  private database: DefaultProcessingDatabase;
+  private database: DefaultCatalogDatabase;
 
-  constructor(options: { database: DefaultProcessingDatabase }) {
+  constructor(options: { database: DefaultCatalogDatabase }) {
     this.database = options.database;
   }
 
@@ -29,20 +29,17 @@ export class DefaultRefreshService implements RefreshService {
       const { entityRefs } = await this.database.listAncestors(tx, {
         entityRef: options.entityRef,
       });
-      const locationAncestor = entityRefs.find(ref =>
+
+      const locationAncestors = entityRefs.filter(ref =>
         ref.startsWith('location:'),
       );
 
       // TODO: Refreshes are currently scheduled(as soon as possible) for execution and will therefore happen in the future.
       // There's room for improvements here where the refresh could potentially hang or return an ID so that the user can check progress.
-      if (locationAncestor) {
-        await this.database.refresh(tx, {
-          entityRef: locationAncestor,
-        });
+      for (const locationAncestor of locationAncestors) {
+        await this.database.refresh(tx, { entityRef: locationAncestor });
       }
-      await this.database.refresh(tx, {
-        entityRef: options.entityRef,
-      });
+      await this.database.refresh(tx, { entityRef: options.entityRef });
     });
   }
 }

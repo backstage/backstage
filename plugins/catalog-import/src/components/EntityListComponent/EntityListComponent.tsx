@@ -14,38 +14,34 @@
  * limitations under the License.
  */
 
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import { useApp } from '@backstage/core-plugin-api';
 import {
+  Entity,
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
+import {
+  EntityDisplayName,
   EntityRefLink,
-  humanizeEntityRef,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import {
-  Collapse,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  ListItemText,
-} from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import WorkIcon from '@material-ui/icons/Work';
-import React, { useState } from 'react';
+import { ReactElement, Fragment, useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
   nested: {
     paddingLeft: theme.spacing(4),
   },
 }));
-
-function sortEntities(entities: Array<CompoundEntityRef | Entity>) {
-  return entities.sort((a, b) =>
-    humanizeEntityRef(a).localeCompare(humanizeEntityRef(b)),
-  );
-}
 
 /**
  * Props for {@link EntityListComponent}.
@@ -57,9 +53,9 @@ export interface EntityListComponentProps {
     target: string;
     entities: (Entity | CompoundEntityRef)[];
   }>;
-  locationListItemIcon: (target: string) => React.ReactElement;
+  locationListItemIcon: (target: string) => ReactElement;
   collapsed?: boolean;
-  firstListItem?: React.ReactElement;
+  firstListItem?: ReactElement;
   onItemClick?: (target: string) => void;
   withLinks?: boolean;
 }
@@ -79,9 +75,8 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
     withLinks = false,
   } = props;
 
-  const app = useApp();
   const classes = useStyles();
-
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const [expandedUrls, setExpandedUrls] = useState<string[]>([]);
 
   const handleClick = (url: string) => {
@@ -90,15 +85,26 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
     );
   };
 
+  function sortEntities(entities: Array<CompoundEntityRef | Entity>) {
+    return entities.sort((a, b) =>
+      entityPresentationApi
+        .forEntity(stringifyEntityRef(a))
+        .snapshot.entityRef.localeCompare(
+          entityPresentationApi.forEntity(stringifyEntityRef(b)).snapshot
+            .entityRef,
+        ),
+    );
+  }
+
   return (
     <List>
       {firstListItem}
       {locations.map(r => (
-        <React.Fragment key={r.target}>
+        <Fragment key={r.target}>
           <ListItem
             dense
             button={Boolean(onItemClick) as any}
-            onClick={() => onItemClick?.call(this, r.target)}
+            onClick={() => onItemClick?.(r.target)}
           >
             <ListItemIcon>{locationListItemIcon(r.target)}</ListItemIcon>
 
@@ -127,13 +133,9 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
           >
             <List component="div" disablePadding dense>
               {sortEntities(r.entities).map(entity => {
-                const Icon =
-                  app.getSystemIcon(
-                    `kind:${entity.kind.toLocaleLowerCase('en-US')}`,
-                  ) ?? WorkIcon;
                 return (
                   <ListItem
-                    key={humanizeEntityRef(entity)}
+                    key={stringifyEntityRef(entity)}
                     className={classes.nested}
                     {...(withLinks
                       ? {
@@ -143,16 +145,15 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
                         }
                       : {})}
                   >
-                    <ListItemIcon>
-                      <Icon />
-                    </ListItemIcon>
-                    <ListItemText primary={humanizeEntityRef(entity)} />
+                    <ListItemText
+                      primary={<EntityDisplayName entityRef={entity} />}
+                    />
                   </ListItem>
                 );
               })}
             </List>
           </Collapse>
-        </React.Fragment>
+        </Fragment>
       ))}
     </List>
   );

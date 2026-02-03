@@ -13,7 +13,7 @@ spec:
   profile:
     displayName: ACME Corp
     email: info@example.com
-    picture: https://avatars.dicebear.com/api/identicon/info@example.com.svg?background=%23fff&margin=25
+    picture: https://api.dicebear.com/7.x/identicon/svg?seed=Maggie&flip=true&backgroundColor=ffdfbf
   children: [infrastructure]
 ---
 apiVersion: backstage.io/v1alpha1

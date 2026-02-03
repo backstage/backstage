@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
-import { useOutlet } from 'react-router';
+import { ReactNode } from 'react';
+import { useOutlet } from 'react-router-dom';
 
 export const HomepageCompositionRoot = (props: {
   title?: string;

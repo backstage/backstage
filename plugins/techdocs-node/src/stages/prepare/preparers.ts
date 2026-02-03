@@ -15,6 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import { parseReferenceAnnotation } from '../../helpers';
 import { DirectoryPreparer } from './dir';
 import { UrlPreparer } from './url';
@@ -40,11 +41,14 @@ export class Preparers implements PreparerBuilder {
    */
   static async fromConfig(
     backstageConfig: Config,
-    { logger, reader }: PreparerConfig,
+    options: PreparerConfig,
   ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
 
-    const urlPreparer = UrlPreparer.fromConfig({ reader, logger });
+    const urlPreparer = UrlPreparer.fromConfig({
+      reader: options.reader,
+      logger: options.logger,
+    });
     preparers.register('url', urlPreparer);
 
     /**
@@ -52,8 +56,8 @@ export class Preparers implements PreparerBuilder {
      * When using dir preparer, the docs will be fetched using URL Reader.
      */
     const directoryPreparer = DirectoryPreparer.fromConfig(backstageConfig, {
-      logger,
-      reader,
+      reader: options.reader,
+      logger: options.logger,
     });
     preparers.register('dir', directoryPreparer);
 
@@ -75,10 +79,7 @@ export class Preparers implements PreparerBuilder {
    * @returns
    */
   get(entity: Entity): PreparerBase {
-    const { type } = parseReferenceAnnotation(
-      'backstage.io/techdocs-ref',
-      entity,
-    );
+    const { type } = parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity);
     const preparer = this.preparerMap.get(type);
 
     if (!preparer) {

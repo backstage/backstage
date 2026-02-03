@@ -19,6 +19,8 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
+  CompoundEntityRef,
+  parseEntityRef,
 } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
 import { CatalogProcessingOrchestrator } from '../processing/types';
@@ -27,18 +29,37 @@ import { locationSpecToMetadataName } from '../util/conversion';
 import { InputError } from '@backstage/errors';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
+export type DefaultLocationServiceOptions = {
+  allowedLocationTypes: string[];
+};
+
 export class DefaultLocationService implements LocationService {
+  private readonly store: LocationStore;
+  private readonly orchestrator: CatalogProcessingOrchestrator;
+  private readonly options: DefaultLocationServiceOptions;
+
   constructor(
-    private readonly store: LocationStore,
-    private readonly orchestrator: CatalogProcessingOrchestrator,
-  ) {}
+    store: LocationStore,
+    orchestrator: CatalogProcessingOrchestrator,
+    options: DefaultLocationServiceOptions = {
+      allowedLocationTypes: ['url'],
+    },
+  ) {
+    this.store = store;
+    this.orchestrator = orchestrator;
+    this.options = options;
+  }
 
   async createLocation(
     input: LocationInput,
     dryRun: boolean,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
-    if (input.type !== 'url') {
-      throw new InputError(`Registered locations must be of type 'url'`);
+    if (!this.options.allowedLocationTypes.includes(input.type)) {
+      throw new InputError(
+        `Registered locations must be of an allowed type ${JSON.stringify(
+          this.options.allowedLocationTypes,
+        )}`,
+      );
     }
     if (dryRun) {
       return this.dryRunCreateLocation(input);
@@ -55,6 +76,12 @@ export class DefaultLocationService implements LocationService {
   }
   deleteLocation(id: string): Promise<void> {
     return this.store.deleteLocation(id);
+  }
+
+  getLocationByEntity(
+    entityRef: CompoundEntityRef | string,
+  ): Promise<Location> {
+    return this.store.getLocationByEntity(parseEntityRef(entityRef));
   }
 
   private async processEntities(

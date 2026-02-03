@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
@@ -25,6 +25,7 @@ import Close from '@material-ui/icons/Close';
 export default {
   title: 'Layout/Drawer',
   component: Drawer,
+  tags: ['!manifest'],
 };
 
 const useDrawerStyles = makeStyles((theme: Theme) =>

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
@@ -31,9 +33,28 @@ export interface Config {
       secret?: string;
     };
 
+    /**
+     * JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+     * Must match one of the algorithms defined for IdentityClient.
+     * When setting a different algorithm, check if the `key` field
+     * of the `signing_keys` table can fit the length of the generated keys.
+     * If not, add a knex migration file in the migrations folder.
+     * More info on supported algorithms: https://github.com/panva/jose
+     */
+    identityTokenAlgorithm?: string;
+
+    /**
+     * Whether to omit the entity ownership references (`ent`) claim from the
+     * identity token. If this is enabled the `ent` claim will only be available
+     * via the user info endpoint and the `UserInfoService`.
+     *
+     * Defaults to `false`.
+     */
+    omitIdentityTokenOwnershipClaim?: boolean;
+
     /** To control how to store JWK data in auth-backend */
     keyStore?: {
-      provider?: 'database' | 'memory' | 'firestore';
+      provider?: 'database' | 'memory' | 'firestore' | 'static';
       firestore?: {
         /** The host to connect to */
         host?: string;
@@ -55,70 +76,55 @@ export interface Config {
         /** Timeout used for database operations. Defaults to 10000ms */
         timeout?: number;
       };
+      static?: {
+        /** Must be declared at least once and the first one will be used for signing */
+        keys: Array<{
+          /** Path to the public key file in the SPKI format */
+          publicKeyFile: string;
+          /** Path to the matching private key file in the PKCS#8 format */
+          privateKeyFile: string;
+          /** id to uniquely identify this key within the JWK set */
+          keyId: string;
+          /** JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+           * Must match the algorithm used to generate the keys in the provided files
+           */
+          algorithm?: string;
+        }>;
+      };
     };
 
     /**
-     * The available auth-provider options and attributes
+     * The backstage token expiration.
+     * Defaults to 1 hour (3600s). Maximum allowed is 24 hours.
      */
-    providers?: {
-      google?: {
-        [authEnv: string]: { [key: string]: string };
-      };
-      github?: {
-        [authEnv: string]: { [key: string]: string };
-      };
-      gitlab?: {
-        [authEnv: string]: { [key: string]: string };
-      };
-      saml?: {
-        entryPoint: string;
-        logoutUrl?: string;
-        issuer: string;
-        cert: string;
-        audience?: string;
-        privateKey?: string;
-        authnContext?: string[];
-        identifierFormat?: string;
-        decryptionPvk?: string;
-        signatureAlgorithm?: 'sha256' | 'sha512';
-        digestAlgorithm?: string;
-        acceptedClockSkewMs?: number;
-      };
-      okta?: {
-        [authEnv: string]: { [key: string]: string };
-      };
-      oauth2?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          authorizationUrl: string;
-          tokenUrl: string;
-          scope?: string;
-          disableRefresh?: boolean;
-        };
-      };
-      oidc?: {
-        [authEnv: string]: { [key: string]: string };
-      };
-      auth0?: {
-        [authEnv: string]: { [key: string]: string };
-      };
-      microsoft?: {
-        [authEnv: string]: { [key: string]: string };
-      };
-      onelogin?: {
-        [authEnv: string]: { [key: string]: string };
-      };
-      awsalb?: {
-        issuer?: string;
-        region: string;
-      };
-      cfaccess?: {
-        teamName: string;
-      };
+    backstageTokenExpiration?: HumanDuration | string;
+
+    /**
+     * Additional app origins to allow for authenticating
+     */
+    experimentalExtraAllowedOrigins?: string[];
+
+    /**
+     * Configuration for dynamic client registration
+     */
+    experimentalDynamicClientRegistration?: {
+      /**
+       * Whether to enable dynamic client registration
+       * Defaults to false
+       */
+      enabled?: boolean;
+
+      /**
+       * A list of allowed URI patterns to use for redirect URIs during
+       * dynamic client registration. Defaults to '[*]' which allows any redirect URI.
+       */
+      allowedRedirectUriPatterns?: string[];
+
+      /**
+       * The expiration time for the client registration access tokens.
+       * Defaults to 1 hour (3600s). Maximum allowed is 24 hours.
+       */
+      tokenExpiration?: HumanDuration | string;
     };
   };
 }

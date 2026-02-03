@@ -19,25 +19,27 @@ import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthRequestOptions,
+  BackstageIdentityApi,
   BackstageIdentityResponse,
+  BackstageUserIdentity,
   OAuthApi,
   OpenIdConnectApi,
   ProfileInfo,
   ProfileInfoApi,
-  SessionState,
   SessionApi,
-  BackstageIdentityApi,
+  SessionState,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { OAuth2Session } from './types';
-import { OAuthApiCreateOptions } from '../types';
+import {
+  OAuth2CreateOptions,
+  OAuth2CreateOptionsWithAuthConnector,
+  OAuth2Session,
+} from './types';
 
-/**
- * OAuth2 create options.
- * @public
- */
-export type OAuth2CreateOptions = OAuthApiCreateOptions & {
-  scopeTransform?: (scopes: string[]) => string[];
+const DEFAULT_PROVIDER = {
+  id: 'oauth2',
+  title: 'Your Identity Provider',
+  icon: () => null,
 };
 
 export type OAuth2Response = {
@@ -45,16 +47,14 @@ export type OAuth2Response = {
     accessToken: string;
     idToken: string;
     scope: string;
-    expiresInSeconds: number;
+    expiresInSeconds?: number;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
-};
-
-const DEFAULT_PROVIDER = {
-  id: 'oauth2',
-  title: 'Your Identity Provider',
-  icon: () => null,
+  backstageIdentity: {
+    token: string;
+    expiresInSeconds?: number;
+    identity: BackstageUserIdentity;
+  };
 };
 
 /**
@@ -70,47 +70,87 @@ export default class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  static create(options: OAuth2CreateOptions) {
+  private static createAuthConnector(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ) {
+    if ('authConnector' in options) {
+      return options.authConnector;
+    }
     const {
+      scopeTransform = x => x,
+      configApi,
       discoveryApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
-      defaultScopes = [],
-      scopeTransform = x => x,
+      popupOptions,
     } = options;
 
-    const connector = new DefaultAuthConnector({
+    return new DefaultAuthConnector({
+      configApi,
       discoveryApi,
       environment,
       provider,
       oauthRequestApi: oauthRequestApi,
-      sessionTransform(res: OAuth2Response): OAuth2Session {
-        return {
+      sessionTransform({
+        backstageIdentity,
+        ...res
+      }: OAuth2Response): OAuth2Session {
+        const session: OAuth2Session = {
           ...res,
           providerInfo: {
             idToken: res.providerInfo.idToken,
             accessToken: res.providerInfo.accessToken,
-            scopes: OAuth2.normalizeScopes(
+            scopes: OAuth2.normalizeScopes(res.providerInfo.scope, {
               scopeTransform,
-              res.providerInfo.scope,
-            ),
-            expiresAt: new Date(
-              Date.now() + res.providerInfo.expiresInSeconds * 1000,
-            ),
+            }),
+            expiresAt: res.providerInfo.expiresInSeconds
+              ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
+              : undefined,
           },
         };
+        if (backstageIdentity) {
+          session.backstageIdentity = {
+            token: backstageIdentity.token,
+            identity: backstageIdentity.identity,
+            expiresAt: backstageIdentity.expiresInSeconds
+              ? new Date(Date.now() + backstageIdentity.expiresInSeconds * 1000)
+              : undefined,
+          };
+        }
+        return session;
       },
+      popupOptions,
     });
+  }
+
+  static create(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ) {
+    const { defaultScopes = [], scopeTransform = x => x } = options;
+
+    const connector = OAuth2.createAuthConnector(options);
 
     const sessionManager = new RefreshingAuthSessionManager({
       connector,
       defaultScopes: new Set(defaultScopes),
       sessionScopes: (session: OAuth2Session) => session.providerInfo.scopes,
       sessionShouldRefresh: (session: OAuth2Session) => {
-        const expiresInSec =
-          (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000;
-        return expiresInSec < 60 * 5;
+        // TODO(Rugvip): Optimize to use separate checks for provider vs backstage session expiration
+        let min = Infinity;
+        if (session.providerInfo?.expiresAt) {
+          min = Math.min(
+            min,
+            (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000,
+          );
+        }
+        if (session.backstageIdentity?.expiresAt) {
+          min = Math.min(
+            min,
+            (session.backstageIdentity.expiresAt.getTime() - Date.now()) / 1000,
+          );
+        }
+        return min < 60 * 3;
       },
     });
 
@@ -144,7 +184,9 @@ export default class OAuth2
     scope?: string | string[],
     options?: AuthRequestOptions,
   ) {
-    const normalizedScopes = OAuth2.normalizeScopes(this.scopeTransform, scope);
+    const normalizedScopes = OAuth2.normalizeScopes(scope, {
+      scopeTransform: this.scopeTransform,
+    });
     const session = await this.sessionManager.getSession({
       ...options,
       scopes: normalizedScopes,
@@ -153,7 +195,10 @@ export default class OAuth2
   }
 
   async getIdToken(options: AuthRequestOptions = {}) {
-    const session = await this.sessionManager.getSession(options);
+    const session = await this.sessionManager.getSession({
+      ...options,
+      scopes: new Set(['openid']),
+    });
     return session?.providerInfo.idToken ?? '';
   }
 
@@ -169,9 +214,12 @@ export default class OAuth2
     return session?.profile;
   }
 
-  private static normalizeScopes(
-    scopeTransform: (scopes: string[]) => string[],
+  /**
+   * @public
+   */
+  public static normalizeScopes(
     scopes?: string | string[],
+    options?: { scopeTransform: (scopes: string[]) => string[] },
   ): Set<string> {
     if (!scopes) {
       return new Set();
@@ -181,6 +229,10 @@ export default class OAuth2
       ? scopes
       : scopes.split(/[\s|,]/).filter(Boolean);
 
-    return new Set(scopeTransform(scopeList));
+    const transformedScopes = options
+      ? options.scopeTransform(scopeList)
+      : scopeList;
+
+    return new Set(transformedScopes);
   }
 }

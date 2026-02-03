@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const VERSION_PREFIX_GIT_BRANCH = 'GB';
-
 export class AzureUrl {
   /**
    * Parses an azure URL as copied from the browser address bar.
@@ -50,16 +48,19 @@ export class AzureUrl {
     const path = url.searchParams.get('path') ?? undefined;
 
     let ref;
+    let prefix;
     const version = url.searchParams.get('version');
     if (version) {
-      const prefix = version.slice(0, 2);
-      if (prefix !== 'GB') {
-        throw new Error('Azure URL version must point to a git branch');
+      prefix = version.slice(0, 2);
+      if (prefix !== 'GB' && prefix !== 'GT') {
+        throw new Error(
+          'Azure URL version must point to a git branch or git tag',
+        );
       }
       ref = version.slice(2);
     }
 
-    return new AzureUrl(url.origin, owner, project, repo, path, ref);
+    return new AzureUrl(url.origin, owner, project, repo, path, ref, prefix);
   }
 
   #origin: string;
@@ -68,6 +69,7 @@ export class AzureUrl {
   #repo: string;
   #path?: string;
   #ref?: string;
+  #prefix?: string;
 
   private constructor(
     origin: string,
@@ -76,6 +78,7 @@ export class AzureUrl {
     repo: string,
     path?: string,
     ref?: string,
+    prefix?: string,
   ) {
     this.#origin = origin;
     this.#owner = owner;
@@ -83,6 +86,7 @@ export class AzureUrl {
     this.#repo = repo;
     this.#path = path;
     this.#ref = ref;
+    this.#prefix = prefix;
   }
 
   #baseUrl = (...parts: string[]): URL => {
@@ -108,7 +112,7 @@ export class AzureUrl {
       url.searchParams.set('path', this.#path);
     }
     if (this.#ref) {
-      url.searchParams.set('version', VERSION_PREFIX_GIT_BRANCH + this.#ref);
+      url.searchParams.set('version', this.#prefix + this.#ref);
     }
 
     return url.toString();
@@ -231,5 +235,12 @@ export class AzureUrl {
    */
   getRef(): string | undefined {
     return this.#ref;
+  }
+
+  /**
+   * Returns the git prefix in the repo if the URL contains one.
+   */
+  getPrefix(): string | undefined {
+    return this.#prefix;
   }
 }

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { AnsiChunk, AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
 import classnames from 'classnames';
 import { useStyles } from './styles';
+import Linkify from 'linkify-react';
+import { Link } from '../Link';
 
 export function getModifierClasses(
   classes: ReturnType<typeof useStyles>,
@@ -137,11 +139,27 @@ export function calculateHighlightedChunks(
   return chunks;
 }
 
+const renderLink = ({
+  attributes,
+  content,
+}: {
+  attributes: { [attr: string]: any };
+  content: string;
+}) => {
+  const { href, ...props } = attributes;
+  return (
+    <Link to={href} {...props}>
+      {content}
+    </Link>
+  );
+};
+
 export interface LogLineProps {
   line: AnsiLine;
   classes: ReturnType<typeof useStyles>;
   searchText: string;
   highlightResultIndex?: number;
+  setRowHeight?: (index: number, size: number) => void;
 }
 
 export function LogLine({
@@ -149,15 +167,24 @@ export function LogLine({
   classes,
   searchText,
   highlightResultIndex,
+  setRowHeight,
 }: LogLineProps) {
+  const lineRef = useRef<HTMLSpanElement>(null);
   const chunks = useMemo(
     () => calculateHighlightedChunks(line, searchText),
     [line, searchText],
   );
 
+  useEffect(() => {
+    if (lineRef.current && setRowHeight) {
+      setRowHeight(line.lineNumber, lineRef.current.offsetHeight);
+    }
+  }, [line.lineNumber, setRowHeight]);
+
   const elements = useMemo(
     () =>
       chunks.map(({ text, modifiers, highlight }, index) => (
+        // eslint-disable-next-line react/forbid-elements
         <span
           key={index}
           className={classnames(
@@ -166,13 +193,14 @@ export function LogLine({
               (highlight === highlightResultIndex
                 ? classes.textSelectedHighlight
                 : classes.textHighlight),
+            { [classes.textWrap]: !!setRowHeight },
           )}
         >
-          {text}
+          <Linkify options={{ render: renderLink }}>{text}</Linkify>
         </span>
       )),
-    [chunks, highlightResultIndex, classes],
+    [chunks, highlightResultIndex, classes, setRowHeight],
   );
 
-  return <>{elements}</>;
+  return <span ref={lineRef}>{elements}</span>;
 }

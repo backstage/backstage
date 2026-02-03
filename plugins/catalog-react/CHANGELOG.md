@@ -1,5 +1,4146 @@
 # @backstage/plugin-catalog-react
 
+## 1.22.0-next.1
+
+### Minor Changes
+
+- 0e9578d: Migrated `UnregisterEntityDialog` from Material UI to Backstage UI components.
+- e8258d0: **BREAKING**: Removed the 'summary' entity card type from `EntityCardType`. Users should migrate to using 'content' or 'info' card types instead.
+
+  TypeScript will now show errors if you try to use `type: 'summary'` when creating entity cards.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-test-utils@0.4.6-next.1
+  - @backstage/ui@0.12.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-compat-api@0.5.8-next.1
+  - @backstage/core-components@0.18.7-next.1
+  - @backstage/integration-react@1.2.15-next.1
+
+## 1.21.6-next.0
+
+### Patch Changes
+
+- f523983: Fixes a bug where the `EntityListProvider` would not correctly hydrate query parameters if more than 20 were provided for the same key.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/core-compat-api@0.5.7-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/frontend-test-utils@0.4.5-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.15-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+  - @backstage/plugin-permission-react@0.4.40-next.0
+
+## 1.21.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/core-compat-api@0.5.6
+  - @backstage/frontend-test-utils@0.4.3
+  - @backstage/integration-react@1.2.14
+
+## 1.21.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/integration-react@1.2.14-next.0
+
+## 1.21.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/frontend-test-utils@0.4.3-next.0
+  - @backstage/core-compat-api@0.5.6-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 1.21.4
+
+### Patch Changes
+
+- 6d39141: Fixed an issue where `EntityOwnerPicker` failed to filter options when the input text contained uppercase characters.
+- b3c0594: Use a versioned context for `useEntityList`, to better work with mixed `@backstage/plugin-catalog-react` versions.
+- c51c901: $contains may have string value in an entity filter. Typescript type and Zod parser were not the same.
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/core-compat-api@0.5.5
+  - @backstage/frontend-test-utils@0.4.2
+  - @backstage/integration-react@1.2.13
+  - @backstage/plugin-permission-react@0.4.39
+
+## 1.21.4-next.2
+
+### Patch Changes
+
+- b3c0594: Use a versioned context for `useEntityList`, to better work with mixed `@backstage/plugin-catalog-react` versions.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-compat-api@0.5.5-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.4.2-next.0
+  - @backstage/integration-react@1.2.13-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-react@0.4.39-next.0
+
+## 1.21.4-next.1
+
+### Patch Changes
+
+- 6d39141: Fixed an issue where `EntityOwnerPicker` failed to filter options when the input text contained uppercase characters.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+
+## 1.21.4-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/core-compat-api@0.5.5-next.0
+  - @backstage/frontend-test-utils@0.4.2-next.0
+  - @backstage/integration-react@1.2.13-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-permission-react@0.4.39-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.21.3
+
+### Patch Changes
+
+- 36d7582: Added missing i18n
+- 2b7924b: Apply default ordering of templates
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- 904d136: Fixed catalog filter "all" not appearing as selected when set as the initially selected filter.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-react@0.4.38
+  - @backstage/catalog-model@1.7.6
+  - @backstage/frontend-test-utils@0.4.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/integration-react@1.2.12
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 1.21.3-next.2
+
+### Patch Changes
+
+- 36d7582: Added missing i18n
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
+## 1.21.3-next.1
+
+### Patch Changes
+
+- 2b7924b: Apply default ordering of templates
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
+## 1.21.3-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.38-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.4.1-next.0
+  - @backstage/integration-react@1.2.12-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 1.21.2
+
+### Patch Changes
+
+- 2a3704d: Correct translation key from "type" to "owner" for owner column in entity table to ensure the right translation is loaded.
+- ace202e: Update `material-ui-popup-state` to latest available version.
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/frontend-test-utils@0.4.0
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/integration-react@1.2.11
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-react@0.4.37
+
+## 1.21.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/frontend-test-utils@0.3.7-next.1
+  - @backstage/integration-react@1.2.11-next.1
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-react@0.4.37-next.0
+  - @backstage/core-compat-api@0.5.3-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 1.21.2-next.0
+
+### Patch Changes
+
+- 2a3704d: Correct translation key from "type" to "owner" for owner column in entity table to ensure the right translation is loaded.
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.3-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/integration-react@1.2.11-next.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.3.7-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.21.0
+
+### Minor Changes
+
+- 0e9ec44: Introduced new `streamEntities` async generator method for the catalog.
+
+  Catalog API and Catalog Service now includes a `streamEntities` method that allows for streaming entities from the catalog.
+  This method is designed to handle large datasets efficiently by processing entities in a stream rather than loading them
+  all into memory at once. This is useful when you need to fetch a large number of entities but do not want to use pagination
+  or fetch all entities at once.
+
+  Example usage:
+
+  ```ts
+  const pageStream = catalogClient.streamEntities({ pageSize: 100 }, { token });
+  for await (const page of pageStream) {
+    // Handle page of entities
+    for (const entity of page) {
+      console.log(entity);
+    }
+  }
+  ```
+
+### Patch Changes
+
+- 0174799: Fix a potential race condition in EntityListProvider when selecting filters
+- 4316c11: Catalog table columns support i18n
+- 79ff318: Removed the deprecation warning when not passing an explicit type to `EntityCardBlueprint`. Omitting the type is now intended, allowing the layout to pick the default type instead, typically `content`.
+- ad0f58d: Support `default*` for older packages as this package is in range for breaking `/alpha` changes
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/catalog-client@1.12.0
+  - @backstage/frontend-test-utils@0.3.6
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/core-compat-api@0.5.2
+  - @backstage/integration-react@1.2.10
+
+## 1.21.0-next.2
+
+### Minor Changes
+
+- 0e9ec44: Introduced new `streamEntities` async generator method for the catalog.
+
+  Catalog API and Catalog Service now includes a `streamEntities` method that allows for streaming entities from the catalog.
+  This method is designed to handle large datasets efficiently by processing entities in a stream rather than loading them
+  all into memory at once. This is useful when you need to fetch a large number of entities but do not want to use pagination
+  or fetch all entities at once.
+
+  Example usage:
+
+  ```ts
+  const pageStream = catalogClient.streamEntities({ pageSize: 100 }, { token });
+  for await (const page of pageStream) {
+    // Handle page of entities
+    for (const entity of page) {
+      console.log(entity);
+    }
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+  - @backstage/core-components@0.17.6-next.1
+  - @backstage/core-compat-api@0.5.2-next.2
+
+## 1.20.2-next.1
+
+### Patch Changes
+
+- 0174799: Fix a potential race condition in EntityListProvider when selecting filters
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/core-compat-api@0.5.2-next.1
+  - @backstage/frontend-test-utils@0.3.6-next.0
+  - @backstage/integration-react@1.2.10-next.0
+
+## 1.20.2-next.0
+
+### Patch Changes
+
+- ad0f58d: Support `default*` for older packages as this package is in range for breaking `/alpha` changes
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.2-next.0
+  - @backstage/catalog-client@1.11.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-components@0.17.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/frontend-test-utils@0.3.5
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.20.0
+
+### Minor Changes
+
+- 3f4da39: Added the `analyzeLocation` method to `catalogApiMock`
+- e4ddf22: **BREAKING ALPHA**: The `defaultPath`, `defaultTitle`, and `defaultGroup` params of `PageBlueprint` has been renamed to `path`, `title`, and `group`. The `convertLegacyEntityContentExtension` utility has also received the same change. This change does not affect the compatibility of extensions created with older versions of this blueprint.
+
+### Patch Changes
+
+- 77eebdc: Support `filter` parameter on the `EntityHeaderBlueprint`
+- a3a878d: Adding `type` as an override to the `convertLegacyEntityCardExtension`
+- defc243: hide pagination `queryparams` if pagination mode is set to none
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/frontend-test-utils@0.3.5
+  - @backstage/core-compat-api@0.5.0
+  - @backstage/catalog-client@1.11.0
+
+## 1.20.0-next.2
+
+### Minor Changes
+
+- e4ddf22: **BREAKING ALPHA**: The `defaultPath`, `defaultTitle`, and `defaultGroup` params of `PageBlueprint` has been renamed to `path`, `title`, and `group`. The `convertLegacyEntityContentExtension` utility has also received the same change. This change does not affect the compatibility of extensions created with older versions of this blueprint.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/frontend-test-utils@0.3.5-next.2
+  - @backstage/core-compat-api@0.5.0-next.2
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.20.0-next.1
+
+### Minor Changes
+
+- 3f4da39: Added the `analyzeLocation` method to `catalogApiMock`
+
+### Patch Changes
+
+- defc243: hide pagination `queryparams` if pagination mode is set to none
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/catalog-client@1.11.0-next.0
+  - @backstage/frontend-test-utils@0.3.5-next.1
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 77eebdc: Support `filter` parameter on the `EntityHeaderBlueprint`
+- a3a878d: Adding `type` as an override to the `convertLegacyEntityCardExtension`
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.5-next.0
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/frontend-test-utils@0.3.5-next.0
+
+## 1.19.1
+
+### Patch Changes
+
+- a07feb7: Fixed a but in the new alpha entity predicates where the `$in` operator mistakenly case sensitive.
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/catalog-client@1.10.2
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration-react@1.2.9
+  - @backstage/core-compat-api@0.4.4
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/frontend-test-utils@0.3.4
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.19.1-next.1
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-test-utils@0.3.4-next.1
+  - @backstage/integration-react@1.2.9-next.1
+  - @backstage/plugin-permission-react@0.4.36-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 1.19.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.9-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/frontend-test-utils@0.3.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.35
+
+## 1.19.0
+
+### Minor Changes
+
+- 406acb6: Introduces a new `EntityIconLinkBlueprint` that customizes the `About` card icon links on the `Catalog` entity page.
+
+  The blueprint currently accepts a `useProps` hook as `param` and this function returns the following props that will be passed to the icon link component:
+
+  | Name       | Description                                         | Type          | Default Value |
+  | ---------- | --------------------------------------------------- | ------------- | ------------- |
+  | `icon`     | The icon to display.                                | `JSX.Element` | N/A           |
+  | `label`    | The label for the element.                          | `string`      | N/A           |
+  | `title`    | The title for the element.                          | `string`      | N/A           |
+  | `disabled` | Whether the element is disabled.                    | `boolean`     | `false`       |
+  | `href`     | The URL to navigate to when the element is clicked. | `string`      | N/A           |
+  | `onClick`  | A function to call when the element is clicked.     | `() => void`  | N/A           |
+
+  Here is an usage example:
+
+  ```tsx
+  import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
+  //...
+
+  EntityIconLinkBlueprint.make({
+    name: 'my-icon-link',
+    params: {
+      useProps() {
+        const { t } = useTranslationRef(myIconLinkTranslationRef);
+        return {
+          label: t('myIconLink.label'),
+          icon: <MyIconLinkIcon />,
+          href: '/my-plugin',
+        };
+      },
+    },
+  });
+  ```
+
+  Additionally, the `app-config.yaml` file allows you to override some of the default icon link parameters, including `label` and `title` values. Here's how to set them:
+
+  ```yaml
+  app:
+    extensions:
+      - entity-icon-link:my-plugin/my-icon-link:
+          config:
+            label: 'My Custom Icon Link label'
+  ```
+
+  Finally, you can disable all links if you want to hide the About card header completely (useful, for example, when links are displayed on separate cards). The header is hidden when no icon links extensions are enabled.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/integration-react@1.2.8
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.3.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.35
+
+## 1.19.0-next.2
+
+### Minor Changes
+
+- 406acb6: Introduces a new `EntityIconLinkBlueprint` that customizes the `About` card icon links on the `Catalog` entity page.
+
+  The blueprint currently accepts a `useProps` hook as `param` and this function returns the following props that will be passed to the icon link component:
+
+  | Name       | Description                                         | Type          | Default Value |
+  | ---------- | --------------------------------------------------- | ------------- | ------------- |
+  | `icon`     | The icon to display.                                | `JSX.Element` | N/A           |
+  | `label`    | The label for the element.                          | `string`      | N/A           |
+  | `title`    | The title for the element.                          | `string`      | N/A           |
+  | `disabled` | Whether the element is disabled.                    | `boolean`     | `false`       |
+  | `href`     | The URL to navigate to when the element is clicked. | `string`      | N/A           |
+  | `onClick`  | A function to call when the element is clicked.     | `() => void`  | N/A           |
+
+  Here is an usage example:
+
+  ```tsx
+  import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
+  //...
+
+  EntityIconLinkBlueprint.make({
+    name: 'my-icon-link',
+    params: {
+      useProps() {
+        const { t } = useTranslationRef(myIconLinkTranslationRef);
+        return {
+          label: t('myIconLink.label'),
+          icon: <MyIconLinkIcon />,
+          href: '/my-plugin',
+        };
+      },
+    },
+  });
+  ```
+
+  Additionally, the `app-config.yaml` file allows you to override some of the default icon link parameters, including `label` and `title` values. Here's how to set them:
+
+  ```yaml
+  app:
+    extensions:
+      - entity-icon-link:my-plugin/my-icon-link:
+          config:
+            label: 'My Custom Icon Link label'
+  ```
+
+  Finally, you can disable all links if you want to hide the About card header completely (useful, for example, when links are displayed on separate cards). The header is hidden when no icon links extensions are enabled.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/integration-react@1.2.7
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.3.3-next.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.34
+
+## 1.18.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/frontend-test-utils@0.3.3-next.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.34
+
+## 1.18.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+  - @backstage/frontend-test-utils@0.3.3-next.0
+  - @backstage/integration-react@1.2.7
+
+## 1.18.0
+
+### Minor Changes
+
+- d47aaa3: Added EntityOrderFilter to sort entities by different fields/columns. This new filter allows users to specify the order in which entities are displayed in the catalog.
+
+  Example usage:
+
+  ```ts
+  import {
+    EntityOrderFilter,
+    useEntityList,
+  } from '@backstage/plugin-catalog-react';
+  // ...
+  const { updateFilters } = useEntityList();
+
+  // ...
+  updateFilters({
+    order: new EntityOrderFilter([
+      {
+        field: 'metadata.name',
+        order: 'desc',
+      },
+    ]),
+  });
+  ```
+
+- 1a003ff: Add `getLocations` method to `CatalogApi` and `CatalogClient`. This method calls the [`GET /locations`](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-locations) endpoint from the catalog backend.
+
+### Patch Changes
+
+- 2ddbc50: A new `filter` parameter has been added to `EntityContextMenuItemBlueprint` to make it easier to configure which entities a menu item should appear for. The `filter` parameter is a function which accepts an entity and returns a boolean.
+- 6d7f0d5: Fixed an issue causing entities of kind user and group to be empty when an owner was selected
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/frontend-test-utils@0.3.2
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/catalog-client@1.10.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+
+## 1.18.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.3
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/frontend-test-utils@0.3.2-next.3
+  - @backstage/integration-react@1.2.7-next.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.1
+
+## 1.18.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-compat-api@0.4.2-next.2
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/frontend-test-utils@0.3.2-next.2
+  - @backstage/integration-react@1.2.7-next.2
+  - @backstage/plugin-permission-react@0.4.34-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-permission-common@0.9.0-next.0
+
+## 1.18.0-next.1
+
+### Patch Changes
+
+- 6d7f0d5: Fixed an issue causing entities of kind user and group to be empty when an owner was selected
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/frontend-test-utils@0.3.2-next.1
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/integration-react@1.2.7-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.0
+
+## 1.18.0-next.0
+
+### Minor Changes
+
+- d47aaa3: Added EntityOrderFilter to sort entities by different fields/columns. This new filter allows users to specify the order in which entities are displayed in the catalog.
+
+  Example usage:
+
+  ```ts
+  import {
+    EntityOrderFilter,
+    useEntityList,
+  } from '@backstage/plugin-catalog-react';
+  // ...
+  const { updateFilters } = useEntityList();
+
+  // ...
+  updateFilters({
+    order: new EntityOrderFilter([
+      {
+        field: 'metadata.name',
+        order: 'desc',
+      },
+    ]),
+  });
+  ```
+
+- 1a003ff: Add `getLocations` method to `CatalogApi` and `CatalogClient`. This method calls the [`GET /locations`](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-locations) endpoint from the catalog backend.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/frontend-test-utils@0.3.2-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.33
+
+## 1.17.0
+
+### Minor Changes
+
+- 0f37fa8: `entityRouteParams` now also accepts entity refs, and can help with encoding the resulting parameters.
+- 61d350f: **BREAKING ALPHA**: `CatalogFilterBlueprint`, used in the new frontend system, is now exported under plugin-catalog-react instead of plugin-catalog.
+
+  ```diff
+  + import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
+  - import { CatalogFilterBlueprint } from '@backstage/plugin-catalog/alpha';
+  ```
+
+- 09afd67: Adds `EntityContextMenuItemBlueprint` to enable extending the entity page's context menu with user defined items.
+
+  For example:
+
+  ```ts
+  import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+  const myCustomHref = EntityContextMenuItemBlueprint.make({
+    name: 'test-href',
+    params: {
+      icon: <span>Example Icon</span>,
+      useProps: () => ({
+        title: 'Example Href',
+        href: '/example-path',
+        disabled: false,
+        component: 'a',
+      }),
+    },
+  });
+
+  const myCustomOnClick = EntityContextMenuItemBlueprint.make({
+    name: 'test-click',
+    params: {
+      icon: <span>Test Icon</span>,
+      useProps: () => ({
+        title: 'Example onClick',
+        onClick: () => window.alert('Hello world!'),
+        disabled: false,
+      }),
+    },
+  });
+  ```
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 3f7e4f1: Added a new `overview` entity content group for the new frontend system.
+- 186d016: Add `operation` to alpha `defaultEntityContentGroups`.
+- 221ddba: Fix offset pagination to reset when updating filters in `useEntityList`
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/frontend-test-utils@0.3.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.17.0-next.2
+
+### Minor Changes
+
+- 61d350f: **BREAKING ALPHA**: `CatalogFilterBlueprint`, used in the new frontend system, is now exported under plugin-catalog-react instead of plugin-catalog.
+
+  ```diff
+  + import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
+  - import { CatalogFilterBlueprint } from '@backstage/plugin-catalog/alpha';
+  ```
+
+- 09afd67: Adds `EntityContextMenuItemBlueprint` to enable extending the entity page's context menu with user defined items.
+
+  For example:
+
+  ```ts
+  import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+  const myCustomHref = EntityContextMenuItemBlueprint.make({
+    name: 'test-href',
+    params: {
+      icon: <span>Example Icon</span>,
+      useProps: () => ({
+        title: 'Example Href',
+        href: '/example-path',
+        disabled: false,
+        component: 'a',
+      }),
+    },
+  });
+
+  const myCustomOnClick = EntityContextMenuItemBlueprint.make({
+    name: 'test-click',
+    params: {
+      icon: <span>Test Icon</span>,
+      useProps: () => ({
+        title: 'Example onClick',
+        onClick: () => window.alert('Hello world!'),
+        disabled: false,
+      }),
+    },
+  });
+  ```
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/frontend-test-utils@0.3.1-next.1
+  - @backstage/integration-react@1.2.6-next.1
+  - @backstage/core-compat-api@0.4.1-next.2
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-permission-react@0.4.33-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.16.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/integration-react@1.2.6-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/core-compat-api@0.4.1-next.1
+  - @backstage/frontend-test-utils@0.3.1-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.32
+
+## 1.16.1-next.0
+
+### Patch Changes
+
+- 186d016: Add `operation` to alpha `defaultEntityContentGroups`.
+- 221ddba: Fix offset pagination to reset when updating filters in `useEntityList`
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.1-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/frontend-test-utils@0.3.0
+  - @backstage/integration-react@1.2.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.32
+
+## 1.16.0
+
+### Minor Changes
+
+- 7f57365: Add support for a new entity predicate syntax when defining `filter`s related to the blueprints exported via `/alpha` for the new frontend system. For more information, see the [entity filters documentation](https://backstage.io/docs/features/software-catalog/catalog-customization#advanced-customization#entity-filters).
+- ba9649a: Add a new `defaultGroup` parameter to the `EntityContentBlueprint`, here are usage examples:
+
+  Set a default group while creating the extension:
+
+  ```diff
+  const entityKubernetesContent = EntityContentBlueprint.make({
+    name: 'kubernetes',
+    params: {
+      defaultPath: '/kubernetes',
+      defaultTitle: 'Kubernetes',
+  +   defaultGroup: 'deployment',
+      filter: 'kind:component,resource',
+      loader: () =>
+        import('./KubernetesContentPage').then(m =>
+          compatWrapper(<m.KubernetesContentPage />),
+        ),
+    },
+  });
+  ```
+
+  Disassociate an entity content from a default group:
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Entity page content
+  -   - entity-content:kubernetes/kubernetes
+  +   - entity-content:kubernetes/kubernetes:
+  +       config:
+  +         group: false
+  ```
+
+  Associate an entity content with a different default or custom group than the one defined in code when the extension was created:
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Entity page content
+  -   - entity-content:kubernetes/kubernetes
+  +   - entity-content:kubernetes/kubernetes:
+  +       config:
+  +         group: custom # associating this extension with a custom group id, the group should have previously been created via entity page configuration
+
+  ```
+
+- 247a40b: Introduces a new `EntityHeaderBlueprint` that allows you to override the default entity page header.
+
+  ```jsx
+  import { EntityHeaderBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+  EntityHeaderBlueprint.make({
+    name: 'my-default-header',
+    params: {
+      loader: () =>
+        import('./MyDefaultHeader').then(m => <m.MyDefaultHeader />),
+    },
+  });
+  ```
+
+- a3d93ca: Introduces a new `EntityContentLayoutBlueprint` that creates custom entity content layouts.
+
+  The layout components receive card elements and can render them as they see fit. Cards is an array of objects with the following properties:
+
+  - element: `JSx.Element`;
+  - type: `"peek" | "info" | "full" | undefined`;
+
+  ### Usage example
+
+  Creating a custom overview tab layout:
+
+  ```tsx
+  import {
+    EntityContentLayoutProps,
+    EntityContentLayoutBlueprint,
+  } from '@backstage/plugin-catalog-react/alpha';
+  // ...
+
+  function StickyEntityContentOverviewLayout(props: EntityContentLayoutProps) {
+    const { cards } = props;
+    const classes = useStyles();
+    return (
+      <Grid container spacing={3}>
+        <Grid
+          className={classes.infoArea}
+          xs={12}
+          md={4}
+          item
+        >
+          <Grid container spacing={3}>
+            {cards
+              .filter(card => card.type === 'info')
+              .map((card, index) => (
+                <Grid key={index} xs={12} item>
+                  {card.element}
+                </Grid>
+              ))}
+          </Grid>
+        </Grid>
+        <Grid xs={12} md={8} item>
+          <Grid container spacing={3}>
+            {cards
+              .filter(card => card.type === 'peek')
+              .map((card, index) => (
+                <Grid key={index} className={classes.card} xs={12} md={6} item>
+                  {card.element}
+                </Grid>
+              ))}
+            {cards
+              .filter(card => !card.type || card.type === 'full')
+              .map((card, index) => (
+                <Grid key={index} className={classes.card} xs={12} md={6} item>
+                  {card.element}
+                </Grid>
+              ))}
+          </Grid>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  export const customEntityContentOverviewStickyLayoutModule = createFrontendModule({
+    pluginId: 'app',
+    extensions: [
+      EntityContentLayoutBlueprint.make({
+        name: 'sticky',
+        params: {
+          // (optional) defaults the `() => false` filter function
+          defaultFilter: 'kind:template'
+          loader: async () => StickyEntityContentOverviewLayout,
+        },
+      }),
+    ],
+  ```
+
+  Disabling the custom layout:
+
+  ```yaml
+  # app-config.yaml
+  app:
+    extensions:
+      - entity-content-layout:app/sticky: false
+  ```
+
+  Overriding the custom layout filter:
+
+  ```yaml
+  # app-config.yaml
+  app:
+    extensions:
+      - entity-content-layout:app/sticky:
+          config:
+            # This layout will be used only with component entities
+            filter: 'kind:component'
+  ```
+
+- d78bb71: Added `hidden` prop to `EntityTagPicker`, `EntityAutocompletePicker` and `UserListPicker`.
+  Added `initialFilter` prop to `EntityTagPicker` to set an initial filter for the picker.
+  Added `alwaysKeepFilters` prop to `UserListPicker` to prevent filters from resetting when no entities match the initial filters.
+- a3d93ca: Add an optional `type` parameter to `EntityCard` extensions. A card's type determines characteristics such as its expected size and where it will be rendered by the entity content layout.
+
+  Initially the following three types are supported:
+
+  - `peek`: small vertical cards that provide information at a glance, for example recent builds, deployments, and service health.
+  - `info`: medium size cards with high priority and frequently used information such as common actions, entity metadata, and links.
+  - `full`: Large cards that are more feature rich with more information, typically used by plugins that don't quite need the full content view and want to show a card instead.
+
+  ### Usage examples
+
+  Defining a default type when creating a card:
+
+  ```diff
+  const myCard = EntityCardBlueprint.make({
+    name: 'myCard',
+    params: {
+  +   type: 'info',
+      loader: import('./MyCard).then(m => { default: m.MyCard }),
+    },
+  });
+  ```
+
+  Changing the card type via `app-config.yaml` file:
+
+  ```diff
+  app:
+    extensions:
+  +   - entity-card:myPlugin/myCard:
+  +       config:
+  +         type: info
+  ```
+
+### Patch Changes
+
+- bec1e15: update EntityAutocompletePicker selected options when filter value is changed externally
+- 75a3551: Export CatalogAutocomplete so it can be used externally
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/frontend-test-utils@0.3.0
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/integration-react@1.2.5
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.16.0-next.2
+
+### Minor Changes
+
+- 7f57365: Add support for a new entity predicate syntax when defining `filter`s related to the blueprints exported via `/alpha` for the new frontend system. For more information, see the [entity filters documentation](https://backstage.io/docs/features/software-catalog/catalog-customization#advanced-customization#entity-filters).
+- 247a40b: Introduces a new `EntityHeaderBlueprint` that allows you to override the default entity page header.
+
+  ```jsx
+  import { EntityHeaderBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+  EntityHeaderBlueprint.make({
+    name: 'my-default-header',
+    params: {
+      loader: () =>
+        import('./MyDefaultHeader').then(m => <m.MyDefaultHeader />),
+    },
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/frontend-test-utils@0.3.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.5-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- bec1e15: update EntityAutocompletePicker selected options when filter value is changed externally
+- 75a3551: Export CatalogAutocomplete so it can be used externally
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/frontend-test-utils@0.2.7-next.1
+  - @backstage/integration-react@1.2.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31
+
+## 1.16.0-next.0
+
+### Minor Changes
+
+- ba9649a: Add a new `defaultGroup` parameter to the `EntityContentBlueprint`, here are usage examples:
+
+  Set a default group while creating the extension:
+
+  ```diff
+  const entityKubernetesContent = EntityContentBlueprint.make({
+    name: 'kubernetes',
+    params: {
+      defaultPath: '/kubernetes',
+      defaultTitle: 'Kubernetes',
+  +   defaultGroup: 'deployment',
+      filter: 'kind:component,resource',
+      loader: () =>
+        import('./KubernetesContentPage').then(m =>
+          compatWrapper(<m.KubernetesContentPage />),
+        ),
+    },
+  });
+  ```
+
+  Disassociate an entity content from a default group:
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Entity page content
+  -   - entity-content:kubernetes/kubernetes
+  +   - entity-content:kubernetes/kubernetes:
+  +       config:
+  +         group: false
+  ```
+
+  Associate an entity content with a different default or custom group than the one defined in code when the extension was created:
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Entity page content
+  -   - entity-content:kubernetes/kubernetes
+  +   - entity-content:kubernetes/kubernetes:
+  +       config:
+  +         group: custom # associating this extension with a custom group id, the group should have previously been created via entity page configuration
+
+  ```
+
+- a3d93ca: Introduces a new `EntityContentLayoutBlueprint` that creates custom entity content layouts.
+
+  The layout components receive card elements and can render them as they see fit. Cards is an array of objects with the following properties:
+
+  - element: `JSx.Element`;
+  - type: `"summary" | "info" | "content" | undefined`;
+
+  ### Usage example
+
+  Creating a custom overview tab layout:
+
+  ```tsx
+  import {
+    EntityContentLayoutProps,
+    EntityContentLayoutBlueprint,
+  } from '@backstage/plugin-catalog-react/alpha';
+  // ...
+
+  function StickyEntityContentOverviewLayout(props: EntityContentLayoutProps) {
+    const { cards } = props;
+    const classes = useStyles();
+    return (
+      <Grid container spacing={3}>
+        <Grid
+          className={classes.infoArea}
+          xs={12}
+          md={4}
+          item
+        >
+          <Grid container spacing={3}>
+            {cards
+              .filter(card => card.type === 'info')
+              .map((card, index) => (
+                <Grid key={index} xs={12} item>
+                  {card.element}
+                </Grid>
+              ))}
+          </Grid>
+        </Grid>
+        <Grid xs={12} md={8} item>
+          <Grid container spacing={3}>
+            {cards
+              .filter(card => card.type === 'summary')
+              .map((card, index) => (
+                <Grid key={index} className={classes.card} xs={12} md={6} item>
+                  {card.element}
+                </Grid>
+              ))}
+            {cards
+              .filter(card => !card.type || card.type === 'content')
+              .map((card, index) => (
+                <Grid key={index} className={classes.card} xs={12} md={6} item>
+                  {card.element}
+                </Grid>
+              ))}
+          </Grid>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  export const customEntityContentOverviewStickyLayoutModule = createFrontendModule({
+    pluginId: 'app',
+    extensions: [
+      EntityContentLayoutBlueprint.make({
+        name: 'sticky',
+        params: {
+          // (optional) defaults the `() => false` filter function
+          defaultFilter: 'kind:template'
+          loader: async () => StickyEntityContentOverviewLayout,
+        },
+      }),
+    ],
+  ```
+
+  Disabling the custom layout:
+
+  ```yaml
+  # app-config.yaml
+  app:
+    extensions:
+      - entity-content-layout:app/sticky: false
+  ```
+
+  Overriding the custom layout filter:
+
+  ```yaml
+  # app-config.yaml
+  app:
+    extensions:
+      - entity-content-layout:app/sticky:
+          config:
+            # This layout will be used only with component entities
+            filter: 'kind:component'
+  ```
+
+- d78bb71: Added `hidden` prop to `EntityTagPicker`, `EntityAutocompletePicker` and `UserListPicker`.
+  Added `initialFilter` prop to `EntityTagPicker` to set an initial filter for the picker.
+  Added `alwaysKeepFilters` prop to `UserListPicker` to prevent filters from resetting when no entities match the initial filters.
+- a3d93ca: Add an optional `type` parameter to `EntityCard` extensions. A card's type determines characteristics such as its expected size and where it will be rendered by the entity content layout.
+
+  Initially the following three types are supported:
+
+  - `summary`: small vertical cards that provide information at a glance, for example recent builds, deployments, and service health.
+  - `info`: medium size cards with high priority and frequently used information such as common actions, entity metadata, and links.
+  - `content`: Large cards that are more feature rich with more information, typically used by plugins that don't quite need the content content view and want to show a card instead.
+
+  ### Usage examples
+
+  Defining a default type when creating a card:
+
+  ```diff
+  const myCard = EntityCardBlueprint.make({
+    name: 'myCard',
+    params: {
+  +   type: 'info',
+      loader: import('./MyCard).then(m => { default: m.MyCard }),
+    },
+  });
+  ```
+
+  Changing the card type via `app-config.yaml` file:
+
+  ```diff
+  app:
+    extensions:
+  +   - entity-card:myPlugin/myCard:
+  +       config:
+  +         type: info
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+  - @backstage/frontend-test-utils@0.2.7-next.0
+  - @backstage/integration-react@1.2.4
+
+## 1.15.2
+
+### Patch Changes
+
+- b07756e: The Entity Page now retains the visibility of the Inspect Dialog after a reload. This allows sharing the URL with the dialog open.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/frontend-test-utils@0.2.6
+  - @backstage/integration-react@1.2.4
+  - @backstage/core-compat-api@0.3.6
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/version-bridge@1.0.11
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.15.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.2.6-next.3
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 1.15.2-next.2
+
+### Patch Changes
+
+- b07756e: The Entity Page now retains the visibility of the Inspect Dialog after a reload. This allows sharing the URL with the dialog open.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/frontend-test-utils@0.2.6-next.2
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 1.15.2-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/frontend-test-utils@0.2.6-next.1
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/core-compat-api@0.3.6-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.15.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.0
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.2.6-next.0
+  - @backstage/integration-react@1.2.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.30
+
+## 1.15.1
+
+### Patch Changes
+
+- aaf6508: Creates new CatalogAutocomplete component in catalog-react that aligns with Select component UI for consistent a dropdown UI for all catalog filters.
+- cbfc0a4: Fixed an issue where the `<EntityListProvider />` in `offset` mode would unnecessarily re-fetch data when the filter didn't change, causing a flicker effect.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-test-utils@0.2.5
+  - @backstage/integration-react@1.2.3
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.30
+
+## 1.15.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/core-compat-api@0.3.5-next.0
+  - @backstage/frontend-test-utils@0.2.5-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/integration-react@1.2.3-next.0
+  - @backstage/plugin-permission-react@0.4.30-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/plugin-catalog-common@1.1.3-next.0
+  - @backstage/version-bridge@1.0.10
+
+## 1.15.1-next.0
+
+### Patch Changes
+
+- cbfc0a4: Fixed an issue where the `<EntityListProvider />` in `offset` mode would unnecessarily re-fetch data when the filter didn't change, causing a flicker effect.
+- Updated dependencies
+  - @backstage/integration-react@1.2.2
+  - @backstage/core-compat-api@0.3.4
+
+## 1.15.0
+
+### Minor Changes
+
+- 1ffb9f3: Update `EntityKindFilter` to include a `label` field with the properly capitalized Kind facet string
+- ceaf602: Sort EntityTypePicker by default
+
+### Patch Changes
+
+- d97a2cd: Fixed an issue causing the `EntityOwnerPicker` to reset scrolling when more elements are loaded.
+- c36bd35: Internal refactor to break potential circular imports
+- f18c67d: Fix catalog filtering to allow searching entities by display name
+- 95092a6: Fixed an issue where `<CatalogFilterLayout.Filters />` would re-render its children on page load for smaller screens, potentially leading to unnecessary additional backend requests.
+- 4a43398: Fixed an issue where the `EntityOwnerPicker` component failed to load when the `mode` prop was set to `owners-only`. In this mode, the `EntityOwnerPicker` does not load details about the owners, such as `displayName` or `title`. To display these details, use `mode=all` instead.
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/core-components@0.16.2
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/frontend-test-utils@0.2.4
+  - @backstage/integration-react@1.2.2
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.2
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-permission-react@0.4.29
+
+## 1.14.3-next.2
+
+### Patch Changes
+
+- 95092a6: Fixed an issue where `<CatalogFilterLayout.Filters />` would re-render its children on page load for smaller screens, potentially leading to unnecessary additional backend requests.
+- 4a43398: Fixed an issue where the `EntityOwnerPicker` component failed to load when the `mode` prop was set to `owners-only`. In this mode, the `EntityOwnerPicker` does not load details about the owners, such as `displayName` or `title`. To display these details, use `mode=all` instead.
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/frontend-test-utils@0.2.4-next.2
+  - @backstage/integration-react@1.2.2-next.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.2-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+  - @backstage/plugin-permission-react@0.4.29-next.0
+
+## 1.14.3-next.1
+
+### Patch Changes
+
+- d97a2cd: Fixed an issue causing the `EntityOwnerPicker` to reset scrolling when more elements are loaded.
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/frontend-test-utils@0.2.4-next.1
+  - @backstage/integration-react@1.2.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-permission-react@0.4.28
+
+## 1.14.3-next.0
+
+### Patch Changes
+
+- f18c67d: Fix catalog filtering to allow searching entities by display name
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.3-next.0
+  - @backstage/catalog-client@1.8.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.0
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-test-utils@0.2.4-next.0
+  - @backstage/integration-react@1.2.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-permission-react@0.4.28
+
+## 1.14.1
+
+### Patch Changes
+
+- 9cc82c0: Fixed bug in `EntityDisplayName` where text was overflowing.
+- 6fcbb3b: Ensure EntityDisplayName component link receives underline on hover.
+- 9670906: Improve UI consistency of default catalog filters
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/types@1.2.0
+  - @backstage/core-components@0.16.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.2
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/frontend-test-utils@0.2.2
+  - @backstage/integration-react@1.2.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-react@0.4.28
+
+## 1.14.1-next.3
+
+### Patch Changes
+
+- 6fcbb3b: Ensure EntityDisplayName component link receives underline on hover.
+- 9670906: Improve UI consistency of default catalog filters
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.2
+  - @backstage/core-compat-api@0.3.2-next.2
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.2
+  - @backstage/frontend-test-utils@0.2.2-next.2
+  - @backstage/integration-react@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.27
+
+## 1.14.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.1
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/frontend-test-utils@0.2.2-next.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.27
+
+## 1.14.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.1
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/frontend-test-utils@0.2.2-next.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.27
+
+## 1.14.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.2-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/frontend-test-utils@0.2.2-next.0
+  - @backstage/integration-react@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.27
+
+## 1.14.0
+
+### Minor Changes
+
+- 0801db6: Add catalog service mocks under the `/testUtils` subpath export.
+
+  You can now use e.g. `const catalog = catalogApiMock.mock()` in your test and then do assertions on `catalog.getEntities` without awkward type casting.
+
+- 6812980: Added a new prop, `disableTooltip` to the `EntityRefLink` component
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/frontend-test-utils@0.2.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/version-bridge@1.0.10
+  - @backstage/catalog-client@1.7.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.14.0-next.2
+
+### Minor Changes
+
+- 0801db6: Add catalog service mocks under the `/testUtils` subpath export.
+
+  You can now use e.g. `const catalog = catalogApiMock.mock()` in your test and then do assertions on `catalog.getEntities` without awkward type casting.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-test-utils@0.2.1-next.2
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.1-next.2
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/integration-react@1.2.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.27-next.1
+
+## 1.14.0-next.1
+
+### Minor Changes
+
+- 6812980: Added a new prop, `disableTooltip` to the `EntityRefLink` component
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.1
+  - @backstage/integration-react@1.2.0-next.1
+  - @backstage/core-compat-api@0.3.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/plugin-permission-react@0.4.27-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.13.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/core-compat-api@0.3.1-next.0
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.32-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.9
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.27-next.0
+
+## 1.13.0
+
+### Minor Changes
+
+- 78475c3: Allow offset mode paging in entity list provider
+
+### Patch Changes
+
+- c891b69: Add `FavoriteToggle` in `core-components` to standardise favorite marking
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 5446061: The `/alpha` export no longer export extension creators for the new frontend system, existing usage should be switched to use the equivalent extension blueprint instead. For more information see the [new frontend system 1.30 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations#130).
+- a159180: Added missing items to `overridableComponents`
+- ae9b6cb: Small internal fix to better work with recent `lodash` versions
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-compat-api@0.3.0
+  - @backstage/integration-react@1.1.31
+  - @backstage/catalog-model@1.7.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/version-bridge@1.0.9
+  - @backstage/plugin-permission-react@0.4.26
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.13.0-next.2
+
+### Minor Changes
+
+- 78475c3: Allow offset mode paging in entity list provider
+
+### Patch Changes
+
+- c891b69: Add `FavoriteToggle` in `core-components` to standardise favorite marking
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/integration-react@1.1.31-next.0
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/core-compat-api@0.3.0-next.2
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/plugin-permission-react@0.4.26-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.12.4-next.1
+
+### Patch Changes
+
+- ae9b6cb: Small internal fix to better work with recent `lodash` versions
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.1
+  - @backstage/core-compat-api@0.3.0-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.25
+
+## 1.12.4-next.0
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- 5446061: The `/alpha` export no longer export extension creators for the new frontend system, existing usage should be switched to use the equivalent extension blueprint instead. For more information see the [new frontend system 1.30 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations#130).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.0
+  - @backstage/core-compat-api@0.2.9-next.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.25
+
+## 1.12.3
+
+### Patch Changes
+
+- 7bd27e1: Deprecate the old pattern of `create*Extension`, and replace it with the equivalent Blueprint implementation instead.
+- 31bfc44: Updated alpha definitions of extension data references.
+- 7ca331c: Correct `EntityDisplayName`'s icon alignment with the text.
+- 9b89b82: Internal refactor to remove unnecessary `routable` prop in the implementation of the `createEntityContentExtension` alpha export.
+- bebd569: Fix extra divider displayed on user list picker component
+- 519b8e0: Added utilities for converting existing entity card and content extensions to the new frontend system. This is in particular useful when used in combination with the new `convertLegacyPlugin` utility from `@backstage/core-compat-api`.
+- d001a42: Fix label related accessibility issues with `FavorityEntity`
+- 012e3eb: Entity page extensions created for the new frontend system via the `/alpha` exports will now be enabled by default.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/core-components@0.14.10
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/core-compat-api@0.2.8
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-react@0.4.25
+
+## 1.12.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/catalog-client@1.6.6-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.26-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-permission-react@0.4.25-next.1
+
+## 1.12.3-next.2
+
+### Patch Changes
+
+- 012e3eb: Entity page extensions created for the new frontend system via the `/alpha` exports will now be enabled by default.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-catalog-common@1.0.26-next.1
+  - @backstage/plugin-permission-react@0.4.25-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.3-next.1
+
+### Patch Changes
+
+- 7ca331c: Correct `EntityDisplayName`'s icon alignment with the text.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/frontend-plugin-api@0.6.8-next.1
+  - @backstage/plugin-catalog-common@1.0.26-next.0
+  - @backstage/plugin-permission-react@0.4.25-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.3-next.0
+
+### Patch Changes
+
+- 31bfc44: Updated alpha definitions of extension data references.
+- 9b89b82: Internal refactor to remove unnecessary `routable` prop in the implementation of the `createEntityContentExtension` alpha export.
+- bebd569: Fix extra divider displayed on user list picker component
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.25
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-react@0.4.24
+
+## 1.12.2
+
+### Patch Changes
+
+- 06c0956: Support i18n for catalog and catalog-react plugins
+- 2030962: Make EntityOwnerPicker display metadata.title or spec.profile.displayName for mode=only-owners instead of metadata.name
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/core-components@0.14.9
+  - @backstage/plugin-permission-react@0.4.24
+  - @backstage/plugin-catalog-common@1.0.25
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/integration-react@1.1.29
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9-next.1
+  - @backstage/frontend-plugin-api@0.6.7-next.1
+  - @backstage/integration-react@1.1.29-next.0
+
+## 1.12.2-next.1
+
+### Patch Changes
+
+- 06c0956: Support i18n for catalog and catalog-react plugins
+- Updated dependencies
+  - @backstage/core-components@0.14.9-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.7-next.0
+  - @backstage/integration-react@1.1.29-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-react@0.4.23
+
+## 1.12.2-next.0
+
+### Patch Changes
+
+- 2030962: Make EntityOwnerPicker display metadata.title or spec.profile.displayName for mode=only-owners instead of metadata.name
+- Updated dependencies
+  - @backstage/core-components@0.14.9-next.0
+  - @backstage/frontend-plugin-api@0.6.7-next.0
+  - @backstage/integration-react@1.1.29-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-react@0.4.23
+
+## 1.12.1
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- fa8560e: Prevents Autocomplete dropdown from overlapping sidebar on hovering it
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-react@0.4.23
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/integration-react@1.1.28
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.1-next.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- fa8560e: Prevents Autocomplete dropdown from overlapping sidebar on hovering it
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.2
+  - @backstage/plugin-permission-common@0.7.14-next.0
+  - @backstage/plugin-permission-react@0.4.23-next.1
+  - @backstage/plugin-catalog-common@1.0.24-next.0
+  - @backstage/integration-react@1.1.28-next.1
+  - @backstage/frontend-plugin-api@0.6.6-next.2
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.1
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/frontend-plugin-api@0.6.6-next.1
+  - @backstage/integration-react@1.1.28-next.0
+  - @backstage/plugin-permission-react@0.4.23-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-permission-common@0.7.13
+
+## 1.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.6-next.0
+  - @backstage/integration-react@1.1.27
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.22
+
+## 1.12.0
+
+### Minor Changes
+
+- 8834daf: Updated the presentation API to return a promise, in addition to the snapshot and observable that were there before. This makes it much easier to consume the API in a non-React context.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/frontend-plugin-api@0.6.5
+  - @backstage/integration-react@1.1.27
+  - @backstage/plugin-catalog-common@1.0.23
+
+## 1.12.0-next.2
+
+### Minor Changes
+
+- 8834daf: Updated the presentation API to return a promise, in addition to the snapshot and observable that were there before. This makes it much easier to consume the API in a non-React context.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+  - @backstage/integration-react@1.1.27-next.0
+
+## 1.11.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.6-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+  - @backstage/integration-react@1.1.26
+
+## 1.11.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/core-components@0.14.5-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-catalog-common@1.0.23-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.5-next.0
+  - @backstage/integration-react@1.1.26
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.22
+
+## 1.11.3
+
+### Patch Changes
+
+- 47dec6f: Added the `no-top-level-material-ui-4-imports` ESLint rule to aid with the migration to Material UI v5
+- b863830: Change behavior in EntityAutoCompletePicker to only hide filter if there are no available options. Previously the filter was hidden if there were <= 1 available options.
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/frontend-plugin-api@0.6.4
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-permission-react@0.4.22
+  - @backstage/integration-react@1.1.26
+  - @backstage/catalog-client@1.6.4
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+
+## 1.11.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/frontend-plugin-api@0.6.4-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.26-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.21
+
+## 1.11.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.4-next.0
+  - @backstage/integration-react@1.1.26-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.21
+
+## 1.11.2
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- b5cbbb6: `EntitySearchBar` and `EntityTextFilter` have been updated accordingly to persist the status as query params, following the same pattern as the other server side
+- Updated dependencies
+  - @backstage/catalog-client@1.6.3
+  - @backstage/core-components@0.14.3
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/integration-react@1.1.25
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.21
+
+## 1.11.1
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/catalog-client@1.6.2
+  - @backstage/core-components@0.14.2
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/integration-react@1.1.25
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.21
+
+## 1.11.0
+
+### Minor Changes
+
+- 72b8827: Number of results is now directly added as the field `totalItems` on `useEntityList`.
+
+### Patch Changes
+
+- 930b5c1: Added 'root' and 'label' class keys for EntityAutocompletePicker, EntityOwnerPicker and EntityProcessingStatusPicker
+- b2a9926: Adds an argument for which filters should be applied when fetching/counting available values
+- a6e237f: Added `DefaultFilters` component
+- 298953b: Added support for providing an `initiallySelectedNamespaces` which accepts an array of Namespaces to have selected by default
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.25
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-react@0.4.21
+
+## 1.11.0-next.2
+
+### Minor Changes
+
+- 72b8827: Number of results is now directly added as the field `totalItems` on `useEntityList`.
+
+### Patch Changes
+
+- 298953b: Added support for providing an `initiallySelectedNamespaces` which accepts an array of Namespaces to have selected by default
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/integration-react@1.1.25-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+
+## 1.10.1-next.1
+
+### Patch Changes
+
+- b2a9926: Adds an argument for which filters should be applied when fetching/counting available values
+- a6e237f: Added `DefaultFilters` component
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/integration-react@1.1.25-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- 930b5c1: Added 'root' and 'label' class keys for EntityAutocompletePicker, EntityOwnerPicker and EntityProcessingStatusPicker
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/integration-react@1.1.25-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+  - @backstage/plugin-permission-react@0.4.21-next.0
+
+## 1.10.0
+
+### Minor Changes
+
+- d208a93: Added support for server side text filtering to paginated entity requests.
+- 3dc64e9: Add support to `configSchema` option on the `createEntityCardExtension` factory function.
+
+### Patch Changes
+
+- 916da47: Change default icon for unknown entities to nothing instead of the help icon.
+- 71c6d7a: Overflowing labels in OwnerPicker (Catalog) are now truncated. Hovering over them shows the full label
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 09cedb9: Updated dependency `@react-hookz/web` to `^24.0.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-permission-react@0.4.20
+  - @backstage/errors@1.2.3
+  - @backstage/integration-react@1.1.24
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.21
+  - @backstage/plugin-permission-common@0.7.12
+
+## 1.10.0-next.3
+
+### Patch Changes
+
+- 09cedb9: Updated dependency `@react-hookz/web` to `^24.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/frontend-plugin-api@0.6.0-next.3
+  - @backstage/integration-react@1.1.24-next.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-react@0.4.20-next.1
+
+## 1.10.0-next.2
+
+### Minor Changes
+
+- 3dc64e9: Add support to `configSchema` option on the `createEntityCardExtension` factory function.
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/integration-react@1.1.24-next.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-common@0.7.12
+
+## 1.9.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/integration-react@1.1.24-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-react@0.4.20-next.0
+
+## 1.9.4-next.0
+
+### Patch Changes
+
+- 916da47: Change default icon for unknown entities to nothing instead of the help icon.
+- 71c6d7a: Overflowing labels in OwnerPicker (Catalog) are now truncated. Hovering over them shows the full label
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/integration-react@1.1.23
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.20
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-react@0.4.19
+
+## 1.9.3
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/catalog-client@1.5.2
+  - @backstage/plugin-permission-react@0.4.19
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/integration-react@1.1.23
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 1.9.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/integration-react@1.1.23-next.0
+
+## 1.9.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/frontend-plugin-api@0.4.1-next.1
+  - @backstage/integration-react@1.1.23-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.1
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-permission-common@0.7.11
+
+## 1.9.3-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/frontend-plugin-api@0.4.1-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-permission-common@0.7.11
+
+## 1.9.2
+
+### Patch Changes
+
+- 8587f06: Added pagination support to `EntityListProvider`.
+- 5360097: Ensure that passed-in icons are taken advantage of in the presentation API
+- fd9863c: Grouped all `/alpha` extension data reference exports under `catalogExtensionData`.
+- 08d9e67: Add default icon for kind resource.
+- aaa6fb3: Minor updates for TypeScript 5.2.2+ compatibility
+- a5a0473: Internal refactor of alpha exports due to a change in how extension factories are defined.
+- 4d9e3b3: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- 8f5d6c1: Updates to the `/alpha` exports to match the extension input wrapping change.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- e223f22: Breaking alpha-API change to entity visibility filter functions to accept a bare entity as their first argument, instead of an object with an entity property.
+
+  Functions that accept such filters now also support the string expression form of filters.
+
+- eee0ff2: Fixed a issue where `CatalogPage` wasn't using the chosen `initiallySelectedFilter` as intended.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-permission-react@0.4.18
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.19
+
+## 1.9.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/frontend-plugin-api@0.4.0-next.3
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-react@0.4.18-next.1
+
+## 1.9.2-next.2
+
+### Patch Changes
+
+- 8f5d6c1: Updates to the `/alpha` exports to match the extension input wrapping change.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.2
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-react@0.4.18-next.1
+
+## 1.9.2-next.1
+
+### Patch Changes
+
+- 53600976bb: Ensure that passed-in icons are taken advantage of in the presentation API
+- 08d9e67199: Add default icon for kind resource.
+- a5a04739e1: Internal refactor of alpha exports due to a change in how extension factories are defined.
+- e223f2264d: Breaking alpha-API change to entity visibility filter functions to accept a bare entity as their first argument, instead of an object with an entity property.
+
+  Functions that accept such filters now also support the string expression form of filters.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/catalog-client@1.5.0-next.0
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/plugin-permission-react@0.4.18-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+
+## 1.9.2-next.0
+
+### Patch Changes
+
+- 8587f067d2: Added pagination support to `EntityListProvider`.
+- aaa6fb3bc9: Minor updates for TypeScript 5.2.2+ compatibility
+- 4d9e3b39e4: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- eee0ff2946: Fixed a issue where `CatalogPage` wasn't using the chosen `initiallySelectedFilter` as intended.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/integration-react@1.1.22-next.0
+  - @backstage/plugin-permission-react@0.4.18-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+
+## 1.9.0
+
+### Minor Changes
+
+- 1e5b7d993a: Added an `EntityPresentationApi` and associated `entityPresentationApiRef`. This
+  API lets you control how references to entities (e.g. in links, headings,
+  iconography etc) are represented in the user interface.
+
+  Usage of this API is initially added to the `EntityRefLink` and `EntityRefLinks`
+  components, so that they can render richer, more correct representation of
+  entity refs. There's also a new `EntityDisplayName` component, which works just like
+  the `EntityRefLink` but without the link.
+
+  Along with that change, the `fetchEntities` and `getTitle` props of
+  `EntityRefLinksProps` are deprecated and no longer used, since the same need
+  instead is fulfilled (and by default always enabled) by the
+  `entityPresentationApiRef`.
+
+- 1fd53fa0c6: The `UserListPicker` component has undergone improvements to enhance its performance.
+
+  The previous implementation inferred the number of owned and starred entities based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling.
+
+  The component now loads the entities' count asynchronously, resulting in improved performance and responsiveness. For this purpose, some of the exported filters such as `EntityTagFilter`, `EntityOwnerFilter`, `EntityLifecycleFilter` and `EntityNamespaceFilter` have now the `getCatalogFilters` method implemented.
+
+### Patch Changes
+
+- 2ad1bacef7: Add EntityRef to Entity Inspector UI
+- 6c2b872153: Add official support for React 18.
+- 69ee8d75f4: Remove `button` prop from used MaterialUI `MenuItem` component fixing incompatibility with MaterialUI v5.
+- 0bf6ebda88: Added new APIs at the `/alpha` subpath for creating entity page cards and content for the new frontend system.
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- 71c97e7d73: The `spec.type` field in entities will now always be rendered as a string.
+- 69c14904b6: Move the `EntityRefLink` icon to the left hand side as per Material-UI guidelines
+- 000dcd01af: Removed unnecessary `@backstage/integration` dependency, replaced by `@backstage/integration-react`.
+- 6c357184e2: Export `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react`
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-permission-react@0.4.17
+  - @backstage/version-bridge@1.0.7
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-client@1.4.6
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+
+## 1.9.0-next.2
+
+### Patch Changes
+
+- [#20962](https://github.com/backstage/backstage/pull/20962) [`000dcd01af`](https://github.com/backstage/backstage/commit/000dcd01afaa4a06b67da20c3590a7753af4f532) Thanks [@Rugvip](https://github.com/Rugvip)! - Removed unnecessary `@backstage/integration` dependency, replaced by `@backstage/integration-react`.
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`6c357184e2`](https://github.com/backstage/backstage/commit/6c357184e27d86796fac6005ec6a597f994aa19d) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Export `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react`
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+
+## 1.9.0-next.1
+
+### Patch Changes
+
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-permission-react@0.4.17-next.0
+
+## 1.9.0-next.0
+
+### Minor Changes
+
+- 1e5b7d993a: Added an `EntityPresentationApi` and associated `entityPresentationApiRef`. This
+  API lets you control how references to entities (e.g. in links, headings,
+  iconography etc) are represented in the user interface.
+
+  Usage of this API is initially added to the `EntityRefLink` and `EntityRefLinks`
+  components, so that they can render richer, more correct representation of
+  entity refs. There's also a new `EntityDisplayName` component, which works just like
+  the `EntityRefLink` but without the link.
+
+  Along with that change, the `fetchEntities` and `getTitle` props of
+  `EntityRefLinksProps` are deprecated and no longer used, since the same need
+  instead is fulfilled (and by default always enabled) by the
+  `entityPresentationApiRef`.
+
+- 1fd53fa0c6: The `UserListPicker` component has undergone improvements to enhance its performance.
+
+  The previous implementation inferred the number of owned and starred entities based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling.
+
+  The component now loads the entities' count asynchronously, resulting in improved performance and responsiveness. For this purpose, some of the exported filters such as `EntityTagFilter`, `EntityOwnerFilter`, `EntityLifecycleFilter` and `EntityNamespaceFilter` have now the `getCatalogFilters` method implemented.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 0bf6ebda88: Added new APIs at the `/alpha` subpath for creating entity page cards and content for the new frontend system.
+- 71c97e7d73: The `spec.type` field in entities will now always be rendered as a string.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-permission-react@0.4.17-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+
+## 1.8.5
+
+### Patch Changes
+
+- a402e1dfb9: Fixed an issue causing `EntityPage` to show an error for entities containing special characters
+- 0b55f773a7: Removed some unused dependencies
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 0296f272b4: The `spec.type` field in entities will now always be rendered as a string.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/version-bridge@1.0.6
+  - @backstage/plugin-permission-react@0.4.16
+  - @backstage/theme@0.4.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+
+## 1.8.5-next.2
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/catalog-client@1.4.5-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+  - @backstage/plugin-catalog-common@1.0.17-next.0
+  - @backstage/plugin-permission-common@0.7.9-next.0
+  - @backstage/plugin-permission-react@0.4.16-next.1
+
+## 1.8.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/plugin-permission-react@0.4.16-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+
+## 1.8.5-next.0
+
+### Patch Changes
+
+- a402e1dfb9: Fixed an issue causing `EntityPage` to show an error for entities containing special characters
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/plugin-permission-react@0.4.16-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+
+## 1.8.4
+
+### Patch Changes
+
+- bd817209ddd7: Export the `EntityAutocompletePicker` component.
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 7029ba1ce0af: Added delete alert popup when user delete the entity
+- Updated dependencies
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-permission-react@0.4.15
+  - @backstage/theme@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.8.4-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.4-next.2
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/integration@1.7.0-next.3
+  - @backstage/plugin-catalog-common@1.0.16-next.2
+  - @backstage/plugin-permission-common@0.7.8-next.2
+  - @backstage/plugin-permission-react@0.4.15-next.3
+  - @backstage/theme@0.4.2-next.0
+  - @backstage/types@1.1.1-next.0
+  - @backstage/version-bridge@1.0.5-next.0
+
+## 1.8.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-permission-react@0.4.15-next.2
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/catalog-client@1.4.4-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.16-next.1
+
+## 1.8.4-next.1
+
+### Patch Changes
+
+- bd817209ddd7: Export the `EntityAutocompletePicker` component.
+- 7029ba1ce0af: Added delete alert popup when user delete the entity
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/plugin-permission-react@0.4.15-next.1
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/plugin-catalog-common@1.0.16-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.15-next.0
+
+## 1.8.1
+
+### Patch Changes
+
+- aa3feedce10a: Allow specifying screen size when catalog filters are hidden in drawer
+- Updated dependencies
+  - @backstage/integration@1.6.0
+  - @backstage/core-components@0.13.4
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.14
+
+## 1.8.1-next.1
+
+### Patch Changes
+
+- aa3feedce10a: Allow specifying screen size when catalog filters are hidden in drawer
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/integration@1.5.1
+  - @backstage/theme@0.4.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.14
+
+## 1.8.0
+
+### Minor Changes
+
+- eae0352d3864: Tables which use `EntityTableProps` now have an additional `tableOptions` prop which can be used to provide additional table options to these components.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/errors@1.2.1
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration@1.5.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-react@0.4.14
+
+## 1.8.0-next.2
+
+### Minor Changes
+
+- eae0352d3864: Tables which use `EntityTableProps` now have an additional `tableOptions` prop which can be used to provide additional table options to these components.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.1
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/core-components@0.13.3-next.2
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.2
+
+## 1.7.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1-next.0
+  - @backstage/core-components@0.13.3-next.1
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.1
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/core-components@0.13.3-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/theme@0.4.0
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-react@0.4.14-next.0
+
+## 1.7.0
+
+### Minor Changes
+
+- cb4c15989b6b: The `EntityOwnerPicker` component has undergone improvements to enhance its performance.
+  The previous implementation inferred users and groups displayed by the `EntityOwnerPicker` component based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling and improved performance.
+
+  The component now loads entities asynchronously, resulting in improved performance and responsiveness. A new `mode` prop has been introduced which provides two different behaviours:
+
+  - `<EntityOwnerPicker mode="owners-only" />`: loads the owners data asynchronously using the facets endpoint. The data is kept in memory and rendered asynchronously as the user scrolls. This is the default mode and is supposed to be retro-compatible with the previous implementation.
+
+  - `<EntityOwnerPicker mode="all" />` loads all users and groups present in the catalog asynchronously. The data is loaded in batches as the user scrolls. This is more efficient than `owners-only`, but has the drawback of displaying users and groups who aren't owner of any entity.
+
+### Patch Changes
+
+- d68692aee97e: Make `useRelatedEntities` use `getEntitiesByRefs` under the hood
+- 429319d080cd: `EntityAutocompletePicker` add `initialSelectedOptions` prop
+- 429319d080cd: `EntityLifecycleFilter` loads data using the facets endpoint
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/catalog-client@1.4.2
+  - @backstage/core-components@0.13.2
+  - @backstage/types@1.1.0
+  - @backstage/theme@0.4.0
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/plugin-permission-react@0.4.13
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.14
+  - @backstage/plugin-permission-common@0.7.6
+
+## 1.7.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.2-next.3
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.14-next.1
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-permission-react@0.4.13-next.0
+
+## 1.7.0-next.2
+
+### Patch Changes
+
+- d68692aee97e: Make `useRelatedEntities` use `getEntitiesByRefs` under the hood
+- Updated dependencies
+  - @backstage/theme@0.4.0-next.1
+  - @backstage/core-components@0.13.2-next.2
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/plugin-permission-react@0.4.13-next.0
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 429319d080cd: `EntityAutocompletePicker` add `initialSelectedOptions` prop
+- 429319d080cd: `EntityLifecycleFilter` loads data using the facets endpoint
+- Updated dependencies
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/core-components@0.13.2-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/catalog-client@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-catalog-common@1.0.14-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-permission-react@0.4.13-next.0
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- cb4c15989b6b: The `EntityOwnerPicker` component has undergone improvements to enhance its performance.
+
+  The component now loads entities asynchronously, resulting in improved performance and responsiveness. Instead of loading all entities upfront, they are now loaded in batches as the user scrolls.
+  The previous implementation inferred users and groups displayed by the `EntityOwnerPicker` component based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling and improved performance.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.4.2-next.0
+  - @backstage/theme@0.4.0-next.0
+  - @backstage/integration@1.4.5
+  - @backstage/core-components@0.13.2-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-permission-react@0.4.12
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+
+## 1.6.0
+
+### Minor Changes
+
+- 2258dcae970: Added an entity namespace filter and column on the default catalog page.
+
+  If you have a custom version of the catalog page, you can add this filter in your CatalogPage code:
+
+  ```ts
+  <CatalogFilterLayout>
+    <CatalogFilterLayout.Filters>
+      <EntityTypePicker />
+      <UserListPicker initialFilter={initiallySelectedFilter} />
+      <EntityTagPicker />
+      /* if you want namespace picker */
+      <EntityNamespacePicker />
+    </CatalogFilterLayout.Filters>
+    <CatalogFilterLayout.Content>
+      <CatalogTable columns={columns} actions={actions} />
+    </CatalogFilterLayout.Content>
+  </CatalogFilterLayout>
+  ```
+
+  The namespace column can be added using `createNamespaceColumn();`. This is only needed if you customized the columns for CatalogTable.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0
+  - @backstage/integration@1.4.5
+  - @backstage/core-components@0.13.1
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-permission-react@0.4.12
+
+## 1.6.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.3.0-next.0
+  - @backstage/core-components@0.13.1-next.1
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-permission-react@0.4.12
+
+## 1.6.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.1-next.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/plugin-permission-react@0.4.12
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 2258dcae970: Added an entity namespace filter and column on the default catalog page.
+
+  If you have a custom version of the catalog page, you can add this filter in your CatalogPage code:
+
+  ```ts
+  <CatalogFilterLayout>
+    <CatalogFilterLayout.Filters>
+      <EntityTypePicker />
+      <UserListPicker initialFilter={initiallySelectedFilter} />
+      <EntityTagPicker />
+      /* if you want namespace picker */
+      <EntityNamespacePicker />
+    </CatalogFilterLayout.Filters>
+    <CatalogFilterLayout.Content>
+      <CatalogTable columns={columns} actions={actions} />
+    </CatalogFilterLayout.Content>
+  </CatalogFilterLayout>
+  ```
+
+  The namespace column can be added using `createNamespaceColumn();`. This is only needed if you customized the columns for CatalogTable.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/core-components@0.13.0
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.19
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-permission-react@0.4.12
+
+## 1.5.0
+
+### Minor Changes
+
+- a49fb39df5a: Attempt to load entity owner names in the EntityOwnerPicker through the `by-refs` endpoint. If `spec.profile.displayName` or `metadata.title` are populated, we now attempt to show those before showing the `humanizeEntityRef`'d version.
+
+  **BREAKING**: `EntityOwnerFilter` now uses the full entity ref instead of the `humanizeEntityRef`. If you rely on `EntityOwnerFilter.values` or the `queryParameters.owners` of `useEntityList`, you will need to adjust your code like the following.
+
+  ```tsx
+  const { queryParameters: { owners } } = useEntityList();
+  // or
+  const { filter: { owners } } = useEntityList();
+
+  // Instead of,
+  if (owners.some(ref => ref === humanizeEntityRef(myEntity))) ...
+
+  // You'll need to use,
+  if (owners.some(ref => ref === stringifyEntityRef(myEntity))) ...
+  ```
+
+### Patch Changes
+
+- 81bee24c5de: Fixed bug in catalog filters where you could not click on the text to select a value.
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- d1f5324dff7: Reverted the check if the selected options list is different than the query parameters list before invoking `setSelectedOptions` method. This was preventing updating list items when a query string was already present in the URL when loading the page.
+- 2898b6c8d52: Minor type tweaks for TypeScript 5.0
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/theme@0.2.19
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/plugin-permission-react@0.4.12
+  - @backstage/version-bridge@1.0.4
+  - @backstage/integration@1.4.4
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 1.5.0-next.3
+
+### Minor Changes
+
+- a49fb39df5a: Attempt to load entity owner names in the EntityOwnerPicker through the `by-refs` endpoint. If `spec.profile.displayName` or `metadata.title` are populated, we now attempt to show those before showing the `humanizeEntityRef`'d version.
+
+  **BREAKING**: `EntityOwnerFilter` now uses the full entity ref instead of the `humanizeEntityRef`. If you rely on `EntityOwnerFilter.values` or the `queryParameters.owners` of `useEntityList`, you will need to adjust your code like the following.
+
+  ```tsx
+  const { queryParameters: { owners } } = useEntityList();
+  // or
+  const { filter: { owners } } = useEntityList();
+
+  // Instead of,
+  if (owners.some(ref => ref === humanizeEntityRef(myEntity))) ...
+
+  // You'll need to use,
+  if (owners.some(ref => ref === stringifyEntityRef(myEntity))) ...
+  ```
+
+### Patch Changes
+
+- d1f5324dff7: Reverted the check if the selected options list is different than the query parameters list before invoking `setSelectedOptions` method. This was preventing updating list items when a query string was already present in the URL when loading the page.
+- Updated dependencies
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/core-components@0.13.0-next.3
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/plugin-catalog-common@1.0.13-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-permission-react@0.4.12-next.1
+
+## 1.4.1-next.2
+
+### Patch Changes
+
+- 81bee24c5de: Fixed bug in catalog filters where you could not click on the text to select a value.
+- 2898b6c8d52: Minor type tweaks for TypeScript 5.0
+- Updated dependencies
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/core-components@0.12.6-next.2
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-permission-react@0.4.12-next.1
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/plugin-permission-react@0.4.12-next.0
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/theme@0.2.19-next.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- 8e00acb28db: Small tweaks to remove warnings in the console during development (mainly focusing on techdocs)
+- Updated dependencies
+  - @backstage/core-components@0.12.6-next.0
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/integration@1.4.3
+  - @backstage/plugin-permission-react@0.4.11
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-permission-common@0.7.4
+
+## 1.4.0
+
+### Minor Changes
+
+- 0a5b73b2926: Add possibility to re-use EntityPicker for filters with multiple select.
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 24916d23494: Do not close `Autocomplete` powered multiple-selection filters when checking boxes
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0
+  - @backstage/core-components@0.12.5
+  - @backstage/errors@1.1.5
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/integration@1.4.3
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/theme@0.2.18
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-permission-react@0.4.11
+
+## 1.4.0-next.2
+
+### Patch Changes
+
+- 65454876fb2: Minor API report tweaks
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.2
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/plugin-permission-react@0.4.11-next.2
+  - @backstage/integration@1.4.3-next.0
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- 24916d23494: Do not close `Autocomplete` powered multiple-selection filters when checking boxes
+- Updated dependencies
+  - @backstage/core-components@0.12.5-next.1
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/theme@0.2.18-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.12-next.1
+  - @backstage/plugin-permission-react@0.4.11-next.1
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 0a5b73b292: Add possibility to re-use EntityPicker for filters with multiple select.
+
+### Patch Changes
+
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.12-next.0
+  - @backstage/core-components@0.12.5-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/theme@0.2.17
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.11-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- 929e1afe1b: Add `initialFilter` prop to EntityLifecyclePicker. This allows you to set an initial lifecycle for the catalog.
+- fab93c2fe8: Aligned buttons on "Unregister entity" dialog to keep them on the same line
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4
+  - @backstage/catalog-model@1.2.0
+  - @backstage/theme@0.2.17
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/catalog-client@1.3.1
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.11
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.10
+
+## 1.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/core-components@0.12.4-next.1
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.11-next.1
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.9
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- fab93c2fe8: Aligned buttons on "Unregister entity" dialog to keep them on the same line
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.4-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+  - @backstage/plugin-permission-common@0.7.3
+  - @backstage/plugin-permission-react@0.4.9
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 929e1afe1b: Add `initialFilter` prop to EntityLifecyclePicker. This allows you to set an initial lifecycle for the catalog.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-common@1.0.11-next.0
+
+## 1.2.4
+
+### Patch Changes
+
+- 37426f6f5e: Fixed bug in `EntityTagPicker` that filtered on unavailable tags for the selected kind.
+- 516b2039b6: Add a reusable pop over `EntityPeekAheadPopover` component. It shows more details about the associated entity. See the playbook here https://backstage.io/storybook/?path=/story/catalog-entitypeekaheadpopover--default
+- 0e33627996: Remove usage of raw span
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5
+  - @backstage/catalog-client@1.3.0
+  - @backstage/core-components@0.12.3
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/plugin-permission-react@0.4.9
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.10
+  - @backstage/plugin-permission-common@0.7.3
+
+## 1.2.4-next.2
+
+### Patch Changes
+
+- 516b2039b6: Add a reusable pop over `EntityPeekAheadPopover` component. It shows more details about the associated entity. See the playbook here https://backstage.io/storybook/?path=/story/catalog-entitypeekaheadpopover--default
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/catalog-client@1.3.0-next.2
+  - @backstage/plugin-permission-react@0.4.9-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/core-components@0.12.3-next.2
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.10-next.1
+  - @backstage/plugin-permission-common@0.7.3-next.0
+
+## 1.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.3.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/core-components@0.12.3-next.1
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.10-next.1
+  - @backstage/plugin-permission-common@0.7.3-next.0
+  - @backstage/plugin-permission-react@0.4.9-next.0
+
+## 1.2.4-next.0
+
+### Patch Changes
+
+- 37426f6f5e: Fixed bug in `EntityTagPicker` that filtered on unavailable tags for the selected kind.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/core-components@0.12.3-next.0
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-catalog-common@1.0.10-next.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/plugin-permission-react@0.4.8
+
+## 1.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.2
+
+## 1.2.2
+
+### Patch Changes
+
+- 2cb9998: Fixed bug in `EntityOwnerPicker` and `EntityLifecyclePicker` that filtered on unavailable tags for the selected kind.
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- 6ffa47bb0a: Cleanup and small fixes for the kind selector
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/core-components@0.12.1
+  - @backstage/version-bridge@1.0.3
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/errors@1.1.4
+  - @backstage/plugin-permission-react@0.4.8
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.9
+
+## 1.2.2-next.4
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.4
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/plugin-permission-react@0.4.8-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/plugin-catalog-common@1.0.9-next.3
+
+## 1.2.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/plugin-catalog-common@1.0.9-next.2
+  - @backstage/plugin-permission-common@0.7.2-next.1
+  - @backstage/plugin-permission-react@0.4.8-next.2
+
+## 1.2.2-next.2
+
+### Patch Changes
+
+- 6ffa47bb0a: Cleanup and small fixes for the kind selector
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/core-components@0.12.1-next.2
+  - @backstage/plugin-permission-react@0.4.8-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/plugin-catalog-common@1.0.9-next.2
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
+## 1.2.2-next.1
+
+### Patch Changes
+
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/core-components@0.12.1-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/plugin-permission-react@0.4.8-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.9-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/core-components@0.12.1-next.0
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/plugin-permission-common@0.7.2-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.2
+  - @backstage/plugin-catalog-common@1.0.9-next.0
+  - @backstage/plugin-permission-react@0.4.8-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- a889314692: Both `EntityProvider` and `AsyncEntityProvider` contexts now wrap all children with an `AnalyticsContext` containing the corresponding `entityRef`; this opens up the possibility for all events underneath these contexts to be associated with and aggregated by the corresponding entity.
+- e47f466f80: Removed forced capitalization for Entity types in the catalog sidebar.
+- Updated dependencies
+  - @backstage/core-components@0.12.0
+  - @backstage/version-bridge@1.0.2
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/integration@1.4.0
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-permission-common@0.7.1
+  - @backstage/types@1.0.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/errors@1.1.3
+  - @backstage/theme@0.2.16
+  - @backstage/plugin-catalog-common@1.0.8
+  - @backstage/plugin-permission-react@0.4.7
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.1-next.0
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-catalog-common@1.0.8-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/plugin-permission-react@0.4.7-next.0
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- a889314692: Both `EntityProvider` and `AsyncEntityProvider` contexts now wrap all children with an `AnalyticsContext` containing the corresponding `entityRef`; this opens up the possibility for all events underneath these contexts to be associated with and aggregated by the corresponding entity.
+- e47f466f80: Removed forced capitalization for Entity types in the catalog sidebar.
+- Updated dependencies
+  - @backstage/core-components@0.12.0-next.0
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-permission-react@0.4.7-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-catalog-common@1.0.8-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 4efadb6968: Implemented the visual parts of `EntityKindPicker` so that it can be shown alongside the other filters on the left side of your catalog pages.
+
+### Patch Changes
+
+- 7939e743f5: Added two new `EntityRefLinks` props, the first being `getTitle` that allows for customization of the title used for each link. The second one is `fetchEntities`, which triggers a fetching of all entities so that the full entity definition is available in the `getTitle` callback.
+- e9e532ebd8: Fixed issue where the query kind parameter is not honored
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2
+  - @backstage/core-components@0.11.2
+  - @backstage/plugin-catalog-common@1.0.7
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/catalog-client@1.1.1
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-permission-react@0.4.6
+
+## 1.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.7-next.2
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/plugin-permission-react@0.4.6-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/core-components@0.11.2-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.2.0-next.1
+
+### Minor Changes
+
+- 4efadb6968: Implemented the visual parts of `EntityKindPicker` so that it can be shown alongside the other filters on the left side of your catalog pages.
+
+### Patch Changes
+
+- 7939e743f5: Added two new `EntityRefLinks` props, the first being `getTitle` that allows for customization of the title used for each link. The second one is `fetchEntities`, which triggers a fetching of all entities so that the full entity definition is available in the `getTitle` callback.
+- Updated dependencies
+  - @backstage/catalog-client@1.1.1-next.1
+  - @backstage/core-components@0.11.2-next.1
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/integration@1.3.2-next.1
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-catalog-common@1.0.7-next.1
+  - @backstage/plugin-permission-common@0.6.5-next.1
+  - @backstage/plugin-permission-react@0.4.6-next.1
+
+## 1.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/core-components@0.11.2-next.0
+  - @backstage/catalog-client@1.1.1-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/integration@1.3.2-next.0
+  - @backstage/theme@0.2.16
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-catalog-common@1.0.7-next.0
+  - @backstage/plugin-permission-common@0.6.5-next.0
+  - @backstage/plugin-permission-react@0.4.6-next.0
+
+## 1.1.4
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- f6033d1121: humanizeEntityRef function can now be forced to include default namespace
+- c86741a052: Support showing counts in option labels of the `EntityTagPicker`. You can enable this by adding the `showCounts` property
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- a6d551fad9: Properly handle free-text entity filtering in the case of empty tag arrays
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-components@0.11.1
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/plugin-permission-react@0.4.5
+  - @backstage/integration@1.3.1
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-permission-common@0.6.4
+  - @backstage/plugin-catalog-common@1.0.6
+
+## 1.1.4-next.2
+
+### Patch Changes
+
+- f6033d1121: humanizeEntityRef function can now be forced to include default namespace
+- c86741a052: Support showing counts in option labels of the `EntityTagPicker`. You can enable this by adding the `showCounts` property
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/core-components@0.11.1-next.3
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+  - @backstage/plugin-permission-common@0.6.4-next.2
+  - @backstage/plugin-permission-react@0.4.5-next.2
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- a6d551fad9: Properly handle free-text entity filtering in the case of empty tag arrays
+- Updated dependencies
+  - @backstage/core-components@0.11.1-next.1
+  - @backstage/core-plugin-api@1.0.6-next.1
+  - @backstage/plugin-permission-react@0.4.5-next.1
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/core-components@0.11.1-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+  - @backstage/plugin-permission-react@0.4.5-next.0
+  - @backstage/plugin-catalog-common@1.0.6-next.0
+
+## 1.1.3
+
+### Patch Changes
+
+- 44e691a7f9: Modify description column to not use auto width.
+- Updated dependencies
+  - @backstage/integration@1.3.0
+  - @backstage/core-components@0.11.0
+  - @backstage/core-plugin-api@1.0.5
+  - @backstage/plugin-catalog-common@1.0.5
+  - @backstage/plugin-permission-react@0.4.4
+
+## 1.1.3-next.2
+
+### Patch Changes
+
+- 44e691a7f9: Modify description column to not use auto width.
+- Updated dependencies
+  - @backstage/core-components@0.11.0-next.2
+
+## 1.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.10.1-next.1
+  - @backstage/plugin-catalog-common@1.0.5-next.0
+  - @backstage/integration@1.3.0-next.1
+
 ## 1.1.3-next.0
 
 ### Patch Changes
@@ -1079,8 +5220,7 @@
   `CatalogPage` component in your `App.tsx` routing allows you to adjust the
   layout, header, and which filters are available.
 
-  See the documentation added on [Catalog
-  Customization](https://backstage.io/docs/features/software-catalog/catalog-customization)
+  See the documentation added on [Catalog Customization](https://backstage.io/docs/features/software-catalog/catalog-customization)
   for instructions.
 
 ### Patch Changes

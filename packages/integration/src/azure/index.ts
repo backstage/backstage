@@ -19,10 +19,24 @@ export {
   readAzureIntegrationConfig,
   readAzureIntegrationConfigs,
 } from './config';
-export type { AzureIntegrationConfig } from './config';
+export type {
+  AzureIntegrationConfig,
+  AzureDevOpsCredentialKind,
+  AzureCredentialBase,
+  AzureClientSecretCredential,
+  AzureManagedIdentityCredential,
+  AzureManagedIdentityClientAssertionCredential,
+  PersonalAccessTokenCredential,
+  AzureDevOpsCredentialLike,
+  AzureDevOpsCredential,
+} from './config';
 export {
   getAzureCommitsUrl,
   getAzureDownloadUrl,
   getAzureFileFetchUrl,
-  getAzureRequestOptions,
 } from './core';
+
+export * from './types';
+export { DefaultAzureDevOpsCredentialsProvider } from './DefaultAzureDevOpsCredentialsProvider';
+
+export * from './deprecated';

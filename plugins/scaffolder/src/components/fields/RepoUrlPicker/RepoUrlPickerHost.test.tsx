@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { scaffolderApiRef } from '../../../api';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { fireEvent, within } from '@testing-library/react';
 
 describe('RepoUrlPickerHostField', () => {
@@ -64,7 +63,7 @@ describe('RepoUrlPickerHostField', () => {
       </TestApiProvider>,
     );
 
-    fireEvent.mouseDown(getByTestId('select'));
+    fireEvent.mouseDown(getByTestId('host-select'));
     expect(getByText('gitlab.com')).toBeInTheDocument();
 
     const listbox = within(getByRole('combobox'));
@@ -93,11 +92,38 @@ describe('RepoUrlPickerHostField', () => {
       </TestApiProvider>,
     );
 
-    fireEvent.mouseDown(getByTestId('select'));
+    fireEvent.mouseDown(getByTestId('host-select'));
     expect(getByText('gitlab.com')).toBeInTheDocument();
 
     const listbox = within(getByRole('combobox'));
 
     expect(listbox.getAllByRole('option')).toHaveLength(2);
+  });
+
+  it('disables the host select when isDisabled is true', async () => {
+    const mockOnChange = jest.fn();
+    const mockScaffolderApi = {
+      getIntegrationsList: jest.fn().mockResolvedValue({
+        integrations: [
+          { host: 'github.com', title: 'github.com', type: 'github' },
+          { host: 'gitlab.com', title: 'gitlab.com', type: 'gitlab' },
+        ],
+      }),
+    };
+
+    const { getByTestId } = await renderInTestApp(
+      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
+        <RepoUrlPickerHost
+          hosts={['github.com', 'gitlab.com']}
+          onChange={mockOnChange}
+          rawErrors={[]}
+          isDisabled
+        />
+      </TestApiProvider>,
+    );
+
+    const selectElement = getByTestId('host-select').querySelector('select');
+
+    expect(selectElement).toBeDisabled();
   });
 });

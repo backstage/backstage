@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, Fragment } from 'react';
+import { cloneElement, ReactElement } from 'react';
 
 // Shadow DOM support for the simple and complete DOM testing utilities
 // https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
-import { screen } from 'testing-library__dom';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { screen } from 'shadow-dom-testing-library';
 import { Route } from 'react-router-dom';
 import { act, render } from '@testing-library/react';
 
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FlatRoutes } from '@backstage/core-app-api';
-import { ApiRef } from '@backstage/core-plugin-api';
+import {
+  ApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
 
 import {
   TechDocsAddons,
@@ -35,29 +38,22 @@ import {
   techdocsStorageApiRef,
 } from '@backstage/plugin-techdocs-react';
 import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
-import { catalogPlugin } from '@backstage/plugin-catalog';
+import {
+  catalogApiRef,
+  EntityPresentationApi,
+  entityPresentationApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
-const techdocsApi = {
-  getTechDocsMetadata: jest.fn(),
-  getEntityMetadata: jest.fn(),
-};
-
-const techdocsStorageApi = {
-  getApiOrigin: jest.fn(),
-  getBaseUrl: jest.fn(),
-  getEntityDocs: jest.fn(),
-  syncEntityDocs: jest.fn(),
-};
-
-const searchApi = {
-  query: jest.fn().mockResolvedValue({ results: [] }),
-};
-
-const scmIntegrationsApi = {
-  fromConfig: jest.fn().mockReturnValue({}),
-};
+// Since React 18 react-dom/server eagerly uses TextEncoder, so lazy load and make it available globally first
+if (!global.TextEncoder) {
+  global.TextEncoder = require('node:util').TextEncoder;
+}
+const { renderToStaticMarkup } =
+  require('react-dom/server') as typeof import('react-dom/server');
 
 /** @ignore */
 type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
@@ -193,7 +189,69 @@ export class TechDocsAddonTester {
    * App instance, using the given Addon(s).
    */
   build() {
+    const techdocsApi = {
+      getTechDocsMetadata: jest.fn(),
+      getEntityMetadata: jest.fn(),
+      getCookie: jest.fn().mockReturnValue({
+        // Expires in 10 minutes
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+      }),
+    };
+
+    const techdocsStorageApi = {
+      getApiOrigin: jest.fn(),
+      getBaseUrl: jest.fn(),
+      getEntityDocs: jest.fn(),
+      syncEntityDocs: jest.fn(),
+    };
+
+    const searchApi = {
+      query: jest.fn().mockResolvedValue({ results: [] }),
+    };
+
+    const scmIntegrationsApi = {
+      fromConfig: jest.fn().mockReturnValue({}),
+    };
+
+    const discoveryApi = {
+      getBaseUrl: jest
+        .fn()
+        .mockResolvedValue('https://backstage.example.com/api/techdocs'),
+    };
+
+    const fetchApi = {
+      fetch: jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          // Expires in 10 minutes
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        }),
+      }),
+    };
+
+    const entityPresentationApi: EntityPresentationApi = {
+      forEntity: jest.fn().mockReturnValue({
+        snapshot: {
+          primaryTitle: 'Test Entity',
+        },
+      }),
+    };
+
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name: 'docs' },
+        },
+      ],
+    });
+
     const apis: TechdocsAddonTesterApis<any[]> = [
+      [fetchApiRef, fetchApi],
+      [catalogApiRef, catalogApi],
+      [entityPresentationApiRef, entityPresentationApi],
+      [discoveryApiRef, discoveryApi],
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
@@ -236,9 +294,9 @@ export class TechDocsAddonTester {
               element={<TechDocsReaderPage />}
             >
               <TechDocsAddons>
-                {this.addons.map((addon, index) => (
-                  <Fragment key={index}>{addon}</Fragment>
-                ))}
+                {this.addons.map((addon, index) =>
+                  cloneElement(addon, { key: index }),
+                )}
               </TechDocsAddons>
             </Route>
           </FlatRoutes>
@@ -253,7 +311,7 @@ export class TechDocsAddonTester {
       mountedRoutes: {
         '/docs': techdocsPlugin.routes.root,
         '/docs/:namespace/:kind/:name/*': techdocsPlugin.routes.docRoot,
-        '/catalog/:namespace/:kind/:name': catalogPlugin.routes.catalogEntity,
+        '/catalog/:namespace/:kind/:name': entityRouteRef,
       },
     });
   }
@@ -262,6 +320,25 @@ export class TechDocsAddonTester {
    * Render the Addon within a fully configured and mocked TechDocs reader.
    *
    * @remarks
+   *
+   * Note that to make assertions on the shadow dom, add a dependency on
+   * [the `shadow-dom-testing-library` package](https://github.com/konnorrogers/shadow-dom-testing-library/)
+   * and use its screen as follows:
+   *
+   * ```ts
+   * import { screen } from 'shadow-dom-testing-library';
+   *
+   * // ... render the addon ...
+   * await TechDocsAddonTester.buildAddonsInTechDocs([<AnAddon />])
+   *   .withDom(<body>TEST_CONTENT</body>)
+   *   .renderWithEffects();
+   *
+   * expect(screen.getByShadowText('TEST_CONTENT')).toBeInTheDocument();
+   * ```
+   *
+   * For items outside of the shadow dom, you can still use the regular screen
+   * from `@testing-library/react`.
+   *
    * Components using useEffect to perform an asynchronous action (such as
    * fetch) must be rendered within an async act call to properly get the final
    * state, even with mocked responses. This utility method makes the signature
@@ -271,17 +348,16 @@ export class TechDocsAddonTester {
    * @see https://github.com/testing-library/react-testing-library/issues/281
    * @see https://github.com/facebook/react/pull/14853
    */
-  async renderWithEffects(): Promise<
-    typeof screen & { shadowRoot: ShadowRoot | null }
-  > {
+  async renderWithEffects(): Promise<{ shadowRoot: ShadowRoot | null }> {
     await act(async () => {
       render(this.build());
     });
 
-    const shadowHost = screen.getByTestId('techdocs-native-shadowroot');
+    const shadowHost = await screen.findByShadowTestId(
+      'techdocs-native-shadowroot',
+    );
 
     return {
-      ...screen,
       shadowRoot: shadowHost?.shadowRoot || null,
     };
   }

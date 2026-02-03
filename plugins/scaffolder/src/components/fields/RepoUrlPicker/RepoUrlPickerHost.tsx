@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Progress, Select, SelectItem } from '@backstage/core-components';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { useApi } from '@backstage/core-plugin-api';
-import { scaffolderApiRef } from '../../../api';
-import useAsync from 'react-use/lib/useAsync';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import useAsync from 'react-use/esm/useAsync';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export const RepoUrlPickerHost = (props: {
   host?: string;
   hosts?: string[];
   onChange: (host: string) => void;
   rawErrors: string[];
+  isDisabled?: boolean;
 }) => {
-  const { host, hosts, onChange, rawErrors } = props;
+  const { host, hosts, onChange, rawErrors, isDisabled } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const scaffolderApi = useApi(scaffolderApiRef);
 
   const { value: { integrations } = { integrations: [] }, loading } = useAsync(
@@ -72,8 +76,8 @@ export const RepoUrlPickerHost = (props: {
       >
         <Select
           native
-          disabled={hosts?.length === 1 ?? false}
-          label="Host"
+          disabled={isDisabled || hosts?.length === 1}
+          label={t('fields.repoUrlPicker.host.title')}
           onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
           selected={host}
           items={hostsOptions}
@@ -81,7 +85,7 @@ export const RepoUrlPickerHost = (props: {
         />
 
         <FormHelperText>
-          The host where the repository will be created
+          {t('fields.repoUrlPicker.host.description')}
         </FormHelperText>
       </FormControl>
     </>

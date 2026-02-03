@@ -27,6 +27,8 @@ describe('GerritIntegration', () => {
               host: 'gerrit-review.example.com',
               username: 'gerrituser',
               baseUrl: 'https://gerrit-review.example.com/gerrit',
+              gitilesBaseUrl:
+                'https://gerrit-review.example.com/gerrit/plugins/gitiles',
               password: '1234',
             },
           ],
@@ -45,6 +47,7 @@ describe('GerritIntegration', () => {
   it('returns the basics', () => {
     const integration = new GerritIntegration({
       host: 'gerrit-review.example.com',
+      gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
     } as any);
     expect(integration.type).toBe('gerrit');
     expect(integration.title).toBe('gerrit-review.example.com');
@@ -68,6 +71,7 @@ describe('GerritIntegration', () => {
     it('handles line numbers', () => {
       const integration = new GerritIntegration({
         host: 'gerrit-review.example.com',
+        gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
       } as any);
 
       expect(
@@ -81,11 +85,11 @@ describe('GerritIntegration', () => {
   });
 
   describe('resolves with a relative url', () => {
-    it('works for valid urls', () => {
-      const integration = new GerritIntegration({
-        host: 'gerrit-review.example.com',
-      } as any);
-
+    const integration = new GerritIntegration({
+      host: 'gerrit-review.example.com',
+      gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
+    } as any);
+    it('works for valid urls pointing to a branch', () => {
       expect(
         integration.resolveUrl({
           url: './skeleton',
@@ -95,15 +99,24 @@ describe('GerritIntegration', () => {
         'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/heads/master/skeleton',
       );
     });
+    it('works for urls pointing to a tag', () => {
+      expect(
+        integration.resolveUrl({
+          url: './skeleton.yaml',
+          base: 'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/tags/v.1.2.3/src/template.yaml',
+        }),
+      ).toBe(
+        'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/tags/v.1.2.3/src/skeleton.yaml',
+      );
+    });
   });
 
   describe('resolves with an absolute url', () => {
-    it('works for valid urls', () => {
-      const integration = new GerritIntegration({
-        host: 'gerrit-review.example.com',
-        gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
-      } as any);
-
+    const integration = new GerritIntegration({
+      host: 'gerrit-review.example.com',
+      gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
+    } as any);
+    it('works for valid urls pointing to a branch', () => {
       expect(
         integration.resolveUrl({
           url: '/catalog-info.yaml',
@@ -113,19 +126,49 @@ describe('GerritIntegration', () => {
         'https://gerrit-review.example.com/gitiles/repo/+/refs/heads/master/catalog-info.yaml',
       );
     });
+    it('works for urls pointing to a tag', () => {
+      expect(
+        integration.resolveUrl({
+          url: '/skeleton.yaml',
+          base: 'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/tags/v.1.2.3/src/template.yaml',
+        }),
+      ).toBe(
+        'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/tags/v.1.2.3/skeleton.yaml',
+      );
+    });
   });
 
-  it('resolve edit URL', () => {
+  it('resolve Url when editUrl is disabled', () => {
     const integration = new GerritIntegration({
       host: 'gerrit-review.example.com',
+      disableEditUrl: true,
     } as any);
 
     // Resolve edit URLs is not applicable for gerrit. Return the input
     // url as is.
     expect(
       integration.resolveEditUrl(
-        'https://gerrit-review.example.com/catalog-info.yaml',
+        'https://gerrit-review.example.com/gitiles/backstage/backstage/+/refs/heads/master/catalog-info.yaml',
       ),
-    ).toBe('https://gerrit-review.example.com/catalog-info.yaml');
+    ).toBe(
+      'https://gerrit-review.example.com/gitiles/backstage/backstage/+/refs/heads/master/catalog-info.yaml',
+    );
+  });
+
+  it('resolve edit URL with editUrl', () => {
+    const integration = new GerritIntegration({
+      host: 'gerrit-review.example.com',
+      baseUrl: 'https://gerrit-review.example.com',
+      gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
+      disableEditUrl: false,
+    } as any);
+
+    expect(
+      integration.resolveEditUrl(
+        'https://gerrit-review.example.com/gitiles/backstage/backstage/+/refs/heads/master/catalog-info.yaml',
+      ),
+    ).toBe(
+      'https://gerrit-review.example.com/admin/repos/edit/repo/backstage/backstage/branch/refs/heads/master/file/catalog-info.yaml',
+    );
   });
 });

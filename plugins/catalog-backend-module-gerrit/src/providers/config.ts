@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { GerritProviderConfig } from './types';
 
 function readGerritConfig(id: string, config: Config): GerritProviderConfig {
-  const branch = config.getOptionalString('branch') ?? 'master';
+  const branch = config.getOptionalString('branch');
+  const catalogPath =
+    config.getOptionalString('catalogPath') ?? 'catalog-info.yaml';
   const host = config.getString('host');
   const query = config.getString('query');
 
+  const schedule = config.has('schedule')
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
+    : undefined;
+
   return {
     branch,
+    catalogPath,
     host,
     id,
     query,
+    schedule,
   };
 }
 

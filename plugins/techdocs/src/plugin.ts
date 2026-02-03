@@ -31,8 +31,12 @@ import {
   createRoutableExtension,
   discoveryApiRef,
   fetchApiRef,
-  identityApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  createSearchResultListItemExtension,
+  SearchResultListItemExtensionProps,
+} from '@backstage/plugin-search-react';
+import { TechDocsSearchResultListItemProps } from './search/components/TechDocsSearchResultListItem';
 
 /**
  * The Backstage plugin that renders technical documentation for your components
@@ -47,14 +51,12 @@ export const techdocsPlugin = createPlugin({
       deps: {
         configApi: configApiRef,
         discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
         fetchApi: fetchApiRef,
       },
-      factory: ({ configApi, discoveryApi, identityApi, fetchApi }) =>
+      factory: ({ configApi, discoveryApi, fetchApi }) =>
         new TechDocsStorageClient({
           configApi,
           discoveryApi,
-          identityApi,
           fetchApi,
         }),
     }),
@@ -101,7 +103,7 @@ export const TechdocsPage = techdocsPlugin.provide(
 export const EntityTechdocsContent = techdocsPlugin.provide(
   createRoutableExtension({
     name: 'EntityTechdocsContent',
-    component: () => import('./Router').then(m => m.EmbeddedDocsRouter),
+    component: () => import('./Router').then(m => m.LegacyEmbeddedDocsRouter),
     mountPoint: rootCatalogDocsRouteRef,
   }),
 );
@@ -151,5 +153,23 @@ export const TechDocsReaderPage = techdocsPlugin.provide(
         m => m.TechDocsReaderPage,
       ),
     mountPoint: rootDocsRouteRef,
+  }),
+);
+
+/**
+ * React extension used to render results on Search page or modal
+ *
+ * @public
+ */
+export const TechDocsSearchResultListItem: (
+  props: SearchResultListItemExtensionProps<TechDocsSearchResultListItemProps>,
+) => JSX.Element | null = techdocsPlugin.provide(
+  createSearchResultListItemExtension({
+    name: 'TechDocsSearchResultListItem',
+    component: () =>
+      import('./search/components/TechDocsSearchResultListItem').then(
+        m => m.TechDocsSearchResultListItem,
+      ),
+    predicate: result => result.type === 'techdocs',
   }),
 );

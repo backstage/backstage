@@ -14,55 +14,54 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
 import {
   RELATION_MEMBER_OF,
-  UserEntity,
   UserEntityV1alpha1,
 } from '@backstage/catalog-model';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { CatalogIdentityClient } from './CatalogIdentityClient';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('CatalogIdentityClient', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-  };
-  const tokenManager: jest.Mocked<TokenManager> = {
-    getToken: jest.fn(),
-    authenticate: jest.fn(),
-  };
+  const auth = mockServices.auth({ pluginId: 'auth' });
 
   afterEach(() => jest.resetAllMocks());
 
   it('findUser passes through the correct search params', async () => {
-    catalogApi.getEntities.mockResolvedValueOnce({ items: [{} as UserEntity] });
-    tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
+    const catalog = catalogServiceMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1beta1',
+          kind: 'User',
+          metadata: {
+            name: 'user',
+            namespace: 'default',
+            annotations: { key: 'value' },
+          },
+          spec: {},
+        },
+      ],
+    });
+    jest.spyOn(catalog, 'getEntities');
+
     const client = new CatalogIdentityClient({
-      catalogApi,
-      tokenManager,
+      catalog,
+      auth,
     });
 
     await client.findUser({ annotations: { key: 'value' } });
 
-    expect(catalogApi.getEntities).toHaveBeenCalledWith(
+    expect(catalog.getEntities).toHaveBeenCalledWith(
       {
         filter: {
           kind: 'user',
           'metadata.annotations.key': 'value',
         },
       },
-      { token: 'my-token' },
+      {
+        credentials: await auth.getOwnServiceCredentials(),
+      },
     );
-    expect(tokenManager.getToken).toHaveBeenCalledWith();
   });
 
   it('resolveCatalogMembership resolves membership', async () => {
@@ -101,19 +100,19 @@ describe('CatalogIdentityClient', () => {
         ],
       },
     ];
-    catalogApi.getEntities.mockResolvedValueOnce({ items: mockUsers });
-    tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
+    const catalog = catalogServiceMock({ entities: mockUsers });
+    jest.spyOn(catalog, 'getEntities');
 
     const client = new CatalogIdentityClient({
-      catalogApi,
-      tokenManager,
+      catalog,
+      auth,
     });
 
     const claims = await client.resolveCatalogMembership({
       entityRefs: ['inigom', 'User:default/imontoya', 'User:reality/mpatinkin'],
     });
 
-    expect(catalogApi.getEntities).toHaveBeenCalledWith(
+    expect(catalog.getEntities).toHaveBeenCalledWith(
       {
         filter: [
           {
@@ -133,7 +132,9 @@ describe('CatalogIdentityClient', () => {
           },
         ],
       },
-      { token: 'my-token' },
+      {
+        credentials: await auth.getOwnServiceCredentials(),
+      },
     );
 
     expect(claims).toMatchObject([

@@ -23,20 +23,19 @@ import MenuBookIcon from '@material-ui/icons/MenuBook';
 import CloudQueueIcon from '@material-ui/icons/CloudQueue';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
 import AppsIcon from '@material-ui/icons/Apps';
-import React, { ComponentType } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
+import { SidebarPage } from './Page';
+import { Sidebar } from './Bar';
+import { SidebarGroup } from './SidebarGroup';
 import {
-  Sidebar,
   SidebarDivider,
-  SidebarGroup,
   SidebarExpandButton,
-  SidebarIntro,
   SidebarItem,
-  SidebarPage,
   SidebarSearchField,
   SidebarSpace,
-  SidebarSubmenu,
-  SidebarSubmenuItem,
-} from '.';
+} from './Items';
+import { SidebarSubmenu } from './SidebarSubmenu';
+import { SidebarSubmenuItem } from './SidebarSubmenuItem';
 
 const routeRef = createRouteRef({
   id: 'storybook.test-route',
@@ -46,9 +45,10 @@ export default {
   title: 'Layout/Sidebar',
   component: Sidebar,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(<Story />, { mountedRoutes: { '/': routeRef } }),
   ],
+  tags: ['!manifest'],
 };
 
 const handleSearch = (input: string) => {
@@ -59,13 +59,12 @@ const handleSearch = (input: string) => {
 export const SampleSidebar = () => (
   <SidebarPage>
     <Sidebar>
-      <SidebarGroup label="Menu" icon={MenuIcon}>
+      <SidebarGroup label="Menu" icon={<MenuIcon />}>
         <SidebarSearchField onSearch={handleSearch} to="/search" />
         <SidebarDivider />
         <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
         <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
         <SidebarDivider />
-        <SidebarIntro />
         <SidebarSpace />
       </SidebarGroup>
     </Sidebar>
@@ -104,7 +103,6 @@ export const SampleScalableSidebar = () => (
         <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
       </SidebarGroup>
       <SidebarDivider />
-      <SidebarIntro />
       <SidebarSpace />
       <SidebarExpandButton />
     </Sidebar>

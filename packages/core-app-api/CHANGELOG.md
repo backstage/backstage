@@ -1,5 +1,1612 @@
 # @backstage/core-app-api
 
+## 1.19.4-next.0
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.19.3
+
+### Patch Changes
+
+- 75683ed: Added replay functionality to `AlertApiForwarder` to buffer and replay recent alerts to new subscribers, preventing missed alerts that were posted before subscription.
+- 97cd16f: Internal update of translation imports.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1
+
+## 1.19.3-next.1
+
+### Patch Changes
+
+- 75683ed: Added replay functionality to `AlertApiForwarder` to buffer and replay recent alerts to new subscribers, preventing missed alerts that were posted before subscription.
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.19.3-next.0
+
+### Patch Changes
+
+- 97cd16f: Internal update of translation imports.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.19.2
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/config@1.3.6
+
+## 1.19.2-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.1
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.19.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/core-plugin-api@1.11.1
+
+## 1.19.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+
+## 1.19.0
+
+### Minor Changes
+
+- 3fca906: Add `OpenShiftAuth` helper to create default OAuth flow for OpenShift.
+
+### Patch Changes
+
+- 5ae6d9d: feat: support no en languages
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/types@1.2.2
+
+## 1.18.0
+
+### Minor Changes
+
+- 5ddc0fe: if session exists and refresh fails, then create a new session if not instant popup
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+
+## 1.18.0-next.1
+
+### Minor Changes
+
+- 5ddc0fe: if session exists and refresh fails, then create a new session if not instant popup
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 1.17.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 1.17.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.17.0
+
+### Minor Changes
+
+- 1e0230e: Support custom `AuthConnector` for `OAuth2`.
+
+  A user can pass their own `AuthConnector` implementation in `OAuth2` constructor.
+  In which case the session manager will use that instead of the `DefaultAuthConnector` to interact with the
+  authentication provider.
+
+  A custom `AuthConnector` may call the authentication provider from the front-end, store and retrieve tokens
+  in the session storage, for example, and otherwise send custom requests to the authentication provider and
+  handle its responses.
+
+  Note, that if the custom `AuthConnector` transforms scopes returned from the authentication provider,
+  the transformation must be the same as `OAuth2CreateOptions#scopeTransform` passed to `OAuth2` constructor.
+  See creating `DefaultAuthConnector` in `OAuth2#create(...)` for an example.
+
+### Patch Changes
+
+- 73f6cc3: Updated `I18nextTranslationApi` to support interpolation of JSX elements.
+- cc119b2: Fixed an issue causing `OAuthRequestDialog` to re-render on mount.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.17.0-next.1
+
+### Minor Changes
+
+- 1e0230e: Support custom `AuthConnector` for `OAuth2`.
+
+  A user can pass their own `AuthConnector` implementation in `OAuth2` constructor.
+  In which case the session manager will use that instead of the `DefaultAuthConnector` to interact with the
+  authentication provider.
+
+  A custom `AuthConnector` may call the authentication provider from the front-end, store and retrieve tokens
+  in the session storage, for example, and otherwise send custom requests to the authentication provider and
+  handle its responses.
+
+  Note, that if the custom `AuthConnector` transforms scopes returned from the authentication provider,
+  the transformation must be the same as `OAuth2CreateOptions#scopeTransform` passed to `OAuth2` constructor.
+  See creating `DefaultAuthConnector` in `OAuth2#create(...)` for an example.
+
+### Patch Changes
+
+- cc119b2: Fixed an issue causing `OAuthRequestDialog` to re-render on mount.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.2-next.0
+
+### Patch Changes
+
+- 73f6cc3: Updated `I18nextTranslationApi` to support interpolation of JSX elements.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.1-next.0
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.0
+
+### Minor Changes
+
+- 9262001: The default auth injection middleware for the `FetchApi` will now also take configuration under `discovery.endpoints` into consideration when deciding whether to include credentials or not.
+- 12f8e01: The `discovery.endpoints` configuration no longer requires both `internal` and `external` target when using the object form, instead falling back to the default.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.0-next.0
+
+### Minor Changes
+
+- 9262001: The default auth injection middleware for the `FetchApi` will now also take configuration under `discovery.endpoints` into consideration when deciding whether to include credentials or not.
+- 12f8e01: The `discovery.endpoints` configuration no longer requires both `internal` and `external` target when using the object form, instead falling back to the default.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.15.5
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/version-bridge@1.0.11
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
+## 1.15.5-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
+## 1.15.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/version-bridge@1.0.10
+
+## 1.15.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/version-bridge@1.0.10
+
+## 1.15.3
+
+### Patch Changes
+
+- e5fa018: The OAuth 2 client implementations will now attempt to refresh the session when the existing session doesn't have the required scopes. The previous behavior was to only try to refresh the session of it was missing, and otherwise directly request a new session. This fixes an issue where some auth providers will not return access tokens with certain scopes unless explicitly requested, leading to an auth popup even if the underlying session already had been granted the requested scopes.
+- 2830689: Decrease OAuth2 token refresh grace period
+- Updated dependencies
+  - @backstage/config@1.3.1
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 1.15.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.1-next.0
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 1.15.3-next.0
+
+### Patch Changes
+
+- e5fa018: The OAuth 2 client implementations will now attempt to refresh the session when the existing session doesn't have the required scopes. The previous behavior was to only try to refresh the session of it was missing, and otherwise directly request a new session. This fixes an issue where some auth providers will not return access tokens with certain scopes unless explicitly requested, leading to an auth popup even if the underlying session already had been granted the requested scopes.
+- 2830689: Decrease OAuth2 token refresh grace period
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 1.15.2
+
+### Patch Changes
+
+- 44b82da: The default config loader no longer requires `process.env.APP_CONFIG` to be set, allowing config to be read from other sources instead.
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/version-bridge@1.0.10
+
+## 1.15.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 1.15.1-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 1.15.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.9
+
+## 1.15.0
+
+### Minor Changes
+
+- ddbeace: Added the ability to explicitly disable routes through the `bindRoutes` option by passing `false` as the route target. This also fixes a bug where route bindings in config were incorrectly prioritized above the ones in code in certain situations.
+
+### Patch Changes
+
+- ea69e46: The `defaultConfigLoader` now also reads configuration from scripts tags with `type="backstage.io/config"`. The tag is expected to contain a JSON-serialized array of `AppConfig` objects. If any of these script tags are present, the injected runtime configuration in the static assets will no longer be used.
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/version-bridge@1.0.9
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 1.14.3-next.0
+
+### Patch Changes
+
+- ea69e46: The `defaultConfigLoader` now also reads configuration from scripts tags with `type="backstage.io/config"`. The tag is expected to contain a JSON-serialized array of `AppConfig` objects. If any of these script tags are present, the injected runtime configuration in the static assets will no longer be used.
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 1.14.2
+
+### Patch Changes
+
+- 9a46a81: The request to delete the session cookie when running the app in protected mode is now done with a plain `fetch` rather than `FetchApi`. This fixes a bug where the app would immediately try to sign-in again when removing the cookie during logout.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.14.1-next.0
+
+### Patch Changes
+
+- 9a46a81: The request to delete the session cookie when running the app in protected mode is now done with a plain `fetch` rather than `FetchApi`. This fixes a bug where the app would immediately try to sign-in again when removing the cookie during logout.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.14.0
+
+### Minor Changes
+
+- d3c39fc: Allow for the disabling of external routes through config, which was rendered impossible after the introduction of default targets.
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        # This has the effect of removing the button for registering new
+        # catalog entities in the scaffolder template list view
+        scaffolder.registerComponent: false
+  ```
+
+### Patch Changes
+
+- db2e2d5: Updated config schema to support app.routes.bindings
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.13.1-next.1
+
+### Patch Changes
+
+- db2e2d5: Updated config schema to support app.routes.bindings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.13.0-next.0
+
+### Minor Changes
+
+- d3c39fc: Allow for the disabling of external routes through config, which was rendered impossible after the introduction of default targets.
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        # This has the effect of removing the button for registering new
+        # catalog entities in the scaffolder template list view
+        scaffolder.registerComponent: false
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.6
+
+### Patch Changes
+
+- 35fbe09: Added support for configuration of route bindings through static configuration, and default targets for external route refs.
+
+  In addition to configuring route bindings through code, it is now also possible to configure route bindings under the `app.routes.bindings` key, for example:
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        catalog.createComponent: catalog-import.importPage
+  ```
+
+  Each key in the route binding object is of the form `<plugin-id>.<externalRouteName>`, where the route name is key used in the `externalRoutes` object passed to `createPlugin`. The value is of the same form, but with the name taken from the plugin `routes` option instead.
+
+  The equivalent of the above configuration in code is the following:
+
+  ```ts
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: catalogImportPlugin.routes.importPage,
+      });
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.6-next.0
+
+### Patch Changes
+
+- 35fbe09: Added support for configuration of route bindings through static configuration, and default targets for external route refs.
+
+  In addition to configuring route bindings through code, it is now also possible to configure route bindings under the `app.routes.bindings` key, for example:
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        catalog.createComponent: catalog-import.importPage
+  ```
+
+  Each key in the route binding object is of the form `<plugin-id>.<externalRouteName>`, where the route name is key used in the `externalRoutes` object passed to `createPlugin`. The value is of the same form, but with the name taken from the plugin `routes` option instead.
+
+  The equivalent of the above configuration in code is the following:
+
+  ```ts
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: catalogImportPlugin.routes.importPage,
+      });
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.5
+
+### Patch Changes
+
+- 1bed9a3: The Backstage identity session expiration check will no longer fall back to using the provider expiration. This was introduced to smooth out the rollout of Backstage release 1.18, and is no longer needed.
+
+## 1.12.4
+
+### Patch Changes
+
+- c884b9a: The app is now aware of if it is being served from the `app-backend` with a separate public and protected bundles. When in protected mode the app will now continuously refresh the session cookie, as well as clear the cookie if the user signs out.
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/version-bridge@1.0.8
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 1.12.4-next.0
+
+### Patch Changes
+
+- c884b9a: The app is now aware of if it is being served from the `app-backend` with a separate public and protected bundles. When in protected mode the app will now continuously refresh the session cookie, as well as clear the cookie if the user signs out.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.12.3
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.12.2
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.12.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.12.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.2-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.12.0
+
+### Minor Changes
+
+- f919be9: Added a utility API for VMware Cloud auth; the API ref is available in the
+  `@backstage/core-plugin-api` and `@backstage/frontend-plugin-api` packages, the
+  implementation is in `@backstage/core-app-api` and a factory has been added to
+  `@backstage/app-defaults`.
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 7da67ce: Change `defaultScopes` for Bitbucket auth from invalid `team` to `account`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.12.0-next.1
+
+### Minor Changes
+
+- f919be9: Added a utility API for VMware Cloud auth; the API ref is available in the
+  `@backstage/core-plugin-api` and `@backstage/frontend-plugin-api` packages, the
+  implementation is in `@backstage/core-app-api` and a factory has been added to
+  `@backstage/app-defaults`.
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.4-next.0
+
+### Patch Changes
+
+- 7da67ce: Change `defaultScopes` for Bitbucket auth from invalid `team` to `account`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.2
+
+### Patch Changes
+
+- 3e358b0: Added deprecation warning for React Router v6 beta, please make sure you have migrated your apps to use React Router v6 stable as support for the beta version will be removed. See the [migration tutorial](https://backstage.io/docs/tutorials/react-router-stable-migration) for more information.
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.2-next.1
+
+### Patch Changes
+
+- 3e358b0dff: Added deprecation warning for React Router v6 beta, please make sure you have migrated your apps to use React Router v6 stable as support for the beta version will be removed. See the [migration tutorial](https://backstage.io/docs/tutorials/react-router-stable-migration) for more information.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.1
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 89d13e5618: Add current and default scopes when refreshing session
+- 9ab0572217: Add component data `core.type` marker for `AppRouter` and `FlatRoutes`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/version-bridge@1.0.7
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 89d13e5618: Add current and default scopes when refreshing session
+- 9ab0572217: Add component data `core.type` marker for `AppRouter` and `FlatRoutes`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.11.0
+
+### Minor Changes
+
+- c9d9bfeca2: URL encode some well known unsafe characters in `RouteResolver` (and therefore `useRouteRef`)
+
+### Patch Changes
+
+- 29e4d8b76b: Fixed bug in `AppRouter` to determine the correct `signOutTargetUrl` if `app.baseUrl` contains a `basePath`
+- acca17e91a: Wrap entire app in `<Suspense>`, enabling support for using translations outside plugins.
+- 1a0616fa10: Add missing resource and template app icons
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- f1b349cfba: Fixed a bug in `TranslationApi` implementation where in some cases it wouldn't notify subscribers of language changes.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/version-bridge@1.0.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.11.0-next.2
+
+### Minor Changes
+
+- c9d9bfeca2: URL encode some well known unsafe characters in `RouteResolver` (and therefore `useRouteRef`)
+
+### Patch Changes
+
+- acca17e91a: Wrap entire app in `<Suspense>`, enabling support for using translations outside plugins.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.10.1-next.1
+
+### Patch Changes
+
+- 1a0616fa10: Add missing resource and template app icons
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.10.0
+
+### Minor Changes
+
+- 18619f793c94: Fixed two bugs in how the `OAuth2Session` type represents the underlying data. The `expiresAt` and `backstageIdentity` are now both optional, since that's what they are in practice. This is not considered a breaking change since it was effectively a bug in the modelling of the state that this type represents, and the type was not used in any other external contract.
+- 18619f793c94: The `OAuth` class which is used by all OAuth providers will now consider both the session expiration of both the Backstage identity as well as the upstream identity provider, and refresh the session with either of them is about to expire.
+- 6e30769cc627: Introduced experimental support for internationalization.
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 9fe827b380e1: Internal refactor
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.10.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 9fe827b380e1: Internal refactor
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/types@1.1.1-next.0
+  - @backstage/version-bridge@1.0.5-next.0
+
+## 1.10.0-next.2
+
+### Minor Changes
+
+- 6e30769cc627: Introduced experimental support for internationalization.
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.10.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 18619f793c94: Fixed two bugs in how the `OAuth2Session` type represents the underlying data. The `expiresAt` and `backstageIdentity` are now both optional, since that's what they are in practice. This is not considered a breaking change since it was effectively a bug in the modelling of the state that this type represents, and the type was not used in any other external contract.
+- 18619f793c94: The `OAuth` class which is used by all OAuth providers will now consider both the session expiration of both the Backstage identity as well as the upstream identity provider, and refresh the session with either of them is about to expire.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.9.1
+
+### Patch Changes
+
+- 9ae4e7e63836: Fixed a bug that could cause `navigate` analytics events to be misattributed to the plugin mounted on the root route (e.g. the `home` plugin at `/`) when the route that was navigated to wasn't associated with a routable extension.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- 9ae4e7e63836: Fixed a bug that could cause `navigate` analytics events to be misattributed to the plugin mounted on the root route (e.g. the `home` plugin at `/`) when the route that was navigated to wasn't associated with a routable extension.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.9.0
+
+### Minor Changes
+
+- a77ddf7ccd71: add login in popup options to config popup width and height
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.2-next.1
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/config@1.0.8
+
+## 1.8.1
+
+### Patch Changes
+
+- 12adfbc8fe2d: Fixed a bug that prevented accurate plugin and route data from being applied to `navigate` analytics events when users visited pages constructed with `<EntityLayout>`, `<TabbedLayout>`, and similar components that are used to gather one or more routable extensions under a given path.
+- ac677bc30ae0: Expose discovery.endpoints configuration to use FrontendHostDiscovery
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/types@1.1.0
+  - @backstage/config@1.0.8
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- 74b216ee4e50: Add `PropsWithChildren` to usages of `ComponentType`, in preparation for React 18 where the children are no longer implicit.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.0
+
+### Minor Changes
+
+- c89437db899: The analytics' `navigate` event will now include the route parameters as attributes of the navigate event
+
+### Patch Changes
+
+- b645d70034a: Fixed a bug in the Azure auth provider which prevented getting access tokens with multiple scopes for one resource
+- 42d817e76ab: Added `FrontendHostDiscovery` for config driven discovery implementation
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
+## 1.8.0-next.1
+
+### Minor Changes
+
+- c89437db899: The analytics' `navigate` event will now include the route parameters as attributes of the navigate event
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- 42d817e76ab: Added `FrontendHostDiscovery` for config driven discovery implementation
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4
+
+## 1.7.0
+
+### Minor Changes
+
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
+  refreshing a session. The `DefaultAuthConnector` implementation passes the
+  `scope` query parameter to the auth-backend plugin appropriately. The
+  `RefreshingAuthSessionManager` passes any scopes in its `GetSessionRequest`
+  appropriately.
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/version-bridge@1.0.4
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.7.0-next.3
+
+### Minor Changes
+
+- c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
+  refreshing a session. The `DefaultAuthConnector` implementation passes the
+  `scope` query parameter to the auth-backend plugin appropriately. The
+  `RefreshingAuthSessionManager` passes any scopes in its `GetSessionRequest`
+  appropriately.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+
+## 1.7.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.4-next.0
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/version-bridge@1.0.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.6.0
+
+### Minor Changes
+
+- 456eaa8cf83: `OAuth2` now gets ID tokens from a session with the `openid` scope explicitly
+  requested.
+
+  This should not be considered a breaking change, because spec-compliant OIDC
+  providers will already be returning ID tokens if and only if the `openid` scope
+  is granted.
+
+  This change makes the dependence explicit, and removes the burden on
+  OAuth2-based providers which require an ID token (e.g. this is done by various
+  default [auth handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  `openid` to their default scopes. _That_ could carry another indirect benefit:
+  by removing `openid` from the default scopes for a provider, grants for
+  resource-specific access tokens can avoid requesting excess ID token-related
+  scopes.
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.6.0-next.2
+
+### Minor Changes
+
+- 456eaa8cf83: `OAuth2` now gets ID tokens from a session with the `openid` scope explicitly
+  requested.
+
+  This should not be considered a breaking change, because spec-compliant OIDC
+  providers will already be returning ID tokens if and only if the `openid` scope
+  is granted.
+
+  This change makes the dependence explicit, and removes the burden on
+  OAuth2-based providers which require an ID token (e.g. this is done by various
+  default [auth handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  `openid` to their default scopes. _That_ could carry another indirect benefit:
+  by removing `openid` from the default scopes for a provider, grants for
+  resource-specific access tokens can avoid requesting excess ID token-related
+  scopes.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.5.0
+
+### Minor Changes
+
+- db10b6ef65: Added a Bitbucket Server Auth Provider and added its API to the app defaults
+
+### Patch Changes
+
+- dff4d8ddb1: Fixed an issue where an explicit port the frontend base URL could break the app.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- dff4d8ddb1: Fixed an issue where an explicit port the frontend base URL could break the app.
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.4.0
+
+### Minor Changes
+
+- bca8e8b393: Allow defining application level feature flags. See [Feature Flags documentation](https://backstage.io/docs/plugins/feature-flags#in-the-application) for reference.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.4.0-next.1
+
+### Minor Changes
+
+- bca8e8b393: Allow defining application level feature flags. See [Feature Flags documentation](https://backstage.io/docs/plugins/feature-flags#in-the-application) for reference.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/types@1.0.2
+  - @backstage/version-bridge@1.0.3
+
+## 1.3.0
+
+### Minor Changes
+
+- e0d9c9559a: Added a new `AppRouter` component and `app.createRoot()` method that replaces `app.getRouter()` and `app.getProvider()`, which are now deprecated. The new `AppRouter` component is a drop-in replacement for the old router component, while the new `app.createRoot()` method is used instead of the old provider component.
+
+  An old app setup might look like this:
+
+  ```tsx
+  const app = createApp(/* ... */);
+
+  const AppProvider = app.getProvider();
+  const AppRouter = app.getRouter();
+
+  const routes = ...;
+
+  const App = () => (
+    <AppProvider>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </AppProvider>
+  );
+
+  export default App;
+  ```
+
+  With these new APIs, the setup now looks like this:
+
+  ```tsx
+  import { AppRouter } from '@backstage/core-app-api';
+
+  const app = createApp(/* ... */);
+
+  const routes = ...;
+
+  export default app.createRoot(
+    <>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </>,
+  );
+  ```
+
+  Note that `app.createRoot()` accepts a React element, rather than a component.
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- b4b5b02315: Tweak feature flag registration so that it happens immediately before the first rendering of the app, rather than just after.
+- 6870b43dd1: Fix for the automatic rewriting of base URLs.
+- 203271b746: Prevent duplicate feature flag components from rendering in the settings when using <FeatureFlagged /> components
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- 653d7912ac: Made `WebStorage` notify its subscribers when `localStorage` values change in other tabs/windows
+- 63310e3987: Apps will now rewrite the `app.baseUrl` configuration to match the current `location.origin`. The `backend.baseUrl` will also be rewritten in the same way when the `app.baseUrl` and `backend.baseUrl` have matching origins. This will reduce the need for separate frontend builds for different environments.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/version-bridge@1.0.3
+  - @backstage/types@1.0.2
+  - @backstage/config@1.0.5
+
+## 1.3.0-next.4
+
+### Minor Changes
+
+- e0d9c9559a: Added a new `AppRouter` component and `app.createRoot()` method that replaces `app.getRouter()` and `app.getProvider()`, which are now deprecated. The new `AppRouter` component is a drop-in replacement for the old router component, while the new `app.createRoot()` method is used instead of the old provider component.
+
+  An old app setup might look like this:
+
+  ```tsx
+  const app = createApp(/* ... */);
+
+  const AppProvider = app.getProvider();
+  const AppRouter = app.getRouter();
+
+  const routes = ...;
+
+  const App = () => (
+    <AppProvider>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </AppProvider>
+  );
+
+  export default App;
+  ```
+
+  With these new APIs, the setup now looks like this:
+
+  ```tsx
+  import { AppRouter } from '@backstage/core-app-api';
+
+  const app = createApp(/* ... */);
+
+  const routes = ...;
+
+  export default app.createRoot(
+    <>
+      <AlertDisplay />
+      <OAuthRequestDialog />
+      <AppRouter>
+        <Root>{routes}</Root>
+      </AppRouter>
+    </>,
+  );
+  ```
+
+  Note that `app.createRoot()` accepts a React element, rather than a component.
+
+### Patch Changes
+
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 1.2.1-next.3
+
+### Patch Changes
+
+- 6870b43dd1: Fix for the automatic rewriting of base URLs.
+- 653d7912ac: Made `WebStorage` notify its subscribers when `localStorage` values change in other tabs/windows
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 1.2.1-next.2
+
+### Patch Changes
+
+- b4b5b02315: Tweak feature flag registration so that it happens immediately before the first rendering of the app, rather than just after.
+- 203271b746: Prevent duplicate feature flag components from rendering in the settings when using <FeatureFlagged /> components
+- 8015ff1258: Tweaked wording to use inclusive terminology
+- 63310e3987: Apps will now rewrite the `app.baseUrl` configuration to match the current `location.origin`. The `backend.baseUrl` will also be rewritten in the same way when the `app.baseUrl` and `backend.baseUrl` have matching origins. This will reduce the need for separate frontend builds for different environments.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/version-bridge@1.0.3-next.0
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- d3fea4ae0a: Internal fixes to avoid implicit usage of globals
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.3-next.0
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/version-bridge@1.0.2
+
+## 1.2.0
+
+### Minor Changes
+
+- 9b737e5f2e: Updated the React Router wiring to make use of the new `basename` property of the router components in React Router v6 stable. To implement this, a new optional `basename` property has been added to the `Router` app component, which can be forwarded to the concrete router implementation in order to support this new behavior. This is done by default in any app that does not have a `Router` component override.
+- 127fcad26d: Deprecated the `homepage` config as the component that used it - `HomepageTimer` - has been removed and replaced by the `HeaderWorldClock` in the home plugin
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/version-bridge@1.0.2
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/types@1.0.1
+  - @backstage/config@1.0.4
+
+## 1.2.0-next.0
+
+### Minor Changes
+
+- 9b737e5f2e: Updated the React Router wiring to make use of the new `basename` property of the router components in React Router v6 stable. To implement this, a new optional `basename` property has been added to the `Router` app component, which can be forwarded to the concrete router implementation in order to support this new behavior. This is done by default in any app that does not have a `Router` component override.
+- 127fcad26d: Deprecated the `homepage` config as the component that used it - `HomepageTimer` - has been removed and replaced by the `HeaderWorldClock` in the home plugin
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.1
+
+### Patch Changes
+
+- 27e6404aba: Fixed a bug where gathered index routes would fail to bind routable extensions. This would typically show up when placing a routable extension in the entity page overview tab.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- 27e6404aba: Fixed a bug where gathered index routes would fail to bind routable extensions. This would typically show up when placing a routable extension in the entity page overview tab.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/types@1.0.0
+  - @backstage/version-bridge@1.0.1
+
+## 1.1.0
+
+### Minor Changes
+
+- a448fea691: Updated the routing system to be compatible with React Router v6 stable.
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- f9ec4e46e3: When using React Router v6 stable, it is now possible for components within the `Route` element tree to have `path` props, although they will be ignored.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 8448b53dd6: Clarify that the `WebStorage` observable returns `JsonValue` items.
+- 70299c99d5: Updated `FlatRoutes` to be compatible with React Router v6 stable.
+- e9d40ebf54: If you'd like to send analytics events to multiple implementations, you may now
+  do so using the `MultipleAnalyticsApi` implementation provided by this package.
+
+  ```tsx
+  import { MultipleAnalyticsApi } from '@backstage/core-app-api';
+  import {
+    analyticsApiRef,
+    configApiRef,
+    storageApiRef,
+    identityApiRef,
+  } from '@internal/backstage/core-plugin-api';
+  import { CustomAnalyticsApi } from '@internal/analytics';
+  import { VendorAnalyticsApi } from '@vendor/analytics';
+
+  createApiFactory({
+    api: analyticsApiRef,
+    deps: { configApi: configApiRef, identityApi: identityApiRef, storageApi: storageApiRef },
+    factory: ({ configApi, identityApi, storageApi }) =>
+      MultipleAnalyticsApi.fromApis([
+        VendorAnalyticsApi.fromConfig(configApi, { identityApi }),
+        CustomAnalyticsApi.fromConfig(configApi, { identityApi, storageApi }),
+      ]),
+  }),
+  ```
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/config@1.0.2
+
+## 1.1.0-next.3
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.6-next.3
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- f9ec4e46e3: When using React Router v6 stable, it is now possible for components within the `Route` element tree to have `path` props, although they will be ignored.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- e9d40ebf54: If you'd like to send analytics events to multiple implementations, you may now
+  do so using the `MultipleAnalyticsApi` implementation provided by this package.
+
+  ```tsx
+  import { MultipleAnalyticsApi } from '@backstage/core-app-api';
+  import {
+    analyticsApiRef,
+    configApiRef,
+    storageApiRef,
+    identityApiRef,
+  } from '@internal/backstage/core-plugin-api';
+  import { CustomAnalyticsApi } from '@internal/analytics';
+  import { VendorAnalyticsApi } from '@vendor/analytics';
+
+  createApiFactory({
+    api: analyticsApiRef,
+    deps: { configApi: configApiRef, identityApi: identityApiRef, storageApi: storageApiRef },
+    factory: ({ configApi, identityApi, storageApi }) =>
+      MultipleAnalyticsApi.fromApis([
+        VendorAnalyticsApi.fromConfig(configApi, { identityApi }),
+        CustomAnalyticsApi.fromConfig(configApi, { identityApi, storageApi }),
+      ]),
+  }),
+  ```
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.2
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- a448fea691: Updated the routing system to be compatible with React Router v6 stable.
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 70299c99d5: Updated `FlatRoutes` to be compatible with React Router v6 stable.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.1
+
+## 1.0.6-next.0
+
+### Patch Changes
+
+- 744fea158b: Added `getSystemIcons()` function to the `AppContext` available through `useApp` that will pull a list of all the icons that have been registered in the App.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+
 ## 1.0.5-next.0
 
 ### Patch Changes
@@ -216,7 +1823,7 @@
 
   Deprecated the `SamlSession` and `GithubSession` types.
 
-- 784d8078ab: Removed direct and transitive MUI dependencies.
+- 784d8078ab: Removed direct and transitive Material UI dependencies.
 - Updated dependencies
   - @backstage/config@0.1.12
   - @backstage/core-plugin-api@0.5.0
@@ -415,7 +2022,7 @@
 
   The first and most commonly used one is `createApp` from the new `@backstage/app-defaults` package, which behaves just like the existing `createApp`. In the future this method is likely to be expanded to add more APIs and other pieces into the default setup, for example the Utility APIs from `@backstage/integration-react`.
 
-  The other option that we now provide is to use `createSpecializedApp` from `@backstage/core-app-api`. This is a more low-level API where you need to provide a full set of options, including your own `components`, `icons`, `defaultApis`, and `themes`. The `createSpecializedApp` way of creating an app is particularly useful if you are not using `@backstage/core-components` or MUI, as it allows you to avoid those dependencies completely.
+  The other option that we now provide is to use `createSpecializedApp` from `@backstage/core-app-api`. This is a more low-level API where you need to provide a full set of options, including your own `components`, `icons`, `defaultApis`, and `themes`. The `createSpecializedApp` way of creating an app is particularly useful if you are not using `@backstage/core-components` or Material UI, as it allows you to avoid those dependencies completely.
 
 - 475edb5bc5: move the BehaviorSubject init into the constructor
 - Updated dependencies

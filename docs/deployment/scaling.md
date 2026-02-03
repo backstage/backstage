@@ -17,7 +17,7 @@ into multiple different services, each running a different set of plugins. This
 is a more advanced approach and requires you to be able to route requests to
 the appropriate backends based on the plugin ID. Both for ingress, but also
 internal traffic between Backstage backends, which is done by creating a custom
-implementation of the [PluginEndpointDiscover](../reference/backend-common.pluginendpointdiscovery.md) interface.
+implementation of the [DiscoveryService](https://backstage.io/api/stable/interfaces/_backstage_backend-plugin-api.index.DiscoveryService.html) interface. See the [backend system docs](../backend-system/building-backends/01-index.md#split-into-multiple-backends) for more details on how to separate your deployment into multiple backend instances.
 
 Lastly, you can also replicate the Backstage deployments across multiple regions.
 This is not a pattern that there is built-in support for and typically only makes

@@ -18,6 +18,16 @@ export interface Config {
   /** Configuration options for the search plugin */
   search?: {
     /**
+     * Sets the maximum max page limit size. Defaults to 100.
+     */
+    maxPageLimit?: number;
+
+    /**
+     * Sets the maximum term length for the search string. Defaults to 100.
+     */
+    maxTermLength?: number;
+
+    /**
      * Options related to the search integration with the Backstage permissions system
      */
     permissions?: {

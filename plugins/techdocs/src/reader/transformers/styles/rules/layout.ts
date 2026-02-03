@@ -19,7 +19,13 @@ import { RuleOptions } from './types';
 const SIDEBAR_WIDTH = '224px';
 
 export default ({ theme, sidebar }: RuleOptions) => `
+
 /*==================  Layout  ==================*/
+
+/* mkdocs material v9 compat */
+.md-nav__title {
+  color: var(--md-default-fg-color);
+}
 
 .md-grid {
   max-width: 100%;
@@ -29,10 +35,13 @@ export default ({ theme, sidebar }: RuleOptions) => `
 .md-nav {
   font-size: calc(var(--md-typeset-font-size) * 0.9);
 }
-.md-nav__link {
+.md-nav__link:not(:has(svg)) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.md-nav__link:has(svg) > .md-ellipsis {
+  flex-grow: 1;
 }
 .md-nav__icon {
   height: 20px !important;
@@ -48,10 +57,20 @@ export default ({ theme, sidebar }: RuleOptions) => `
   width: 20px !important;
   height: 20px !important;
 }
+.md-status--updated::after {
+  -webkit-mask-image: var(--md-status--updated);
+  mask-image: var(--md-status--updated);
+}
 
 .md-nav__item--active > .md-nav__link, a.md-nav__link--active {
   text-decoration: underline;
   color: var(--md-typeset-a-color);
+}
+.md-nav__link--active > .md-status:after {
+  background-color: var(--md-typeset-a-color);
+}
+.md-nav__link[href]:hover > .md-status:after {
+  background-color: var(--md-accent-fg-color);
 }
 
 .md-main__inner {
@@ -62,38 +81,19 @@ export default ({ theme, sidebar }: RuleOptions) => `
   bottom: 75px;
   position: fixed;
   width: 16rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-color: rgb(193, 193, 193) #eee;
-  scrollbar-width: thin;
 }
 .md-sidebar .md-sidebar__scrollwrap {
-  width: calc(12.1rem);
+  width: calc(16rem);
+  height: 100%
+}
+
+@supports selector(::-webkit-scrollbar) {
+  [dir=ltr] .md-sidebar__inner {
+      padding-right: calc(100% - 15.1rem);
+  }
 }
 .md-sidebar--secondary {
   right: ${theme.spacing(3)}px;
-}
-.md-sidebar::-webkit-scrollbar {
-  width: 5px;
-}
-.md-sidebar::-webkit-scrollbar-button {
-  width: 5px;
-  height: 5px;
-}
-.md-sidebar::-webkit-scrollbar-track {
-  background: #eee;
-  border: 1 px solid rgb(250, 250, 250);
-  box-shadow: 0px 0px 3px #dfdfdf inset;
-  border-radius: 3px;
-}
-.md-sidebar::-webkit-scrollbar-thumb {
-  width: 5px;
-  background: rgb(193, 193, 193);
-  border: transparent;
-  border-radius: 3px;
-}
-.md-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgb(125, 125, 125);
 }
 
 .md-content {
@@ -102,14 +102,24 @@ export default ({ theme, sidebar }: RuleOptions) => `
   margin-bottom: 50px;
 }
 
+.md-content > .md-sidebar {
+  left: 16rem;
+}
+
 .md-footer {
   position: fixed;
   bottom: 0px;
+  pointer-events: none;
 }
+
+.md-footer-nav__link, .md-footer__link {
+  pointer-events: all;
+}
+
 .md-footer__title {
   background-color: unset;
 }
-.md-footer-nav__link {
+.md-footer-nav__link, .md-footer__link {
   width: 16rem;
 }
 
@@ -120,6 +130,8 @@ export default ({ theme, sidebar }: RuleOptions) => `
 @media screen and (min-width: 76.25em) {
   .md-sidebar {
     height: auto;
+    /* Less padding before the Previous / Next buttons */
+    padding-bottom: 0 !important;
   }
 }
 
@@ -173,16 +185,20 @@ export default ({ theme, sidebar }: RuleOptions) => `
     height: 100%;
   }
   .md-sidebar--primary {
-    width: 12.1rem !important;
+    width: 16rem !important;
     z-index: 200;
     left: ${
       sidebar.isPinned
-        ? `calc(-12.1rem + ${SIDEBAR_WIDTH})`
-        : 'calc(-12.1rem + 72px)'
+        ? `calc(-16rem + ${SIDEBAR_WIDTH})`
+        : 'calc(-16rem + 72px)'
     } !important;
   }
   .md-sidebar--secondary:not([hidden]) {
     display: none;
+  }
+
+  [data-md-toggle=drawer]:checked~.md-container .md-sidebar--primary {
+    transform: translateX(16rem);
   }
 
   .md-content {
@@ -212,8 +228,22 @@ export default ({ theme, sidebar }: RuleOptions) => `
 
 @media screen and (max-width: 600px) {
   .md-sidebar--primary {
-    left: -12.1rem !important;
-    width: 12.1rem;
+    left: -16rem !important;
+    width: 16rem;
+  }
+}
+
+
+@media print {
+  .md-sidebar,
+  #toggle-sidebar {
+    display: none;
+  }
+
+  .md-content {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
   }
 }
 `;

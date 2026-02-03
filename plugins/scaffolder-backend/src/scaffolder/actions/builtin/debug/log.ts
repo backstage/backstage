@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { readdir, stat } from 'fs-extra';
-import { relative, join } from 'path';
-import { createTemplateAction } from '../../createTemplateAction';
+import { join, relative } from 'node:path';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { examples } from './log.examples';
+import fs from 'node:fs';
+
+const id = 'debug:log';
 
 /**
  * Writes a message into the log or lists all files in the workspace
@@ -29,26 +34,22 @@ import { createTemplateAction } from '../../createTemplateAction';
  * @public
  */
 export function createDebugLogAction() {
-  return createTemplateAction<{ message?: string; listWorkspace?: boolean }>({
-    id: 'debug:log',
+  return createTemplateAction({
+    id,
     description:
-      'Writes a message into the log or lists all files in the workspace.',
+      'Writes a message into the log and/or lists all files in the workspace.',
+    examples,
     schema: {
       input: {
-        type: 'object',
-        properties: {
-          message: {
-            title: 'Message to output.',
-            type: 'string',
-          },
-          listWorkspace: {
-            title: 'List all files in the workspace, if true.',
-            type: 'boolean',
-          },
-          extra: {
-            title: 'Extra info',
-          },
-        },
+        message: z =>
+          z.string({ description: 'Message to output.' }).optional(),
+        listWorkspace: z =>
+          z
+            .union([z.boolean(), z.enum(['with-filenames', 'with-contents'])], {
+              description:
+                'List all files in the workspace. If used with "with-contents", also the file contents are listed.',
+            })
+            .optional(),
       },
     },
     supportsDryRun: true,
@@ -56,14 +57,29 @@ export function createDebugLogAction() {
       ctx.logger.info(JSON.stringify(ctx.input, null, 2));
 
       if (ctx.input?.message) {
-        ctx.logStream.write(ctx.input.message);
+        ctx.logger.info(ctx.input.message);
       }
 
       if (ctx.input?.listWorkspace) {
         const files = await recursiveReadDir(ctx.workspacePath);
-        ctx.logStream.write(
+        ctx.logger.info(
           `Workspace:\n${files
-            .map(f => `  - ${relative(ctx.workspacePath, f)}`)
+            .map(f => {
+              const relativePath = relative(ctx.workspacePath, f);
+              if (ctx.input?.listWorkspace === 'with-contents') {
+                try {
+                  const safePath = resolveSafeChildPath(
+                    ctx.workspacePath,
+                    relativePath,
+                  );
+                  const content = fs.readFileSync(safePath, 'utf-8');
+                  return ` - ${relativePath}:\n\n  ${content}`;
+                } catch {
+                  return ` - ${relativePath}: [skipped]`;
+                }
+              }
+              return `  - ${relativePath}`;
+            })
             .join('\n')}`,
         );
       }

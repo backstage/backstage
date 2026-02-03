@@ -20,13 +20,14 @@ import { rootRouteRef } from '../../routes';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/core-app-api';
-import { Grid, makeStyles } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import { ComponentType, PropsWithChildren } from 'react';
 
 export default {
   title: 'Plugins/Home/Components/CompanyLogo',
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <TestApiProvider
           apis={[
@@ -40,6 +41,7 @@ export default {
         },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 const useLogoStyles = makeStyles(theme => ({

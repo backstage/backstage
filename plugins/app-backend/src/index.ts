@@ -20,4 +20,4 @@
  * @packageDocumentation
  */
 
-export * from './service/router';
+export { appPlugin as default } from './service/appPlugin';

@@ -18,6 +18,7 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
+import { z } from 'zod';
 import { createConditionTransformer } from './createConditionTransformer';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -26,20 +27,22 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-1',
     description: 'Test rule 1',
     resourceType: 'test-resource',
+    paramsSchema: z.object({
+      foo: z.string(),
+      bar: z.number(),
+    }),
     apply: jest.fn(),
-    toQuery: jest.fn(
-      (firstParam: string, secondParam: number) =>
-        `test-rule-1:${firstParam}/${secondParam}`,
-    ),
+    toQuery: jest.fn(({ foo, bar }) => `test-rule-1:${foo}/${bar}`),
   }),
   createPermissionRule({
     name: 'test-rule-2',
     description: 'Test rule 2',
     resourceType: 'test-resource',
+    paramsSchema: z.object({
+      foo: z.string(),
+    }),
     apply: jest.fn(),
-    toQuery: jest.fn(
-      (firstParam: object) => `test-rule-2:${JSON.stringify(firstParam)}`,
-    ),
+    toQuery: jest.fn(({ foo }) => `test-rule-2:${foo}`),
   }),
 ]);
 
@@ -52,7 +55,10 @@ describe('createConditionTransformer', () => {
       conditions: {
         rule: 'test-rule-1',
         resourceType: 'test-resource',
-        params: ['abc', 123],
+        params: {
+          foo: 'abc',
+          bar: 123,
+        },
       },
       expectedResult: 'test-rule-1:abc/123',
     },
@@ -60,9 +66,11 @@ describe('createConditionTransformer', () => {
       conditions: {
         rule: 'test-rule-2',
         resourceType: 'test-resource',
-        params: [{ foo: 0 }],
+        params: {
+          foo: '0',
+        },
       },
-      expectedResult: 'test-rule-2:{"foo":0}',
+      expectedResult: 'test-rule-2:0',
     },
     {
       conditions: {
@@ -70,13 +78,22 @@ describe('createConditionTransformer', () => {
           {
             rule: 'test-rule-1',
             resourceType: 'test-resource',
-            params: ['a', 1],
+            params: {
+              foo: 'a',
+              bar: 1,
+            },
           },
-          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
+          {
+            rule: 'test-rule-2',
+            resourceType: 'test-resource',
+            params: {
+              foo: 'b',
+            },
+          },
         ],
       },
       expectedResult: {
-        anyOf: ['test-rule-1:a/1', 'test-rule-2:{}'],
+        anyOf: ['test-rule-1:a/1', 'test-rule-2:b'],
       },
     },
     {
@@ -85,13 +102,22 @@ describe('createConditionTransformer', () => {
           {
             rule: 'test-rule-1',
             resourceType: 'test-resource',
-            params: ['a', 1],
+            params: {
+              foo: 'a',
+              bar: 1,
+            },
           },
-          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
+          {
+            rule: 'test-rule-2',
+            resourceType: 'test-resource',
+            params: {
+              foo: 'b',
+            },
+          },
         ],
       },
       expectedResult: {
-        allOf: ['test-rule-1:a/1', 'test-rule-2:{}'],
+        allOf: ['test-rule-1:a/1', 'test-rule-2:b'],
       },
     },
     {
@@ -99,11 +125,13 @@ describe('createConditionTransformer', () => {
         not: {
           rule: 'test-rule-2',
           resourceType: 'test-resource',
-          params: [{}],
+          params: {
+            foo: 'a',
+          },
         },
       },
       expectedResult: {
-        not: 'test-rule-2:{}',
+        not: 'test-rule-2:a',
       },
     },
     {
@@ -114,12 +142,17 @@ describe('createConditionTransformer', () => {
               {
                 rule: 'test-rule-1',
                 resourceType: 'test-resource',
-                params: ['a', 1],
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
               },
               {
                 rule: 'test-rule-2',
                 resourceType: 'test-resource',
-                params: [{}],
+                params: {
+                  foo: 'b',
+                },
               },
             ],
           },
@@ -129,61 +162,16 @@ describe('createConditionTransformer', () => {
                 {
                   rule: 'test-rule-1',
                   resourceType: 'test-resource',
-                  params: ['b', 2],
+                  params: {
+                    foo: 'b',
+                    bar: 2,
+                  },
                 },
                 {
                   rule: 'test-rule-2',
                   resourceType: 'test-resource',
-                  params: [{ c: 3 }],
-                },
-              ],
-            },
-          },
-        ],
-      },
-      expectedResult: {
-        allOf: [
-          {
-            anyOf: ['test-rule-1:a/1', 'test-rule-2:{}'],
-          },
-          {
-            not: {
-              allOf: ['test-rule-1:b/2', 'test-rule-2:{"c":3}'],
-            },
-          },
-        ],
-      },
-    },
-    {
-      conditions: {
-        allOf: [
-          {
-            anyOf: [
-              {
-                rule: 'test-rule-1',
-                resourceType: 'test-resource',
-                params: ['a', 1],
-              },
-              {
-                rule: 'test-rule-2',
-                resourceType: 'test-resource',
-                params: [{ b: 2 }],
-              },
-            ],
-          },
-          {
-            not: {
-              allOf: [
-                {
-                  rule: 'test-rule-1',
-                  resourceType: 'test-resource',
-                  params: ['c', 3],
-                },
-                {
-                  not: {
-                    rule: 'test-rule-2',
-                    resourceType: 'test-resource',
-                    params: [{ d: 4 }],
+                  params: {
+                    foo: 'c',
                   },
                 },
               ],
@@ -194,11 +182,71 @@ describe('createConditionTransformer', () => {
       expectedResult: {
         allOf: [
           {
-            anyOf: ['test-rule-1:a/1', 'test-rule-2:{"b":2}'],
+            anyOf: ['test-rule-1:a/1', 'test-rule-2:b'],
           },
           {
             not: {
-              allOf: ['test-rule-1:c/3', { not: 'test-rule-2:{"d":4}' }],
+              allOf: ['test-rule-1:b/2', 'test-rule-2:c'],
+            },
+          },
+        ],
+      },
+    },
+    {
+      conditions: {
+        allOf: [
+          {
+            anyOf: [
+              {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: {
+                  foo: 'a',
+                  bar: 1,
+                },
+              },
+              {
+                rule: 'test-rule-2',
+                resourceType: 'test-resource',
+                params: {
+                  foo: 'b',
+                },
+              },
+            ],
+          },
+          {
+            not: {
+              allOf: [
+                {
+                  rule: 'test-rule-1',
+                  resourceType: 'test-resource',
+                  params: {
+                    foo: 'c',
+                    bar: 3,
+                  },
+                },
+                {
+                  not: {
+                    rule: 'test-rule-2',
+                    resourceType: 'test-resource',
+                    params: {
+                      foo: 'd',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      expectedResult: {
+        allOf: [
+          {
+            anyOf: ['test-rule-1:a/1', 'test-rule-2:b'],
+          },
+          {
+            not: {
+              allOf: ['test-rule-1:c/3', { not: 'test-rule-2:d' }],
             },
           },
         ],

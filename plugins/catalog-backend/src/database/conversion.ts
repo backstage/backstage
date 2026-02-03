@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isDatabaseConflictError } from '@backstage/backend-common';
+import { isDatabaseConflictError } from '@backstage/backend-plugin-api';
 import { ConflictError, InputError } from '@backstage/errors';
 import { DateTime } from 'luxon';
 

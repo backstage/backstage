@@ -15,4 +15,8 @@
  */
 
 export { EntityOwnerPicker } from './EntityOwnerPicker';
-export type { CatalogReactEntityOwnerPickerClassKey } from './EntityOwnerPicker';
+export type {
+  CatalogReactEntityOwnerPickerClassKey,
+  EntityOwnerPickerProps,
+  FixedWidthFormControlLabelClassKey,
+} from './EntityOwnerPicker';

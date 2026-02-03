@@ -18,7 +18,6 @@ import {
   EmptyState,
   ErrorPanel,
   Header,
-  Lifecycle,
   Link,
   Page,
   Progress,
@@ -26,11 +25,12 @@ import {
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
-import useAsync from 'react-use/lib/useAsync';
-import React, { useState } from 'react';
-import { scaffolderApiRef } from '../../api';
-import { rootRouteRef } from '../../routes';
-import { ScaffolderTask } from '../../types';
+import useAsync from 'react-use/esm/useAsync';
+import { useState } from 'react';
+import {
+  scaffolderApiRef,
+  ScaffolderTask,
+} from '@backstage/plugin-scaffolder-react';
 import { OwnerListPicker } from './OwnerListPicker';
 import {
   CreatedAtColumn,
@@ -38,13 +38,32 @@ import {
   TaskStatusColumn,
   TemplateTitleColumn,
 } from './columns';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  rootRouteRef,
+  templatingExtensionsRouteRef,
+} from '../../routes';
+import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
+import { useNavigate } from 'react-router-dom';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+    create?: boolean;
+    templatingExtensions?: boolean;
+  };
 }
 
 const ListTaskPageContent = (props: MyTaskPageProps) => {
   const { initiallySelectedFilter = 'owned' } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+  const [limit, setLimit] = useState(5);
+  const [page, setPage] = useState(0);
 
   const scaffolderApi = useApi(scaffolderApiRef);
   const rootLink = useRouteRef(rootRouteRef);
@@ -52,7 +71,11 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
   const [ownerFilter, setOwnerFilter] = useState(initiallySelectedFilter);
   const { value, loading, error } = useAsync(() => {
     if (scaffolderApi.listTasks) {
-      return scaffolderApi.listTasks?.({ filterByOwnership: ownerFilter });
+      return scaffolderApi.listTasks?.({
+        filterByOwnership: ownerFilter,
+        limit,
+        offset: page * limit,
+      });
     }
 
     // eslint-disable-next-line no-console
@@ -60,8 +83,8 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
       'listTasks is not implemented in the scaffolderApi, please make sure to implement this method.',
     );
 
-    return Promise.resolve({ tasks: [] });
-  }, [scaffolderApi, ownerFilter]);
+    return Promise.resolve({ tasks: [], totalTasks: 0 });
+  }, [scaffolderApi, ownerFilter, limit, page]);
 
   if (loading) {
     return <Progress />;
@@ -69,14 +92,22 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
 
   if (error) {
     return (
-      <>
-        <ErrorPanel error={error} />
-        <EmptyState
-          missing="info"
-          title="No information to display"
-          description="There is no Tasks or there was an issue communicating with backend."
-        />
-      </>
+      <CatalogFilterLayout>
+        <CatalogFilterLayout.Filters>
+          <OwnerListPicker
+            filter={ownerFilter}
+            onSelectOwner={id => setOwnerFilter(id)}
+          />
+        </CatalogFilterLayout.Filters>
+        <CatalogFilterLayout.Content>
+          <ErrorPanel error={error} />
+          <EmptyState
+            missing="info"
+            title={t('listTaskPage.content.emptyState.title')}
+            description={t('listTaskPage.content.emptyState.description')}
+          />
+        </CatalogFilterLayout.Content>
+      </CatalogFilterLayout>
     );
   }
 
@@ -90,18 +121,27 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
       </CatalogFilterLayout.Filters>
       <CatalogFilterLayout.Content>
         <Table<ScaffolderTask>
+          onRowsPerPageChange={pageSize => {
+            setPage(0);
+            setLimit(pageSize);
+          }}
+          onPageChange={newPage => setPage(newPage)}
+          options={{ pageSize: limit, emptyRowsWhenPaging: false }}
           data={value?.tasks ?? []}
-          title="Tasks"
+          page={page}
+          totalCount={value?.totalTasks ?? 0}
+          title={t('listTaskPage.content.tableTitle')}
           columns={[
             {
-              title: 'Task ID',
+              title: t('listTaskPage.content.tableCell.taskID'),
               field: 'id',
               render: row => (
                 <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
               ),
             },
             {
-              title: 'Template',
+              title: t('listTaskPage.content.tableCell.template'),
+              field: 'spec.templateInfo.entity.metadata.title',
               render: row => (
                 <TemplateTitleColumn
                   entityRef={row.spec.templateInfo?.entityRef}
@@ -109,19 +149,19 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
               ),
             },
             {
-              title: 'Created',
+              title: t('listTaskPage.content.tableCell.created'),
               field: 'createdAt',
               render: row => <CreatedAtColumn createdAt={row.createdAt} />,
             },
             {
-              title: 'Owner',
+              title: t('listTaskPage.content.tableCell.owner'),
               field: 'createdBy',
               render: row => (
                 <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
               ),
             },
             {
-              title: 'Status',
+              title: t('listTaskPage.content.tableCell.status'),
               field: 'status',
               render: row => <TaskStatusColumn status={row.status} />,
             },
@@ -133,17 +173,41 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
 };
 
 export const ListTasksPage = (props: MyTaskPageProps) => {
+  const navigate = useNavigate();
+  const editorLink = useRouteRef(editRouteRef);
+  const actionsLink = useRouteRef(actionsRouteRef);
+  const createLink = useRouteRef(rootRouteRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+  const templatingExtensionsLink = useRouteRef(templatingExtensionsRouteRef);
+
+  const scaffolderPageContextMenuProps = {
+    onEditorClicked:
+      props?.contextMenu?.editor !== false
+        ? () => navigate(editorLink())
+        : undefined,
+    onActionsClicked:
+      props?.contextMenu?.actions !== false
+        ? () => navigate(actionsLink())
+        : undefined,
+    onTasksClicked: undefined,
+    onCreateClicked:
+      props?.contextMenu?.create !== false
+        ? () => navigate(createLink())
+        : undefined,
+    onTemplatingExtensionsClicked:
+      props?.contextMenu?.templatingExtensions !== false
+        ? () => navigate(templatingExtensionsLink())
+        : undefined,
+  };
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Templates Tasks"
-        title={
-          <>
-            List template tasks <Lifecycle shorthand alpha />
-          </>
-        }
-        subtitle="All tasks that have been started"
-      />
+        pageTitleOverride={t('listTaskPage.pageTitle')}
+        title={t('listTaskPage.title')}
+        subtitle={t('listTaskPage.subtitle')}
+      >
+        <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
+      </Header>
       <Content>
         <ListTaskPageContent {...props} />
       </Content>

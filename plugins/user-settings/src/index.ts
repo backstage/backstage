@@ -15,14 +15,15 @@
  */
 
 /**
- * A Backstage plugin that provides a settings page
+ * A Backstage plugin that provides various per-user settings functionality.
  *
  * @packageDocumentation
  */
 
+export * from './apis';
 export {
   userSettingsPlugin,
   userSettingsPlugin as plugin,
   UserSettingsPage,
 } from './plugin';
-export * from './components/';
+export * from './components';

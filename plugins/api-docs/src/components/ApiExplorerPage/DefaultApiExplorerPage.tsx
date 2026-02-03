@@ -29,15 +29,20 @@ import {
   EntityKindPicker,
   EntityLifecyclePicker,
   EntityListProvider,
+  EntityListPagination,
   EntityOwnerPicker,
   EntityTagPicker,
   EntityTypePicker,
   UserListFilterKind,
   UserListPicker,
   CatalogFilterLayout,
+  EntityOwnerPickerProps,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import { registerComponentRouteRef } from '../../routes';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { apiDocsTranslationRef } from '../../translation';
 
 const defaultColumns: TableColumn<CatalogTableRow>[] = [
   CatalogTable.columns.createTitleColumn({ hidden: true }),
@@ -58,45 +63,59 @@ export type DefaultApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: EntityListPagination;
 };
 
 /**
  * DefaultApiExplorerPage
  * @public
  */
-export const DefaultApiExplorerPage = ({
-  initiallySelectedFilter = 'all',
-  columns,
-  actions,
-}: DefaultApiExplorerPageProps) => {
+export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
+  const {
+    initiallySelectedFilter = 'all',
+    columns,
+    actions,
+    ownerPickerMode,
+    pagination,
+  } = props;
+
   const configApi = useApi(configApiRef);
-  const generatedSubtitle = `${
-    configApi.getOptionalString('organization.name') ?? 'Backstage'
-  } API Explorer`;
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const generatedSubtitle = t('defaultApiExplorerPage.subtitle', {
+    orgName: configApi.getOptionalString('organization.name') ?? 'Backstage',
+  });
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
 
   return (
     <PageWithHeader
       themeId="apis"
-      title="APIs"
+      title={t('defaultApiExplorerPage.title')}
       subtitle={generatedSubtitle}
-      pageTitleOverride="APIs"
+      pageTitleOverride={t('defaultApiExplorerPage.pageTitleOverride')}
     >
       <Content>
         <ContentHeader title="">
-          <CreateButton
-            title="Register Existing API"
-            to={registerComponentLink?.()}
-          />
-          <SupportButton>All your APIs</SupportButton>
+          {allowed && (
+            <CreateButton
+              title={t('defaultApiExplorerPage.createButtonTitle')}
+              to={registerComponentLink?.()}
+            />
+          )}
+          <SupportButton>
+            {t('defaultApiExplorerPage.supportButtonTitle')}
+          </SupportButton>
         </ContentHeader>
-        <EntityListProvider>
+        <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
               <EntityKindPicker initialFilter="api" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker />
+              <EntityOwnerPicker mode={ownerPickerMode} />
               <EntityLifecyclePicker />
               <EntityTagPicker />
             </CatalogFilterLayout.Filters>

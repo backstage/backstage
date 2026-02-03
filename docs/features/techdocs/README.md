@@ -2,7 +2,6 @@
 id: techdocs-overview
 title: TechDocs Documentation
 sidebar_label: Overview
-# prettier-ignore
 description: TechDocs is Spotify’s homegrown docs-like-code solution built directly into Backstage
 ---
 
@@ -30,16 +29,15 @@ Today, it is one of the core products in Spotify’s developer experience offeri
 
 ### Now
 
-With the Backstage 1.2 release, we have introduced the [TechDocs Addon Framework](https://backstage.io/blog/2022/05/13/techdocs-addon-framework) for augmenting the TechDocs experience at read-time.
-
-In addition to the framework itself, we have open sourced a **ReportIssue** Addon, helping you to create a feedback loop that drives up documentation quality and foster a documentation culture at your organization.
+No current plans.
 
 ### Next
 
-What can we do in TechDocs to help drive up documentation quality? We have many ideas, for example, a Trust Card with associated Trust Score and automatic triggering of documentation maintenance notifications.
+No current plans.
 
 ### Someday/Maybe
 
+- What can we do in TechDocs to help drive up documentation quality? We have many ideas, for example, a Trust Card with associated Trust Score and automatic triggering of documentation maintenance notifications.
 - Contribute to and deploy from a marketplace of TechDocs Addons
 - Addon: MDX (allows you to use JSX in your Markdown content)
 - Can we go static site generator agnostic?
@@ -69,6 +67,9 @@ See [TechDocs Architecture](architecture.md) to get an overview of where the bel
 | Gerrit                       | Yes ✅         |
 | GitLab                       | Yes ✅         |
 | GitLab Enterprise            | Yes ✅         |
+| Gitea                        | Yes ✅         |
+| AWS CodeCommit               | Yes ✅         |
+| Harness Code                 | Yes ✅         |
 
 ### File storage providers
 
@@ -100,7 +101,7 @@ See [TechDocs Architecture](architecture.md) to get an overview of where the bel
 
 ## Get involved
 
-Reach out to us in the **#docs-like-code** channel of our
+Reach out to us in the **#techdocs** channel of our
 [Discord chatroom](https://github.com/backstage/backstage#community).
 
 ## Done
@@ -129,3 +130,9 @@ TechDocs packages:
 - @backstage/plugin-techdocs-backend
 - @backstage/plugin-techdocs-node
 - @techdocs/cli
+
+**TechDocs Addon Framework**
+
+With the Backstage 1.2 release, we introduced the [TechDocs Addon Framework](https://backstage.io/blog/2022/05/13/techdocs-addon-framework) for augmenting the TechDocs experience at read-time.
+
+In addition to the framework itself, we open sourced a **ReportIssue** Addon, helping you to create a feedback loop that drives up documentation quality and foster a documentation culture at your organization.

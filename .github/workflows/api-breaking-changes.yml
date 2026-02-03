@@ -1,0 +1,57 @@
+name: API Breaking Changes (Trigger)
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    paths:
+      - '**/openapi.yaml'
+
+jobs:
+  get-backstage-changes:
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+    name: Build PR image
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Fetch the commit that's merged into the base rather than the target ref
+          # This will let us diff only the contents of the PR, without fetching more history
+          ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
+      - name: fetch base
+        run: git fetch --depth 1 origin ${{ github.base_ref }}
+
+      - name: setup-node
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        with:
+          cache-prefix: linux-v22
+
+      - name: breaking changes check
+        run: |
+          yarn backstage-repo-tools repo schema openapi diff --since origin/${{ github.base_ref }} > comment.md
+          echo "<!-- api-breaking-changes-comment -->" >> comment.md
+
+      - name: clone artifacts to current directory
+        run: |
+          cat ${{ github.event_path }} > event.json
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: preview-spec
+          path: |
+            comment.md
+            event.json
+          retention-days: 2
+          overwrite: true

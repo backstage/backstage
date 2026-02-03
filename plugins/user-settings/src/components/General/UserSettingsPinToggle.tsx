@@ -14,37 +14,42 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import {
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  Switch,
-  Tooltip,
-} from '@material-ui/core';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
 import { useSidebarPinState } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
+/** @public */
 export const UserSettingsPinToggle = () => {
   const { isPinned, toggleSidebarPinState } = useSidebarPinState();
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   return (
     <ListItem>
       <ListItemText
-        primary="Pin Sidebar"
-        secondary="Prevent the sidebar from collapsing"
+        primary={t('pinToggle.title')}
+        secondary={t('pinToggle.description')}
       />
       <ListItemSecondaryAction>
         <Tooltip
           placement="top"
           arrow
-          title={`${isPinned ? 'Unpin' : 'Pin'} Sidebar`}
+          title={
+            isPinned
+              ? t('pinToggle.switchTitles.unpin')
+              : t('pinToggle.switchTitles.pin')
+          }
         >
           <Switch
             color="primary"
             checked={isPinned}
             onChange={() => toggleSidebarPinState()}
             name="pin"
-            inputProps={{ 'aria-label': 'Pin Sidebar Switch' }}
+            inputProps={{ 'aria-label': t('pinToggle.ariaLabelTitle') }}
           />
         </Tooltip>
       </ListItemSecondaryAction>

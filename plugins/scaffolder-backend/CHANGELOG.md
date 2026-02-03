@@ -1,5 +1,5882 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.3-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.3-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.6-next.1
+  - @backstage/plugin-scaffolder-common@1.7.6-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 3.1.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Removed unused dependency
+- 1e669cc: Migrate audit events reference docs to http://backstage.io/docs.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.17-next.0
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18-next.0
+  - @backstage/backend-openapi-utils@0.6.6-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.18-next.0
+  - @backstage/plugin-scaffolder-common@1.7.6-next.0
+
+## 3.1.1
+
+### Patch Changes
+
+- 5012852: Remove unused abort controller in debug:wait action
+- c641c14: Wrap some of the action logic with `resolveSafeChildPath` and improve symlink handling when fetching remote and local files
+- 27f9061: REwrite]
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.4
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.17
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+  - @backstage/plugin-bitbucket-cloud-common@0.3.6
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.18
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.17
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.17
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.17
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.1
+  - @backstage/plugin-scaffolder-common@1.7.5
+
+## 3.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.4-next.1
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-permission-node@0.10.7
+
+## 3.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.1
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.17-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.18-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.17-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.17-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.17-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.1-next.0
+  - @backstage/plugin-scaffolder-common@1.7.5-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.16-next.0
+
+## 3.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.5-next.0
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.19.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-bitbucket-cloud-common@0.3.5
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.15
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.17
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.0
+  - @backstage/plugin-scaffolder-common@1.7.4
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 3.1.0
+
+### Minor Changes
+
+- a4cd405: Add `defaultEnvironment` config to scaffolder to enable more flexible and custom templates. Now it's possible enable access to default parameters and secrets in templates, improving security and reducing complexity.
+
+### Patch Changes
+
+- be5972b: Fixed a bug where config was not passed to NunjucksWorkflowRunner, causing defaultEnvironment to be undefined
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 2bae83a: Updated `isolated-vm` to `6.0.1`
+- 25b560e: Internal change to support new versions of the `logform` library
+- 8f4aded: Fixing OpenAPI definition
+- 1226647: Updated dependency `esbuild` to `^0.27.0`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.0
+  - @backstage/integration@1.19.0
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.5
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.17
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.15
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.16
+  - @backstage/plugin-scaffolder-common@1.7.4
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 3.1.0-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 2bae83a: Updated `isolated-vm` to `6.0.1`
+- 25b560e: Internal change to support new versions of the `logform` library
+- 1226647: Updated dependency `esbuild` to `^0.27.0`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.0-next.1
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/backend-openapi-utils@0.6.4-next.1
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.16-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-bitbucket-cloud-common@0.3.5-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.15-next.1
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.16-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.17-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.16-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.16-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.16-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.3-next.1
+  - @backstage/plugin-scaffolder-common@1.7.4-next.0
+  - @backstage/plugin-scaffolder-node@0.12.2-next.1
+
+## 3.1.0-next.0
+
+### Minor Changes
+
+- a4cd405: Add `defaultEnvironment` config to scaffolder to enable more flexible and custom templates. Now it's possible enable access to default parameters and secrets in templates, improving security and reducing complexity.
+
+### Patch Changes
+
+- 8f4aded: Fixing OpenAPI definition
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/backend-openapi-utils@0.6.4-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.15-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.17-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.10.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.5-next.0
+  - @backstage/plugin-scaffolder-common@1.7.4-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 3.0.1
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.15
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.16
+  - @backstage/plugin-bitbucket-cloud-common@0.3.4
+  - @backstage/integration@1.18.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.10.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-scaffolder-node@0.12.1
+  - @backstage/backend-openapi-utils@0.6.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.14
+  - @backstage/plugin-permission-node@0.10.6
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.15
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.15
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.15
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.15
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.2
+  - @backstage/plugin-scaffolder-common@1.7.3
+
+## 3.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.10.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.14-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.2-next.1
+  - @backstage/backend-openapi-utils@0.6.3-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.15-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.16-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.15-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.15-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.15-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.15-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+
+## 3.0.1-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1-next.0
+  - @backstage/plugin-events-node@0.4.17-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.4-next.0
+  - @backstage/plugin-auth-node@0.6.9-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-openapi-utils@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.14-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.7-next.0
+  - @backstage/plugin-scaffolder-common@1.7.3-next.0
+
+## 3.0.0
+
+### Major Changes
+
+- 9b81a90: **BREAKING** - Removing the deprecated types and interfaces, there's no replacement for these types, and hopefully not currently used as they offer no value with the plugin being on the new backend system and no way to consume them.
+
+  Affected types: `CreateWorkerOptions`, `CurrentClaimedTask`, `DatabaseTaskStore`, `DatabaseTaskStoreOptions`, `TaskManager`, `TaskStore`, `TaskStoreCreateTaskOptions`, `TaskStoreCreateTaskResult`, `TaskStoreEmitOptions`, `TaskStoreListEventsOptions`, `TaskStoreRecoverTaskOptions`, `TaskStoreShutDownTaskOptions`, `TaskWorker` and `TemplateActionRegistry`.
+
+### Patch Changes
+
+- f222a2e: Fixed distributed actions not being visible in the scaffolder template actions.
+
+  Depending on the plugin startup order, some of the distributed actions were not being registered correctly,
+  causing them to be invisible in the scaffolder template actions list.
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0
+  - @backstage/integration@1.18.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.14
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.14
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.15
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.14
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.6
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.14
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.14
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/config@1.3.5
+  - @backstage/plugin-bitbucket-cloud-common@0.3.3
+  - @backstage/backend-openapi-utils@0.6.2
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-auth-node@0.6.8
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.13
+  - @backstage/plugin-catalog-node@1.19.1
+  - @backstage/plugin-events-node@0.4.16
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-node@0.10.5
+  - @backstage/plugin-scaffolder-common@1.7.2
+
+## 3.0.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-defaults@0.13.0-next.1
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-auth-node@0.6.8-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.14-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.15-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.14-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.14-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.14-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.14-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.6-next.1
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+  - @backstage/backend-openapi-utils@0.6.2-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.13-next.1
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-events-node@0.4.16-next.0
+  - @backstage/plugin-scaffolder-common@1.7.2-next.1
+
+## 3.0.0-next.0
+
+### Major Changes
+
+- 9b81a90: **BREAKING** - Removing the deprecated types and interfaces, there's no replacement for these types, and hopefully not currently used as they offer no value with the plugin being on the new backend system and no way to consume them.
+
+  Affected types: `CreateWorkerOptions`, `CurrentClaimedTask`, `DatabaseTaskStore`, `DatabaseTaskStoreOptions`, `TaskManager`, `TaskStore`, `TaskStoreCreateTaskOptions`, `TaskStoreCreateTaskResult`, `TaskStoreEmitOptions`, `TaskStoreListEventsOptions`, `TaskStoreRecoverTaskOptions`, `TaskStoreShutDownTaskOptions`, `TaskWorker` and `TemplateActionRegistry`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.0-next.0
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.14-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.14-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.14-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.14-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.14-next.0
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.3-next.0
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/plugin-scaffolder-common@1.7.2-next.0
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.13-next.0
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/plugin-permission-common@0.9.1
+
+## 2.2.1
+
+### Patch Changes
+
+- a57185f: Added support for executing actions from the `ActionsRegistry` in the `scaffolder-backend`
+- c3405db: Fixed a regression that prevented uploads greater than 100KB. Uploads up to 10MB are supported again.
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.0
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/plugin-auth-node@0.6.7
+  - @backstage/plugin-events-node@0.4.15
+  - @backstage/integration@1.18.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.5
+  - @backstage/types@1.2.2
+  - @backstage/backend-openapi-utils@0.6.1
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-bitbucket-cloud-common@0.3.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.12
+  - @backstage/plugin-permission-node@0.10.4
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.14
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.13
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.13
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.13
+  - @backstage/plugin-scaffolder-common@1.7.1
+  - @backstage/plugin-scaffolder-node@0.11.1
+
+## 2.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.1-next.1
+  - @backstage/plugin-auth-node@0.6.7-next.1
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.12-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.3-next.1
+
+## 2.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.5-next.0
+  - @backstage/plugin-auth-node@0.6.7-next.0
+  - @backstage/backend-defaults@0.12.1-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.14-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.3-next.0
+  - @backstage/plugin-scaffolder-common@1.7.1-next.0
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-permission-node@0.10.4-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.12-next.0
+  - @backstage/backend-openapi-utils@0.6.1-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 2.2.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+- 2032660: Fixed fs:readdir action example
+- 11dc90f: Implement max length for scaffolder auditor audit logging with default of 256
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+
+### Patch Changes
+
+- caee2eb: Fixed WinstonLogger throwing when redactions were null or undefined
+- 4ae87f5: add `getResources` method to `permissionIntegrationRouter` for frontend task permission checks
+- b817c1d: Stop logging of `SPLAT` twice in logs
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0
+  - @backstage/backend-defaults@0.12.0
+  - @backstage/plugin-scaffolder-common@1.7.0
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.4
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.2
+  - @backstage/plugin-auth-node@0.6.6
+  - @backstage/plugin-permission-node@0.10.3
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.11
+  - @backstage/plugin-events-node@0.4.14
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.12
+
+## 2.2.0-next.1
+
+### Minor Changes
+
+- 2032660: Fixed fs:readdir action example
+- 11dc90f: Implement max length for scaffolder auditor audit logging with default of 256
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.2-next.1
+
+## 2.2.0-next.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+
+### Patch Changes
+
+- caee2eb: Fixed WinstonLogger throwing when redactions were null or undefined
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.2-next.0
+  - @backstage/backend-openapi-utils@0.6.0-next.0
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.4-next.0
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/plugin-auth-node@0.6.6-next.0
+  - @backstage/plugin-permission-node@0.10.3-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-events-node@0.4.14-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.1
+  - @backstage/plugin-permission-common@0.9.1
+
+## 2.1.0
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- 424610a: Scaffolder audit Log now includes taskId and createdBy
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- fc70b43: Replaced deprecated uses of `@backstage/backend-common` with the equivalents in `@backstage/backend-defaults` and `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-node@0.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-defaults@0.11.1
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/integration@1.17.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1
+  - @backstage/plugin-scaffolder-common@1.6.0
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.5
+  - @backstage/plugin-bitbucket-cloud-common@0.3.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.10
+  - @backstage/plugin-catalog-node@1.17.2
+  - @backstage/plugin-events-node@0.4.13
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.3
+
+## 2.1.0-next.2
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.6.0-next.1
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.12-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.3-next.2
+
+## 2.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.12-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.3-next.1
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-scaffolder-common@1.5.12-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.10-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- fc70b43: Replaced deprecated uses of `@backstage/backend-common` with the equivalents in `@backstage/backend-defaults` and `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.1-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.0
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1-next.0
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/plugin-permission-node@0.10.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.9
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.12-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.11-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 2.0.0
+
+### Major Changes
+
+- 33394db: **BREAKING CHANGES**
+
+  Removal of deprecated re-exports from module packages.
+
+  The following functions have been re-exported from the `scaffolder-backend` plugin for quite some time, and now it's time to clean them up. They've been moved as follows:
+
+  - `createPublishAzureAction` should be imported from `@backstage/plugin-scaffolder-backend-module-azure` instead.
+
+  - `createPublishBitbucketCloudAction` should be imported from `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud` instead.
+
+  - `createPublishBitbucketServerAction` and `createPublishBitbucketServerPullRequestAction` can be imported from `@backstage/plugin-scaffolder-backend-module-bitbucket-server` instead.
+
+  - `createPublishBitbucketAction` should be imported from `@backstage/plugin-scaffolder-backend-module-bitbucket` instead.
+
+  - `createPublishGerritAction` and `createPublishGerritReviewAction` can be imported from `@backstage/plugin-scaffolder-backend-module-gerrit` instead.
+
+  - `createGithubActionsDispatchAction`, `createGithubDeployKeyAction`, `createGithubEnvironmentAction`, `createGithubIssuesLabelAction`, `CreateGithubPullRequestActionOptions`, `createGithubRepoCreateAction`, `createGithubRepoPushAction`, `createGithubWebhookAction`, and `createPublishGithubAction` can be imported from `@backstage/plugin-scaffolder-backend-module-github` instead.
+
+  - `createPublishGitlabAction` should be imported from `@backstage/plugin-scaffolder-backend-module-gitlab` instead.
+
+  - `ActionContext`. `createTemplateAction`, `executeShellCommand`, `ExecuteShellCommandOptions`, `fetchContents`, `TaskSecrets`, and `TemplateAction` should be imported from `@backstage/plugin-scaffolder-node` instead.
+
+  - `ScaffolderEntitiesProcessor` should be imported from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model` instead.
+
+- a8fcf04: **BREAKING ALPHA**: The `/alpha` export no longer exports the plugin. Please use `import('@backstage/plugin-scaffolder-backend')` instead as this has been removed.
+
+  **BREAKING CHANGES**: The old `createRouter` function which was used in the old backend system has been removed along with the `RouterOptions` type.
+
+- 73b94d7: **BREAKING CHANGES**
+
+  The following functions have been re-exported from the `scaffolder-backend` plugin for quite some time, and now it's time to clean them up. They've been moved as follows:
+
+  - `SerializedTask`, `SerializedTaskEvent`, `TaskBroker`, `TaskBrokerDispatchOptions`, `TaskBrokerDispatchResult`, `TaskCompletionState`, `TaskContext`, `TaskEventType`, `TaskStatus`, `TemplateFilter`, and `TemplateGlobal` should be imported from `@backstage/plugin-scaffolder-node` instead.
+
+  - The deprecated `copyWithoutRender` option has been removed from `fetch:template` action. You should rename the option to `copyWithoutTemplating` instead.
+
+- 5863b04: **BREAKING CHANGES**
+
+  - The `createBuiltinActions` method has been removed, as this should no longer be needed with the new backend system route, and was only useful when passing the default list of actions again in the old backend system. You should be able to rely on the default behaviour of the new backend system which is to merge the actions.
+
+  - The `createCatalogRegisterAction` and `createFetchCatalogEntityAction` actions no longer require an `AuthService`, and now accepts a `CatalogService` instead of `CatalogClient`.
+
+  Unless you're providing your own override action to the default, this should be a non-breaking change.
+
+  You can migrate using the following if you're getting typescript errors:
+
+  ```ts
+  import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  export const myModule = createBackendModule({
+    pluginId: 'scaffolder',
+    moduleId: 'test',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          scaffolder: scaffolderActionsExtensionPoint,
+          catalog: catalogServiceRef,
+        },
+        async init({ scaffolder, catalog }) {
+          scaffolder.addActions(
+            createCatalogRegisterAction({
+              catalog,
+            }),
+            createFetchCatalogEntityAction({
+              catalog,
+              integrations,
+            }),
+          );
+        },
+      });
+    },
+  });
+  ```
+
+### Minor Changes
+
+- 73b94d7: **DEPRECATIONS**
+
+  The following types and implementations have been deprecated, either because they're no longer relevant, or because upcoming changes to the `scaffolder-backend` after `2.0.0` will influence the changes to these API surfaces.
+
+  - `CreateWorkerOptions`
+  - `DatabaseTaskStore`
+  - `DatabaseTaskStoreOptions`
+  - `TaskManager`
+  - `TaskStoreCreateTaskOptions`
+  - `TaskStoreCreateTaskResult`
+  - `TaskStoreEmitOptions`
+  - `TaskStoreListEventsOptions`
+  - `TaskStoreRecoverTaskOptions`
+  - `TaskStoreShutDownTaskOptions`
+
+  There is no current path off deprecation, these types are going to be removed and rethought with a better way to define workers in the new backend system.
+
+### Patch Changes
+
+- 89a941d: Migrating to latest action format
+- 023629e: Enable usage of secrets within 'each' step of software templates. For example, you can now structure your `each` step like this:
+
+  ```
+  each:
+    [
+      { name: "Service1", token: "${{ secrets.token1 }}" },
+      { name: "Service2", token: "${{ secrets.token2 }}" },
+    ]
+  ```
+
+- e92e481: Add tests for Scaffolder
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.10
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.0
+  - @backstage/backend-defaults@0.11.0
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.10
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.10
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.11
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.9
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 2.0.0-next.2
+
+### Major Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  - The `createBuiltinActions` method has been removed, as this should no longer be needed with the new backend system route, and was only useful when passing the default list of actions again in the old backend system. You should be able to rely on the default behaviour of the new backend system which is to merge the actions.
+
+  - The `createCatalogRegisterAction` and `createFetchCatalogEntityAction` actions no longer require an `AuthService`, and now accepts a `CatalogService` instead of `CatalogClient`.
+
+  Unless you're providing your own override action to the default, this should be a non-breaking change.
+
+  You can migrate using the following if you're getting typescript errors:
+
+  ```ts
+  import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  export const myModule = createBackendModule({
+    pluginId: 'scaffolder',
+    moduleId: 'test',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          scaffolder: scaffolderActionsExtensionPoint,
+          catalog: catalogServiceRef,
+        },
+        async init({ scaffolder, catalog }) {
+          scaffolder.addActions(
+            createCatalogRegisterAction({
+              catalog,
+            }),
+            createFetchCatalogEntityAction({
+              catalog,
+              integrations,
+            }),
+          );
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 89a941d: Migrating to latest action format
+- 023629e: Enable usage of secrets within 'each' step of software templates. For example, you can now structure your `each` step like this:
+
+  ```
+  each:
+    [
+      { name: "Service1", token: "${{ secrets.token1 }}" },
+      { name: "Service2", token: "${{ secrets.token2 }}" },
+    ]
+  ```
+
+- e92e481: Add tests for Scaffolder
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.0-next.2
+  - @backstage/backend-defaults@0.11.0-next.2
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.9-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.10-next.2
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 2.0.0-next.1
+
+### Major Changes
+
+- 33394db: **BREAKING CHANGES**
+
+  Removal of deprecated re-exports from module packages.
+
+  The following functions have been re-exported from the `scaffolder-backend` plugin for quite some time, and now it's time to clean them up. They've been moved as follows:
+
+  - `createPublishAzureAction` should be imported from `@backstage/plugin-scaffolder-backend-module-azure` instead.
+
+  - `createPublishBitbucketCloudAction` should be imported from `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud` instead.
+
+  - `createPublishBitbucketServerAction` and `createPublishBitbucketServerPullRequestAction` can be imported from `@backstage/plugin-scaffolder-backend-module-bitbucket-server` instead.
+
+  - `createPublishBitbucketAction` should be imported from `@backstage/plugin-scaffolder-backend-module-bitbucket` instead.
+
+  - `createPublishGerritAction` and `createPublishGerritReviewAction` can be imported from `@backstage/plugin-scaffolder-backend-module-gerrit` instead.
+
+  - `createGithubActionsDispatchAction`, `createGithubDeployKeyAction`, `createGithubEnvironmentAction`, `createGithubIssuesLabelAction`, `CreateGithubPullRequestActionOptions`, `createGithubRepoCreateAction`, `createGithubRepoPushAction`, `createGithubWebhookAction`, and `createPublishGithubAction` can be imported from `@backstage/plugin-scaffolder-backend-module-github` instead.
+
+  - `createPublishGitlabAction` should be imported from `@backstage/plugin-scaffolder-backend-module-gitlab` instead.
+
+  - `ActionContext`. `createTemplateAction`, `executeShellCommand`, `ExecuteShellCommandOptions`, `fetchContents`, `TaskSecrets`, and `TemplateAction` should be imported from `@backstage/plugin-scaffolder-node` instead.
+
+  - `ScaffolderEntitiesProcessor` should be imported from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model` instead.
+
+- a8fcf04: **BREAKING ALPHA**: The `/alpha` export no longer exports the plugin. Please use `import('@backstage/plugin-scaffolder-backend')` instead as this has been removed.
+
+  **BREAKING CHANGES**: The old `createRouter` function which was used in the old backend system has been removed along with the `RouterOptions` type.
+
+- 73b94d7: **BREAKING CHANGES**
+
+  The following functions have been re-exported from the `scaffolder-backend` plugin for quite some time, and now it's time to clean them up. They've been moved as follows:
+
+  - `SerializedTask`, `SerializedTaskEvent`, `TaskBroker`, `TaskBrokerDispatchOptions`, `TaskBrokerDispatchResult`, `TaskCompletionState`, `TaskContext`, `TaskEventType`, `TaskStatus`, `TemplateFilter`, and `TemplateGlobal` should be imported from `@backstage/plugin-scaffolder-node` instead.
+
+  - The deprecated `copyWithoutRender` option has been removed from `fetch:template` action. You should rename the option to `copyWithoutTemplating` instead.
+
+### Minor Changes
+
+- 73b94d7: **DEPRECATIONS**
+
+  The following types and implementations have been deprecated, either because they're no longer relevant, or because upcoming changes to the `scaffolder-backend` after `2.0.0` will influence the changes to these API surfaces.
+
+  - `CreateWorkerOptions`
+  - `DatabaseTaskStore`
+  - `DatabaseTaskStoreOptions`
+  - `TaskManager`
+  - `TaskStoreCreateTaskOptions`
+  - `TaskStoreCreateTaskResult`
+  - `TaskStoreEmitOptions`
+  - `TaskStoreListEventsOptions`
+  - `TaskStoreRecoverTaskOptions`
+  - `TaskStoreShutDownTaskOptions`
+
+  There is no current path off deprecation, these types are going to be removed and rethought with a better way to define workers in the new backend system.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10-next.1
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.11-next.1
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.2-next.1
+  - @backstage/backend-defaults@0.10.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.9-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.33.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10-next.0
+  - @backstage/plugin-scaffolder-node@0.8.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.2-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/backend-defaults@0.10.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.2-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.9-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+  - @backstage/plugin-permission-node@0.10.1-next.0
+
+## 1.33.0
+
+### Minor Changes
+
+- 587cb05: Added `workspace:template` and `workspace:template:file` actions to complement respective `fetch:*` actions
+
+### Patch Changes
+
+- eb39388: Fixed bug in fs:delete that prevented wildcard patterns from matching paths starting with "."
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- 72d019d: Removed various typos
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1
+  - @backstage/backend-defaults@0.10.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8
+  - @backstage/plugin-events-node@0.4.11
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.33.0-next.3
+
+### Patch Changes
+
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.3
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/plugin-scaffolder-node@0.8.2-next.3
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0-next.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8-next.2
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-events-node@0.4.11-next.2
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1-next.3
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.33.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/backend-defaults@0.10.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.2
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1-next.2
+  - @backstage/plugin-scaffolder-node@0.8.2-next.2
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8-next.1
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.33.0-next.1
+
+### Minor Changes
+
+- 587cb05: Added `workspace:template` and `workspace:template:file` actions to complement respective `fetch:*` actions
+
+### Patch Changes
+
+- eb39388: Fixed bug in fs:delete that prevented wildcard patterns from matching paths starting with "."
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.1
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0-next.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9-next.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.32.2-next.0
+
+### Patch Changes
+
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-defaults@0.9.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.32.0
+
+### Minor Changes
+
+- 75e4db4: add template-extensions scaffolder service endpoint
+
+### Patch Changes
+
+- 8685cab: Added `template` and `step` labels for scaffolder histogram metrics: `scaffolder_task_duration` and `scaffolder_step_duration`
+- 497d47a: Document the internal built-in filters, and ensure that the types are validated when using `createTemplateFilter` and `createTemplateGlobalFunction` from the `zod` schema.
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.0
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.8
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.9
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.0
+  - @backstage/plugin-scaffolder-node@0.8.1
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.8
+  - @backstage/integration@1.16.3
+  - @backstage/plugin-auth-node@0.6.2
+  - @backstage/plugin-permission-node@0.9.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.7
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.29
+  - @backstage/plugin-events-node@0.4.10
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.8
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.8
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.8
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.32.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.0
+  - @backstage/backend-defaults@0.9.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.2-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.7-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.29-next.0
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.2-next.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+
+## 1.32.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.2-next.1
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/backend-defaults@0.9.0-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.29-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.2-next.1
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.6
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.32.0-next.0
+
+### Minor Changes
+
+- 75e4db4: add template-extensions scaffolder service endpoint
+
+### Patch Changes
+
+- 497d47a: Document the internal built-in filters, and ensure that the types are validated when using `createTemplateFilter` and `createTemplateGlobalFunction` from the `zod` schema.
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.2-next.0
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.8-next.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.28
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.6
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.2-next.0
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.31.0
+
+### Minor Changes
+
+- 36677bb: Support new `createTemplateAction` type, and convert `catalog:fetch` action to new way of defining actions.
+- 2b1e50d: use CreatedTemplate[Filter|Global*] as canonical template extensions in scaffolder plugin
+
+### Patch Changes
+
+- e0b226b: build(deps): bump `esbuild` from 0.24.2 to 0.25.0
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- 59dcf37: Fixed bug in fs:delete causing no files to be deleted on windows machines
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.1
+  - @backstage/integration@1.16.2
+  - @backstage/backend-defaults@0.8.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.7
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.1
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.7
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.8
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.7
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.7
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.7
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.28
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.6
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.31.0-next.2
+
+### Minor Changes
+
+- 36677bb: Support new `createTemplateAction` type, and convert `catalog:fetch` action to new way of defining actions.
+- 2b1e50d: use CreatedTemplate[Filter|Global*] as canonical template extensions in scaffolder plugin
+
+### Patch Changes
+
+- e0b226b: build(deps): bump `esbuild` from 0.24.2 to 0.25.0
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- 59dcf37: Fixed bug in fs:delete causing no files to be deleted on windows machines
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.7-next.2
+  - @backstage/plugin-scaffolder-node@0.8.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.1-next.2
+  - @backstage/backend-defaults@0.8.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.7-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.8-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.7-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.7-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.7-next.2
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/plugin-events-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.28-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.6-next.1
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.9-next.1
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+
+## 1.30.1-next.1
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.1-next.1
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.1
+  - @backstage/backend-defaults@0.8.2-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.6-next.1
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-events-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.7-next.1
+
+## 1.30.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2-next.0
+  - @backstage/plugin-permission-node@0.8.9-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.16.1-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.6-next.0
+  - @backstage/plugin-events-node@0.4.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.1-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.7-next.0
+
+## 1.30.0
+
+### Minor Changes
+
+- dc8dd4b: Added new `createTemplateFilter`, `createTemplateGlobalFunction`, `createTemplateGlobalValue` for template extensions.
+- a4aa244: This change integrates the `auditor` service into the Scaffolder plugin.
+- 3d6ef79: Support file globbing in fs:delete
+- 91f3313: Added experimental flag for scaffolder to wait for running tasks to complete on shutdown
+
+  Enabling the `EXPERIMENTAL_gracefulShutdown` flag in the scaffolder config will make the
+  scaffolder block the shutdown process until all running tasks have completed. This is useful
+  when there is a need to ensure that all tasks have completed before the scaffolder is shut down.
+
+  Please note, that the `TaskWorker` `stop` method is now asynchronous and awaited for the
+  tasks to complete when the experimental flag is enabled.
+
+### Patch Changes
+
+- 37ab712: Fixed an issue where invalid expressions or non-object values in `step.each` caused an error.
+- 1e935f0: Added conditional rendering of `oneOf` output schemas on the Installed Actions page for scaffolder actions
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.0
+  - @backstage/backend-defaults@0.8.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.0
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-catalog-node@1.16.0
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/plugin-scaffolder-node@0.7.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.5
+  - @backstage/plugin-events-node@0.4.8
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.7
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.6
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.6
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.30.0-next.3
+
+### Minor Changes
+
+- dc8dd4b: Added new `createTemplateFilter`, `createTemplateGlobalFunction`, `createTemplateGlobalValue` for template extensions.
+- 3d6ef79: Support file globbing in fs:delete
+
+### Patch Changes
+
+- 1e935f0: Added conditional rendering of `oneOf` output schemas on the Installed Actions page for scaffolder actions
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.0-next.2
+  - @backstage/plugin-catalog-node@1.16.0-next.3
+  - @backstage/plugin-permission-node@0.8.8-next.2
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-defaults@0.8.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.5-next.3
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/plugin-events-node@0.4.8-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.7-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.6-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.30.0-next.2
+
+### Minor Changes
+
+- 91f3313: Added experimental flag for scaffolder to wait for running tasks to complete on shutdown
+
+  Enabling the `EXPERIMENTAL_gracefulShutdown` flag in the scaffolder config will make the
+  scaffolder block the shutdown process until all running tasks have completed. This is useful
+  when there is a need to ensure that all tasks have completed before the scaffolder is shut down.
+
+  Please note, that the `TaskWorker` `stop` method is now asynchronous and awaited for the
+  tasks to complete when the experimental flag is enabled.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.0-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.6.0-next.1
+  - @backstage/backend-defaults@0.8.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.5-next.2
+  - @backstage/plugin-catalog-node@1.16.0-next.2
+  - @backstage/plugin-events-node@0.4.8-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.6-next.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+  - @backstage/plugin-scaffolder-node@0.7.0-next.1
+
+## 1.30.0-next.1
+
+### Patch Changes
+
+- 37ab712: Fixed an issue where invalid expressions or non-object values in `step.each` caused an error.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.0-next.1
+  - @backstage/plugin-catalog-node@1.16.0-next.1
+  - @backstage/backend-defaults@0.8.0-next.1
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.5-next.1
+  - @backstage/plugin-events-node@0.4.8-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.6-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+
+## 1.30.0-next.0
+
+### Minor Changes
+
+- a4aa244: This change integrates the `auditor` service into the Scaffolder plugin.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/backend-defaults@0.8.0-next.0
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.5-next.0
+  - @backstage/plugin-events-node@0.4.8-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.2-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.29.0
+
+### Minor Changes
+
+- 5d9e5c8: Added the ability to use `${{ context.task.id }}` in nunjucks templating, as well as `ctx.task.id` in actions to get the current task ID.
+
+### Patch Changes
+
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.5
+  - @backstage/backend-defaults@0.7.0
+  - @backstage/plugin-scaffolder-node@0.6.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.1
+  - @backstage/plugin-permission-node@0.8.7
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.4
+  - @backstage/plugin-catalog-node@1.15.1
+  - @backstage/plugin-events-node@0.4.7
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.5
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.29.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-defaults@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9-next.0
+  - @backstage/plugin-scaffolder-node@0.6.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.1-next.1
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.5-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.5-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.5-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.5-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.5-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.5-next.2
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/integration@1.16.1-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.27-next.0
+
+## 1.29.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.5-next.1
+
+## 1.29.0-next.0
+
+### Minor Changes
+
+- 5d9e5c8: Added the ability to use `${{ context.task.id }}` in nunjucks templating, as well as `ctx.task.id` in actions to get the current task ID.
+
+### Patch Changes
+
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- Updated dependencies
+  - @backstage/backend-defaults@0.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.6.3-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.26
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.4-next.0
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-events-node@0.4.7-next.0
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.1-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8
+
+## 1.28.0
+
+### Minor Changes
+
+- c05a343: Emit scaffolder events using the optional `EventsService`
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- 3c62a50: Experimental support for `formDecorators` to enable secret collection and mutations to the parameters for scaffolder tasks
+- 6c326cf: The --no-node-snapshot check needs to be done against process.execArgv instead of process.argv
+- e913fdf: Add github backend module to create-app and improve error messages
+- 8f59dc5: Add fs:readdir to scaffolder startup
+- 0851834: Resolved an issue where the `templateManagementPermission` was not being exposed through the `/permissions/metadata` endpoint.
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.4
+  - @backstage/integration@1.16.0
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/plugin-scaffolder-common@1.5.8
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.4
+  - @backstage/plugin-scaffolder-node@0.6.2
+  - @backstage/catalog-client@1.9.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.4
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.4
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.4
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.26
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.3
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.4
+
+## 1.28.0-next.2
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- 6c326cf: The --no-node-snapshot check needs to be done against process.execArgv instead of process.argv
+- e913fdf: Add github backend module to create-app and improve error messages
+- 0851834: Resolved an issue where the `templateManagementPermission` was not being exposed through the `/permissions/metadata` endpoint.
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.2
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.4-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.3-next.2
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.5-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.0-next.2
+  - @backstage/plugin-scaffolder-node@0.6.2-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.26-next.1
+  - @backstage/plugin-permission-common@0.8.3-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.1
+
+## 1.28.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/backend-defaults@0.6.0-next.1
+  - @backstage/plugin-catalog-node@1.15.0-next.1
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/plugin-scaffolder-node@0.6.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.5-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.4-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-permission-node@0.8.6-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.26-next.0
+  - @backstage/plugin-events-node@0.4.6-next.1
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+
+## 1.28.0-next.0
+
+### Minor Changes
+
+- c05a343: Emit scaffolder events using the optional `EventsService`
+
+### Patch Changes
+
+- 3c62a50: Experimental support for `formDecorators` to enable secret collection and mutations to the parameters for scaffolder tasks
+- 8f59dc5: Add fs:readdir to scaffolder startup
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.0
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-events-node@0.4.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.7.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.3-next.0
+  - @backstage/plugin-scaffolder-node@0.6.1-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.4-next.0
+  - @backstage/catalog-client@1.8.1-next.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.26-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.3-next.0
+  - @backstage/plugin-catalog-node@1.14.1-next.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-permission-node@0.8.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.3-next.0
+
+## 1.27.0
+
+### Minor Changes
+
+- 0587633: Bumped the `isolated-vm` dependency from v4 to v5, which drops support for Node.js v16.
+- e61d5ef: BREAKING EXPERIMENTAL: The `checkpoint` method now takes an object instead of previous arguments.
+
+  ```ts
+  await ctx.checkpoint({ key: 'repo.create', fn: () => ockokit.repo.create({...})})
+  ```
+
+  You can also now return `void` from the checkpoint if the method returns `void` inside the `checkpoint` handler.
+
+### Patch Changes
+
+- 6aa5b98: Fix tasks listing with postgres
+- 59137ff: Fix issue with token not being available because it's now non-enumerable
+- c5e39e7: Internal refactor to use the deferred from the types package
+- e4f5d95: Align with type declaration of template filter/global function by supporting undefined as return value.
+- d52d7f9: Support ISO and ms string forms of durations in config too
+- 7ab3371: Modified `createDryRunner` and corresponding route to include `templateMetaData` inside the `templateInfo`. This allows custom action writers to access things like `templateInfo.entity.metadata.name` via the action context while executing templates using the dry run framework.
+- 4e58bc7: Upgrade to uuid v11 internally
+- 2dae341: Add new `fs:readdir` action to list current content of the workspace
+- 97ba58f: Add example template for notification sending
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0
+  - @backstage/config@1.3.0
+  - @backstage/backend-defaults@0.5.3
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.1
+  - @backstage/plugin-scaffolder-common@1.5.7
+  - @backstage/plugin-auth-node@0.5.4
+  - @backstage/plugin-bitbucket-cloud-common@0.2.25
+  - @backstage/plugin-catalog-node@1.14.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.2
+  - @backstage/plugin-scaffolder-node@0.6.0
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.2
+  - @backstage/plugin-permission-node@0.8.5
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.2
+
+## 1.27.0-next.3
+
+### Patch Changes
+
+- 7ab3371: Modified `createDryRunner` and corresponding route to include `templateMetaData` inside the `templateInfo`. This allows custom action writers to access things like `templateInfo.entity.metadata.name` via the action context while executing templates using the dry run framework.
+- 2dae341: Add new `fs:readdir` action to list current content of the workspace
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.7-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.25-next.0
+  - @backstage/backend-defaults@0.5.3-next.3
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.4-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.2-next.3
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.1-next.3
+  - @backstage/plugin-scaffolder-node@0.5.1-next.3
+
+## 1.27.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.8.0-next.1
+  - @backstage/backend-defaults@0.5.3-next.2
+  - @backstage/plugin-auth-node@0.5.4-next.2
+  - @backstage/plugin-catalog-node@1.14.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.2-next.2
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.24
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.2-next.2
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.1-next.2
+  - @backstage/plugin-scaffolder-common@1.5.6
+  - @backstage/plugin-scaffolder-node@0.5.1-next.2
+
+## 1.27.0-next.1
+
+### Minor Changes
+
+- 0587633: Bumped the `isolated-vm` dependency from v4 to v5, which drops support for Node.js v16.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.2-next.1
+  - @backstage/backend-defaults@0.5.3-next.1
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.4-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.24
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.2-next.1
+  - @backstage/plugin-catalog-node@1.14.0-next.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.1-next.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+  - @backstage/plugin-scaffolder-node@0.5.1-next.1
+
+## 1.26.3-next.0
+
+### Patch Changes
+
+- 6aa5b98: Fix tasks listing with postgres
+- 59137ff: Fix issue with token not being available because it's now non-enumerable
+- e4f5d95: Align with type declaration of template filter/global function by supporting undefined as return value.
+- 97ba58f: Add example template for notification sending
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.4-next.0
+  - @backstage/plugin-catalog-node@1.14.0-next.0
+  - @backstage/backend-defaults@0.5.3-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.24
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.2-next.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.1-next.0
+  - @backstage/plugin-scaffolder-common@1.5.6
+  - @backstage/plugin-scaffolder-node@0.5.1-next.0
+
+## 1.26.0
+
+### Minor Changes
+
+- 3ec4e6d: Added pagination support for listing of tasks and the ability to filter on several users and task statuses.
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+
+### Patch Changes
+
+- 734c2d4: Add `fetch:template:file` scaffolder action to download a single file and template the contents. Example usage:
+
+  ```yaml
+  - id: fetch-file
+    name: Fetch File
+    action: fetch:template:file
+    input:
+      url: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/create-react-app/skeleton/catalog-info.yaml
+      targetPath: './target/catalog-info.yaml'
+      values:
+        component_id: My Component
+        owner: Test
+  ```
+
+- f1f0076: handle step.if: false
+- 2f90932: Include step name and step id to checkpoint key
+- 094eaa3: Remove references to in-repo backend-common
+- 8f0898b: Updated dependency `esbuild` to `^0.24.0`.
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.1
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.0
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.1
+  - @backstage/plugin-permission-node@0.8.4
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/integration@1.15.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.1
+  - @backstage/catalog-client@1.7.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.24
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.26.0-next.2
+
+### Patch Changes
+
+- f1f0076: handle step.if: false
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.1-next.2
+  - @backstage/backend-defaults@0.5.1-next.2
+  - @backstage/plugin-auth-node@0.5.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.1-next.2
+  - @backstage/plugin-catalog-node@1.13.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.6.0-next.2
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.1-next.2
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/plugin-scaffolder-node@0.5.0-next.2
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.24-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.1-next.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.1-next.2
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.26.0-next.1
+
+### Patch Changes
+
+- 2f90932: Include step name and step id to checkpoint key
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1-next.1
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.1-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.3-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.24-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.1-next.0
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.5.1-next.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+  - @backstage/plugin-scaffolder-node@0.5.0-next.1
+
+## 1.26.0-next.0
+
+### Minor Changes
+
+- 3ec4e6d: Added pagination support for listing of tasks and the ability to filter on several users and task statuses.
+
+### Patch Changes
+
+- 734c2d4: Add `fetch:template:file` scaffolder action to download a single file and template the contents. Example usage:
+
+  ```yaml
+  - id: fetch-file
+    name: Fetch File
+    action: fetch:template:file
+    input:
+      url: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/create-react-app/skeleton/catalog-info.yaml
+      targetPath: './target/catalog-info.yaml'
+      values:
+        component_id: My Component
+        owner: Test
+  ```
+
+- 094eaa3: Remove references to in-repo backend-common
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.5.1-next.0
+  - @backstage/backend-defaults@0.5.1-next.0
+  - @backstage/plugin-permission-node@0.8.4-next.0
+  - @backstage/plugin-auth-node@0.5.3-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.23
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.1-next.0
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.1-next.0
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.25.0
+
+### Minor Changes
+
+- df9ae9e: Added scaffolder action publish:bitbucketCloud:pull-request
+- 62898bd: `createRouter` and its related types has been marked as deprecared. This backend should instead be initialized using the new backend system.
+
+### Patch Changes
+
+- f0c6b25: Allow listing file contents with `debug:log` scaffolder action
+- c160951: Found the issue during testing the clean up of the workspace for the database implementation.
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- f865103: Updated dependency `esbuild` to `^0.23.0`.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- 7976081: Added support for all request parameters in the Github create/update environment API in the Github environment create scaffolder action.
+
+  Disable MultiEntityPicker when `maxItems` limit is reached defined in `JSONSchema`
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-auth-node@0.5.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.5.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/plugin-permission-node@0.8.3
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.0
+  - @backstage/integration@1.15.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.23
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+  - @backstage/plugin-scaffolder-node@0.4.11
+
+## 1.25.0-next.2
+
+### Minor Changes
+
+- df9ae9e: Added scaffolder action publish:bitbucketCloud:pull-request
+
+### Patch Changes
+
+- f0c6b25: Allow listing file contents with `debug:log` scaffolder action
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-defaults@0.5.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.5.0-next.2
+  - @backstage/plugin-auth-node@0.5.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.0-next.2
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/plugin-permission-node@0.8.3-next.2
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.23-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.0-next.2
+  - @backstage/plugin-catalog-node@1.12.7-next.2
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.0-next.2
+  - @backstage/plugin-scaffolder-common@1.5.5
+  - @backstage/plugin-scaffolder-node@0.4.11-next.2
+
+## 1.25.0-next.1
+
+### Patch Changes
+
+- f865103: Updated dependency `esbuild` to `^0.23.0`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0-next.1
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.0-next.1
+  - @backstage/plugin-catalog-node@1.12.7-next.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.5.0-next.1
+  - @backstage/plugin-scaffolder-common@1.5.5
+  - @backstage/plugin-scaffolder-node@0.4.11-next.1
+
+## 1.25.0-next.0
+
+### Minor Changes
+
+- 62898bd: `createRouter` and its related types has been marked as deprecared. This backend should instead be initialized using the new backend system.
+
+### Patch Changes
+
+- c160951: Found the issue during testing the clean up of the workspace for the database implementation.
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/backend-defaults@0.5.0-next.0
+  - @backstage/plugin-permission-node@0.8.3-next.0
+  - @backstage/backend-common@0.25.0-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.5.0-next.0
+  - @backstage/plugin-auth-node@0.5.2-next.0
+  - @backstage/plugin-catalog-node@1.12.7-next.0
+  - @backstage/plugin-scaffolder-node@0.4.11-next.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-common@1.5.5
+
+## 1.24.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+- dcd6a79: Added OpenTelemetry support to Scaffolder metrics
+
+### Patch Changes
+
+- 389f5a4: Update deprecated url-reader-related imports.
+- c544f81: Add support for status filtering in scaffolder tasks endpoint
+- b63d378: Update internal imports
+- ef87e06: Fix scaffolder action `catalog:write` to write to directories that don't already exist
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.1
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-scaffolder-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.13
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.15
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.13
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.15
+  - @backstage/plugin-permission-node@0.8.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.5
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/integration@1.14.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.21
+  - @backstage/plugin-scaffolder-common@1.5.5
+
+## 1.23.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.13-next.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.15-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.5-next.3
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.1-next.3
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.13-next.3
+  - @backstage/backend-tasks@0.5.28-next.3
+  - @backstage/catalog-client@1.6.6-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.0-next.3
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.21-next.3
+  - @backstage/plugin-catalog-node@1.12.5-next.3
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-permission-node@0.8.1-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.13-next.3
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.15-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.13-next.3
+  - @backstage/plugin-scaffolder-common@1.5.5-next.2
+  - @backstage/plugin-scaffolder-node@0.4.9-next.3
+
+## 1.23.1-next.2
+
+### Patch Changes
+
+- c544f81: Add support for status filtering in scaffolder tasks endpoint
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-scaffolder-node@0.4.9-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.13-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.13-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.13-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.15-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.13-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/plugin-permission-node@0.8.1-next.2
+  - @backstage/backend-tasks@0.5.28-next.2
+  - @backstage/plugin-catalog-node@1.12.5-next.2
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.21-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.15-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.5-next.2
+  - @backstage/plugin-scaffolder-common@1.5.5-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.23.1-next.1
+
+### Patch Changes
+
+- ef87e06: Fix scaffolder action `catalog:write` to write to directories that don't already exist
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.13-next.1
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/plugin-permission-node@0.8.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.13-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/plugin-catalog-node@1.12.5-next.1
+  - @backstage/plugin-scaffolder-common@1.5.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.13-next.1
+  - @backstage/backend-tasks@0.5.28-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.21-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.15-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.13-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.15-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.5-next.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
+## 1.23.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.5-next.0
+  - @backstage/plugin-catalog-node@1.12.5-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/backend-tasks@0.5.28-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.21-next.0
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.15-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.1-next.0
+  - @backstage/plugin-scaffolder-common@1.5.4
+  - @backstage/plugin-scaffolder-node@0.4.9-next.0
+
+## 1.23.0
+
+### Minor Changes
+
+- b5deed0: Add support for `autocomplete` extension point to provide additional `autocomplete` handlers
+- 0b52438: Serialization of the scaffolder workspace into GCP bucket
+
+### Patch Changes
+
+- b9451dd: Updated `catalog:write` scaffolder action to show correct file path location in log message
+- ff1bb4c: Added a documentation how to use checkpoints
+- da90cce: Updated dependency `esbuild` to `^0.21.0`.
+- 62d1fe3: Fix user entity not being fetched for scaffolder dry runner
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/backend-tasks@0.5.27
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.0
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.12
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.14
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.12
+  - @backstage/plugin-bitbucket-cloud-common@0.2.21
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.20
+  - @backstage/plugin-catalog-node@1.12.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.14
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.12
+  - @backstage/plugin-scaffolder-common@1.5.4
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.23.0-next.2
+
+### Patch Changes
+
+- ff1bb4c: Added a documentation how to use checkpoints
+
+## 1.23.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.4-next.1
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/backend-tasks@0.5.27-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.17-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.21-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.20-next.1
+  - @backstage/plugin-catalog-node@1.12.4-next.1
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-node@0.7.33-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.14-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.12-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.12-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.12-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.14-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.12-next.1
+  - @backstage/plugin-scaffolder-common@1.5.3
+  - @backstage/plugin-scaffolder-node@0.4.8-next.1
+
+## 1.23.0-next.0
+
+### Minor Changes
+
+- b5deed0: Add support for `autocomplete` extension point to provide additional `autocomplete` handlers
+- 0b52438: Serialization of the scaffolder workspace into GCP bucket
+
+### Patch Changes
+
+- da90cce: Updated dependency `esbuild` to `^0.21.0`.
+- 62d1fe3: Fix user entity not being fetched for scaffolder dry runner
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/backend-tasks@0.5.26-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.11-next.0
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.13-next.0
+  - @backstage/plugin-scaffolder-node@0.4.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.11-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.21-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.0-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.19-next.0
+  - @backstage/plugin-catalog-node@1.12.3-next.0
+  - @backstage/plugin-permission-node@0.7.32-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.11-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-scaffolder-common@1.5.3
+
+## 1.22.9
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- 5c65785: Fixing issues with log redaction in the scaffolder logs
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 7d30d95: Fixing issue with log meta fields possibly being circular refs
+- d617103: Updating the logger redaction message to something less dramatic
+- f4c8486: Increase max wait time in debug:wait action to 10 minutes
+- bcec60f: added the following new permissions to the scaffolder backend endpoints:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-scaffolder-backend-module-github@0.3.0
+  - @backstage/integration@1.12.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.17
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.9
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.11
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.11
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.9
+  - @backstage/plugin-catalog-node@1.12.1
+  - @backstage/plugin-permission-node@0.7.30
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-scaffolder-common@1.5.3
+  - @backstage/plugin-scaffolder-node@0.4.5
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.22.8-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- f4c8486: Increase max wait time in debug:wait action to 10 minutes
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.17-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.3.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.1-next.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.9-next.3
+  - @backstage/plugin-permission-common@0.7.14-next.0
+  - @backstage/plugin-scaffolder-common@1.5.3-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.3
+  - @backstage/plugin-scaffolder-node@0.4.5-next.3
+  - @backstage/plugin-catalog-node@1.12.1-next.2
+  - @backstage/backend-tasks@0.5.24-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.22.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.1-next.2
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/integration@1.12.0-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.3.0-next.2
+  - @backstage/backend-tasks@0.5.24-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.17-next.2
+  - @backstage/plugin-catalog-node@1.12.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.9-next.2
+  - @backstage/plugin-scaffolder-node@0.4.5-next.2
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-scaffolder-common@1.5.3-next.0
+
+## 1.22.8-next.1
+
+### Patch Changes
+
+- bcec60f: added the following new permissions to the scaffolder backend endpoints:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.24-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.9-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.1-next.1
+  - @backstage/plugin-scaffolder-common@1.5.3-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.17-next.1
+  - @backstage/plugin-catalog-node@1.12.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.9-next.1
+  - @backstage/plugin-scaffolder-node@0.4.5-next.1
+
+## 1.22.8-next.0
+
+### Patch Changes
+
+- 7d30d95: Fixing issue with log meta fields possibly being circular refs
+- d617103: Updating the logger redaction message to something less dramatic
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.24-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.9-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.1-next.0
+  - @backstage/plugin-scaffolder-node@0.4.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.9-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.17-next.0
+  - @backstage/plugin-catalog-node@1.12.1-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.11.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-scaffolder-common@1.5.2
+
+## 1.22.6
+
+### Patch Changes
+
+- 131e5cb: Fix broken links in README.
+- 025641b: Fix issue with the log format not being respected when logging from actions
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- e4b50ab: Scaffolder workspace serialization
+- 025641b: Redact `meta` fields too with the logger
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.2
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.8
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-scaffolder-node@0.4.4
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.8
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/integration@1.11.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.16
+  - @backstage/plugin-permission-node@0.7.29
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.10
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.8
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.10
+
+## 1.22.6-next.2
+
+### Patch Changes
+
+- e4b50ab: Scaffolder workspace serialization
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.0-next.2
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-scaffolder-node@0.4.4-next.2
+  - @backstage/integration@1.11.0-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.16-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.8-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.8-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.8-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.8-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.8-next.2
+
+## 1.22.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.2-next.1
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.16-next.1
+  - @backstage/plugin-scaffolder-node@0.4.4-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/plugin-permission-node@0.7.29-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.8-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 1.22.5-next.0
+
+### Patch Changes
+
+- 025641b: Fix issue with the log format not being respected when logging from actions
+- 025641b: Redact `meta` fields too with the logger
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.8-next.0
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.8-next.0
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.16-next.0
+  - @backstage/plugin-catalog-node@1.11.2-next.0
+  - @backstage/plugin-scaffolder-common@1.5.2-next.0
+  - @backstage/plugin-scaffolder-node@0.4.4-next.0
+  - @backstage/backend-tasks@0.5.23-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-node@0.7.29-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.10-next.0
+
+## 1.22.4
+
+### Patch Changes
+
+- f34a9b1: The `catalog:write` action now automatically adds a `backstage.io/template-source` annotation, indicating which Scaffolder template was used to create the entity.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-permission-node@0.7.28
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.7
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.7
+  - @backstage/backend-tasks@0.5.22
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.9
+  - @backstage/plugin-auth-node@0.4.12
+  - @backstage/catalog-client@1.6.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.7
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.9
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.7
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-scaffolder-node@0.4.3
+  - @backstage/plugin-catalog-node@1.11.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.15
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-scaffolder-common@1.5.1
+
+## 1.22.4-next.1
+
+### Patch Changes
+
+- f34a9b1: The `catalog:write` action now automatically adds a `backstage.io/template-source` annotation, indicating which Scaffolder template was used to create the entity.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.7-next.1
+  - @backstage/backend-tasks@0.5.22-next.1
+  - @backstage/plugin-permission-node@0.7.28-next.1
+  - @backstage/plugin-scaffolder-node@0.4.3-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.15-next.1
+  - @backstage/plugin-catalog-node@1.11.1-next.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.9-next.1
+  - @backstage/plugin-scaffolder-common@1.5.1
+
+## 1.22.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.7-next.0
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.7-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/backend-tasks@0.5.22-next.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.12-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.15-next.0
+  - @backstage/plugin-catalog-node@1.11.1-next.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-node@0.7.28-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.3-next.0
+  - @backstage/plugin-scaffolder-common@1.5.1
+  - @backstage/plugin-scaffolder-node@0.4.3-next.0
+
+## 1.22.3
+
+### Patch Changes
+
+- c74c2de: Fixed an issue causing actions to fail when retrieving auth credentials
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.14
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.2
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/plugin-permission-node@0.7.27
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.6
+  - @backstage/plugin-scaffolder-node@0.4.2
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.6
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.6
+  - @backstage/plugin-scaffolder-common@1.5.1
+
+## 1.22.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.10.0
+  - @backstage/catalog-client@1.6.2
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.13
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.1
+  - @backstage/backend-tasks@0.5.20
+  - @backstage/plugin-permission-node@0.7.26
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.5
+  - @backstage/plugin-scaffolder-node@0.4.1
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.7
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.5
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.7
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.5
+  - @backstage/plugin-scaffolder-common@1.5.1
+
+## 1.22.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.12
+
+## 1.22.0
+
+### Minor Changes
+
+- e9663a9: Move away from using `ctx.logStream`
+- aa543c9: Migrate plugin to use the new auth services, add an optional service discovery to the router options and change the permissions type to be `PermissionsService`.
+- e9663a9: Enable the redaction of secrets using the redacting logger and the secrets from the `TaskSpec`
+- c6b132e: Introducing checkpoints for scaffolder task action idempotency
+
+### Patch Changes
+
+- 984abfa: Fixing the lost of the initial state after a task recovery.
+- 703ebc9: Fix support for unauthenticated requests to create scaffolder tasks
+- f44589d: Introduced `createMockActionContext` to unify the way of creating scaffolder mock context.
+
+  It will help to maintain tests in a long run during structural changes of action context.
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- bbd1fe1: Made "checkpoint" on scaffolder action context non-optional
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.4
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.6
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.4
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.4
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.11
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.1
+
+## 1.22.0-next.2
+
+### Minor Changes
+
+- e9663a9: Move away from using `ctx.logStream`
+- e9663a9: Enable the redaction of secrets using the redacting logger and the secrets from the `TaskSpec`
+
+### Patch Changes
+
+- 703ebc9: Fix support for unauthenticated requests to create scaffolder tasks
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.4-next.2
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.4-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.4-next.2
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.11-next.2
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.2
+  - @backstage/plugin-scaffolder-common@1.5.1-next.1
+
+## 1.22.0-next.1
+
+### Minor Changes
+
+- aa543c9: Migrate plugin to use the new auth services, add an optional service discovery to the router options and change the permissions type to be `PermissionsService`.
+
+### Patch Changes
+
+- bbd1fe1: Made "checkpoint" on scaffolder action context non-optional
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/plugin-scaffolder-node@0.4.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.4-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/backend-tasks@0.5.19-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.17-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.11-next.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+  - @backstage/plugin-scaffolder-common@1.5.1-next.1
+
+## 1.22.0-next.0
+
+### Minor Changes
+
+- c6b132e: Introducing checkpoints for scaffolder task action idempotency
+
+### Patch Changes
+
+- f44589d: Introduced `createMockActionContext` to unify the way of creating scaffolder mock context.
+
+  It will help to maintain tests in a long run during structural changes of action context.
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-scaffolder-node@0.3.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.3-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/plugin-permission-node@0.7.24-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.10-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.1-next.0
+
+## 1.21.0
+
+### Minor Changes
+
+- 458bf21: Created a gitea module for the scaffolder. This module provides a new action "publish:gitea" able to create a gitea repository owned by an organization. See: https://gitea.com/api/swagger#/organization/createOrgRepo
+- 11b9a08: Introduced the first version of recoverable tasks.
+- 78c100b: Support providing an overriding token for `fetch:template`, `fetch:plain` and `fetch:file` when interacting with upstream integrations
+- e9a5228: The built-in module list has been trimmed down when using the new Backend System. Provider specific modules should now be installed with `backend.add` to provide additional actions to the scaffolder. These modules are as follows:
+
+  - `@backstage/plugin-scaffolder-backend-module-github`
+  - `@backstage/plugin-scaffolder-backend-module-gitlab`
+  - `@backstage/plugin-scaffolder-backend-module-bitbucket`
+  - `@backstage/plugin-scaffolder-backend-module-gitea`
+  - `@backstage/plugin-scaffolder-backend-module-gerrit`
+  - `@backstage/plugin-scaffolder-backend-module-confluence-to-markdown`
+  - `@backstage/plugin-scaffolder-backend-module-cookiecutter`
+  - `@backstage/plugin-scaffolder-backend-module-rails`
+  - `@backstage/plugin-scaffolder-backend-module-sentry`
+  - `@backstage/plugin-scaffolder-backend-module-yeoman`
+
+### Patch Changes
+
+- 5eb6882: New scaffolder module `@backstage/plugin-scaffolder-backend-module-bitbucket-server`.
+
+  Extracted from `@backstage/plugin-scaffolder-backend-module-bitbucket`
+  and replaces its actions related to Bitbucket Server.
+
+  - `publish:bitbucketServer`
+  - `publish:bitbucketServer:pull-request`
+
+- 09f8b31: Simple typo fix in the fetch:template action example on the word 'skeleton'.
+- c25a500: Fix some deprecations and misplaced `await` usage.
+- f6792c6: Move the `NODE_OPTIONS` messaging for `--no-node-snapshot` to the `SecureTemplater` in order to get better messaging at runtime
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- 52ae6b9: Updated dependency `esbuild` to `^0.20.0`.
+- 5eb6882: New scaffolder module `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`.
+
+  Extracted from `@backstage/plugin-scaffolder-backend-module-bitbucket`
+  and replaces its actions related to Bitbucket Cloud.
+
+  - `publish:bitbucketCloud`
+  - `bitbucket:pipelines:run`
+
+- 0a395b3: Upgraded `prom-client` to version 15
+- e1c479d: When using node 20+ the `scaffolder-backend` will now throw an error at startup if the `--no-node-snapshot` option was
+  not provided to node.
+- e0e5afe: Add option to configure nunjucks with the `trimBlocks` and `lstripBlocks` options in the fetch:template action
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.0
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.13
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.2
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.0
+  - @backstage/plugin-scaffolder-node@0.3.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.7
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.0
+  - @backstage/plugin-scaffolder-common@1.5.0
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/plugin-permission-node@0.7.21
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
+## 1.21.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.13-next.3
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/backend-tasks@0.5.15-next.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.7-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.2-next.3
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.2-next.3
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/plugin-permission-node@0.7.21-next.3
+  - @backstage/plugin-scaffolder-node@0.3.0-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
+## 1.21.0-next.2
+
+### Patch Changes
+
+- 5eb6882: New scaffolder module `@backstage/plugin-scaffolder-backend-module-bitbucket-server`.
+
+  Extracted from `@backstage/plugin-scaffolder-backend-module-bitbucket`
+  and replaces its actions related to Bitbucket Server.
+
+  - `publish:bitbucketServer`
+  - `publish:bitbucketServer:pull-request`
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 52ae6b9: Updated dependency `esbuild` to `^0.20.0`.
+- 5eb6882: New scaffolder module `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`.
+
+  Extracted from `@backstage/plugin-scaffolder-backend-module-bitbucket`
+  and replaces its actions related to Bitbucket Cloud.
+
+  - `publish:bitbucketCloud`
+  - `bitbucket:pipelines:run`
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.0-next.0
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.13-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/backend-tasks@0.5.15-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.2-next.2
+  - @backstage/plugin-permission-node@0.7.21-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.0-next.2
+  - @backstage/plugin-scaffolder-node@0.3.0-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.7-next.2
+  - @backstage/plugin-catalog-node@1.6.2-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
+## 1.21.0-next.1
+
+### Minor Changes
+
+- 78c100b: Support providing an overriding token for `fetch:template`, `fetch:plain` and `fetch:file` when interacting with upstream integrations
+
+### Patch Changes
+
+- 09f8b31: Simple typo fix in the fetch:template action example on the word 'skeleton'.
+- f6792c6: Move the `NODE_OPTIONS` messaging for `--no-node-snapshot` to the `SecureTemplater` in order to get better messaging at runtime
+- e1c479d: When using node 20+ the `scaffolder-backend` will now throw an error at startup if the `--no-node-snapshot` option was
+  not provided to node.
+- e0e5afe: Add option to configure nunjucks with the `trimBlocks` and `lstripBlocks` options in the fetch:template action
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/plugin-scaffolder-node@0.3.0-next.1
+  - @backstage/backend-tasks@0.5.15-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.4-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.7-next.1
+  - @backstage/plugin-catalog-node@1.6.2-next.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.21-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.13-next.1
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
+## 1.21.0-next.0
+
+### Minor Changes
+
+- 11b9a08: Introduced the first version of recoverable tasks.
+- e9a5228: The built-in module list has been trimmed down when using the new Backend System. Provider specific modules should now be installed with `backend.add` to provide additional actions to the scaffolder. These modules are as follows:
+
+  - `@backstage/plugin-scaffolder-backend-module-github`
+  - `@backstage/plugin-scaffolder-backend-module-gitlab`
+  - `@backstage/plugin-scaffolder-backend-module-bitbucket`
+  - `@backstage/plugin-scaffolder-backend-module-gitea`
+  - `@backstage/plugin-scaffolder-backend-module-gerrit`
+  - `@backstage/plugin-scaffolder-backend-module-confluence-to-markdown`
+  - `@backstage/plugin-scaffolder-backend-module-cookiecutter`
+  - `@backstage/plugin-scaffolder-backend-module-rails`
+  - `@backstage/plugin-scaffolder-backend-module-sentry`
+  - `@backstage/plugin-scaffolder-backend-module-yeoman`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.2-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/plugin-scaffolder-node@0.3.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.0
+  - @backstage/backend-tasks@0.5.15-next.0
+  - @backstage/plugin-auth-node@0.4.4-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.7-next.0
+  - @backstage/plugin-catalog-node@1.6.2-next.0
+  - @backstage/plugin-permission-node@0.7.21-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
+## 1.20.0
+
+### Minor Changes
+
+- a694f71: The Scaffolder builtin actions now contains an action for running pipelines from Bitbucket Cloud Rest API
+- 7c522c5: Add `gitlab:repo:push` scaffolder action to push files to arbitrary branch without creating a Merge Request
+
+### Patch Changes
+
+- e9ab1c4: Fixed an issue where not passing a `value` to any of the action's permission conditions caused an error.
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.12
+  - @backstage/plugin-scaffolder-common@1.4.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.1
+  - @backstage/catalog-client@1.5.2
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.6
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.20
+  - @backstage/backend-tasks@0.5.14
+  - @backstage/plugin-auth-node@0.4.3
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.1
+  - @backstage/plugin-scaffolder-node@0.2.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+
+## 1.19.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-auth-node@0.4.3-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.6-next.2
+  - @backstage/plugin-catalog-node@1.6.1-next.2
+  - @backstage/plugin-permission-node@0.7.20-next.2
+  - @backstage/plugin-scaffolder-node@0.2.10-next.2
+  - @backstage/backend-tasks@0.5.14-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.12-next.2
+
+## 1.19.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.12-next.1
+  - @backstage/config@1.1.1
+  - @backstage/backend-tasks@0.5.14-next.1
+  - @backstage/plugin-auth-node@0.4.3-next.1
+  - @backstage/plugin-permission-node@0.7.20-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.1-next.1
+  - @backstage/plugin-scaffolder-node@0.2.10-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.6-next.1
+  - @backstage/plugin-catalog-node@1.6.1-next.1
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-scaffolder-common@1.4.4
+
+## 1.19.3-next.0
+
+### Patch Changes
+
+- e9ab1c4: Fixed an issue where not passing a `value` to any of the action's permission conditions caused an error.
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.1-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.6-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/backend-tasks@0.5.14-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-node@0.7.20-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.12-next.0
+  - @backstage/plugin-scaffolder-common@1.4.4
+  - @backstage/plugin-scaffolder-node@0.2.10-next.0
+
+## 1.19.2
+
+### Patch Changes
+
+- 219d7f0: Refactor some methods to `-node` instead and use the new external modules
+- aff34fc: Fix issue with Circular JSON dependencies in templating
+- 48667b4: Fix creating env secret in github:environment:create action
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- 28949ea: Add a new action for creating github-autolink references for a repository: `github:autolinks:create`
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.11
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.0
+  - @backstage/plugin-catalog-node@1.6.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/plugin-scaffolder-node@0.2.9
+  - @backstage/backend-tasks@0.5.13
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-node@0.7.19
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.5
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.4.4
+
+## 1.19.2-next.3
+
+### Patch Changes
+
+- 219d7f0: Refactor some methods to `-node` instead and use the new external modules
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.11-next.3
+  - @backstage/plugin-scaffolder-node@0.2.9-next.3
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.0-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/backend-tasks@0.5.13-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.2-next.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.5-next.3
+  - @backstage/plugin-catalog-node@1.6.0-next.3
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.3
+  - @backstage/plugin-scaffolder-common@1.4.3
+
+## 1.19.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.6.0-next.2
+  - @backstage/plugin-catalog-backend@1.16.0-next.2
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/plugin-auth-node@0.4.2-next.2
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.5-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/backend-tasks@0.5.13-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.2
+  - @backstage/plugin-scaffolder-common@1.4.3
+  - @backstage/plugin-scaffolder-node@0.2.9-next.2
+
+## 1.19.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.1-next.1
+  - @backstage/catalog-client@1.5.0-next.0
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/backend-tasks@0.5.13-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.2-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.5-next.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-catalog-node@1.5.1-next.1
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.1
+  - @backstage/plugin-scaffolder-common@1.4.3
+  - @backstage/plugin-scaffolder-node@0.2.9-next.1
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- aff34fcf23: Fix issue with Circular JSON dependencies in templating
+- 48667b4d3a: Fix creating env secret in github:environment:create action
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/backend-tasks@0.5.13-next.0
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/plugin-auth-node@0.4.2-next.0
+  - @backstage/plugin-catalog-backend@1.15.1-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.5-next.0
+  - @backstage/plugin-catalog-node@1.5.1-next.0
+  - @backstage/plugin-permission-node@0.7.19-next.0
+  - @backstage/plugin-scaffolder-node@0.2.9-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-scaffolder-common@1.4.3
+
+## 1.19.0
+
+### Minor Changes
+
+- f3ab9cfcb7: Made shut down stale tasks configurable.
+
+  There are two properties exposed:
+
+  - `scaffolder.processingInterval` - sets the processing interval for staled tasks.
+  - `scaffolder.taskTimeoutJanitorFrequency` - sets the task's heartbeat timeout, when to consider a task to be staled.
+
+- 7d5a921114: Allow using `globby`'s negative matching with `copyWithoutTemplating`/`copyWithoutRender`. This allows including an entire subdirectory while excluding a single file so that it will still be templated instead of needing to list every other file and ensure the list is updated when new files are added.
+- 5e4127c18e: Allow setting `update: true` in `publish:github:pull-request` scaffolder action
+
+### Patch Changes
+
+- 0920fd02ac: Add examples for `github:environment:create` scaffolder action & improve related tests
+- ae30a9ae8c: Added description for publish:gerrit scaffolder actions
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- 23f72b2cba: Refactoring the runner to generate minimally informative task log per iteration and properly validate iterated actions.
+- 8613ba3928: Switched to using `"exports"` field for `/alpha` subpath export.
+- 99d4936f6c: Add examples for `github:webhook` scaffolder action & improve related tests
+- 2be3922eb8: Add examples for `github:deployKey:create` scaffolder action & improve related tests
+- 76d07da66a: Make it possible to define control buttons text (Back, Create, Review) per template
+- f8727ad228: Add examples for `publish:github:pull-request` scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.0
+  - @backstage/plugin-catalog-node@1.5.0
+  - @backstage/plugin-scaffolder-common@1.4.3
+  - @backstage/integration@1.7.2
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/catalog-client@1.4.6
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-scaffolder-node@0.2.8
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-node@0.7.18
+
+## 1.19.0-next.2
+
+### Patch Changes
+
+- [#20531](https://github.com/backstage/backstage/pull/20531) [`ae30a9ae8c`](https://github.com/backstage/backstage/commit/ae30a9ae8cbedc6df69c0656bf7044d1c869db40) Thanks [@andym0457](https://github.com/andym0457)! - Added description for publish:gerrit scaffolder actions
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-catalog-backend@1.15.0-next.2
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-auth-node@0.4.1-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.4-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+  - @backstage/plugin-permission-node@0.7.18-next.2
+  - @backstage/plugin-scaffolder-node@0.2.8-next.2
+
+## 1.19.0-next.1
+
+### Patch Changes
+
+- 2be3922eb8: Add examples for `github:deployKey:create` scaffolder action & improve related tests
+- 76d07da66a: Make it possible to define control buttons text (Back, Create, Review) per template
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.0-next.1
+  - @backstage/plugin-catalog-node@1.5.0-next.1
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/plugin-scaffolder-common@1.4.3-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.4-next.1
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-scaffolder-node@0.2.8-next.1
+  - @backstage/backend-tasks@0.5.12-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/plugin-permission-node@0.7.18-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+
+## 1.19.0-next.0
+
+### Minor Changes
+
+- 5e4127c18e: Allow setting `update: true` in `publish:github:pull-request` scaffolder action
+
+### Patch Changes
+
+- 0920fd02ac: Add examples for `github:environment:create` scaffolder action & improve related tests
+- 8613ba3928: Switched to using `"exports"` field for `/alpha` subpath export.
+- 99d4936f6c: Add examples for `github:webhook` scaffolder action & improve related tests
+- f8727ad228: Add examples for `publish:github:pull-request` scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.4.3-next.0
+  - @backstage/plugin-catalog-backend@1.15.0-next.0
+  - @backstage/plugin-scaffolder-node@0.2.8-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.4-next.0
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-catalog-node@1.4.8-next.0
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-permission-node@0.7.18-next.0
+
+## 1.18.0
+
+### Minor Changes
+
+- dea0aafda7: Updated `publish:gitlab` action properties to support additional Gitlab project settings:
+
+  - general project settings provided by gitlab project create API (new `settings` property)
+  - branch level settings to create additional branches and make them protected (new `branches` property)
+  - project level environment variables settings (new `projectVariables` property)
+
+  Marked existed properties `repoVisibility` and `topics` as deprecated, as they are covered by `settings` property.
+
+- f41099bb31: Display meaningful error to the output if Gitlab namespace not found inside `publish:gitlab`.
+
+### Patch Changes
+
+- 7dd82cc07e: Add examples for `github:issues:label` scaffolder action & improve related tests
+- 733ddf7130: Add examples for `publish:Azure` scaffolder action.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-backend@1.14.0
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.3
+  - @backstage/plugin-permission-node@0.7.17
+  - @backstage/plugin-scaffolder-node@0.2.6
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-scaffolder-common@1.4.2
+
+## 1.18.0-next.2
+
+### Minor Changes
+
+- dea0aafda7: Updated `publish:gitlab` action properties to support additional Gitlab project settings:
+
+  - general project settings provided by gitlab project create API (new `settings` property)
+  - branch level settings to create additional branches and make them protected (new `branches` property)
+  - project level environment variables settings (new `projectVariables` property)
+
+  Marked existed properties `repoVisibility` and `topics` as deprecated, as they are covered by `settings` property.
+
+### Patch Changes
+
+- 7dd82cc07e: Add examples for `github:issues:label` scaffolder action & improve related tests
+- 733ddf7130: Add examples for `publish:Azure` scaffolder action.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/plugin-auth-node@0.4.0-next.2
+  - @backstage/plugin-catalog-backend@1.14.0-next.2
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/backend-tasks@0.5.11-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.3-next.2
+  - @backstage/plugin-catalog-node@1.4.7-next.2
+  - @backstage/plugin-permission-node@0.7.17-next.2
+  - @backstage/plugin-scaffolder-node@0.2.6-next.2
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/catalog-client@1.4.5-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17-next.0
+  - @backstage/plugin-permission-common@0.7.9-next.0
+  - @backstage/plugin-scaffolder-common@1.4.2-next.0
+
+## 1.18.0-next.1
+
+### Minor Changes
+
+- f41099bb31: Display meaningful error to the output if Gitlab namespace not found inside `publish:gitlab`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.10-next.1
+  - @backstage/plugin-catalog-backend@1.14.0-next.1
+  - @backstage/plugin-catalog-node@1.4.6-next.1
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.2-next.1
+  - @backstage/plugin-auth-node@0.3.2-next.1
+  - @backstage/plugin-permission-node@0.7.16-next.1
+  - @backstage/plugin-scaffolder-node@0.2.5-next.1
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-scaffolder-common@1.4.1
+
+## 1.17.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/plugin-catalog-backend@1.14.0-next.0
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/plugin-scaffolder-node@0.2.5-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.2-next.0
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-catalog-node@1.4.6-next.0
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-permission-node@0.7.16-next.0
+  - @backstage/plugin-scaffolder-common@1.4.1
+
+## 1.17.0
+
+### Minor Changes
+
+- b5f239b50bcf: Improved the `parseEntityRef` Scaffolder filter by introducing the ability for users to provide default kind and/or namespace values. The filter now takes
+  2 arguments, similarly to the original [parseEntityRef](https://github.com/backstage/backstage/blob/v1.17.2/packages/catalog-model/src/entity/ref.ts#L77).
+- d5313ede3529: **DEPRECATION**: Deprecated `ScaffolderEntitiesProcessor`, which should now instead be imported from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model`.
+
+  `catalogModuleTemplateKind` was also moved to that package and renamed to `catalogModuleScaffolderEntityModel`, without any deprecation since it was an alpha export.
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- a4989552d828: Add examples for `publish:github` and `publish:gitlab` scaffolder actions.
+- ded27b83ead2: Add examples for `publish:bitbucket` scaffolder actions.
+- 5f1a92b9f19f: Use `DefaultAzureDevOpsCredentialsProvider` to retrieve credentials for Azure DevOps.
+- fb57a4694fc6: Fixed the plugin and module ID of the alpha `catalogModuleTemplateKind` export.
+- f3c0b95e3ef1: Add examples for `github:actions:dispatch` scaffolder actions.
+- cfc3ca6ce060: Changes needed to support MySQL
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.13.0
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-catalog-common@1.0.16
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-scaffolder-common@1.4.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-node@0.7.14
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.0
+  - @backstage/plugin-catalog-node@1.4.4
+  - @backstage/plugin-scaffolder-node@0.2.3
+
+## 1.17.0-next.3
+
+### Minor Changes
+
+- b5f239b50bcf: Improved the `parseEntityRef` Scaffolder filter by introducing the ability for users to provide default kind and/or namespace values. The filter now takes
+  2 arguments, similarly to the original [parseEntityRef](https://github.com/backstage/backstage/blob/v1.17.2/packages/catalog-model/src/entity/ref.ts#L77).
+- d5313ede3529: **DEPRECATION**: Deprecated `ScaffolderEntitiesProcessor`, which should now instead be imported from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model`.
+
+  `catalogModuleTemplateKind` was also moved to that package and renamed to `catalogModuleScaffolderEntityModel`, without any deprecation since it was an alpha export.
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.13.0-next.3
+  - @backstage/catalog-client@1.4.4-next.2
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/integration@1.7.0-next.3
+  - @backstage/plugin-catalog-common@1.0.16-next.2
+  - @backstage/plugin-permission-common@0.7.8-next.2
+  - @backstage/plugin-scaffolder-common@1.4.1-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/plugin-permission-node@0.7.14-next.3
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/backend-tasks@0.5.8-next.3
+  - @backstage/plugin-auth-node@0.3.0-next.3
+  - @backstage/plugin-catalog-node@1.4.4-next.3
+  - @backstage/plugin-scaffolder-node@0.2.3-next.3
+
+## 1.16.6-next.2
+
+### Patch Changes
+
+- ded27b83ead2: Add examples for `publish:bitbucket` scaffolder actions.
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.13.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.2
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/plugin-catalog-node@1.4.4-next.2
+  - @backstage/plugin-permission-node@0.7.14-next.2
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/plugin-scaffolder-node@0.2.3-next.2
+  - @backstage/catalog-client@1.4.4-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.16-next.1
+  - @backstage/plugin-scaffolder-common@1.4.1-next.1
+
+## 1.16.6-next.1
+
+### Patch Changes
+
+- f3c0b95e3ef1: Add examples for `github:actions:dispatch` scaffolder actions.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.13.0-next.1
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-auth-node@0.3.0-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/plugin-permission-node@0.7.14-next.1
+  - @backstage/plugin-scaffolder-node@0.2.3-next.1
+  - @backstage/plugin-catalog-node@1.4.4-next.1
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/plugin-catalog-common@1.0.16-next.0
+  - @backstage/plugin-scaffolder-common@1.4.1-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.16.3-next.0
+
+### Patch Changes
+
+- a4989552d828: Add examples for `publish:github` and `publish:gitlab` scaffolder actions.
+- 5f1a92b9f19f: Use `DefaultAzureDevOpsCredentialsProvider` to retrieve credentials for Azure DevOps.
+- fb57a4694fc6: Fixed the plugin and module ID of the alpha `catalogModuleTemplateKind` export.
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.12.2-next.0
+  - @backstage/plugin-auth-node@0.3.0-next.0
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/backend-tasks@0.5.7-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-node@1.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-node@0.7.13-next.0
+  - @backstage/plugin-scaffolder-common@1.4.0
+  - @backstage/plugin-scaffolder-node@0.2.2-next.0
+
+## 1.16.0
+
+### Minor Changes
+
+- e514aac3eac0: Introduce `each` property on action steps, allowing them to be ran repeatedly.
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 349611126ae2: Removed the options from the alpha `scaffolderPlugin` export. To extend the scaffolder plugin you instead now use the available extension points, `scaffolderActionsExtensionPoint`, `scaffolderTaskBrokerExtensionPoint`, and `scaffolderTemplatingExtensionPoint`.
+- 33c76caef72a: Added examples for the `fs:delete` and `fs:rename` actions
+- e07a4914f621: Deprecated the following type exports, which have been moved to `@backstage/plugin-scaffolder-node` instead:
+
+  - `TemplateFilter`
+  - `TemplateGlobal`
+  - `TaskStatus`
+  - `TaskCompletionState`
+  - `SerializedTask`
+  - `TaskEventType`
+  - `SerializedTaskEvent`
+  - `TaskBrokerDispatchResult`
+  - `TaskBrokerDispatchOptions`
+  - `TaskContext`
+  - `TaskBroker`
+
+- 0b1d775be05b: Adds examples to a few scaffolder actions.
+- 88bc6e27a213: The `concurrentTasksLimit` option can now be configured via static configuration as well. Setting it to 0 will now also disable the task worker.
+- 0f873325068d: Add examples for `github:repo:create` and `github:repo:push` scaffolder actions.
+- 5c28ebc79fd6: Updated dependency `esbuild` to `^0.19.0`.
+- d3b31a791eb1: Deprecated `executeShellCommand`, `RunCommandOptions`, and `fetchContents` from `@backstage/plugin-scaffolder-backend`, since they are useful for Scaffolder modules (who should not be importing from the plugin package itself). You should now import these from `@backstage/plugin-scaffolder-backend-node` instead. `RunCommandOptions` was renamed in the Node package as `ExecuteShellCommandOptions`, for consistency.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/plugin-catalog-backend@1.12.0
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-scaffolder-node@0.2.0
+  - @backstage/plugin-catalog-node@1.4.1
+  - @backstage/plugin-auth-node@0.2.17
+  - @backstage/integration@1.6.0
+  - @backstage/backend-tasks@0.5.5
+  - @backstage/plugin-scaffolder-common@1.4.0
+  - @backstage/plugin-permission-node@0.7.11
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+
+## 1.15.2-next.2
+
+### Patch Changes
+
+- 33c76caef72a: Added examples for the fs:delete and fs:rename actions
+- 0b1d775be05b: Adds examples to a few scaffolder actions.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.12.0-next.2
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/plugin-scaffolder-node@0.1.6-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-catalog-node@1.4.1-next.2
+  - @backstage/plugin-permission-node@0.7.11-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+
+## 1.15.2-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- d3b31a791eb1: Deprecated `executeShellCommand`, `RunCommandOptions`, and `fetchContents` from `@backstage/plugin-scaffolder-backend`, since they are useful for Scaffolder modules (who should not be importing from the plugin package itself). You should now import these from `@backstage/plugin-scaffolder-backend-node` instead. `RunCommandOptions` was renamed in the Node package as `ExecuteShellCommandOptions`, for consistency.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-catalog-backend@1.12.0-next.1
+  - @backstage/plugin-scaffolder-node@0.1.6-next.1
+  - @backstage/plugin-catalog-node@1.4.1-next.1
+  - @backstage/plugin-auth-node@0.2.17-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/backend-tasks@0.5.5-next.1
+  - @backstage/plugin-permission-node@0.7.11-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-scaffolder-common@1.3.2
+
+## 1.15.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.12.0-next.0
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/backend-tasks@0.5.5-next.0
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration@1.5.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.17-next.0
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-catalog-node@1.4.1-next.0
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-node@0.7.11-next.0
+  - @backstage/plugin-scaffolder-common@1.3.2
+  - @backstage/plugin-scaffolder-node@0.1.6-next.0
+
+## 1.15.1
+
+### Patch Changes
+
+- 600be804927d: Indicate the name of the option that is being deprecated in task deprecation warning.
+- ff45cb559e49: Updated dependency `esbuild` to `^0.18.0`.
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/backend-common@0.19.1
+  - @backstage/plugin-catalog-backend@1.11.0
+  - @backstage/plugin-catalog-node@1.4.0
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/backend-tasks@0.5.4
+  - @backstage/catalog-client@1.4.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16
+  - @backstage/plugin-catalog-common@1.0.15
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-permission-node@0.7.10
+  - @backstage/plugin-scaffolder-common@1.3.2
+  - @backstage/plugin-scaffolder-node@0.1.5
+
+## 1.15.1-next.1
+
+### Patch Changes
+
+- 600be804927d: Indicate the name of the option that is being deprecated in task deprecation warning.
+- ff45cb559e49: Updated dependency `esbuild` to `^0.18.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/backend-plugin-api@0.5.4-next.0
+  - @backstage/backend-tasks@0.5.4-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16-next.0
+  - @backstage/plugin-catalog-backend@1.11.0-next.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-catalog-node@1.4.0-next.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-node@0.7.10-next.0
+  - @backstage/plugin-scaffolder-common@1.3.2-next.0
+  - @backstage/plugin-scaffolder-node@0.1.5-next.0
+
+## 1.15.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/backend-common@0.19.1-next.0
+  - @backstage/plugin-catalog-backend@1.11.0-next.0
+  - @backstage/plugin-catalog-node@1.4.0-next.0
+  - @backstage/backend-plugin-api@0.5.4-next.0
+  - @backstage/backend-tasks@0.5.4-next.0
+  - @backstage/catalog-client@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1-next.0
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1-next.0
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16-next.0
+  - @backstage/plugin-catalog-common@1.0.15-next.0
+  - @backstage/plugin-permission-common@0.7.7-next.0
+  - @backstage/plugin-permission-node@0.7.10-next.0
+  - @backstage/plugin-scaffolder-common@1.3.2-next.0
+  - @backstage/plugin-scaffolder-node@0.1.5-next.0
+
+## 1.15.0
+
+### Minor Changes
+
+- 84b0e47373db: Add `TargetBranchName` variable and output for the `publish:gitlab:merge-request` and `publish:github:pull-request` s'cascaffolder actions.
+- 6a694ce98e32: Add a scaffolder action that pull-requests for bitbucket server
+- 1948845861b0: Added `github:deployKey:create` and `github:environment:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Administration` (for deploy key functionality) and `Environments` (for Environment functionality)
+- df8411779da1: Add support for Repository Variables and Secrets to the `publish:github` and `github:repo:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Secrets` and `Variables`
+
+  Upgrade octokit introduces some breaking changes.
+
+### Patch Changes
+
+- cc936b529676: Fix handling of `optional` property in `catalog:register` scaffolder action
+- b269da39ac2d: Clearer error messages for action `publish:gitlab:merge-request`
+- 11e0f625583f: Fix wrong gitlabUrl format in repoUrl input description
+- a2c70cdda202: Switch out the sandbox, from `vm2` to `isolated-vm`.
+
+  This is a native dependency, which means that it will need to be compiled with the same version of node on the same OS. This could cause some issues when running in Docker for instance, as you will need to make sure that the dependency is installed and compiled inside the docker container that it will run on.
+
+  This could mean adding in some dependencies to the container like `build-essential` to make sure that this compiles correctly.
+
+  If you're having issues installing this dependency, there's some [install instructions](https://github.com/laverdet/isolated-vm#requirements) over on `isolated-vm`'s repo.
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0
+  - @backstage/catalog-client@1.4.2
+  - @backstage/types@1.1.0
+  - @backstage/plugin-catalog-backend@1.10.0
+  - @backstage/integration@1.5.0
+  - @backstage/catalog-model@1.4.0
+  - @backstage/errors@1.2.0
+  - @backstage/backend-plugin-api@0.5.3
+  - @backstage/backend-tasks@0.5.3
+  - @backstage/plugin-auth-node@0.2.15
+  - @backstage/plugin-catalog-node@1.3.7
+  - @backstage/plugin-permission-node@0.7.9
+  - @backstage/config@1.0.8
+  - @backstage/plugin-catalog-common@1.0.14
+  - @backstage/plugin-permission-common@0.7.6
+  - @backstage/plugin-scaffolder-common@1.3.1
+  - @backstage/plugin-scaffolder-node@0.1.4
+
+## 1.15.0-next.3
+
+### Minor Changes
+
+- 84b0e47373db: Add `TargetBranchName` variable and output for the `publish:gitlab:merge-request` and `publish:github:pull-request` s'cascaffolder actions.
+- 6a694ce98e32: Add a scaffolder action that pull-requests for bitbucket server
+- 1948845861b0: Added `github:deployKey:create` and `github:environment:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Administration` (for deploy key functionality) and `Environments` (for Environment functionality)
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.2
+  - @backstage/catalog-model@1.4.0-next.1
+  - @backstage/plugin-catalog-backend@1.10.0-next.2
+  - @backstage/backend-plugin-api@0.5.3-next.2
+  - @backstage/backend-tasks@0.5.3-next.2
+  - @backstage/catalog-client@1.4.2-next.2
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.15-next.2
+  - @backstage/plugin-catalog-common@1.0.14-next.1
+  - @backstage/plugin-catalog-node@1.3.7-next.2
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-permission-node@0.7.9-next.2
+  - @backstage/plugin-scaffolder-common@1.3.1-next.1
+  - @backstage/plugin-scaffolder-node@0.1.4-next.2
+
+## 1.15.0-next.2
+
+### Patch Changes
+
+- 11e0f625583f: Fix wrong gitlabUrl format in repoUrl input description
+- Updated dependencies
+  - @backstage/config@1.0.7
+
+## 1.15.0-next.1
+
+### Minor Changes
+
+- df8411779da1: Add support for Repository Variables and Secrets to the `publish:github` and `github:repo:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Secrets` and `Variables`
+
+  Upgrade octokit introduces some breaking changes.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.0-next.1
+  - @backstage/plugin-catalog-backend@1.9.2-next.1
+  - @backstage/integration@1.5.0-next.0
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/backend-plugin-api@0.5.3-next.1
+  - @backstage/catalog-model@1.4.0-next.0
+  - @backstage/backend-tasks@0.5.3-next.1
+  - @backstage/plugin-auth-node@0.2.15-next.1
+  - @backstage/plugin-catalog-node@1.3.7-next.1
+  - @backstage/plugin-permission-node@0.7.9-next.1
+  - @backstage/catalog-client@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/plugin-scaffolder-node@0.1.4-next.1
+  - @backstage/plugin-catalog-common@1.0.14-next.0
+  - @backstage/plugin-scaffolder-common@1.3.1-next.0
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.14.1-next.0
+
+### Patch Changes
+
+- cc936b529676: Fix handling of `optional` property in `catalog:register` scaffolder action
+- b269da39ac2d: Clearer error messages for action `publish:gitlab:merge-request`
+- Updated dependencies
+  - @backstage/catalog-client@1.4.2-next.0
+  - @backstage/plugin-catalog-backend@1.9.2-next.0
+  - @backstage/plugin-catalog-node@1.3.7-next.0
+  - @backstage/backend-common@0.18.6-next.0
+  - @backstage/integration@1.4.5
+  - @backstage/config@1.0.7
+  - @backstage/backend-plugin-api@0.5.3-next.0
+  - @backstage/backend-tasks@0.5.3-next.0
+  - @backstage/catalog-model@1.3.0
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.15-next.0
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-permission-node@0.7.9-next.0
+  - @backstage/plugin-scaffolder-common@1.3.0
+  - @backstage/plugin-scaffolder-node@0.1.4-next.0
+
+## 1.14.0
+
+### Minor Changes
+
+- 67115f532b8: Expose both types of scaffolder permissions and rules through the metadata endpoint.
+
+  The metadata endpoint now correctly exposes both types of scaffolder permissions and rules (for both the template and action resource types) through the metadata endpoint.
+
+- a73b3c0b097: Add ability to use `defaultNamespace` and `defaultKind` for scaffolder action `catalog:fetch`
+
+### Patch Changes
+
+- 1a48b84901c: Bump minimum required version of `vm2` to be 3.9.18
+- d20c87966a4: Bump minimum required version of `vm2` to be 3.9.17
+- 6d954de4b06: Update typing for `RouterOptions::actions` and `ScaffolderActionsExtensionPoint::addActions` to allow any kind of action being assigned to it.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.1
+  - @backstage/backend-common@0.18.5
+  - @backstage/integration@1.4.5
+  - @backstage/plugin-scaffolder-common@1.3.0
+  - @backstage/plugin-permission-node@0.7.8
+  - @backstage/plugin-scaffolder-node@0.1.3
+  - @backstage/backend-tasks@0.5.2
+  - @backstage/plugin-auth-node@0.2.14
+  - @backstage/plugin-catalog-node@1.3.6
+  - @backstage/backend-plugin-api@0.5.2
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+
+## 1.13.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.1-next.2
+  - @backstage/plugin-scaffolder-common@1.3.0-next.0
+  - @backstage/plugin-scaffolder-node@0.1.3-next.2
+  - @backstage/config@1.0.7
+
+## 1.13.2-next.1
+
+### Patch Changes
+
+- 6d954de4b06: Update typing for `RouterOptions::actions` and `ScaffolderActionsExtensionPoint::addActions` to allow any kind of action being assigned to it.
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.1
+  - @backstage/plugin-catalog-backend@1.9.1-next.1
+  - @backstage/plugin-scaffolder-node@0.1.3-next.1
+  - @backstage/backend-tasks@0.5.2-next.1
+  - @backstage/plugin-auth-node@0.2.14-next.1
+  - @backstage/plugin-catalog-node@1.3.6-next.1
+  - @backstage/plugin-permission-node@0.7.8-next.1
+  - @backstage/backend-plugin-api@0.5.2-next.1
+  - @backstage/config@1.0.7
+
+## 1.13.2-next.0
+
+### Patch Changes
+
+- d20c87966a4: Bump minimum required version of `vm2` to be 3.9.17
+- Updated dependencies
+  - @backstage/backend-common@0.18.5-next.0
+  - @backstage/integration@1.4.5-next.0
+  - @backstage/plugin-permission-node@0.7.8-next.0
+  - @backstage/backend-tasks@0.5.2-next.0
+  - @backstage/plugin-auth-node@0.2.14-next.0
+  - @backstage/plugin-catalog-backend@1.9.1-next.0
+  - @backstage/plugin-catalog-node@1.3.6-next.0
+  - @backstage/backend-plugin-api@0.5.2-next.0
+  - @backstage/catalog-client@1.4.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/plugin-scaffolder-common@1.2.7
+  - @backstage/plugin-scaffolder-node@0.1.3-next.0
+
+## 1.13.0
+
+### Minor Changes
+
+- 2b15cb4aa0a: The non-PR/MR Git Actions now return the commit hash of the commit pushed as a new output called `commitHash`, isomorphic-git is now on version 1.23.0
+- 30ffdae70f9: Added `fetch:plain:file` action to fetch a single file, this action is also added to the list of built-in actions.
+- 65e989f4018: Added the possibility to authorize parameters and steps of a template
+
+  The scaffolder plugin is now integrated with the permission framework.
+  It is possible to toggle parameters or actions within templates by marking each section with specific `tags`, inside a `backstage:permissions` property under each parameter or action. Each parameter or action can then be permissioned by using a conditional decision containing the `scaffolderTemplateRules.hasTag` rule.
+
+- 3b68b09fc2d: Renamed permissionApi router option to permissions
+- bcae5aaf25c: Added the possibility to authorize actions
+
+  It is now possible to decide who should be able to execute certain actions or who should be able to pass specific input to specified actions.
+
+  Some of the existing utility functions for creating conditional decisions have been renamed:
+
+  - `createScaffolderConditionalDecision` has been renamed to `createScaffolderActionConditionalDecision`
+  - `scaffolderConditions` has been renamed to `scaffolderTemplateConditions`
+
+- d7c8c222e25: Allow for a commit message to differ from the PR title when publishing a GitHub pull request.
+- 95ea9f69b6f: Provide some more default filters out of the box and refactoring how the filters are applied to the `SecureTemplater`.
+
+  - `parseEntityRef` will take an string entity triplet and return a parsed object.
+  - `pick` will allow you to reference a specific property in the piped object.
+
+  So you can now combine things like this: `${{ parameters.entity | parseEntityRef | pick('name') }}` to get the name of a specific entity, or `${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}` to get the owner of a repo.
+
+### Patch Changes
+
+- e23abb37ec1: Rename output parameter `mergeRequestURL` of `publish:gitlab:merge-request` action to `mergeRequestUrl`.
+- e27ddc36dad: Added a possibility to cancel the running task (executing of a scaffolder template)
+- a7eb36c6e38: Improve type-check for scaffolder output parameters
+- c9a0fdcd2c8: Fix deprecated types.
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- 9c26e6d8ed3: Updated the alpha `scaffolderPlugin` to not require options.
+- f37a95adcd8: Stripped entity types and namespace before passing to GitHub API
+- Updated dependencies
+  - @backstage/backend-common@0.18.4
+  - @backstage/plugin-catalog-backend@1.9.0
+  - @backstage/plugin-scaffolder-common@1.2.7
+  - @backstage/plugin-scaffolder-node@0.1.2
+  - @backstage/catalog-client@1.4.1
+  - @backstage/plugin-permission-node@0.7.7
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/backend-tasks@0.5.1
+  - @backstage/catalog-model@1.3.0
+  - @backstage/integration@1.4.4
+  - @backstage/plugin-auth-node@0.2.13
+  - @backstage/plugin-catalog-node@1.3.5
+  - @backstage/backend-plugin-api@0.5.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-common@1.0.13
+
+## 1.13.0-next.3
+
+### Minor Changes
+
+- d7c8c222e25: Allow for a commit message to differ from the PR title when publishing a GitHub pull request.
+
+### Patch Changes
+
+- f37a95adcd8: Stripped entity types and namespace before passing to GitHub API
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.9.0-next.3
+  - @backstage/catalog-model@1.3.0-next.0
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/backend-tasks@0.5.1-next.2
+  - @backstage/catalog-client@1.4.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-catalog-common@1.0.13-next.1
+  - @backstage/plugin-catalog-node@1.3.5-next.3
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/plugin-scaffolder-common@1.2.7-next.2
+  - @backstage/plugin-scaffolder-node@0.1.2-next.3
+
+## 1.13.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.1-next.2
+  - @backstage/backend-common@0.18.4-next.2
+  - @backstage/catalog-client@1.4.1-next.0
+  - @backstage/plugin-permission-node@0.7.7-next.2
+  - @backstage/plugin-scaffolder-node@0.1.2-next.2
+  - @backstage/backend-plugin-api@0.5.1-next.2
+  - @backstage/backend-tasks@0.5.1-next.2
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.2
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-catalog-node@1.3.5-next.2
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.7-next.1
+
+## 1.13.0-next.1
+
+### Minor Changes
+
+- 30ffdae70f9: Added `fetch:plain:file` action to fetch a single file, this action is also added to the list of built-in actions.
+- 65e989f4018: Added the possibility to authorize parameters and steps of a template
+
+  The scaffolder plugin is now integrated with the permission framework.
+  It is possible to toggle parameters or actions within templates by marking each section with specific `tags`, inside a `backstage:permissions` property under each parameter or action. Each parameter or action can then be permissioned by using a conditional decision containing the `scaffolderTemplateRules.hasTag` rule.
+
+- 95ea9f69b6f: Provide some more default filters out of the box and refactoring how the filters are applied to the `SecureTemplater`.
+
+  - `parseEntityRef` will take an string entity triplet and return a parsed object.
+  - `pick` will allow you to reference a specific property in the piped object.
+
+  So you can now combine things like this: `${{ parameters.entity | parseEntityRef | pick('name') }}` to get the name of a specific entity, or `${{ parameters.repoUrl | parseRepoUrl | pick('owner') }}` to get the owner of a repo.
+
+### Patch Changes
+
+- a7eb36c6e38: Improve type-check for scaffolder output parameters
+- 1e4f5e91b8e: Bump `zod` and `zod-to-json-schema` dependencies.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.2.7-next.1
+  - @backstage/plugin-scaffolder-node@0.1.2-next.1
+  - @backstage/plugin-permission-node@0.7.7-next.1
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/plugin-catalog-backend@1.8.1-next.1
+  - @backstage/backend-tasks@0.5.1-next.1
+  - @backstage/integration@1.4.4-next.0
+  - @backstage/backend-common@0.18.4-next.1
+  - @backstage/backend-plugin-api@0.5.1-next.1
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.1
+  - @backstage/plugin-catalog-common@1.0.13-next.0
+  - @backstage/plugin-catalog-node@1.3.5-next.1
+
+## 1.12.1-next.0
+
+### Patch Changes
+
+- e23abb37ec1: Rename output parameter `mergeRequestURL` of `publish:gitlab:merge-request` action to `mergeRequestUrl`.
+- e27ddc36dad: Added a possibility to cancel the running task (executing of a scaffolder template)
+- c9a0fdcd2c8: Fix deprecated types.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.2-next.0
+  - @backstage/plugin-scaffolder-common@1.2.7-next.0
+  - @backstage/plugin-catalog-backend@1.8.1-next.0
+  - @backstage/backend-common@0.18.4-next.0
+  - @backstage/config@1.0.7
+  - @backstage/integration@1.4.3
+  - @backstage/backend-plugin-api@0.5.1-next.0
+  - @backstage/backend-tasks@0.5.1-next.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.13-next.0
+  - @backstage/plugin-catalog-common@1.0.12
+  - @backstage/plugin-catalog-node@1.3.5-next.0
+
+## 1.12.0
+
+### Minor Changes
+
+- 7d724d8ef56: Added the ability to be able to define an actions `input` and `output` schema using `zod` instead of hand writing types and `jsonschema`
+
+### Patch Changes
+
+- 860de10fa67: Make identity valid if subject of token is a backstage server-2-server auth token
+- 65454876fb2: Minor API report tweaks
+- c6c78b4acbe: throw error from catalog:fetch scaffolder action when entity is null and optional is false
+- 9968f455921: catalog write action should allow any shape of object
+- 928a12a9b3e: Internal refactor of `/alpha` exports.
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 7af12854970: Extended scaffolder action `catalog:fetch` to fetch multiple catalog entities by entity references.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.8.0
+  - @backstage/catalog-client@1.4.0
+  - @backstage/plugin-auth-node@0.2.12
+  - @backstage/backend-tasks@0.5.0
+  - @backstage/backend-common@0.18.3
+  - @backstage/errors@1.1.5
+  - @backstage/plugin-catalog-node@1.3.4
+  - @backstage/backend-plugin-api@0.5.0
+  - @backstage/catalog-model@1.2.1
+  - @backstage/integration@1.4.3
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.6
+  - @backstage/plugin-scaffolder-node@0.1.1
+
+## 1.12.0-next.2
+
+### Patch Changes
+
+- 860de10fa67: Make identity valid if subject of token is a backstage server-2-server auth token
+- 65454876fb2: Minor API report tweaks
+- 9968f455921: catalog write action should allow any shape of object
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.12-next.2
+  - @backstage/backend-tasks@0.5.0-next.2
+  - @backstage/backend-common@0.18.3-next.2
+  - @backstage/backend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-backend@1.8.0-next.2
+  - @backstage/plugin-catalog-node@1.3.4-next.2
+  - @backstage/plugin-scaffolder-node@0.1.1-next.2
+  - @backstage/config@1.0.7-next.0
+  - @backstage/integration@1.4.3-next.0
+
+## 1.12.0-next.1
+
+### Minor Changes
+
+- 7d724d8ef56: Added the ability to be able to define an actions `input` and `output` schema using `zod` instead of hand writing types and `jsonschema`
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/backend-common@0.18.3-next.1
+  - @backstage/catalog-client@1.4.0-next.1
+  - @backstage/integration@1.4.3-next.0
+  - @backstage/plugin-auth-node@0.2.12-next.1
+  - @backstage/plugin-catalog-backend@1.8.0-next.1
+  - @backstage/backend-plugin-api@0.4.1-next.1
+  - @backstage/backend-tasks@0.4.4-next.1
+  - @backstage/config@1.0.7-next.0
+  - @backstage/catalog-model@1.2.1-next.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-catalog-node@1.3.4-next.1
+  - @backstage/plugin-scaffolder-common@1.2.6-next.1
+  - @backstage/plugin-scaffolder-node@0.1.1-next.1
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- c6c78b4acb: throw error from catalog:fetch scaffolder action when entity is null and optional is false
+- 928a12a9b3: Internal refactor of `/alpha` exports.
+- Updated dependencies
+  - @backstage/catalog-client@1.4.0-next.0
+  - @backstage/plugin-catalog-backend@1.8.0-next.0
+  - @backstage/backend-tasks@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.4.1-next.0
+  - @backstage/backend-common@0.18.3-next.0
+  - @backstage/catalog-model@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.3.4-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.12-next.0
+  - @backstage/plugin-scaffolder-common@1.2.6-next.0
+  - @backstage/plugin-scaffolder-node@0.1.1-next.0
+
+## 1.11.0
+
+### Minor Changes
+
+- 0b2952ee4b: Added the option to overwrite files in the `targetPath` of the `template:fetch` action
+- 127154930f: Renamed the export `scaffolderCatalogModule` to `catalogModuleTemplateKind` in order to follow the new recommended naming patterns of backend system items. This is technically a breaking change but in an alpha export, so take care to change your imports if you have already migrated to the new backend system.
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- ad3edc402d: **Deprecations**: The following are deprecated and should instead be imported from the new package `@backstage/plugin-scaffolder-node`:
+
+  - `ActionContext`
+  - `createTemplateAction`
+  - `TaskSecrets`
+  - `TemplateAction`
+
+- 6c70919f1a: Provide better error messaging when GitHub fails due to missing team definitions
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2
+  - @backstage/backend-plugin-api@0.4.0
+  - @backstage/backend-common@0.18.2
+  - @backstage/plugin-scaffolder-node@0.1.0
+  - @backstage/catalog-model@1.2.0
+  - @backstage/plugin-catalog-node@1.3.3
+  - @backstage/backend-tasks@0.4.3
+  - @backstage/catalog-client@1.3.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11
+  - @backstage/plugin-scaffolder-common@1.2.5
+
+## 1.11.0-next.2
+
+### Patch Changes
+
+- 0ff03319be: Updated usage of `createBackendPlugin`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.4.0-next.2
+  - @backstage/backend-common@0.18.2-next.2
+  - @backstage/plugin-catalog-backend@1.7.2-next.2
+  - @backstage/catalog-model@1.2.0-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.2
+  - @backstage/plugin-scaffolder-node@0.1.0-next.2
+  - @backstage/backend-tasks@0.4.3-next.2
+  - @backstage/plugin-auth-node@0.2.11-next.2
+  - @backstage/catalog-client@1.3.1-next.1
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.5-next.1
+
+## 1.11.0-next.1
+
+### Minor Changes
+
+- 127154930f: Renamed the export `scaffolderCatalogModule` to `catalogModuleTemplateKind` in order to follow the new recommended naming patterns of backend system items. This is technically a breaking change but in an alpha export, so take care to change your imports if you have already migrated to the new backend system.
+
+### Patch Changes
+
+- 66cf22fdc4: Updated dependency `esbuild` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.7.2-next.1
+  - @backstage/backend-common@0.18.2-next.1
+  - @backstage/backend-plugin-api@0.3.2-next.1
+  - @backstage/backend-tasks@0.4.3-next.1
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.11-next.1
+  - @backstage/plugin-catalog-node@1.3.3-next.1
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/plugin-scaffolder-node@0.1.0-next.1
+
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 0b2952ee4b: Added the option to overwrite files in the `targetPath` of the `template:fetch` action
+
+### Patch Changes
+
+- ad3edc402d: **Deprecations**: The following are deprecated and should instead be imported from the new package `@backstage/plugin-scaffolder-node`:
+
+  - `ActionContext`
+  - `createTemplateAction`
+  - `TaskSecrets`
+  - `TemplateAction`
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.0-next.0
+  - @backstage/catalog-model@1.1.6-next.0
+  - @backstage/backend-common@0.18.2-next.0
+  - @backstage/catalog-client@1.3.1-next.0
+  - @backstage/plugin-catalog-backend@1.7.2-next.0
+  - @backstage/plugin-catalog-node@1.3.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.5-next.0
+  - @backstage/backend-tasks@0.4.3-next.0
+  - @backstage/plugin-auth-node@0.2.11-next.0
+  - @backstage/backend-plugin-api@0.3.2-next.0
+
+## 1.10.0
+
+### Minor Changes
+
+- a6808b67a7: Implement `Required approving review count`, `Restrictions`, and `Required commit signing` support for `publish:github` action
+- 04a2048fb8: Allow custom repository roles to be configured on github repos
+- c0ad7341f7: Add Scaffolder action `catalog:fetch` to get entity by entity reference from catalog
+- b44eb68bcb: This change adds changes to provide examples alongside scaffolder task actions.
+
+  The `createTemplateAction` function now takes a list of examples e.g.
+
+  ```typescript
+  const actionExamples = [
+    {
+      description: 'Example 1',
+      example: yaml.stringify({
+        steps: [
+          {
+            action: 'test:action',
+            id: 'test',
+            input: {
+              input1: 'value',
+            },
+          },
+        ],
+      }),
+    },
+  ];
+
+  export function createTestAction() {
+    return createTemplateAction({
+        id: 'test:action',
+        examples: [
+            {
+                description: 'Example 1',
+                examples: actionExamples
+            }
+        ],
+        ...,
+    });
+  ```
+
+  These examples can be retrieved later from the api.
+
+  ```bash
+  curl http://localhost:7007/api/scaffolder/v2/actions
+  ```
+
+  ```json
+  [
+    {
+      "id": "test:action",
+      "examples": [
+        {
+          "description": "Example 1",
+          "example": "steps:\n  - action: test:action\n    id: test\n    input:\n      input1: value\n"
+        }
+      ],
+      "schema": {
+        "input": {
+          "type": "object",
+          "properties": {
+            "input1": {
+              "title": "Input 1",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  ]
+  ```
+
+- 72d6b9f4e2: Added ability to override the commit message and author details for the `publish:bitbucketServer` action.
+- a69664faee: Add Github repository support for squash merge commit title and message options
+
+### Patch Changes
+
+- 2fadff2a25: Change scaffolder task actions to include markdown to demonstrate the new `ActionsPage` markdown feature.
+- ecbec4ec4c: Internal refactor to match new options pattern in the experimental backend system.
+- e4c0240445: Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+
+  The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
+
+  - Get all entities of kind `Group`
+
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+    ```
+
+  - Get entities of kind `Group` and spec.type `team`
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+            spec.type: team
+    ```
+
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0
+  - @backstage/backend-common@0.18.0
+  - @backstage/catalog-model@1.1.5
+  - @backstage/plugin-scaffolder-common@1.2.4
+  - @backstage/catalog-client@1.3.0
+  - @backstage/backend-tasks@0.4.1
+  - @backstage/plugin-catalog-node@1.3.1
+  - @backstage/plugin-catalog-backend@1.7.0
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9
+
+## 1.10.0-next.2
+
+### Patch Changes
+
+- 2fadff2a25: Change scaffolder task actions to include markdown to demonstrate the new `ActionsPage` markdown feature.
+- b44eb68bcb: This patch adds changes to provide examples alongside scaffolder task actions.
+
+  The `createTemplateAction` function now takes a list of examples e.g.
+
+  ```typescript
+  const actionExamples = [
+    {
+      description: 'Example 1',
+      example: yaml.stringify({
+        steps: [
+          {
+            action: 'test:action',
+            id: 'test',
+            input: {
+              input1: 'value',
+            },
+          },
+        ],
+      }),
+    },
+  ];
+
+  export function createTestAction() {
+    return createTemplateAction({
+        id: 'test:action',
+        examples: [
+            {
+                description: 'Example 1',
+                examples: actionExamples
+            }
+        ],
+        ...,
+    });
+  ```
+
+  These examples can be retrieved later from the api.
+
+  ```bash
+  curl http://localhost:7007/api/scaffolder/v2/actions
+  ```
+
+  ```json
+  [
+    {
+      "id": "test:action",
+      "examples": [
+        {
+          "description": "Example 1",
+          "example": "steps:\n  - action: test:action\n    id: test\n    input:\n      input1: value\n"
+        }
+      ],
+      "schema": {
+        "input": {
+          "type": "object",
+          "properties": {
+            "input1": {
+              "title": "Input 1",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  ]
+  ```
+
+- 8e06f3cf00: Switched imports of `loggerToWinstonLogger` to `@backstage/backend-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.3.0-next.1
+  - @backstage/backend-common@0.18.0-next.1
+  - @backstage/backend-tasks@0.4.1-next.1
+  - @backstage/catalog-client@1.3.0-next.2
+  - @backstage/plugin-catalog-backend@1.7.0-next.2
+  - @backstage/plugin-catalog-node@1.3.1-next.2
+  - @backstage/plugin-auth-node@0.2.9-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-scaffolder-common@1.2.4-next.1
+
+## 1.10.0-next.1
+
+### Minor Changes
+
+- 04a2048fb8: Allow custom repository roles to be configured on github repos
+- a69664faee: Add Github repository support for squash merge commit title and message options
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.2.1-next.0
+  - @backstage/backend-common@0.18.0-next.0
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-catalog-backend@1.7.0-next.1
+  - @backstage/plugin-catalog-node@1.3.1-next.1
+  - @backstage/backend-tasks@0.4.1-next.0
+  - @backstage/catalog-client@1.3.0-next.1
+  - @backstage/catalog-model@1.1.5-next.1
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.2-next.0
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.9-next.0
+  - @backstage/plugin-scaffolder-common@1.2.4-next.1
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- e4c0240445: Added `catalogFilter` field to OwnerPicker and EntityPicker components to support filtering options by any field(s) of an entity.
+
+  The `allowedKinds` field has been deprecated. Use `catalogFilter` instead. This field allows users to specify a filter on the shape of [EntityFilterQuery](https://github.com/backstage/backstage/blob/774c42003782121d3d6b2aa5f2865d53370c160e/packages/catalog-client/src/types/api.ts#L74), which can be passed into the CatalogClient. See examples below:
+
+  - Get all entities of kind `Group`
+
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+    ```
+
+  - Get entities of kind `Group` and spec.type `team`
+    ```yaml
+    owner:
+      title: Owner
+      type: string
+      description: Owner of the component
+      ui:field: OwnerPicker
+      ui:options:
+        catalogFilter:
+          - kind: Group
+            spec.type: team
+    ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.1.5-next.0
+  - @backstage/plugin-scaffolder-common@1.2.4-next.0
+  - @backstage/catalog-client@1.3.0-next.0
+  - @backstage/plugin-catalog-backend@1.7.0-next.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/config@1.0.5
+  - @backstage/errors@1.1.4
+  - @backstage/integration@1.4.1
+  - @backstage/types@1.0.2
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/plugin-catalog-node@1.3.1-next.0
+
+## 1.9.0
+
+### Minor Changes
+
+- a20a0ea698: Added `requiredConversationResolution` template option to `github:repo:create`, `github:repo:push` and `publish:github`
+- b32005e98a: Deprecated the `taskWorkers` option in RouterOptions in favor of `concurrentTasksLimit` which sets the limit of concurrent tasks in a single TaskWorker
+
+  TaskWorker can now run multiple (defaults to 10) tasks concurrently using the `concurrentTasksLimit` option available in both `RouterOptions` and `CreateWorkerOptions`.
+
+  To use the option to create a TaskWorker:
+
+  ```diff
+  const worker = await TaskWorker.create({
+      taskBroker,
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+      additionalTemplateFilters,
+  +   concurrentTasksLimit: 10 // (1 to Infinity)
+  });
+  ```
+
+- fc51bd8aa0: Add support for disabling Github repository wiki, issues and projects
+- 0053d07bee: Update the `github:publish` action to allow passing wether to dismiss stale reviews on the protected default branch.
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 26404430bc: Use Json types from @backstage/types
+- b07ccffad0: Backend now returns 'ui:options' value from template metadata, it can be used by all your custom scaffolder components.
+- 309f2daca4: Updated dependency `esbuild` to `^0.16.0`.
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0
+  - @backstage/catalog-client@1.2.0
+  - @backstage/backend-common@0.17.0
+  - @backstage/plugin-catalog-node@1.3.0
+  - @backstage/backend-tasks@0.4.0
+  - @backstage/errors@1.1.4
+  - @backstage/backend-plugin-api@0.2.0
+  - @backstage/integration@1.4.1
+  - @backstage/plugin-auth-node@0.2.8
+  - @backstage/types@1.0.2
+  - @backstage/catalog-model@1.1.4
+  - @backstage/config@1.0.5
+  - @backstage/plugin-scaffolder-common@1.2.3
+
+## 1.9.0-next.3
+
+### Minor Changes
+
+- 0053d07bee: Update the `github:publish` action to allow passing wether to dismiss stale reviews on the protected default branch.
+
+### Patch Changes
+
+- 935b66a646: Change step output template examples to use square bracket syntax.
+- b05dcd5530: Move the `zod` dependency to a version that does not collide with other libraries
+- 309f2daca4: Updated dependency `esbuild` to `^0.16.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0-next.3
+  - @backstage/backend-tasks@0.4.0-next.3
+  - @backstage/backend-common@0.17.0-next.3
+  - @backstage/backend-plugin-api@0.2.0-next.3
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.3
+  - @backstage/plugin-catalog-node@1.3.0-next.3
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
+## 1.9.0-next.2
+
+### Minor Changes
+
+- b32005e98a: Deprecated the `taskWorkers` option in RouterOptions in favor of `concurrentTasksLimit` which sets the limit of concurrent tasks in a single TaskWorker
+
+  TaskWorker can now run multiple (defaults to 10) tasks concurrently using the `concurrentTasksLimit` option available in both `RouterOptions` and `CreateWorkerOptions`.
+
+  To use the option to create a TaskWorker:
+
+  ```diff
+  const worker = await TaskWorker.create({
+      taskBroker,
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+      additionalTemplateFilters,
+  +   concurrentTasksLimit: 10 // (1 to Infinity)
+  });
+  ```
+
+### Patch Changes
+
+- 884d749b14: Refactored to use `coreServices` from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.6.0-next.2
+  - @backstage/plugin-catalog-node@1.3.0-next.2
+  - @backstage/backend-common@0.17.0-next.2
+  - @backstage/backend-plugin-api@0.2.0-next.2
+  - @backstage/backend-tasks@0.4.0-next.2
+  - @backstage/plugin-auth-node@0.2.8-next.2
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
+## 1.8.1-next.1
+
+### Patch Changes
+
+- c3fa90e184: Updated dependency `zen-observable` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.17.0-next.1
+  - @backstage/plugin-catalog-backend@1.6.0-next.1
+  - @backstage/backend-tasks@0.4.0-next.1
+  - @backstage/types@1.0.2-next.1
+  - @backstage/backend-plugin-api@0.1.5-next.1
+  - @backstage/plugin-auth-node@0.2.8-next.1
+  - @backstage/plugin-catalog-node@1.2.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/integration@1.4.1-next.1
+  - @backstage/catalog-client@1.2.0-next.1
+  - @backstage/catalog-model@1.1.4-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/plugin-scaffolder-common@1.2.3-next.1
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- cb716004ef: Internal refactor to improve tests
+- 26404430bc: Use Json types from @backstage/types
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 19356df560: Updated dependency `zen-observable` to `^0.9.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.2.0-next.0
+  - @backstage/plugin-catalog-backend@1.6.0-next.0
+  - @backstage/backend-common@0.16.1-next.0
+  - @backstage/integration@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.2.8-next.0
+  - @backstage/types@1.0.2-next.0
+  - @backstage/backend-plugin-api@0.1.5-next.0
+  - @backstage/plugin-catalog-node@1.2.2-next.0
+  - @backstage/backend-tasks@0.3.8-next.0
+  - @backstage/catalog-model@1.1.4-next.0
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+  - @backstage/plugin-scaffolder-common@1.2.3-next.0
+
+## 1.8.0
+
+### Minor Changes
+
+- ea14eb62a2: Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
+
+  - `scaffolder_task_count`: Tracks successful task runs.
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `user`: The entity ref of the user that invoked the template run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_task_duration`: a histogram which tracks the duration of a task run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `result`: A boolean describing whether the task ran successfully
+
+  - `scaffolder_step_count`: a count that tracks each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_step_duration`: a histogram which tracks the duration of each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+
+- 5921b5ce49: - The GitLab Project ID for the `publish:gitlab:merge-request` action is now passed through the query parameter `project` in the `repoUrl`. It still allows people to not use the `projectid` and use the `repoUrl` with the `owner` and `repo` query parameters instead. This makes it easier to publish to repositories instead of writing the full path to the project.
+- 5025d2e8b6: Adds the ability to pass (an optional) array of strings that will be applied to the newly scaffolded repository as topic labels.
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- 9ff4ff3745: Implement "Branch protection rules" support for "publish:github" action
+- Updated dependencies
+  - @backstage/backend-common@0.16.0
+  - @backstage/plugin-catalog-backend@1.5.1
+  - @backstage/integration@1.4.0
+  - @backstage/backend-tasks@0.3.7
+  - @backstage/catalog-model@1.1.3
+  - @backstage/plugin-auth-node@0.2.7
+  - @backstage/types@1.0.1
+  - @backstage/backend-plugin-api@0.1.4
+  - @backstage/plugin-catalog-node@1.2.1
+  - @backstage/catalog-client@1.1.2
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+  - @backstage/plugin-scaffolder-common@1.2.2
+
+## 1.8.0-next.2
+
+### Minor Changes
+
+- 5025d2e8b6: Adds the ability to pass (an optional) array of strings that will be applied to the newly scaffolded repository as topic labels.
+
+### Patch Changes
+
+- 969a8444ea: Updated dependency `esbuild` to `^0.15.0`.
+- 9ff4ff3745: Implement "Branch protection rules" support for "publish:github" action
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.1
+  - @backstage/backend-plugin-api@0.1.4-next.1
+  - @backstage/backend-tasks@0.3.7-next.1
+  - @backstage/plugin-auth-node@0.2.7-next.1
+  - @backstage/plugin-catalog-backend@1.5.1-next.1
+  - @backstage/plugin-catalog-node@1.2.1-next.1
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.2-next.0
+
+## 1.8.0-next.1
+
+### Minor Changes
+
+- 5921b5ce49: - The GitLab Project ID for the `publish:gitlab:merge-request` action is now passed through the query parameter `project` in the `repoUrl`. It still allows people to not use the `projectid` and use the `repoUrl` with the `owner` and `repo` query parameters instead. This makes it easier to publish to repositories instead of writing the full path to the project.
+
+## 1.8.0-next.0
+
+### Minor Changes
+
+- ea14eb62a2: Added a set of default Prometheus metrics around scaffolding. See below for a list of metrics and an explanation of their labels:
+
+  - `scaffolder_task_count`: Tracks successful task runs.
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `user`: The entity ref of the user that invoked the template run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_task_duration`: a histogram which tracks the duration of a task run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `result`: A boolean describing whether the task ran successfully
+
+  - `scaffolder_step_count`: a count that tracks each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  - `scaffolder_step_duration`: a histogram which tracks the duration of each step run
+
+    Labels:
+
+    - `template`: The entity ref of the scaffolded template
+    - `step`: The name of the step that was run
+    - `result`: A string describing whether the task ran successfully, failed, or was skipped
+
+  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.16.0-next.0
+  - @backstage/plugin-catalog-backend@1.5.1-next.0
+  - @backstage/integration@1.4.0-next.0
+  - @backstage/backend-tasks@0.3.7-next.0
+  - @backstage/catalog-model@1.1.3-next.0
+  - @backstage/plugin-auth-node@0.2.7-next.0
+  - @backstage/types@1.0.1-next.0
+  - @backstage/backend-plugin-api@0.1.4-next.0
+  - @backstage/plugin-catalog-node@1.2.1-next.0
+  - @backstage/catalog-client@1.1.2-next.0
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+  - @backstage/plugin-scaffolder-common@1.2.2-next.0
+
+## 1.7.0
+
+### Minor Changes
+
+- 253453fa14: Added a new property called `additionalTemplateGlobals` which allows you to add global functions to the scaffolder nunjucks templates.
+- 17ff77154c: Update the `github:publish` action to allow passing whether pull
+  requests must be up to date with the default branch before merging.
+- 304305dd20: Add `allowAutoMerge` option for `publish:github` action
+- 694bfe2d61: Add functionality to shutdown scaffolder tasks if they are stale
+- a8e9848479: Added optional `sourcePath` parameter to `publish:gitlab:merge-request` action, `targetPath` is now optional and falls back to current workspace path.
+
+### Patch Changes
+
+- 489621f613: Switching off duplicated timestamp in case of logging via task logger in a custom action
+- 4880d43e25: Fixed setting default branch for Bitbucket Server
+- b681275e69: Ignore .git directories in Template Editor, increase upload limit for dry-runs to 10MB.
+- a35a27df70: Updated the `moduleId` of the experimental module export.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0
+  - @backstage/catalog-model@1.1.2
+  - @backstage/backend-common@0.15.2
+  - @backstage/plugin-catalog-backend@1.5.0
+  - @backstage/plugin-auth-node@0.2.6
+  - @backstage/backend-tasks@0.3.6
+  - @backstage/backend-plugin-api@0.1.3
+  - @backstage/catalog-client@1.1.1
+  - @backstage/plugin-scaffolder-common@1.2.1
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/integration@1.3.2
+  - @backstage/types@1.0.0
+
+## 1.7.0-next.2
+
+### Minor Changes
+
+- 17ff77154c: Update the `github:publish` action to allow passing whether pull
+  requests must be up to date with the default branch before merging.
+- a8e9848479: Added optional `sourcePath` parameter to `publish:gitlab:merge-request` action, `targetPath` is now optional and falls back to current workspace path.
+
+### Patch Changes
+
+- 4880d43e25: Fixed setting default branch for Bitbucket Server
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.2.0-next.2
+  - @backstage/plugin-catalog-backend@1.5.0-next.2
+  - @backstage/backend-tasks@0.3.6-next.2
+  - @backstage/backend-common@0.15.2-next.2
+  - @backstage/backend-plugin-api@0.1.3-next.2
+  - @backstage/plugin-auth-node@0.2.6-next.2
+  - @backstage/catalog-client@1.1.1-next.2
+  - @backstage/catalog-model@1.1.2-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/integration@1.3.2-next.2
+  - @backstage/types@1.0.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.2
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 489621f613: Switching off duplicated timestamp in case of logging via task logger in a custom action
+- a35a27df70: Updated the `moduleId` of the experimental module export.
+- Updated dependencies
+  - @backstage/catalog-client@1.1.1-next.1
+  - @backstage/backend-common@0.15.2-next.1
+  - @backstage/backend-plugin-api@0.1.3-next.1
+  - @backstage/backend-tasks@0.3.6-next.1
+  - @backstage/catalog-model@1.1.2-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/integration@1.3.2-next.1
+  - @backstage/types@1.0.0
+  - @backstage/plugin-auth-node@0.2.6-next.1
+  - @backstage/plugin-catalog-backend@1.4.1-next.1
+  - @backstage/plugin-catalog-node@1.1.1-next.1
+  - @backstage/plugin-scaffolder-common@1.2.1-next.1
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 253453fa14: Added a new property called `additionalTemplateGlobals` which allows you to add global functions to the scaffolder nunjucks templates.
+- 304305dd20: Add `allowAutoMerge` option for `publish:github` action
+- 694bfe2d61: Add functionality to shutdown scaffolder tasks if they are stale
+
+### Patch Changes
+
+- b681275e69: Ignore .git directories in Template Editor, increase upload limit for dry-runs to 10MB.
+- Updated dependencies
+  - @backstage/catalog-model@1.1.2-next.0
+  - @backstage/backend-plugin-api@0.1.3-next.0
+  - @backstage/plugin-catalog-backend@1.4.1-next.0
+  - @backstage/catalog-client@1.1.1-next.0
+  - @backstage/plugin-catalog-node@1.1.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.1-next.0
+  - @backstage/backend-common@0.15.2-next.0
+  - @backstage/backend-tasks@0.3.6-next.0
+  - @backstage/plugin-auth-node@0.2.6-next.0
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/integration@1.3.2-next.0
+  - @backstage/types@1.0.0
+
+## 1.6.0
+
+### Minor Changes
+
+- ea2eee9e6a: Add the option for a homepage when using the `github:publish` action
+- 8872cc735d: Fixed a bug in plugin-scaffolder-backend where it ignores the skip migration database options.
+
+  To use this new implementation you need to create the instance of `DatabaseTaskStore` using the `PluginDatabaseManager` instead of `Knex`;
+
+  ```
+  import { DatabaseManager, getRootLogger, loadBackendConfig } from '@backstage/backend-common';
+  import { DatabaseTaskStore } from '@backstage/plugin-scaffolder-backend';
+
+  const config = await loadBackendConfig({ argv: process.argv, logger: getRootLogger() });
+  const databaseManager = DatabaseManager.fromConfig(config, { migrations: { skip: true } });
+  const databaseTaskStore = await DatabaseTaskStore.create(databaseManager);
+  ```
+
+- 7db9613671: Added `projectId` for gitlab projects to be displayed in the `gitlab:publish` output
+- d1f7ba58e3: Added `repositoryId` output when create a repository in Azure
+- 1ff817b3f0: add entity metadata to the template info type
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- de8ee4afe3: Provide information about the user into scaffolder template action's context
+- 096631e571: Added support for handling broken symlinks within the scaffolder backend. This is intended for templates that may hold a symlink that is invalid at build time but valid within the destination repo.
+- 0d8d650e32: Applied the fix from version 1.5.1 of this package, which is part of the v1.5.1 release of Backstage.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 2df9955f4a: Removed the depreacated `publish:file` action, use the template editor to test templates instead.
+- 0ecc9a6784: Properly set `ctx.isDryRun` when running actions in dry run mode. Also always log action inputs for debugging purposes when running in dry run mode.
+- 6b9f6c0a4d: Added alpha `scaffolderPlugin` to be used with experimental backend system.
+- 83c037cd46: Disable octokit throttling in publish:github:pull-request
+- 2cbd533426: Uptake the `IdentityApi` change to use `getIdentity` instead of `authenticate` for retrieving the logged in users identity.
+- ef9ab322de: Minor API signatures cleanup
+- 50467bc15b: The number of task workers used to execute templates now default to 3, rather than 1.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2
+  - @backstage/backend-common@0.15.1
+  - @backstage/plugin-auth-node@0.2.5
+  - @backstage/plugin-catalog-node@1.1.0
+  - @backstage/integration@1.3.1
+  - @backstage/plugin-catalog-backend@1.4.0
+  - @backstage/catalog-client@1.1.0
+  - @backstage/catalog-model@1.1.1
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+  - @backstage/plugin-scaffolder-common@1.2.0
+
+## 1.6.0-next.3
+
+### Patch Changes
+
+- 50467bc15b: The number of task workers used to execute templates now default to 3, rather than 1.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.1.0-next.2
+  - @backstage/backend-plugin-api@0.1.2-next.2
+  - @backstage/catalog-client@1.1.0-next.2
+  - @backstage/catalog-model@1.1.1-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+  - @backstage/integration@1.3.1-next.2
+  - @backstage/plugin-catalog-backend@1.4.0-next.3
+  - @backstage/backend-common@0.15.1-next.3
+  - @backstage/plugin-scaffolder-common@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.2.5-next.3
+
+## 1.6.0-next.2
+
+### Minor Changes
+
+- d1f7ba58e3: Added `repositoryId` output when create a repository in Azure
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 096631e571: Added support for handling broken symlinks within the scaffolder backend. This is intended for templates that may hold a symlink that is invalid at build time but valid within the destination repo.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 6b9f6c0a4d: Added alpha `scaffolderPlugin` to be used with experimental backend system.
+- 83c037cd46: Disable octokit throttling in publish:github:pull-request
+- 2cbd533426: Uptake the `IdentityApi` change to use `getIdentity` instead of `authenticate` for retrieving the logged in users identity.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.1.2-next.1
+  - @backstage/plugin-catalog-node@1.0.2-next.1
+  - @backstage/backend-common@0.15.1-next.2
+  - @backstage/integration@1.3.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.2
+  - @backstage/plugin-auth-node@0.2.5-next.2
+  - @backstage/catalog-client@1.0.5-next.1
+
+## 1.6.0-next.1
+
+### Minor Changes
+
+- 7db9613671: Added `projectId` for gitlab projects to be displayed in the `gitlab:publish` output
+
+### Patch Changes
+
+- 0d8d650e32: Applied the fix from version 1.5.1 of this package, which is part of the v1.5.1 release of Backstage.
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.1
+  - @backstage/plugin-catalog-backend@1.4.0-next.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- ea2eee9e6a: Add the option for a homepage when using the `github:publish` action
+- 8872cc735d: Fixed a bug in plugin-scaffolder-backend where it ignores the skip migration database options.
+
+  To use this new implementation you need to create the instance of `DatabaseTaskStore` using the `PluginDatabaseManager` instead of `Knex`;
+
+  ```
+  import { DatabaseManager, getRootLogger, loadBackendConfig } from '@backstage/backend-common';
+  import { DatabaseTaskStore } from '@backstage/plugin-scaffolder-backend';
+
+  const config = await loadBackendConfig({ argv: process.argv, logger: getRootLogger() });
+  const databaseManager = DatabaseManager.fromConfig(config, { migrations: { skip: true } });
+  const databaseTaskStore = await DatabaseTaskStore.create(databaseManager);
+  ```
+
+- 1ff817b3f0: add entity metadata to the template info type
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 2df9955f4a: Removed the depreacated `publish:file` action, use the template editor to test templates instead.
+- ef9ab322de: Minor API signatures cleanup
+- Updated dependencies
+  - @backstage/backend-common@0.15.1-next.0
+  - @backstage/plugin-catalog-backend@1.3.2-next.0
+  - @backstage/backend-plugin-api@0.1.2-next.0
+  - @backstage/catalog-client@1.0.5-next.0
+  - @backstage/integration@1.3.1-next.0
+  - @backstage/plugin-scaffolder-common@1.2.0-next.0
+  - @backstage/plugin-catalog-node@1.0.2-next.0
+
+## 1.5.1
+
+### Patch Changes
+
+- Fix minimum required version for `vm2`
+
+## 1.5.0
+
+### Minor Changes
+
+- c4b452e16a: Starting the implementation of the Wizard page for the `next` scaffolder plugin
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- 3b7930b3e5: Add support for Bearer Authorization header / token-based auth at Git commands.
+- 3f1316f1c5: User Bearer Authorization header at Git commands with token-based auth at Bitbucket Server.
+- eeff5046ae: Updated `publish:gitlab:merge-request` action to allow commit updates and deletes
+- 692d5d3405: Added `reviewers` and `teamReviewers` parameters to `publish:github:pull-request` action to add reviewers on the pull request created by the action
+
+### Patch Changes
+
+- fc8a5f797b: Add a `publish:gerrit:review` scaffolder action
+- c971afbf21: The `publish:file` action has been deprecated in favor of testing templates using the template editor instead. Note that this action is not and was never been installed by default.
+- b10b6c4aa4: Fix issue on Windows where templated files where not properly skipped as intended.
+- 56e1b4b89c: Fixed typos in alpha types.
+- dad0f65494: Fail gracefully if an invalid `Authorization` header is passed to `POST /v2/tasks`
+- 014b3b7776: Add missing `res.end()` in scaffolder backend `EventStream` usage
+- Updated dependencies
+  - @backstage/backend-common@0.15.0
+  - @backstage/backend-plugin-api@0.1.1
+  - @backstage/plugin-catalog-node@1.0.1
+  - @backstage/integration@1.3.0
+  - @backstage/plugin-catalog-backend@1.3.1
+
+## 1.5.0-next.2
+
+### Minor Changes
+
+- 692d5d3405: Added `reviewers` and `teamReviewers` parameters to `publish:github:pull-request` action to add reviewers on the pull request created by the action
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.3.1-next.2
+
+## 1.5.0-next.1
+
+### Minor Changes
+
+- c4b452e16a: Starting the implementation of the Wizard page for the `next` scaffolder plugin
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.15.0-next.1
+  - @backstage/integration@1.3.0-next.1
+  - @backstage/plugin-catalog-backend@1.3.1-next.1
+
 ## 1.5.0-next.0
 
 ### Minor Changes

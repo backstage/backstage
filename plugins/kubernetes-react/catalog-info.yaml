@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-kubernetes-react
+  title: '@backstage/plugin-kubernetes-react'
+  description: >-
+    Shared frontend utilities for Kubernetes plugins
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: kubernetes-maintainers

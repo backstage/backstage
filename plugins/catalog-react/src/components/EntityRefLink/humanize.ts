@@ -19,11 +19,20 @@ import {
   CompoundEntityRef,
   DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
+import get from 'lodash/get';
 
-/** @public */
+/**
+ * @param defaultNamespace - if set to false then namespace is never omitted,
+ * if set to string which matches namespace of entity then omitted
+ *
+ * @public
+ **/
 export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,
-  opts?: { defaultKind?: string },
+  opts?: {
+    defaultKind?: string;
+    defaultNamespace?: string | false;
+  },
 ) {
   const defaultKind = opts?.defaultKind;
   let kind;
@@ -40,7 +49,14 @@ export function humanizeEntityRef(
     name = entityRef.name;
   }
 
-  if (namespace === DEFAULT_NAMESPACE) {
+  if (namespace === undefined || namespace === '') {
+    namespace = DEFAULT_NAMESPACE;
+  }
+  if (opts?.defaultNamespace !== undefined) {
+    if (opts?.defaultNamespace === namespace) {
+      namespace = undefined;
+    }
+  } else if (namespace === DEFAULT_NAMESPACE) {
     namespace = undefined;
   }
 
@@ -50,4 +66,27 @@ export function humanizeEntityRef(
       ? undefined
       : kind;
   return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
+}
+
+/**
+ * Convert an entity to its more readable name if available.
+ *
+ * If an entity is either User or Group, this will be its `spec.profile.displayName`.
+ * Otherwise, this is `metadata.title`.
+ *
+ * If neither of those are found or populated, fallback to `defaultName`.
+ *
+ * @param entity - Entity to convert.
+ * @param defaultName - If entity readable name is not available, `defaultName` will be returned.
+ * @returns Readable name, defaults to `defaultName`.
+ *
+ */
+export function humanizeEntity(entity: Entity, defaultName: string) {
+  for (const path of ['spec.profile.displayName', 'metadata.title']) {
+    const value = get(entity, path);
+    if (value && typeof value === 'string') {
+      return value;
+    }
+  }
+  return defaultName;
 }

@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, ReactElement } from 'react';
-import { MemoryRouter, Routes } from 'react-router';
-import { Route } from 'react-router-dom';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core/styles';
-import { CssBaseline } from '@material-ui/core';
-import MockIcon from '@material-ui/icons/AcUnit';
-import { createSpecializedApp } from '@backstage/core-app-api';
 import {
-  BootErrorPageProps,
-  RouteRef,
-  ExternalRouteRef,
+  ComponentType,
+  PropsWithChildren,
+  ReactElement,
+  ReactNode,
+  createElement,
+} from 'react';
+import { MemoryRouter, Route } from 'react-router-dom';
+import { themes, UnifiedThemeProvider } from '@backstage/theme';
+import MockIcon from '@material-ui/icons/AcUnit';
+import { AppIcons, createSpecializedApp } from '@backstage/core-app-api';
+import {
+  AppComponents,
   attachComponentData,
+  BootErrorPageProps,
   createRouteRef,
+  ExternalRouteRef,
+  IconComponent,
+  RouteRef,
 } from '@backstage/core-plugin-api';
-import { RenderResult } from '@testing-library/react';
-import { renderWithEffects } from './testingLibrary';
+import { MatcherFunction, RenderResult } from '@testing-library/react';
+import { LegacyRootOption, renderWithEffects } from './testingLibrary';
 import { defaultApis } from './defaultApis';
 import { mockApis } from './mockApis';
 
@@ -42,6 +47,8 @@ const mockIcons = {
   'kind:location': MockIcon,
   'kind:system': MockIcon,
   'kind:user': MockIcon,
+  'kind:resource': MockIcon,
+  'kind:template': MockIcon,
 
   brokenImage: MockIcon,
   catalog: MockIcon,
@@ -57,6 +64,8 @@ const mockIcons = {
   help: MockIcon,
   user: MockIcon,
   warning: MockIcon,
+  star: MockIcon,
+  unstarred: MockIcon,
 };
 
 const ErrorBoundaryFallback = ({ error }: { error: Error }) => {
@@ -97,6 +106,18 @@ export type TestAppOptions = {
    * const link = useRouteRef(myRouteRef)
    */
   mountedRoutes?: { [path: string]: RouteRef | ExternalRouteRef };
+
+  /**
+   * Components to be forwarded to the `components` option of `createApp`.
+   */
+  components?: Partial<AppComponents>;
+
+  /**
+   * Icons to be forwarded to the `icons` option of `createApp`.
+   */
+  icons?: Partial<AppIcons> & {
+    [key in string]: IconComponent;
+  };
 };
 
 function isExternalRouteRef(
@@ -133,8 +154,12 @@ export function createTestAppWrapper(
       Router: ({ children }) => (
         <MemoryRouter initialEntries={routeEntries} children={children} />
       ),
+      ...options.components,
     },
-    icons: mockIcons,
+    icons: {
+      ...mockIcons,
+      ...options.icons,
+    },
     plugins: [],
     themes: [
       {
@@ -142,9 +167,9 @@ export function createTestAppWrapper(
         title: 'Test App Theme',
         variant: 'light',
         Provider: ({ children }) => (
-          <ThemeProvider theme={lightTheme}>
-            <CssBaseline>{children}</CssBaseline>
-          </ThemeProvider>
+          <UnifiedThemeProvider theme={themes.light}>
+            {children}
+          </UnifiedThemeProvider>
         ),
       },
     ],
@@ -184,11 +209,7 @@ export function createTestAppWrapper(
     <AppProvider>
       <AppRouter>
         <NoRender>{routeElements}</NoRender>
-        {/* The path of * here is needed to be set as a catch all, so it will render the wrapper element
-         *  and work with nested routes if they exist too */}
-        <Routes>
-          <Route path="/*" element={<>{children}</>} />
-        </Routes>
+        {children}
       </AppRouter>
     </AppProvider>
   );
@@ -210,11 +231,11 @@ export function wrapInTestApp(
 ): ReactElement {
   const TestAppWrapper = createTestAppWrapper(options);
 
-  let wrappedElement: React.ReactElement;
+  let wrappedElement: ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = <Component />;
+    wrappedElement = createElement(Component as ComponentType);
   } else {
-    wrappedElement = Component as React.ReactElement;
+    wrappedElement = Component as ReactElement;
   }
 
   return <TestAppWrapper>{wrappedElement}</TestAppWrapper>;
@@ -232,17 +253,41 @@ export function wrapInTestApp(
  * @public
  */
 export async function renderInTestApp(
-  Component: ComponentType | ReactNode,
-  options: TestAppOptions = {},
+  Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
+  options: TestAppOptions & LegacyRootOption = {},
 ): Promise<RenderResult> {
-  let wrappedElement: React.ReactElement;
+  let wrappedElement: ReactElement;
   if (Component instanceof Function) {
-    wrappedElement = <Component />;
+    wrappedElement = createElement(Component as ComponentType);
   } else {
-    wrappedElement = Component as React.ReactElement;
+    wrappedElement = Component as ReactElement;
   }
+  const { legacyRoot } = options;
 
   return renderWithEffects(wrappedElement, {
     wrapper: createTestAppWrapper(options),
+    legacyRoot,
   });
 }
+
+/**
+ * Returns a `@testing-library/react` valid MatcherFunction for supplied text
+ *
+ * @param string - text Text to match by element's textContent
+ *
+ * @public
+ */
+export const textContentMatcher =
+  (text: string): MatcherFunction =>
+  (_, node) => {
+    if (!node) {
+      return false;
+    }
+
+    const hasText = (textNode: Element) =>
+      textNode?.textContent?.includes(text) ?? false;
+    const childrenDontHaveText = (containerNode: Element) =>
+      Array.from(containerNode?.children).every(child => !hasText(child));
+
+    return hasText(node) && childrenDontHaveText(node);
+  };

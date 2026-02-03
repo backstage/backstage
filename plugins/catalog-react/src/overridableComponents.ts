@@ -13,26 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 
 import {
   CatalogReactUserListPickerClassKey,
+  CatalogReactEntityDisplayNameClassKey,
   CatalogReactEntityLifecyclePickerClassKey,
   CatalogReactEntitySearchBarClassKey,
   CatalogReactEntityTagPickerClassKey,
   CatalogReactEntityOwnerPickerClassKey,
   CatalogReactEntityProcessingStatusPickerClassKey,
+  FixedWidthFormControlLabelClassKey,
+  MissingAnnotationEmptyStateClassKey,
 } from './components';
+import { CatalogReactEntityAutocompletePickerClassKey } from './components/EntityAutocompletePicker/EntityAutocompletePicker';
 
 /** @public */
 export type CatalogReactComponentsNameToClassKey = {
   CatalogReactUserListPicker: CatalogReactUserListPickerClassKey;
+  CatalogReactEntityDisplayName: CatalogReactEntityDisplayNameClassKey;
   CatalogReactEntityLifecyclePicker: CatalogReactEntityLifecyclePickerClassKey;
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
+  CatalogReactFixedWidthFormControlLabel: FixedWidthFormControlLabelClassKey;
   CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
+  CatalogReactEntityAutocompletePickerClassKey: CatalogReactEntityAutocompletePickerClassKey;
+  CatalogReactMissingAnnotationEmptyState: MissingAnnotationEmptyStateClassKey;
 };
 
 /** @public */
@@ -41,3 +50,8 @@ export type BackstageOverrides = Overrides & {
     StyleRules<CatalogReactComponentsNameToClassKey[Name]>
   >;
 };
+
+declare module '@backstage/theme' {
+  interface OverrideComponentNameToClassKeys
+    extends CatalogReactComponentsNameToClassKey {}
+}

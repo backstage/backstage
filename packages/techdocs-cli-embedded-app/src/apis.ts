@@ -72,7 +72,7 @@ class TechDocsDevStorageApi implements TechDocsStorageApi {
   }
 
   async getBuilder() {
-    return this.configApi.getString('techdocs.builder');
+    return this.configApi.getOptionalString('techdocs.builder') || 'local';
   }
 
   async getEntityDocs(_entityId: CompoundEntityRef, path: string) {
@@ -125,6 +125,11 @@ class TechDocsDevApi implements TechDocsApi {
     this.configApi = configApi;
     this.discoveryApi = discoveryApi;
     this.identityApi = identityApi;
+  }
+
+  async getCookie(): Promise<{ expiresAt: string }> {
+    const tenMinutesFromNow = new Date(Date.now() + 10 * 60 * 1000);
+    return { expiresAt: tenMinutesFromNow.toISOString() };
   }
 
   async getApiOrigin() {

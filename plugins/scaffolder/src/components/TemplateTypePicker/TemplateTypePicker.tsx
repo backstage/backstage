@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import capitalize from 'lodash/capitalize';
 import { Progress } from '@backstage/core-components';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Autocomplete } from '@material-ui/lab';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -43,6 +42,7 @@ export const TemplateTypePicker = () => {
   const alertApi = useApi(alertApiRef);
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   if (loading) return <Progress />;
 
@@ -58,10 +58,16 @@ export const TemplateTypePicker = () => {
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Categories</Typography>
-      <Autocomplete
+      <Typography
+        variant="button"
+        component="label"
+        htmlFor="categories-picker"
+      >
+        {t('templateTypePicker.title')}
+      </Typography>
+      <Autocomplete<string, true>
+        id="categories-picker"
         multiple
-        aria-label="Categories"
         options={availableTypes}
         value={selectedTypes}
         onChange={(_: object, value: string[]) => setSelectedTypes(value)}

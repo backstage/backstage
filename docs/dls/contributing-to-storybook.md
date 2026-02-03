@@ -14,8 +14,8 @@ You'll find our storybook at
 [http://backstage.io/storybook](http://backstage.io/storybook).
 
 As noted in the [design introduction](design.md), Backstage's design is based
-off of [Material-UI](https://material-ui.com/). Much of the UI elements use
-direct Material-UI, while we've also extended and written custom ones to provide
+off of [Material UI](https://material-ui.com/). Much of the UI elements use
+direct Material UI, while we've also extended and written custom ones to provide
 specific functionality.
 
 ![Storybook Page](../assets/dls/storybook-page.png)
@@ -27,13 +27,13 @@ copied.
 When custom Backstage components are created, they are placed in the
 `@backstage/core-components` package and added to the Storybook.
 
-There may be times where an existing Material-UI component (in
+There may be times where an existing Material UI component (in
 `@material-ui/core`) is sufficient and doesn't need to be wrapped or duplicated.
 However, we may want to identify an _opinionated_ way to use that component
 inside of Backstage. In these cases, stories showing how to use those existing
 components will also be put into our storybook.
 
-When a story example using Material-UI becomes more complex, requiring a
+When a story example using Material UI becomes more complex, requiring a
 specific set of colors, variants, parameters, etc., it may become a candidate to
 be refactored to become a full Backstage core component.
 
@@ -61,7 +61,7 @@ core
 ## Running locally
 
 Go to `storybook`, run `yarn install` and install the dependencies, then run the
-following on your command line: `yarn start`
+following on your command line: `yarn storybook`
 
 ![Storybook command startup](../assets/dls/running-storybook.png)
 

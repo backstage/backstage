@@ -17,7 +17,6 @@
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { EmptyStateImage } from './EmptyStateImage';
 
 /** @public */
@@ -42,7 +41,7 @@ const useStyles = makeStyles(
 type Props = {
   title: string;
   description?: string | JSX.Element;
-  missing: 'field' | 'info' | 'content' | 'data';
+  missing: 'field' | 'info' | 'content' | 'data' | { customImage: JSX.Element };
   action?: JSX.Element;
 };
 
@@ -78,7 +77,11 @@ export function EmptyState(props: Props) {
         </Grid>
       </Grid>
       <Grid item xs={12} md={6} className={classes.imageContainer}>
-        <EmptyStateImage missing={missing} />
+        {typeof missing === 'string' ? (
+          <EmptyStateImage missing={missing} />
+        ) : (
+          missing.customImage
+        )}
       </Grid>
     </Grid>
   );

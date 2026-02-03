@@ -18,26 +18,28 @@ import { compact, zipObject } from 'lodash';
 import qs from 'qs';
 import DataLoader from 'dataloader';
 import {
-  EvaluatePermissionResponse,
-  EvaluatePermissionRequest,
-  AuthorizeResult,
-  isResourcePermission,
-  PermissionEvaluator,
   AuthorizePermissionRequest,
+  AuthorizeResult,
+  EvaluatePermissionRequest,
+  EvaluatePermissionResponse,
+  isResourcePermission,
   QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
   IndexableResult,
   IndexableResultSet,
+  SearchQuery,
+} from '@backstage/plugin-search-common';
+import {
   QueryRequestOptions,
   QueryTranslator,
   SearchEngine,
-  SearchQuery,
-} from '@backstage/plugin-search-common';
+} from '@backstage/plugin-search-backend-node';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
+import { AuthService, PermissionsService } from '@backstage/backend-plugin-api';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {
   if (!pageCursor) {
@@ -63,15 +65,23 @@ export function encodePageCursor({ page }: { page: number }): string {
 }
 
 export class AuthorizedSearchEngine implements SearchEngine {
-  private readonly pageSize = 25;
   private readonly queryLatencyBudgetMs: number;
+  private readonly searchEngine: SearchEngine;
+  private readonly types: Record<string, DocumentTypeInfo>;
+  private readonly permissions: PermissionsService;
+  private readonly auth: AuthService;
 
   constructor(
-    private readonly searchEngine: SearchEngine,
-    private readonly types: Record<string, DocumentTypeInfo>,
-    private readonly permissions: PermissionEvaluator,
+    searchEngine: SearchEngine,
+    types: Record<string, DocumentTypeInfo>,
+    permissions: PermissionsService,
+    auth: AuthService,
     config: Config,
   ) {
+    this.searchEngine = searchEngine;
+    this.types = types;
+    this.permissions = permissions;
+    this.auth = auth;
     this.queryLatencyBudgetMs =
       config.getOptionalNumber('search.permissions.queryLatencyBudgetMs') ??
       1000;
@@ -91,9 +101,14 @@ export class AuthorizedSearchEngine implements SearchEngine {
   ): Promise<IndexableResultSet> {
     const queryStartTime = Date.now();
 
+    const compatOptions =
+      'credentials' in options
+        ? options
+        : { credentials: await this.auth.getNoneCredentials() };
+
     const conditionFetcher = new DataLoader(
       (requests: readonly QueryPermissionRequest[]) =>
-        this.permissions.authorizeConditional(requests.slice(), options),
+        this.permissions.authorizeConditional(requests.slice(), compatOptions),
       {
         cacheKeyFn: ({ permission: { name } }) => name,
       },
@@ -101,7 +116,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
     const authorizer = new DataLoader(
       (requests: readonly AuthorizePermissionRequest[]) =>
-        this.permissions.authorize(requests.slice(), options),
+        this.permissions.authorize(requests.slice(), compatOptions),
       {
         // Serialize the permission name and resourceRef as
         // a query string to avoid collisions from overlapping
@@ -121,7 +136,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
           // No permission configured for this document type - always allow.
           if (!permission) {
-            return { result: AuthorizeResult.ALLOW as const };
+            return { result: AuthorizeResult.ALLOW };
           }
 
           // Resource permission supplied, so we need to check for conditional decisions.
@@ -158,12 +173,13 @@ export class AuthorizedSearchEngine implements SearchEngine {
     if (!resultByResultFilteringRequired) {
       return this.searchEngine.query(
         { ...query, types: authorizedTypes },
-        options,
+        compatOptions,
       );
     }
 
+    const pageSize = query.pageLimit || 25;
     const { page } = decodePageCursor(query.pageCursor);
-    const targetResults = (page + 1) * this.pageSize;
+    const targetResults = (page + 1) * pageSize;
 
     let filteredResults: IndexableResult[] = [];
     let nextPageCursor: string | undefined;
@@ -172,7 +188,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     do {
       const nextPage = await this.searchEngine.query(
         { ...query, types: authorizedTypes, pageCursor: nextPageCursor },
-        options,
+        compatOptions,
       );
 
       filteredResults = filteredResults.concat(
@@ -190,12 +206,12 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
     return {
       results: filteredResults
-        .slice(page * this.pageSize, (page + 1) * this.pageSize)
+        .slice(page * pageSize, (page + 1) * pageSize)
         .map((result, index) => {
           // Overwrite any/all rank entries to avoid leaking knowledge of filtered results.
           return {
             ...result,
-            rank: page * this.pageSize + index + 1,
+            rank: page * pageSize + index + 1,
           };
         }),
       previousPageCursor:
@@ -205,6 +221,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
         (nextPageCursor || filteredResults.length > targetResults)
           ? encodePageCursor({ page: page + 1 })
           : undefined,
+      numberOfResults: undefined,
     };
   }
 

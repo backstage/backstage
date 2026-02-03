@@ -25,7 +25,7 @@ describe('createPropertyRule', () => {
 
   it('formats the rule description correctly', () => {
     expect(description).toBe(
-      'Allow entities which have the specified metadata subfield.',
+      'Allow entities with the specified metadata subfield',
     );
   });
 
@@ -41,7 +41,27 @@ describe('createPropertyRule', () => {
                 name: 'test-component',
               },
             },
-            'org.name',
+            {
+              key: 'org.name',
+            },
+          ),
+        ).toBe(false);
+      });
+
+      it('returns false when specified key is an empty array', () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                tags: [],
+              },
+            },
+            {
+              key: 'tags',
+            },
           ),
         ).toBe(false);
       });
@@ -59,7 +79,27 @@ describe('createPropertyRule', () => {
                 },
               },
             },
-            'org.name',
+            {
+              key: 'org.name',
+            },
+          ),
+        ).toBe(true);
+      });
+
+      it('returns true when specified key is an array containing more than an element', () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                tags: ['java'],
+              },
+            },
+            {
+              key: 'tags',
+            },
           ),
         ).toBe(true);
       });
@@ -76,8 +116,10 @@ describe('createPropertyRule', () => {
                 name: 'test-component',
               },
             },
-            'org.name',
-            'test-org',
+            {
+              key: 'org.name',
+              value: 'test-org',
+            },
           ),
         ).toBe(false);
       });
@@ -95,8 +137,29 @@ describe('createPropertyRule', () => {
                 },
               },
             },
-            'org.name',
-            'test-org',
+            {
+              key: 'org.name',
+              value: 'test-org',
+            },
+          ),
+        ).toBe(false);
+      });
+
+      it(`returns false when key is an array and doesn't contain the specified value`, () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                tags: ['java'],
+              },
+            },
+            {
+              key: 'tags',
+              value: 'python',
+            },
           ),
         ).toBe(false);
       });
@@ -114,8 +177,29 @@ describe('createPropertyRule', () => {
                 },
               },
             },
-            'org.name',
-            'test-org',
+            {
+              key: 'org.name',
+              value: 'test-org',
+            },
+          ),
+        ).toBe(true);
+      });
+
+      it(`returns true when key is an array and contains the specified value`, () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                tags: ['java', 'java11'],
+              },
+            },
+            {
+              key: 'tags',
+              value: 'java',
+            },
           ),
         ).toBe(true);
       });
@@ -124,7 +208,11 @@ describe('createPropertyRule', () => {
 
   describe('toQuery', () => {
     it('returns an appropriate catalog-backend filter', () => {
-      expect(toQuery('backstage.io/test-component')).toEqual({
+      expect(
+        toQuery({
+          key: 'backstage.io/test-component',
+        }),
+      ).toEqual({
         key: 'metadata.backstage.io/test-component',
       });
     });

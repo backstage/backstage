@@ -6,7 +6,7 @@
 
 # This dockerfile also performs the build first inside docker. This may come
 # with a build time impact, but is sometimes desirable. If you want to run the
-# build on the host instead, use the file simply named Dockerfile in this folder
+# build on the host instead, use the file simply named Dockerfile.hostbuild in this folder
 # instead.
 
 # USAGE:
@@ -35,7 +35,7 @@
 
 
 
-FROM node:14-buster AS build
+FROM node:20-buster AS build
 
 RUN mkdir /app
 COPY . /app
@@ -55,4 +55,4 @@ COPY docker/default.conf.template /etc/nginx/templates/default.conf.template
 
 COPY docker/inject-config.sh /docker-entrypoint.d/40-inject-config.sh
 
-ENV PORT 80
+ENV PORT=80

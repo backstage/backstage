@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { ErrorBoundary } from './ErrorBoundary';
 import {
   MockErrorApi,
@@ -27,7 +27,7 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 
 type BombProps = {
   shouldThrow?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const Bomb = ({ shouldThrow }: BombProps) => {
@@ -67,12 +67,20 @@ describe('<ErrorBoundary/>', () => {
     });
 
     expect(error).toEqual([
-      expect.stringMatching(/^Error: Uncaught \[Error: Bomb\]/),
-      expect.stringMatching(
-        /^The above error occurred in the <Bomb> component:/,
+      expect.stringContaining('Error: Bomb'),
+      expect.objectContaining({
+        type: 'unhandled-exception',
+      }),
+      expect.stringContaining('Error: Bomb'),
+      expect.objectContaining({
+        type: 'unhandled-exception',
+      }),
+      expect.stringContaining(
+        'The above error occurred in the <Bomb> component:',
       ),
-      expect.stringMatching(/^ErrorBoundary/),
+      expect.stringContaining('ErrorBoundary'),
+      expect.stringContaining('Warning: findDOMNode'), // React warning, unfortunate but currently true
     ]);
-    expect(error.length).toEqual(3);
+    expect(error.length).toEqual(7);
   });
 });

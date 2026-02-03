@@ -20,7 +20,7 @@ const BASE_DOMAIN = 'https://developer.atlassian.com';
 const SCHEMA_SOURCE = `${BASE_DOMAIN}/cloud/bitbucket/swagger.v3.json`;
 
 const fetch = require('cross-fetch');
-const fs = require('fs');
+const fs = require('node:fs');
 
 const destFile = `${__dirname}/../bitbucket-cloud.oas.json`;
 
@@ -214,19 +214,6 @@ const preventHardToDetectDuplicateInterfacesDueToAllOf = json => {
   return json;
 };
 
-const removeBuggyDescription = json => {
-  const valueProp =
-    json.components.schemas.branchrestriction.allOf[1].properties.value;
-  if (!valueProp.description.startsWith('<staticmethod')) {
-    // eslint-disable-next-line no-console
-    console.log('[WARN] "removeBuggyDescription" is not necessary anymore.');
-    return json;
-  }
-
-  delete valueProp.description;
-  return json;
-};
-
 const resolveConflictingInheritance = json => {
   const schema = json.components.schemas.pipeline_selector;
   const extension = schema.allOf[1];
@@ -269,7 +256,6 @@ fetch(SCHEMA_SOURCE)
   .then(addPaginatedDefinition)
   .then(paginatedDefinitionsExtendPaginated)
   .then(preventHardToDetectDuplicateInterfacesDueToAllOf)
-  .then(removeBuggyDescription)
   .then(resolveConflictingInheritance)
   .then(escapeTsdocInDescription)
   .then(relativeToAbsoluteUrls)

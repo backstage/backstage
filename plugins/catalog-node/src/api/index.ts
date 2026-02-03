@@ -15,7 +15,12 @@
  */
 
 export { processingResult } from './processingResult';
-export type { EntityRelationSpec, LocationSpec } from './common';
+export type {
+  EntityRelationSpec,
+  LocationSpec,
+  EntitiesSearchFilter,
+  EntityFilter,
+} from './common';
 export type {
   CatalogProcessor,
   CatalogProcessorParser,
@@ -32,4 +37,5 @@ export type {
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
+  EntityProviderRefreshOptions,
 } from './provider';

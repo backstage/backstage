@@ -16,7 +16,8 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
-import { EntityRelationSpec, LocationSpec } from './common';
+import { EntityRelationSpec } from './common';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 /**
  * @public
@@ -99,6 +100,14 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
+
+  /**
+   * Returns a processor priority, which is used to determine the order in which
+   * processors are run. The default priority is 20, and lower value means
+   * that the processor runs earlier.
+   * @returns A number representing the priority of the processor.
+   */
+  getPriority?(): number;
 };
 
 /**
@@ -154,6 +163,7 @@ export type CatalogProcessorEntityResult = {
   type: 'entity';
   entity: Entity;
   location: LocationSpec;
+  locationKey?: string | null;
 };
 
 /** @public */

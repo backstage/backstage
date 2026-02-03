@@ -20,6 +20,26 @@ export {
   getOrganizationRepositories,
   getOrganizationTeams,
   getOrganizationUsers,
+  type GithubUser,
+  type GithubTeam,
+  type GithubPageSizes,
+  DEFAULT_PAGE_SIZES,
 } from './github';
-export { assignGroupsToUsers, buildOrgHierarchy } from './org';
-export { parseGitHubOrgUrl } from './util';
+export {
+  type UserTransformer,
+  defaultUserTransformer,
+  type TeamTransformer,
+  defaultOrganizationTeamTransformer,
+  type TransformerContext,
+} from './defaultTransformers';
+export {
+  assignGroupsToUser,
+  assignGroupsToUsers,
+  buildOrgHierarchy,
+} from './org';
+export { parseGithubOrgUrl } from './util';
+export {
+  ANNOTATION_GITHUB_USER_LOGIN,
+  ANNOTATION_GITHUB_TEAM_SLUG,
+  ANNOTATION_GITHUB_USER_ID,
+} from './annotation';

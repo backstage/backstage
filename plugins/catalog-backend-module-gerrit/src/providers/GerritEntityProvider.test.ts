@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
+
+import {
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskInvocationDefinition,
+} from '@backstage/backend-plugin-api';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
-import { rest } from 'msw';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import fs from 'fs-extra';
-import path from 'path';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import path from 'node:path';
 import { GerritEntityProvider } from './GerritEntityProvider';
 
 const server = setupServer();
@@ -33,55 +41,72 @@ const getJsonFixture = (fileName: string) =>
     ),
   );
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }
 }
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('GerritEntityProvider', () => {
-  beforeAll(() => server.listen());
-  afterEach(() => {
-    jest.resetAllMocks();
-    server.resetHandlers();
-  });
-  afterAll(() => server.close());
+  let schedule: PersistingTaskRunner;
 
-  const config = new ConfigReader({
-    catalog: {
-      providers: {
-        gerrit: {
-          'active-training': {
-            host: 'g.com',
-            query: 'state=ACTIVE&prefix=training',
-            branch: 'main',
+  registerMswTestHooks(server);
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const config = mockServices.rootConfig({
+    data: {
+      catalog: {
+        providers: {
+          gerrit: {
+            'active-training': {
+              host: 'g.com',
+              query: 'state=ACTIVE&prefix=training',
+              branch: 'main',
+            },
+            'custom-catalog-file': {
+              host: 'g.com',
+              query: 'state=ACTIVE&prefix=training',
+              catalogPath: 'catalog-*.yaml',
+              branch: 'main',
+            },
+            'without-branch': {
+              host: 'g.com',
+              query: 'state=ACTIVE&prefix=training',
+            },
           },
         },
       },
-    },
-    integrations: {
-      gerrit: [
-        {
-          host: 'g.com',
-          baseUrl: 'https://g.com/gerrit',
-          gitilesBaseUrl: 'https:/g.com/gitiles',
-        },
-      ],
+      integrations: {
+        gerrit: [
+          {
+            host: 'g.com',
+            baseUrl: 'https://g.com/gerrit',
+            gitilesBaseUrl: 'https:/g.com/gitiles',
+          },
+        ],
+      },
     },
   });
-  const schedule = new PersistingTaskRunner();
+
+  beforeEach(() => {
+    schedule = new PersistingTaskRunner();
+  });
 
   const entityProviderConnection: EntityProviderConnection = {
     applyMutation: jest.fn(),
+    refresh: jest.fn(),
   };
 
   it('discovers projects from the api.', async () => {
@@ -95,7 +120,7 @@ describe('GerritEntityProvider', () => {
         res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
-          ctx.body(repoBuffer),
+          ctx.body(new Uint8Array(repoBuffer)),
         ),
       ),
     );
@@ -114,7 +139,110 @@ describe('GerritEntityProvider', () => {
     expect(taskDef.id).toEqual('gerrit-provider:active-training:refresh');
     await (taskDef.fn as () => Promise<void>)();
 
-    expect(entityProviderConnection.applyMutation).toBeCalledWith(expected);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith(
+      expected,
+    );
+  });
+
+  it('discovers projects from the api with a custom catalog file path.', async () => {
+    const repoBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/listProjectsBody.txt'),
+    );
+    const expected = getJsonFixture(
+      'expectedProviderEntitiesCustomCatalogFile.json',
+    );
+
+    server.use(
+      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.body(new Uint8Array(repoBuffer)),
+        ),
+      ),
+    );
+
+    const provider = GerritEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[1];
+    expect(provider.getProviderName()).toEqual(
+      'gerrit-provider:custom-catalog-file',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('gerrit-provider:custom-catalog-file:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith(
+      expected,
+    );
+  });
+
+  it('discovers the default branch when not explicitly configured.', async () => {
+    const repoBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/listProjectsBody.txt'),
+    );
+    const expected = getJsonFixture('expectedProviderEntities.json');
+
+    server.use(
+      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.body(new Uint8Array(repoBuffer)),
+        ),
+      ),
+      rest.get('https://g.com/gerrit/projects/:project/HEAD', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.body(`)]}'\n"refs/heads/main"`),
+        ),
+      ),
+    );
+
+    const configWithoutBranch = new ConfigReader({
+      catalog: {
+        providers: {
+          gerrit: {
+            'active-training': {
+              host: 'g.com',
+              query: 'state=ACTIVE&prefix=training',
+            },
+          },
+        },
+      },
+      integrations: {
+        gerrit: [
+          {
+            host: 'g.com',
+            baseUrl: 'https://g.com/gerrit',
+            gitilesBaseUrl: 'https:/g.com/gitiles',
+          },
+        ],
+      },
+    });
+
+    const provider = GerritEntityProvider.fromConfig(configWithoutBranch, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'gerrit-provider:active-training',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('gerrit-provider:active-training:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith(
+      expected,
+    );
   });
 
   it('handles api errors.', async () => {
@@ -156,9 +284,11 @@ describe('GerritEntityProvider', () => {
         gerrit: [
           {
             host: 'gerrit1.com',
+            gitilesBaseUrl: 'https://gerrit1.com/gitiles',
           },
           {
             host: 'gerrit2.com',
+            gitilesBaseUrl: 'https://gerrit2.com/gitiles',
           },
         ],
       },
@@ -191,6 +321,7 @@ describe('GerritEntityProvider', () => {
         gerrit: [
           {
             host: 'gerrit1.com',
+            gitilesBaseUrl: 'https://gerrit1.com/gitiles',
           },
         ],
       },
@@ -202,5 +333,94 @@ describe('GerritEntityProvider', () => {
         schedule,
       }),
     ).toThrow(/No gerrit integration/);
+  });
+
+  it('fail without schedule and scheduler', () => {
+    expect(() =>
+      GerritEntityProvider.fromConfig(config, {
+        logger,
+      }),
+    ).toThrow('Either schedule or scheduler must be provided');
+  });
+
+  it('fail with scheduler but no schedule config', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as SchedulerService;
+    expect(() =>
+      GerritEntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for gerrit-provider:active-training',
+    );
+  });
+
+  it('discovers projects from the api with schedule in config', async () => {
+    const configWithSchedule = new ConfigReader({
+      catalog: {
+        providers: {
+          gerrit: {
+            'active-training': {
+              host: 'g.com',
+              query: 'state=ACTIVE&prefix=training',
+              branch: 'main',
+              schedule: {
+                frequency: 'PT30M',
+                timeout: {
+                  minutes: 3,
+                },
+              },
+            },
+          },
+        },
+      },
+      integrations: {
+        gerrit: [
+          {
+            host: 'g.com',
+            baseUrl: 'https://g.com/gerrit',
+            gitilesBaseUrl: 'https:/g.com/gitiles',
+          },
+        ],
+      },
+    });
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => schedule,
+    } as unknown as SchedulerService;
+
+    const repoBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/listProjectsBody.txt'),
+    );
+    const expected = getJsonFixture('expectedProviderEntities.json');
+
+    server.use(
+      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.body(new Uint8Array(repoBuffer)),
+        ),
+      ),
+    );
+
+    const provider = GerritEntityProvider.fromConfig(configWithSchedule, {
+      logger,
+      scheduler,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'gerrit-provider:active-training',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('gerrit-provider:active-training:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith(
+      expected,
+    );
   });
 });

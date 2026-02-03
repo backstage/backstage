@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { act } from '@testing-library/react';
 
 import { Progress } from './Progress';
 
 describe('<Progress />', () => {
   it('renders without exploding', async () => {
-    jest.useFakeTimers();
-    const { getByTestId, queryByTestId } = await renderInTestApp(<Progress />);
-    expect(queryByTestId('progress')).not.toBeInTheDocument();
-    act(() => {
-      jest.advanceTimersByTime(250);
-    });
-    expect(getByTestId('progress')).toBeInTheDocument();
-    jest.useRealTimers();
+    const { queryByTestId } = await renderInTestApp(<Progress />);
+    expect(queryByTestId('progress')).toBeInTheDocument();
   });
 });

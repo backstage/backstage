@@ -7,5 +7,7 @@
 **/.git/**
 **/public/**
 **/microsite/**
+**/docs-ui/**
 **/templates/**
 **/sample-templates/**
+playwright.config.ts

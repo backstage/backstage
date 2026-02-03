@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useEffect, useState, PropsWithChildren } from 'react';
+import { useMemo, useEffect, useState, PropsWithChildren } from 'react';
 import { useApi, appThemeApiRef, AppTheme } from '@backstage/core-plugin-api';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 
 // This tries to find the most accurate match, but also falls back to less
 // accurate results in order to avoid errors.

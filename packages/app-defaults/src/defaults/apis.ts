@@ -25,14 +25,17 @@ import {
   GitlabAuth,
   MicrosoftAuth,
   BitbucketAuth,
+  BitbucketServerAuth,
   OAuthRequestManager,
   WebStorage,
-  UrlPatternDiscovery,
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
   createFetchApi,
   FetchMiddlewares,
+  VMwareCloudAuth,
+  FrontendHostDiscovery,
+  OpenShiftAuth,
 } from '@backstage/core-app-api';
 
 import {
@@ -53,7 +56,10 @@ import {
   configApiRef,
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
+  bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
+  vmwareCloudAuthApiRef,
+  openshiftAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
@@ -64,10 +70,7 @@ export const apis = [
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      UrlPatternDiscovery.compile(
-        `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
-      ),
+    factory: ({ configApi }) => FrontendHostDiscovery.fromConfig(configApi),
   }),
   createApiFactory({
     api: alertApiRef,
@@ -128,6 +131,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       GoogleAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -142,6 +146,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       MicrosoftAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -156,6 +161,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       GithubAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         defaultScopes: ['read:user'],
@@ -171,6 +177,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       OktaAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -185,6 +192,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       GitlabAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -199,6 +207,7 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       OneLoginAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),
@@ -213,9 +222,26 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       BitbucketAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
-        defaultScopes: ['team'],
+        defaultScopes: ['account'],
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
+  }),
+  createApiFactory({
+    api: bitbucketServerAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      BitbucketServerAuth.create({
+        configApi,
+        discoveryApi,
+        oauthRequestApi,
+        defaultScopes: ['REPO_READ'],
         environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
@@ -228,6 +254,39 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
       return AtlassianAuth.create({
+        configApi,
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      });
+    },
+  }),
+  createApiFactory({
+    api: vmwareCloudAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      return VMwareCloudAuth.create({
+        configApi,
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      });
+    },
+  }),
+  createApiFactory({
+    api: openshiftAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      return OpenShiftAuth.create({
+        configApi,
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useLayoutEffect, useState, useMemo, useCallback } from 'react';
+import { useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import {
   SignInPageProps,
   useApi,
   useApiHolder,
   errorApiRef,
   IdentityApi,
+  useAnalytics,
 } from '@backstage/core-plugin-api';
 import {
   IdentityProviders,
@@ -31,6 +32,11 @@ import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
+import { useSearchParams } from 'react-router-dom';
+import { useMountEffect } from '@react-hookz/web';
+import { ForwardedError } from '@backstage/errors';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -87,21 +93,37 @@ export const useSignInProviders = (
   const errorApi = useApi(errorApiRef);
   const apiHolder = useApiHolder();
   const [loading, setLoading] = useState(true);
+  const analytics = useAnalytics();
+
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  // User was redirected back to sign in page with error from auth redirect flow
+  const [searchParams, _setSearchParams] = useSearchParams();
+
+  useMountEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      errorApi.post(
+        new ForwardedError(t('signIn.loginFailed'), new Error(errorParam)),
+      );
+    }
+  });
 
   // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(
-    (identityApi: IdentityApi) => {
+    async (identityApi: IdentityApi) => {
       onSignInSuccess(
         IdentityApiSignOutProxy.from({
           identityApi,
           signOut: async () => {
             localStorage.removeItem(PROVIDER_STORAGE_KEY);
             await identityApi.signOut?.();
+            analytics.captureEvent('signOut', 'success');
           },
         }),
       );
+      analytics.captureEvent('signIn', 'success');
     },
-    [onSignInSuccess],
+    [onSignInSuccess, analytics],
   );
 
   // In this effect we check if the user has already selected an existing login
@@ -134,6 +156,7 @@ export const useSignInProviders = (
       .loader(apiHolder, provider.config?.apiRef!)
       .then(result => {
         if (didCancel) {
+          localStorage.removeItem(PROVIDER_STORAGE_KEY);
           return;
         }
         if (result) {
@@ -143,10 +166,10 @@ export const useSignInProviders = (
         }
       })
       .catch(error => {
+        localStorage.removeItem(PROVIDER_STORAGE_KEY);
         if (didCancel) {
           return;
         }
-        localStorage.removeItem(PROVIDER_STORAGE_KEY);
         errorApi.post(error);
         setLoading(false);
       });
@@ -172,16 +195,27 @@ export const useSignInProviders = (
         const { Component } = provider.components;
 
         const handleSignInSuccess = (result: IdentityApi) => {
-          localStorage.setItem(PROVIDER_STORAGE_KEY, provider.id);
-
           handleWrappedResult(result);
+        };
+
+        const handleSignInStarted = () => {
+          localStorage.setItem(
+            PROVIDER_STORAGE_KEY,
+            provider?.config?.id || provider.id,
+          );
+        };
+
+        const handleSignInFailure = () => {
+          localStorage.removeItem(PROVIDER_STORAGE_KEY);
         };
 
         return (
           <Component
             key={provider.id}
             config={provider.config!}
+            onSignInStarted={handleSignInStarted}
             onSignInSuccess={handleSignInSuccess}
+            onSignInFailure={handleSignInFailure}
           />
         );
       }),

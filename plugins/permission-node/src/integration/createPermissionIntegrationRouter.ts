@@ -17,23 +17,28 @@
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { z } from 'zod';
+import zodToJsonSchema from 'zod-to-json-schema';
 import { InputError } from '@backstage/errors';
-import { errorHandler } from '@backstage/backend-common';
 import {
   AuthorizeResult,
   DefinitivePolicyDecision,
   IdentifiedPermissionMessage,
+  MetadataResponse as CommonMetadataResponse,
+  MetadataResponseSerializedRule as CommonMetadataResponseSerializedRule,
   Permission,
   PermissionCondition,
   PermissionCriteria,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '../types';
+import { NoInfer, PermissionRule, PermissionRuleset } from '../types';
 import {
   createGetRule,
   isAndCriteria,
   isNotCriteria,
   isOrCriteria,
 } from './util';
+import { NotImplementedError } from '@backstage/errors';
+import { PermissionResourceRef } from './createPermissionResourceRef';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -45,7 +50,7 @@ const permissionCriteriaSchema: z.ZodSchema<
     z.object({
       rule: z.string(),
       resourceType: z.string(),
-      params: z.array(z.unknown()),
+      params: z.record(z.any()).optional(),
     }),
   ]),
 );
@@ -54,7 +59,7 @@ const applyConditionsRequestSchema = z.object({
   items: z.array(
     z.object({
       id: z.string(),
-      resourceRef: z.string(),
+      resourceRef: z.union([z.string(), z.array(z.string()).nonempty()]),
       resourceType: z.string(),
       conditions: permissionCriteriaSchema,
     }),
@@ -68,7 +73,7 @@ const applyConditionsRequestSchema = z.object({
  * @public
  */
 export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
-  resourceRef: string;
+  resourceRef: string | string[];
   resourceType: string;
   conditions: PermissionCriteria<PermissionCondition>;
 }>;
@@ -88,8 +93,12 @@ export type ApplyConditionsRequest = {
  *
  * @public
  */
-export type ApplyConditionsResponseEntry =
-  IdentifiedPermissionMessage<DefinitivePolicyDecision>;
+export type ApplyConditionsResponseEntry = IdentifiedPermissionMessage<
+  | DefinitivePolicyDecision
+  | {
+      result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
+    }
+>;
 
 /**
  * A batch of {@link ApplyConditionsResponseEntry} objects.
@@ -99,6 +108,24 @@ export type ApplyConditionsResponseEntry =
 export type ApplyConditionsResponse = {
   items: ApplyConditionsResponseEntry[];
 };
+
+/**
+ * Serialized permission rules, with the paramsSchema
+ * converted from a ZodSchema to a JsonSchema.
+ *
+ * @public
+ * @deprecated Please import from `@backstage/plugin-permission-common` instead.
+ */
+export type MetadataResponseSerializedRule =
+  CommonMetadataResponseSerializedRule;
+
+/**
+ * Response type for the .metadata endpoint.
+ *
+ * @public
+ * @deprecated Please import from `@backstage/plugin-permission-common` instead.
+ */
+export type MetadataResponse = CommonMetadataResponse;
 
 const applyConditions = <TResourceType extends string, TResource>(
   criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
@@ -124,16 +151,239 @@ const applyConditions = <TResourceType extends string, TResource>(
     return !applyConditions(criteria.not, resource, getRule);
   }
 
-  return getRule(criteria.rule).apply(resource, ...criteria.params);
+  const rule = getRule(criteria.rule);
+  const result = rule.paramsSchema?.safeParse(criteria.params);
+
+  if (result && !result.success) {
+    throw new InputError(`Parameters to rule are invalid`, result.error);
+  }
+
+  return rule.apply(resource, criteria.params ?? {});
+};
+
+function authorizeResult<TResourceType extends string, TResource>(
+  criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
+  resource: TResource | undefined,
+  getRule: (name: string) => PermissionRule<TResource, unknown, TResourceType>,
+) {
+  return applyConditions(criteria, resource, getRule)
+    ? AuthorizeResult.ALLOW
+    : AuthorizeResult.DENY;
+}
+
+/**
+ * Takes some permission conditions and returns a definitive authorization result
+ * on the resource to which they apply.
+ *
+ * @public
+ */
+export function createConditionAuthorizer<TResource>(
+  permissionRuleset: PermissionRuleset<TResource>,
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+/**
+ * @public
+ * @deprecated Use the version of `createConditionAuthorizer` that accepts a `PermissionRuleset` instead.
+ */
+export function createConditionAuthorizer<TResource, TQuery>(
+  rules: PermissionRule<TResource, TQuery, string>[],
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+export function createConditionAuthorizer<TResource, TQuery>(
+  rules:
+    | PermissionRule<TResource, TQuery, string>[]
+    | PermissionRuleset<TResource>,
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean {
+  const getRule =
+    'getRuleByName' in rules
+      ? (n: string) => rules.getRuleByName(n)
+      : createGetRule(rules);
+
+  return (
+    decision: PolicyDecision,
+    resource: TResource | undefined,
+  ): boolean => {
+    if (decision.result === AuthorizeResult.CONDITIONAL) {
+      return applyConditions(decision.conditions, resource, getRule);
+    }
+
+    return decision.result === AuthorizeResult.ALLOW;
+  };
+}
+
+/**
+ * Options for creating a permission integration router specific
+ * for a particular resource type.
+ *
+ * @public
+ * @deprecated {@link createPermissionIntegrationRouter} is deprecated
+ */
+export type CreatePermissionIntegrationRouterResourceOptions<
+  TResourceType extends string,
+  TResource,
+> = {
+  resourceType: TResourceType;
+  permissions?: Array<Permission>;
+  // Do not infer value of TResourceType from supplied rules.
+  // instead only consider the resourceType parameter, and
+  // consider any rules whose resource type does not match
+  // to be an error.
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
+  getResources?: (
+    resourceRefs: string[],
+  ) => Promise<Array<TResource | undefined>>;
 };
 
 /**
- * Prevent use of type parameter from contributing to type inference.
+ * Options for creating a permission integration router exposing
+ * permissions and rules from multiple resource types.
  *
- * https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-980401795
- * @ignore
+ * @public
+ * @deprecated {@link createPermissionIntegrationRouter} is deprecated
  */
-type NoInfer<T> = T extends infer S ? S : never;
+export type PermissionIntegrationRouterOptions<
+  TResourceType1 extends string = string,
+  TResource1 = any,
+  TResourceType2 extends string = string,
+  TResource2 = any,
+  TResourceType3 extends string = string,
+  TResource3 = any,
+> = {
+  resources: Readonly<
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+      ]
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType2,
+          TResource2
+        >,
+      ]
+    | [
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType1,
+          TResource1
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType2,
+          TResource2
+        >,
+        CreatePermissionIntegrationRouterResourceOptions<
+          TResourceType3,
+          TResource3
+        >,
+      ]
+  >;
+};
+
+class PermissionIntegrationMetadataStore {
+  readonly #rulesByTypeByName = new Map<
+    string,
+    Map<string, PermissionRule<unknown, unknown, string>>
+  >();
+  readonly #permissionsByName = new Map<string, Permission>();
+  readonly #resourcesByType = new Map<
+    string,
+    CreatePermissionIntegrationRouterResourceOptions<string, unknown>
+  >();
+  readonly #serializedRules = new Array<MetadataResponseSerializedRule>();
+
+  getSerializedMetadata(): MetadataResponse {
+    return {
+      permissions: Array.from(this.#permissionsByName.values()),
+      rules: this.#serializedRules,
+    };
+  }
+
+  hasResourceType(type: string): boolean {
+    return this.#resourcesByType.has(type);
+  }
+
+  async getResources(
+    resourceType: string,
+    refs: string[],
+  ): Promise<Record<string, unknown>> {
+    const resource = this.#resourcesByType.get(resourceType);
+    if (!resource?.getResources) {
+      throw new NotImplementedError(
+        `This plugin does not expose any permission rule or can't evaluate the conditions request for ${resourceType}`,
+      );
+    }
+
+    const uniqueRefs = Array.from(new Set(refs));
+    const resources = await resource.getResources(uniqueRefs);
+    return Object.fromEntries(
+      uniqueRefs.map((ref, index) => [ref, resources[index]]),
+    );
+  }
+
+  getRuleMapper(resourceType: string) {
+    return (name: string): PermissionRule<unknown, unknown, string> => {
+      const rule = this.#rulesByTypeByName.get(resourceType)?.get(name);
+      if (!rule) {
+        throw new Error(
+          `Permission rule '${name}' does not exist for resource type '${resourceType}'`,
+        );
+      }
+      return rule;
+    };
+  }
+
+  addPermissions(permissions: Permission[]) {
+    for (const permission of permissions) {
+      // Permission naming conflicts are silently ignored
+      this.#permissionsByName.set(permission.name, permission);
+    }
+  }
+
+  addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]) {
+    for (const rule of rules) {
+      const rulesByName =
+        this.#rulesByTypeByName.get(rule.resourceType) ?? new Map();
+      this.#rulesByTypeByName.set(rule.resourceType, rulesByName);
+
+      if (rulesByName.has(rule.name)) {
+        throw new Error(
+          `Refused to add permission rule for type '${rule.resourceType}' with name '${rule.name}' because it already exists`,
+        );
+      }
+      rulesByName.set(rule.name, rule);
+
+      this.#serializedRules.push({
+        name: rule.name,
+        description: rule.description,
+        resourceType: rule.resourceType,
+        paramsSchema: zodToJsonSchema(rule.paramsSchema ?? z.object({})),
+      });
+    }
+  }
+
+  addResourceType(
+    resource: CreatePermissionIntegrationRouterResourceOptions<string, unknown>,
+  ) {
+    const { resourceType } = resource;
+
+    if (this.#resourcesByType.has(resourceType)) {
+      throw new Error(
+        `Refused to add permission resource with type '${resourceType}' because it already exists`,
+      );
+    }
+    this.#resourcesByType.set(resourceType, resource);
+
+    if (resource.rules) {
+      this.addPermissionRules(resource.rules);
+    }
+
+    if (resource.permissions) {
+      this.addPermissions(resource.permissions);
+    }
+  }
+}
 
 /**
  * Create an express Router which provides an authorization route to allow
@@ -141,6 +391,12 @@ type NoInfer<T> = T extends infer S ? S : never;
  * plugins. Plugin owners that wish to support conditional authorization for
  * their resources should add the router created by this function to their
  * express app inside their `createRouter` implementation.
+ *
+ * In case the `permissions` option is provided, the router also
+ * provides a route that exposes permissions and routes of a plugin.
+ *
+ * In case resources is provided, the routes can handle permissions
+ * for multiple resource types.
  *
  * @remarks
  *
@@ -169,94 +425,144 @@ type NoInfer<T> = T extends infer S ? S : never;
  * need to be evaluated.
  *
  * @public
+ * @deprecated use `PermissionRegistryService` instead, see {@link https://backstage.io/docs/backend-system/core-services/permissions-registry#migrating-from-createpermissionintegrationrouter | the migration section in the service docs} for more details.
  */
-export const createPermissionIntegrationRouter = <
-  TResourceType extends string,
-  TResource,
->(options: {
-  resourceType: TResourceType;
-  permissions?: Array<Permission>;
-  // Do not infer value of TResourceType from supplied rules.
-  // instead only consider the resourceType parameter, and
-  // consider any rules whose resource type does not match
-  // to be an error.
-  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
-  getResources: (
-    resourceRefs: string[],
-  ) => Promise<Array<TResource | undefined>>;
-}): express.Router => {
-  const { resourceType, permissions, rules, getResources } = options;
+export function createPermissionIntegrationRouter<
+  TResourceType1 extends string,
+  TResource1,
+  TResourceType2 extends string,
+  TResource2,
+  TResourceType3 extends string,
+  TResource3,
+>(
+  options?:
+    | { permissions: Array<Permission> }
+    | CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType1,
+        TResource1
+      >
+    | PermissionIntegrationRouterOptions<
+        TResourceType1,
+        TResource1,
+        TResourceType2,
+        TResource2,
+        TResourceType3,
+        TResource3
+      >,
+): express.Router & {
+  addPermissions(permissions: Permission[]): void;
+  addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]): void;
+  addResourceType<const TResourceType extends string, TResource>(
+    resource: CreatePermissionIntegrationRouterResourceOptions<
+      TResourceType,
+      TResource
+    >,
+  ): void;
+  getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
+    resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+  ): PermissionRuleset<TResource, TQuery, TResourceType>;
+} {
+  const store = new PermissionIntegrationMetadataStore();
+
+  if (options) {
+    if ('resources' in options) {
+      // Not technically allowed by types, but it's historically been covered by tests
+      if ('permissions' in options) {
+        store.addPermissions(options.permissions as Permission[]);
+      }
+
+      for (const resource of options.resources) {
+        store.addResourceType(resource);
+      }
+    } else if ('resourceType' in options) {
+      store.addResourceType(options);
+    } else {
+      store.addPermissions(options.permissions);
+    }
+  }
+
   const router = Router();
-  router.use(express.json());
+
+  router.use('/.well-known/backstage/permissions/', express.json());
 
   router.get('/.well-known/backstage/permissions/metadata', (_, res) => {
-    const serializableRules = rules.map(rule => ({
-      name: rule.name,
-      description: rule.description,
-      resourceType: rule.resourceType,
-      parameters: {
-        count: rule.toQuery.length,
-      },
-    }));
-
-    return res.json({ permissions, rules: serializableRules });
+    res.json(store.getSerializedMetadata());
   });
-
-  const getRule = createGetRule(rules);
-
-  const assertValidResourceTypes = (
-    requests: ApplyConditionsRequestEntry[],
-  ) => {
-    const invalidResourceTypes = requests
-      .filter(request => request.resourceType !== resourceType)
-      .map(request => request.resourceType);
-
-    if (invalidResourceTypes.length) {
-      throw new InputError(
-        `Unexpected resource types: ${invalidResourceTypes.join(', ')}.`,
-      );
-    }
-  };
 
   router.post(
     '/.well-known/backstage/permissions/apply-conditions',
-    async (req, res: Response<ApplyConditionsResponse | string>) => {
+    async (req, res: Response<ApplyConditionsResponse>) => {
       const parseResult = applyConditionsRequestSchema.safeParse(req.body);
-
       if (!parseResult.success) {
         throw new InputError(parseResult.error.toString());
       }
 
-      const body = parseResult.data;
+      const { items: requests } = parseResult.data;
 
-      assertValidResourceTypes(body.items);
-
-      const resourceRefs = Array.from(
-        new Set(body.items.map(({ resourceRef }) => resourceRef)),
+      const invalidResourceTypes = requests.filter(
+        i => !store.hasResourceType(i.resourceType),
       );
-      const resourceArray = await getResources(resourceRefs);
-      const resources = resourceRefs.reduce((acc, resourceRef, index) => {
-        acc[resourceRef] = resourceArray[index];
+      if (invalidResourceTypes.length) {
+        throw new InputError(
+          `Unexpected resource types: ${invalidResourceTypes
+            .map(i => i.resourceType)
+            .join(', ')}.`,
+        );
+      }
 
-        return acc;
-      }, {} as Record<string, TResource | undefined>);
+      const resourcesByType: Record<string, Record<string, any>> = {};
+      for (const requestedType of new Set(requests.map(i => i.resourceType))) {
+        resourcesByType[requestedType] = await store.getResources(
+          requestedType,
+          requests
+            .filter(r => r.resourceType === requestedType)
+            .map(i => i.resourceRef)
+            .flat(),
+        );
+      }
 
-      return res.json({
-        items: body.items.map(request => ({
+      res.json({
+        items: requests.map(request => ({
           id: request.id,
-          result: applyConditions(
-            request.conditions,
-            resources[request.resourceRef],
-            getRule,
-          )
-            ? AuthorizeResult.ALLOW
-            : AuthorizeResult.DENY,
+          result: Array.isArray(request.resourceRef)
+            ? request.resourceRef.map(resourceRef =>
+                authorizeResult(
+                  request.conditions,
+                  resourcesByType[request.resourceType][resourceRef],
+                  store.getRuleMapper(request.resourceType),
+                ),
+              )
+            : authorizeResult(
+                request.conditions,
+                resourcesByType[request.resourceType][request.resourceRef],
+                store.getRuleMapper(request.resourceType),
+              ),
         })),
       });
     },
   );
 
-  router.use(errorHandler());
-
-  return router;
-};
+  return Object.assign(router, {
+    addPermissions(permissions: Permission[]) {
+      store.addPermissions(permissions);
+    },
+    addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]) {
+      store.addPermissionRules(rules);
+    },
+    addResourceType<const TResourceType extends string, TResource>(
+      resource: CreatePermissionIntegrationRouterResourceOptions<
+        TResourceType,
+        TResource
+      >,
+    ) {
+      store.addResourceType(resource);
+    },
+    getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
+      resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+    ): PermissionRuleset<TResource, TQuery, TResourceType> {
+      return {
+        getRuleByName: store.getRuleMapper(resourceRef.resourceType),
+      } as PermissionRuleset<TResource, TQuery, TResourceType>;
+    },
+  });
+}

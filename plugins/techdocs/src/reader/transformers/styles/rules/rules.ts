@@ -20,6 +20,7 @@ import { default as layout } from './layout';
 import { default as typeset } from './typeset';
 import { default as animations } from './animations';
 import { default as extensions } from './extensions';
+import palette from './palette';
 
 /**
  * A list of style rules that will be applied to an element in the order they were added.
@@ -35,4 +36,5 @@ export const rules = [
   typeset,
   animations,
   extensions,
+  palette,
 ];

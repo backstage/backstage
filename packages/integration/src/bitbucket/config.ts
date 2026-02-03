@@ -62,6 +62,11 @@ export type BitbucketIntegrationConfig = {
    * See https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/
    */
   appPassword?: string;
+
+  /**
+   * Signing key for commits
+   */
+  commitSigningKey?: string;
 };
 
 /**
@@ -76,9 +81,9 @@ export function readBitbucketIntegrationConfig(
 ): BitbucketIntegrationConfig {
   const host = config.getOptionalString('host') ?? BITBUCKET_HOST;
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
-  const token = config.getOptionalString('token');
+  const token = config.getOptionalString('token')?.trim();
   const username = config.getOptionalString('username');
-  const appPassword = config.getOptionalString('appPassword');
+  const appPassword = config.getOptionalString('appPassword')?.trim();
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -100,6 +105,7 @@ export function readBitbucketIntegrationConfig(
     token,
     username,
     appPassword,
+    commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }
 

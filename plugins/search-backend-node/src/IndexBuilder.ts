@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   DocumentDecoratorFactory,
   DocumentTypeInfo,
-  SearchEngine,
 } from '@backstage/plugin-search-common';
-import { Transform, pipeline } from 'stream';
-import { Logger } from 'winston';
+import { pipeline, Transform } from 'node:stream';
 import { Scheduler } from './Scheduler';
 import {
   IndexBuilderOptions,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
+  SearchEngine,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Used for adding collators, decorators and compile them into tasks which are added to a scheduler returned to the caller.
@@ -36,14 +37,14 @@ export class IndexBuilder {
   private decorators: Record<string, DocumentDecoratorFactory[]>;
   private documentTypes: Record<string, DocumentTypeInfo>;
   private searchEngine: SearchEngine;
-  private logger: Logger;
+  private logger: LoggerService;
 
-  constructor({ logger, searchEngine }: IndexBuilderOptions) {
+  constructor(options: IndexBuilderOptions) {
     this.collators = {};
     this.decorators = {};
     this.documentTypes = {};
-    this.logger = logger;
-    this.searchEngine = searchEngine;
+    this.logger = options.logger;
+    this.searchEngine = options.searchEngine;
   }
 
   /**
@@ -64,7 +65,9 @@ export class IndexBuilder {
    * Makes the index builder aware of a collator that should be executed at the
    * given refresh interval.
    */
-  addCollator({ factory, schedule }: RegisterCollatorParameters): void {
+  addCollator(options: RegisterCollatorParameters): void {
+    const { factory, schedule } = options;
+
     this.logger.info(
       `Added ${factory.constructor.name} collator factory for type ${factory.type}`,
     );
@@ -82,7 +85,8 @@ export class IndexBuilder {
    * the decorator, it will be applied to documents from all known collators,
    * otherwise it will only be applied to documents of the given types.
    */
-  addDecorator({ factory }: RegisterDecoratorParameters): void {
+  addDecorator(options: RegisterDecoratorParameters): void {
+    const { factory } = options;
     const types = factory.types || ['*'];
     this.logger.info(
       `Added decorator ${factory.constructor.name} to types ${types.join(
@@ -108,13 +112,14 @@ export class IndexBuilder {
     });
 
     Object.keys(this.collators).forEach(type => {
+      const taskLogger = this.logger.child({ documentType: type });
       scheduler.addToSchedule({
         id: `search_index_${type.replace('-', '_').toLocaleLowerCase('en-US')}`,
         scheduledRunner: this.collators[type].schedule,
         task: async () => {
           // Instantiate the collator.
           const collator = await this.collators[type].factory.getCollator();
-          this.logger.info(
+          taskLogger.info(
             `Collating documents for ${type} via ${this.collators[type].factory.constructor.name}`,
           );
 
@@ -124,7 +129,7 @@ export class IndexBuilder {
               .concat(this.decorators[type] || [])
               .map(async factory => {
                 const decorator = await factory.getDecorator();
-                this.logger.info(
+                taskLogger.info(
                   `Attached decorator via ${factory.constructor.name} to ${type} index pipeline.`,
                 );
                 return decorator;
@@ -140,13 +145,13 @@ export class IndexBuilder {
               [collator, ...decorators, indexer],
               (error: NodeJS.ErrnoException | null) => {
                 if (error) {
-                  this.logger.error(
+                  taskLogger.error(
                     `Collating documents for ${type} failed: ${error}`,
                   );
                   reject(error);
                 } else {
                   // Signal index pipeline completion!
-                  this.logger.info(`Collating documents for ${type} succeeded`);
+                  taskLogger.info(`Collating documents for ${type} succeeded`);
                   resolve();
                 }
               },

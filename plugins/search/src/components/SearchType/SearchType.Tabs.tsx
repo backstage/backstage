@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 import { useSearch } from '@backstage/plugin-search-react';
-import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Tab, Tabs } from '@material-ui/core';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@material-ui/core/styles';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchTranslationRef } from '../../translation';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   tabs: {
     borderBottom: `1px solid ${theme.palette.textVerySubtle}`,
-    padding: theme.spacing(0, 4),
   },
   tab: {
     height: '50px',
     fontWeight: theme.typography.fontWeightBold,
     fontSize: theme.typography.pxToRem(13),
-    color: theme.palette.textSubtle,
+    color: theme.palette.text.primary,
     minWidth: '130px',
   },
 }));
@@ -48,8 +51,9 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
   const classes = useStyles();
   const { setPageCursor, setTypes, types } = useSearch();
   const { defaultValue, types: givenTypes } = props;
+  const { t } = useTranslationRef(searchTranslationRef);
 
-  const changeTab = (_: React.ChangeEvent<{}>, newType: string) => {
+  const changeTab = (_: ChangeEvent<{}>, newType: string) => {
     setTypes(newType !== '' ? [newType] : []);
     setPageCursor(undefined);
   };
@@ -65,13 +69,14 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
   const definedTypes = [
     {
       value: '',
-      name: 'All',
+      name: t('searchType.tabs.allTitle'),
     },
     ...givenTypes,
   ];
 
   return (
     <Tabs
+      aria-label="List of search types tabs"
       className={classes.tabs}
       indicatorColor="primary"
       value={types.length === 0 ? '' : types[0]}
@@ -81,7 +86,6 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
         <Tab
           key={idx}
           className={classes.tab}
-          disableRipple
           label={type.name}
           value={type.value}
         />

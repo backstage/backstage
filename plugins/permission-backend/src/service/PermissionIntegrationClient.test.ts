@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { AddressInfo } from 'net';
-import { Server } from 'http';
+import { AddressInfo } from 'node:net';
+import { Server } from 'node:http';
 import express, { Router, RequestHandler } from 'express';
 import { RestContext, rest } from 'msw';
-import { setupServer, SetupServerApi } from 'msw/node';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { setupServer, SetupServer } from 'msw/node';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import {
   AuthorizeResult,
   PermissionCondition,
@@ -30,16 +30,23 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
+import { z } from 'zod';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 describe('PermissionIntegrationClient', () => {
   describe('applyConditions', () => {
-    let server: SetupServerApi;
+    let server: SetupServer;
+    const auth = mockServices.auth();
 
     const mockConditions: PermissionCriteria<PermissionCondition> = {
       not: {
         allOf: [
-          { rule: 'RULE_1', resourceType: 'test-resource', params: [] },
-          { rule: 'RULE_2', resourceType: 'test-resource', params: ['abc'] },
+          { rule: 'RULE_1', resourceType: 'test-resource', params: {} },
+          {
+            rule: 'RULE_2',
+            resourceType: 'test-resource',
+            params: { foo: 'abc' },
+          },
         ],
       },
     };
@@ -53,7 +60,7 @@ describe('PermissionIntegrationClient', () => {
     );
 
     const mockBaseUrl = 'http://backstage:9191';
-    const discovery: PluginEndpointDiscovery = {
+    const discovery: DiscoveryService = {
       async getBaseUrl(pluginId) {
         return `${mockBaseUrl}/${pluginId}`;
       },
@@ -65,6 +72,7 @@ describe('PermissionIntegrationClient', () => {
     const client: PermissionIntegrationClient = new PermissionIntegrationClient(
       {
         discovery,
+        auth,
       },
     );
 
@@ -86,7 +94,7 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should make a POST request to the correct endpoint', async () => {
-      await client.applyConditions('plugin-1', [
+      await client.applyConditions('plugin-1', mockCredentials.none(), [
         {
           id: '123',
           resourceRef: 'testResource1',
@@ -99,7 +107,7 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should include a request body', async () => {
-      await client.applyConditions('plugin-1', [
+      await client.applyConditions('plugin-1', mockCredentials.none(), [
         {
           id: '123',
           resourceRef: 'testResource1',
@@ -127,22 +135,24 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should return the response from the fetch request', async () => {
-      const response = await client.applyConditions('plugin-1', [
-        {
-          id: '123',
-          resourceRef: 'testResource1',
-          resourceType: 'test-resource',
-          conditions: mockConditions,
-        },
-      ]);
-
-      expect(response).toEqual(
-        expect.objectContaining([{ id: '123', result: AuthorizeResult.ALLOW }]),
+      const response = await client.applyConditions(
+        'plugin-1',
+        mockCredentials.none(),
+        [
+          {
+            id: '123',
+            resourceRef: 'testResource1',
+            resourceType: 'test-resource',
+            conditions: mockConditions,
+          },
+        ],
       );
+
+      expect(response).toEqual([{ id: '123', result: AuthorizeResult.ALLOW }]);
     });
 
     it('should not include authorization headers if no token is supplied', async () => {
-      await client.applyConditions('plugin-1', [
+      await client.applyConditions('plugin-1', mockCredentials.none(), [
         {
           id: '123',
           resourceRef: 'testResource1',
@@ -156,21 +166,22 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should include correctly-constructed authorization header if token is supplied', async () => {
-      await client.applyConditions(
-        'plugin-1',
-        [
-          {
-            id: '123',
-            resourceRef: 'testResource1',
-            resourceType: 'test-resource',
-            conditions: mockConditions,
-          },
-        ],
-        'Bearer fake-token',
-      );
+      await client.applyConditions('plugin-1', mockCredentials.user(), [
+        {
+          id: '123',
+          resourceRef: 'testResource1',
+          resourceType: 'test-resource',
+          conditions: mockConditions,
+        },
+      ]);
 
       const request = mockApplyConditionsHandler.mock.calls[0][0];
-      expect(request.headers.get('authorization')).toEqual('Bearer fake-token');
+      expect(request.headers.get('authorization')).toEqual(
+        mockCredentials.service.header({
+          onBehalfOf: mockCredentials.user(),
+          targetPluginId: 'plugin-1',
+        }),
+      );
     });
 
     it('should forward response errors', async () => {
@@ -181,7 +192,7 @@ describe('PermissionIntegrationClient', () => {
       );
 
       await expect(
-        client.applyConditions('plugin-1', [
+        client.applyConditions('plugin-1', mockCredentials.none(), [
           {
             id: '123',
             resourceRef: 'testResource1',
@@ -189,7 +200,7 @@ describe('PermissionIntegrationClient', () => {
             conditions: mockConditions,
           },
         ]),
-      ).rejects.toThrowError(/401/i);
+      ).rejects.toThrow(/401/);
     });
 
     it('should reject invalid responses', async () => {
@@ -202,7 +213,7 @@ describe('PermissionIntegrationClient', () => {
       );
 
       await expect(
-        client.applyConditions('plugin-1', [
+        client.applyConditions('plugin-1', mockCredentials.none(), [
           {
             id: '123',
             resourceRef: 'testResource1',
@@ -210,7 +221,7 @@ describe('PermissionIntegrationClient', () => {
             conditions: mockConditions,
           },
         ]),
-      ).rejects.toThrowError(/invalid input/i);
+      ).rejects.toThrow(/invalid input/i);
     });
 
     it('should batch requests to plugin backends', async () => {
@@ -229,7 +240,7 @@ describe('PermissionIntegrationClient', () => {
       );
 
       await expect(
-        client.applyConditions('plugin-1', [
+        client.applyConditions('plugin-1', mockCredentials.none(), [
           {
             id: '123',
             resourceRef: 'testResource1',
@@ -263,6 +274,7 @@ describe('PermissionIntegrationClient', () => {
     let server: Server;
     let client: PermissionIntegrationClient;
     let routerSpy: RequestHandler;
+    const auth = mockServices.auth();
 
     beforeAll(async () => {
       const router = Router();
@@ -278,8 +290,11 @@ describe('PermissionIntegrationClient', () => {
             createPermissionRule({
               name: 'RULE_1',
               description: 'Test rule 1',
-              resourceType: 'test-resource',
-              apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
+              resourceType: 'test-resource' as const,
+              paramsSchema: z.object({
+                input: z.enum(['yes', 'no']),
+              }),
+              apply: (_resource, { input }) => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');
               },
@@ -287,8 +302,12 @@ describe('PermissionIntegrationClient', () => {
             createPermissionRule({
               name: 'RULE_2',
               description: 'Test rule 2',
-              resourceType: 'test-resource',
-              apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
+              resourceType: 'test-resource' as const,
+
+              paramsSchema: z.object({
+                input: z.enum(['yes', 'no']),
+              }),
+              apply: (_resource, { input }) => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');
               },
@@ -307,7 +326,7 @@ describe('PermissionIntegrationClient', () => {
         server = app.listen(resolve);
       });
 
-      const discovery: PluginEndpointDiscovery = {
+      const discovery: DiscoveryService = {
         async getBaseUrl(pluginId: string) {
           const listenPort = (server.address()! as AddressInfo).port;
 
@@ -320,6 +339,7 @@ describe('PermissionIntegrationClient', () => {
 
       client = new PermissionIntegrationClient({
         discovery,
+        auth,
       });
     });
 
@@ -336,7 +356,7 @@ describe('PermissionIntegrationClient', () => {
 
     it('works for simple conditions', async () => {
       await expect(
-        client.applyConditions('plugin-1', [
+        client.applyConditions('plugin-1', mockCredentials.none(), [
           {
             id: '123',
             resourceRef: 'testResource1',
@@ -344,7 +364,9 @@ describe('PermissionIntegrationClient', () => {
             conditions: {
               rule: 'RULE_1',
               resourceType: 'test-resource',
-              params: ['no'],
+              params: {
+                input: 'no',
+              },
             },
           },
         ]),
@@ -353,7 +375,7 @@ describe('PermissionIntegrationClient', () => {
 
     it('works for complex criteria', async () => {
       await expect(
-        client.applyConditions('plugin-1', [
+        client.applyConditions('plugin-1', mockCredentials.none(), [
           {
             id: '123',
             resourceRef: 'testResource1',
@@ -365,13 +387,17 @@ describe('PermissionIntegrationClient', () => {
                     {
                       rule: 'RULE_1',
                       resourceType: 'test-resource',
-                      params: ['yes'],
+                      params: {
+                        input: 'yes',
+                      },
                     },
                     {
                       not: {
                         rule: 'RULE_2',
                         resourceType: 'test-resource',
-                        params: ['no'],
+                        params: {
+                          input: 'no',
+                        },
                       },
                     },
                   ],
@@ -382,12 +408,16 @@ describe('PermissionIntegrationClient', () => {
                       {
                         rule: 'RULE_1',
                         resourceType: 'test-resource',
-                        params: ['no'],
+                        params: {
+                          input: 'no',
+                        },
                       },
                       {
                         rule: 'RULE_2',
                         resourceType: 'test-resource',
-                        params: ['yes'],
+                        params: {
+                          input: 'yes',
+                        },
                       },
                     ],
                   },

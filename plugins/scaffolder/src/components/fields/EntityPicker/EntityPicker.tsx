@@ -13,29 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  type EntityFilterQuery,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/catalog-client';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
+  EntityDisplayName,
+  EntityRefPresentationSnapshot,
   catalogApiRef,
-  humanizeEntityRef,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import { TextField } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import { FieldExtensionComponentProps } from '../../../extensions';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete, {
+  AutocompleteChangeReason,
+  createFilterOptions,
+} from '@material-ui/lab/Autocomplete';
+import { useCallback, useEffect } from 'react';
+import useAsync from 'react-use/esm/useAsync';
+import {
+  EntityPickerFilterQueryValue,
+  EntityPickerProps,
+  EntityPickerUiOptions,
+  EntityPickerFilterQuery,
+} from './schema';
+import { VirtualizedListbox } from '../VirtualizedListbox';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 
-/**
- * The input props that can be specified under `ui:options` for the
- * `EntityPicker` field extension.
- *
- * @public
- */
-export interface EntityPickerUiOptions {
-  allowedKinds?: string[];
-  defaultKind?: string;
-  allowArbitraryValues?: boolean;
-}
+export { EntityPickerSchema } from './schema';
 
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
@@ -43,73 +55,249 @@ export interface EntityPickerUiOptions {
  *
  * @public
  */
-export const EntityPicker = (
-  props: FieldExtensionComponentProps<string, EntityPickerUiOptions>,
-) => {
+export const EntityPicker = (props: EntityPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     onChange,
-    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    schema: {
+      title = t('fields.entityPicker.title'),
+      description = t('fields.entityPicker.description'),
+    },
     required,
     uiSchema,
     rawErrors,
     formData,
     idSchema,
+    errors,
   } = props;
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+  const catalogFilter = buildCatalogFilter(uiSchema);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
+  const defaultNamespace =
+    uiSchema['ui:options']?.defaultNamespace || undefined;
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
 
   const catalogApi = useApi(catalogApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
 
-  const { value: entities, loading } = useAsync(() =>
-    catalogApi.getEntities(
-      allowedKinds ? { filter: { kind: allowedKinds } } : undefined,
-    ),
-  );
+  const { value: entities, loading } = useAsync(async () => {
+    const fields = [
+      'kind',
+      'metadata.name',
+      'metadata.namespace',
+      'metadata.title',
+      'metadata.description',
+      'spec.profile.displayName',
+      'spec.type',
+    ];
+    const { items } = await catalogApi.getEntities(
+      catalogFilter
+        ? { filter: catalogFilter, fields }
+        : { filter: undefined, fields },
+    );
 
-  const entityRefs = entities?.items.map(e =>
-    humanizeEntityRef(e, { defaultKind }),
+    const entityRefToPresentation = new Map<
+      string,
+      EntityRefPresentationSnapshot
+    >(
+      await Promise.all(
+        items.map(async item => {
+          const presentation = await entityPresentationApi.forEntity(item)
+            .promise;
+          return [stringifyEntityRef(item), presentation] as [
+            string,
+            EntityRefPresentationSnapshot,
+          ];
+        }),
+      ),
+    );
+
+    return { catalogEntities: items, entityRefToPresentation };
+  });
+
+  const allowArbitraryValues =
+    uiSchema['ui:options']?.allowArbitraryValues ?? true;
+
+  const getLabel = useCallback(
+    (freeSoloValue: string) => {
+      try {
+        // Will throw if defaultKind or defaultNamespace are not set
+        const parsedRef = parseEntityRef(freeSoloValue, {
+          defaultKind,
+          defaultNamespace,
+        });
+
+        return stringifyEntityRef(parsedRef);
+      } catch (err) {
+        return freeSoloValue;
+      }
+    },
+    [defaultKind, defaultNamespace],
   );
 
   const onSelect = useCallback(
-    (_: any, value: string | null) => {
-      onChange(value || '');
+    (_: any, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
+      // ref can either be a string from free solo entry or
+      if (typeof ref !== 'string') {
+        // if ref does not exist: pass 'undefined' to trigger validation for required value
+        onChange(ref ? stringifyEntityRef(ref as Entity) : undefined);
+      } else {
+        if (reason === 'blur' || reason === 'create-option') {
+          // Add in default namespace, etc.
+          let entityRef = ref;
+          try {
+            // Attempt to parse the entity ref into it's full form.
+            entityRef = stringifyEntityRef(
+              parseEntityRef(ref as string, {
+                defaultKind,
+                defaultNamespace,
+              }),
+            );
+          } catch (err) {
+            // If the passed in value isn't an entity ref, do nothing.
+          }
+          // We need to check against formData here as that's the previous value for this field.
+          if (formData !== ref || allowArbitraryValues) {
+            onChange(entityRef);
+          }
+        }
+      }
     },
-    [onChange],
+    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
   );
 
+  // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
+  // back to the given value.
+  const selectedEntity =
+    entities?.catalogEntities.find(e => stringifyEntityRef(e) === formData) ??
+    (allowArbitraryValues && formData ? getLabel(formData) : '');
+
   useEffect(() => {
-    if (entityRefs?.length === 1) {
-      onChange(entityRefs[0]);
+    if (
+      required &&
+      !allowArbitraryValues &&
+      entities?.catalogEntities.length === 1 &&
+      selectedEntity === ''
+    ) {
+      onChange(stringifyEntityRef(entities.catalogEntities[0]));
     }
-  }, [entityRefs, onChange]);
+  }, [entities, onChange, selectedEntity, required, allowArbitraryValues]);
 
   return (
-    <FormControl
-      margin="normal"
+    <ScaffolderField
+      rawErrors={rawErrors}
+      rawDescription={uiSchema['ui:description'] ?? description}
       required={required}
-      error={rawErrors?.length > 0 && !formData}
+      disabled={isDisabled}
+      errors={errors}
     >
       <Autocomplete
-        disabled={entityRefs?.length === 1}
+        disabled={
+          isDisabled ||
+          (required &&
+            !allowArbitraryValues &&
+            entities?.catalogEntities.length === 1)
+        }
         id={idSchema?.$id}
-        value={(formData as string) || ''}
+        value={selectedEntity}
         loading={loading}
         onChange={onSelect}
-        options={entityRefs || []}
+        options={entities?.catalogEntities || []}
+        getOptionLabel={option =>
+          // option can be a string due to freeSolo.
+          typeof option === 'string'
+            ? option
+            : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+                ?.entityRef!
+        }
         autoSelect
-        freeSolo={uiSchema['ui:options']?.allowArbitraryValues ?? true}
+        freeSolo={allowArbitraryValues}
         renderInput={params => (
           <TextField
             {...params}
             label={title}
-            margin="normal"
-            helperText={description}
+            margin="dense"
             variant="outlined"
             required={required}
+            disabled={isDisabled}
             InputProps={params.InputProps}
           />
         )}
+        renderOption={option => <EntityDisplayName entityRef={option} />}
+        filterOptions={createFilterOptions<Entity>({
+          stringify: option =>
+            entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+              ?.primaryTitle!,
+        })}
+        ListboxComponent={VirtualizedListbox}
       />
-    </FormControl>
+    </ScaffolderField>
   );
 };
+
+/**
+ * Converts a especial `{exists: true}` value to the `CATALOG_FILTER_EXISTS` symbol.
+ *
+ * @param value - The value to convert.
+ * @returns The converted value.
+ */
+function convertOpsValues(
+  value: Exclude<EntityPickerFilterQueryValue, Array<any>>,
+): string | symbol {
+  if (typeof value === 'object' && value.exists) {
+    return CATALOG_FILTER_EXISTS;
+  }
+  return value?.toString();
+}
+
+/**
+ * Converts schema filters to entity filter query, replacing `{exists:true}` values
+ * with the constant `CATALOG_FILTER_EXISTS`.
+ *
+ * @param schemaFilters - An object containing schema filters with keys as filter names
+ * and values as filter values.
+ * @returns An object with the same keys as the input object, but with `{exists:true}` values
+ * transformed to `CATALOG_FILTER_EXISTS` symbol.
+ */
+function convertSchemaFiltersToQuery(
+  schemaFilters: EntityPickerFilterQuery,
+): Exclude<EntityFilterQuery, Array<any>> {
+  const query: EntityFilterQuery = {};
+
+  for (const [key, value] of Object.entries(schemaFilters)) {
+    if (Array.isArray(value)) {
+      query[key] = value;
+    } else {
+      query[key] = convertOpsValues(value);
+    }
+  }
+
+  return query;
+}
+
+/**
+ * Builds an `EntityFilterQuery` based on the `uiSchema` passed in.
+ * If `catalogFilter` is specified in the `uiSchema`, it is converted to a `EntityFilterQuery`.
+ * If `allowedKinds` is specified in the `uiSchema` will support the legacy `allowedKinds` option.
+ *
+ * @param uiSchema The `uiSchema` of an `EntityPicker` component.
+ * @returns An `EntityFilterQuery` based on the `uiSchema`, or `undefined` if `catalogFilter` is not specified in the `uiSchema`.
+ */
+function buildCatalogFilter(
+  uiSchema: EntityPickerProps['uiSchema'],
+): EntityFilterQuery | undefined {
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+
+  const catalogFilter: EntityPickerUiOptions['catalogFilter'] | undefined =
+    uiSchema['ui:options']?.catalogFilter ||
+    (allowedKinds && { kind: allowedKinds });
+
+  if (!catalogFilter) {
+    return undefined;
+  }
+
+  if (Array.isArray(catalogFilter)) {
+    return catalogFilter.map(convertSchemaFiltersToQuery);
+  }
+
+  return convertSchemaFiltersToQuery(catalogFilter);
+}

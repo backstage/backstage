@@ -1,0 +1,90 @@
+{
+  "name": "@backstage/backend-dynamic-feature-service",
+  "version": "0.7.9-next.1",
+  "description": "Backstage dynamic feature service",
+  "backstage": {
+    "role": "node-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/backend-dynamic-feature-service"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "diff": "backstage-repo-tools package schema openapi diff",
+    "fuzz": "backstage-repo-tools package schema openapi fuzz --exclude-checks response_schema_conformance",
+    "generate": "backstage-repo-tools package schema openapi generate --server --client-package packages/frontend-dynamic-feature-loader",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-openapi-utils": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/config-loader": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-app-node": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-events-backend": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@backstage/plugin-search-backend-node": "workspace:^",
+    "@backstage/plugin-search-common": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@manypkg/get-packages": "^1.1.3",
+    "@module-federation/sdk": "^0.9.0",
+    "chokidar": "^3.5.3",
+    "express": "^4.22.0",
+    "express-promise-router": "^4.1.0",
+    "fs-extra": "^11.2.0",
+    "lodash": "^4.17.21",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-app-backend": "workspace:^",
+    "@backstage/repo-tools": "workspace:^",
+    "@types/express": "^4.17.6",
+    "triple-beam": "^1.4.1",
+    "wait-for-expect": "^3.0.2"
+  },
+  "configSchema": "config.d.ts"
+}

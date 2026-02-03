@@ -15,14 +15,10 @@
  */
 
 import express from 'express';
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { z } from 'zod';
-import { errorHandler } from '@backstage/backend-common';
-import { ErrorResponseBody, InputError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
   PermissionAuthorizer,
   PermissionEvaluator,
@@ -33,8 +29,15 @@ import {
   IndexableResultSet,
   SearchResultSet,
 } from '@backstage/plugin-search-common';
-import { SearchEngine } from '@backstage/plugin-search-common';
+import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
+import { createOpenApiRouter } from '../schema/openapi';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
   const jsonValueSchema: z.ZodSchema<JsonValue> = z.lazy(() =>
@@ -52,33 +55,70 @@ const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
 });
 
 /**
- * @public
+ * @internal
  */
 export type RouterOptions = {
   engine: SearchEngine;
   types: Record<string, DocumentTypeInfo>;
+  discovery?: DiscoveryService;
   permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
 };
 
+const defaultMaxPageLimit = 100;
+const defaultMaxTermLength = 100;
 const allowedLocationProtocols = ['http:', 'https:'];
 
 /**
- * @public
+ * @internal
  */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { engine: inputEngine, types, permissions, config, logger } = options;
+  const router = await createOpenApiRouter();
+  const {
+    engine: inputEngine,
+    types,
+    permissions,
+    config,
+    logger,
+    auth,
+    httpAuth,
+  } = options;
+
+  const maxPageLimit =
+    config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;
+
+  const maxTermLength =
+    config.getOptionalNumber('search.maxTermLength') ?? defaultMaxTermLength;
 
   const requestSchema = z.object({
-    term: z.string().default(''),
+    term: z
+      .string()
+      .refine(
+        term => term.length <= maxTermLength,
+        term => ({
+          message: `The term length "${term.length}" is greater than "${maxTermLength}"`,
+        }),
+      )
+      .default(''),
     filters: jsonObjectSchema.optional(),
     types: z
       .array(z.string().refine(type => Object.keys(types).includes(type)))
       .optional(),
     pageCursor: z.string().optional(),
+    pageLimit: z
+      .number()
+      .refine(
+        pageLimit => pageLimit <= maxPageLimit,
+        pageLimit => ({
+          message: `The page limit "${pageLimit}" is greater than "${maxPageLimit}"`,
+        }),
+      )
+      .optional(),
   });
 
   let permissionEvaluator: PermissionEvaluator;
@@ -96,6 +136,7 @@ export async function createRouter(
         inputEngine,
         types,
         permissionEvaluator,
+        auth,
         config,
       )
     : inputEngine;
@@ -126,51 +167,49 @@ export async function createRouter(
     })),
   });
 
-  const router = Router();
-  router.get(
-    '/query',
-    async (
-      req: express.Request,
-      res: express.Response<SearchResultSet | ErrorResponseBody>,
-    ) => {
-      const parseResult = requestSchema.safeParse(req.query);
+  router.get('/query', async (req, res) => {
+    const parseResult = requestSchema.passthrough().safeParse(req.query);
 
-      if (!parseResult.success) {
-        throw new InputError(`Invalid query string: ${parseResult.error}`);
+    if (!parseResult.success) {
+      throw new InputError(`Invalid query string: ${parseResult.error}`);
+    }
+
+    const query = parseResult.data;
+
+    logger.info(
+      `Search request received: term="${query.term}", filters=${JSON.stringify(
+        query.filters,
+      )}, types=${query.types ? query.types.join(',') : ''}, pageCursor=${
+        query.pageCursor ?? ''
+      }`,
+    );
+
+    try {
+      const credentials = await httpAuth.credentials(req);
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: credentials,
+        targetPluginId: 'search',
+      });
+      const resultSet = await engine?.query(query, {
+        token,
+        credentials,
+      });
+
+      res.json(filterResultSet(toSearchResults(resultSet)));
+    } catch (error) {
+      // Log the error message here, but don't expose it to the user in the response
+      logger.error(
+        `There was a problem performing the search query: ${error.message}`,
+      );
+      if (error.name === 'MissingIndexError') {
+        // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
+        throw error;
       }
 
-      const query = parseResult.data;
-
-      logger.info(
-        `Search request received: term="${
-          query.term
-        }", filters=${JSON.stringify(query.filters)}, types=${
-          query.types ? query.types.join(',') : ''
-        }, pageCursor=${query.pageCursor ?? ''}`,
-      );
-
-      const token = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
-
-      try {
-        const resultSet = await engine?.query(query, { token });
-
-        res.send(filterResultSet(toSearchResults(resultSet)));
-      } catch (error) {
-        if (error.name === 'MissingIndexError') {
-          // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
-          throw error;
-        }
-
-        throw new Error(
-          `There was a problem performing the search query. ${error}`,
-        );
-      }
-    },
-  );
-
-  router.use(errorHandler());
+      // If the error is not a MissingIndexError, we want to throw a generic error without the error message as it may leak internal information
+      throw new Error(`There was a problem performing the search query`);
+    }
+  });
 
   return router;
 }

@@ -16,3 +16,4 @@
 export * from './Group';
 export * from './User';
 export * from './OwnershipCard';
+export type { EntityRelationAggregation } from './types';

@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { LogViewer } from './LogViewer';
 
 export default {
   title: 'Data Display/LogViewer',
   component: LogViewer,
-  decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+  decorators: [
+    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+  ],
+  tags: ['!manifest'],
 };
 
 const exampleLog = `Starting up task with 3 steps
 Beginning step Fetch Skeleton + Template
-[32minfo[39m: Fetching template content from remote URL {"timestamp":"2021-12-03T15:47:11.625Z"}
+[32minfo[39m: Fetching template content from remote URL: https://github.com/backstage/software-templates/tree/main/scaffolder-templates/react-ssr-template/skeleton {"timestamp":"2021-12-03T15:47:11.625Z"}
 [32minfo[39m: Listing files and directories in template {"timestamp":"2021-12-03T15:47:12.797Z"}
 [32minfo[39m: Processing 33 template files/directories with input values {"component_id":"srnthsrthntrhsn","description":"rnthsrtnhssrthnrsthn","destination":{"host":"github.com","owner":"rtshnsrtmhrstmh","repo":"srtmhsrtmhrsthms"},"owner":"rstnhrstnhsrthn","timestamp":"2021-12-03T15:47:12.801Z"}
 [32minfo[39m: Writing file .editorconfig to template output path with mode 33188. {"timestamp":"2021-12-03T15:47:12.816Z"}
@@ -79,5 +82,11 @@ Run completed with status: failed`;
 export const ExampleLogViewer = () => (
   <div style={{ height: 240 }}>
     <LogViewer text={exampleLog} />
+  </div>
+);
+
+export const WithTextWrap = () => (
+  <div style={{ height: 240 }}>
+    <LogViewer text={exampleLog} textWrap />
   </div>
 );

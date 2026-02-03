@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  AlphaEntity,
-  stringifyEntityRef,
-  EntityStatusItem,
-} from '@backstage/catalog-model';
+import { AlphaEntity, EntityStatusItem } from '@backstage/catalog-model/alpha';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   EntityRefLink,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import { Box } from '@material-ui/core';
-import React from 'react';
+import Box from '@material-ui/core/Box';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import {
   CatalogApi,
   ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
 } from '@backstage/catalog-client';
 import { useApi, ApiHolder } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { SerializedError } from '@backstage/errors';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const errorFilter = (i: EntityStatusItem) =>
   i.error &&
@@ -99,6 +96,7 @@ export function EntityProcessingErrorsPanel() {
   const { loading, error, value } = useAsync(async () => {
     return getOwnAndAncestorsErrors(entityRef, catalogApi);
   }, [entityRef, catalogApi]);
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   if (error) {
     return (
@@ -119,7 +117,7 @@ export function EntityProcessingErrorsPanel() {
           {stringifyEntityRef(entity) !==
             stringifyEntityRef(ancestorError.entity) && (
             <Box p={1}>
-              The error below originates from{' '}
+              {t('entityProcessingErrorsDescription')}{' '}
               <EntityRefLink entityRef={ancestorError.entity} />
             </Box>
           )}

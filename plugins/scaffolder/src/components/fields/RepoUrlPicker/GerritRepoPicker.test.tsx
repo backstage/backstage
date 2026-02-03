@@ -14,15 +14,32 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { GerritRepoPicker } from './GerritRepoPicker';
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('GerritRepoPicker', () => {
+  it('disables input fields when isDisabled is true', async () => {
+    const { getAllByRole } = await renderInTestApp(
+      <GerritRepoPicker
+        onChange={jest.fn()}
+        rawErrors={[]}
+        state={{}}
+        isDisabled
+      />,
+    );
+
+    const allInputs = getAllByRole('textbox');
+
+    allInputs.forEach(input => {
+      expect(input).toBeDisabled();
+    });
+  });
+
   describe('owner input field', () => {
-    it('calls onChange when the owner input changes', () => {
+    it('calls onChange when the owner input changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <GerritRepoPicker
           onChange={onChange}
           rawErrors={[]}
@@ -39,9 +56,9 @@ describe('GerritRepoPicker', () => {
   });
 
   describe('parent field', () => {
-    it('calls onChange when the parent changes', () => {
+    it('calls onChange when the parent changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <GerritRepoPicker
           onChange={onChange}
           rawErrors={[]}

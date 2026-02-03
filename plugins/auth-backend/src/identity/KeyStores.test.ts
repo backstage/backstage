@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-
-import { MemoryKeyStore } from './MemoryKeyStore';
+import { AuthDatabase } from '../database/AuthDatabase';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { FirestoreKeyStore } from './FirestoreKeyStore';
 import { KeyStores } from './KeyStores';
+import { MemoryKeyStore } from './MemoryKeyStore';
+import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
+
+jest.setTimeout(60_000);
 
 describe('KeyStores', () => {
+  const databases = TestDatabases.create();
+
   const defaultConfigOptions = {
     auth: {
       keyStore: {
@@ -32,67 +36,77 @@ describe('KeyStores', () => {
   };
   const defaultConfig = new ConfigReader(defaultConfigOptions);
 
-  it('reads auth section from config', async () => {
-    const configSpy = jest.spyOn(defaultConfig, 'getOptionalConfig');
-    const keyStore = await KeyStores.fromConfig(defaultConfig);
+  it.each(databases.eachSupportedId())(
+    'reads auth section from config, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      const configSpy = jest.spyOn(defaultConfig, 'getOptionalConfig');
+      const keyStore = await KeyStores.fromConfig(defaultConfig, {
+        logger: mockServices.logger.mock(),
+        database: AuthDatabase.create(mockServices.database({ knex })),
+      });
 
-    expect(keyStore).toBeInstanceOf(MemoryKeyStore);
-    expect(configSpy).toHaveBeenCalledWith('auth.keyStore');
-    expect(
-      defaultConfig
-        .getOptionalConfig('auth.keyStore')
-        ?.getOptionalString('provider'),
-    ).toBe(defaultConfigOptions.auth.keyStore.provider);
-  });
+      expect(keyStore).toBeInstanceOf(MemoryKeyStore);
+      expect(configSpy).toHaveBeenCalledWith('auth.keyStore');
+      expect(
+        defaultConfig
+          .getOptionalConfig('auth.keyStore')
+          ?.getOptionalString('provider'),
+      ).toBe(defaultConfigOptions.auth.keyStore.provider);
+    },
+  );
 
-  it('can handle without auth config', async () => {
-    const config = new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
-    });
-    const database =
-      DatabaseManager.fromConfig(config).forPlugin('auth-backend');
-    const keyStore = await KeyStores.fromConfig(config, { database });
+  it.each(databases.eachSupportedId())(
+    'can handle without auth config, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      const keyStore = await KeyStores.fromConfig(new ConfigReader({}), {
+        logger: mockServices.logger.mock(),
+        database: AuthDatabase.create(mockServices.database({ knex })),
+      });
+      expect(keyStore).toBeInstanceOf(DatabaseKeyStore);
+    },
+  );
 
-    expect(keyStore).toBeInstanceOf(DatabaseKeyStore);
-  });
+  it.each(databases.eachSupportedId())(
+    'can handle additional provider config, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      jest.spyOn(FirestoreKeyStore, 'verifyConnection').mockResolvedValue();
+      const createSpy = jest.spyOn(FirestoreKeyStore, 'create');
 
-  it('can handle additional provider config', async () => {
-    jest.spyOn(FirestoreKeyStore, 'verifyConnection').mockResolvedValue();
-    const createSpy = jest.spyOn(FirestoreKeyStore, 'create');
-
-    const configOptions = {
-      auth: {
-        keyStore: {
-          provider: 'firestore',
-          firestore: {
-            projectId: 'my-project',
-            keyFilename: 'cred.json',
-            path: 'my-path',
-            timeout: 100,
-            host: 'localhost',
-            port: 8088,
-            ssl: false,
+      const configOptions = {
+        auth: {
+          keyStore: {
+            provider: 'firestore',
+            firestore: {
+              projectId: 'my-project',
+              keyFilename: 'cred.json',
+              path: 'my-path',
+              timeout: 100,
+              host: 'localhost',
+              port: 8088,
+              ssl: false,
+            },
           },
         },
-      },
-    };
-    const config = new ConfigReader(configOptions);
-    const keyStore = await KeyStores.fromConfig(config);
+      };
+      const config = new ConfigReader(configOptions);
+      const keyStore = await KeyStores.fromConfig(config, {
+        logger: mockServices.logger.mock(),
+        database: AuthDatabase.create(mockServices.database({ knex })),
+      });
 
-    expect(keyStore).toBeInstanceOf(FirestoreKeyStore);
-    expect(createSpy).toHaveBeenCalledWith(
-      configOptions.auth.keyStore.firestore,
-    );
-    expect(
-      config
-        .getOptionalConfig('auth.keyStore')
-        ?.getOptionalConfig('firestore')
-        ?.getOptionalString('projectId'),
-    ).toBe(configOptions.auth.keyStore.firestore.projectId);
-  });
+      expect(keyStore).toBeInstanceOf(FirestoreKeyStore);
+      expect(createSpy).toHaveBeenCalledWith(
+        configOptions.auth.keyStore.firestore,
+      );
+      expect(
+        config
+          .getOptionalConfig('auth.keyStore')
+          ?.getOptionalConfig('firestore')
+          ?.getOptionalString('projectId'),
+      ).toBe(configOptions.auth.keyStore.firestore.projectId);
+    },
+  );
 });

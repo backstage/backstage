@@ -15,9 +15,15 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
+import Typography from '@material-ui/core/Typography';
+import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
+import WarningOutline from '@material-ui/icons/ReportProblemOutlined';
+import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import classNames from 'classnames';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
+import { PendingIcon } from './icons/PendingIcon';
+import { RunningIcon } from './icons/RunningIcon';
+import { AbortedIcon } from './icons/AbortedIcon';
 
 export type StatusClassKey =
   | 'status'
@@ -28,121 +34,189 @@ export type StatusClassKey =
   | 'running'
   | 'aborted';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     status: {
-      fontWeight: 500,
-      '&::before': {
-        width: '0.7em',
-        height: '0.7em',
-        display: 'inline-block',
-        marginRight: 8,
-        borderRadius: '50%',
-        content: '""',
-      },
+      fontWeight: theme.typography.fontWeightMedium,
+      alignItems: 'baseline',
+      display: 'flex',
+    },
+    statusIcon: {
+      flexShrink: 0,
+      position: 'relative',
+      top: '0.125em',
+      marginRight: theme.spacing(1),
+    },
+    statusIconSize: {
+      width: '0.8em',
+      height: '0.8em',
+    },
+    statusIconSizeForImg: {
+      width: '1.2em',
+      height: '1.2em',
     },
     ok: {
-      '&::before': {
-        backgroundColor: theme.palette.status.ok,
-      },
+      fill: theme.palette.status.ok || '#3E8635',
     },
     warning: {
-      '&::before': {
-        backgroundColor: theme.palette.status.warning,
-      },
+      fill: theme.palette.status.warning || '#F0AB00',
     },
     error: {
-      '&::before': {
-        backgroundColor: theme.palette.status.error,
-      },
+      fill: theme.palette.status.error || '#C9190B',
     },
     pending: {
-      '&::before': {
-        backgroundColor: theme.palette.status.pending,
-      },
+      fill: theme.palette.status.aborted || '#6A6E73',
     },
     running: {
-      '&::before': {
-        backgroundColor: theme.palette.status.running,
-      },
+      fill: theme.palette.status.aborted || '#6A6E73',
     },
     aborted: {
-      '&::before': {
-        backgroundColor: theme.palette.status.aborted,
-      },
+      fill: theme.palette.status.aborted || '#6A6E73',
     },
   }),
   { name: 'BackstageStatus' },
 );
 
 export function StatusOK(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { children, ...otherProps } = props;
+  const classes = useStyles(otherProps);
   return (
-    <span
-      className={classNames(classes.status, classes.ok)}
+    <Typography
+      component="span"
+      className={classNames(classes.status)}
       aria-label="Status ok"
       aria-hidden="true"
-      {...props}
-    />
+      {...otherProps}
+    >
+      <CheckCircleOutline
+        data-testid="status-ok"
+        className={classNames(
+          classes.ok,
+          classes.statusIconSize,
+          classes.statusIcon,
+        )}
+      />
+      {children}
+    </Typography>
   );
 }
 
 export function StatusWarning(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { children, ...otherProps } = props;
+  const classes = useStyles(otherProps);
   return (
-    <span
-      className={classNames(classes.status, classes.warning)}
+    <Typography
+      component="span"
+      className={classNames(classes.status)}
       aria-label="Status warning"
       aria-hidden="true"
-      {...props}
-    />
+      {...otherProps}
+    >
+      <WarningOutline
+        data-testid="status-warning"
+        className={classNames(
+          classes.warning,
+          classes.statusIconSize,
+          classes.statusIcon,
+        )}
+      />
+      {children}
+    </Typography>
   );
 }
 
 export function StatusError(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { children, ...otherProps } = props;
+  const classes = useStyles(otherProps);
   return (
-    <span
-      className={classNames(classes.status, classes.error)}
+    <Typography
+      component="span"
+      className={classNames(classes.status)}
       aria-label="Status error"
       aria-hidden="true"
-      {...props}
-    />
+      {...otherProps}
+    >
+      <ErrorOutline
+        data-testid="status-error"
+        className={classNames(
+          classes.error,
+          classes.statusIconSize,
+          classes.statusIcon,
+        )}
+      />
+      {children}
+    </Typography>
   );
 }
 
 export function StatusPending(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { children, ...otherProps } = props;
+  const classes = useStyles(otherProps);
   return (
-    <span
-      className={classNames(classes.status, classes.pending)}
+    <Typography
+      component="span"
+      className={classNames(classes.status)}
       aria-label="Status pending"
       aria-hidden="true"
-      {...props}
-    />
+      {...otherProps}
+    >
+      <PendingIcon
+        dataTestId="status-pending"
+        className={classNames(
+          classes.pending,
+          classes.statusIconSizeForImg,
+          classes.statusIcon,
+        )}
+      />
+      {children}
+    </Typography>
   );
 }
 
 export function StatusRunning(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { children, ...otherProps } = props;
+  const classes = useStyles(otherProps);
   return (
-    <span
-      className={classNames(classes.status, classes.running)}
+    <Typography
+      component="span"
+      className={classNames(classes.status)}
       aria-label="Status running"
       aria-hidden="true"
-      {...props}
-    />
+      {...otherProps}
+    >
+      <RunningIcon
+        dataTestId="status-running"
+        className={classNames(
+          classes.running,
+          classes.statusIcon,
+          classes.statusIconSizeForImg,
+        )}
+      />
+      {children}
+    </Typography>
   );
 }
 
 export function StatusAborted(props: PropsWithChildren<{}>) {
-  const classes = useStyles(props);
+  const { children, ...otherProps } = props;
+  const classes = useStyles(otherProps);
   return (
-    <span
-      className={classNames(classes.status, classes.aborted)}
+    <Typography
+      component="span"
+      className={classNames(classes.status)}
       aria-label="Status aborted"
       aria-hidden="true"
-      {...props}
-    />
+      {...otherProps}
+    >
+      <AbortedIcon
+        dataTestId="status-aborted"
+        className={classNames(
+          classes.aborted,
+          classes.statusIcon,
+          classes.statusIconSizeForImg,
+        )}
+      />
+      {children}
+    </Typography>
   );
 }

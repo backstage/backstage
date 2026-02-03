@@ -1,7 +1,6 @@
 ---
 id: configuring-plugin-databases
 title: Configuring Plugin Databases
-# prettier-ignore
 description: Guide on how to configure Backstage databases.
 ---
 
@@ -21,8 +20,8 @@ instance or cluster.
 With infrastructure defined as code or data (Terraform, AWS CloudFormation,
 etc.), you may have database credentials which lack permissions to create new
 databases or you do not have control over the database names. In these
-instances, you can set the database name and connection information on a per
-plugin basis as mentioned earlier.
+instances, you can set the database connection configuration on a
+[per plugin basis](#connection-configuration-per-plugin).
 
 Backstage supports all of these use cases with the `DatabaseManager` provided by
 `@backstage/backend-common`. We will now cover how to use and configure
@@ -36,13 +35,16 @@ Please ensure the appropriate database drivers are installed in your `backend`
 package. If you intend to use both PostgreSQL and SQLite, you can install
 both of them.
 
-```bash
-# From the Backstage root directory
-# install pg if you need PostgreSQL
-yarn add --cwd packages/backend pg
+Install pg if you need PostgreSQL:
 
-# install SQLite 3 if you intend to set it as the client
-yarn add --cwd packages/backend better-sqlite3
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add pg
+```
+
+Install SQLite 3 if you intend to set it as the client:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add better-sqlite3
 ```
 
 From an operational perspective, you only need to install drivers for clients
@@ -178,3 +180,11 @@ GRANT SHOW DATABASES ON *.* TO some_user;
 
 The mechanisms in this guide should help you tackle different database
 deployment situations. Good luck!
+
+## Further Reading
+
+If you want to read more about the database configuration, here are some helpful links:
+
+- [Manual Knex Rollback](./manual-knex-rollback.md)
+- [Read more about Knex](http://knexjs.org/), the database wrapper that we use.
+- [Install `pgAdmin` 4](https://www.pgadmin.org/), a helpful tool for querying your database.

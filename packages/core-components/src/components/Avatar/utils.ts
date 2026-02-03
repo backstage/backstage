@@ -22,11 +22,22 @@ export function stringToColor(str: string) {
   let color = '#';
   for (let i = 0; i < 3; i++) {
     const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.substr(-2);
+    color += `00${value.toString(16)}`.slice(-2);
   }
   return color;
 }
 
-export function extractInitials(value: string) {
-  return value.match(/\b\w/g)?.join('').substring(0, 2);
+export function extractInitials(name: string) {
+  const names = name
+    .replace(/\([^)]{0,1000}\)/g, '')
+    .replace(/\[[^\]]{0,1000}\]/g, '')
+    .trim()
+    .split(/\s+/)
+    .map(word => word.replace(/[^A-Za-z\u00C0-\u017F]/g, ''))
+    .filter(Boolean);
+  const firstName = names[0] ?? '';
+  const lastName = names.length > 1 ? names[names.length - 1] : '';
+  return firstName && lastName
+    ? `${firstName.charAt(0)}${lastName.charAt(0)}`
+    : firstName.charAt(0);
 }

@@ -1,14 +1,29 @@
+.cache
+.lighthouseci
 .yarn
 dist
 microsite
+docs-ui/.next
+docs-ui/public
+docs-ui/out
+packages/ui/css
 coverage
 *.hbs
 templates
+type-docs
+# old reports
 api-report.md
+api-report-*.md
+# new reports
+report.api.md
+report-*.api.md
+
+knip-report.md
 cli-report.md
 plugins/scaffolder-backend/sample-templates
 .vscode
 dist-types
+.eslintrc.js
 
 # reduce the barrier for adopters to add themselves
 ADOPTERS.md

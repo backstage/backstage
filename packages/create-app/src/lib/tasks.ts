@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { bootstrapEnvProxyAgents } from '@backstage/cli-common';
+
+bootstrapEnvProxyAgents();
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
@@ -24,13 +27,19 @@ import {
   dirname,
   resolve as resolvePath,
   relative as relativePath,
-} from 'path';
-import { exec as execCb } from 'child_process';
+} from 'node:path';
+import { exec as execCb } from 'node:child_process';
 import { packageVersions } from './versions';
-import { promisify } from 'util';
+import { promisify } from 'node:util';
+import os from 'node:os';
 
 const TASK_NAME_MAX_LENGTH = 14;
+const TEN_MINUTES_MS = 1000 * 60 * 10;
 const exec = promisify(execCb);
+
+export type GitConfig = {
+  defaultBranch?: string;
+};
 
 export class Task {
   static log(name: string = '') {
@@ -79,6 +88,7 @@ export class Task {
  * @param templateDir - location containing template files
  * @param destinationDir - location to save templated project
  * @param context - template parameters
+ * @param excludedDirs - template files to exclude
  */
 export async function templatingTask(
   templateDir: string,
@@ -90,10 +100,9 @@ export async function templatingTask(
   });
 
   for (const file of files) {
-    const destinationFile = resolvePath(
-      destinationDir,
-      relativePath(templateDir, file),
-    );
+    const filePath = relativePath(templateDir, file);
+
+    const destinationFile = resolvePath(destinationDir, filePath);
     await fs.ensureDir(dirname(destinationFile));
 
     if (file.endsWith('.hbs')) {
@@ -173,30 +182,15 @@ export async function checkPathExistsTask(path: string) {
 }
 
 /**
- * Create a folder to store templated files
- *
- * @param tempDir - target temporary directory
- * @throws if `fs.mkdir` fails
- */
-export async function createTemporaryAppFolderTask(tempDir: string) {
-  await Task.forItem('creating', 'temporary directory', async () => {
-    try {
-      await fs.mkdir(tempDir);
-    } catch (error) {
-      throw new Error(`Failed to create temporary app directory, ${error}`);
-    }
-  });
-}
-
-/**
  * Run `yarn install` and `run tsc` in application directory
  *
  * @param appDir - location of application to build
  */
 export async function buildAppTask(appDir: string) {
+  process.chdir(appDir);
+
   const runCmd = async (cmd: string) => {
     await Task.forItem('executing', cmd, async () => {
-      process.chdir(appDir);
       await exec(cmd).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
@@ -205,7 +199,13 @@ export async function buildAppTask(appDir: string) {
     });
   };
 
-  await runCmd('yarn install');
+  const installTimeout = setTimeout(() => {
+    Task.error(
+      "\n⏱️  It's taking a long time to install dependencies, you may want to exit (Ctrl-C) and run 'yarn install' and 'yarn tsc' manually",
+    );
+  }, TEN_MINUTES_MS);
+
+  await runCmd('yarn install').finally(() => clearTimeout(installTimeout));
   await runCmd('yarn tsc');
 }
 
@@ -235,4 +235,108 @@ export async function moveAppTask(
         fs.removeSync(tempDir);
       });
   });
+}
+
+/**
+ * Read git configs by creating a temp folder and initializing a repo
+ *
+ * @throws if `exec` fails
+ */
+export async function readGitConfig(): Promise<GitConfig | undefined> {
+  const tempDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'git-temp-dir-'));
+
+  try {
+    await exec('git init', { cwd: tempDir });
+    await exec('git commit --allow-empty -m "Initial commit"', {
+      cwd: tempDir,
+    });
+
+    const getDefaultBranch = await exec(
+      'git branch --format="%(refname:short)"',
+      { cwd: tempDir },
+    );
+
+    return {
+      defaultBranch: getDefaultBranch.stdout?.trim() || undefined,
+    };
+  } catch (error) {
+    return undefined;
+  } finally {
+    await fs.rm(tempDir, { recursive: true });
+  }
+}
+
+/**
+ * Initializes a git repository in the destination folder if possible
+ *
+ * @param dir - source path to initialize git repository in
+ * @returns true if git repository was initialized
+ */
+export async function tryInitGitRepository(dir: string) {
+  try {
+    // Check if we're already in a git repo
+    await exec('git rev-parse --is-inside-work-tree', { cwd: dir });
+    return false;
+  } catch {
+    /* ignored */
+  }
+
+  try {
+    await exec('git init', { cwd: dir });
+    await exec('git add .', { cwd: dir });
+    await exec('git commit -m "Initial commit"', { cwd: dir });
+    return true;
+  } catch (error) {
+    try {
+      await fs.rm(resolvePath(dir, '.git'), { recursive: true, force: true });
+    } catch {
+      throw new Error('Failed to remove .git folder');
+    }
+
+    return false;
+  }
+}
+
+/**
+ * This fetches the yarn.lock seed file at https://github.com/backstage/backstage/blob/master/packages/create-app/seed-yarn.lock
+ * Its purpose is to lock individual dependencies with broken releases to known working versions.
+ * This flow is decoupled from the release of the create-app package in order to avoid
+ * the need to re-publish the create-app package whenever we want to update the seed file.
+ *
+ * @returns true if the yarn.lock seed file was fetched successfully
+ */
+export async function fetchYarnLockSeedTask(dir: string) {
+  try {
+    await Task.forItem('fetching', 'yarn.lock seed', async () => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      const res = await fetch(
+        'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
+        {
+          signal: controller.signal,
+        },
+      );
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        throw new Error(
+          `Request failed with status ${res.status} ${res.statusText}`,
+        );
+      }
+
+      const initialYarnLockContent = await res.text();
+
+      await fs.writeFile(
+        resolvePath(dir, 'yarn.lock'),
+        initialYarnLockContent
+          .split('\n')
+          .filter(l => !l.startsWith('//'))
+          .join('\n'),
+        'utf8',
+      );
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }

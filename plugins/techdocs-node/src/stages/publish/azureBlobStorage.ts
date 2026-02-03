@@ -25,8 +25,7 @@ import { assertError, ForwardedError } from '@backstage/errors';
 import express from 'express';
 import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
-import { default as path, default as platformPath } from 'path';
-import { Logger } from 'winston';
+import { default as path, default as platformPath } from 'node:path';
 import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
@@ -43,6 +42,7 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // The number of batches that may be ongoing at the same time.
 const BATCH_CONCURRENCY = 3;
@@ -51,13 +51,13 @@ export class AzureBlobStoragePublish implements PublisherBase {
   private readonly storageClient: BlobServiceClient;
   private readonly containerName: string;
   private readonly legacyPathCasing: boolean;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
   constructor(options: {
     storageClient: BlobServiceClient;
     containerName: string;
     legacyPathCasing: boolean;
-    logger: Logger;
+    logger: LoggerService;
   }) {
     this.storageClient = options.storageClient;
     this.containerName = options.containerName;
@@ -65,7 +65,8 @@ export class AzureBlobStoragePublish implements PublisherBase {
     this.logger = options.logger;
   }
 
-  static fromConfig(config: Config, logger: Logger): PublisherBase {
+  static fromConfig(config: Config, logger: LoggerService): PublisherBase {
+    let storageClient: BlobServiceClient;
     let containerName = '';
     try {
       containerName = config.getString(
@@ -78,40 +79,52 @@ export class AzureBlobStoragePublish implements PublisherBase {
       );
     }
 
-    let accountName = '';
-    try {
-      accountName = config.getString(
-        'techdocs.publisher.azureBlobStorage.credentials.accountName',
-      );
-    } catch (error) {
-      throw new Error(
-        "Since techdocs.publisher.type is set to 'azureBlobStorage' in your app config, " +
-          'techdocs.publisher.azureBlobStorage.credentials.accountName is required.',
-      );
-    }
-
-    // Credentials is an optional config. If missing, default Azure Blob Storage environment variables will be used.
-    // https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app
-    const accountKey = config.getOptionalString(
-      'techdocs.publisher.azureBlobStorage.credentials.accountKey',
-    );
-
-    let credential;
-    if (accountKey) {
-      credential = new StorageSharedKeyCredential(accountName, accountKey);
-    } else {
-      credential = new DefaultAzureCredential();
-    }
-
-    const storageClient = new BlobServiceClient(
-      `https://${accountName}.blob.core.windows.net`,
-      credential,
-    );
-
     const legacyPathCasing =
       config.getOptionalBoolean(
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
+
+    // Give more priority for connectionString, if configured, return the AzureBlobStoragePublish object here itself
+    const connectionStringKey =
+      'techdocs.publisher.azureBlobStorage.connectionString';
+    const connectionString = config.getOptionalString(connectionStringKey);
+
+    if (connectionString) {
+      logger.info(
+        `Using '${connectionStringKey}' configuration to create storage client`,
+      );
+      storageClient = BlobServiceClient.fromConnectionString(connectionString);
+    } else {
+      let accountName = '';
+      try {
+        accountName = config.getString(
+          'techdocs.publisher.azureBlobStorage.credentials.accountName',
+        );
+      } catch (error) {
+        throw new Error(
+          "Since techdocs.publisher.type is set to 'azureBlobStorage' in your app config, " +
+            'techdocs.publisher.azureBlobStorage.credentials.accountName is required.',
+        );
+      }
+
+      // Credentials is an optional config. If missing, default Azure Blob Storage environment variables will be used.
+      // https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app
+      const accountKey = config.getOptionalString(
+        'techdocs.publisher.azureBlobStorage.credentials.accountKey',
+      );
+
+      let credential;
+      if (accountKey) {
+        credential = new StorageSharedKeyCredential(accountName, accountKey);
+      } else {
+        credential = new DefaultAzureCredential();
+      }
+
+      storageClient = new BlobServiceClient(
+        `https://${accountName}.blob.core.windows.net`,
+        credential,
+      );
+    }
 
     return new AzureBlobStoragePublish({
       storageClient: storageClient,
@@ -273,32 +286,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
     return { objects };
   }
 
-  private download(containerName: string, blobPath: string): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      const fileStreamChunks: Array<any> = [];
-      this.storageClient
-        .getContainerClient(containerName)
-        .getBlockBlobClient(blobPath)
-        .download()
-        .then(res => {
-          const body = res.readableStreamBody;
-          if (!body) {
-            reject(new Error(`Unable to parse the response data`));
-            return;
-          }
-          body
-            .on('error', reject)
-            .on('data', chunk => {
-              fileStreamChunks.push(chunk);
-            })
-            .on('end', () => {
-              resolve(Buffer.concat(fileStreamChunks));
-            });
-        })
-        .catch(reject);
-    });
-  }
-
   async fetchTechDocsMetadata(
     entityName: CompoundEntityRef,
   ): Promise<TechDocsMetadata> {
@@ -308,10 +295,32 @@ export class AzureBlobStoragePublish implements PublisherBase {
       : lowerCaseEntityTriplet(entityTriplet);
 
     try {
-      const techdocsMetadataJson = await this.download(
-        this.containerName,
-        `${entityRootDir}/techdocs_metadata.json`,
+      const techdocsMetadataJson = await new Promise<Buffer>(
+        (resolve, reject) => {
+          const fileStreamChunks: Array<any> = [];
+          this.storageClient
+            .getContainerClient(this.containerName)
+            .getBlockBlobClient(`${entityRootDir}/techdocs_metadata.json`)
+            .download()
+            .then(res => {
+              const body = res.readableStreamBody;
+              if (!body) {
+                reject(new Error(`Unable to parse the response data`));
+                return;
+              }
+              body
+                .on('error', reject)
+                .on('data', chunk => {
+                  fileStreamChunks.push(chunk);
+                })
+                .on('end', () => {
+                  resolve(Buffer.concat(fileStreamChunks));
+                });
+            })
+            .catch(reject);
+        },
       );
+
       if (!techdocsMetadataJson) {
         throw new Error(
           `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
@@ -343,21 +352,32 @@ export class AzureBlobStoragePublish implements PublisherBase {
       const fileExtension = platformPath.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      this.download(this.containerName, filePath)
-        .then(fileContent => {
-          // Inject response headers
+      const blobClient = this.storageClient
+        .getContainerClient(this.containerName)
+        .getBlockBlobClient(filePath);
+
+      blobClient
+        .download()
+        .then(downloadRes => {
+          if (!downloadRes.readableStreamBody) {
+            throw new Error('Unable to parse the response data');
+          }
           for (const [headerKey, headerValue] of Object.entries(
             responseHeaders,
           )) {
             res.setHeader(headerKey, headerValue);
           }
-          res.send(fileContent);
+          downloadRes.readableStreamBody.pipe(res);
         })
         .catch(e => {
           this.logger.warn(
             `TechDocs Azure router failed to serve content from container ${this.containerName} at path ${filePath}: ${e.message}`,
           );
-          res.status(404).send('File Not Found');
+          if (!res.headersSent) {
+            res.status(404).send('File Not Found');
+          } else {
+            res.destroy();
+          }
         });
     };
   }
@@ -408,7 +428,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
 
     if (originalPath === newPath) return;
     try {
-      this.logger.verbose(`Migrating ${originalPath}`);
+      this.logger.debug(`Migrating ${originalPath}`);
       await this.renameBlob(originalPath, newPath, removeOriginal);
     } catch (e) {
       assertError(e);

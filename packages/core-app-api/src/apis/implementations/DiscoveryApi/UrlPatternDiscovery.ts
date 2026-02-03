@@ -26,7 +26,7 @@ const ERROR_PREFIX = 'Invalid discovery URL pattern,';
  */
 export class UrlPatternDiscovery implements DiscoveryApi {
   /**
-   * Creates a new UrlPatternDiscovery given a template. The the only
+   * Creates a new UrlPatternDiscovery given a template. The only
    * interpolation done for the template is to replace instances of `{{pluginId}}`
    * with the ID of the plugin being requested.
    *
@@ -58,6 +58,6 @@ export class UrlPatternDiscovery implements DiscoveryApi {
   private constructor(private readonly parts: string[]) {}
 
   async getBaseUrl(pluginId: string): Promise<string> {
-    return this.parts.join(pluginId);
+    return this.parts.join(encodeURIComponent(pluginId));
   }
 }

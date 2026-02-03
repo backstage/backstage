@@ -1,47 +1,61 @@
 {
   "name": "@backstage/plugin-api-docs-module-protoc-gen-doc",
+  "version": "0.1.10",
   "description": "Additional functionalities for the api-docs plugin that renders the output of the protoc-gen-doc",
-  "version": "0.1.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "frontend-plugin-module",
+    "pluginId": "api-docs",
+    "pluginPackage": "@backstage/plugin-api-docs"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "frontend-plugin-module"
-  },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/api-docs-module-protoc-gen-doc"
   },
-  "keywords": [
-    "backstage"
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
   ],
   "scripts": {
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "grpc-docs": "^1.1.2"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
-  },
   "devDependencies": {
-    "@backstage/cli": "^0.18.1-next.0",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@types/react": "^16.13.1 || ^17.0.0"
+    "@backstage/cli": "workspace:^",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
 }

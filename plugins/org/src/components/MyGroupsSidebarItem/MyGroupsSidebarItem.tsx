@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
@@ -30,11 +29,11 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   catalogApiRef,
-  CatalogApi,
   entityRouteRef,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
 
@@ -52,8 +51,9 @@ export const MyGroupsSidebarItem = (props: {
   const { singularTitle, pluralTitle, icon, filter } = props;
 
   const identityApi = useApi(identityApiRef);
-  const catalogApi: CatalogApi = useApi(catalogApiRef);
+  const catalogApi = useApi(catalogApiRef);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
 
   const { value: groups } = useAsync(async () => {
     const profile = await identityApi.getBackstageIdentity();
@@ -66,13 +66,11 @@ export const MyGroupsSidebarItem = (props: {
           ...(filter ?? {}),
         },
       ],
-      fields: ['metadata', 'kind'],
+      fields: ['metadata', 'kind', 'spec.profile'],
     });
-
     return response.items;
   }, []);
 
-  // Not a member of any groups
   if (!groups?.length) {
     return null;
   }
@@ -93,10 +91,11 @@ export const MyGroupsSidebarItem = (props: {
   return (
     <SidebarItem icon={icon} text={pluralTitle}>
       <SidebarSubmenu title={pluralTitle}>
-        {groups?.map(function groupsMap(group) {
+        {groups?.map(group => {
+          const entityDisplayName = entityPresentationApi.forEntity(group);
           return (
             <SidebarSubmenuItem
-              title={group.metadata.title || group.metadata.name}
+              title={entityDisplayName.snapshot.primaryTitle}
               subtitle={
                 group.metadata.namespace !== DEFAULT_NAMESPACE
                   ? group.metadata.namespace

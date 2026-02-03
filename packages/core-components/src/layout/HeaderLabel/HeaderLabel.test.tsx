@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { HeaderLabel } from './HeaderLabel';
 
@@ -50,5 +49,30 @@ describe('<HeaderLabel />', () => {
     const anchor = rendered.container.querySelector('a') as HTMLAnchorElement;
     expect(rendered.getByText('Value')).toBeInTheDocument();
     expect(anchor.href).toBe('http://localhost/test');
+  });
+
+  it('should use a `p` tag if the provided value is a string', async () => {
+    const rendered = await renderInTestApp(
+      <HeaderLabel label="Label" value="Value" />,
+    );
+    expect(rendered.getByText('Value').tagName).toBe('P');
+  });
+
+  it('should use a `span` tag if the provided value is not a string', async () => {
+    const rendered = await renderInTestApp(
+      <HeaderLabel label="Label" value={<>Value</>} />,
+    );
+    expect(rendered.getByText('Value').tagName).toBe('SPAN');
+  });
+
+  it('should use the correct custom typography root component', async () => {
+    const rendered = await renderInTestApp(
+      <HeaderLabel
+        label="Label"
+        value="Value"
+        contentTypograpyRootComponent="tr"
+      />,
+    );
+    expect(rendered.container.querySelector('tr')).toBeInTheDocument();
   });
 });

@@ -67,8 +67,8 @@ describe('EntityPolicies', () => {
       p2.enforce.mockResolvedValue(entity2);
       const policy = EntityPolicies.allOf([p1, p2]);
       await expect(policy.enforce(entity1)).resolves.toBe(entity2);
-      expect(p1.enforce).toBeCalledWith(entity1);
-      expect(p2.enforce).toBeCalledWith(entity2);
+      expect(p1.enforce).toHaveBeenCalledWith(entity1);
+      expect(p2.enforce).toHaveBeenCalledWith(entity2);
     });
   });
 

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ServiceRef } from '../services/system/types';
+import { InternalServiceFactory, ServiceRef } from '../services/system/types';
+import { BackendFeature } from '../types';
 
 /**
  * TODO
@@ -32,82 +33,165 @@ export type ExtensionPoint<T> = {
 
   toString(): string;
 
-  $$ref: 'extension-point';
+  $$type: '@backstage/ExtensionPoint';
 };
 
-/** @public */
-export function createExtensionPoint<T>(options: {
-  id: string;
-}): ExtensionPoint<T> {
-  return {
-    id: options.id,
-    get T(): T {
-      throw new Error(`tried to read ExtensionPoint.T of ${this}`);
-    },
-    toString() {
-      return `extensionPoint{${options.id}}`;
-    },
-    $$ref: 'extension-point', // TODO: declare
-  };
+/**
+ * Context provided to extension point factories.
+ *
+ * @public
+ */
+export interface ExtensionPointFactoryContext {
+  /**
+   * Report a startup failure that happened as part of using an extension that
+   * the module provided. This should be called before the plugin's `init`
+   * function returns.
+   */
+  reportModuleStartupFailure(options: { error: Error }): void;
 }
 
-/** @public */
-export interface BackendInitRegistry {
+/** @ignore */
+type DepsToInstances<
+  TDeps extends {
+    [key in string]: ServiceRef<unknown> | ExtensionPoint<unknown>;
+  },
+> = {
+  [key in keyof TDeps]: TDeps[key] extends ServiceRef<unknown, any, 'multiton'>
+    ? Array<TDeps[key]['T']>
+    : TDeps[key]['T'];
+};
+
+/**
+ * The callbacks passed to the `register` method of a backend plugin.
+ *
+ * @public
+ */
+export interface BackendPluginRegistrationPoints {
+  /**
+   * Registers an implementation for an extension point.
+   */
   registerExtensionPoint<TExtensionPoint>(
-    ref: ServiceRef<TExtensionPoint>,
+    ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
   ): void;
-  registerInit<Deps extends { [name in string]: unknown }>(options: {
-    deps: { [name in keyof Deps]: ServiceRef<Deps[name]> };
-    init: (deps: Deps) => Promise<void>;
+  /**
+   * Registers a factory that produces a separate implementation for an extension point for each module.
+   */
+  registerExtensionPoint<TExtensionPoint>(options: {
+    extensionPoint: ExtensionPoint<TExtensionPoint>;
+    factory: (context: ExtensionPointFactoryContext) => TExtensionPoint;
+  }): void;
+  registerInit<
+    TDeps extends {
+      [name in string]: ServiceRef<unknown>;
+    },
+  >(options: {
+    deps: TDeps;
+    init(deps: DepsToInstances<TDeps>): Promise<void>;
   }): void;
 }
 
-/** @public */
-export interface BackendRegistrable {
-  id: string;
-  register(reg: BackendInitRegistry): void;
-}
-
-/** @public */
-export interface BackendPluginConfig<TOptions> {
-  id: string;
-  register(reg: BackendInitRegistry, options: TOptions): void;
-}
-
-// TODO: Make option optional in the returned factory if they are indeed optional
-/** @public */
-export function createBackendPlugin<TOptions>(
-  config: BackendPluginConfig<TOptions>,
-): (option: TOptions) => BackendRegistrable {
-  return options => ({
-    id: config.id,
-    register(register) {
-      return config.register(register, options);
+/**
+ * The callbacks passed to the `register` method of a backend module.
+ *
+ * @public
+ */
+export interface BackendModuleRegistrationPoints {
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
+  registerExtensionPoint<TExtensionPoint>(options: {
+    extensionPoint: ExtensionPoint<TExtensionPoint>;
+    factory: (context: ExtensionPointFactoryContext) => TExtensionPoint;
+  }): void;
+  registerInit<
+    TDeps extends {
+      [name in string]: ServiceRef<unknown> | ExtensionPoint<unknown>;
     },
-  });
+  >(options: {
+    deps: TDeps;
+    init(deps: DepsToInstances<TDeps>): Promise<void>;
+  }): void;
 }
 
-/** @public */
-export interface BackendModuleConfig<TOptions> {
+/** @internal */
+export interface InternalBackendRegistrations extends BackendFeature {
+  version: 'v1';
+  featureType: 'registrations';
+  getRegistrations(): Array<
+    | InternalBackendPluginRegistration
+    | InternalBackendModuleRegistration
+    | InternalBackendPluginRegistrationV1_1
+    | InternalBackendModuleRegistrationV1_1
+  >;
+}
+
+/** @internal */
+export interface InternalBackendPluginRegistration {
+  pluginId: string;
+  type: 'plugin';
+  extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
+  init: {
+    deps: Record<string, ServiceRef<unknown>>;
+    func(deps: Record<string, unknown>): Promise<void>;
+  };
+}
+
+/** @internal */
+export interface InternalBackendModuleRegistration {
   pluginId: string;
   moduleId: string;
-  register(
-    reg: Omit<BackendInitRegistry, 'registerExtensionPoint'>,
-    options: TOptions,
-  ): void;
+  type: 'module';
+  extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
+  init: {
+    deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
+    func(deps: Record<string, unknown>): Promise<void>;
+  };
 }
 
-// TODO: Make option optional in the returned factory if they are indeed optional
-/** @public */
-export function createBackendModule<TOptions>(
-  config: BackendModuleConfig<TOptions>,
-): (option: TOptions) => BackendRegistrable {
-  return options => ({
-    id: `${config.pluginId}.${config.moduleId}`,
-    register(register) {
-      // TODO: Hide registerExtensionPoint
-      return config.register(register, options);
-    },
-  });
+/** @internal */
+export type ExtensionPointRegistration = {
+  extensionPoint: ExtensionPoint<unknown>;
+  factory: (context: ExtensionPointFactoryContext) => unknown;
+};
+
+/** @internal */
+export interface InternalBackendPluginRegistrationV1_1 {
+  pluginId: string;
+  type: 'plugin-v1.1';
+  extensionPoints: Array<ExtensionPointRegistration>;
+  init: {
+    deps: Record<string, ServiceRef<unknown>>;
+    func(deps: Record<string, unknown>): Promise<void>;
+  };
 }
+
+/** @internal */
+export interface InternalBackendModuleRegistrationV1_1 {
+  pluginId: string;
+  moduleId: string;
+  type: 'module-v1.1';
+  extensionPoints: Array<ExtensionPointRegistration>;
+  init: {
+    deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
+    func(deps: Record<string, unknown>): Promise<void>;
+  };
+}
+
+/**
+ * @public
+ */
+export interface InternalBackendFeatureLoader extends BackendFeature {
+  version: 'v1';
+  featureType: 'loader';
+  description: string;
+  deps: Record<string, ServiceRef<unknown>>;
+  loader(deps: Record<string, unknown>): Promise<BackendFeature[]>;
+}
+
+/** @internal */
+export type InternalBackendFeature =
+  | InternalBackendRegistrations
+  | InternalBackendFeatureLoader
+  | InternalServiceFactory;

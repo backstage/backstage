@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 import { IconComponent } from '@backstage/core-plugin-api';
-import {
-  Card,
-  List,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  MenuItem,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import List from '@material-ui/core/List';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import SettingsIcon from '@material-ui/icons/Settings';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
+import {
+  TranslationFunction,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 import AllIcon from '@material-ui/icons/FontDownload';
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       backgroundColor: 'rgba(0, 0, 0, .11)',
@@ -67,19 +69,21 @@ export type ButtonGroup = {
   }[];
 };
 
-function getFilterGroups(): ButtonGroup[] {
+function getFilterGroups(
+  t: TranslationFunction<typeof scaffolderTranslationRef.T>,
+): ButtonGroup[] {
   return [
     {
-      name: 'Task Owner',
+      name: t('ownerListPicker.title'),
       items: [
         {
           id: 'owned',
-          label: 'Owned',
+          label: t('ownerListPicker.options.owned'),
           icon: SettingsIcon,
         },
         {
           id: 'all',
-          label: 'All',
+          label: t('ownerListPicker.options.all'),
           icon: AllIcon,
         },
       ],
@@ -93,22 +97,27 @@ export const OwnerListPicker = (props: {
 }) => {
   const { filter, onSelectOwner } = props;
   const classes = useStyles();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const filterGroups = getFilterGroups();
+  const filterGroups = getFilterGroups(t);
   return (
     <Card className={classes.root}>
       {filterGroups.map(group => (
         <Fragment key={group.name}>
-          <Typography variant="subtitle2" className={classes.title}>
+          <Typography
+            variant="subtitle2"
+            component="span"
+            className={classes.title}
+          >
             {group.name}
           </Typography>
           <Card className={classes.groupWrapper}>
-            <List disablePadding dense>
-              {group.items.map(item => (
+            <List disablePadding dense role="menu">
+              {group.items.map((item, index) => (
                 <MenuItem
                   key={item.id}
-                  button
-                  divider
+                  divider={index !== group.items.length - 1}
+                  ContainerProps={{ role: 'menuitem' }}
                   onClick={() => onSelectOwner(item.id as 'owned' | 'all')}
                   selected={item.id === filter}
                   className={classes.menuItem}

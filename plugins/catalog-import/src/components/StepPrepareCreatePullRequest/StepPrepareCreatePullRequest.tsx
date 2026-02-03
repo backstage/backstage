@@ -17,18 +17,24 @@
 import { Entity } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useCallback, useEffect, useState } from 'react';
-import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
-import useAsync from 'react-use/lib/useAsync';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { NestedValue, UseFormReturn } from 'react-hook-form';
+import useAsync from 'react-use/esm/useAsync';
 import YAML from 'yaml';
+
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { useCatalogFilename } from '../../hooks';
+import { catalogImportTranslationRef } from '../../translation';
 import { PartialEntity } from '../../types';
 import { BackButton, NextButton } from '../Buttons';
 import { PrepareResult } from '../useImportState';
@@ -54,6 +60,22 @@ type FormData = {
 };
 
 /**
+ * Helper for unpacking NestedValue into the underlying type.
+ *
+ * @public
+ * @deprecated This is a copy of the type from react-hook-form, and will be removed in a future release
+ */
+export type UnpackNestedValue<T> = T extends NestedValue<infer U>
+  ? U
+  : T extends Date | FileList | File | Blob
+  ? T
+  : T extends object
+  ? {
+      [K in keyof T]: UnpackNestedValue<T[K]>;
+    }
+  : T;
+
+/**
  * Props for {@link StepPrepareCreatePullRequest}.
  *
  * @public
@@ -75,7 +97,7 @@ export interface StepPrepareCreatePullRequestProps {
       groups: string[];
       groupsLoading: boolean;
     },
-  ) => React.ReactNode;
+  ) => ReactNode;
 }
 
 export function generateEntities(
@@ -108,6 +130,7 @@ export const StepPrepareCreatePullRequest = (
 ) => {
   const { analyzeResult, onPrepare, onGoBack, renderFormFields } = props;
 
+  const { t } = useTranslationRef(catalogImportTranslationRef);
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
@@ -204,9 +227,10 @@ export const StepPrepareCreatePullRequest = (
   return (
     <>
       <Typography>
-        You entered a link to a {analyzeResult.integrationType} repository but a{' '}
-        <code>{catalogFilename}</code> could not be found. Use this form to open
-        a Pull Request that creates one.
+        {t('stepPrepareCreatePullRequest.description', {
+          integrationType: analyzeResult.integrationType,
+          catalogFilename: <code>{catalogFilename}</code>,
+        })}
       </Typography>
 
       {!prDefaultsLoading && (
@@ -233,7 +257,9 @@ export const StepPrepareCreatePullRequest = (
               })}
 
               <Box marginTop={2}>
-                <Typography variant="h6">Preview Pull Request</Typography>
+                <Typography variant="h6">
+                  {t('stepPrepareCreatePullRequest.previewPr.title')}
+                </Typography>
               </Box>
 
               <PreviewPullRequestComponent
@@ -246,7 +272,9 @@ export const StepPrepareCreatePullRequest = (
               />
 
               <Box marginTop={2} marginBottom={1}>
-                <Typography variant="h6">Preview Entities</Typography>
+                <Typography variant="h6">
+                  {t('stepPrepareCreatePullRequest.previewCatalogInfo.title')}
+                </Typography>
               </Box>
 
               <PreviewCatalogInfoComponent
@@ -277,7 +305,7 @@ export const StepPrepareCreatePullRequest = (
                   )}
                   loading={submitted}
                 >
-                  Create PR
+                  {t('stepPrepareCreatePullRequest.nextButtonText')}
                 </NextButton>
               </Grid>
             </>

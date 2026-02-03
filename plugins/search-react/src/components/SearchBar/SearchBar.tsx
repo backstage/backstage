@@ -14,47 +14,45 @@
  * limitations under the License.
  */
 
-import React, {
-  ChangeEvent,
-  KeyboardEvent,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
-import {
-  InputBase,
-  InputBaseProps,
-  InputAdornment,
-  IconButton,
-} from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import ClearButton from '@material-ui/icons/Clear';
-
 import {
   AnalyticsContext,
   configApiRef,
   useApi,
+  useApp,
 } from '@backstage/core-plugin-api';
-
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import { TextFieldProps } from '@material-ui/core/TextField';
+import DefaultSearchIcon from '@material-ui/icons/Search';
 import {
-  SearchContextProvider,
-  useSearch,
-  useSearchContextCheck,
-} from '../../context';
-import { TrackSearch } from '../SearchTracker';
+  ReactNode,
+  ChangeEvent,
+  forwardRef,
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import useDebounce from 'react-use/esm/useDebounce';
+import { SearchContextProvider, useSearch } from '../../context';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchReactTranslationRef } from '../../translation';
 
 /**
  * Props for {@link SearchBarBase}.
  *
  * @public
  */
-export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
+export type SearchBarBaseProps = Omit<TextFieldProps, 'onChange'> & {
   debounceTime?: number;
   clearButton?: boolean;
   onClear?: () => void;
   onSubmit?: () => void;
   onChange: (value: string) => void;
+  endAdornment?: ReactNode;
 };
 
 /**
@@ -64,29 +62,49 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
  *
  * @public
  */
-export const SearchBarBase = ({
-  onChange,
-  onKeyDown,
-  onSubmit,
-  debounceTime = 200,
-  clearButton = true,
-  fullWidth = true,
-  value: defaultValue,
-  inputProps: defaultInputProps = {},
-  endAdornment: defaultEndAdornment,
-  ...props
-}: SearchBarBaseProps) => {
+export const SearchBarBase = forwardRef((props: SearchBarBaseProps, ref) => {
+  const {
+    onChange,
+    onKeyDown = () => {},
+    onClear = () => {},
+    onSubmit = () => {},
+    debounceTime = 200,
+    clearButton = true,
+    fullWidth = true,
+    value: defaultValue,
+    label,
+    placeholder,
+    inputProps = {},
+    InputProps = {},
+    endAdornment,
+    ...rest
+  } = props;
+
   const configApi = useApi(configApiRef);
-  const [value, setValue] = useState<string>(defaultValue as string);
-  const hasSearchContext = useSearchContextCheck();
+  const [value, setValue] = useState<string>('');
+  const forwardedValueRef = useRef<string>('');
+  const { t } = useTranslationRef(searchReactTranslationRef);
 
   useEffect(() => {
-    setValue(prevValue =>
-      prevValue !== defaultValue ? (defaultValue as string) : prevValue,
-    );
-  }, [defaultValue]);
+    setValue(prevValue => {
+      // We only update the value if our current value is the same as it was
+      // for the most recent onChange call. Otherwise it means that the users
+      // has continued typing and we should not replace their input.
+      if (prevValue === forwardedValueRef.current) {
+        return String(defaultValue);
+      }
+      return prevValue;
+    });
+  }, [defaultValue, forwardedValueRef]);
 
-  useDebounce(() => onChange(value), debounceTime, [value]);
+  useDebounce(
+    () => {
+      forwardedValueRef.current = value;
+      onChange(value);
+    },
+    debounceTime,
+    [value],
+  );
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -96,7 +114,7 @@ export const SearchBarBase = ({
   );
 
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
+    (e: KeyboardEvent<HTMLDivElement>) => {
       if (onKeyDown) onKeyDown(e);
       if (onSubmit && e.key === 'Enter') {
         onSubmit();
@@ -106,52 +124,79 @@ export const SearchBarBase = ({
   );
 
   const handleClear = useCallback(() => {
+    forwardedValueRef.current = '';
     onChange('');
-  }, [onChange]);
+    setValue('');
+    if (onClear) {
+      onClear();
+    }
+  }, [onChange, onClear]);
 
-  const placeholder = `Search in ${
-    configApi.getOptionalString('app.title') || 'Backstage'
-  }`;
+  const ariaLabel: string | undefined = label
+    ? undefined
+    : t('searchBar.title');
+
+  const inputPlaceholder =
+    placeholder ??
+    t('searchBar.placeholder', {
+      org: configApi.getOptionalString('app.title') || 'Backstage',
+    });
+  const SearchIcon = useApp().getSystemIcon('search') || DefaultSearchIcon;
 
   const startAdornment = (
     <InputAdornment position="start">
-      <IconButton aria-label="Query" disabled>
+      <IconButton aria-label="Query" size="small" disabled>
         <SearchIcon />
       </IconButton>
     </InputAdornment>
   );
 
-  const endAdornment = (
+  const clearButtonEndAdornment = (
     <InputAdornment position="end">
-      <IconButton aria-label="Clear" onClick={handleClear}>
-        <ClearButton />
-      </IconButton>
+      <Button
+        aria-label={t('searchBar.clearButtonTitle')}
+        size="small"
+        onClick={handleClear}
+        onKeyDown={event => {
+          if (event.key === 'Enter') {
+            // write your functionality here
+            event.stopPropagation();
+          }
+        }}
+      >
+        {t('searchBar.clearButtonTitle')}
+      </Button>
     </InputAdornment>
   );
 
-  const searchBar = (
-    <TrackSearch>
-      <InputBase
+  return (
+    <SearchContextProvider inheritParentContextIfAvailable>
+      <TextField
+        id="search-bar-text-field"
         data-testid="search-bar-next"
+        variant="outlined"
+        margin="normal"
+        inputRef={ref}
         value={value}
-        placeholder={placeholder}
-        startAdornment={startAdornment}
-        endAdornment={clearButton ? endAdornment : defaultEndAdornment}
-        inputProps={{ 'aria-label': 'Search', ...defaultInputProps }}
+        label={label}
+        placeholder={inputPlaceholder}
+        InputProps={{
+          startAdornment,
+          endAdornment: clearButton ? clearButtonEndAdornment : endAdornment,
+          ...InputProps,
+        }}
+        inputProps={{
+          'aria-label': ariaLabel,
+          ...inputProps,
+        }}
         fullWidth={fullWidth}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        {...props}
+        {...rest}
       />
-    </TrackSearch>
+    </SearchContextProvider>
   );
-
-  return hasSearchContext ? (
-    searchBar
-  ) : (
-    <SearchContextProvider>{searchBar}</SearchContextProvider>
-  );
-};
+});
 
 /**
  * Props for {@link SearchBar}.
@@ -165,8 +210,16 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
  *
  * @public
  */
-export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
+export const SearchBar = forwardRef((props: SearchBarProps, ref) => {
+  const { value: initialValue = '', onChange, ...rest } = props;
+
   const { term, setTerm } = useSearch();
+
+  useEffect(() => {
+    if (initialValue) {
+      setTerm(String(initialValue));
+    }
+  }, [initialValue, setTerm]);
 
   const handleChange = useCallback(
     (newValue: string) => {
@@ -180,10 +233,17 @@ export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
   );
 
   return (
-    <AnalyticsContext
-      attributes={{ pluginId: 'search', extension: 'SearchBar' }}
-    >
-      <SearchBarBase value={term} onChange={handleChange} {...props} />
-    </AnalyticsContext>
+    <SearchContextProvider inheritParentContextIfAvailable>
+      <AnalyticsContext
+        attributes={{ pluginId: 'search', extension: 'SearchBar' }}
+      >
+        <SearchBarBase
+          {...rest}
+          ref={ref}
+          value={term}
+          onChange={handleChange}
+        />
+      </AnalyticsContext>
+    </SearchContextProvider>
   );
-};
+});

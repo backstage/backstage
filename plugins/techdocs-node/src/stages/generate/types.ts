@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
-// Determines where the generator will be run
+/**
+ * Determines where the generator will be run. `'docker'` is a shorthand for running the generator in a container.
+ * If no {@link GeneratorOptions.containerRunner} is specified, the internal `DockerContainerRunner` will be used.
+ */
 export type GeneratorRunInType = 'docker' | 'local';
 
 /**
@@ -28,8 +31,8 @@ export type GeneratorRunInType = 'docker' | 'local';
  * @public
  */
 export type GeneratorOptions = {
-  containerRunner: ContainerRunner;
-  logger: Logger;
+  logger: LoggerService;
+  containerRunner?: TechDocsContainerRunner;
 };
 
 /**
@@ -41,6 +44,7 @@ export type GeneratorConfig = {
   pullImage?: boolean;
   omitTechdocsCoreMkdocsPlugin?: boolean;
   legacyCopyReadmeMdToIndexMd?: boolean;
+  defaultPlugins?: string[];
 };
 
 /**
@@ -53,6 +57,7 @@ export type GeneratorConfig = {
  * @param etag - A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.
  * @param logger - A logger that forwards the messages to the caller to be displayed outside of the backend.
  * @param logStream - A log stream that can send raw log messages to the caller to be displayed outside of the backend.
+ * @param siteOptions - Options for the site: The `name` property will be used in mkdocs.yml config for the required `site_name` property, default value is "Documentation Site"
  */
 export type GeneratorRunOptions = {
   inputDir: string;
@@ -61,6 +66,8 @@ export type GeneratorRunOptions = {
   etag?: string;
   logger: Logger;
   logStream?: Writable;
+  siteOptions?: { name?: string };
+  runAsDefaultUser?: boolean;
 };
 
 /**
@@ -89,3 +96,45 @@ export type GeneratorBuilder = {
   register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
   get(entity: Entity): GeneratorBase;
 };
+
+export type DefaultMkdocsContent = {
+  site_name: string;
+  docs_dir: string;
+  plugins: String[];
+};
+
+/**
+ * Handles the running of containers to generate TechDocs.
+ *
+ * Custom implementations, e.g. for Kubernetes or other execution environments, can be inspired by the internal default
+ * implementation `DockerContainerRunner`.
+ *
+ * @public
+ */
+export interface TechDocsContainerRunner {
+  /**
+   * Runs a container image to completion.
+   */
+  runContainer(opts: {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+    pullImage?: boolean;
+    defaultUser?: boolean;
+    pullOptions?: {
+      authconfig?: {
+        username?: string;
+        password?: string;
+        auth?: string;
+        email?: string;
+        serveraddress?: string;
+        [key: string]: unknown;
+      };
+      [key: string]: unknown;
+    };
+  }): Promise<void>;
+}

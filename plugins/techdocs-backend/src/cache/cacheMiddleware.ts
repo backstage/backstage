@@ -15,15 +15,15 @@
  */
 import { Router } from 'express';
 import router from 'express-promise-router';
-import { Logger } from 'winston';
 import { TechDocsCache } from './TechDocsCache';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type CacheMiddlewareOptions = {
   cache: TechDocsCache;
-  logger: Logger;
+  logger: LoggerService;
 };
 
-type ErrorCallback = (err?: Error) => void;
+type ErrorCallback = (err?: Error | null) => void;
 
 export const createCacheMiddleware = ({
   cache,
@@ -58,7 +58,11 @@ export const createCacheMiddleware = ({
       encoding?: BufferEncoding | ErrorCallback,
       callback?: ErrorCallback,
     ) => {
-      chunks.push(Buffer.from(data));
+      // This cast is obviously weird, but it covers a type bug in @types/node
+      // which does not gracefully handle union types.
+      chunks.push(
+        typeof data === 'string' ? Buffer.from(data) : Buffer.from(data),
+      );
       if (typeof encoding === 'function') {
         return realWrite(data, encoding);
       }

@@ -15,16 +15,16 @@
  */
 
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
+import { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
+import { useContent } from '../Sidebar';
 
 /** @public */
 export type HeaderClassKey =
@@ -38,7 +38,7 @@ export type HeaderClassKey =
   | 'breadcrumbType'
   | 'breadcrumbTitle';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     header: {
       gridArea: 'pageHeader',
@@ -157,8 +157,15 @@ const TypeFragment = ({
 };
 
 const TitleFragment = ({ pageTitle, classes, tooltip }: TitleFragmentProps) => {
+  const { contentRef } = useContent();
+
   const FinalTitle = (
-    <Typography className={classes.title} variant="h1">
+    <Typography
+      ref={contentRef}
+      tabIndex={-1}
+      className={classes.title}
+      variant="h1"
+    >
       {pageTitle}
     </Typography>
   );

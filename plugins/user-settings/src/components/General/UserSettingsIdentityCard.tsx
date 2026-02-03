@@ -13,40 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { InfoCard } from '@backstage/core-components';
-import React from 'react';
-import { useUserProfile } from '../useUserProfileInfo';
-import Chip from '@material-ui/core/Chip';
+import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { useUserProfile } from '../useUserProfileInfo';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
-export const UserSettingsIdentityCard = () => {
+const Contents = () => {
   const { backstageIdentity } = useUserProfile();
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+
+  if (!backstageIdentity) {
+    return <Typography>{t('identityCard.noIdentityTitle')}</Typography>;
+  }
 
   return (
-    <InfoCard title="Backstage Identity">
-      <Grid container spacing={6}>
-        <Grid item xs={12} sm container>
-          <Grid item xs container direction="column" spacing={2}>
-            <Grid item xs>
-              <Typography variant="subtitle1" gutterBottom>
-                User Entity:{' '}
-                <Chip
-                  label={backstageIdentity?.userEntityRef}
-                  variant="outlined"
-                  size="small"
-                />
-              </Typography>
-              <Typography variant="subtitle1">
-                Ownership Entities:{' '}
-                {backstageIdentity?.ownershipEntityRefs.map(it => (
-                  <Chip label={it} variant="outlined" size="small" />
-                ))}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
+    <Grid container spacing={1}>
+      <Grid item xs={12}>
+        <Typography variant="subtitle1" gutterBottom>
+          {t('identityCard.userEntity')}:{' '}
+          <EntityRefLinks entityRefs={[backstageIdentity.userEntityRef]} />
+        </Typography>
       </Grid>
+      <Grid item xs={12}>
+        <Typography variant="subtitle1">
+          {t('identityCard.ownershipEntities')}:{' '}
+          <EntityRefLinks entityRefs={backstageIdentity.ownershipEntityRefs} />
+        </Typography>
+      </Grid>
+    </Grid>
+  );
+};
+
+/** @public */
+export const UserSettingsIdentityCard = () => {
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+
+  return (
+    <InfoCard title={t('identityCard.title')}>
+      <Contents />
     </InfoCard>
   );
 };

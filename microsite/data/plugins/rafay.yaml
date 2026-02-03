@@ -1,0 +1,10 @@
+---
+title: Rafay Kubernetes Operations Platform
+author: Rafay Systems
+authorUrl: https://rafay.co/
+category: Deployment
+description: Deploy and view clusters, namespaces, workloads and more using Rafay plugin
+documentation: https://docs.rafay.co/backstage/setup/
+iconUrl: https://avatars.githubusercontent.com/u/33210764?s=200&v=4
+npmPackageName: '@rafaysystems/backstage-plugin-rafay'
+addedDate: '2023-08-24'

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import usePrevious from 'react-use/lib/usePrevious';
+import { useEffect } from 'react';
+import usePrevious from 'react-use/esm/usePrevious';
 import qs from 'qs';
-import { useLocation, useOutlet } from 'react-router';
+import { useLocation, useOutlet } from 'react-router-dom';
 import {
   SearchContextProvider,
   useSearch,
@@ -45,7 +45,7 @@ export const UrlUpdater = () => {
     }
 
     const query =
-      qs.parse(location.search.substring(1), { arrayLimit: 0 }) || {};
+      qs.parse(location.search.substring(1), { arrayLimit: 10000 }) || {};
 
     if (query.filters) {
       setFilters(query.filters as JsonObject);

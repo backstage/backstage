@@ -18,42 +18,57 @@ import { NotAllowedError } from '@backstage/errors';
 import {
   catalogEntityDeletePermission,
   catalogEntityReadPermission,
-} from '@backstage/plugin-catalog-common';
+} from '@backstage/plugin-catalog-common/alpha';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import {
+  Cursor,
+  EntitiesBatchRequest,
+  EntitiesBatchResponse,
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
   EntityAncestryResponse,
   EntityFacetsRequest,
   EntityFacetsResponse,
-  EntityFilter,
+  QueryEntitiesRequest,
+  QueryEntitiesResponse,
 } from '../catalog/types';
-import { basicEntityFilter } from './request/basicEntityFilter';
+import { basicEntityFilter } from './request';
+import { isQueryEntitiesCursorRequest } from './util';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
+import {
+  BackstageCredentials,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
-  constructor(
-    private readonly entitiesCatalog: EntitiesCatalog,
-    private readonly permissionApi: PermissionEvaluator,
-    private readonly transformConditions: ConditionTransformer<EntityFilter>,
-  ) {}
+  private readonly entitiesCatalog: EntitiesCatalog;
+  private readonly permissionApi: PermissionsService;
+  private readonly transformConditions: ConditionTransformer<EntityFilter>;
 
-  async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
+  constructor(
+    entitiesCatalog: EntitiesCatalog,
+    permissionApi: PermissionsService,
+    transformConditions: ConditionTransformer<EntityFilter>,
+  ) {
+    this.entitiesCatalog = entitiesCatalog;
+    this.permissionApi = permissionApi;
+    this.transformConditions = transformConditions;
+  }
+
+  async entities(request: EntitiesRequest): Promise<EntitiesResponse> {
     const authorizeDecision = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
-        { token: request?.authorizationToken },
+        { credentials: request.credentials },
       )
     )[0];
 
     if (authorizeDecision.result === AuthorizeResult.DENY) {
       return {
-        entities: [],
+        entities: { type: 'object', entities: [] },
         pageInfo: { hasNextPage: false },
       };
     }
@@ -73,14 +88,122 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     return this.entitiesCatalog.entities(request);
   }
 
+  async entitiesBatch(
+    request: EntitiesBatchRequest,
+  ): Promise<EntitiesBatchResponse> {
+    const authorizeDecision = (
+      await this.permissionApi.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { credentials: request.credentials },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      return {
+        items: {
+          type: 'object',
+          entities: new Array(request.entityRefs.length).fill(null),
+        },
+      };
+    }
+
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.transformConditions(
+        authorizeDecision.conditions,
+      );
+      return this.entitiesCatalog.entitiesBatch({
+        ...request,
+        filter: request?.filter
+          ? { allOf: [permissionFilter, request.filter] }
+          : permissionFilter,
+      });
+    }
+
+    return this.entitiesCatalog.entitiesBatch(request);
+  }
+
+  async queryEntities(
+    request: QueryEntitiesRequest,
+  ): Promise<QueryEntitiesResponse> {
+    const authorizeDecision = (
+      await this.permissionApi.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { credentials: request.credentials },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      return {
+        items: { type: 'object', entities: [] },
+        pageInfo: {},
+        totalItems: 0,
+      };
+    }
+
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.transformConditions(
+        authorizeDecision.conditions,
+      );
+
+      let permissionedRequest: QueryEntitiesRequest;
+      let requestFilter: EntityFilter | undefined;
+
+      if (isQueryEntitiesCursorRequest(request)) {
+        requestFilter = request.cursor.filter;
+
+        permissionedRequest = {
+          ...request,
+          cursor: {
+            ...request.cursor,
+            filter: request.cursor.filter
+              ? { allOf: [permissionFilter, request.cursor.filter] }
+              : permissionFilter,
+          },
+        };
+      } else {
+        permissionedRequest = {
+          ...request,
+          filter: request.filter
+            ? { allOf: [permissionFilter, request.filter] }
+            : permissionFilter,
+        };
+        requestFilter = request.filter;
+      }
+
+      const response = await this.entitiesCatalog.queryEntities(
+        permissionedRequest,
+      );
+
+      const prevCursor: Cursor | undefined = response.pageInfo.prevCursor && {
+        ...response.pageInfo.prevCursor,
+        filter: requestFilter,
+      };
+
+      const nextCursor: Cursor | undefined = response.pageInfo.nextCursor && {
+        ...response.pageInfo.nextCursor,
+        filter: requestFilter,
+      };
+
+      return {
+        ...response,
+        pageInfo: {
+          prevCursor,
+          nextCursor,
+        },
+      };
+    }
+
+    return this.entitiesCatalog.queryEntities(request);
+  }
+
   async removeEntityByUid(
     uid: string,
-    options?: { authorizationToken?: string },
+    options: { credentials: BackstageCredentials },
   ): Promise<void> {
     const authorizeResponse = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityDeletePermission }],
-        { token: options?.authorizationToken },
+        { credentials: options.credentials },
       )
     )[0];
     if (authorizeResponse.result === AuthorizeResult.DENY) {
@@ -91,38 +214,44 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
         authorizeResponse.conditions,
       );
       const { entities } = await this.entitiesCatalog.entities({
+        credentials: options.credentials,
         filter: {
           allOf: [permissionFilter, basicEntityFilter({ 'metadata.uid': uid })],
         },
       });
-      if (entities.length === 0) {
+      if (entities.entities.length === 0) {
         throw new NotAllowedError();
       }
     }
-    return this.entitiesCatalog.removeEntityByUid(uid);
+    return this.entitiesCatalog.removeEntityByUid(uid, {
+      credentials: options.credentials,
+    });
   }
 
   async entityAncestry(
     entityRef: string,
-    options?: { authorizationToken?: string },
+    options: { credentials: BackstageCredentials },
   ): Promise<EntityAncestryResponse> {
     const rootEntityAuthorizeResponse = (
       await this.permissionApi.authorize(
         [{ permission: catalogEntityReadPermission, resourceRef: entityRef }],
-        { token: options?.authorizationToken },
+        { credentials: options.credentials },
       )
     )[0];
     if (rootEntityAuthorizeResponse.result === AuthorizeResult.DENY) {
       throw new NotAllowedError();
     }
 
-    const ancestryResult = await this.entitiesCatalog.entityAncestry(entityRef);
+    const ancestryResult = await this.entitiesCatalog.entityAncestry(
+      entityRef,
+      { credentials: options.credentials },
+    );
     const authorizeResponse = await this.permissionApi.authorize(
       ancestryResult.items.map(item => ({
         permission: catalogEntityReadPermission,
         resourceRef: stringifyEntityRef(item.entity),
       })),
-      { token: options?.authorizationToken },
+      { credentials: options.credentials },
     );
     const unauthorizedAncestryItems = ancestryResult.items.filter(
       (_, index) => authorizeResponse[index].result === AuthorizeResult.DENY,
@@ -157,7 +286,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     const authorizeDecision = (
       await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
-        { token: request?.authorizationToken },
+        { credentials: request.credentials },
       )
     )[0];
 

@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { capitalize } from 'lodash';
 import {
   CodeSnippet,
   TableColumn,
+  TableOptions,
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { DocsTable } from './DocsTable';
+import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
+import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
-import { columnFactories } from './columns';
+import { columnFactories, defaultColumns } from './columns';
 import { DocsTableRow } from './types';
+import { rootDocsRouteRef } from '../../../routes';
+import { entitiesToDocsMapper } from './helpers';
 
 /**
  * Props for {@link EntityListDocsTable}.
@@ -40,6 +45,7 @@ import { DocsTableRow } from './types';
 export type EntityListDocsTableProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
+  options?: TableOptions<DocsTableRow>;
 };
 
 /**
@@ -48,10 +54,13 @@ export type EntityListDocsTableProps = {
  * @public
  */
 export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
-  const { columns, actions } = props;
-  const { loading, error, entities, filters } = useEntityList();
+  const { columns, actions, options } = props;
+  const { loading, error, entities, filters, paginationMode, pageInfo } =
+    useEntityList();
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const [, copyToClipboard] = useCopyToClipboard();
+  const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
+  const config = useApi(configApiRef);
 
   const title = capitalize(filters.user?.value ?? 'all');
 
@@ -62,6 +71,38 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
       toggleStarredEntity,
     ),
   ];
+
+  const documents = entitiesToDocsMapper(
+    entities,
+    getRouteToReaderPageFor,
+    config,
+  );
+
+  if (paginationMode === 'cursor') {
+    return (
+      <CursorPaginatedDocsTable
+        columns={columns || defaultColumns}
+        isLoading={loading}
+        title={title}
+        actions={actions || defaultActions}
+        options={options}
+        data={documents}
+        next={pageInfo?.next}
+        prev={pageInfo?.prev}
+      />
+    );
+  } else if (paginationMode === 'offset') {
+    return (
+      <OffsetPaginatedDocsTable
+        columns={columns || defaultColumns}
+        isLoading={loading}
+        title={title}
+        actions={actions || defaultActions}
+        options={options}
+        data={documents}
+      />
+    );
+  }
 
   if (error) {
     return (
@@ -81,6 +122,7 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
       loading={loading}
       actions={actions || defaultActions}
       columns={columns}
+      options={options}
     />
   );
 };

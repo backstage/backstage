@@ -64,6 +64,7 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
   }
 
   async getSession(options: GetSessionOptions): Promise<T | undefined> {
+    let alreadyTriedToRefreshSession = false;
     if (
       this.helper.sessionExistsAndHasScope(this.currentSession, options.scopes)
     ) {
@@ -72,8 +73,12 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
         return this.currentSession!;
       }
 
+      alreadyTriedToRefreshSession = true;
+
       try {
-        const refreshedSession = await this.collapsedSessionRefresh();
+        const refreshedSession = await this.collapsedSessionRefresh(
+          options.scopes,
+        );
         const currentScopes = this.sessionScopesFunc(this.currentSession!);
         const refreshedScopes = this.sessionScopesFunc(refreshedSession);
         if (hasScopes(refreshedScopes, currentScopes)) {
@@ -81,27 +86,31 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
         }
         return refreshedSession;
       } catch (error) {
+        this.removeLocalSession();
+
         if (options.optional) {
           return undefined;
         }
-        throw error;
+        // If the refresh attempt fails we assume we don't have a session, so continue to create one
       }
     }
 
     // The user may still have a valid refresh token in their cookies. Attempt to
     // initiate a fresh session through the backend using that refresh token.
     //
-    // We skip this check if an instant login popup is requested, as we need to
-    // stay in a synchronous call stack from the user interaction. The downside
-    // is that that the user will sometimes be requested to log in even if they
-    // already had an existing session.
-    if (!this.currentSession && !options.instantPopup) {
+    // We can still try to refresh even if client requested instant popup.
+    // With instant popup option, the client is responsible for providing the user login prompt modal window.
+    // If control flow executes this code and client requested instant popup, it means that
+    // must have clicked sign in on the login prompt. The browser allows asynchronous code to open a popup
+    // if it is caused by a user interaction, clicking on a sign-in button, for example.
+    if (!alreadyTriedToRefreshSession) {
       try {
-        const newSession = await this.collapsedSessionRefresh();
+        const newSession = await this.collapsedSessionRefresh(options.scopes);
         this.currentSession = newSession;
         // The session might not have the scopes requested so go back and check again
         return this.getSession(options);
       } catch {
+        this.removeLocalSession();
         // If the refresh attempt fails we assume we don't have a session, so continue to create one.
       }
     }
@@ -120,6 +129,18 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     return this.currentSession;
   }
 
+  /**
+   * Sets `undefined` to this.{@link currentSession} and tells this.{@link stateTracker}, session state tracker,
+   * that a user has signed out.
+   *
+   * Does not propagate session removal to the connector like {@link removeSession}().
+   *
+   */
+  removeLocalSession() {
+    this.currentSession = undefined;
+    this.stateTracker.setIsSignedIn(false);
+  }
+
   async removeSession() {
     this.currentSession = undefined;
     await this.connector.removeSession();
@@ -130,15 +151,22 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     return this.stateTracker.sessionState$();
   }
 
-  private async collapsedSessionRefresh(): Promise<T> {
+  private async collapsedSessionRefresh(scopes?: Set<string>): Promise<T> {
     if (this.refreshPromise) {
       return this.refreshPromise;
     }
 
-    this.refreshPromise = this.connector.refreshSession();
+    this.refreshPromise = this.connector.refreshSession({
+      scopes: this.helper.getExtendedScope(this.currentSession, scopes),
+    });
 
     try {
       const session = await this.refreshPromise;
+      if (!this.helper.sessionExistsAndHasScope(session, scopes)) {
+        throw new Error(
+          'Refreshed session did not receive the required scopes',
+        );
+      }
       this.stateTracker.setIsSignedIn(true);
       return session;
     } finally {

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import Helmet from 'react-helmet';
 
-import { Skeleton } from '@material-ui/lab';
+import Grid from '@material-ui/core/Grid';
+import Skeleton from '@material-ui/lab/Skeleton';
 import CodeIcon from '@material-ui/icons/Code';
 
 import {
@@ -28,15 +29,23 @@ import {
   TechDocsMetadata,
 } from '@backstage/plugin-techdocs-react';
 import {
+  entityPresentationApiRef,
   EntityRefLink,
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  RELATION_OWNED_BY,
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
+import capitalize from 'lodash/capitalize';
+
 import { rootRouteRef } from '../../../routes';
+import { useParams } from 'react-router-dom';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
@@ -65,6 +74,9 @@ export const TechDocsReaderPageHeader = (
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
 
+  const entityPresentationApi = useApi(entityPresentationApiRef);
+  const { '*': path = '' } = useParams();
+
   const {
     title,
     setTitle,
@@ -77,21 +89,17 @@ export const TechDocsReaderPageHeader = (
 
   useEffect(() => {
     if (!metadata) return;
-    setTitle(prevTitle => {
-      const { site_name } = metadata;
-      return prevTitle || site_name;
-    });
-    setSubtitle(prevSubtitle => {
+    setTitle(metadata.site_name);
+    setSubtitle(() => {
       let { site_description } = metadata;
       if (!site_description || site_description === 'None') {
-        site_description = 'Home';
+        site_description = '';
       }
-      return prevSubtitle || site_description;
+      return site_description;
     });
   }, [metadata, setTitle, setSubtitle]);
 
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
-  const tabTitle = [title, subtitle, appTitle].filter(Boolean).join(' | ');
 
   const { locationMetadata, spec } = entityMetadata || {};
   const lifecycle = spec?.lifecycle;
@@ -105,7 +113,7 @@ export const TechDocsReaderPageHeader = (
   const labels = (
     <>
       <HeaderLabel
-        label="Component"
+        label={capitalize(entityMetadata?.kind || 'entity')}
         value={
           <EntityRefLink
             color="inherit"
@@ -127,21 +135,25 @@ export const TechDocsReaderPageHeader = (
           }
         />
       )}
-      {lifecycle ? <HeaderLabel label="Lifecycle" value={lifecycle} /> : null}
+      {lifecycle ? (
+        <HeaderLabel label="Lifecycle" value={String(lifecycle)} />
+      ) : null}
       {locationMetadata &&
       locationMetadata.type !== 'dir' &&
       locationMetadata.type !== 'file' ? (
         <HeaderLabel
           label=""
           value={
-            <a
-              href={locationMetadata.target}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <CodeIcon style={{ marginTop: '-25px', fill: '#fff' }} />
-            </a>
+            <Grid container direction="column" alignItems="center">
+              <Grid style={{ padding: 0 }} item>
+                <CodeIcon style={{ marginTop: '-25px' }} />
+              </Grid>
+              <Grid style={{ padding: 0 }} item>
+                Source
+              </Grid>
+            </Grid>
           }
+          url={locationMetadata.target}
         />
       ) : null}
     </>
@@ -153,12 +165,31 @@ export const TechDocsReaderPageHeader = (
   const noTdMetadata = !metadataLoading && metadata === undefined;
   if (noEntMetadata || noTdMetadata) return null;
 
+  const stringEntityRef = stringifyEntityRef(entityRef);
+
+  const entityDisplayName =
+    entityPresentationApi.forEntity(stringEntityRef).snapshot.primaryTitle;
+
+  const removeTrailingSlash = (str: string) => str.replace(/\/$/, '');
+  const normalizeAndSpace = (str: string) =>
+    str.replace(/[-_]/g, ' ').split(' ').map(capitalize).join(' ');
+
+  let techdocsTabTitleItems: string[] = [];
+
+  if (path !== '')
+    techdocsTabTitleItems = removeTrailingSlash(path)
+      .split('/')
+      .map(normalizeAndSpace);
+
+  const tabTitleItems = [entityDisplayName, ...techdocsTabTitleItems, appTitle];
+  const tabTitle = tabTitleItems.join(' | ');
+
   return (
     <Header
       type="Documentation"
       typeLink={docsRootLink}
       title={title || skeleton}
-      subtitle={subtitle || skeleton}
+      subtitle={subtitle === '' ? undefined : subtitle || skeleton}
     >
       <Helmet titleTemplate="%s">
         <title>{tabTitle}</title>

@@ -25,6 +25,7 @@ export {
   createTechDocsAddonExtension,
   TechDocsAddons,
   TECHDOCS_ADDONS_WRAPPER_KEY,
+  TECHDOCS_ADDONS_KEY,
 } from './addons';
 export { techdocsApiRef, techdocsStorageApiRef } from './api';
 export type { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
@@ -51,4 +52,8 @@ export {
   useShadowRootElements,
   useShadowRootSelection,
 } from './hooks';
-export { toLowercaseEntityRefMaybe } from './helpers';
+export {
+  toLowercaseEntityRefMaybe,
+  getEntityRootTechDocsPath,
+  buildTechDocsURL,
+} from './helpers';

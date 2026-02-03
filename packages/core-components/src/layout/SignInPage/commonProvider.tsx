@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { InfoCard } from '../InfoCard/InfoCard';
@@ -28,18 +27,28 @@ import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 import { GridItem } from './styles';
 import { ForwardedError } from '@backstage/errors';
 import { UserIdentity } from './UserIdentity';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
+const Component: ProviderComponent = ({
+  config,
+  onSignInStarted,
+  onSignInSuccess,
+  onSignInFailure,
+}) => {
   const { apiRef, title, message } = config as SignInProviderConfig;
   const authApi = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const handleLogin = async () => {
     try {
+      onSignInStarted();
       const identityResponse = await authApi.getBackstageIdentity({
         instantPopup: true,
       });
       if (!identityResponse) {
+        onSignInFailure();
         throw new Error(
           `The ${title} provider is not configured to support sign-in`,
         );
@@ -55,7 +64,8 @@ const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
         }),
       );
     } catch (error) {
-      errorApi.post(new ForwardedError('Login failed', error));
+      onSignInFailure();
+      errorApi.post(new ForwardedError(t('signIn.loginFailed'), error));
     }
   };
 
@@ -66,7 +76,7 @@ const Component: ProviderComponent = ({ config, onSignInSuccess }) => {
         title={title}
         actions={
           <Button color="primary" variant="outlined" onClick={handleLogin}>
-            Sign In
+            {t('signIn.title')}
           </Button>
         }
       >

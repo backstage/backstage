@@ -12,7 +12,7 @@ Using Cookiecutter extensions is a two-step process:
 This step depends on how the scaffolder is setup to use Cookiecutter:
 
 - Using a local Cookiecutter, or
-- Using a Cookiecutter Docker image, e.g. [spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/37e35b91/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile).
+- Using a Cookiecutter Docker image, e.g. [spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile).
 
 Say we want to install [`jinja2_custom_filters_extension`](https://pypi.org/project/jinja2-custom-filters-extension/) to use the `upper_case_first_letter` filter in a Cookiecutter template.
 
@@ -51,7 +51,7 @@ steps:
       imageName: 'foo/custom-built-cookiecutter-image-with-extensions'
 ```
 
-See for example, the [`Dockerfile`](./Dockerfile) in this directory.
+For example, you can `pip install jinja2_custom_filters_extension` as part of your cookiecutter Dockerfile.
 
 ### Instructing Cookiecutter to use the extension
 

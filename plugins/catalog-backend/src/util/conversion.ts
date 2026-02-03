@@ -22,8 +22,8 @@ import {
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import { createHash } from 'node:crypto';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 export function locationSpecToMetadataName(location: LocationSpec) {
   const hash = createHash('sha1')
@@ -32,7 +32,6 @@ export function locationSpecToMetadataName(location: LocationSpec) {
   return `generated-${hash}`;
 }
 
-/** @public */
 export function locationSpecToLocationEntity(opts: {
   location: LocationSpec;
   parentEntity?: Entity;

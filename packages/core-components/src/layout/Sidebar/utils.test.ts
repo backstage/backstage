@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Location, Path } from 'history';
+import type { Location, Path } from 'history';
 import { isLocationMatch } from './utils';
 
 describe('isLocationMatching', () => {
@@ -94,5 +94,31 @@ describe('isLocationMatching', () => {
     };
     toLocation = { pathname: '/catalog', search: '', hash: '' };
     expect(isLocationMatch(currentLocation, toLocation)).toBe(true);
+  });
+
+  describe('exact matching', () => {
+    it('return false when target query parameters are subset of current location query parameters', async () => {
+      currentLocation = {
+        pathname: '/catalog',
+        search: '?x=foo&y=bar',
+        state: null,
+        hash: '',
+        key: '',
+      };
+      toLocation = { pathname: '/catalog', search: '?x=foo', hash: '' };
+      expect(isLocationMatch(currentLocation, toLocation, true)).toBe(false);
+    });
+
+    it('return true when target query parameters are exact match with current location query parameters', async () => {
+      currentLocation = {
+        pathname: '/catalog',
+        search: '?x=foo&y=bar',
+        state: null,
+        hash: '',
+        key: '',
+      };
+      toLocation = { pathname: '/catalog', search: '?y=bar&x=foo', hash: '' };
+      expect(isLocationMatch(currentLocation, toLocation, true)).toBe(true);
+    });
   });
 });

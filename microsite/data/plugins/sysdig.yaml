@@ -1,0 +1,10 @@
+---
+title: Sysdig
+author: Sysdig
+authorUrl: https://sysdig.com/
+category: Security
+description: Generate security reports using Sysdig Secure
+documentation: https://github.com/sysdiglabs/backstage-plugin-sysdig/blob/main/README.md
+iconUrl: https://sysdig.com/wp-content/uploads/sysdig-logo-new-white.svg
+npmPackageName: '@sysdig/backstage-plugin-sysdig'
+addedDate: '2024-03-06'

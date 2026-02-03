@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { act } from 'react-dom/test-utils';
 import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
-import { render, fireEvent } from '@testing-library/react';
 
 describe('RepoUrlPickerRepoName', () => {
   it('should call onChange with the first allowed repo if there is none set already', async () => {
     const onChange = jest.fn();
 
-    render(
+    await renderInTestApp(
       <RepoUrlPickerRepoName
         onChange={onChange}
         allowedRepos={['foo', 'bar']}
@@ -29,7 +31,7 @@ describe('RepoUrlPickerRepoName', () => {
       />,
     );
 
-    expect(onChange).toHaveBeenCalledWith('foo');
+    expect(onChange).toHaveBeenCalledWith({ name: 'foo' });
   });
 
   it('should render a dropdown of all the options', async () => {
@@ -37,7 +39,7 @@ describe('RepoUrlPickerRepoName', () => {
 
     const onChange = jest.fn();
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <RepoUrlPickerRepoName
         onChange={onChange}
         allowedRepos={allowedRepos}
@@ -57,7 +59,7 @@ describe('RepoUrlPickerRepoName', () => {
   it('should render a normal text area when no options are passed', async () => {
     const onChange = jest.fn();
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <RepoUrlPickerRepoName
         onChange={onChange}
         allowedRepos={[]}
@@ -69,8 +71,78 @@ describe('RepoUrlPickerRepoName', () => {
 
     expect(textArea).toBeVisible();
 
-    fireEvent.change(textArea, { target: { value: 'foo' } });
+    act(() => {
+      textArea.focus();
+      fireEvent.change(textArea, { target: { value: 'foo' } });
+      textArea.blur();
+    });
 
-    expect(onChange).toHaveBeenCalledWith('foo');
+    expect(onChange).toHaveBeenCalledWith({ name: 'foo' });
+  });
+
+  it('should autocomplete with provided availableRepos', async () => {
+    const availableRepos = [{ name: 'foo' }, { name: 'bar' }];
+
+    const onChange = jest.fn();
+
+    const { getByRole, getByText } = await renderInTestApp(
+      <RepoUrlPickerRepoName
+        onChange={onChange}
+        availableRepos={availableRepos}
+        rawErrors={[]}
+      />,
+    );
+
+    // Open the Autocomplete dropdown
+    const input = getByRole('textbox');
+    await userEvent.click(input);
+
+    // Verify that available repos are shown
+    for (const repo of availableRepos) {
+      expect(getByText(repo.name)).toBeInTheDocument();
+    }
+
+    // Verify that selecting an option calls onChange
+    await userEvent.click(getByText(availableRepos[0].name));
+    expect(onChange).toHaveBeenCalledWith(availableRepos[0]);
+  });
+
+  it('should disable the repo selection when isDisabled is true', async () => {
+    const allowedRepos = ['foo', 'bar'];
+    const onChange = jest.fn();
+
+    const { getByRole } = await renderInTestApp(
+      <RepoUrlPickerRepoName
+        onChange={onChange}
+        allowedRepos={allowedRepos}
+        rawErrors={[]}
+        isDisabled
+      />,
+    );
+
+    // Find the select element
+    const selectElement = getByRole('combobox');
+
+    // Ensure it's disabled
+    expect(selectElement).toBeDisabled();
+  });
+
+  it('should disable the text input when no options are passed and isDisabled is true', async () => {
+    const onChange = jest.fn();
+
+    const { getByRole } = await renderInTestApp(
+      <RepoUrlPickerRepoName
+        onChange={onChange}
+        allowedRepos={[]}
+        rawErrors={[]}
+        isDisabled
+      />,
+    );
+
+    // Find the text input (autocomplete)
+    const textInput = getByRole('textbox');
+
+    // Ensure it's disabled
+    expect(textInput).toBeDisabled();
   });
 });

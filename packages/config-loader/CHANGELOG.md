@@ -1,5 +1,1183 @@
 # @backstage/config-loader
 
+## 1.10.8-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/cli-common@0.1.18-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.7
+
+### Patch Changes
+
+- 741c47a: Updated dependency `typescript-json-schema` to `^0.67.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 1.10.7-next.1
+
+### Patch Changes
+
+- 741c47a: Updated dependency `typescript-json-schema` to `^0.67.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.6
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 1.10.6-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.5
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 1.10.4-next.0
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
+## 1.10.3
+
+### Patch Changes
+
+- a73f495: Allow using `BACKSTAGE_ENV` for loading environment specific config files
+- Updated dependencies
+  - @backstage/types@1.2.2
+
+## 1.10.3-next.0
+
+### Patch Changes
+
+- a73f495: Allow using `BACKSTAGE_ENV` for loading environment specific config files
+
+## 1.10.2
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 1.10.2-next.0
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
+## 1.10.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.10.0
+
+### Minor Changes
+
+- 2fd73aa: The include transforms applied during config loading will now only apply to the known keys `$file`, `$env`, and `$include`. Any other key that begins with a `# @backstage/config-loader will now be passed through as is.
+
+### Patch Changes
+
+- f422984: Added `@types/minimist` to `devDependencies`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 2fd73aa: The include transforms applied during config loading will now only apply to the known keys `$file`, `$env`, and `$include`. Any other key that begins with a `# @backstage/config-loader will now be passed through as is.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.9.6
+
+### Patch Changes
+
+- f866b86: Internal refactor to use explicit `require` for lazy-loading dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.9.6-next.0
+
+### Patch Changes
+
+- f866b86: Internal refactor to use explicit `require` for lazy-loading dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.9.5
+
+### Patch Changes
+
+- 8ecf8cb: Exclude `@backstage/backend-common` from schema collection if `@backstage/backend-defaults` is present
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.9.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/cli-common@0.1.15
+
+## 1.9.5-next.0
+
+### Patch Changes
+
+- 8ecf8cb: Exclude `@backstage/backend-common` from schema collection if `@backstage/backend-defaults` is present
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+
+## 1.9.3
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/errors@1.2.6
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+
+## 1.9.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+
+## 1.9.3-next.0
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
+## 1.9.2
+
+### Patch Changes
+
+- c5e39e7: Internal refactor to use the deferred from the types package
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.5
+
+## 1.9.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.9.1
+
+### Patch Changes
+
+- ef3c507: Updated dependency `typescript-json-schema` to `^0.65.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- ef3c507: Updated dependency `typescript-json-schema` to `^0.65.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.9.0
+
+### Minor Changes
+
+- 274428f: Add configuration key to File and Remote `ConfigSource`s that enables configuration of parsing logic. Previously limited to yaml, these `ConfigSource`s now allow for a multitude of parsing options (e.g. JSON).
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 1edd6c2: The `env` option of `ConfigSources.default` now correctly allows undefined members.
+- 493feac: Add boolean `allowMissingDefaultConfig` option to `ConfigSources.default` and
+  `ConfigSources.defaultForTargets`, which results in omission of a ConfigSource
+  for the default app-config.yaml configuration file if it's not present.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.9.0-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.9.0-next.1
+
+### Minor Changes
+
+- 274428f: Add configuration key to File and Remote `ConfigSource`s that enables configuration of parsing logic. Previously limited to yaml, these `ConfigSource`s now allow for a multitude of parsing options (e.g. JSON).
+
+### Patch Changes
+
+- 1edd6c2: The `env` option of `ConfigSources.default` now correctly allows undefined members.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.8.2-next.0
+
+### Patch Changes
+
+- 493feac: Add boolean `allowMissingDefaultConfig` option to `ConfigSources.default` and
+  `ConfigSources.defaultForTargets`, which results in omission of a ConfigSource
+  for the default app-config.yaml configuration file if it's not present.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.8.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.14-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.8.0
+
+### Minor Changes
+
+- 2ce31b3: The default environment variable substitution function will now trim whitespace characters from the substituted value. This alleviates bugs where whitespace characters are mistakenly included in environment variables.
+
+  If you depend on the old behavior, you can override the default substitution function with your own, for example:
+
+  ```ts
+  ConfigSources.default({
+    substitutionFunc: async name => process.env[name],
+  });
+  ```
+
+- 99bab65: Support parameter substitution for environment variables
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 99bab65: Support parameter substitution for environment variables
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.7.0
+
+### Minor Changes
+
+- db8358d: Forward `null` values read from configuration files in configuration data, rather than treating them as an absence of config.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
+## 1.7.0-next.1
+
+### Minor Changes
+
+- db8358d: Forward `null` values read from configuration files in configuration data, rather than treating them as an absence of config.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+
+## 1.6.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
+## 1.6.2
+
+### Patch Changes
+
+- 0a9a03c: Make schema processing gracefully handle an empty config.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- bf3da16: Updated dependency `typescript-json-schema` to `^0.63.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.6.2-next.0
+
+### Patch Changes
+
+- 0a9a03c: Make schema processing gracefully handle an empty config.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.6.1
+
+### Patch Changes
+
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.6.1-next.0
+
+### Patch Changes
+
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.6.0
+
+### Minor Changes
+
+- 24f5a85: Add "path" to `TransformFunc` context
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 24f5a85: Add "path" to `TransformFunc` context
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.5.3
+
+### Patch Changes
+
+- 22ca64f117: Correctly resolve config targets into absolute paths
+- 087bab5b42: Updated dependency `typescript-json-schema` to `^0.62.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.5.2-next.0
+
+### Patch Changes
+
+- 22ca64f117: Correctly resolve config targets into absolute paths
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.5.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 30c553c1d2: Updated dependency `typescript-json-schema` to `^0.61.0`.
+- 773ea341d2: The `FileConfigSource` will now retry file reading after a short delay if it reads an empty file. This is to avoid flakiness during watch mode where change events can trigger before the file content has been written.
+- a4617c422a: Added `watch` option to configuration loaders that can be used to disable file watching by setting it to `false`.
+- Updated dependencies
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 30c553c1d2: Updated dependency `typescript-json-schema` to `^0.61.0`.
+- a4617c422a: Added `watch` option to configuration loaders that can be used to disable file watching by setting it to `false`.
+- Updated dependencies
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- 773ea341d2: The `FileConfigSource` will now retry file reading after a short delay if it reads an empty file. This is to avoid flakiness during watch mode where change events can trigger before the file content has been written.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 1.5.0
+
+### Minor Changes
+
+- 9606ba0939e6: Deep visibility now also applies to values that are not covered by the configuration schema.
+
+  For example, given the following configuration schema:
+
+  ```ts
+  // plugins/a/config.schema.ts
+  export interface Config {
+    /** @deepVisibility frontend */
+    a?: unknown;
+  }
+
+  // plugins/a/config.schema.ts
+  export interface Config {
+    a?: {
+      b?: string;
+    };
+  }
+  ```
+
+  All values under `a` are now visible to the frontend, while previously only `a` and `a/b` would've been visible.
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- f9657b891b00: Do not unnecessarily notify subscribers when no-op updates to config happen
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/cli-common@0.1.12
+
+## 1.5.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/types@1.1.1-next.0
+  - @backstage/cli-common@0.1.12
+
+## 1.5.0-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.5.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.5.0-next.0
+
+### Minor Changes
+
+- 9606ba0939e6: Deep visibility now also applies to values that are not covered by the configuration schema.
+
+  For example, given the following configuration schema:
+
+  ```ts
+  // plugins/a/config.schema.ts
+  export interface Config {
+    /** @deepVisibility frontend */
+    a?: unknown;
+  }
+
+  // plugins/a/config.schema.ts
+  export interface Config {
+    a?: {
+      b?: string;
+    };
+  }
+  ```
+
+  All values under `a` are now visible to the frontend, while previously only `a` and `a/b` would've been visible.
+
+### Patch Changes
+
+- f9657b891b00: Do not unnecessarily notify subscribers when no-op updates to config happen
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.4.0
+
+### Minor Changes
+
+- 2f1859585998: Loading invalid TypeScript configuration schemas will now throw an error rather than silently being ignored.
+
+  In particular this includes defining any additional types other than `Config` in the schema file, or use of unsupported types such as `Record` or `Partial`.
+
+- cd514545d1d0: Adds a new `deepVisibility` schema keyword that sets child visibility recursively to the defined value, respecting preexisting values or child `deepVisibility`.
+
+  Example usage:
+
+  ```ts
+  export interface Config {
+    /**
+     * Enforces a default of `secret` instead of `backend` for this object.
+     * @deepVisibility secret
+     */
+    mySecretProperty: {
+      type: 'object';
+      properties: {
+        secretValue: {
+          type: 'string';
+        };
+
+        verySecretProperty: {
+          type: 'string';
+        };
+      };
+    };
+  }
+  ```
+
+  Example of a schema that would not be allowed:
+
+  ```ts
+  export interface Config {
+    /**
+     * Set the top level property to secret, enforcing a default of `secret` instead of `backend` for this object.
+     * @deepVisibility secret
+     */
+    mySecretProperty: {
+      type: 'object';
+      properties: {
+        frontendUrl: {
+          /**
+           * We can NOT override the visibility to reveal a property to the front end.
+           * @visibility frontend
+           */
+          type: 'string';
+        };
+
+        verySecretProperty: {
+          type: 'string';
+        };
+      };
+    };
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.4.0-next.1
+
+### Minor Changes
+
+- 2f1859585998: Loading invalid TypeScript configuration schemas will now throw an error rather than silently being ignored.
+
+  In particular this includes defining any additional types other than `Config` in the schema file, or use of unsupported types such as `Record` or `Partial`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- cd514545d1d0: Adds a new `deepVisibility` schema keyword that sets child visibility recursively to the defined value, respecting preexisting values or child `deepVisibility`.
+
+  Example usage:
+
+  ```ts
+  export interface Config {
+    /**
+     * Enforces a default of `secret` instead of `backend` for this object.
+     * @deepVisibility secret
+     */
+    mySecretProperty: {
+      type: 'object';
+      properties: {
+        secretValue: {
+          type: 'string';
+        };
+
+        verySecretProperty: {
+          type: 'string';
+        };
+      };
+    };
+  }
+  ```
+
+  Example of a schema that would not be allowed:
+
+  ```ts
+  export interface Config {
+    /**
+     * Set the top level property to secret, enforcing a default of `secret` instead of `backend` for this object.
+     * @deepVisibility secret
+     */
+    mySecretProperty: {
+      type: 'object';
+      properties: {
+        frontendUrl: {
+          /**
+           * We can NOT override the visibility to reveal a property to the front end.
+           * @visibility frontend
+           */
+          type: 'string';
+        };
+
+        verySecretProperty: {
+          type: 'string';
+        };
+      };
+    };
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 1.3.1
+
+### Patch Changes
+
+- f25427f665f7: Fix a bug where config items with `/` in the key were incorrectly handled.
+- a5c5491ff50c: Use `durationToMilliseconds` from `@backstage/types` instead of our own
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/errors@1.2.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- f25427f665f7: Fix a bug where config items with `/` in the key were incorrectly handled.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 1.3.0
+
+### Minor Changes
+
+- 201206132da: Introduced a new config source system to replace `loadConfig`. There is a new `ConfigSource` interface along with utilities provided by `ConfigSources`, as well as a number of built-in configuration source implementations. The new system is more flexible and makes it easier to create new and reusable sources of configuration, such as loading configuration from secret providers.
+
+  The following is an example of how to load configuration using the default behavior:
+
+  ```ts
+  const source = ConfigSources.default({
+    argv: options?.argv,
+    remote: options?.remote,
+  });
+  const config = await ConfigSources.toConfig(source);
+  ```
+
+  The `ConfigSource` interface looks like this:
+
+  ```ts
+  export interface ConfigSource {
+    readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceIterator;
+  }
+  ```
+
+  It is best implemented using an async iterator:
+
+  ```ts
+  class MyConfigSource implements ConfigSource {
+    async *readConfigData() {
+      yield {
+        config: [
+          {
+            context: 'example',
+            data: { backend: { baseUrl: 'http://localhost' } },
+          },
+        ],
+      };
+    }
+  }
+  ```
+
+### Patch Changes
+
+- 7c116bcac7f: Fixed the way that some request errors are thrown
+- 473db605a4f: Added a new `noUndeclaredProperties` option to `SchemaLoader` to support enforcing that there are no extra keys when verifying config.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 201206132da: Introduced a new config source system to replace `loadConfig`. There is a new `ConfigSource` interface along with utilities provided by `ConfigSources`, as well as a number of built-in configuration source implementations. The new system is more flexible and makes it easier to create new and reusable sources of configuration, such as loading configuration from secret providers.
+
+  The following is an example of how to load configuration using the default behavior:
+
+  ```ts
+  const source = ConfigSources.default({
+    argv: options?.argv,
+    remote: options?.remote,
+  });
+  const config = await ConfigSources.toConfig(source);
+  ```
+
+  The `ConfigSource` interface looks like this:
+
+  ```ts
+  export interface ConfigSource {
+    readConfigData(options?: ReadConfigDataOptions): AsyncConfigSourceIterator;
+  }
+  ```
+
+  It is best implemented using an async iterator:
+
+  ```ts
+  class MyConfigSource implements ConfigSource {
+    async *readConfigData() {
+      yield {
+        config: [
+          {
+            context: 'example',
+            data: { backend: { baseUrl: 'http://localhost' } },
+          },
+        ],
+      };
+    }
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 1.2.0
+
+### Minor Changes
+
+- c791fcd96b9: Configuration validation is now more permissive when it comes to config whose values are `string` but whose schemas declare them to be `boolean` or `number`.
+
+  For example, configuration was previously marked invalid when a string `'true'` was set on a property expecting type `boolean` or a string `'146'` was set on a property expecting type `number` (as when providing configuration via variable substitution sourced from environment variables). Now, such configurations will be considered valid and their values will be coerced to the right type at read-time.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+  - @backstage/types@1.0.2
+
+## 1.1.9
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.7
+  - @backstage/types@1.0.2
+
+## 1.1.9-next.0
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/cli-common@0.1.12-next.0
+  - @backstage/config@1.0.7-next.0
+  - @backstage/types@1.0.2
+
+## 1.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/cli-common@0.1.11
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/cli-common@0.1.11
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+
+## 1.1.7
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 40e7e6e1a2: Updated dependency `typescript-json-schema` to `^0.55.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/types@1.0.2
+  - @backstage/cli-common@0.1.11
+  - @backstage/config@1.0.5
+
+## 1.1.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+  - @backstage/types@1.0.2-next.1
+
+## 1.1.7-next.1
+
+### Patch Changes
+
+- 40e7e6e1a2: Updated dependency `typescript-json-schema` to `^0.55.0`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/errors@1.1.4-next.1
+
+## 1.1.7-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 1.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 1.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 1.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+  - @backstage/types@1.0.0
+
+## 1.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+  - @backstage/types@1.0.0
+
+## 1.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+  - @backstage/types@1.0.0
+
+## 1.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+  - @backstage/types@1.0.0
+
+## 1.1.4
+
+### Patch Changes
+
+- 5ecca7e44b: No longer log when reloading remote config.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
+## 1.1.4-next.2
+
+### Patch Changes
+
+- 5ecca7e44b: No longer log when reloading remote config.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10-next.0
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+
 ## 1.1.3
 
 ### Patch Changes

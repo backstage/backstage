@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { Lifecycle } from './Lifecycle';
 
 export default {
   title: 'Feedback/Lifecycle',
   component: Lifecycle,
+  tags: ['!manifest'],
 };
 
 export const AlphaDefault = () => (

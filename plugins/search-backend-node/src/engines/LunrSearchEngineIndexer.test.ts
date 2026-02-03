@@ -58,7 +58,7 @@ describe('LunrSearchEngineIndexer', () => {
       },
     ];
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     expect(lunrBuilderAddSpy).toHaveBeenCalledWith(documents[0]);
   });
@@ -70,7 +70,7 @@ describe('LunrSearchEngineIndexer', () => {
       location: `location-${i}`,
     }));
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
     expect(lunrBuilderAddSpy).toHaveBeenCalledTimes(350);
   });
 
@@ -84,7 +84,7 @@ describe('LunrSearchEngineIndexer', () => {
       },
     ];
 
-    await TestPipeline.withSubject(indexer).withDocuments(documents).execute();
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     // Builder ref should be set to location (and only once).
     expect(lunrBuilderRefSpy).toHaveBeenCalledTimes(1);
@@ -105,5 +105,32 @@ describe('LunrSearchEngineIndexer', () => {
     expect(lunrBuilderPipelineAddSpy).toHaveBeenCalledWith(
       ...[lunr.trimmer, lunr.stopWordFilter, lunr.stemmer],
     );
+  });
+
+  it('should tokenize input on non-alphanumeric characters', () => {
+    const input =
+      "Tokenize_test string, entity-name. Doesn't break abc123def - also Unicode support also!三 stjärna عربي";
+    const expectedTokens = [
+      'tokenize',
+      'test',
+      'string',
+      'entity',
+      'name',
+      'doesn',
+      't',
+      'break',
+      'abc123def',
+      'also',
+      'unicode',
+      'support',
+      'also',
+      '三',
+      'stjärna',
+      'عربي',
+    ];
+
+    const tokens = lunr.tokenizer(input).map(token => token.toString());
+
+    expect(tokens).toEqual(expectedTokens);
   });
 });

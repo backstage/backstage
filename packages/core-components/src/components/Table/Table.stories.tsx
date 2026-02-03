@@ -15,14 +15,15 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import { ReactNode } from 'react';
 import { Link } from '../Link';
-import { SubvalueCell, Table, TableColumn } from '.';
-import { TableFilter } from './Table';
+import { SubvalueCell } from './SubvalueCell';
+import { Table, TableColumn, TableFilter } from './Table';
 
 export default {
   title: 'Data Display/Table',
   component: Table,
+  tags: ['!manifest'],
 };
 
 const useStyles = makeStyles(theme => ({
@@ -83,6 +84,43 @@ export const DefaultTable = () => {
         options={{ paging: false }}
         data={testData10}
         columns={columns}
+        title="Backstage Table"
+      />
+    </div>
+  );
+};
+
+export const LoadingTable = () => {
+  const classes = useStyles();
+  const columns: TableColumn[] = [
+    {
+      title: 'Column 1',
+      field: 'col1',
+      highlight: true,
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
+  return (
+    <div className={classes.container}>
+      <Table
+        options={{ paging: false }}
+        data={[]}
+        columns={columns}
+        isLoading
         title="Backstage Table"
       />
     </div>
@@ -217,7 +255,7 @@ export const SubvalueTable = () => {
           .includes(query.toLocaleUpperCase('en-US')),
       field: 'col1',
       highlight: true,
-      render: (row: any): React.ReactNode => (
+      render: (row: any): ReactNode => (
         <SubvalueCell value={row.col1} subvalue={row.subvalue} />
       ),
     },

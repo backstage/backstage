@@ -2,7 +2,6 @@
 id: well-known-relations
 title: Well-known Relations between Catalog Entities
 sidebar_label: Well-known Relations
-# prettier-ignore
 description: Documentation that lists a number of well known Relations, that have defined semantics. They can be attached to catalog entities and consumed by plugins as needed.
 ---
 
@@ -76,6 +75,9 @@ an entity to function. It can for example be used to express that a website
 component needs a library component as part of its build, or that a service
 component uses a persistent storage resource.
 
+This relation is commonly generated based on `spec.dependsOn` of the component
+or resource in question.
+
 ### `parentOf` and `childOf`
 
 A parent/child relation to build up a tree, used for example to describe the
@@ -96,11 +98,12 @@ A relation with a [Domain](descriptor-format.md#kind-domain),
 [System](descriptor-format.md#kind-system) or
 [Component](descriptor-format.md#kind-component) entity, typically from a
 [Component](descriptor-format.md#kind-component),
-[API](descriptor-format.md#kind-api), or
-[System](descriptor-format.md#kind-system).
+[API](descriptor-format.md#kind-api),
+[System](descriptor-format.md#kind-system), or
+[Domain](descriptor-format.md#kind-domain),
 
 These relations express that a component belongs to a larger component; a
-component, API or resource belongs to a system; or that a system is grouped
-under a domain.
+component, API or resource belongs to a system; that a system is grouped
+under a domain; or that a domain belongs to a larger domain.
 
 This relation is commonly based on `spec.system` or `spec.domain`.

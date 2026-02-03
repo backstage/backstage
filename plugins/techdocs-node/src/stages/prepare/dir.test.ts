@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
+
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import { DirectoryPreparer } from './dir';
+import { mockServices } from '@backstage/backend-test-utils';
 
 function normalizePath(path: string) {
   return path
@@ -28,7 +29,7 @@ jest.mock('../../helpers', () => ({
   ...jest.requireActual<{}>('../../helpers'),
 }));
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 const createMockEntity = (annotations: {}) => {
   return {
@@ -43,12 +44,8 @@ const createMockEntity = (annotations: {}) => {
   };
 };
 
-const mockConfig = new ConfigReader({});
-const mockUrlReader: jest.Mocked<UrlReader> = {
-  read: jest.fn(),
-  readTree: jest.fn(),
-  search: jest.fn(),
-};
+const mockConfig = mockServices.rootConfig();
+const mockUrlReader = mockServices.urlReader.mock();
 
 describe('directory preparer', () => {
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is relative', async () => {
@@ -60,7 +57,7 @@ describe('directory preparer', () => {
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
         'file:/directory/documented-component.yaml',
-      'backstage.io/techdocs-ref': 'dir:./our-documentation',
+      [TECHDOCS_ANNOTATION]: 'dir:./our-documentation',
     });
 
     const { preparedDir } = await directoryPreparer.prepare(mockEntity);
@@ -76,7 +73,7 @@ describe('directory preparer', () => {
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
         'file:/directory/documented-component.yaml',
-      'backstage.io/techdocs-ref': 'dir:/our-documentation/techdocs',
+      [TECHDOCS_ANNOTATION]: 'dir:/our-documentation/techdocs',
     });
 
     await expect(directoryPreparer.prepare(mockEntity)).rejects.toThrow(
@@ -93,7 +90,7 @@ describe('directory preparer', () => {
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
         'does-not-exist:https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
-      'backstage.io/techdocs-ref': 'dir:./docs',
+      [TECHDOCS_ANNOTATION]: 'dir:./docs',
     });
 
     await expect(directoryPreparer.prepare(mockEntity)).rejects.toThrow(

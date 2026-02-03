@@ -18,6 +18,7 @@ import { Command } from 'commander';
 import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
+const defaultPreviewAppPort = '3000';
 
 export function registerCommands(program: Command) {
   program
@@ -53,6 +54,11 @@ export function registerCommands(program: Command) {
       '--etag <ETAG>',
       'A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.',
     )
+    .option(
+      '--site-name',
+      'Name for site when using default MkDocs config',
+      'Documentation Site',
+    )
     .option('-v --verbose', 'Enable verbose output.', false)
     .option(
       '--omitTechdocsCoreMkdocsPlugin',
@@ -64,8 +70,18 @@ export function registerCommands(program: Command) {
       'Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default <docs-dir>/index.md is not provided.',
       false,
     )
+    .option(
+      '--defaultPlugin [defaultPlugins...]',
+      'Plugins which should be added automatically to the mkdocs.yaml file',
+      [],
+    )
+    .option(
+      '--runAsDefaultUser',
+      'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
+      false,
+    )
     .alias('build')
-    .action(lazy(() => import('./generate/generate').then(m => m.default)));
+    .action(lazy(() => import('./generate/generate'), 'default'));
 
   program
     .command('migrate')
@@ -101,10 +117,6 @@ export function registerCommands(program: Command) {
       'Optional AWS S3 option to force path style.',
     )
     .option(
-      '--awsBucketRootPath',
-      'Optional sub-directory to store files in Amazon S3',
-    )
-    .option(
       '--osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>',
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
     )
@@ -131,7 +143,7 @@ export function registerCommands(program: Command) {
       '25',
     )
     .option('-v --verbose', 'Enable verbose output.', false)
-    .action(lazy(() => import('./migrate/migrate').then(m => m.default)));
+    .action(lazy(() => import('./migrate/migrate'), 'default'));
 
   program
     .command('publish')
@@ -171,10 +183,22 @@ export function registerCommands(program: Command) {
       '--awsEndpoint <AWS ENDPOINT>',
       'Optional AWS endpoint to send requests to.',
     )
+    .option(
+      '--awsProxy <HTTPS Proxy>',
+      'Optional Proxy to use for AWS requests.',
+    )
     .option('--awsS3sse <AWS SSE>', 'Optional AWS S3 Server Side Encryption.')
     .option(
       '--awsS3ForcePathStyle',
       'Optional AWS S3 option to force path style.',
+    )
+    .option(
+      '--awsBucketRootPath <AWS BUCKET ROOT PATH>',
+      'Optional sub-directory to store files in Amazon S3',
+    )
+    .option(
+      '--awsMaxAttempts <AWS MAX ATTEMPTS>',
+      'Optional maximum number of retries for AWS S3 operations. If not specified, default value of 3 is used.',
     )
     .option(
       '--osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>',
@@ -193,7 +217,7 @@ export function registerCommands(program: Command) {
       '(Required for OpenStack) specify when --publisher-type openStackSwift',
     )
     .option(
-      '--gcsBucketRootPath',
+      '--gcsBucketRootPath <GCS BUCKET ROOT PATH>',
       'Optional sub-directory to store files in Google cloud storage',
     )
     .option(
@@ -201,7 +225,7 @@ export function registerCommands(program: Command) {
       'Path of the directory containing generated files to publish',
       './site/',
     )
-    .action(lazy(() => import('./publish/publish').then(m => m.default)));
+    .action(lazy(() => import('./publish/publish'), 'default'));
 
   program
     .command('serve:mkdocs')
@@ -216,12 +240,21 @@ export function registerCommands(program: Command) {
       'Override the image entrypoint',
     )
     .option(
+      '--docker-option <DOCKER_OPTION...>',
+      'Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12" (can be added multiple times).',
+    )
+    .option(
       '--no-docker',
       'Do not use Docker, run `mkdocs serve` in current user environment.',
     )
+    .option(
+      '--site-name',
+      'Name for site when using default MkDocs config',
+      'Documentation Site',
+    )
     .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)
-    .action(lazy(() => import('./serve/mkdocs').then(m => m.default)));
+    .action(lazy(() => import('./serve/mkdocs'), 'default'));
 
   program
     .command('serve')
@@ -238,26 +271,85 @@ export function registerCommands(program: Command) {
       'Override the image entrypoint',
     )
     .option(
+      '--docker-option <DOCKER_OPTION...>',
+      'Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12" (can be added multiple times).',
+    )
+    .option(
       '--no-docker',
       'Do not use Docker, use MkDocs executable in current user environment.',
     )
+    .option(
+      '--site-name',
+      'Name for site when using default MkDocs config',
+      'Documentation Site',
+    )
     .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)
-    .action(lazy(() => import('./serve/serve').then(m => m.default)));
+    .option(
+      '--preview-app-bundle-path <PATH_TO_BUNDLE>',
+      'Preview documentation using another web app',
+    )
+    .option(
+      '--preview-app-port <PORT>',
+      'Port for the preview app to be served on',
+      defaultPreviewAppPort,
+    )
+    .option(
+      '-c, --mkdocs-config-file-name <FILENAME>',
+      'Mkdocs config file name',
+    )
+    .option(
+      '--mkdocs-parameter-clean',
+      'Pass "--clean" parameter to mkdocs server running in containerized environment',
+      false,
+    )
+    .option(
+      '--mkdocs-parameter-dirtyreload',
+      'Pass "--dirtyreload" parameter to mkdocs server running in containerized environment',
+      false,
+    )
+    .option(
+      '--mkdocs-parameter-strict',
+      'Pass "--strict" parameter to mkdocs server running in containerized environment',
+      false,
+    )
+    .hook('preAction', command => {
+      if (
+        command.opts().previewAppPort !== defaultPreviewAppPort &&
+        !command.opts().previewAppBundlePath
+      ) {
+        command.error(
+          '--preview-app-port can only be used together with --preview-app-bundle-path',
+        );
+      }
+    })
+    .action(lazy(() => import('./serve/serve'), 'default'));
 }
 
-// Wraps an action function so that it always exits and handles errors
 // Humbly taken from backstage-cli's registerCommands
-function lazy(
-  getActionFunc: () => Promise<(...args: any[]) => Promise<void>>,
+type ActionFunc = (...args: any[]) => Promise<void>;
+type ActionExports<TModule extends object> = {
+  [KName in keyof TModule as TModule[KName] extends ActionFunc
+    ? KName
+    : never]: TModule[KName];
+};
+
+// Wraps an action function so that it always exits and handles errors
+export function lazy<TModule extends object>(
+  moduleLoader: () => Promise<TModule>,
+  exportName: keyof ActionExports<TModule>,
 ): (...args: any[]) => Promise<never> {
   return async (...args: any[]) => {
     try {
-      const actionFunc = await getActionFunc();
+      const mod = await moduleLoader();
+      const actualModule = (
+        mod as unknown as { default: ActionExports<TModule> }
+      ).default;
+      const actionFunc = actualModule[exportName] as ActionFunc;
       await actionFunc(...args);
+
       process.exit(0);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(error.message);
       process.exit(1);
     }

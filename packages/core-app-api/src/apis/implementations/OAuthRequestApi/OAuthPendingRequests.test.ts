@@ -27,7 +27,7 @@ describe('OAuthPendingRequests', () => {
     target.pending().subscribe({ next, error });
     target.request(input);
 
-    await waitFor(() => expect(next).toBeCalledTimes(2));
+    await waitFor(() => expect(next).toHaveBeenCalledTimes(2));
     expect(next.mock.calls[0][0].scopes).toBeUndefined();
     expect(next.mock.calls[1][0].scopes.toString()).toBe(input.toString());
     expect(error.mock.calls.length).toBe(0);
@@ -46,8 +46,8 @@ describe('OAuthPendingRequests', () => {
 
     await expect(request1).resolves.toBe('session1');
     await expect(request2).resolves.toBe('session1');
-    expect(next).toBeCalledTimes(3); // once on subscription, twice on resolve
-    expect(error).toBeCalledTimes(0);
+    expect(next).toHaveBeenCalledTimes(3); // once on subscription, twice on resolve
+    expect(error).toHaveBeenCalledTimes(0);
   });
 
   it('can resolve through the observable', async () => {
@@ -59,8 +59,8 @@ describe('OAuthPendingRequests', () => {
     target.pending().subscribe({ next, error });
 
     await expect(request1).resolves.toBe('done');
-    expect(next).toBeCalledTimes(2); // once with data on subscription, once empty after resolution
-    expect(error).toBeCalledTimes(0);
+    expect(next).toHaveBeenCalledTimes(2); // once with data on subscription, once empty after resolution
+    expect(error).toHaveBeenCalledTimes(0);
   });
 
   it('rejects requests and notifies observers only once', async () => {
@@ -77,8 +77,8 @@ describe('OAuthPendingRequests', () => {
 
     await expect(request1).rejects.toBe(rejection);
     await expect(request2).rejects.toBe(rejection);
-    expect(next).toBeCalledTimes(3); // once on subscription, once or reject, once on resolve
-    expect(error).toBeCalledTimes(0);
+    expect(next).toHaveBeenCalledTimes(3); // once on subscription, once or reject, once on resolve
+    expect(error).toHaveBeenCalledTimes(0);
   });
 
   it('can reject through the observable', async () => {
@@ -91,6 +91,6 @@ describe('OAuthPendingRequests', () => {
     target.pending().subscribe({ next, error });
 
     await expect(request1).rejects.toBe(rejection);
-    expect(next).toBeCalledTimes(2);
+    expect(next).toHaveBeenCalledTimes(2);
   });
 });

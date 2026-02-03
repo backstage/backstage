@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/core';
+import { useMemo } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+
+/** @public */
+export type HighlightedSearchResultTextClassKey = 'highlight';
 
 const useStyles = makeStyles(
   () => ({
@@ -38,16 +41,17 @@ export type HighlightedSearchResultTextProps = {
 /**
  * @public
  */
-export const HighlightedSearchResultText = ({
-  text,
-  preTag,
-  postTag,
-}: HighlightedSearchResultTextProps) => {
+export const HighlightedSearchResultText = (
+  props: HighlightedSearchResultTextProps,
+) => {
+  const { text, preTag, postTag } = props;
+
   const classes = useStyles();
   const terms = useMemo(
     () => text.split(new RegExp(`(${preTag}.+?${postTag})`)),
     [postTag, preTag, text],
   );
+
   return (
     <>
       {terms.map((t, idx) =>

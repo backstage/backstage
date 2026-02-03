@@ -19,7 +19,6 @@ import { Content, Header, Page } from '@backstage/core-components';
 import { createDevApp } from '@backstage/dev-utils';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import {
   apiDocsConfigRef,
   apiDocsPlugin,
@@ -32,6 +31,7 @@ import graphqlApiEntity from './graphql-example-api.yaml';
 import invalidLanguageApiEntity from './invalid-language-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
+import trpcApiEntity from './trpc-example-api.yaml';
 
 const mockEntities = [
   openapiApiEntity,
@@ -39,6 +39,7 @@ const mockEntities = [
   graphqlApiEntity,
   invalidLanguageApiEntity,
   otherApiEntity,
+  trpcApiEntity,
 ] as unknown as Entity[];
 
 createDevApp()
@@ -131,6 +132,19 @@ createDevApp()
         <Header title="Other" />
         <Content>
           <EntityProvider entity={otherApiEntity as any as Entity}>
+            <EntityApiDefinitionCard />
+          </EntityProvider>
+        </Content>
+      </Page>
+    ),
+  })
+  .addPage({
+    title: 'tRPC',
+    element: (
+      <Page themeId="home">
+        <Header title="tRPC" />
+        <Content>
+          <EntityProvider entity={trpcApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>

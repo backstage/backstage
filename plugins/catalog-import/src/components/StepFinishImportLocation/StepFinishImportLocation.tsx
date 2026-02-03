@@ -14,32 +14,63 @@
  * limitations under the License.
  */
 
-import { Grid, Typography } from '@material-ui/core';
+import { CompoundEntityRef, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Link } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import React from 'react';
-import { BackButton } from '../Buttons';
+import partition from 'lodash/partition';
+
+import { catalogImportTranslationRef } from '../../translation';
+import { BackButton, ViewComponentButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult } from '../useImportState';
-import { Link } from '@backstage/core-components';
-import partition from 'lodash/partition';
 
 type Props = {
   prepareResult: PrepareResult;
   onReset: () => void;
 };
 
+// Among the newly registered entities, return a software entity (e.g. Component, API, Resource)
+const filterComponentEntity = (
+  newLocations: Array<{
+    exists?: boolean;
+    target: string;
+    entities: CompoundEntityRef[];
+  }>,
+): CompoundEntityRef | null => {
+  for (const location of newLocations) {
+    for (const entity of location.entities) {
+      if (
+        ['component', 'api', 'resource'].includes(
+          entity.kind.toLocaleLowerCase('en-US'),
+        )
+      ) {
+        return {
+          kind: entity.kind.toLocaleLowerCase('en-US'),
+          namespace:
+            entity.namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE,
+          name: entity.name,
+        };
+      }
+    }
+  }
+
+  return null;
+};
+
 export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
-  const continueButton = (
-    <Grid container spacing={0}>
-      <BackButton onClick={onReset}>Register another</BackButton>
-    </Grid>
-  );
+  const { t } = useTranslationRef(catalogImportTranslationRef);
+  const entityRoute = useRouteRef(entityRouteRef);
 
   if (prepareResult.type === 'repository') {
     return (
       <>
         <Typography paragraph>
-          The following Pull Request has been opened:{' '}
+          {t('stepFinishImportLocation.repository.title')}
           <Link
             to={prepareResult.pullRequest.url}
             target="_blank"
@@ -48,12 +79,14 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
             {prepareResult.pullRequest.url}
           </Link>
         </Typography>
-
         <Typography paragraph>
-          Your entities will be imported as soon as the Pull Request is merged.
+          {t('stepFinishImportLocation.repository.description')}
         </Typography>
-
-        {continueButton}
+        <Grid container spacing={0}>
+          <BackButton onClick={onReset}>
+            {t('stepFinishImportLocation.backButtonText')}
+          </BackButton>
+        </Grid>
       </>
     );
   }
@@ -62,14 +95,12 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
     prepareResult.locations,
     l => l.exists,
   );
-
+  const newComponentEntity = filterComponentEntity(newLocations);
   return (
     <>
       {newLocations.length > 0 && (
         <>
-          <Typography>
-            The following entities have been added to the catalog:
-          </Typography>
+          <Typography>{t('stepFinishImportLocation.locations.new')}</Typography>
 
           <EntityListComponent
             locations={newLocations}
@@ -81,7 +112,7 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
       {existingLocations.length > 0 && (
         <>
           <Typography>
-            A refresh was triggered for the following locations:
+            {t('stepFinishImportLocation.locations.existing')}
           </Typography>
 
           <EntityListComponent
@@ -91,7 +122,16 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
           />
         </>
       )}
-      {continueButton}
+      <Grid container spacing={0}>
+        {newComponentEntity && (
+          <ViewComponentButton to={entityRoute(newComponentEntity)}>
+            {t('stepFinishImportLocation.locations.viewButtonText')}
+          </ViewComponentButton>
+        )}
+        <BackButton onClick={onReset}>
+          {t('stepFinishImportLocation.backButtonText')}
+        </BackButton>
+      </Grid>
     </>
   );
 };

@@ -96,17 +96,17 @@ Animals: :tiger: :horse: :turtle: :wolf: :frog:
 
 ### MDX truly sane lists
 
-- attributes
+- `attributes`
 
-- customer
-  - first_name
-    - test
-  - family_name
-  - email
-- person
-  - first_name
-  - family_name
-  - birth_date
-- subscription_id
+- `customer`
+  - `first_name`
+    - `test`
+  - `family_name`
+  - `email`
+- `person`
+  - `first_name`
+  - `family_name`
+  - `birth_date`
+- `subscription_id`
 
-- request
+- `request`

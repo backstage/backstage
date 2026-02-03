@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-unprocessed-entities-common
+  title: '@backstage/plugin-catalog-unprocessed-entities-common'
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: catalog-maintainers

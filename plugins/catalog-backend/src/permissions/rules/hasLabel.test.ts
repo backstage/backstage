@@ -31,7 +31,9 @@ describe('hasLabel permission rule', () => {
               },
             },
           },
-          'backstage.io/testlabel',
+          {
+            label: 'backstage.io/testlabel',
+          },
         ),
       ).toEqual(false);
     });
@@ -46,7 +48,9 @@ describe('hasLabel permission rule', () => {
               name: 'test-component',
             },
           },
-          'backstage.io/testlabel',
+          {
+            label: 'backstage.io/testlabel',
+          },
         ),
       ).toEqual(false);
     });
@@ -65,7 +69,51 @@ describe('hasLabel permission rule', () => {
               },
             },
           },
-          'backstage.io/testlabel',
+          { label: 'backstage.io/testlabel' },
+        ),
+      ).toEqual(true);
+    });
+
+    it('returns false when specified label has different than expected value', () => {
+      expect(
+        hasLabel.apply(
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'test-component',
+              labels: {
+                someLabel: 'foo',
+                'backstage.io/testLabel': 'bar',
+              },
+            },
+          },
+          {
+            label: 'backstage.io/testLabel',
+            value: 'baz',
+          },
+        ),
+      ).toEqual(false);
+    });
+
+    it('returns true when specified label has expected value', () => {
+      expect(
+        hasLabel.apply(
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'test-component',
+              labels: {
+                someLabel: 'foo',
+                'backstage.io/testLabel': 'bar',
+              },
+            },
+          },
+          {
+            label: 'backstage.io/testLabel',
+            value: 'bar',
+          },
         ),
       ).toEqual(true);
     });
@@ -73,8 +121,24 @@ describe('hasLabel permission rule', () => {
 
   describe('toQuery', () => {
     it('returns an appropriate catalog-backend filter', () => {
-      expect(hasLabel.toQuery('backstage.io/testlabel')).toEqual({
+      expect(
+        hasLabel.toQuery({
+          label: 'backstage.io/testlabel',
+        }),
+      ).toEqual({
         key: 'metadata.labels.backstage.io/testlabel',
+      });
+    });
+
+    it('returns an appropriate catalog-backend filter with values', () => {
+      expect(
+        hasLabel.toQuery({
+          label: 'backstage.io/testLabel',
+          value: 'foo',
+        }),
+      ).toEqual({
+        key: 'metadata.labels.backstage.io/testLabel',
+        values: ['foo'],
       });
     });
   });

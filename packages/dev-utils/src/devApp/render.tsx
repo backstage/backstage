@@ -15,7 +15,7 @@
  */
 
 import { createApp } from '@backstage/app-defaults';
-import { FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -25,6 +25,8 @@ import {
   SidebarPage,
   SidebarSpace,
   SidebarSpacer,
+  SignInPage,
+  SignInProviderConfig,
 } from '@backstage/core-components';
 import {
   AnyApiFactory,
@@ -38,25 +40,44 @@ import {
   IconComponent,
   RouteRef,
 } from '@backstage/core-plugin-api';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import React, { ComponentType, ReactNode } from 'react';
-import ReactDOM from 'react-dom';
-import { hot } from 'react-hot-loader';
-import { Route } from 'react-router';
+import { ComponentType, lazy, PropsWithChildren, ReactNode } from 'react';
+import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
+import 'react-dom';
+import { SidebarLanguageSwitcher, SidebarSignOutButton } from '../components';
 
-const GatheringRoute: (props: {
+const BuiCss = lazy(() => import('./BuiCss'));
+
+let ReactDOMPromise: Promise<
+  typeof import('react-dom') | typeof import('react-dom/client')
+>;
+if (process.env.HAS_REACT_DOM_CLIENT) {
+  ReactDOMPromise = import('react-dom/client');
+} else {
+  ReactDOMPromise = import('react-dom');
+}
+
+export function isReactRouterBeta(): boolean {
+  const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
+  return !obj.index;
+}
+
+const MaybeGatheringRoute: (props: {
   path: string;
   element: JSX.Element;
   children?: ReactNode;
 }) => JSX.Element = ({ element }) => element;
 
-attachComponentData(GatheringRoute, 'core.gatherMountPoints', true);
+if (isReactRouterBeta()) {
+  attachComponentData(MaybeGatheringRoute, 'core.gatherMountPoints', true);
+}
 
 /** @public */
 export type DevAppPageOptions = {
@@ -79,9 +100,13 @@ export class DevAppBuilder {
   private readonly rootChildren = new Array<ReactNode>();
   private readonly routes = new Array<JSX.Element>();
   private readonly sidebarItems = new Array<JSX.Element>();
+  private readonly signInProviders = new Array<SignInProviderConfig>();
+  private readonly translationResources = new Array<TranslationResource>();
 
   private defaultPage?: string;
   private themes?: Array<AppTheme>;
+  private languages?: string[];
+  private defaultLanguage?: string;
 
   /**
    * Register one or more plugins to render in the dev app
@@ -114,6 +139,16 @@ export class DevAppBuilder {
   }
 
   /**
+   * Adds a new sidebar item to the dev app.
+   *
+   * Useful for adding only sidebar items without a corresponding page.
+   */
+  addSidebarItem(sidebarItem: JSX.Element): DevAppBuilder {
+    this.sidebarItems.push(sidebarItem);
+    return this;
+  }
+
+  /**
    * Adds a page component along with accompanying sidebar item.
    *
    * If no path is provided one will be generated.
@@ -136,8 +171,9 @@ export class DevAppBuilder {
         />,
       );
     }
+
     this.routes.push(
-      <GatheringRoute
+      <MaybeGatheringRoute
         key={path}
         path={path}
         element={opts.element}
@@ -156,12 +192,44 @@ export class DevAppBuilder {
   }
 
   /**
+   * Adds new sign in provider for the dev app
+   */
+  addSignInProvider(provider: SignInProviderConfig) {
+    this.signInProviders.push(provider);
+    return this;
+  }
+
+  /**
+   * Set available languages to be shown in the dev app
+   */
+  setAvailableLanguages(languages: string[]) {
+    this.languages = languages;
+    return this;
+  }
+
+  /**
+   * Add translation resource to the dev app
+   */
+  addTranslationResource(resource: TranslationResource) {
+    this.translationResources.push(resource);
+    return this;
+  }
+
+  /**
+   * Set default language for the dev app
+   */
+  setDefaultLanguage(language: string) {
+    this.defaultLanguage = language;
+    return this;
+  }
+
+  /**
    * Build a DevApp component using the resources registered so far
    */
-  build(): ComponentType<{}> {
-    const dummyRouteRef = createRouteRef({ id: 'dummy' });
-    const DummyPage = () => <Box p={3}>Page belonging to another plugin.</Box>;
-    attachComponentData(DummyPage, 'core.mountPoint', dummyRouteRef);
+  build(): ComponentType<PropsWithChildren<{}>> {
+    const fakeRouteRef = createRouteRef({ id: 'fake' });
+    const FakePage = () => <Box p={3}>Page belonging to another plugin.</Box>;
+    attachComponentData(FakePage, 'core.mountPoint', fakeRouteRef);
 
     const apis = [...this.apis];
     if (!apis.some(api => api.api.id === scmIntegrationsApiRef.id)) {
@@ -178,58 +246,68 @@ export class DevAppBuilder {
       apis,
       plugins: this.plugins,
       themes: this.themes,
+      components: {
+        SignInPage: props => {
+          return (
+            <SignInPage
+              {...props}
+              providers={['guest', ...this.signInProviders]}
+              title="Select a sign-in method"
+              align="center"
+            />
+          );
+        },
+      },
       bindRoutes: ({ bind }) => {
         for (const plugin of this.plugins ?? []) {
           const targets: Record<string, RouteRef<any>> = {};
           for (const routeKey of Object.keys(plugin.externalRoutes)) {
-            targets[routeKey] = dummyRouteRef;
+            targets[routeKey] = fakeRouteRef;
           }
           bind(plugin.externalRoutes, targets);
         }
       },
+      __experimentalTranslations: {
+        defaultLanguage: this.defaultLanguage,
+        availableLanguages: this.languages,
+        resources: this.translationResources,
+      },
     });
 
-    const AppProvider = app.getProvider();
-    const AppRouter = app.getRouter();
+    const DevApp = (
+      <>
+        <BuiCss />
+        <AlertDisplay />
+        <OAuthRequestDialog />
+        {this.rootChildren}
+        <AppRouter>
+          <SidebarPage>
+            <Sidebar>
+              <SidebarSpacer />
+              {this.sidebarItems}
+              <SidebarSpace />
+              <SidebarDivider />
+              <SidebarThemeSwitcher />
+              <SidebarLanguageSwitcher />
+              <SidebarSignOutButton />
+            </Sidebar>
+            <FlatRoutes>
+              {this.routes}
+              <Route path="/_external_route" element={<FakePage />} />
+            </FlatRoutes>
+          </SidebarPage>
+        </AppRouter>
+      </>
+    );
 
-    const DevApp = () => {
-      return (
-        <AppProvider>
-          <AlertDisplay />
-          <OAuthRequestDialog />
-          {this.rootChildren}
-          <AppRouter>
-            <SidebarPage>
-              <Sidebar>
-                <SidebarSpacer />
-                {this.sidebarItems}
-                <SidebarSpace />
-                <SidebarDivider />
-                <SidebarThemeSwitcher />
-              </Sidebar>
-              <FlatRoutes>
-                {this.routes}
-                <Route path="/_external_route" element={<DummyPage />} />
-              </FlatRoutes>
-            </SidebarPage>
-          </AppRouter>
-        </AppProvider>
-      );
-    };
-
-    return DevApp;
+    return app.createRoot(DevApp);
   }
 
   /**
    * Build and render directory to #root element, with react hot loading.
    */
   render(): void {
-    const hotModule =
-      require.cache['./dev/index.tsx'] ??
-      require.cache['./dev/index.ts'] ??
-      module;
-
-    const DevApp = hot(hotModule)(this.build());
+    const DevApp = this.build();
 
     if (
       window.location.pathname === '/' &&
@@ -239,7 +317,15 @@ export class DevAppBuilder {
       window.location.pathname = this.defaultPage;
     }
 
-    ReactDOM.render(<DevApp />, document.getElementById('root'));
+    ReactDOMPromise.then(ReactDOM => {
+      if ('createRoot' in ReactDOM) {
+        ReactDOM.createRoot(document.getElementById('root')!).render(
+          <DevApp />,
+        );
+      } else {
+        ReactDOM.render(<DevApp />, document.getElementById('root'));
+      }
+    });
   }
 }
 

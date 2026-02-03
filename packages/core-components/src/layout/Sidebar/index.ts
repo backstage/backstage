@@ -21,10 +21,14 @@ export { SidebarGroup } from './SidebarGroup';
 export type { SidebarGroupProps } from './SidebarGroup';
 export { SidebarSubmenuItem } from './SidebarSubmenuItem';
 export { SidebarSubmenu } from './SidebarSubmenu';
-export type { SidebarSubmenuProps } from './SidebarSubmenu';
+export type {
+  SidebarSubmenuProps,
+  SidebarSubmenuClassKey,
+} from './SidebarSubmenu';
 export type {
   SidebarSubmenuItemProps,
   SidebarSubmenuItemDropdownItem,
+  SidebarSubmenuItemClassKey,
 } from './SidebarSubmenuItem';
 export type { SidebarClassKey, SidebarProps } from './Bar';
 export { SidebarPage, useContent } from './Page';
@@ -44,8 +48,6 @@ export type {
   SidebarSpacerClassKey,
   SidebarDividerClassKey,
 } from './Items';
-export { IntroCard, SidebarIntro } from './Intro';
-export type { SidebarIntroClassKey } from './Intro';
 export { SIDEBAR_INTRO_LOCAL_STORAGE, sidebarConfig } from './config';
 export type { SidebarOptions, SubmenuOptions } from './config';
 export {

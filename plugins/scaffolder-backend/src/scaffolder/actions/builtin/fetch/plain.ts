@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { UrlReader, resolveSafeChildPath } from '@backstage/backend-common';
+import {
+  resolveSafeChildPath,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { fetchContents } from './helpers';
-import { createTemplateAction } from '../../createTemplateAction';
+import { examples } from './plain.examples';
+
+import {
+  createTemplateAction,
+  fetchContents,
+} from '@backstage/plugin-scaffolder-node';
+
+export const ACTION_ID = 'fetch:plain';
 
 /**
  * Downloads content and places it in the workspace, or optionally
@@ -25,33 +34,37 @@ import { createTemplateAction } from '../../createTemplateAction';
  * @public
  */
 export function createFetchPlainAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
 }) {
   const { reader, integrations } = options;
 
-  return createTemplateAction<{ url: string; targetPath?: string }>({
-    id: 'fetch:plain',
+  return createTemplateAction({
+    id: ACTION_ID,
+    examples,
     description:
-      "Downloads content and places it in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
+      'Downloads content and places it in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.',
     schema: {
       input: {
-        type: 'object',
-        required: ['url'],
-        properties: {
-          url: {
-            title: 'Fetch URL',
+        url: z =>
+          z.string({
             description:
               'Relative path or absolute URL pointing to the directory tree to fetch',
-            type: 'string',
-          },
-          targetPath: {
-            title: 'Target Path',
-            description:
-              'Target path within the working directory to download the contents to.',
-            type: 'string',
-          },
-        },
+          }),
+        targetPath: z =>
+          z
+            .string({
+              description:
+                'Target path within the working directory to download the contents to.',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description:
+                'An optional token to use for authentication when reading the resources.',
+            })
+            .optional(),
       },
     },
     supportsDryRun: true,
@@ -68,6 +81,7 @@ export function createFetchPlainAction(options: {
         baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
         outputPath,
+        token: ctx.input.token,
       });
     },
   });

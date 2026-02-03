@@ -44,31 +44,58 @@ describe('BitbucketServerIntegration', () => {
     expect(integration.title).toBe('h.com');
   });
 
-  it('resolves url line number correctly', () => {
+  it('resolves url', () => {
     const integration = new BitbucketServerIntegration({
       host: 'h.com',
     } as any);
 
     expect(
       integration.resolveUrl({
-        url: './a.yaml',
-        base: 'https://h.com/my-owner/my-project/src/master/README.md',
-        lineNumber: 14,
+        url: './README.md',
+        base: 'https://h.com/projects/my-project/repos/my-repo/browse/?at=master',
       }),
-    ).toBe('https://h.com/my-owner/my-project/src/master/a.yaml#a.yaml-14');
+    ).toBe(
+      'https://h.com/projects/my-project/repos/my-repo/browse/README.md?at=master',
+    );
   });
 
-  it('resolve edit URL', () => {
+  it('resolves url with line number', () => {
+    const integration = new BitbucketServerIntegration({
+      host: 'h.com',
+    } as any);
+
+    expect(
+      integration.resolveUrl({
+        url: './README.md',
+        base: 'https://h.com/projects/my-project/repos/my-repo/browse/?at=master',
+        lineNumber: 14,
+      }),
+    ).toBe(
+      'https://h.com/projects/my-project/repos/my-repo/browse/README.md?at=master#14',
+    );
+  });
+
+  it('resolves edit url', () => {
     const integration = new BitbucketServerIntegration({
       host: 'h.com',
     } as any);
 
     expect(
       integration.resolveEditUrl(
-        'https://h.com/my-owner/my-project/src/master/README.md',
+        'https://h.com/projects/my-project/repos/my-repo/browse/README.md',
       ),
-    ).toBe(
-      'https://h.com/my-owner/my-project/src/master/README.md?mode=edit&spa=0&at=master',
-    );
+    ).toBe('https://h.com/projects/my-project/repos/my-repo/browse/README.md');
+  });
+
+  it('resolves edit url with query params', () => {
+    const integration = new BitbucketServerIntegration({
+      host: 'h.com',
+    } as any);
+
+    expect(
+      integration.resolveEditUrl(
+        'https://h.com/projects/my-project/repos/my-repo/browse/README.md?at=master',
+      ),
+    ).toBe('https://h.com/projects/my-project/repos/my-repo/browse/README.md');
   });
 });

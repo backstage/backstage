@@ -1,9 +1,7 @@
 # Scaffolder Backend
 
-This is the backend for the default Backstage [software
-templates](https://backstage.io/docs/features/software-templates/software-templates-index).
-This provides the API for the frontend [scaffolder
-plugin](https://github.com/backstage/backstage/tree/master/plugins/scaffolder),
+This is the backend for the default Backstage [software templates](https://backstage.io/docs/features/software-templates/).
+This provides the API for the frontend [scaffolder plugin](https://github.com/backstage/backstage/tree/master/plugins/scaffolder),
 as well as the built-in template actions, tasks and stages.
 
 ## Installation
@@ -21,15 +19,22 @@ restoring the plugin, if you previously removed it.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend
 ```
 
-### Adding the plugin to your `packages/backend`
+Then add the plugin to your backend, typically in `packages/backend/src/index.ts`:
 
-You'll need to add the plugin to the router in your `backend` package. You can
-do this by creating a file called `packages/backend/src/plugins/scaffolder.ts`
-with contents matching [scaffolder.ts in the create-app
-template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/backend/src/plugins/scaffolder.ts).
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-scaffolder-backend'));
+```
+
+#### Old backend system
+
+In the old backend system there's a bit more wiring required. You'll need to
+create a file called `packages/backend/src/plugins/scaffolder.ts`
+with contents matching [scaffolder.ts in the create-app template](https://github.com/backstage/backstage/blob/ad9314d3a7e0405719ba93badf96e97adde8ef83/packages/create-app/templates/default-app/packages/backend/src/plugins/scaffolder.ts).
 
 With the `scaffolder.ts` router setup in place, add the router to
 `packages/backend/src/index.ts`:
@@ -54,10 +59,68 @@ async function main() {
 ### Adding templates
 
 At this point the scaffolder backend is installed in your backend package, but
-you will not have any templates available to use. These need to be [added to the
-software
-catalog](https://backstage.io/docs/features/software-templates/adding-templates).
+you will not have any templates available to use. These need to be [added to the software catalog](https://backstage.io/docs/features/software-templates/adding-templates).
 
 To get up and running and try out some templates quickly, you can or copy the
-catalog locations from the [create-app
-template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/app-config.yaml.hbs).
+catalog locations from the [create-app template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/app-config.yaml.hbs).
+
+## Configuration
+
+### Default Environment
+
+The scaffolder supports a `defaultEnvironment` configuration that provides default parameters and secrets to all templates. This reduces template complexity and improves security by centralizing common values.
+
+```yaml
+scaffolder:
+  defaultEnvironment:
+    parameters:
+      region: eu-west-1
+      organizationName: acme-corp
+      defaultRegistry: registry.acme-corp.com
+    secrets:
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      DOCKER_REGISTRY_TOKEN: ${DOCKER_REGISTRY_TOKEN}
+```
+
+#### Default parameters
+
+Default parameters are accessible via `${{ environment.parameters.* }}` in templates. Default parameters are isolated in their own context to avoid naming conflicts.
+
+```yaml
+ parameters:
+    - title: Fill in some steps
+      required:
+        - organizationName
+      properties:
+        organizationName:
+          title: organizationName
+          type: string
+          description: Unique name of the organization
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+
+  steps:
+    - id: deploy
+      name: Deploy Application
+      action: aws:deploy
+      input:
+        region: ${{ environment.parameters.region }}  # Resolves to defaultEnvironment.parameters.region
+        organization: ${{ parameters.organizationName }}  # Resolves to frontend input value
+        otherOrganization: ${{ environment.parameters.organizationName }}  # Resolves to defaultEnvironment.parameters.organizationName
+```
+
+#### Secrets
+
+Default secrets are resolved from environment variables and accessible via `${{ environment.secrets.* }}` in template actions. Secrets are only available during action execution, not in frontend forms.
+
+```yaml
+- id: deploy
+  name: Deploy with credentials
+  action: aws:deploy
+  input:
+    accessKey: ${{ environment.secrets.AWS_ACCESS_KEY }} # Resolves to defaultEnvironment.secrets.AWS_ACCESS_KEY
+```
+
+**Security Note:** Secrets are automatically masked in logs and are only available to backend actions, never exposed to the frontend.

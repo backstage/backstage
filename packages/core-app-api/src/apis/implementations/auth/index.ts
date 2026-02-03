@@ -23,5 +23,8 @@ export * from './saml';
 export * from './microsoft';
 export * from './onelogin';
 export * from './bitbucket';
+export * from './bitbucketServer';
 export * from './atlassian';
+export * from './vmwareCloud';
+export * from './openshift';
 export type { OAuthApiCreateOptions, AuthApiCreateOptions } from './types';

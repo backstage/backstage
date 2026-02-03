@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Credentials } from 'aws-sdk';
+import { AwsCredentialIdentity } from '@aws-sdk/types';
 
 /**
  * A factory for providing user-specified AWS credentials for a given AWS account.
@@ -22,4 +22,4 @@ import { Credentials } from 'aws-sdk';
  */
 export type AWSCredentialFactory = (
   awsAccountId: string,
-) => Promise<Credentials>;
+) => Promise<AwsCredentialIdentity>;

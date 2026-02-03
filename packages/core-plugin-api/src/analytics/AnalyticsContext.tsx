@@ -18,7 +18,7 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import React, { ReactNode, useContext } from 'react';
+import { ComponentType, ReactNode, useContext } from 'react';
 import { AnalyticsContextValue } from './types';
 
 const AnalyticsReactContext = createVersionedContext<{
@@ -91,11 +91,11 @@ export const AnalyticsContext = (options: {
  * @param values - Analytics context key/value pairs.
  * @internal
  */
-export function withAnalyticsContext<P>(
-  Component: React.ComponentType<P>,
+export function withAnalyticsContext<TProps extends {}>(
+  Component: ComponentType<TProps>,
   values: AnalyticsContextValue,
 ) {
-  const ComponentWithAnalyticsContext = (props: P) => {
+  const ComponentWithAnalyticsContext = (props: TProps) => {
     return (
       <AnalyticsContext attributes={values}>
         <Component {...props} />

@@ -15,26 +15,10 @@
  */
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { ConflictError, isError, NotFoundError } from '@backstage/errors';
+import { ConflictError } from '@backstage/errors';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
-import { v4 as uuid } from 'uuid';
-import type { Logger } from 'winston';
-import {
-  Transaction,
-  GetProcessableEntitiesResult,
-  ProcessingDatabase,
-  RefreshStateItem,
-  RefreshOptions,
-  ReplaceUnprocessedEntitiesOptions,
-  UpdateProcessedEntityOptions,
-  ListAncestorsOptions,
-  ListAncestorsResult,
-  UpdateEntityCacheOptions,
-  ListParentsOptions,
-  ListParentsResult,
-  RefreshByKeyOptions,
-} from './types';
 import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
@@ -44,26 +28,47 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from './tables';
-
-import { generateStableHash } from './util';
-import { isDatabaseConflictError } from '@backstage/backend-common';
-import { DeferredEntity } from '@backstage/plugin-catalog-node';
+import {
+  GetProcessableEntitiesResult,
+  ListParentsOptions,
+  ListParentsResult,
+  ProcessingDatabase,
+  RefreshStateItem,
+  Transaction,
+  UpdateEntityCacheOptions,
+  UpdateProcessedEntityOptions,
+} from './types';
+import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
+import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
+import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
+import { generateStableHash, generateTargetKey } from './util';
+import { EventParams, EventsService } from '@backstage/plugin-events-node';
+import { DateTime } from 'luxon';
+import { CATALOG_CONFLICTS_TOPIC } from '../constants';
+import { CatalogConflictEventPayload } from '../catalog/types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
 // errors in the underlying engine due to exceeding query limits, but large
 // enough to get the speed benefits.
 const BATCH_SIZE = 50;
-const MAX_ANCESTOR_DEPTH = 32;
 
 export class DefaultProcessingDatabase implements ProcessingDatabase {
-  constructor(
-    private readonly options: {
-      database: Knex;
-      logger: Logger;
-      refreshInterval: ProcessingIntervalFunction;
-    },
-  ) {
+  private readonly options: {
+    database: Knex;
+    logger: LoggerService;
+    refreshInterval: ProcessingIntervalFunction;
+    events: EventsService;
+  };
+
+  constructor(options: {
+    database: Knex;
+    logger: LoggerService;
+    refreshInterval: ProcessingIntervalFunction;
+    events: EventsService;
+  }) {
+    this.options = options;
     initDatabaseMetrics(options.database);
   }
 
@@ -82,6 +87,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       refreshKeys,
       locationKey,
     } = options;
+    const configClient = tx.client.config.client;
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         processed_entity: JSON.stringify(processedEntity),
@@ -112,8 +118,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     });
 
     // Delete old relations
+    // NOTE(freben): knex implemented support for returning() on update queries for sqlite, but at the current time of writing (Sep 2022) not for delete() queries.
     let previousRelationRows: DbRelationsRow[];
-    if (tx.client.config.client.includes('sqlite3')) {
+    if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
       previousRelationRows = await tx<DbRelationsRow>('relations')
         .select('*')
         .where({ originating_entity_id: id });
@@ -136,6 +143,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         type,
       }),
     );
+
     await tx.batchInsert(
       'relations',
       this.deduplicateRelations(relationRows),
@@ -152,7 +160,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       'refresh_keys',
       refreshKeys.map(k => ({
         entity_id: id,
-        key: k.key,
+        key: generateTargetKey(k.key),
       })),
       BATCH_SIZE,
     );
@@ -191,259 +199,53 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .where('entity_id', id);
   }
 
-  async replaceUnprocessedEntities(
-    txOpaque: Transaction,
-    options: ReplaceUnprocessedEntitiesOptions,
-  ): Promise<void> {
-    const tx = txOpaque as Knex.Transaction;
-
-    const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
-
-    if (toRemove.length) {
-      let removedCount = 0;
-      for (const refs of lodash.chunk(toRemove, 1000)) {
-        /*
-      WITH RECURSIVE
-        -- All the nodes that can be reached downwards from our root
-        descendants(root_id, entity_ref) AS (
-          SELECT id, target_entity_ref
-          FROM refresh_state_references
-          WHERE source_key = "R1" AND target_entity_ref = "A"
-          UNION
-          SELECT descendants.root_id, target_entity_ref
-          FROM descendants
-          JOIN refresh_state_references ON source_entity_ref = descendants.entity_ref
-        ),
-        -- All the nodes that can be reached upwards from the descendants
-        ancestors(root_id, via_entity_ref, to_entity_ref) AS (
-          SELECT CAST(NULL as INT), entity_ref, entity_ref
-          FROM descendants
-          UNION
-          SELECT
-            CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END,
-            source_entity_ref,
-            ancestors.to_entity_ref
-          FROM ancestors
-          JOIN refresh_state_references ON target_entity_ref = ancestors.via_entity_ref
-        )
-      -- Start out with all of the descendants
-      SELECT descendants.entity_ref
-      FROM descendants
-      -- Expand with all ancestors that point to those, but aren't the current root
-      LEFT OUTER JOIN ancestors
-        ON ancestors.to_entity_ref = descendants.entity_ref
-        AND ancestors.root_id IS NOT NULL
-        AND ancestors.root_id != descendants.root_id
-      -- Exclude all lines that had such a foreign ancestor
-      WHERE ancestors.root_id IS NULL;
-      */
-        removedCount += await tx<DbRefreshStateRow>('refresh_state')
-          .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
-            return (
-              orphans
-                // All the nodes that can be reached downwards from our root
-                .withRecursive('descendants', function descendants(outer) {
-                  return outer
-                    .select({ root_id: 'id', entity_ref: 'target_entity_ref' })
-                    .from('refresh_state_references')
-                    .where('source_key', options.sourceKey)
-                    .whereIn('target_entity_ref', refs)
-                    .union(function recursive(inner) {
-                      return inner
-                        .select({
-                          root_id: 'descendants.root_id',
-                          entity_ref:
-                            'refresh_state_references.target_entity_ref',
-                        })
-                        .from('descendants')
-                        .join('refresh_state_references', {
-                          'descendants.entity_ref':
-                            'refresh_state_references.source_entity_ref',
-                        });
-                    });
-                })
-                // All the nodes that can be reached upwards from the descendants
-                .withRecursive('ancestors', function ancestors(outer) {
-                  return outer
-                    .select({
-                      root_id: tx.raw('CAST(NULL as INT)', []),
-                      via_entity_ref: 'entity_ref',
-                      to_entity_ref: 'entity_ref',
-                    })
-                    .from('descendants')
-                    .union(function recursive(inner) {
-                      return inner
-                        .select({
-                          root_id: tx.raw(
-                            'CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END',
-                            [],
-                          ),
-                          via_entity_ref: 'source_entity_ref',
-                          to_entity_ref: 'ancestors.to_entity_ref',
-                        })
-                        .from('ancestors')
-                        .join('refresh_state_references', {
-                          target_entity_ref: 'ancestors.via_entity_ref',
-                        });
-                    });
-                })
-                // Start out with all of the descendants
-                .select('descendants.entity_ref')
-                .from('descendants')
-                // Expand with all ancestors that point to those, but aren't the current root
-                .leftOuterJoin('ancestors', function keepaliveRoots() {
-                  this.on(
-                    'ancestors.to_entity_ref',
-                    '=',
-                    'descendants.entity_ref',
-                  );
-                  this.andOnNotNull('ancestors.root_id');
-                  this.andOn('ancestors.root_id', '!=', 'descendants.root_id');
-                })
-                .whereNull('ancestors.root_id')
-            );
-          })
-          .delete();
-
-        await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-          .where('source_key', '=', options.sourceKey)
-          .whereIn('target_entity_ref', refs)
-          .delete();
-      }
-
-      this.options.logger.debug(
-        `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
-      );
-    }
-
-    if (toAdd.length) {
-      // The reason for this chunking, rather than just massively batch
-      // inserting the entire payload, is that we fall back to the individual
-      // upsert mechanism below on conflicts. That path is massively slower than
-      // the fast batch path, so we don't want to end up accidentally having to
-      // for example item-by-item upsert tens of thousands of entities in a
-      // large initial delivery dump. The implication is that the size of these
-      // chunks needs to weigh the benefit of fast successful inserts, against
-      // the drawback of super slow but more rare fallbacks. There's quickly
-      // diminishing returns though with turning up this value way high.
-      for (const chunk of lodash.chunk(toAdd, 50)) {
-        try {
-          await tx.batchInsert(
-            'refresh_state',
-            chunk.map(item => ({
-              entity_id: uuid(),
-              entity_ref: stringifyEntityRef(item.deferred.entity),
-              unprocessed_entity: JSON.stringify(item.deferred.entity),
-              unprocessed_hash: item.hash,
-              errors: '',
-              location_key: item.deferred.locationKey,
-              next_update_at: tx.fn.now(),
-              last_discovery_at: tx.fn.now(),
-            })),
-            BATCH_SIZE,
-          );
-          await tx.batchInsert(
-            'refresh_state_references',
-            chunk.map(item => ({
-              source_key: options.sourceKey,
-              target_entity_ref: stringifyEntityRef(item.deferred.entity),
-            })),
-            BATCH_SIZE,
-          );
-        } catch (error) {
-          if (!isDatabaseConflictError(error)) {
-            throw error;
-          } else {
-            this.options.logger.debug(
-              `Fast insert path failed, falling back to slow path, ${error}`,
-            );
-            toUpsert.push(...chunk);
-          }
-        }
-      }
-    }
-
-    if (toUpsert.length) {
-      for (const {
-        deferred: { entity, locationKey },
-        hash,
-      } of toUpsert) {
-        const entityRef = stringifyEntityRef(entity);
-
-        try {
-          let ok = await this.updateUnprocessedEntity(
-            tx,
-            entity,
-            hash,
-            locationKey,
-          );
-          if (!ok) {
-            ok = await this.insertUnprocessedEntity(
-              tx,
-              entity,
-              hash,
-              locationKey,
-            );
-          }
-
-          if (ok) {
-            await tx<DbRefreshStateReferencesRow>(
-              'refresh_state_references',
-            ).insert({
-              source_key: options.sourceKey,
-              target_entity_ref: entityRef,
-            });
-          } else {
-            const conflictingKey = await this.checkLocationKeyConflict(
-              tx,
-              entityRef,
-              locationKey,
-            );
-            if (conflictingKey) {
-              this.options.logger.warn(
-                `Source ${options.sourceKey} detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
-              );
-            }
-          }
-        } catch (error) {
-          this.options.logger.error(
-            `Failed to add '${entityRef}' from source '${options.sourceKey}', ${error}`,
-          );
-        }
-      }
-    }
-  }
-
   async getProcessableEntities(
-    txOpaque: Transaction,
+    maybeTx: Transaction | Knex,
     request: { processBatchSize: number },
   ): Promise<GetProcessableEntitiesResult> {
-    const tx = txOpaque as Knex.Transaction;
+    const knex = maybeTx as Knex.Transaction | Knex;
 
-    let itemsQuery = tx<DbRefreshStateRow>('refresh_state').select();
+    let itemsQuery = knex<DbRefreshStateRow>('refresh_state').select([
+      'entity_id',
+      'entity_ref',
+      'unprocessed_entity',
+      'result_hash',
+      'cache',
+      'errors',
+      'location_key',
+      'next_update_at',
+    ]);
 
     // This avoids duplication of work because of race conditions and is
     // also fast because locked rows are ignored rather than blocking.
     // It's only available in MySQL and PostgreSQL
-    if (['mysql', 'mysql2', 'pg'].includes(tx.client.config.client)) {
+    if (['mysql', 'mysql2', 'pg'].includes(knex.client.config.client)) {
       itemsQuery = itemsQuery.forUpdate().skipLocked();
     }
 
     const items = await itemsQuery
-      .where('next_update_at', '<=', tx.fn.now())
+      .where('next_update_at', '<=', knex.fn.now())
       .limit(request.processBatchSize)
       .orderBy('next_update_at', 'asc');
 
     const interval = this.options.refreshInterval();
-    await tx<DbRefreshStateRow>('refresh_state')
+
+    const nextUpdateAt = (refreshInterval: number) => {
+      if (knex.client.config.client.includes('sqlite3')) {
+        return knex.raw(`datetime('now', ?)`, [`${refreshInterval} seconds`]);
+      } else if (knex.client.config.client.includes('mysql')) {
+        return knex.raw(`now() + interval ${refreshInterval} second`);
+      }
+      return knex.raw(`now() + interval '${refreshInterval} seconds'`);
+    };
+
+    await knex<DbRefreshStateRow>('refresh_state')
       .whereIn(
         'entity_ref',
         items.map(i => i.entity_ref),
       )
       .update({
-        next_update_at: tx.client.config.client.includes('sqlite3')
-          ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
-          : tx.raw(`now() + interval '${interval} seconds'`),
+        next_update_at: nextUpdateAt(interval),
       });
 
     return {
@@ -453,57 +255,14 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             id: i.entity_id,
             entityRef: i.entity_ref,
             unprocessedEntity: JSON.parse(i.unprocessed_entity) as Entity,
-            processedEntity: i.processed_entity
-              ? (JSON.parse(i.processed_entity) as Entity)
-              : undefined,
             resultHash: i.result_hash || '',
             nextUpdateAt: timestampToDateTime(i.next_update_at),
-            lastDiscoveryAt: timestampToDateTime(i.last_discovery_at),
             state: i.cache ? JSON.parse(i.cache) : undefined,
             errors: i.errors,
             locationKey: i.location_key,
-          } as RefreshStateItem),
+          } satisfies RefreshStateItem),
       ),
     };
-  }
-
-  async listAncestors(
-    txOpaque: Transaction,
-    options: ListAncestorsOptions,
-  ): Promise<ListAncestorsResult> {
-    const tx = txOpaque as Knex.Transaction;
-    const { entityRef } = options;
-    const entityRefs = new Array<string>();
-
-    let currentRef = entityRef.toLocaleLowerCase('en-US');
-    for (let depth = 1; depth <= MAX_ANCESTOR_DEPTH; depth += 1) {
-      const rows = await tx<DbRefreshStateReferencesRow>(
-        'refresh_state_references',
-      )
-        .where({ target_entity_ref: currentRef })
-        .select();
-
-      if (rows.length === 0) {
-        if (depth === 1) {
-          throw new NotFoundError(`Entity ${currentRef} not found`);
-        }
-        throw new NotFoundError(
-          `Entity ${entityRef} has a broken parent reference chain at ${currentRef}`,
-        );
-      }
-
-      const parentRef = rows.find(r => r.source_entity_ref)?.source_entity_ref;
-      if (!parentRef) {
-        // We've reached the top of the tree which is the entityProvider.
-        // In this case we refresh the entity itself.
-        return { entityRefs };
-      }
-      entityRefs.push(parentRef);
-      currentRef = parentRef;
-    }
-    throw new Error(
-      `Unable receive ancestors for ${entityRef}, reached maximum depth of ${MAX_ANCESTOR_DEPTH}`,
-    );
   }
 
   async listParents(
@@ -515,43 +274,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const rows = await tx<DbRefreshStateReferencesRow>(
       'refresh_state_references',
     )
-      .where({ target_entity_ref: options.entityRef })
+      .whereIn('target_entity_ref', options.entityRefs)
       .select();
 
     const entityRefs = rows.map(r => r.source_entity_ref!).filter(Boolean);
 
     return { entityRefs };
-  }
-
-  async refresh(txOpaque: Transaction, options: RefreshOptions): Promise<void> {
-    const tx = txOpaque as Knex.Transaction;
-    const { entityRef } = options;
-
-    const updateResult = await tx<DbRefreshStateRow>('refresh_state')
-      .where({ entity_ref: entityRef.toLocaleLowerCase('en-US') })
-      .update({ next_update_at: tx.fn.now() });
-    if (updateResult === 0) {
-      throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);
-    }
-  }
-
-  async refreshByRefreshKeys(
-    txOpaque: Transaction,
-    options: RefreshByKeyOptions,
-  ) {
-    const tx = txOpaque as Knex.Transaction;
-    const { keys } = options;
-
-    await tx<DbRefreshStateRow>('refresh_state')
-      .whereIn('entity_id', function selectEntityRefs(tx2) {
-        tx2
-          .whereIn('key', keys)
-          .select({
-            entity_id: 'refresh_keys.entity_id',
-          })
-          .from('refresh_keys');
-      })
-      .update({ next_update_at: tx.fn.now() });
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
@@ -577,202 +305,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     }
   }
 
-  /**
-   * Attempts to update an existing refresh state row, returning true if it was
-   * updated and false if there was no entity with a matching ref and location key.
-   *
-   * Updating the entity will also cause it to be scheduled for immediate processing.
-   */
-  private async updateUnprocessedEntity(
-    tx: Knex.Transaction,
-    entity: Entity,
-    hash: string,
-    locationKey?: string,
-  ): Promise<boolean> {
-    const entityRef = stringifyEntityRef(entity);
-    const serializedEntity = JSON.stringify(entity);
-
-    const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
-      .update({
-        unprocessed_entity: serializedEntity,
-        unprocessed_hash: hash,
-        location_key: locationKey,
-        last_discovery_at: tx.fn.now(),
-        // We only get to this point if a processed entity actually had any changes, or
-        // if an entity provider requested this mutation, meaning that we can safely
-        // bump the deferred entities to the front of the queue for immediate processing.
-        next_update_at: tx.fn.now(),
-      })
-      .where('entity_ref', entityRef)
-      .andWhere(inner => {
-        if (!locationKey) {
-          return inner.whereNull('location_key');
-        }
-        return inner
-          .where('location_key', locationKey)
-          .orWhereNull('location_key');
-      });
-
-    return refreshResult === 1;
-  }
-
-  /**
-   * Attempts to insert a new refresh state row for the given entity, returning
-   * true if successful and false if there was a conflict.
-   */
-  private async insertUnprocessedEntity(
-    tx: Knex.Transaction,
-    entity: Entity,
-    hash: string,
-    locationKey?: string,
-  ): Promise<boolean> {
-    const entityRef = stringifyEntityRef(entity);
-    const serializedEntity = JSON.stringify(entity);
-
-    try {
-      let query = tx<DbRefreshStateRow>('refresh_state').insert({
-        entity_id: uuid(),
-        entity_ref: entityRef,
-        unprocessed_entity: serializedEntity,
-        unprocessed_hash: hash,
-        errors: '',
-        location_key: locationKey,
-        next_update_at: tx.fn.now(),
-        last_discovery_at: tx.fn.now(),
-      });
-
-      // TODO(Rugvip): only tested towards Postgres and SQLite
-      // We have to do this because the only way to detect if there was a conflict with
-      // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
-      // break the ongoing transaction.
-      if (!tx.client.config.client.includes('sqlite3')) {
-        query = query.onConflict('entity_ref').ignore() as any; // type here does not match runtime
-      }
-
-      // Postgres gives as an object with rowCount, SQLite gives us an array
-      const result: { rowCount?: number; length?: number } = await query;
-      return result.rowCount === 1 || result.length === 1;
-    } catch (error) {
-      // SQLite reached this rather than the rowCount check above
-      if (
-        isError(error) &&
-        error.message.includes('UNIQUE constraint failed')
-      ) {
-        return false;
-      }
-      throw error;
-    }
-  }
-
-  /**
-   * Checks whether a refresh state exists for the given entity that has a
-   * location key that does not match the provided location key.
-   *
-   * @returns The conflicting key if there is one.
-   */
-  private async checkLocationKeyConflict(
-    tx: Knex.Transaction,
-    entityRef: string,
-    locationKey?: string,
-  ): Promise<string | undefined> {
-    const row = await tx<DbRefreshStateRow>('refresh_state')
-      .select('location_key')
-      .where('entity_ref', entityRef)
-      .first();
-
-    const conflictingKey = row?.location_key;
-
-    // If there's no existing key we can't have a conflict
-    if (!conflictingKey) {
-      return undefined;
-    }
-
-    if (conflictingKey !== locationKey) {
-      return conflictingKey;
-    }
-    return undefined;
-  }
-
   private deduplicateRelations(rows: DbRelationsRow[]): DbRelationsRow[] {
     return lodash.uniqBy(
       rows,
       r => `${r.source_entity_ref}:${r.target_entity_ref}:${r.type}`,
     );
-  }
-
-  private async createDelta(
-    tx: Knex.Transaction,
-    options: ReplaceUnprocessedEntitiesOptions,
-  ): Promise<{
-    toAdd: { deferred: DeferredEntity; hash: string }[];
-    toUpsert: { deferred: DeferredEntity; hash: string }[];
-    toRemove: string[];
-  }> {
-    if (options.type === 'delta') {
-      return {
-        toAdd: [],
-        toUpsert: options.added.map(e => ({
-          deferred: e,
-          hash: generateStableHash(e.entity),
-        })),
-        toRemove: options.removed.map(e => stringifyEntityRef(e.entity)),
-      };
-    }
-
-    // Grab all of the existing references from the same source, and their locationKeys as well
-    const oldRefs = await tx<DbRefreshStateReferencesRow>(
-      'refresh_state_references',
-    )
-      .leftJoin<DbRefreshStateRow>('refresh_state', {
-        target_entity_ref: 'entity_ref',
-      })
-      .where({ source_key: options.sourceKey })
-      .select({
-        target_entity_ref: 'refresh_state_references.target_entity_ref',
-        location_key: 'refresh_state.location_key',
-        unprocessed_hash: 'refresh_state.unprocessed_hash',
-      });
-
-    const items = options.items.map(deferred => ({
-      deferred,
-      ref: stringifyEntityRef(deferred.entity),
-      hash: generateStableHash(deferred.entity),
-    }));
-
-    const oldRefsSet = new Map(
-      oldRefs.map(r => [
-        r.target_entity_ref,
-        {
-          locationKey: r.location_key,
-          oldEntityHash: r.unprocessed_hash,
-        },
-      ]),
-    );
-    const newRefsSet = new Set(items.map(item => item.ref));
-
-    const toAdd = new Array<{ deferred: DeferredEntity; hash: string }>();
-    const toUpsert = new Array<{ deferred: DeferredEntity; hash: string }>();
-    const toRemove = oldRefs
-      .map(row => row.target_entity_ref)
-      .filter(ref => !newRefsSet.has(ref));
-
-    for (const item of items) {
-      const oldRef = oldRefsSet.get(item.ref);
-      const upsertItem = { deferred: item.deferred, hash: item.hash };
-      if (!oldRef) {
-        // Add any entity that does not exist in the database
-        toAdd.push(upsertItem);
-      } else if (oldRef.locationKey !== item.deferred.locationKey) {
-        // Remove and then re-add any entity that exists, but with a different location key
-        toRemove.push(item.ref);
-        toAdd.push(upsertItem);
-      } else if (oldRef.oldEntityHash !== item.hash) {
-        // Entities with modifications should be pushed through too
-        toUpsert.push(upsertItem);
-      }
-    }
-
-    return { toAdd, toUpsert, toRemove };
   }
 
   /**
@@ -790,7 +327,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Keeps track of the entities that we end up inserting to update refresh_state_references afterwards
     const stateReferences = new Array<string>();
-    const conflictingStateReferences = new Array<string>();
 
     // Upsert all of the unprocessed entities into the refresh_state table, by
     // their entity ref.
@@ -798,23 +334,24 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const entityRef = stringifyEntityRef(entity);
       const hash = generateStableHash(entity);
 
-      const updated = await this.updateUnprocessedEntity(
+      const updated = await updateUnprocessedEntity({
         tx,
         entity,
         hash,
         locationKey,
-      );
+      });
       if (updated) {
         stateReferences.push(entityRef);
         continue;
       }
 
-      const inserted = await this.insertUnprocessedEntity(
+      const inserted = await insertUnprocessedEntity({
         tx,
         entity,
         hash,
         locationKey,
-      );
+        logger: this.options.logger,
+      });
       if (inserted) {
         stateReferences.push(entityRef);
         continue;
@@ -823,23 +360,37 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       // If the row can't be inserted, we have a conflict, but it could be either
       // because of a conflicting locationKey or a race with another instance, so check
       // whether the conflicting entity has the same entityRef but a different locationKey
-      const conflictingKey = await this.checkLocationKeyConflict(
+      const conflictingKey = await checkLocationKeyConflict({
         tx,
         entityRef,
         locationKey,
-      );
+      });
       if (conflictingKey) {
         this.options.logger.warn(
           `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
-        conflictingStateReferences.push(entityRef);
+        if (locationKey) {
+          const eventParams: EventParams<CatalogConflictEventPayload> = {
+            topic: CATALOG_CONFLICTS_TOPIC,
+            eventPayload: {
+              unprocessedEntity: entity,
+              entityRef,
+              newLocationKey: locationKey,
+              existingLocationKey: conflictingKey,
+              lastConflictAt: DateTime.now().toISO()!,
+            },
+          };
+          await this.options.events.publish(eventParams);
+        }
       }
     }
 
-    // Replace all references for the originating entity or source and then create new ones
+    // Lastly, replace refresh state references for the originating entity and any successfully added entities
     await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-      .whereNotIn('target_entity_ref', conflictingStateReferences)
-      .andWhere({ source_entity_ref: options.sourceEntityRef })
+      // Remove all existing references from the originating entity
+      .where({ source_entity_ref: options.sourceEntityRef })
+      // And remove any existing references to entities that we're inserting new references for
+      .orWhereIn('target_entity_ref', stateReferences)
       .delete();
     await tx.batchInsert(
       'refresh_state_references',

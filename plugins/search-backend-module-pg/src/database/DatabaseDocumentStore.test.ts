@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+
+import {
+  TestDatabaseId,
+  TestDatabases,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { PgSearchHighlightOptions } from '../PgSearchEngine';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
+import { v4 as uuidv4 } from 'uuid';
 
 const highlightOptions: PgSearchHighlightOptions = {
   preTag: '<tag>',
@@ -29,6 +35,8 @@ const highlightOptions: PgSearchHighlightOptions = {
   maxFragments: 0,
   fragmentDelimiter: ' ... ',
 };
+
+jest.setTimeout(60_000);
 
 describe('DatabaseDocumentStore', () => {
   describe('unsupported', () => {
@@ -44,30 +52,30 @@ describe('DatabaseDocumentStore', () => {
 
         expect(supported).toBe(false);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
       'should fail to create, %p',
       async databaseId => {
         const knex = await databases.init(databaseId);
-
+        const databaseManager = mockServices.database({ knex });
         await expect(
-          async () => await DatabaseDocumentStore.create(knex),
+          async () => await DatabaseDocumentStore.create(databaseManager),
         ).rejects.toThrow();
       },
-      60_000,
     );
   });
 
   describe('supported', () => {
     const databases = TestDatabases.create({
-      ids: ['POSTGRES_13'],
+      ids: ['POSTGRES_14'],
     });
 
     async function createStore(databaseId: TestDatabaseId) {
       const knex = await databases.init(databaseId);
-      const store = await DatabaseDocumentStore.create(knex);
+      const databaseManager = mockServices.database({ knex });
+      const store = await DatabaseDocumentStore.create(databaseManager);
+
       return { store, knex };
     }
 
@@ -85,7 +93,6 @@ describe('DatabaseDocumentStore', () => {
 
         expect(supported).toBe(true);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -114,7 +121,32 @@ describe('DatabaseDocumentStore', () => {
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '2' }]);
       },
-      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should insert truncated documents, %p',
+      async databaseId => {
+        const { store, knex } = await createStore(databaseId);
+
+        await store.transaction(async tx => {
+          await store.prepareInsert(tx);
+
+          await store.insertDocuments(tx, 'my-type', [
+            {
+              title: 'TITLE 1',
+              text: Array.from({ length: 100000 })
+                .map(() => uuidv4()) // text tokens should be unique to overflow the tsvector indexing and trigger truncation
+                .join(' '),
+              location: 'LOCATION-1',
+            },
+          ]);
+          await store.completeInsert(tx, 'my-type', true);
+        });
+
+        expect(
+          await knex.count('*').where('type', 'my-type').from('documents'),
+        ).toEqual([{ count: '1' }]);
+      },
     );
 
     it.each(databases.eachSupportedId())(
@@ -155,7 +187,6 @@ describe('DatabaseDocumentStore', () => {
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '4' }]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -202,7 +233,6 @@ describe('DatabaseDocumentStore', () => {
           await knex.count('*').where('type', 'my-type').from('documents'),
         ).toEqual([{ count: '0' }]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -237,12 +267,14 @@ describe('DatabaseDocumentStore', () => {
             pgTerm: 'Hello & World',
             offset: 1,
             limit: 1,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
 
         expect(rows).toEqual([
           {
+            total_count: '2',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -253,7 +285,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -283,12 +314,14 @@ describe('DatabaseDocumentStore', () => {
             pgTerm: 'Hello & World',
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
 
         expect(rows).toEqual([
           {
+            total_count: '2',
             document: {
               location: 'LOCATION-1',
               text: 'Around the world',
@@ -298,6 +331,7 @@ describe('DatabaseDocumentStore', () => {
             type: 'test',
           },
           {
+            total_count: '2',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -308,7 +342,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -345,12 +378,14 @@ describe('DatabaseDocumentStore', () => {
             types: ['my-type'],
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
 
         expect(rows).toEqual([
           {
+            total_count: '1',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -361,7 +396,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -399,12 +433,14 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
 
         expect(rows).toEqual([
           {
+            total_count: '1',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -416,7 +452,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -444,6 +479,18 @@ describe('DatabaseDocumentStore', () => {
               text: 'Around the world',
               location: 'LOCATION-1',
             },
+            {
+              title: 'Sed ut perspiciatis',
+              text: 'Hello World',
+              myField: ['that', 'not'],
+              location: 'LOCATION-1',
+            } as unknown as IndexableDocument,
+            {
+              title: 'Consectetur adipiscing',
+              text: 'Hello World',
+              myField: ['that', 'not', 'where'],
+              location: 'LOCATION-1',
+            } as unknown as IndexableDocument,
           ]);
           await store.completeInsert(tx, 'my-type');
         });
@@ -454,12 +501,14 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: ['this', 'that'] },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
 
         expect(rows).toEqual([
           {
+            total_count: '4',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -470,6 +519,7 @@ describe('DatabaseDocumentStore', () => {
             type: 'my-type',
           },
           {
+            total_count: '4',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -479,9 +529,30 @@ describe('DatabaseDocumentStore', () => {
             rank: expect.any(Number),
             type: 'my-type',
           },
+          {
+            total_count: '4',
+            document: {
+              location: 'LOCATION-1',
+              text: 'Hello World',
+              title: 'Sed ut perspiciatis',
+              myField: ['that', 'not'],
+            },
+            rank: expect.any(Number),
+            type: 'my-type',
+          },
+          {
+            total_count: '4',
+            document: {
+              location: 'LOCATION-1',
+              text: 'Hello World',
+              title: 'Consectetur adipiscing',
+              myField: ['that', 'not', 'where'],
+            },
+            rank: expect.any(Number),
+            type: 'my-type',
+          },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -516,12 +587,14 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this', otherField: 'another' },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
 
         expect(rows).toEqual([
           {
+            total_count: '1',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -534,7 +607,6 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
     );
 
     it.each(databases.eachSupportedId())(
@@ -566,12 +638,14 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
 
         expect(rows).toEqual([
           {
+            total_count: '2',
             document: {
               title: 'Lorem Ipsum',
               text: 'Hello World',
@@ -582,6 +656,7 @@ describe('DatabaseDocumentStore', () => {
             type: 'my-type',
           },
           {
+            total_count: '2',
             document: {
               title: 'Dolor sit amet',
               text: 'Hello World',
@@ -593,7 +668,71 @@ describe('DatabaseDocumentStore', () => {
           },
         ]);
       },
-      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should remove deleted documents and add new ones, %p',
+      async databaseId => {
+        const { store, knex } = await createStore(databaseId);
+
+        await store.transaction(async tx => {
+          await store.prepareInsert(tx);
+          await store.insertDocuments(tx, 'my-type', [
+            {
+              title: 'TITLE 1',
+              text: 'TEXT 1',
+              location: 'LOCATION-1',
+            },
+            {
+              title: 'TITLE 2',
+              text: 'TEXT 2',
+              location: 'LOCATION-2',
+            },
+          ]);
+          await store.completeInsert(tx, 'my-type');
+        });
+
+        await expect(
+          knex.count('*').where('type', 'my-type').from('documents'),
+        ).resolves.toEqual([{ count: '2' }]);
+        const results_pre = await knex
+          .select('*')
+          .where('type', 'my-type')
+          .from('documents');
+        expect(results_pre).toHaveLength(2);
+        expect(results_pre[0].document.title).toBe('TITLE 1');
+        expect(results_pre[0].document.text).toBe('TEXT 1');
+        expect(results_pre[1].document.title).toBe('TITLE 2');
+
+        await store.transaction(async tx => {
+          await store.prepareInsert(tx);
+          await store.insertDocuments(tx, 'my-type', [
+            {
+              title: 'TITLE 1',
+              text: 'TEXT 1 updated',
+              location: 'LOCATION-1',
+            },
+            {
+              title: 'TITLE 3',
+              text: 'TEXT 3',
+              location: 'LOCATION-3',
+            },
+          ]);
+          await store.completeInsert(tx, 'my-type');
+        });
+
+        await expect(
+          knex.count('*').where('type', 'my-type').from('documents'),
+        ).resolves.toEqual([{ count: '2' }]);
+        const results_post = await knex
+          .select('*')
+          .where('type', 'my-type')
+          .from('documents');
+        expect(results_post).toHaveLength(2);
+        expect(results_post[0].document.title).toBe('TITLE 1');
+        expect(results_post[0].document.text).toBe('TEXT 1 updated');
+        expect(results_post[1].document.title).toBe('TITLE 3');
+      },
     );
   });
 });

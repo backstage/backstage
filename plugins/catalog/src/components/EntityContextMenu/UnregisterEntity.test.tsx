@@ -17,19 +17,17 @@
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  MockPermissionApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
-import * as React from 'react';
+import { ReactNode } from 'react';
 import { UnregisterEntity } from './UnregisterEntity';
 
-const mockPermissionApi = new MockPermissionApi();
-
-function render(children: React.ReactNode) {
+function render(children: ReactNode) {
   return renderInTestApp(
-    <TestApiProvider apis={[[permissionApiRef, mockPermissionApi]]}>
+    <TestApiProvider apis={[[permissionApiRef, mockApis.permission()]]}>
       <EntityProvider
         entity={{ apiVersion: 'a', kind: 'b', metadata: { name: 'c' } }}
         children={children}
@@ -54,13 +52,13 @@ describe('ComponentContextMenu', () => {
     expect(unregister).toBeInTheDocument();
     fireEvent.click(unregister);
 
-    expect(mockCallback).toBeCalled();
+    expect(mockCallback).toHaveBeenCalled();
   });
 
   it('check Unregister entity button is disabled', async () => {
     const mockCallback = jest.fn();
 
-    const { getByText } = await render(
+    await render(
       <UnregisterEntity
         unregisterEntityOptions={{ disableUnregister: 'disable' }}
         isUnregisterAllowed
@@ -69,10 +67,10 @@ describe('ComponentContextMenu', () => {
       />,
     );
 
-    const unregister = await screen.getByText('Unregister entity');
+    const unregister = screen.getByText('Unregister entity');
     expect(unregister).toBeInTheDocument();
 
-    const unregisterSpanItem = getByText(/Unregister entity/);
+    const unregisterSpanItem = screen.getByText(/Unregister entity/);
     const unregisterMenuListItem =
       unregisterSpanItem?.parentElement?.parentElement;
     expect(unregisterMenuListItem).toHaveAttribute('aria-disabled');

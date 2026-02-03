@@ -1,25 +1,60 @@
-catalog:
-  - plugins/catalog/**/*
-  - plugins/catalog-*/**/*
-  - packages/catalog-*/**/*
-scaffolder:
-  - plugins/scaffolder/**/*
-  - plugins/scaffolder-*/**/*
-search:
-  - plugins/search/**/*
-  - plugins/search-*/**/*
-  - packages/search-*/**/*
-docs-like-code:
-  - plugins/techdocs/**/*
-  - plugins/techdocs-*/**/*
-  - packages/techdocs-*/**/*
-documentation:
-  - docs/**/*
-microsite:
-  - microsite/**/*
-auth:
-  - plugins/auth-backend/**/*
-  - plugins/permission-*/**/*
-  - packages/core-app-api/src/apis/implementations/auth/**/*
-  - packages/core-app-api/src/lib/Auth*/**/*
-  - packages/core-plugin-api/src/apis/definitions/auth.ts
+area:auth:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/auth-*/**/*
+          - packages/core-app-api/src/apis/implementations/auth/**/*
+          - packages/core-app-api/src/lib/Auth*/**/*
+          - packages/core-plugin-api/src/apis/definitions/auth.ts
+area:catalog:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/catalog/**/*
+          - plugins/catalog-*/**/*
+          - packages/catalog-*/**/*
+area:documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/**/*
+area:events:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/events-*/**/*
+area:home:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/home/**/*
+area:kubernetes:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/kubernetes/**/*
+          - plugins/kubernetes-*/**/*
+area:microsite:
+  - changed-files:
+      - any-glob-to-any-file:
+          - microsite/**/*
+area:permission:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/permission-*/**/*
+area:search:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/search-*/**/*
+          - plugins/home/**/*
+          - plugins/search-*/**/*
+          - plugins/search/**/*
+area:scaffolder:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/scaffolder/**/*
+          - plugins/scaffolder-*/**/*
+area:storybook:
+  - changed-files:
+      - any-glob-to-any-file:
+          - storybook/**/*
+area:techdocs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/techdocs/**/*
+          - plugins/techdocs-*/**/*
+          - packages/techdocs-*/**/*

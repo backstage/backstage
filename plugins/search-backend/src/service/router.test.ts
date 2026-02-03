@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { IndexBuilder } from '@backstage/plugin-search-backend-node';
-import { SearchEngine } from '@backstage/plugin-search-common';
+import {
+  IndexBuilder,
+  SearchEngine,
+} from '@backstage/plugin-search-backend-node';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
+import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
+import { Server } from 'node:http';
+import {
+  mockCredentials,
+  mockErrorHandler,
+  mockServices,
+} from '@backstage/backend-test-utils';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
@@ -34,11 +42,21 @@ const mockPermissionEvaluator: PermissionEvaluator = {
 };
 
 describe('createRouter', () => {
-  let app: express.Express;
+  let app: express.Express | Server;
   let mockSearchEngine: jest.Mocked<SearchEngine>;
 
+  const mockBaseUrl = 'http://backstage:9191/api/proxy';
+  const discovery: DiscoveryService = {
+    async getBaseUrl() {
+      return mockBaseUrl;
+    },
+    async getExternalBaseUrl() {
+      return mockBaseUrl;
+    },
+  };
+
   beforeAll(async () => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     mockSearchEngine = {
       getIndexer: jest.fn(),
       setTranslator: jest.fn(),
@@ -59,11 +77,17 @@ describe('createRouter', () => {
         'first-type': {},
         'second-type': {},
       },
-      config: new ConfigReader({ permissions: { enabled: false } }),
+      config: new ConfigReader({
+        permissions: { enabled: false },
+        search: { maxPageLimit: 200, maxTermLength: 20 },
+      }),
       permissions: mockPermissionEvaluator,
+      discovery,
       logger,
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
     });
-    app = express().use(router);
+    app = await wrapServer(express().use(router).use(mockErrorHandler()));
   });
 
   beforeEach(() => {
@@ -71,6 +95,23 @@ describe('createRouter', () => {
   });
 
   describe('GET /query', () => {
+    it('throws meaningful query errors', async () => {
+      const error = new Error('Query error message');
+      mockSearchEngine.query.mockRejectedValueOnce(error);
+
+      const response = await request(app).get('/query');
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toMatchObject(
+        expect.objectContaining({
+          error: {
+            name: 'Error',
+            message: `There was a problem performing the search query`,
+          },
+        }),
+      );
+    });
+
     it('returns empty results array', async () => {
       const response = await request(app).get('/query');
 
@@ -86,6 +127,8 @@ describe('createRouter', () => {
       'types[0]=first-type&types[1]=second-type',
       'filters[prop]=value',
       'pageCursor=foo',
+      // https://github.com/backstage/backstage/issues/23973
+      'term=foo+bar',
     ])('accepts valid query string "%s"', async queryString => {
       const response = await request(app).get(`/query?${queryString}`);
 
@@ -109,6 +152,50 @@ describe('createRouter', () => {
       expect(response.status).toEqual(400);
       expect(response.body).toMatchObject({
         error: { message: /invalid query string/i },
+      });
+    });
+
+    it('should accept per page value under or equal to configured max', async () => {
+      const response = await request(app).get(`/query?pageLimit=200`);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        results: [],
+      });
+    });
+
+    it('should reject per page value over configured max', async () => {
+      const response = await request(app).get(`/query?pageLimit=300`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The page limit "300" is greater than "200"/i,
+        },
+      });
+    });
+
+    it('should reject a non number per page value', async () => {
+      const response = await request(app).get(`/query?pageLimit=twohundred`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The page limit "twohundred" is not a number"/i,
+        },
+      });
+    });
+
+    it('should reject term length over configured max', async () => {
+      const response = await request(app).get(
+        `/query?term=HelloWorld1234567890!`,
+      );
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The term length "21" is greater than "20"/i,
+        },
       });
     });
 
@@ -148,9 +235,32 @@ describe('createRouter', () => {
       });
     });
 
+    it('is less restrictive with unknown keys on query endpoint', async () => {
+      const queryString =
+        'term=test&%5BdocType%5D%5B0%5D=Service&filters%5BdocType%5D%5B0%5D=filter1&unknownKey1%5B2%5D=unknownValue1&unknownKey1%5B3%5D=unknownValue2&unknownKey2=unknownValue1&pageCursor';
+      const response = await request(app).get(`/query?${queryString}`);
+      const firstArg: Object = {
+        docType: ['Service'],
+        filters: { docType: ['filter1'] },
+        pageCursor: '',
+        term: 'test',
+        unknownKey1: ['unknownValue1', 'unknownValue2'],
+        unknownKey2: 'unknownValue1',
+      };
+      const secondArg = {
+        credentials: mockCredentials.user(),
+        token: mockCredentials.service.token({
+          onBehalfOf: mockCredentials.user(),
+          targetPluginId: 'search',
+        }),
+      };
+      expect(response.status).toEqual(200);
+      expect(mockSearchEngine.query).toHaveBeenCalledWith(firstArg, secondArg);
+    });
+
     describe('search result filtering', () => {
       beforeAll(async () => {
-        const logger = getVoidLogger();
+        const logger = mockServices.logger.mock();
         mockSearchEngine = {
           getIndexer: jest.fn(),
           setTranslator: jest.fn(),
@@ -166,7 +276,10 @@ describe('createRouter', () => {
           types: indexBuilder.getDocumentTypes(),
           config: new ConfigReader({ permissions: { enabled: false } }),
           permissions: mockPermissionEvaluator,
+          discovery,
           logger,
+          auth: mockServices.auth(),
+          httpAuth: mockServices.httpAuth(),
         });
         app = express().use(router);
       });

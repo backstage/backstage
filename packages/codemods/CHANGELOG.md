@@ -1,5 +1,251 @@
 # @backstage/codemods
 
+## 0.1.54-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/cli-common@0.1.18-next.0
+
+## 0.1.53
+
+### Patch Changes
+
+- 688f070: Updated to use new utilities from `@backstage/cli-common`.
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 0.1.53-next.2
+
+### Patch Changes
+
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.2
+
+## 0.1.53-next.1
+
+### Patch Changes
+
+- 688f070: Updated to use new utilities from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
+## 0.1.53-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.0
+
+## 0.1.52
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.1.52-next.0
+
+### Patch Changes
+
+- 702f41d: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15-next.0
+
+## 0.1.51
+
+### Patch Changes
+
+- c06b7f1: Updated dependency `@types/jscodeshift` to `^0.12.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.1.50
+
+### Patch Changes
+
+- 0894166: Updated dependency `jscodeshift` to `^0.16.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.1.50-next.0
+
+### Patch Changes
+
+- 0894166: Updated dependency `jscodeshift` to `^0.16.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.1.49
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.1.49-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.14-next.0
+
+## 0.1.48
+
+### Patch Changes
+
+- 1bd4596: Removed the `ts-node` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.1.47
+
+### Patch Changes
+
+- 6ba64c4: Updated dependency `commander` to `^12.0.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.1.46
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.1.46-next.0
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13-next.0
+
+## 0.1.45
+
+### Patch Changes
+
+- 325a32e9476e: Updated dependency `jscodeshift` to `^0.15.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.1.45-next.0
+
+### Patch Changes
+
+- 325a32e9476e: Updated dependency `jscodeshift` to `^0.15.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.1.44
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.1.44-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12-next.0
+
+## 0.1.43
+
+### Patch Changes
+
+- 02f1316e57: Moved `commander` to being a regular dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.1.43-next.0
+
+### Patch Changes
+
+- 02f1316e57: Moved `commander` to being a regular dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.1.42
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11
+
+## 0.1.42-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.11-next.0
+
+## 0.1.41
+
+### Patch Changes
+
+- 58502ec285: Updated dependency `jscodeshift` to `^0.14.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.1.41-next.0
+
+### Patch Changes
+
+- 58502ec285: Updated dependency `jscodeshift` to `^0.14.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.1.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.1.40-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.1.40-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.1.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.1.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10
+
+## 0.1.39-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.10-next.0
+
 ## 0.1.38
 
 ### Patch Changes

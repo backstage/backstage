@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CacheClient } from '@backstage/backend-common';
 import { assertError, CustomErrorBase } from '@backstage/errors';
-import { Config } from '@backstage/config';
-import { Logger } from 'winston';
+import { Config, readDurationFromConfig } from '@backstage/config';
+import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
+import { durationToMilliseconds } from '@backstage/types';
 
 export class CacheInvalidationError extends CustomErrorBase {}
 
 export class TechDocsCache {
-  protected readonly cache: CacheClient;
-  protected readonly logger: Logger;
+  protected readonly cache: CacheService;
+  protected readonly logger: LoggerService;
   protected readonly readTimeout: number;
 
   private constructor({
@@ -30,8 +30,8 @@ export class TechDocsCache {
     logger,
     readTimeout,
   }: {
-    cache: CacheClient;
-    logger: Logger;
+    cache: CacheService;
+    logger: LoggerService;
     readTimeout: number;
   }) {
     this.cache = cache;
@@ -41,10 +41,22 @@ export class TechDocsCache {
 
   static fromConfig(
     config: Config,
-    { cache, logger }: { cache: CacheClient; logger: Logger },
+    { cache, logger }: { cache: CacheService; logger: LoggerService },
   ) {
-    const timeout = config.getOptionalNumber('techdocs.cache.readTimeout');
-    const readTimeout = timeout === undefined ? 1000 : timeout;
+    let readTimeout: number;
+    if (config.has('techdocs.cache.readTimeout')) {
+      if (typeof config.get('techdocs.cache.readTimeout') === 'number') {
+        readTimeout = config.getNumber('techdocs.cache.readTimeout');
+      } else {
+        readTimeout = durationToMilliseconds(
+          readDurationFromConfig(config, {
+            key: 'techdocs.cache.readTimeout',
+          }),
+        );
+      }
+    } else {
+      readTimeout = 1000;
+    }
     return new TechDocsCache({ cache, logger, readTimeout });
   }
 
@@ -67,7 +79,7 @@ export class TechDocsCache {
     } catch (e) {
       assertError(e);
       this.logger.warn(`Error getting cache entry ${path}: ${e.message}`);
-      this.logger.debug(e.stack);
+      this.logger.debug(e.message, e);
       return undefined;
     }
   }

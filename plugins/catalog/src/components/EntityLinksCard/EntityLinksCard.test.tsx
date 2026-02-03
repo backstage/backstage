@@ -16,16 +16,18 @@
 
 import { Entity, EntityLink } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import React from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import { EntityLinksCard } from './EntityLinksCard';
 
 describe('EntityLinksCard', () => {
   const createEntity = (links: EntityLink[] = []): Entity =>
     ({
       metadata: {
+        name: 'mock',
         links,
       },
+      kind: 'MockKind',
     } as Entity);
 
   const createLink = ({
@@ -41,30 +43,26 @@ describe('EntityLinksCard', () => {
   it('should render a link', async () => {
     const links: EntityLink[] = [createLink()];
 
-    const { queryByText } = await renderWithEffects(
-      wrapInTestApp(
-        <EntityProvider entity={createEntity(links)}>
-          <EntityLinksCard />
-        </EntityProvider>,
-      ),
+    await renderInTestApp(
+      <EntityProvider entity={createEntity(links)}>
+        <EntityLinksCard />
+      </EntityProvider>,
     );
 
-    expect(queryByText('admin dashboard')).toBeInTheDocument();
-    expect(queryByText('derp')).not.toBeInTheDocument();
+    expect(screen.getByText('admin dashboard')).toBeInTheDocument();
+    expect(screen.queryByText('derp')).not.toBeInTheDocument();
   });
 
   it('should show empty state', async () => {
-    const { queryByText } = await renderWithEffects(
-      wrapInTestApp(
-        <EntityProvider entity={createEntity([])}>
-          <EntityLinksCard />
-        </EntityProvider>,
-      ),
+    await renderInTestApp(
+      <EntityProvider entity={createEntity([])}>
+        <EntityLinksCard />
+      </EntityProvider>,
     );
 
     expect(
-      queryByText(/.*No links defined for this entity.*/),
+      screen.getByText(/.*No links defined for this entity.*/),
     ).toBeInTheDocument();
-    expect(queryByText('admin dashboard')).not.toBeInTheDocument();
+    expect(screen.queryByText('admin dashboard')).not.toBeInTheDocument();
   });
 });

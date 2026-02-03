@@ -19,7 +19,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import React from 'react';
 import { CodeSnippet } from '../CodeSnippet';
 import { CopyTextButton } from '../CopyTextButton';
 import { ErrorPanel, ErrorPanelProps } from '../ErrorPanel';
@@ -44,6 +43,7 @@ const useStyles = makeStyles(
 /**
  * Renders a warning panel as the effect of a failed server request.
  *
+ * @remarks
  * Has special treatment for ResponseError errors, to display rich
  * server-provided information about what happened.
  */

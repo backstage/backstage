@@ -30,24 +30,56 @@ import { AppConfigLoader } from './types';
  *
  * @public
  */
-export const defaultConfigLoader: AppConfigLoader = async (
+export const defaultConfigLoader: AppConfigLoader = async () =>
+  defaultConfigLoaderSync();
+
+/** @internal */
+export function defaultConfigLoaderSync(
   // This string may be replaced at runtime to provide additional config.
   // It should be replaced by a JSON-serialized config object.
   // It's a param so we can test it, but at runtime this will always fall back to default.
   runtimeConfigJson: string = '__APP_INJECTED_RUNTIME_CONFIG__',
-) => {
-  const appConfig = process.env.APP_CONFIG;
-  if (!appConfig) {
-    throw new Error('No static configuration provided');
-  }
-  if (!Array.isArray(appConfig)) {
-    throw new Error('Static configuration has invalid format');
-  }
-  const configs = appConfig.slice() as unknown as AppConfig[];
+) {
+  const configs = new Array<AppConfig>();
 
-  // Avoiding this string also being replaced at runtime
-  if (
+  const staticConfig = process.env.APP_CONFIG;
+  if (staticConfig) {
+    if (!Array.isArray(staticConfig)) {
+      throw new Error('Static configuration has invalid format');
+    }
+    configs.push(...staticConfig);
+  }
+
+  // Check if we have any config script tags, otherwise fall back to injected config
+  const configScripts = document.querySelectorAll(
+    'script[type="backstage.io/config"]',
+  );
+  if (configScripts.length > 0) {
+    for (const el of configScripts) {
+      try {
+        const content = el.textContent;
+        if (!content) {
+          throw new Error('tag is empty');
+        }
+        let data;
+        try {
+          data = JSON.parse(content);
+        } catch (error) {
+          throw new Error(`failed to parse config; ${error}`);
+        }
+        if (!Array.isArray(data)) {
+          throw new Error('data is not an array');
+        }
+        configs.push(...data);
+      } catch (error) {
+        throw new Error(
+          `Failed to load config from script tag, ${error.message}`,
+        );
+      }
+    }
+  } else if (
     runtimeConfigJson !==
+    // Avoiding this string also being replaced at runtime
     '__app_injected_runtime_config__'.toLocaleUpperCase('en-US')
   ) {
     try {
@@ -70,4 +102,4 @@ export const defaultConfigLoader: AppConfigLoader = async (
     });
   }
   return configs;
-};
+}

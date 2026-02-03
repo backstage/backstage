@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 /*
  * Copyright 2022 The Backstage Authors
  *
@@ -19,7 +19,7 @@
 const semver = require('semver');
 const fs = require('fs-extra');
 const { getPackages } = require('@manypkg/get-packages');
-const path = require('path');
+const path = require('node:path');
 
 async function main() {
   const [script, version] = process.argv.slice(1);

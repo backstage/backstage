@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { fireEvent, within } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { SimpleStepper as Stepper } from './SimpleStepper';
@@ -144,5 +143,61 @@ describe('Stepper', () => {
     fireEvent.click(rendered.getByText('Step0Next'));
 
     expect(rendered.getByText('FinalStepNext')).toBeInTheDocument();
+  });
+
+  it('Handles skipStep property', async () => {
+    const rendered = await renderInTestApp(
+      <Stepper>
+        <Step title="Step 0" data-testid="step0">
+          <div>step0</div>
+        </Step>
+        <Step title="Step 1" actions={{ showSkip: true }} data-testid="step1">
+          <div>step1</div>
+        </Step>
+        <Step title="Step 2" data-testid="step2">
+          <div>step2</div>
+        </Step>
+        <Step title="Step 3" data-testid="step3">
+          <div>step3</div>
+        </Step>
+      </Stepper>,
+    );
+
+    fireEvent.click(getTextInSlide(rendered, 0)('Next') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 1)('Skip') as Node);
+    expect(rendered.getByText('step2')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 2)('Back') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+  });
+
+  it('Handles onBack action properly when activeStep is higher than 0', async () => {
+    const rendered = await renderInTestApp(
+      <Stepper activeStep={2}>
+        <Step title="Step 0" data-testid="step0">
+          <div>step0</div>
+        </Step>
+        <Step title="Step 1" data-testid="step1">
+          <div>step1</div>
+        </Step>
+        <Step title="Step 2" data-testid="step2">
+          <div>step2</div>
+        </Step>
+      </Stepper>,
+    );
+
+    fireEvent.click(getTextInSlide(rendered, 2)('Back') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 1)('Back') as Node);
+    expect(rendered.getByText('step0')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 0)('Next') as Node);
+    expect(rendered.getByText('step1')).toBeInTheDocument();
+
+    fireEvent.click(getTextInSlide(rendered, 1)('Next') as Node);
+    expect(rendered.getByText('step2')).toBeInTheDocument();
   });
 });

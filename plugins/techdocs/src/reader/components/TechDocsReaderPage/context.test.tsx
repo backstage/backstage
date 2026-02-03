@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { ReactNode } from 'react';
+import { renderHook, waitFor } from '@testing-library/react';
 
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core/styles';
 
 import { lightTheme } from '@backstage/theme';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -44,7 +44,7 @@ const mockEntityMetadata: Entity = {
 };
 
 const mockTechDocsMetadata: TechDocsMetadata = {
-  site_name: 'test-componnet',
+  site_name: 'test-component',
   site_description: 'this is a test component',
 };
 
@@ -66,7 +66,7 @@ const wrapper = ({
   children,
 }: {
   entityRef?: CompoundEntityRef;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
   <ThemeProvider theme={lightTheme}>
     <TestApiProvider
@@ -95,16 +95,13 @@ describe('context', () => {
     });
 
     it('should return expected entity values', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useEntityMetadata(),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useEntityMetadata(), { wrapper });
 
-      await waitForNextUpdate();
-
-      expect(result.current.value).toBeDefined();
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.value).toMatchObject(mockEntityMetadata);
+      await waitFor(() => {
+        expect(result.current.value).toBeDefined();
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.value).toMatchObject(mockEntityMetadata);
+      });
     });
   });
 
@@ -116,16 +113,13 @@ describe('context', () => {
     });
 
     it('should return expected techdocs metadata values', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useTechDocsMetadata(),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useTechDocsMetadata(), { wrapper });
 
-      await waitForNextUpdate();
-
-      expect(result.current.value).toBeDefined();
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.value).toMatchObject(mockTechDocsMetadata);
+      await waitFor(() => {
+        expect(result.current.value).toBeDefined();
+        expect(result.current.error).toBeUndefined();
+        expect(result.current.value).toMatchObject(mockTechDocsMetadata);
+      });
     });
   });
 });

@@ -16,8 +16,8 @@
 
 import { useApi } from '@backstage/core-plugin-api';
 import { useMemo, useReducer, useRef } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useAsync from 'react-use/esm/useAsync';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { techdocsStorageApiRef } from '@backstage/plugin-techdocs-react';
 
 /**
@@ -343,13 +343,24 @@ export function useReaderState(
     [state.activeSyncState, state.content, state.contentLoading],
   );
 
-  return {
-    state: displayState,
-    contentReload,
-    path: state.path,
-    content: state.content,
-    contentErrorMessage: state.contentError?.toString(),
-    syncErrorMessage: state.syncError?.toString(),
-    buildLog: state.buildLog,
-  };
+  return useMemo(
+    () => ({
+      state: displayState,
+      contentReload,
+      path: state.path,
+      content: state.content,
+      contentErrorMessage: state.contentError?.toString(),
+      syncErrorMessage: state.syncError?.toString(),
+      buildLog: state.buildLog,
+    }),
+    [
+      displayState,
+      contentReload,
+      state.path,
+      state.content,
+      state.contentError,
+      state.syncError,
+      state.buildLog,
+    ],
+  );
 }

@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
@@ -34,14 +33,14 @@ const DoubleArrowRight = () => {
   const classes = useStyles();
 
   return (
-    <div className={classes.iconContainer}>
-      <div className={classes.arrow1}>
+    <Box className={classes.iconContainer}>
+      <Box className={classes.arrow1}>
         <ArrowForwardIosIcon style={{ fontSize: '12px' }} />
-      </div>
-      <div>
+      </Box>
+      <Box>
         <ArrowForwardIosIcon style={{ fontSize: '12px' }} />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

@@ -22,9 +22,18 @@ export interface Config {
      */
     elasticsearch?: {
       /**
+       * Prefix to be used for all index creation. Value will be put in front of the index as is.
+       */
+      indexPrefix?: string;
+      /**
        * Batch size for elastic search indexing tasks. Defaults to 1000.
        */
       batchSize?: number;
+      /**
+       * Defines the name of the field in each document that will be used to identify documents during a batch upload.
+       * If not provided, a custom ID will be generated for each document.
+       */
+      batchKeyField?: string;
       /**
        * Options for configuring highlight settings
        * See https://www.elastic.co/guide/en/elasticsearch/reference/7.17/highlighting.html
@@ -43,6 +52,53 @@ export interface Config {
          */
         fragmentDelimiter?: string;
       };
+      queryOptions?: {
+        /**
+         * Fuzziness allows you to define the maximum Levenshtein distance for fuzzy queries,
+         * which determines how many single-character edits (insertions, deletions, substitutions)
+         * are allowed for a term to be considered a match.
+         *
+         * - 'AUTO': Automatically determines the fuzziness level based on the length of the term.
+         *           This is the default and widely accepted standard.
+         * - number: Specifies a fixed fuzziness level. For example, a value of 1 allows for one edit.
+         *
+         * Example:
+         * - For a term "apple" with fuzziness set to 1, queries like "aple" or "apply" would match.
+         */
+
+        fuzziness?: 'AUTO' | number;
+        /**
+         * Minimum number of characters that must match exactly at the beginning of the qeury. Defaults to 0.
+         */
+        prefixLength?: number;
+      };
+
+      /** Elasticsearch specific index template bodies */
+      indexTemplates?: Array<{
+        name: string;
+        body: {
+          /**
+           * Array of wildcard (*) expressions used to match the names of data streams and indices during creation.
+           */
+          index_patterns: string[];
+
+          /**
+           * An ordered list of component template names.
+           * Component templates are merged in the order specified,
+           * meaning that the last component template specified has the highest precedence.
+           */
+          composed_of?: string[];
+
+          /**
+           * See available properties of template
+           * https://www.elastic.co/guide/en/elasticsearch/reference/7.15/indices-put-template.html#put-index-template-api-request-body
+           */
+          template?: {
+            [key: string]: unknown;
+          };
+        };
+      }>;
+
       /** Miscellaneous options for the client */
       clientOptions?: {
         ssl?: {
@@ -53,92 +109,127 @@ export interface Config {
            */
           rejectUnauthorized?: boolean;
         };
-      } & (
-        | {
-            // elastic = Elastic.co ElasticSearch provider
-            provider: 'elastic';
+      };
+    } & (
+      | {
+          // elastic = Elastic.co ElasticSearch provider
+          provider: 'elastic';
+
+          /**
+           * Elastic.co CloudID
+           * See: https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/client-connecting.html#authentication
+           */
+          cloudId: string;
+
+          auth: {
+            username: string;
 
             /**
-             * Elastic.co CloudID
-             * See: https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/client-connecting.html#authentication
+             * @visibility secret
              */
-            cloudId: string;
+            password: string;
+          };
+        }
 
-            auth: {
-              username: string;
-
-              /**
-               * @visibility secret
-               */
-              password: string;
-            };
-          }
-
-        /**
-         *  AWS = Amazon Elasticsearch Service provider
-         *
-         *  Authentication is handled using the default AWS credentials provider chain
-         */
-        | {
-            provider: 'aws';
-
-            /**
-             * Node configuration.
-             * URL AWS ES endpoint to connect to.
-             * Eg. https://my-es-cluster.eu-west-1.es.amazonaws.com
-             */
-            node: string;
-          }
-
-        /**
-         * Standard ElasticSearch
-         *
-         * Includes self-hosted clusters and others that provide direct connection via an endpoint
-         * and authentication method (see possible authentication options below)
-         */
-        | {
-            /**
-             * Node configuration.
-             * URL/URLS to ElasticSearch node to connect to.
-             * Either direct URL like 'https://localhost:9200' or with credentials like 'https://username:password@localhost:9200'
-             */
-            node: string | string[];
-
-            /**
-             * Authentication credentials for ElasticSearch
-             * If both ApiKey/Bearer token and username+password is provided, tokens take precedence
-             */
-            auth?:
-              | {
-                  username: string;
-
-                  /**
-                   * @visibility secret
-                   */
-                  password: string;
-                }
-              | {
-                  /**
-                   * Base64 Encoded API key to be used to connect to the cluster.
-                   * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html
-                   *
-                   * @visibility secret
-                   */
-                  apiKey: string;
-                };
-            /* TODO(kuangp): unsupported until @elastic/elasticsearch@7.14 is released
-    | {
- 
       /**
-       * Bearer authentication token to connect to the cluster.
-       * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-service-token.html
+       *  AWS = Amazon Elasticsearch Service provider
        *
-       * @visibility secret
+       *  Authentication is handled using the default AWS credentials provider chain
+       */
+      | {
+          provider: 'aws';
+
+          /**
+           * Node configuration.
+           * URL AWS ES endpoint to connect to.
+           * Eg. https://my-es-cluster.eu-west-1.es.amazonaws.com
+           */
+          node: string;
+
+          /**
+           * The AWS region.
+           * Only needed if using a custom DNS record.
+           */
+          region?: string;
+
+          /**
+           * The AWS service used for request signature.
+           * Either 'es' for "Managed Clusters" or 'aoss' for "Serverless".
+           * Only needed if using a custom DNS record.
+           */
+          service?: 'es' | 'aoss';
+        }
+
+      /**
+       * Standard ElasticSearch
        *
-      bearer: string;
-    };*/
-          }
-      );
-    };
+       * Includes self-hosted clusters and others that provide direct connection via an endpoint
+       * and authentication method (see possible authentication options below)
+       */
+      | {
+          /**
+           * Node configuration.
+           * URL/URLS to ElasticSearch node to connect to.
+           * Either direct URL like 'https://localhost:9200' or with credentials like 'https://username:password@localhost:9200'
+           */
+          node: string | string[];
+
+          /**
+           * Authentication credentials for ElasticSearch
+           * If both ApiKey/Bearer token and username+password is provided, tokens take precedence
+           */
+          auth?:
+            | {
+                username: string;
+
+                /**
+                 * @visibility secret
+                 */
+                password: string;
+              }
+            | {
+                /**
+                 * Base64 Encoded API key to be used to connect to the cluster.
+                 * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html
+                 *
+                 * @visibility secret
+                 */
+                apiKey: string;
+              };
+        }
+
+      /**
+       *  AWS = In house hosting Open Search
+       */
+      | {
+          provider: 'opensearch';
+          /**
+           * Node configuration.
+           * URL/URLS to OpenSearch node to connect to.
+           * Either direct URL like 'https://localhost:9200' or with credentials like 'https://username:password@localhost:9200'
+           */
+          node: string | string[];
+
+          /**
+           * Authentication credentials for OpenSearch
+           * If both ApiKey/Bearer token and username+password is provided, tokens take precedence
+           */
+          auth?:
+            | {
+                username: string;
+
+                /**
+                 * @visibility secret
+                 */
+                password: string;
+              }
+            | {
+                /**
+                 * @visibility secret
+                 */
+                apiKey: string;
+              };
+        }
+    );
   };
 }

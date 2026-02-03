@@ -1,5 +1,300 @@
 # @backstage/config
 
+## 1.3.6
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+
+## 1.3.6-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.3.5
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+
+## 1.3.4-next.0
+
+### Patch Changes
+
+- b45b094: Allow colon to be used as config key.
+
+## 1.3.3
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- 3507fcd: Just some more circular dep cleanup
+
+## 1.3.3-next.0
+
+### Patch Changes
+
+- ff23618: Loosen the requirements for a key to be considered valid config.
+- 3507fcd: Just some more circular dep cleanup
+
+## 1.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/errors@1.2.7
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/errors@1.2.7-next.0
+
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/types@1.2.0
+
+## 1.3.0
+
+### Minor Changes
+
+- d52d7f9: Make `readDurationFromConfig` support both ISO and ms formats as well, to make it easier to enter time as an end user
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/errors@1.2.5
+
+## 1.2.0
+
+### Minor Changes
+
+- 50cf9df: The `ConfigReader` now treats `null` values as present but explicitly undefined, meaning it will not fall back to the next level of configuration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.2.0-next.1
+
+### Minor Changes
+
+- 50cf9df: The `ConfigReader` now treats `null` values as present but explicitly undefined, meaning it will not fall back to the next level of configuration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/types@1.1.1
+
+## 1.1.0
+
+### Minor Changes
+
+- 62f448edb0b5: Added a `readDurationFromConfig` function
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/types@1.1.1-next.0
+
+## 1.1.0-next.1
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 62f448edb0b5: Added a `readDurationFromConfig` function
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.0
+
+## 1.0.7
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.0.7-next.0
+
+### Patch Changes
+
+- 482dae5de1c: Updated link to docs.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.0.6
+
+### Patch Changes
+
+- ba2d69ee17: Adds the ability to coerce values to their boolean representatives.
+  Values such as `"true"` `1` `on` and `y` will become `true` when using `getBoolean` and the opposites `false`.
+  This happens particularly when such parameters are used with environmental substitution as environment variables are always strings.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.0.6-next.0
+
+### Patch Changes
+
+- ba2d69ee17: Adds the ability to coerce values to their boolean representatives.
+  Values such as `"true"` `1` `on` and `y` will become `true` when using `getBoolean` and the opposites `false`.
+  This happens particularly when such parameters are used with environmental substitution as environment variables are always strings.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.0.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+
+## 1.0.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1
+
+## 1.0.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.0.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.0.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.0.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.0.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
+## 1.0.2-next.0
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
 ## 1.0.1
 
 ### Patch Changes

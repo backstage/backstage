@@ -20,7 +20,13 @@
  * @packageDocumentation
  */
 
-export { ElasticSearchSearchEngine, isOpenSearchCompatible } from './engines';
+export { default } from './module';
+export * from './module';
+export {
+  decodeElasticSearchPageCursor,
+  ElasticSearchSearchEngine,
+  isOpenSearchCompatible,
+} from './engines';
 export type {
   BaseElasticSearchClientOptions,
   ElasticSearchAgentOptions,
@@ -30,6 +36,7 @@ export type {
   ElasticSearchClientOptions,
   ElasticSearchElasticSearchClientOptions,
   ElasticSearchHighlightConfig,
+  ElasticSearchQueryConfig,
   ElasticSearchHighlightOptions,
   ElasticSearchIndexAction,
   ElasticSearchQueryTranslator,

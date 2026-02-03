@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { InfoCard } from '../../layout/InfoCard';
 import Grid from '@material-ui/core/Grid';
 import { StructuredMetadataTable } from './StructuredMetadataTable';
@@ -41,6 +41,7 @@ const metadata = {
 export default {
   title: 'Data Display/Structured Metadata Table',
   component: StructuredMetadataTable,
+  tags: ['!manifest'],
 };
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (
@@ -67,6 +68,22 @@ export const NotDenseTable = () => (
     >
       <div style={cardContentStyle}>
         <StructuredMetadataTable metadata={metadata} dense={false} />
+      </div>
+    </InfoCard>
+  </Wrapper>
+);
+
+export const WithoutKeyFormatting = () => (
+  <Wrapper>
+    <InfoCard
+      title="Structured Metadata Table without key formatting"
+      subheader="Wrapped in InfoCard"
+    >
+      <div style={cardContentStyle}>
+        <StructuredMetadataTable
+          metadata={metadata}
+          options={{ titleFormat: key => key }}
+        />
       </div>
     </InfoCard>
   </Wrapper>

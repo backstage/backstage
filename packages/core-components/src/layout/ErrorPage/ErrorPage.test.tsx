@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ErrorPage } from './ErrorPage';
 import { Link } from '../../components/Link';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -98,5 +97,16 @@ describe('<ErrorPage/>', () => {
       'href',
       'https://error-page-test-support-url.com',
     );
+  });
+
+  it('should render show details if stack is provided', async () => {
+    const { getByText } = await renderInTestApp(
+      <ErrorPage
+        status="500"
+        statusMessage="INTERNAL ERROR"
+        stack="this is my stack trace!"
+      />,
+    );
+    expect(getByText(/Show more details/i)).toBeInTheDocument();
   });
 });

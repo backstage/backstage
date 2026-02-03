@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import {
-  IdentityClient,
-  getBearerTokenFromAuthorizationHeader,
-} from '@backstage/plugin-auth-node';
 import { add, getAll, update } from './todos';
 import { InputError } from '@backstage/errors';
+import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Dependencies of the todo-list router
- *
- * @public
  */
 export interface RouterOptions {
-  logger: Logger;
-  identity: IdentityClient;
+  logger: LoggerService;
+  httpAuth: HttpAuthService;
 }
 
 /**
  * Creates an express.Router with some endpoints
  * for creating, editing and deleting todo items.
  *
- * @public
  * @param options - the dependencies of the router
  * @returns an express.Router
  *
@@ -47,14 +39,14 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, identity } = options;
+  const { logger, httpAuth } = options;
 
   const router = Router();
   router.use(express.json());
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');
-    response.send({ status: 'ok' });
+    response.json({ status: 'ok' });
   });
 
   router.get('/todos', async (_req, res) => {
@@ -62,19 +54,16 @@ export async function createRouter(
   });
 
   router.post('/todos', async (req, res) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
-    let author: string | undefined = undefined;
-
-    const user = token ? await identity.authenticate(token) : undefined;
-    author = user?.identity.userEntityRef;
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
 
     if (!isTodoCreateRequest(req.body)) {
       throw new InputError('Invalid payload');
     }
 
-    const todo = add({ title: req.body.title, author });
+    const todo = add({
+      title: req.body.title,
+      author: credentials.principal.userEntityRef,
+    });
     res.json(todo);
   });
 
@@ -85,7 +74,6 @@ export async function createRouter(
     res.json(update(req.body));
   });
 
-  router.use(errorHandler());
   return router;
 }
 

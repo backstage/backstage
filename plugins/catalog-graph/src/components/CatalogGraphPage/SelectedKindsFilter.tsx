@@ -15,26 +15,32 @@
  */
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  makeStyles,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Autocomplete } from '@material-ui/lab';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { useCallback, useEffect, useMemo } from 'react';
+import useAsync from 'react-use/esm/useAsync';
+import { catalogGraphTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
-const useStyles = makeStyles({
-  formControl: {
-    maxWidth: 300,
+/** @public */
+export type SelectedKindsFilterClassKey = 'formControl';
+
+const useStyles = makeStyles(
+  {
+    formControl: {
+      maxWidth: 300,
+    },
   },
-});
+  { name: 'PluginCatalogGraphSelectedKindsFilter' },
+);
 
 export type Props = {
   value: string[] | undefined;
@@ -45,6 +51,7 @@ export const SelectedKindsFilter = ({ value, onChange }: Props) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
 
   const { error, value: kinds } = useAsync(async () => {
     return await catalogApi
@@ -87,13 +94,15 @@ export const SelectedKindsFilter = ({ value, onChange }: Props) => {
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Kinds</Typography>
+      <Typography variant="button">
+        {t('catalogGraphPage.selectedKindsFilter.title')}
+      </Typography>
       <Autocomplete
         className={classes.formControl}
         multiple
         limitTags={4}
         disableCloseOnSelect
-        aria-label="Kinds"
+        aria-label={t('catalogGraphPage.selectedKindsFilter.title')}
         options={normalizedKinds}
         value={value ?? normalizedKinds}
         getOptionLabel={k => kinds[normalizedKinds.indexOf(k)] ?? k}

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
-import { AnalyticsContext } from '../analytics';
+import { lazy, Suspense, useEffect } from 'react';
+import { AnalyticsContext, useAnalytics } from '../analytics';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
-import { PluginProvider } from '../plugin-options';
+import { routableExtensionRenderedEvent } from '../analytics/Tracker';
+import { ForwardedError } from '@backstage/errors';
 
 /**
  * Lazy or synchronous retrieving of extension components.
@@ -79,51 +80,51 @@ export function createRoutableExtension<
   return createReactExtension({
     component: {
       lazy: () =>
-        component().then(
-          InnerComponent => {
-            const RoutableExtensionWrapper: any = (props: any) => {
-              // Validate that the routing is wired up correctly in the App.tsx
-              try {
-                useRouteRef(mountPoint);
-              } catch (error) {
-                if (typeof error === 'object' && error !== null) {
-                  const { message } = error as { message?: unknown };
-                  if (
-                    typeof message === 'string' &&
-                    message.startsWith('No path for ')
-                  ) {
-                    throw new Error(
-                      `Routable extension component with mount point ${mountPoint} was not discovered in the app element tree. ` +
-                        'Routable extension components may not be rendered by other components and must be ' +
-                        'directly available as an element within the App provider component.',
-                    );
-                  }
+        component().then(InnerComponent => {
+          const RoutableExtensionWrapper: any = (props: any) => {
+            const analytics = useAnalytics();
+
+            // Validate that the routing is wired up correctly in the App.tsx
+            try {
+              useRouteRef(mountPoint);
+            } catch (error) {
+              if (typeof error === 'object' && error !== null) {
+                const { message } = error as { message?: unknown };
+                if (
+                  typeof message === 'string' &&
+                  message.startsWith('No path for ')
+                ) {
+                  throw new Error(
+                    `Routable extension component with mount point ${mountPoint} was not discovered in the app element tree. ` +
+                      'Routable extension components may not be rendered by other components and must be ' +
+                      'directly available as an element within the App provider component.',
+                  );
                 }
-                throw error;
               }
-              return <InnerComponent {...props} />;
-            };
+              throw error;
+            }
 
-            const componentName =
-              name ||
-              (InnerComponent as { displayName?: string }).displayName ||
-              InnerComponent.name ||
-              'LazyComponent';
+            // This event, never exposed to end-users of the analytics API,
+            // helps inform which extension metadata gets associated with a
+            // navigation event when the route navigated to is a gathered
+            // mountpoint.
+            useEffect(() => {
+              analytics.captureEvent(routableExtensionRenderedEvent, '');
+            }, [analytics]);
 
-            RoutableExtensionWrapper.displayName = `RoutableExtension(${componentName})`;
+            return <InnerComponent {...props} />;
+          };
 
-            return RoutableExtensionWrapper as T;
-          },
-          error => {
-            const RoutableExtensionWrapper: any = (_: any) => {
-              const app = useApp();
-              const { BootErrorPage } = app.getComponents();
+          const componentName =
+            name ||
+            (InnerComponent as { displayName?: string }).displayName ||
+            InnerComponent.name ||
+            'LazyComponent';
 
-              return <BootErrorPage step="load-chunk" error={error} />;
-            };
-            return RoutableExtensionWrapper;
-          },
-        ),
+          RoutableExtensionWrapper.displayName = `RoutableExtension(${componentName})`;
+
+          return RoutableExtensionWrapper as T;
+        }),
     },
     data: {
       'core.mountPoint': mountPoint,
@@ -214,7 +215,16 @@ export function createReactExtension<
   if ('lazy' in options.component) {
     const lazyLoader = options.component.lazy;
     Component = lazy(() =>
-      lazyLoader().then(component => ({ default: component })),
+      lazyLoader().then(
+        component => ({ default: component }),
+        error => {
+          const ofExtension = name ? ` of the ${name} extension` : '';
+          throw new ForwardedError(
+            `Failed lazy loading${ofExtension}, try to reload the page`,
+            error,
+          );
+        },
+      ),
     ) as unknown as T;
   } else {
     Component = options.component.sync;
@@ -246,9 +256,7 @@ export function createReactExtension<
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
-                <PluginProvider plugin={plugin}>
-                  <Component {...props} />
-                </PluginProvider>
+                <Component {...props} />
               </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>
@@ -256,6 +264,7 @@ export function createReactExtension<
       };
 
       attachComponentData(Result, 'core.plugin', plugin);
+      attachComponentData(Result, 'core.extensionName', name);
       for (const [key, value] of Object.entries(data)) {
         attachComponentData(Result, key, value);
       }

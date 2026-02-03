@@ -24,7 +24,7 @@ exports.up = async function up(knex) {
     table
       .text('unprocessed_hash')
       .nullable()
-      .comment('A hash of the unprocessed contents, used to detect changes');
+      .comment('A hash of the unprocessed contents');
   });
 };
 

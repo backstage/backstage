@@ -14,46 +14,52 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
-
-import React, { useState, useContext, useRef } from 'react';
-import Button from '@material-ui/core/Button';
+import { ReactNode, useContext, useRef, useState } from 'react';
 
 import {
   makeSidebarConfig,
   makeSidebarSubmenuConfig,
   SidebarConfig,
   SidebarConfigContext,
-  SubmenuConfig,
   SidebarOptions,
+  SubmenuConfig,
   SubmenuOptions,
 } from './config';
-import { BackstageTheme } from '@backstage/theme';
+import { MobileSidebar } from './MobileSidebar';
 import { useContent } from './Page';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
-import { MobileSidebar } from './MobileSidebar';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { coreComponentsTranslationRef } from '../../translation';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
-const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
+const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
   theme => ({
-    drawer: props => ({
-      display: 'flex',
-      flexFlow: 'column nowrap',
-      alignItems: 'flex-start',
-      position: 'fixed',
+    root: {
       left: 0,
       top: 0,
       bottom: 0,
       zIndex: theme.zIndex.appBar,
+      position: 'fixed',
+    },
+    drawer: {
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      alignItems: 'flex-start',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      position: 'absolute',
       background: theme.palette.navigation.background,
       overflowX: 'hidden',
       msOverflowStyle: 'none',
       scrollbarWidth: 'none',
-      width: props.sidebarConfig.drawerWidthClosed,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.shortest,
@@ -64,6 +70,12 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
       '&::-webkit-scrollbar': {
         display: 'none',
       },
+      '@media print': {
+        display: 'none',
+      },
+    },
+    drawerWidth: props => ({
+      width: props.sidebarConfig.drawerWidthClosed,
     }),
     drawerOpen: props => ({
       width: props.sidebarConfig.drawerWidthOpen,
@@ -85,11 +97,11 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
   { name: 'BackstageSidebar' },
 );
 
-enum State {
-  Closed,
-  Idle,
-  Open,
-}
+const State = {
+  Closed: 0,
+  Idle: 1,
+  Open: 2,
+} as const;
 
 /** @public */
 export type SidebarProps = {
@@ -98,14 +110,14 @@ export type SidebarProps = {
   sidebarOptions?: SidebarOptions;
   submenuOptions?: SubmenuOptions;
   disableExpandOnHover?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 export type DesktopSidebarProps = {
   openDelayMs?: number;
   closeDelayMs?: number;
   disableExpandOnHover?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
@@ -128,11 +140,13 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   } = props;
 
   const classes = useStyles({ sidebarConfig });
-  const isSmallScreen = useMediaQuery<BackstageTheme>(
+  const isSmallScreen = useMediaQuery<Theme>(
     theme => theme.breakpoints.down('md'),
     { noSsr: true },
   );
-  const [state, setState] = useState(State.Closed);
+  const [state, setState] = useState<(typeof State)[keyof typeof State]>(
+    State.Closed,
+  );
   const hoverTimerRef = useRef<number>();
   const { isPinned, toggleSidebarPinState } = useSidebarPinState();
 
@@ -175,7 +189,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   const isOpen = (state === State.Open && !isSmallScreen) || isPinned;
 
   /**
-   * Close/Open Sidebar directily without delays. Also toggles `SidebarPinState` to avoid hidden content behind Sidebar.
+   * Close/Open Sidebar directly without delays. Also toggles `SidebarPinState` to avoid hidden content behind Sidebar.
    */
   const setOpen = (open: boolean) => {
     if (open) {
@@ -191,7 +205,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
     <nav style={{}} aria-label="sidebar nav">
       <A11ySkipSidebar />
       <SidebarOpenStateProvider value={{ isOpen, setOpen }}>
-        <div
+        <Box
           className={classes.root}
           data-testid="sidebar-root"
           onMouseEnter={disableExpandOnHover ? () => {} : handleOpen}
@@ -199,14 +213,14 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
           onMouseLeave={disableExpandOnHover ? () => {} : handleClose}
           onBlur={disableExpandOnHover ? () => {} : handleClose}
         >
-          <div
-            className={classnames(classes.drawer, {
+          <Box
+            className={classnames(classes.drawer, classes.drawerWidth, {
               [classes.drawerOpen]: isOpen,
             })}
           >
             {children}
-          </div>
-        </div>
+          </Box>
+        </Box>
       </SidebarOpenStateProvider>
     </nav>
   );
@@ -246,6 +260,7 @@ function A11ySkipSidebar() {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { focusContent, contentRef } = useContent();
   const classes = useStyles({ sidebarConfig });
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   if (!contentRef?.current) {
     return null;
@@ -256,7 +271,7 @@ function A11ySkipSidebar() {
       variant="contained"
       className={classnames(classes.visuallyHidden)}
     >
-      Skip to content
+      {t('skipToContent')}
     </Button>
   );
 }

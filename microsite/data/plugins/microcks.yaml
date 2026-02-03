@@ -1,0 +1,10 @@
+---
+title: Microcks
+author: Microcks
+authorUrl: https://microcks.io
+category: Discovery
+description: Import API definitions (OpenAPI, AsyncAPI, gRPC) from Microcks instances, linking to their mock endpoints and test results.
+documentation: https://github.com/microcks/microcks-backstage-provider
+iconUrl: https://raw.githubusercontent.com/microcks/.github/refs/heads/main/assets/microcks-logo-blue.png
+npmPackageName: '@microcks/microcks-backstage-provider'
+addedDate: '2023-04-06'

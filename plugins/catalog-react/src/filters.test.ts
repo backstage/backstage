@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { AlphaEntity, Entity } from '@backstage/catalog-model';
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   EntityErrorFilter,
   EntityOrphanFilter,
+  EntityOwnerFilter,
   EntityTextFilter,
 } from './filters';
 
@@ -70,6 +72,33 @@ const templates: TemplateEntityV1beta3[] = [
   },
 ];
 
+const users: Entity[] = [
+  {
+    apiVersion: '1',
+    kind: 'User',
+    metadata: {
+      name: 'jd1234',
+    },
+    spec: {
+      profile: {
+        displayName: 'DOE, JOHN',
+      },
+    },
+  },
+  {
+    apiVersion: '1',
+    kind: 'User',
+    metadata: {
+      name: 'fb3456',
+    },
+    spec: {
+      profile: {
+        displayName: 'BAR, FOO',
+      },
+    },
+  },
+];
+
 describe('EntityTextFilter', () => {
   it('should search name', () => {
     const filter = new EntityTextFilter('app');
@@ -93,6 +122,12 @@ describe('EntityTextFilter', () => {
     const filter = new EntityTextFilter('JaVa');
     expect(filter.filterEntity(entities[0])).toBeFalsy();
     expect(filter.filterEntity(entities[1])).toBeTruthy();
+  });
+
+  it('should search display name', () => {
+    const filter = new EntityTextFilter('doe');
+    expect(filter.filterEntity(users[0])).toBeTruthy();
+    expect(filter.filterEntity(users[1])).toBeFalsy();
   });
 });
 
@@ -140,5 +175,67 @@ describe('EntityErrorFilter', () => {
     const filter = new EntityErrorFilter(true);
     expect(filter.filterEntity(error)).toBeTruthy();
     expect(filter.filterEntity(entities[1])).toBeFalsy();
+  });
+});
+
+describe('EntityOwnerFilter', () => {
+  it('should handle humanizedEntityRefs', () => {
+    const filter = new EntityOwnerFilter(['my-user']);
+    expect(
+      filter.filterEntity({
+        relations: [
+          {
+            type: RELATION_OWNED_BY,
+            targetRef: 'group:default/my-user',
+          },
+        ],
+      } as Entity),
+    ).toBeTruthy();
+    expect(filter.values).toStrictEqual(['group:default/my-user']);
+  });
+
+  it('should handle full entityRefs', () => {
+    const filter = new EntityOwnerFilter(['group:default/my-user']);
+    expect(
+      filter.filterEntity({
+        relations: [
+          {
+            type: RELATION_OWNED_BY,
+            targetRef: 'group:default/my-user',
+          },
+        ],
+      } as Entity),
+    ).toBeTruthy();
+    expect(filter.values).toStrictEqual(['group:default/my-user']);
+  });
+
+  it('should gracefully reject non-entity refs', () => {
+    const filter = new EntityOwnerFilter(['group:default/my-user', '']);
+    expect(
+      filter.filterEntity({
+        relations: [
+          {
+            type: RELATION_OWNED_BY,
+            targetRef: 'group:default/my-user',
+          },
+        ],
+      } as Entity),
+    ).toBeTruthy();
+    expect(filter.values).toStrictEqual(['group:default/my-user']);
+  });
+
+  it('should handle non group full entity refs', () => {
+    const filter = new EntityOwnerFilter(['user:default/my-user', '']);
+    expect(
+      filter.filterEntity({
+        relations: [
+          {
+            type: RELATION_OWNED_BY,
+            targetRef: 'user:default/my-user',
+          },
+        ],
+      } as Entity),
+    ).toBeTruthy();
+    expect(filter.values).toStrictEqual(['user:default/my-user']);
   });
 });

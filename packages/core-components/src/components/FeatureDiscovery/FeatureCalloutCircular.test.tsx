@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { act, fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { FeatureCalloutCircular } from './FeatureCalloutCircular';
@@ -58,8 +57,8 @@ describe('<FeatureCalloutCircular />', () => {
         description="description"
       />,
     );
-    rendered.getByText('description');
-    rendered.getByText('title');
+    expect(rendered.getByText('description')).toBeInTheDocument();
+    expect(rendered.getByText('title')).toBeInTheDocument();
   });
 
   it('renders with correct style', async () => {
@@ -70,8 +69,8 @@ describe('<FeatureCalloutCircular />', () => {
         description="description"
       />,
     );
-    const dot = await getByTestId('dot');
-    const text = await getByTestId('text');
+    const dot = getByTestId('dot');
+    const text = getByTestId('text');
 
     expect(dot).toBeInTheDocument();
     expect(text).toBeInTheDocument();
@@ -96,8 +95,8 @@ describe('<FeatureCalloutCircular />', () => {
         description="description"
       />,
     );
-    const dot = await getByTestId('dot');
-    const text = await getByTestId('text');
+    const dot = getByTestId('dot');
+    const text = getByTestId('text');
 
     act(() => {
       Element.prototype.getBoundingClientRect = jest.fn(
@@ -128,8 +127,8 @@ describe('<FeatureCalloutCircular />', () => {
         description="description"
       />,
     );
-    const dot = await getByTestId('dot');
-    const text = await getByTestId('text');
+    const dot = getByTestId('dot');
+    const text = getByTestId('text');
 
     act(() => {
       Element.prototype.getBoundingClientRect = jest.fn(

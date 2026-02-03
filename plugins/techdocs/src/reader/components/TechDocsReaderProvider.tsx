@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ComponentType,
-  createContext,
-  useContext,
-  ReactNode,
-} from 'react';
+import { ComponentType, createContext, useContext, ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 
@@ -48,9 +43,9 @@ export type TechDocsReaderProviderProps = {
  *
  * @public
  */
-export const TechDocsReaderProvider = ({
-  children,
-}: TechDocsReaderProviderProps) => {
+export const TechDocsReaderProvider = (props: TechDocsReaderProviderProps) => {
+  const { children } = props;
+
   const { '*': path = '' } = useParams();
   const { entityRef } = useTechDocsReaderPage();
   const { kind, namespace, name } = entityRef;

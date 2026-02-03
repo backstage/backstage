@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { BackstageTheme } from '@backstage/theme';
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
+import { ReactNode } from 'react';
 
 export type SubvalueCellClassKey = 'value' | 'subvalue';
 
-const useSubvalueCellStyles = makeStyles<BackstageTheme>(
+const useSubvalueCellStyles = makeStyles(
   theme => ({
     value: {
-      marginBottom: '6px',
+      marginBottom: theme.spacing(0.75),
     },
     subvalue: {
       color: theme.palette.textSubtle,
@@ -34,8 +34,8 @@ const useSubvalueCellStyles = makeStyles<BackstageTheme>(
 );
 
 type SubvalueCellProps = {
-  value: React.ReactNode;
-  subvalue: React.ReactNode;
+  value: ReactNode;
+  subvalue: ReactNode;
 };
 
 export function SubvalueCell(props: SubvalueCellProps) {
@@ -44,8 +44,8 @@ export function SubvalueCell(props: SubvalueCellProps) {
 
   return (
     <>
-      <div className={classes.value}>{value}</div>
-      <div className={classes.subvalue}>{subvalue}</div>
+      <Box className={classes.value}>{value}</Box>
+      <Box className={classes.subvalue}>{subvalue}</Box>
     </>
   );
 }

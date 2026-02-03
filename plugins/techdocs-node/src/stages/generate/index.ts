@@ -15,10 +15,19 @@
  */
 export { TechdocsGenerator } from './techdocs';
 export { Generators } from './generators';
+export { getMkdocsYml } from './helpers';
 export type {
   GeneratorBase,
   GeneratorOptions,
   GeneratorBuilder,
   GeneratorRunOptions,
   SupportedGeneratorKey,
+  TechDocsContainerRunner,
 } from './types';
+import { getMkdocsYml } from './helpers';
+/**
+ * @public
+ * @deprecated
+ * Deprecated in favor of getMkdocsYml (lowercase 'd')
+ */
+export const getMkDocsYml = getMkdocsYml;

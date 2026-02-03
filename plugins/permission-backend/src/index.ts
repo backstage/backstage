@@ -18,4 +18,4 @@
  * Backend for Backstage authorization and permissions.
  * @packageDocumentation
  */
-export * from './service';
+export { permissionPlugin as default } from './plugin';

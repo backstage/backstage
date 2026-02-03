@@ -13,27 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
 import { Select, SelectItem } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { useEffect } from 'react';
+import { scaffolderTranslationRef } from '../../../translation';
+import { AvailableRepositories } from './types';
 
 export const RepoUrlPickerRepoName = (props: {
   repoName?: string;
   allowedRepos?: string[];
-  onChange: (host: string) => void;
+  onChange: (chosenRepo: AvailableRepositories) => void;
   rawErrors: string[];
+  availableRepos?: AvailableRepositories[];
+  isDisabled?: boolean;
 }) => {
-  const { repoName, allowedRepos, onChange, rawErrors } = props;
+  const {
+    repoName,
+    allowedRepos,
+    onChange,
+    rawErrors,
+    availableRepos,
+    isDisabled,
+  } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   useEffect(() => {
     // If there is no repoName chosen currently
     if (!repoName) {
       // Set the first of the allowedRepos option if that available
       if (allowedRepos?.length) {
-        onChange(allowedRepos[0]);
+        onChange({ name: allowedRepos[0] });
       }
     }
   }, [allowedRepos, repoName, onChange]);
@@ -52,25 +65,41 @@ export const RepoUrlPickerRepoName = (props: {
         {allowedRepos?.length ? (
           <Select
             native
-            label="Repositories Available"
+            label={t('fields.repoUrlPicker.repository.title')}
             onChange={selected =>
-              String(Array.isArray(selected) ? selected[0] : selected)
+              onChange({
+                name: String(Array.isArray(selected) ? selected[0] : selected),
+              })
             }
-            disabled={allowedRepos.length === 1}
+            disabled={isDisabled || allowedRepos.length === 1}
             selected={repoName}
             items={repoItems}
           />
         ) : (
-          <>
-            <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
-            <Input
-              id="repoNameInput"
-              onChange={e => onChange(String(e.target.value))}
-              value={repoName}
-            />
-          </>
+          <Autocomplete
+            value={repoName}
+            onChange={(_, newValue) => {
+              const selectedRepo = availableRepos?.find(
+                r => r.name === newValue,
+              );
+              onChange(selectedRepo || { name: newValue || '' });
+            }}
+            options={(availableRepos || []).map(r => r.name)}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label={t('fields.repoUrlPicker.repository.inputTitle')}
+                required
+              />
+            )}
+            freeSolo
+            autoSelect
+            disabled={isDisabled}
+          />
         )}
-        <FormHelperText>The name of the repository</FormHelperText>
+        <FormHelperText>
+          {t('fields.repoUrlPicker.repository.description')}
+        </FormHelperText>
       </FormControl>
     </>
   );

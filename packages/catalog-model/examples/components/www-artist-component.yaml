@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: www-artist
   description: Artist main website
+  annotations:
+    backstage.io/source-template: template:default/react-ssr-template
 spec:
   type: website
   lifecycle: production

@@ -14,33 +14,48 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
-import { InfoCardVariants } from '@backstage/core-components';
-import React from 'react';
+import { RELATION_HAS_PART, SystemEntity } from '@backstage/catalog-model';
+import {
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   asSystemEntities,
   RelatedEntitiesCard,
   systemEntityColumns,
   systemEntityHelpLink,
 } from '../RelatedEntitiesCard';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface HasSystemsCardProps {
   variant?: InfoCardVariants;
+  title?: string;
+  columns?: TableColumn<SystemEntity>[];
+  tableOptions?: TableOptions;
 }
 
 export function HasSystemsCard(props: HasSystemsCardProps) {
-  const { variant = 'gridItem' } = props;
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const {
+    variant = 'gridItem',
+    title = t('hasSystemsCard.title'),
+    columns = systemEntityColumns,
+    tableOptions = {},
+  } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Has systems"
+      title={title}
       entityKind="System"
       relationType={RELATION_HAS_PART}
-      columns={systemEntityColumns}
+      columns={columns}
       asRenderableEntities={asSystemEntities}
-      emptyMessage="No system is part of this domain"
+      emptyMessage={t('hasSystemsCard.emptyMessage')}
       emptyHelpLink={systemEntityHelpLink}
+      tableOptions={tableOptions}
     />
   );
 }

@@ -7,7 +7,4 @@ description: Opsgenie offers a simple way to associate alerts to components and 
 documentation: https://github.com/K-Phoen/backstage-plugin-opsgenie/
 iconUrl: https://avatars.githubusercontent.com/u/1818843?s=200&v=4
 npmPackageName: '@k-phoen/backstage-plugin-opsgenie'
-tags:
-  - monitoring
-  - errors
-  - alerting
+addedDate: '2022-03-13'

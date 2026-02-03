@@ -15,18 +15,18 @@
  */
 
 import { StorageApi } from '@backstage/core-plugin-api';
-import { MockStorageApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 import { performMigrationToTheNewBucket } from './migration';
 
 describe('performMigrationToTheNewBucket', () => {
   let mockStorage: StorageApi;
 
   beforeEach(() => {
-    mockStorage = MockStorageApi.create();
+    mockStorage = mockApis.storage();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('should migrate', async () => {
@@ -46,7 +46,7 @@ describe('performMigrationToTheNewBucket', () => {
     await performMigrationToTheNewBucket({ storageApi: mockStorage });
 
     // read NEW bucket
-    expect(await newBucket.snapshot('entityRefs').value).toEqual([
+    expect(newBucket.snapshot('entityRefs').value).toEqual([
       'component:default/c',
       'component:default/a',
       'template:custom/b',
@@ -72,7 +72,7 @@ describe('performMigrationToTheNewBucket', () => {
     await performMigrationToTheNewBucket({ storageApi: mockStorage });
 
     // read NEW bucket
-    expect(await newBucket.snapshot('entityRefs').value).toEqual([
+    expect(newBucket.snapshot('entityRefs').value).toEqual([
       'component:default/a',
     ]);
 

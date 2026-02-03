@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-search-backend-module-stack-overflow-collator
+  title: '@backstage/plugin-search-backend-module-stack-overflow-collator'
+  description: A module for the search backend that exports stack overflow modules
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: search-maintainers

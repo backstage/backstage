@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export * from './OwnershipCard';
+export type { ComponentsGridClassKey } from './ComponentsGrid';

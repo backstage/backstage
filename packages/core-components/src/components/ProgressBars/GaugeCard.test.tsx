@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
 
 import { GaugeCard } from './GaugeCard';
 
@@ -40,7 +39,12 @@ describe('<GaugeCard />', () => {
 
   it('handles invalid numbers', async () => {
     const badProps = { title: 'Tingle upgrade', progress: 'hejjo' } as any;
-    const { getByText } = await renderInTestApp(<GaugeCard {...badProps} />);
-    expect(getByText(/N\/A.*/)).toBeInTheDocument();
+    const { error } = await withLogCollector(async () => {
+      const { getByText } = await renderInTestApp(<GaugeCard {...badProps} />);
+      expect(getByText(/N\/A.*/)).toBeInTheDocument();
+    });
+    expect(error).toEqual([
+      expect.stringMatching(/^Warning: `NaN` is an invalid value/),
+    ]);
   });
 });

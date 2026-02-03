@@ -1,5 +1,1165 @@
 # @backstage/integration
 
+## 1.20.0-next.1
+
+### Minor Changes
+
+- 6999f6d: The AzureUrl class in the @backstage/integration package is now able to process BOTH git branches and git tags. Initially this class only processed git branches and threw an error when non-branch Azure URLs were passed in.
+
+## 1.19.3-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.19.2
+
+### Patch Changes
+
+- 3afeab4: Implementing `ScmIntegration` for `GoogleGcs`
+- 9083273: Rollback the lowercase replacing in GitHub integration config
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 3afeab4: Implementing `ScmIntegration` for `GoogleGcs`
+- 9083273: Rollback the lowercase replacing in GitHub integration config
+
+## 1.19.0
+
+### Minor Changes
+
+- 37fba1d: Added support for Bitbucket Cloud OAuth. This introduces an alternative authentication method using a workspace OAuth consumer, alongside App Passwords (deprecated) and API tokens. OAuth does not require a bot or service account and avoids token expiry issues.
+
+  **BREAKING CHANGES**
+
+  - **@backstage/integration** (`src/bitbucketCloud/core.ts`)
+
+    - `getBitbucketCloudRequestOptions` now returns a `Promise` and **must** be awaited.
+
+  - **@backstage/plugin-scaffolder-backend-module-bitbucket-cloud** (`src/actions/helpers.ts`)
+    - `getBitbucketClient` now returns a `Promise` and **must** be awaited.
+    - `getAuthorizationHeader` now returns a `Promise` and **must** be awaited.
+
+  **OAuth usage example**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - clientId: client-id
+        clientSecret: client-secret
+  ```
+
+### Patch Changes
+
+- a26a322: Added support for using a GitHub App installation to generate tokens for public repository access when the `publicAccess` option is enabled. When all other authentication methods fail (e.g., the app is not installed in that organization), the provider will now use an available installation to generate a token that can be used to access public repositories as read only.
+- fb029b6: Updated luxon types
+- e15fdae: Made the github urls case insensitive.
+
+## 1.18.3-next.1
+
+### Patch Changes
+
+- fb029b6: Updated luxon types
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.18.3-next.0
+
+### Patch Changes
+
+- e15fdae: Made the github urls case insensitive.
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.18.2
+
+### Patch Changes
+
+- fa255f5: Support for Bitbucket Cloud's API token was added as `appPassword` is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
+
+  API token usage example:
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: user@domain.com
+        token: my-token
+  ```
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 1.18.2-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+
+## 1.18.1
+
+### Patch Changes
+
+- d772b51: remove host from azure blob storage integration type
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 1.18.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
+## 1.18.1-next.0
+
+### Patch Changes
+
+- d772b51: remove host from azure blob storage integration type
+- 84443f1: Adds config definitions for Azure Blob Storage.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
+## 1.18.0
+
+### Minor Changes
+
+- 03bdc68: Added support for limiting GithubAppCredentialsMux to specific apps
+
+### Patch Changes
+
+- 56897d7: Fixes issue with Github credentials provider which fails to match organization name if using allowedInstallationOwners
+
+## 1.18.0-next.0
+
+### Minor Changes
+
+- 03bdc68: Added support for limiting GithubAppCredentialsMux to specific apps
+
+## 1.17.1
+
+### Patch Changes
+
+- e0189b8: UrlReader: Fix handling of access tokens for GitLab readURL requests
+- d1e4a6d: Fixed bug where the GitLab user token and GitLab integration token were being merged together
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 1.17.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
+## 1.17.1-next.0
+
+### Patch Changes
+
+- e0189b8: UrlReader: Fix handling of access tokens for GitLab readURL requests
+- d1e4a6d: Fixed bug where the GitLab user token and GitLab integration token were being merged together
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.17.0
+
+### Minor Changes
+
+- d945206: Added support for federated credentials using managed identities in the Azure DevOps integration. Federated credentials are only available for Azure DevOps organizations that have been configured to use Entra ID for authentication.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  +       - clientId: ${APP_REGISTRATION_CLIENT_ID}
+  +         managedIdentityClientId: system-assigned
+  +         tenantId: ${AZURE_TENANT_ID}
+  ```
+
+  This also adds support for automatically using the system-assigned managed identity of an Azure resource by specifying `system-assigned` as the client ID of the managed identity.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  -       - clientId: ${AZURE_CLIENT_ID}
+  +       - clientId: system-assigned
+  ```
+
+- f134cea: Implement Edit URL feature for Gerrit 3.9+.
+
+  It's possible to disable the edit url by adding the `disableEditUrl: true` config in the Gerrit integration.
+
+### Patch Changes
+
+- f3381d3: Added missing `organizations` property to `azure` section in `config.d.ts` file
+- acea1d4: update documentation
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.17.0-next.3
+
+### Minor Changes
+
+- d945206: Added support for federated credentials using managed identities in the Azure DevOps integration. Federated credentials are only available for Azure DevOps organizations that have been configured to use Entra ID for authentication.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  +       - clientId: ${APP_REGISTRATION_CLIENT_ID}
+  +         managedIdentityClientId: system-assigned
+  +         tenantId: ${AZURE_TENANT_ID}
+  ```
+
+  This also adds support for automatically using the system-assigned managed identity of an Azure resource by specifying `system-assigned` as the client ID of the managed identity.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  -       - clientId: ${AZURE_CLIENT_ID}
+  +       - clientId: system-assigned
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.17.0-next.2
+
+### Minor Changes
+
+- f134cea: Implement Edit URL feature for Gerrit 3.9+.
+
+  It's possible to disable the edit url by adding the `disableEditUrl: true` config in the Gerrit integration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.4-next.1
+
+### Patch Changes
+
+- acea1d4: update documentation
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.4-next.0
+
+### Patch Changes
+
+- f3381d3: Added missing `organizations` property to `azure` section in `config.d.ts` file
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.3
+
+### Patch Changes
+
+- 9768992: Mark GitHub `webhookSecret` config property as optional. A `webhookSecret` is not required when creating a GitHub App.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.3-next.0
+
+### Patch Changes
+
+- 9768992: Mark GitHub `webhookSecret` config property as optional. A `webhookSecret` is not required when creating a GitHub App.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.2
+
+### Patch Changes
+
+- 89db8b8: Gerrit integration now exports `getGitilesAuthenticationUrl`. This enables its usage by the `GerritUrlReader`.
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.2-next.0
+
+### Patch Changes
+
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.1
+
+### Patch Changes
+
+- d2b16db: A new Gerrit helper function (`buildGerritGitilesArchiveUrlFromLocation`) has been added. This
+  constructs a Gitiles URL to download an archive. It is similar to the existing
+  `buildGerritGitilesArchiveUrl` but also support content referenced by a full commit `SHA`.
+
+  **DEPRECATIONS**: The function `buildGerritGitilesArchiveUrl` is deprecated, use the
+  `buildGerritGitilesArchiveUrlFromLocation` function instead.
+
+  **DEPRECATIONS**: The function `parseGerritGitilesUrl` is deprecated, use the
+  `parseGitilesUrlRef` function instead.
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+
+## 1.16.0
+
+### Minor Changes
+
+- 277092a: Add the integration for Azure blob storage to read the credentials to access the storage account and provide the default credential provider.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/config@1.3.1-next.0
+
+## 1.16.0-next.0
+
+### Minor Changes
+
+- 277092a: Add the integration for Azure blob storage to read the credentials to access the storage account and provide the default credential provider.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+
+## 1.15.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+
+## 1.15.1
+
+### Patch Changes
+
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- 920004b: Updating error message for getProjectId when fetching Gitlab project from its url to be more accurate
+- 090e49a: Updated functions parseHarnessUrl, getHarnessLatestCommitUrl, getHarnessFileContentsUrl and getHarnessArchiveUrl to fix parsing of urls
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.15.1-next.1
+
+### Patch Changes
+
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.15.1-next.0
+
+### Patch Changes
+
+- 920004b: Updating error message for getProjectId when fetching Gitlab project from its url to be more accurate
+- 090e49a: Updated functions parseHarnessUrl, getHarnessLatestCommitUrl, getHarnessFileContentsUrl and getHarnessArchiveUrl to fix parsing of urls
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.15.0
+
+### Minor Changes
+
+- 1573014: The Gerrit integration can now resolve Gitiles urls that point to the following
+  refs:
+
+  - HEAD
+  - A SHA
+  - Tag
+  - Branch
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.15.0-next.0
+
+### Minor Changes
+
+- 1573014: The Gerrit integration can now resolve Gitiles urls that point to the following
+  refs:
+
+  - HEAD
+  - A SHA
+  - Tag
+  - Branch
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.14.0
+
+### Minor Changes
+
+- 78c1329: Updated `GitlabUrlReader.readUrl` and `GitlabUrlReader.readTree` to accept a user-provided token, supporting both bearer and private tokens.
+
+### Patch Changes
+
+- c591670: Updated functions for `getHarnessEditContentsUrl`, `getHarnessFileContentsUrl`, `getHarnessArchiveUrl`, `getHarnessLatestCommitUrl` and `parseHarnessUrl` to handle account and org level urls
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.14.0-next.0
+
+### Minor Changes
+
+- 78c1329: Updated `GitlabUrlReader.readUrl` and `GitlabUrlReader.readTree` to accept a user-provided token, supporting both bearer and private tokens.
+
+### Patch Changes
+
+- c591670: Updated functions for `getHarnessEditContentsUrl`, `getHarnessFileContentsUrl`, `getHarnessArchiveUrl`, `getHarnessLatestCommitUrl` and `parseHarnessUrl` to handle account and org level urls
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.13.0
+
+### Minor Changes
+
+- b5deed0: Add support for `token` for `bitbucketCloud` integration
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.13.0-next.0
+
+### Minor Changes
+
+- b5deed0: Add support for `token` for `bitbucketCloud` integration
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.12.0
+
+### Minor Changes
+
+- be1014d: **BREAKING** Removed deprecated code from when casing was changed from `GitHub` to `Github` nearly two years ago. The following items have been removed:
+
+  - `getGitHubFileFetchUrl` (use `getGithubFileFetchUrl` instead)
+  - `GitHubIntegrationConfig` (use `GithubIntegrationConfig` instead)
+  - `GitHubIntegration` (use `GithubIntegration` instead)
+  - `readGitHubIntegrationConfig` (use `readGithubIntegrationConfig` instead)
+  - `readGitHubIntegrationConfigs` (use `readGithubIntegrationConfigs` instead)
+  - `replaceGitHubUrlType` (use `replaceGithubUrlType` instead)
+
+- 395b973: Implemented `readTree` for Harness provider to support TechDocs functionality
+- 662dce8: **BREAKING**: `gitilesBaseUrl` is now mandatory for the Gerrit integration. The
+  ability to override this requirement using the `DISABLE_GERRIT_GITILES_REQUIREMENT`
+  environment variable has been removed.
+
+### Patch Changes
+
+- 509e08c: Updated function for getHarnessEditContentsUrl
+- 23ee9ab: Fix AWS CodeCommit integration by allowing to change the host
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.12.0-next.1
+
+### Minor Changes
+
+- be1014d: **BREAKING** Removed deprecated code from when casing was changed from `GitHub` to `Github` nearly two years ago. The following items have been removed:
+
+  - `getGitHubFileFetchUrl` (use `getGithubFileFetchUrl` instead)
+  - `GitHubIntegrationConfig` (use `GithubIntegrationConfig` instead)
+  - `GitHubIntegration` (use `GithubIntegration` instead)
+  - `readGitHubIntegrationConfig` (use `readGithubIntegrationConfig` instead)
+  - `readGitHubIntegrationConfigs` (use `readGithubIntegrationConfigs` instead)
+  - `replaceGitHubUrlType` (use `replaceGithubUrlType` instead)
+
+### Patch Changes
+
+- 23ee9ab: Fix AWS CodeCommit integration by allowing to change the host
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.12.0-next.0
+
+### Minor Changes
+
+- 395b973: Implemented `readTree` for Harness provider to support TechDocs functionality
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.11.0
+
+### Minor Changes
+
+- 2cc750d: Added `HarnessIntegration` via the `ScmIntegrations` interface.
+
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 2cc750d: Added `HarnessIntegration` via the `ScmIntegrations` interface.
+
+## 1.10.0
+
+### Minor Changes
+
+- 7b11422: Add AWS CodeCommit URL Reader/Integration
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 7b11422: Add AWS CodeCommit URL Reader/Integration
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.9.1
+
+### Patch Changes
+
+- 0386fa7: Fixed an issue with resolution of SCM URLs against a base URL with a trailing slash.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.9.1-next.2
+
+### Patch Changes
+
+- 0386fa7: Fixed an issue with resolution of SCM URLs against a base URL with a trailing slash.
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+
+## 1.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/config@1.1.2-next.0
+
+## 1.9.0
+
+### Minor Changes
+
+- e27b7f3: Fix rate limit detection by looking for HTTP status code 429 and updating the header `x-ratelimit-remaining` to look for in case of a 403 code is returned
+
+### Patch Changes
+
+- 6d898f7: All single-line secrets read from config will now have both leading and trailing whitespace trimmed. This is done to ensure that the secrets are always valid HTTP header values, since many fetch implementations will include the header value itself when an error is thrown due to invalid header values.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- 2d0e7cd: Validate if the `baseUrl` is a valid URL
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 1.9.0-next.1
+
+### Patch Changes
+
+- 6d898f7: All single-line secrets read from config will now have both leading and trailing whitespace trimmed. This is done to ensure that the secrets are always valid HTTP header values, since many fetch implementations will include the header value itself when an error is thrown due to invalid header values.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 1.9.0-next.0
+
+### Minor Changes
+
+- e27b7f3: Fix rate limit detection by looking for HTTP status code 429 and updating the header `x-ratelimit-remaining` to look for in case of a 403 code is returned
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 1.8.0
+
+### Minor Changes
+
+- 870db76: Implemented `readTree` for Gitea provider to support TechDocs functionality
+
+### Patch Changes
+
+- 99fb541: Updated dependency `@azure/identity` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/config@1.1.1
+
+## 1.8.0-next.1
+
+### Patch Changes
+
+- 99fb54183b: Updated dependency `@azure/identity` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/config@1.1.1
+
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 870db76a45: Implemented `readTree` for Gitea provider to support TechDocs functionality
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+
+## 1.7.2
+
+### Patch Changes
+
+- 243c655a68: JSDoc and Error message updates to handle `Azure Active Directory` re-brand to `Entra ID`
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/config@1.1.1
+
+## 1.7.2-next.0
+
+### Patch Changes
+
+- 243c655a68: JSDoc and Error message updates to handle `Azure Active Directory` re-brand to `Entra ID`
+- Updated dependencies
+  - @backstage/config@1.1.1
+
+## 1.7.1
+
+### Patch Changes
+
+- 3963d0b885: Ensure that all relevant config fields are properly marked as secret
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/config@1.1.1
+
+## 1.7.1-next.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/config@1.1.1-next.0
+
+## 1.7.1-next.0
+
+### Patch Changes
+
+- 3963d0b885: Ensure that all relevant config fields are properly marked as secret
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+
+## 1.7.0
+
+### Minor Changes
+
+- 5f1a92b9f19f: Added `AzureDevOpsCredentialsProvider` to support multiple Azure DevOps organizations and **deprecated** `AzureIntegrationConfig.credential` and `AzureIntegrationConfig.token` in favour of `AzureIntegrationConfig.credentials`. You can now use specific credentials for different Azure DevOps (Server) organizations by specifying the `organizations` field on a credential:
+
+  ```yaml
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+          - organizations:
+              - my-org
+              - my-other-org
+            clientId: ${AZURE_CLIENT_ID}
+            clientSecret: ${AZURE_CLIENT_SECRET}
+            tenantId: ${AZURE_TENANT_ID}
+          - organizations:
+              - yet-another-org
+            personalAccessToken: ${PERSONAL_ACCESS_TOKEN}
+  ```
+
+  See the [Azure integration documentation](https://backstage.io/docs/integrations/azure/locations) for more information.
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 2d2fc9d20ebb: Additional fix for Gitiles auth links
+- cb2e19d82d95: Gitiles: Fixed auth prefix issue
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+
+## 1.7.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+
+## 1.7.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/errors@1.2.1
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 2d2fc9d20ebb: Additional fix for Gitiles auth links
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/errors@1.2.1
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 5f1a92b9f19f: Added `AzureDevOpsCredentialsProvider` to support multiple Azure DevOps organizations and **deprecated** `AzureIntegrationConfig.credential` and `AzureIntegrationConfig.token` in favour of `AzureIntegrationConfig.credentials`. You can now use specific credentials for different Azure DevOps (Server) organizations by specifying the `organizations` field on a credential:
+
+  ```yaml
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+          - organizations:
+              - my-org
+              - my-other-org
+            clientId: ${AZURE_CLIENT_ID}
+            clientSecret: ${AZURE_CLIENT_SECRET}
+            tenantId: ${AZURE_TENANT_ID}
+          - organizations:
+              - yet-another-org
+            personalAccessToken: ${PERSONAL_ACCESS_TOKEN}
+  ```
+
+  See the [Azure integration documentation](https://backstage.io/docs/integrations/azure/locations) for more information.
+
+### Patch Changes
+
+- cb2e19d82d95: Gitiles: Fixed auth prefix issue
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 1.6.0
+
+### Minor Changes
+
+- 443afcf7f567: Added `buildGerritGitilesArchiveUrl()` to construct a Gitiles URL to download an archive.
+  Gitiles URL that uses an authenticated prefix (`/a/`) can now be parsed by the integration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 1.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/config@1.0.8
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1-next.0
+  - @backstage/config@1.0.8
+
+## 1.5.0
+
+### Minor Changes
+
+- a316d226c780: Add credential provider for GitLab.
+- c7f848bcea3c: Support authentication with a service principal or managed identity for Azure DevOps
+
+  Azure DevOps recently released support, in public preview, for authenticating with a service principal or managed identity instead of a personal access token (PAT): https://devblogs.microsoft.com/devops/introducing-service-principal-and-managed-identity-support-on-azure-devops/. With this change the Azure integration now supports service principals and managed identities for Azure AD backed Azure DevOps organizations. Service principal and managed identity authentication is not supported on Azure DevOps Server (on-premises) organizations.
+
+### Patch Changes
+
+- 3c83550fdb62: Renamed ClientSecret to AzureClientSecretCredential and ManagedIdentity to AzureManagedIdentityCredential
+- df8411779da1: Add support for Repository Variables and Secrets to the `publish:github` and `github:repo:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Secrets` and `Variables`
+
+  Upgrade octokit introduces some breaking changes.
+
+- Updated dependencies
+  - @backstage/errors@1.2.0
+  - @backstage/config@1.0.8
+
+## 1.5.0-next.0
+
+### Minor Changes
+
+- a316d226c780: Add credential provider for GitLab.
+- c7f848bcea3c: Support authentication with a service principal or managed identity for Azure DevOps
+
+  Azure DevOps recently released support, in public preview, for authenticating with a service principal or managed identity instead of a personal access token (PAT): https://devblogs.microsoft.com/devops/introducing-service-principal-and-managed-identity-support-on-azure-devops/. With this change the Azure integration now supports service principals and managed identities for Azure AD backed Azure DevOps organizations. Service principal and managed identity authentication is not supported on Azure DevOps Server (on-premises) organizations.
+
+### Patch Changes
+
+- df8411779da1: Add support for Repository Variables and Secrets to the `publish:github` and `github:repo:create` scaffolder actions. You will need to add `read/write` permissions to your GITHUB_TOKEN and/or Github Backstage App for Repository `Secrets` and `Variables`
+
+  Upgrade octokit introduces some breaking changes.
+
+- Updated dependencies
+  - @backstage/errors@1.2.0-next.0
+  - @backstage/config@1.0.7
+
+## 1.4.5
+
+### Patch Changes
+
+- b026275bcc8: Fixed a bug where the wrong credentials would be selected when using multiple GitHub app integrations.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 1.4.5-next.0
+
+### Patch Changes
+
+- b026275bcc8: Fixed a bug where the wrong credentials would be selected when using multiple GitHub app integrations.
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 1.4.4
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 1.4.4-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/config@1.0.7
+  - @backstage/errors@1.1.5
+
+## 1.4.3
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5
+  - @backstage/config@1.0.7
+
+## 1.4.3-next.0
+
+### Patch Changes
+
+- 52b0022dab7: Updated dependency `msw` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.1.5-next.0
+  - @backstage/config@1.0.7-next.0
+
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6
+  - @backstage/errors@1.1.4
+
+## 1.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/errors@1.1.4
+
+## 1.4.1
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 34b039ca9f: Added `integrations.github.apps.allowedInstallationOwners` to the configuration schema.
+- Updated dependencies
+  - @backstage/errors@1.1.4
+  - @backstage/config@1.0.5
+
+## 1.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.5-next.1
+  - @backstage/errors@1.1.4-next.1
+
+## 1.4.1-next.0
+
+### Patch Changes
+
+- 3280711113: Updated dependency `msw` to `^0.49.0`.
+- 34b039ca9f: Added `integrations.github.apps.allowedInstallationOwners` to the configuration schema.
+- Updated dependencies
+  - @backstage/config@1.0.5-next.0
+  - @backstage/errors@1.1.4-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- d05e1841ce: This patch brings Gitea as a valid integration: target, via the ScmIntegration interface. It adds gitea to the relevant static properties (get integration by name, get integration by type) for plugins to be able to reference the same Gitea server.
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+
+  Deprecates:
+
+  - `getGitHubFileFetchUrl` replaced by `getGithubFileFetchUrl`
+  - `GitHubIntegrationConfig` replaced by `GithubIntegrationConfig`
+  - `GitHubIntegration` replaced by `GithubIntegration`
+  - `readGitHubIntegrationConfig` replaced by `readGithubIntegrationConfig`
+  - `readGitHubIntegrationConfigs` replaced by `readGithubIntegrationConfigs`
+  - `replaceGitHubUrlType` replaced by `replaceGithubUrlType`
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- a6d779d58a: Remove explicit default visibility at `config.d.ts` files.
+
+  ```ts
+  /**
+   * @visibility backend
+   */
+  ```
+
+- Updated dependencies
+  - @backstage/config@1.0.4
+  - @backstage/errors@1.1.3
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- d05e1841ce: This patch brings Gitea as a valid integration: target, via the ScmIntegration interface. It adds gitea to the relevant static properties (get integration by name, get integration by type) for plugins to be able to reference the same Gitea server.
+- c1784a4980: Replaces in-code uses of `GitHub` with `Github` and deprecates old versions.
+
+  Deprecates:
+
+  - `getGitHubFileFetchUrl` replaced by `getGithubFileFetchUrl`
+  - `GitHubIntegrationConfig` replaced by `GithubIntegrationConfig`
+  - `GitHubIntegration` replaced by `GithubIntegration`
+  - `readGitHubIntegrationConfig` replaced by `readGithubIntegrationConfig`
+  - `readGitHubIntegrationConfigs` replaced by `readGithubIntegrationConfigs`
+  - `replaceGitHubUrlType` replaced by `replaceGithubUrlType`
+
+### Patch Changes
+
+- 7573b65232: Internal refactor of imports to avoid circular dependencies
+- a6d779d58a: Remove explicit default visibility at `config.d.ts` files.
+
+  ```ts
+  /**
+   * @visibility backend
+   */
+  ```
+
+- Updated dependencies
+  - @backstage/config@1.0.4-next.0
+  - @backstage/errors@1.1.3-next.0
+
+## 1.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3
+  - @backstage/errors@1.1.2
+
+## 1.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.2
+  - @backstage/errors@1.1.2-next.2
+
+## 1.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.1
+  - @backstage/errors@1.1.2-next.1
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/errors@1.1.2-next.0
+
+## 1.3.1
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+- 42918e085c: Fixed bug in the `bitbucketServer` integration where token did not take precedence over supplied username and password which is described in the documentation.
+- f76f22c649: Improved caching around github app tokens.
+  Tokens are now cached for 50 minutes, not 10.
+  Calls to get app installations are also included in this cache.
+  If you have more than one github app configured, consider adding `allowedInstallationOwners` to your apps configuration to gain the most benefit from these performance changes.
+- Updated dependencies
+  - @backstage/config@1.0.2
+  - @backstage/errors@1.1.1
+
+## 1.3.1-next.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- f76f22c649: Improved caching around github app tokens.
+  Tokens are now cached for 50 minutes, not 10.
+  Calls to get app installations are also included in this cache.
+  If you have more than one github app configured, consider adding `allowedInstallationOwners` to your apps configuration to gain the most benefit from these performance changes.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/errors@1.1.1-next.0
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- eadf56bbbf: Bump `git-url-parse` version to `^13.0.0`
+- 667d917488: Updated dependency `msw` to `^0.47.0`.
+- 87ec2ba4d6: Updated dependency `msw` to `^0.46.0`.
+- 42918e085c: Fixed bug in the `bitbucketServer` integration where token did not take precedence over supplied username and password which is described in the documentation.
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- bf5e9030eb: Updated dependency `msw` to `^0.45.0`.
+
+## 1.3.0
+
+### Minor Changes
+
+- 593dea6710: Add support for Basic Auth for Bitbucket Server.
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+
+### Patch Changes
+
+- 163243a4d1: Handle incorrect return type from Octokit paginate plugin to resolve reading URLs from GitHub
+- c4b460a47d: Avoid double encoding of the file path in `getBitbucketDownloadUrl`
+- 29f782eb37: Updated dependency `@types/luxon` to `^3.0.0`.
+- 1f27d83933: Fixed bug in getGitLabFileFetchUrl where a target whose path did not contain the
+  `/-/` scope would result in a fetch URL that did not support
+  private-token-based authentication.
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- ad35364e97: feat(techdocs): add edit button support for bitbucketServer
+
+### Patch Changes
+
+- 1f27d83933: Fixed bug in getGitLabFileFetchUrl where a target whose path did not contain the
+  `/-/` scope would result in a fetch URL that did not support
+  private-token-based authentication.
+
 ## 1.3.0-next.0
 
 ### Minor Changes

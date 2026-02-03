@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
@@ -35,9 +34,10 @@ describe('DefaultResultListItem', () => {
 
   it('Includes primary/secondary text (title / text)', async () => {
     await renderInTestApp(<DefaultResultListItem result={result} />);
-    expect(screen.getByRole('listitem')).toHaveTextContent(
-      result.title + result.text,
-    );
+    expect(
+      screen.getByRole('link', { name: result.title }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(result.text)).toBeInTheDocument();
   });
 
   it('should render icon if prop is specified', async () => {

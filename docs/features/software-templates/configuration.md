@@ -12,10 +12,13 @@ This is done in your `app-config.yaml` by adding
 [Backstage integrations](https://backstage.io/docs/integrations/) for the
 appropriate source code repository for your organization.
 
-> Note: Integrations may already be set up as part of your `app-config.yaml`.
+:::note Note
 
-The next step is to add
-[add templates](http://backstage.io/docs/features/software-templates/adding-templates)
+Integrations may already be set up as part of your `app-config.yaml`.
+
+:::
+
+The next step is to [add templates](http://backstage.io/docs/features/software-templates/adding-templates)
 to your Backstage app.
 
 ## Publishing defaults
@@ -44,6 +47,65 @@ add the `repoVisibility` key within a software template:
     repoUrl: '{{ parameters.repoUrl }}'
     repoVisibility: public # or 'internal' or 'private'
 ```
+
+### Default Environment
+
+The scaffolder supports a `defaultEnvironment` configuration that provides default parameters and secrets to all templates. This reduces template complexity and improves security by centralizing common values.
+
+```yaml
+scaffolder:
+  defaultEnvironment:
+    parameters:
+      region: eu-west-1
+      organizationName: acme-corp
+      defaultRegistry: registry.acme-corp.com
+    secrets:
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      DOCKER_REGISTRY_TOKEN: ${DOCKER_REGISTRY_TOKEN}
+```
+
+#### Default parameters
+
+Default parameters are accessible via `${{ environment.parameters.* }}` in templates. Default parameters are isolated in their own context to avoid naming conflicts.
+
+```yaml
+ parameters:
+    - title: Fill in some steps
+      required:
+        - organizationName
+      properties:
+        organizationName:
+          title: organizationName
+          type: string
+          description: Unique name of the organization
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+
+  steps:
+    - id: deploy
+      name: Deploy Application
+      action: aws:deploy
+      input:
+        region: ${{ environment.parameters.region }}  # Resolves to defaultEnvironment.parameters.region
+        organization: ${{ parameters.organizationName }}  # Resolves to frontend input value
+        otherOrganization: ${{ environment.parameters.organizationName }}  # Resolves to defaultEnvironment.parameters.organizationName
+```
+
+#### Secrets
+
+Default secrets are resolved from environment variables and accessible via `${{ environment.secrets.* }}` in template actions. Secrets are only available during action execution, not in frontend forms.
+
+```yaml
+- id: deploy
+  name: Deploy with credentials
+  action: aws:deploy
+  input:
+    accessKey: ${{ environment.secrets.AWS_ACCESS_KEY }} # Resolves to defaultEnvironment.secrets.AWS_ACCESS_KEY
+```
+
+**Security Note:** Secrets are automatically masked in logs and are only available to backend actions, never exposed to the frontend.
 
 ## Disabling Docker in Docker situation (Optional)
 
@@ -75,11 +137,11 @@ Once you have more than a few software templates you may want to customize your
 accomplish this by creating `groups` and passing them to your `ScaffolderPage`
 like below
 
-```
+```tsx
 <ScaffolderPage
   groups={[
     {
-      title: "Recommended",
+      title: 'Recommended',
       filter: entity =>
         entity?.metadata?.tags?.includes('recommended') ?? false,
     },
@@ -93,4 +155,20 @@ top of the page above any other templates not filtered by this group or others.
 You can also further customize groups by passing in a `titleComponent` instead
 of a `title` which will be a component to use as the header instead of just the
 default `ContentHeader` with the `title` set as it's value.
+
 ![Grouped Templates](../../assets/software-templates/grouped-templates.png)
+
+There is also an option to hide some templates.
+You can have several use cases for that:
+
+- it's still in an experimental phase, so you can combine it with feature flagging for example
+- you don't want to make them accessible from template list, but only open it on some action with pre-filled data.
+- show different set of templates depends on target environment
+
+```typescript jsx
+<ScaffolderPage
+  templateFilter={entity =>
+    entity?.metadata?.tags?.includes('experimental') ?? false
+  }
+/>
+```

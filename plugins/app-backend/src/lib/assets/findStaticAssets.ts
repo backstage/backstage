@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import globby from 'globby';
 import { StaticAssetInput } from './types';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 
 /**
  * Finds all static assets within a directory

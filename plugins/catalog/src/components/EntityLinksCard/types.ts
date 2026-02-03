@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/** @public */
 export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
+/** @public */
 export type ColumnBreakpoints = Record<Breakpoint, number>;

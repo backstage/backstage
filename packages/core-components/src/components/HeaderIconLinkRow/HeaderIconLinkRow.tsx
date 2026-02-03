@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
 
 /** @public */
@@ -28,6 +27,7 @@ const useStyles = makeStyles(
       gridAutoFlow: 'column',
       gridAutoColumns: 'min-content',
       gridGap: theme.spacing(3),
+      wordBreak: 'keep-all',
     },
   }),
   { name: 'BackstageHeaderIconLinkRow' },

@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
-import { ResourcePermission } from '.';
-import { Permission } from './permission';
+import { JsonPrimitive } from '@backstage/types';
+import { Permission, ResourcePermission } from './permission';
 
 /**
  * A request with a UUID identifier, so that batched responses can be matched up with the original
@@ -36,19 +38,34 @@ export type PermissionMessageBatch<T> = {
  * The result of an authorization request.
  * @public
  */
-export enum AuthorizeResult {
+export const AuthorizeResult = {
   /**
    * The authorization request is denied.
    */
-  DENY = 'DENY',
+  DENY: 'DENY',
   /**
    * The authorization request is allowed.
    */
-  ALLOW = 'ALLOW',
+  ALLOW: 'ALLOW',
   /**
    * The authorization request is allowed if the provided conditions are met.
    */
-  CONDITIONAL = 'CONDITIONAL',
+  CONDITIONAL: 'CONDITIONAL',
+} as const;
+
+/**
+ * @public
+ */
+export type AuthorizeResult =
+  (typeof AuthorizeResult)[keyof typeof AuthorizeResult];
+
+/**
+ * @public
+ */
+export namespace AuthorizeResult {
+  export type ALLOW = typeof AuthorizeResult.ALLOW;
+  export type DENY = typeof AuthorizeResult.DENY;
+  export type CONDITIONAL = typeof AuthorizeResult.CONDITIONAL;
 }
 
 /**
@@ -101,11 +118,11 @@ export type PolicyDecision =
  */
 export type PermissionCondition<
   TResourceType extends string = string,
-  TParams extends unknown[] = unknown[],
+  TParams extends PermissionRuleParams = PermissionRuleParams,
 > = {
   resourceType: TResourceType;
   rule: string;
-  params: TParams;
+  params?: TParams;
 };
 
 /**
@@ -149,6 +166,22 @@ export type PermissionCriteria<TQuery> =
   | TQuery;
 
 /**
+ * A parameter to a permission rule.
+ *
+ * @public
+ */
+export type PermissionRuleParam = undefined | JsonPrimitive | JsonPrimitive[];
+
+/**
+ * Types that can be used as parameters to permission rules.
+ *
+ * @public
+ */
+export type PermissionRuleParams =
+  | undefined
+  | Record<string, PermissionRuleParam>;
+
+/**
  * An individual request sent to the permission backend.
  * @public
  */
@@ -160,6 +193,7 @@ export type EvaluatePermissionRequest = {
 /**
  * A batch of requests sent to the permission backend.
  * @public
+ * @deprecated This type is not used and it will be removed in the future
  */
 export type EvaluatePermissionRequestBatch =
   PermissionMessageBatch<EvaluatePermissionRequest>;
@@ -228,7 +262,7 @@ export interface PermissionEvaluator {
    */
   authorize(
     requests: AuthorizePermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: EvaluatorRequestOptions & { _ignored?: never }, // Since the options are empty we add this placeholder to reject all options
   ): Promise<AuthorizePermissionResponse[]>;
 
   /**
@@ -241,15 +275,20 @@ export interface PermissionEvaluator {
    */
   authorizeConditional(
     requests: QueryPermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: EvaluatorRequestOptions & { _ignored?: never }, // Since the options are empty we add this placeholder to reject all options
   ): Promise<QueryPermissionResponse[]>;
 }
 
+// Note(Rugvip): I kept the below type around in case we want to add new options
+// in the future, for example a signal. It also helps out enabling API
+// constraints, as without this we can't have the permissions service implement
+// the evaluator interface due to the mismatch in parameter count.
+
 /**
  * Options for {@link PermissionEvaluator} requests.
- * The Backstage identity token should be defined if available.
+ *
+ * This is currently empty, as there are no longer any common options for the permission evaluator.
+ *
  * @public
  */
-export type EvaluatorRequestOptions = {
-  token?: string;
-};
+export interface EvaluatorRequestOptions {}

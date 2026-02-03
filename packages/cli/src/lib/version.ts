@@ -19,8 +19,7 @@ import semver from 'semver';
 import { paths } from './paths';
 import { Lockfile } from './versioning';
 
-/* eslint-disable monorepo/no-relative-import */
-
+/* eslint-disable @backstage/no-relative-monorepo-imports */
 /*
 This is a list of all packages used by the templates. If dependencies are added or removed,
 this list should be updated as well.
@@ -33,29 +32,53 @@ This does not create an actual dependency on these packages and does not bring i
 Rollup will extract the value of the version field in each package at build time without
 leaving any imports in place.
 */
-
-import { version as backendCommon } from '../../../../packages/backend-common/package.json';
+import { version as backendPluginApi } from '../../../../packages/backend-plugin-api/package.json';
+import { version as backendTestUtils } from '../../../../packages/backend-test-utils/package.json';
+import { version as catalogClient } from '../../../../packages/catalog-client/package.json';
 import { version as cli } from '../../../../packages/cli/package.json';
 import { version as config } from '../../../../packages/config/package.json';
 import { version as coreAppApi } from '../../../../packages/core-app-api/package.json';
 import { version as coreComponents } from '../../../../packages/core-components/package.json';
 import { version as corePluginApi } from '../../../../packages/core-plugin-api/package.json';
 import { version as devUtils } from '../../../../packages/dev-utils/package.json';
+import { version as errors } from '../../../../packages/errors/package.json';
+import { version as frontendDefaults } from '../../../../packages/frontend-defaults/package.json';
+import { version as frontendPluginApi } from '../../../../packages/frontend-plugin-api/package.json';
+import { version as frontendTestUtils } from '../../../../packages/frontend-test-utils/package.json';
 import { version as testUtils } from '../../../../packages/test-utils/package.json';
+import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
+import { version as scaffolderNodeTestUtils } from '../../../../plugins/scaffolder-node-test-utils/package.json';
+import { version as authBackend } from '../../../../plugins/auth-backend/package.json';
+import { version as authBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
+import { version as catalogNode } from '../../../../plugins/catalog-node/package.json';
 import { version as theme } from '../../../../packages/theme/package.json';
-import { version as scaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
+import { version as types } from '../../../../packages/types/package.json';
+import { version as backendDefaults } from '../../../../packages/backend-defaults/package.json';
 
 export const packageVersions: Record<string, string> = {
-  '@backstage/backend-common': backendCommon,
+  '@backstage/backend-defaults': backendDefaults,
+  '@backstage/backend-plugin-api': backendPluginApi,
+  '@backstage/backend-test-utils': backendTestUtils,
+  '@backstage/catalog-client': catalogClient,
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
   '@backstage/core-components': coreComponents,
   '@backstage/core-plugin-api': corePluginApi,
   '@backstage/dev-utils': devUtils,
+  '@backstage/errors': errors,
+  '@backstage/frontend-defaults': frontendDefaults,
+  '@backstage/frontend-plugin-api': frontendPluginApi,
+  '@backstage/frontend-test-utils': frontendTestUtils,
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
-  '@backstage/plugin-scaffolder-backend': scaffolderBackend,
+  '@backstage/types': types,
+  '@backstage/plugin-scaffolder-node': scaffolderNode,
+  '@backstage/plugin-scaffolder-node-test-utils': scaffolderNodeTestUtils,
+  '@backstage/plugin-auth-backend': authBackend,
+  '@backstage/plugin-auth-backend-module-guest-provider':
+    authBackendModuleGuestProvider,
+  '@backstage/plugin-catalog-node': catalogNode,
 };
 
 export function findVersion() {
@@ -66,21 +89,35 @@ export function findVersion() {
 export const version = findVersion();
 export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
 
-export function createPackageVersionProvider(lockfile?: Lockfile) {
+export function createPackageVersionProvider(
+  lockfile?: Lockfile,
+  options?: {
+    preferBackstageProtocol?: boolean;
+  },
+) {
   return (name: string, versionHint?: string): string => {
     const packageVersion = packageVersions[name];
+
+    // 1) workspace precedence (existing logic) - check this first
+    const lockfileEntries = lockfile?.get(name);
+    const lockfileEntry = lockfileEntries?.find(entry =>
+      entry.range.startsWith('workspace:'),
+    );
+    if (lockfileEntry) {
+      return 'workspace:^';
+    }
+
+    // 2) backstage:^ when plugin is present and allowed
+    if (options?.preferBackstageProtocol && name.startsWith('@backstage/')) {
+      return 'backstage:^';
+    }
+
+    // 3) fallback to current npm resolution
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {
       throw new Error(`No version available for package ${name}`);
     }
 
-    const lockfileEntries = lockfile?.get(name);
-    if (
-      name.startsWith('@types/') &&
-      lockfileEntries?.some(entry => entry.range === '*')
-    ) {
-      return '*';
-    }
     const validRanges = lockfileEntries?.filter(entry =>
       semver.satisfies(targetVersion, entry.range),
     );

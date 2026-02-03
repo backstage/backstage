@@ -15,8 +15,9 @@
  */
 
 export * from './AlertDisplay';
+export * from './AutoLogout';
 export * from './Avatar';
-export * from './Button';
+export * from './LinkButton';
 export * from './CodeSnippet';
 export * from './CopyTextButton';
 export * from './CreateButton';
@@ -24,12 +25,14 @@ export * from './DependencyGraph';
 export * from './DismissableBanner';
 export * from './EmptyState';
 export * from './ErrorPanel';
+export * from './FavoriteToggle';
 export * from './ResponseErrorPanel';
 export * from './FeatureDiscovery';
 export * from './HeaderIconLinkRow';
 export * from './HorizontalScrollGrid';
 export * from './Lifecycle';
 export * from './Link';
+export * from './LinkButton';
 export * from './LogViewer';
 export * from './MarkdownContent';
 export * from './OAuthRequestDialog';
@@ -43,6 +46,5 @@ export * from './StructuredMetadataTable';
 export * from './SupportButton';
 export * from './TabbedLayout';
 export * from './Table';
-export * from './Tabs';
 export * from './TrendLine';
 export * from './WarningPanel';

@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import mockFs from 'mock-fs';
-import * as os from 'os';
-import * as path from 'path';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
   getStaleFiles,
@@ -26,7 +23,9 @@ import {
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
   normalizeExternalStorageRootPath,
+  isValidContentPath,
 } from './helpers';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('getHeadersForFileExtension', () => {
   const correctMapOfExtensions = [
@@ -57,30 +56,24 @@ describe('getHeadersForFileExtension', () => {
 });
 
 describe('getFileTreeRecursively', () => {
-  const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+  const mockDir = createMockDirectory();
 
   beforeEach(() => {
-    mockFs({
-      [root]: {
-        file1: '',
-        subDirA: {
-          file2: '',
-          emptyDir1: mockFs.directory(),
-        },
-        emptyDir2: mockFs.directory(),
+    mockDir.setContent({
+      file1: '',
+      subDirA: {
+        file2: '',
+        emptyDir1: {},
       },
+      emptyDir2: {},
     });
   });
 
-  afterEach(() => {
-    mockFs.restore();
-  });
-
   it('returns complete file tree of a path', async () => {
-    const fileList = await getFileTreeRecursively(root);
+    const fileList = await getFileTreeRecursively(mockDir.path);
     expect(fileList.length).toBe(2);
-    expect(fileList).toContain(path.resolve(root, 'file1'));
-    expect(fileList).toContain(path.resolve(root, 'subDirA/file2'));
+    expect(fileList).toContain(mockDir.resolve('file1'));
+    expect(fileList).toContain(mockDir.resolve('subDirA/file2'));
   });
 });
 
@@ -102,9 +95,9 @@ describe('lowerCaseEntityTripletInStoragePath', () => {
   it('throws error when there is no triplet', () => {
     const originalPath = '/default/component/IMAGE.png';
     const error = `Encountered file unmanaged by TechDocs ${originalPath}. Skipping.`;
-    expect(() =>
-      lowerCaseEntityTripletInStoragePath(originalPath),
-    ).toThrowError(error);
+    expect(() => lowerCaseEntityTripletInStoragePath(originalPath)).toThrow(
+      error,
+    );
   });
 });
 
@@ -157,6 +150,16 @@ describe('getStaleFiles', () => {
     const staleFiles = getStaleFiles(newFiles, oldFiles);
     expect(staleFiles).toHaveLength(1);
     expect(staleFiles).toEqual(expect.arrayContaining(['stale_file.png']));
+  });
+
+  it('should not return directories as stale files if they are parent directories of new files', () => {
+    const oldFiles = [...defaultFiles, 'default/Component/backstage/foo'];
+    const newFiles = [
+      ...defaultFiles,
+      'default/Component/backstage/foo/bar/index.html',
+    ];
+    const staleFiles = getStaleFiles(newFiles, oldFiles);
+    expect(staleFiles).toHaveLength(0);
   });
 });
 
@@ -303,5 +306,27 @@ describe('bulkStorageOperation', () => {
     expect(fn).toHaveBeenCalledTimes(2);
     expect(fn).toHaveBeenNthCalledWith(1, files[0]);
     expect(fn).toHaveBeenNthCalledWith(2, files[1]);
+  });
+
+  describe('isValidContentPath', () => {
+    it('should return true when content path is the same as bucket root', () => {
+      expect(isValidContentPath('/s/t', '/s/t')).toBe(true);
+      expect(isValidContentPath('/s/t', '/s/t/c')).toBe(true);
+      expect(isValidContentPath('/s/t', '/s/t/c w s/f.txt')).toBe(true);
+      expect(isValidContentPath('/s/t w s/', '/s/t w s/f.txt')).toBe(true);
+      expect(isValidContentPath('/s/t w s/', '/s/t w s/c w s/f.txt')).toBe(
+        true,
+      );
+      expect(
+        isValidContentPath('/s/t w s/', '/s/t w s/c w s/../c w s/f.txt'),
+      ).toBe(true);
+    });
+
+    it('should return false when content path is not a child of bucket root', () => {
+      expect(isValidContentPath('/s/t', '/s')).toBe(false);
+      expect(isValidContentPath('/s/t', '/s/t w s')).toBe(false);
+      expect(isValidContentPath('/s/t w s', '/s/c')).toBe(false);
+      expect(isValidContentPath('/s/t', '/s/t/../../c/f.txt')).toBe(false);
+    });
   });
 });

@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, ReactNode } from 'react';
-import {
-  Divider,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
+import { PropsWithChildren, ReactNode } from 'react';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
-import { useAnalytics } from '@backstage/core-plugin-api';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
@@ -43,8 +39,8 @@ const useStyles = makeStyles({
  * @public
  */
 export type TechDocsSearchResultListItemProps = {
-  icon?: ReactNode;
-  result: any;
+  icon?: ReactNode | ((result: any) => ReactNode);
+  result?: any;
   highlight?: ResultHighlight;
   rank?: number;
   lineClamp?: number;
@@ -64,7 +60,6 @@ export const TechDocsSearchResultListItem = (
   const {
     result,
     highlight,
-    rank,
     lineClamp = 5,
     asListItem = true,
     asLink = true,
@@ -73,13 +68,14 @@ export const TechDocsSearchResultListItem = (
   } = props;
   const classes = useStyles();
 
-  const analytics = useAnalytics();
-  const handleClick = () => {
-    analytics.captureEvent('discover', result.title, {
-      attributes: { to: result.location },
-      value: rank,
-    });
-  };
+  const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
+    asLink ? (
+      <Link noTrack to={result.location}>
+        {children}
+      </Link>
+    ) : (
+      <>{children}</>
+    );
 
   const TextItem = () => {
     const resultTitle = highlight?.fields.title ? (
@@ -112,27 +108,34 @@ export const TechDocsSearchResultListItem = (
       result.name
     );
 
+    if (!result) return null;
+
     return (
       <ListItemText
         className={classes.itemText}
         primaryTypographyProps={{ variant: 'h6' }}
         primary={
-          title ? (
-            title
-          ) : (
-            <>
-              {resultTitle} | {entityTitle ?? resultName} docs
-            </>
-          )
+          <LinkWrapper>
+            {title ? (
+              title
+            ) : (
+              <>
+                {resultTitle} | {entityTitle ?? resultName} docs
+              </>
+            )}
+          </LinkWrapper>
         }
         secondary={
-          <span
+          <Typography
+            component="span"
             style={{
               display: '-webkit-box',
               WebkitBoxOrient: 'vertical',
               WebkitLineClamp: lineClamp,
               overflow: 'hidden',
             }}
+            color="textSecondary"
+            variant="body2"
           >
             {highlight?.fields.text ? (
               <HighlightedSearchResultText
@@ -143,39 +146,29 @@ export const TechDocsSearchResultListItem = (
             ) : (
               result.text
             )}
-          </span>
+          </Typography>
         }
       />
     );
   };
 
-  const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
-    asLink ? (
-      <Link noTrack to={result.location} onClick={handleClick}>
-        {children}
-      </Link>
-    ) : (
-      <>{children}</>
-    );
-
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (
       <>
-        <ListItem alignItems="flex-start">
-          {icon && <ListItemIcon>{icon}</ListItemIcon>}
-          <div className={classes.flexContainer}>{children}</div>
-        </ListItem>
-        <Divider component="li" />
+        {icon && (
+          <ListItemIcon>
+            {typeof icon === 'function' ? icon(result) : icon}
+          </ListItemIcon>
+        )}
+        <div className={classes.flexContainer}>{children}</div>
       </>
     ) : (
       <>{children}</>
     );
 
   return (
-    <LinkWrapper>
-      <ListItemWrapper>
-        <TextItem />
-      </ListItemWrapper>
-    </LinkWrapper>
+    <ListItemWrapper>
+      <TextItem />
+    </ListItemWrapper>
   );
 };

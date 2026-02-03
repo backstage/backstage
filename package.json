@@ -1,42 +1,20 @@
 {
   "name": "root",
-  "private": true,
-  "engines": {
-    "node": "14 || 16"
+  "version": "1.48.0-next.1",
+  "backstage": {
+    "cli": {
+      "new": {
+        "globals": {
+          "private": false,
+          "namePrefix": "@backstage/"
+        }
+      }
+    }
   },
-  "scripts": {
-    "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
-    "start": "yarn workspace example-app start",
-    "start-backend": "yarn workspace example-backend start",
-    "build": "backstage-cli repo build --all",
-    "build:api-reports": "yarn build:api-reports:only --tsc",
-    "build:api-reports:only": "ts-node -T -P scripts/tsconfig.json scripts/api-extractor.ts",
-    "build:api-docs": "yarn build:api-reports --docs",
-    "tsc": "tsc",
-    "tsc:full": "backstage-cli clean && tsc --skipLibCheck false --incremental false",
-    "clean": "backstage-cli clean && lerna run clean",
-    "diff": "lerna run diff --",
-    "test": "backstage-cli test",
-    "test:all": "lerna run test -- --coverage",
-    "lint": "backstage-cli repo lint --since origin/master",
-    "lint:docs": "node ./scripts/check-docs-quality",
-    "lint:all": "backstage-cli repo lint",
-    "lint:type-deps": "node scripts/check-type-dependencies.js",
-    "docker-build": "yarn tsc && yarn workspace example-backend build --build-dependencies && yarn workspace example-backend build-image",
-    "backstage-create": "backstage-cli create --scope backstage --no-private",
-    "create-plugin": "yarn backstage-create --select plugin",
-    "remove-plugin": "backstage-cli remove-plugin",
-    "release": "node scripts/prepare-release.js && changeset version && yarn diff --yes && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && yarn install",
-    "prettier:check": "prettier --check .",
-    "lerna": "lerna",
-    "storybook": "yarn --cwd storybook start",
-    "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
-    "snyk:test:package": "yarn snyk:test --include",
-    "build-storybook": "yarn --cwd storybook build-storybook",
-    "techdocs-cli": "node scripts/techdocs-cli.js",
-    "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "prepare": "husky install",
-    "lock:check": "yarn-lock-check"
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage"
   },
   "workspaces": {
     "packages": [
@@ -44,52 +22,185 @@
       "plugins/*"
     ]
   },
-  "resolutions": {
-    "**/@graphql-codegen/cli/**/ws": "^8.0.0",
-    "@types/react": "^17",
-    "@types/react-dom": "^17"
+  "scripts": {
+    "build-storybook": "storybook build --output-dir dist-storybook",
+    "build-storybook:chromatic": "STORYBOOK_STORY_SET=chromatic storybook build --stats-json --output-dir dist-storybook",
+    "build:all": "backstage-cli repo build --all",
+    "build:api-docs": "LANG=en_EN yarn build:api-reports --docs --exclude 'plugins/@(api-docs|api-docs-module-protoc-gen-doc|app-visualizer|catalog-graph|catalog-import|catalog-unprocessed-entities|config-schema|example-todo-list|example-todo-list-backend)'",
+    "build:api-reports": "yarn build:api-reports:only --tsc",
+    "build:api-reports:only": "LANG=en_US.UTF-8 NODE_OPTIONS=--max-old-space-size=8192 backstage-repo-tools api-reports --sql-reports --allow-warnings 'packages/backend-app-api,packages/core-components,plugins/+(catalog|catalog-import|kubernetes)' -o ae-undocumented,ae-wrong-input-file-type --validate-release-tags",
+    "build:backend": "yarn workspace example-backend build",
+    "build:knip-reports": "backstage-repo-tools knip-reports",
+    "build:plugins-report": "node ./scripts/build-plugins-report",
+    "clean": "backstage-cli repo clean",
+    "create-plugin": "echo \"use 'yarn new' instead\"",
+    "dev": "echo \"use 'yarn start' instead\"",
+    "dev:next": "echo \"use 'yarn start:next' instead\"",
+    "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
+    "fix": "backstage-cli repo fix --publish",
+    "postinstall": "husky || true",
+    "lint": "backstage-cli repo lint --since origin/master",
+    "lint:all": "backstage-cli repo lint",
+    "lint:circular-deps": "madge --circular .",
+    "lint:docs": "node ./scripts/check-docs-quality",
+    "lint:peer-deps": "backstage-repo-tools peer-deps",
+    "lint:type-deps": "backstage-repo-tools type-deps",
+    "mui-to-bui": "node scripts/mui-to-bui/backstage-migration-analytics.js",
+    "new": "backstage-cli new",
+    "patch-pr": "node .patches/create-pr-patch.js",
+    "prepare": "husky",
+    "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write .",
+    "release": "node scripts/prepare-release.js && changeset version && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && yarn install --no-immutable",
+    "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
+    "snyk:test:package": "yarn snyk:test --include",
+    "start": "backstage-cli repo start",
+    "start-backend": "echo \"Use 'yarn start example-backend' instead\"",
+    "start:docker": "docker compose -f docker-compose.deps.yml up --wait && BACKSTAGE_ENV=docker yarn start",
+    "start:microsite": "cd microsite/ && yarn start",
+    "start:next": "yarn start example-app-next example-backend",
+    "storybook": "storybook dev -p 6006",
+    "sync-issue-templates": "node ./.github/ISSUE_TEMPLATE/sync.js",
+    "techdocs-cli": "node scripts/techdocs-cli.js",
+    "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
+    "test": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test",
+    "test:all": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test --coverage",
+    "test:e2e": "NODE_OPTIONS=--no-node-snapshot playwright test",
+    "tsc": "NODE_OPTIONS='--max-old-space-size=8192' tsc",
+    "tsc:full": "backstage-cli repo clean && NODE_OPTIONS='--max-old-space-size=8192' tsc --skipLibCheck false --incremental false"
   },
-  "version": "1.5.0-next.0",
-  "dependencies": {
-    "@manypkg/get-packages": "^1.1.3",
-    "@microsoft/api-documenter": "^7.17.11",
-    "@microsoft/api-extractor": "^7.23.0",
-    "@microsoft/api-extractor-model": "^7.17.2",
-    "@microsoft/tsdoc": "^0.14.1"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.14.0",
-    "@octokit/rest": "^19.0.3",
-    "@spotify/prettier-config": "^14.0.0",
-    "@types/node": "^16.11.26",
-    "@types/webpack": "^5.28.0",
-    "command-exists": "^1.2.9",
-    "cross-env": "^7.0.0",
-    "concurrently": "^7.0.0",
-    "eslint-plugin-notice": "^0.9.10",
-    "fs-extra": "10.1.0",
-    "husky": "^8.0.0",
-    "lerna": "^5.0.0",
-    "lint-staged": "^13.0.0",
-    "minimist": "^1.2.5",
-    "prettier": "^2.2.1",
-    "semver": "^7.3.2",
-    "shx": "^0.3.2",
-    "ts-node": "^10.4.0",
-    "typescript": "~4.7.0",
-    "yarn-lock-check": "^1.0.5"
-  },
-  "prettier": "@spotify/prettier-config",
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
       "eslint --fix",
       "prettier --write"
     ],
-    "*.{json,md}": [
+    "*.json": [
       "prettier --write"
     ],
     "*.md": [
+      "prettier --write",
       "node ./scripts/check-docs-quality"
+    ],
+    "{plugins,packages}/*/catalog-info.yaml": [
+      "yarn backstage-repo-tools generate-catalog-info --ci"
+    ],
+    ".github/CODEOWNERS": [
+      "yarn backstage-repo-tools generate-catalog-info",
+      "git add */catalog-info.yaml"
+    ],
+    "package.json": [
+      "yarn backstage-repo-tools generate-catalog-info",
+      "git add */catalog-info.yaml",
+      "node ./scripts/sort-package-json.mjs"
+    ],
+    "yarn.lock": [
+      "node ./scripts/verify-lockfile-duplicates --fix"
     ]
+  },
+  "prettier": "@backstage/cli/config/prettier",
+  "jest": {
+    "rejectFrontendNetworkRequests": true
+  },
+  "resolutions": {
+    "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch",
+    "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
+    "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch",
+    "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.0",
+    "ast-types@0.14.2": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch",
+    "ast-types@^0.14.1": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch",
+    "ast-types@npm:0.14.2": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch",
+    "ast-types@npm:^0.13.4": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch",
+    "ast-types@npm:^0.16.1": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch",
+    "csstype@npm:^3.0.2": "3.0.9",
+    "csstype@npm:^3.1.2": "3.0.9",
+    "csstype@npm:^3.1.3": "3.0.9",
+    "recast@npm:0.23.9>ast-types": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch"
+  },
+  "dependencies": {
+    "@backstage/errors": "workspace:^",
+    "@manypkg/get-packages": "^1.1.3",
+    "@types/global-agent": "^2.1.3",
+    "@useoptic/optic": "^1.0.0",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:*",
+    "@backstage/codemods": "workspace:*",
+    "@backstage/create-app": "workspace:*",
+    "@backstage/e2e-test-utils": "workspace:*",
+    "@backstage/eslint-plugin": "workspace:*",
+    "@backstage/repo-tools": "workspace:*",
+    "@changesets/cli": "^2.14.0",
+    "@jest/environment-jsdom-abstract": "^30",
+    "@octokit/rest": "^19.0.3",
+    "@playwright/test": "^1.32.3",
+    "@spotify/eslint-plugin": "^15.0.0",
+    "@storybook/addon-a11y": "^10.3.0-alpha.1",
+    "@storybook/addon-docs": "^10.3.0-alpha.1",
+    "@storybook/addon-links": "^10.3.0-alpha.1",
+    "@storybook/addon-mcp": "^0.2.2",
+    "@storybook/addon-themes": "^10.3.0-alpha.1",
+    "@storybook/addon-vitest": "^10.3.0-alpha.1",
+    "@storybook/react-vite": "^10.3.0-alpha.1",
+    "@techdocs/cli": "workspace:*",
+    "@types/cacheable-request": "^8.3.6",
+    "@types/jest": "^30",
+    "@types/jsdom": "^27",
+    "@types/memjs": "^1.3.3",
+    "@types/node": "^22.13.14",
+    "@types/webpack": "^5.28.0",
+    "array-to-table": "^1.0.1",
+    "command-exists": "^1.2.9",
+    "cross-env": "^10.0.0",
+    "e2e-test": "workspace:*",
+    "eslint": "^8.6.0",
+    "eslint-plugin-node-import": "^1.0.5",
+    "eslint-plugin-notice": "^1.0.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-testing-library": "^7.0.0",
+    "fs-extra": "^11.2.0",
+    "husky": "^9.0.0",
+    "jest": "^30",
+    "js-yaml": "^4.1.1",
+    "jsdom": "^27",
+    "lint-staged": "^15.0.0",
+    "madge": "^8.0.0",
+    "minimist": "^1.2.5",
+    "node-gyp": "^10.0.0",
+    "prettier": "^2.2.1",
+    "semver": "^7.5.3",
+    "shx": "^0.4.0",
+    "sloc": "^0.3.1",
+    "sort-package-json": "^2.8.0",
+    "storybook": "^10.3.0-alpha.1",
+    "ts-morph": "^24.0.0",
+    "typedoc": "^0.28.0",
+    "typescript": "~5.7.0",
+    "vite": "^7.1.5",
+    "zod": "^3.25.76"
+  },
+  "packageManager": "yarn@4.8.1",
+  "engines": {
+    "node": "22 || 24"
+  },
+  "madge": {
+    "fileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
+    "detectiveOptions": {
+      "ts": {
+        "skipTypeImports": true
+      },
+      "tsx": {
+        "skipTypeImports": true
+      }
+    },
+    "tsConfig": "./tsconfig.json"
   }
 }

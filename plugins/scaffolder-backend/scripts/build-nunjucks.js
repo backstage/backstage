@@ -16,9 +16,9 @@
  */
 
 /* eslint-disable no-restricted-syntax */
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
-const path = require('path');
+const path = require('node:path');
 
 const NUNJUCKS_LICENSE = `/**
  * Copyright (c) 2012-2015, James Long
@@ -58,7 +58,7 @@ require('esbuild')
     bundle: true,
     format: 'cjs',
     platform: 'node',
-    target: 'node14',
+    target: 'node16',
     banner: { js: NUNJUCKS_LICENSE },
     external: ['fsevents'],
     outfile: path.resolve(__dirname, '../assets/nunjucks.js.txt'),

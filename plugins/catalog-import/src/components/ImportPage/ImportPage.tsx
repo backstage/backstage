@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useOutlet } from 'react-router';
+import { useOutlet } from 'react-router-dom';
 import { DefaultImportPage } from '../DefaultImportPage';
 
 /**

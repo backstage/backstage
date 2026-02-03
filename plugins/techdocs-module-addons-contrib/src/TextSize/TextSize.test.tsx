@@ -15,109 +15,132 @@
  */
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
-
-import React from 'react';
-
-import { fireEvent, waitFor } from '@testing-library/react';
-
+import { act, fireEvent, waitFor } from '@testing-library/react';
+import { screen } from 'shadow-dom-testing-library';
 import { TextSize } from '../plugin';
+import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
+
+jest.mock('@backstage/plugin-techdocs-react', () => ({
+  ...jest.requireActual('@backstage/plugin-techdocs-react'),
+  useShadowRootElements: jest.fn(),
+}));
 
 describe('TextSize', () => {
+  const useShadowRootElementsMock = useShadowRootElements as jest.Mock;
+
+  const entityPresentationApiMock = {
+    forEntity: jest.fn(),
+  };
+  entityPresentationApiMock.forEntity.mockReturnValue({
+    snapshot: {
+      primaryTitle: 'Test Entity',
+    },
+  });
+
+  beforeEach(() => {
+    useShadowRootElementsMock.mockReturnValue([]);
+  });
+
   it('renders without exploding', async () => {
-    const { getByText } = await TechDocsAddonTester.buildAddonsInTechDocs([
-      <TextSize />,
-    ])
+    await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
       .withDom(<body>TEST_CONTENT</body>)
+      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
-    expect(getByText('TEST_CONTENT')).toBeInTheDocument();
+    expect(screen.getByShadowText('TEST_CONTENT')).toBeInTheDocument();
   });
 
   it('changes content text size using slider', async () => {
-    const { getByTitle, getByText, getByRole, getByDisplayValue } =
-      await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
-        .withDom(<body>TEST_CONTENT</body>)
-        .renderWithEffects();
+    await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
+      .withDom(<body>TEST_CONTENT</body>)
+      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
+      .renderWithEffects();
 
-    fireEvent.click(getByTitle('Settings'));
+    const content = screen.getByShadowText('TEST_CONTENT');
+    useShadowRootElementsMock.mockReturnValue([content]);
+
+    fireEvent.click(screen.getByShadowTitle('Settings'));
 
     await waitFor(() => {
-      expect(getByText('Text size')).toBeInTheDocument();
+      expect(screen.getByShadowText('Text size')).toBeInTheDocument();
     });
 
-    const slider = getByRole('slider');
+    const slider = screen.getByShadowRole('slider');
 
-    slider.focus();
+    act(() => {
+      slider.focus();
+    });
 
     fireEvent.keyDown(slider, {
       key: 'ArrowRight',
     });
 
     await waitFor(() => {
-      expect(getByDisplayValue('115')).toBeInTheDocument();
+      expect(screen.getByShadowDisplayValue('115')).toBeInTheDocument();
     });
 
     expect(slider).toHaveTextContent('115%');
 
-    let style = getComputedStyle(getByText('TEST_CONTENT'));
+    let style = window.getComputedStyle(screen.getByShadowText('TEST_CONTENT'));
 
-    expect(style.getPropertyValue('--md-typeset-font-size')).toBe('18.4px');
+    await waitFor(() => {
+      expect(style.getPropertyValue('--md-typeset-font-size')).toBe('18.4px');
+    });
 
     fireEvent.keyDown(slider, {
       key: 'ArrowLeft',
     });
 
     await waitFor(() => {
-      expect(getByDisplayValue('100')).toBeInTheDocument();
+      expect(screen.getByShadowDisplayValue('100')).toBeInTheDocument();
     });
 
     expect(slider).toHaveTextContent('100%');
 
-    style = getComputedStyle(getByText('TEST_CONTENT'));
+    style = window.getComputedStyle(screen.getByShadowText('TEST_CONTENT'));
 
     expect(style.getPropertyValue('--md-typeset-font-size')).toBe('16px');
   });
 
   it('changes content text size using buttons', async () => {
-    const {
-      getByTitle,
-      getByText,
-      getByRole,
-      getByLabelText,
-      getByDisplayValue,
-    } = await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
+    await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
       .withDom(<body>TEST_CONTENT</body>)
+      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
-    fireEvent.click(getByTitle('Settings'));
+    const content = screen.getByShadowText('TEST_CONTENT');
+    useShadowRootElementsMock.mockReturnValue([content]);
+
+    fireEvent.click(screen.getByShadowTitle('Settings'));
 
     await waitFor(() => {
-      expect(getByText('Text size')).toBeInTheDocument();
+      expect(screen.getByShadowText('Text size')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByLabelText('Increase text size'));
+    fireEvent.click(screen.getByShadowLabelText('Increase text size'));
 
     await waitFor(() => {
-      expect(getByDisplayValue('115')).toBeInTheDocument();
+      expect(screen.getByShadowDisplayValue('115')).toBeInTheDocument();
     });
 
-    const slider = getByRole('slider');
+    const slider = screen.getByShadowRole('slider');
 
     expect(slider).toHaveTextContent('115%');
 
-    let style = getComputedStyle(getByText('TEST_CONTENT'));
+    let style = window.getComputedStyle(screen.getByShadowText('TEST_CONTENT'));
 
     expect(style.getPropertyValue('--md-typeset-font-size')).toBe('18.4px');
 
-    fireEvent.click(getByLabelText('Decrease text size'));
+    fireEvent.click(screen.getByShadowLabelText('Decrease text size'));
 
     await waitFor(() => {
-      expect(getByDisplayValue('100')).toBeInTheDocument();
+      expect(screen.getByShadowDisplayValue('100')).toBeInTheDocument();
     });
 
     expect(slider).toHaveTextContent('100%');
 
-    style = getComputedStyle(getByText('TEST_CONTENT'));
+    style = window.getComputedStyle(screen.getByShadowText('TEST_CONTENT'));
 
     expect(style.getPropertyValue('--md-typeset-font-size')).toBe('16px');
   });

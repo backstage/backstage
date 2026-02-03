@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-import { createStyles, makeStyles, WithStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  WithStyles,
+} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
-import { BackstageTheme } from '@backstage/theme';
+import { ReactNode } from 'react';
 
 /** @public */
 export type ItemCardHeaderClassKey = 'root';
 
-const styles = (theme: BackstageTheme) =>
+const styles = (theme: Theme) =>
   createStyles({
     root: {
-      color: theme.palette.common.white,
+      color: theme.getPageTheme({ themeId: 'card' }).fontColor,
       padding: theme.spacing(2, 2, 3),
       backgroundImage: theme.getPageTheme({ themeId: 'card' }).backgroundImage,
       backgroundPosition: 0,
@@ -42,7 +47,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
    *
    * Use this if you want to have the default styling and placement of a title.
    */
-  title?: React.ReactNode;
+  title?: ReactNode;
   /**
    * A slightly smaller title to show in the header, providing additional
    * details.
@@ -50,21 +55,22 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
    * Use this if you want to have the default styling and placement of a
    * subtitle.
    */
-  subtitle?: React.ReactNode;
+  subtitle?: ReactNode;
   /**
    * Custom children to draw in the header.
    *
    * If the title and/or subtitle were specified, the children are drawn below
    * those.
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
  * A simple card header, rendering a default look for "item cards" - cards that
  * are arranged in a grid for users to select among several options.
  *
- * This component expects to be placed within a MUI `<CardMedia>`.
+ * @remarks
+ * This component expects to be placed within a Material UI `<CardMedia>`.
  *
  * Styles for the header can be overridden using the `classes` prop, e.g.:
  *
@@ -76,7 +82,7 @@ export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;
   const classes = useStyles(props);
   return (
-    <div className={classes.root}>
+    <Box className={classes.root}>
       {subtitle && (
         <Typography variant="subtitle2" component="h3">
           {subtitle}
@@ -88,6 +94,6 @@ export function ItemCardHeader(props: ItemCardHeaderProps) {
         </Typography>
       )}
       {children}
-    </div>
+    </Box>
   );
 }

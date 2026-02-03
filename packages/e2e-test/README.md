@@ -11,7 +11,7 @@ All packages need to be installed and built before running the test. In a fresh 
 ```sh
 yarn install
 yarn tsc
-yarn build
+yarn build:all
 ```
 
 Once those tasks have completed, you can now run the test using `yarn e2e-test run`.
@@ -21,4 +21,4 @@ If you make changes to other packages you will need to rerun `yarn tsc && yarn b
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)
+- [Backstage Documentation](https://backstage.io/docs)

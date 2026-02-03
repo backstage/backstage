@@ -15,7 +15,7 @@
  */
 
 import { repoPickerValidation } from './validation';
-import { FieldValidation } from '@rjsf/core';
+import { FieldValidation } from '@rjsf/utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
@@ -34,6 +34,11 @@ describe('RepoPicker Validation', () => {
         },
         {
           host: 'server.bitbucket.com',
+        },
+      ],
+      azure: [
+        {
+          host: 'dev.azure.com',
         },
       ],
       github: [
@@ -196,6 +201,61 @@ describe('RepoPicker Validation', () => {
       mockFieldValidation,
       { apiHolder: apiHolderMock },
     );
+
+    expect(mockFieldValidation.addError).toHaveBeenCalledWith(
+      'Incomplete repository location provided, repo not provided',
+    );
+  });
+
+  it('validates properly with proper input for azure', () => {
+    const mockFieldValidation = fieldValidator();
+
+    repoPickerValidation(
+      'dev.azure.com?project=a&repo=b',
+      mockFieldValidation,
+      {
+        apiHolder: apiHolderMock,
+      },
+    );
+
+    expect(mockFieldValidation.addError).not.toHaveBeenCalled();
+  });
+
+  it('validates when no project or repo provided for azure', () => {
+    const mockFieldValidation = fieldValidator();
+
+    repoPickerValidation('dev.azure.com', mockFieldValidation, {
+      apiHolder: apiHolderMock,
+    });
+
+    expect(mockFieldValidation.addError).toHaveBeenNthCalledWith(
+      1,
+      'Incomplete repository location provided, project not provided',
+    );
+    expect(mockFieldValidation.addError).toHaveBeenNthCalledWith(
+      2,
+      'Incomplete repository location provided, repo not provided',
+    );
+  });
+
+  it('validates when no project provided for azure', () => {
+    const mockFieldValidation = fieldValidator();
+
+    repoPickerValidation('dev.azure.com?repo=r', mockFieldValidation, {
+      apiHolder: apiHolderMock,
+    });
+
+    expect(mockFieldValidation.addError).toHaveBeenCalledWith(
+      'Incomplete repository location provided, project not provided',
+    );
+  });
+
+  it('validates when no repo provided for azure', () => {
+    const mockFieldValidation = fieldValidator();
+
+    repoPickerValidation('dev.azure.com?project=p', mockFieldValidation, {
+      apiHolder: apiHolderMock,
+    });
 
     expect(mockFieldValidation.addError).toHaveBeenCalledWith(
       'Incomplete repository location provided, repo not provided',

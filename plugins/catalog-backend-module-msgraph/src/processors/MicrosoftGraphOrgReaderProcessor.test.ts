@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { MicrosoftGraphClient, readMicrosoftGraphOrg } from '../microsoftGraph';
 import { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../microsoftGraph', () => {
   return {
@@ -45,7 +45,7 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
           clientSecret: 'clientsecret',
         },
       ],
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
     });
 
     jest
@@ -92,8 +92,8 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
     const processed = await processor.readLocation(location, false, emit);
 
     expect(processed).toBe(true);
-    expect(emit).toBeCalledTimes(2);
-    expect(emit).toBeCalledWith({
+    expect(emit).toHaveBeenCalledTimes(2);
+    expect(emit).toHaveBeenCalledWith({
       entity: {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
@@ -111,7 +111,7 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
       },
       type: 'entity',
     });
-    expect(emit).toBeCalledWith({
+    expect(emit).toHaveBeenCalledWith({
       entity: {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'User',
@@ -139,6 +139,6 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
     const processed = await processor.readLocation(location, false, emit);
 
     expect(processed).toBe(false);
-    expect(emit).toBeCalledTimes(0);
+    expect(emit).toHaveBeenCalledTimes(0);
   });
 });

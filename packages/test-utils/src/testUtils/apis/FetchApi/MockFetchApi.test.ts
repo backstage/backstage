@@ -16,12 +16,12 @@
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '../../msw';
+import { registerMswTestHooks } from '../../msw';
 import { MockFetchApi } from './MockFetchApi';
 
 describe('MockFetchApi', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   it('works with default constructor', async () => {
     worker.use(
@@ -39,7 +39,7 @@ describe('MockFetchApi', () => {
       const inner = jest.fn();
       const m = new MockFetchApi({ baseImplementation: inner });
       await m.fetch('http://example.com/data.json');
-      expect(inner).lastCalledWith('http://example.com/data.json');
+      expect(inner).toHaveBeenLastCalledWith('http://example.com/data.json');
     });
   });
 

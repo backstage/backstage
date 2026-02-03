@@ -15,14 +15,15 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { makeStyles } from '@material-ui/core';
-import React, { ReactNode } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { CSSProperties, ReactNode } from 'react';
 import { columnFactories } from './columns';
 import { componentEntityColumns, systemEntityColumns } from './presets';
 import {
   InfoCardVariants,
   Table,
   TableColumn,
+  TableOptions,
 } from '@backstage/core-components';
 
 /**
@@ -36,6 +37,7 @@ export interface EntityTableProps<T extends Entity> {
   entities: T[];
   emptyContent?: ReactNode;
   columns: TableColumn<T>[];
+  tableOptions?: TableOptions;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -59,10 +61,11 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
     emptyContent,
     variant = 'gridItem',
     columns,
+    tableOptions = {},
   } = props;
 
   const classes = useStyles();
-  const tableStyle: React.CSSProperties = {
+  const tableStyle: CSSProperties = {
     minWidth: '0',
     width: '100%',
   };
@@ -86,6 +89,7 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
         actionsColumnIndex: -1,
         padding: 'dense',
         draggable: false,
+        ...tableOptions,
       }}
       data={entities}
     />

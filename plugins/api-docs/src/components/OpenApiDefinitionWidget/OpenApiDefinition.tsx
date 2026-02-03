@@ -15,7 +15,7 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
@@ -25,13 +25,18 @@ const useStyles = makeStyles(theme => ({
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.text.primary,
 
+      ['& .btn-clear']: {
+        color: theme.palette.text.primary,
+      },
       [`& .scheme-container`]: {
         backgroundColor: theme.palette.background.default,
       },
       [`& .opblock-tag,
           .opblock-tag small,
           table thead tr td,
-          table thead tr th`]: {
+          table thead tr th,
+          table tbody tr td,
+          table tbody tr th`]: {
         fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
         borderColor: theme.palette.divider,
@@ -89,7 +94,8 @@ const useStyles = makeStyles(theme => ({
           .errors small`]: {
         color: theme.palette.text.secondary,
       },
-      [`& .parameter__name.required:after`]: {
+      [`& .parameter__name.required:after,
+        .parameter__name.required span`]: {
         color: theme.palette.warning.dark,
       },
       [`& table.model,
@@ -102,7 +108,7 @@ const useStyles = makeStyles(theme => ({
         fontWeight: theme.typography.fontWeightRegular,
       },
       [`& .model-hint`]: {
-        color: theme.palette.text.hint,
+        color: theme.palette.text.secondary,
         backgroundColor: theme.palette.background.paper,
       },
       [`& .opblock-summary-method,
@@ -127,15 +133,58 @@ const useStyles = makeStyles(theme => ({
       [`& span.prop-type`]: {
         color: theme.palette.success.light,
       },
+      [`& .opblock-control-arrow svg, .authorization__btn .unlocked`]: {
+        fill: theme.palette.text.primary,
+      },
+      [`& .json-schema-2020-12__title,
+          .json-schema-2020-12-keyword__name,
+          .json-schema-2020-12-property .json-schema-2020-12__title,
+          .json-schema-2020-12-keyword--description`]: {
+        color: theme.palette.text.primary,
+      },
+      [`.json-schema-2020-12-accordion__icon svg`]: {
+        fill: theme.palette.text.primary,
+      },
+      [`& .json-schema-2020-12-accordion,
+          .json-schema-2020-12-expand-deep-button`]: {
+        background: 'none',
+        appearance: 'none',
+      },
+      [`& .json-schema-2020-12-expand-deep-button,
+          .json-schema-2020-12-keyword__name--secondary,
+          .json-schema-2020-12-keyword__value--secondary,
+          .json-schema-2020-12__attribute--muted,
+          .json-schema-2020-12-keyword__value--const,
+          .json-schema-2020-12-keyword__value--warning`]: {
+        color: theme.palette.text.secondary,
+      },
+      [`& .json-schema-2020-12-body,
+          .json-schema-2020-12-keyword__value--const,
+          .json-schema-2020-12-keyword__value--warning`]: {
+        borderColor: theme.palette.text.secondary,
+      },
+      [`.json-schema-2020-12__constraint--string`]: {
+        backgroundColor: theme.palette.primary.main,
+      },
+      [`& .json-schema-2020-12__attribute--primary`]: {
+        color: theme.palette.primary.main,
+      },
+      [`& .json-schema-2020-12-property--required>.json-schema-2020-12:first-of-type>.json-schema-2020-12-head .json-schema-2020-12__title:after`]:
+        {
+          color: theme.palette.warning.dark,
+        },
     },
   },
 }));
 
 export type OpenApiDefinitionProps = {
   definition: string;
-};
+} & Omit<React.ComponentProps<typeof SwaggerUI>, 'spec'>;
 
-export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
+export const OpenApiDefinition = ({
+  definition,
+  ...swaggerUiProps
+}: OpenApiDefinitionProps) => {
   const classes = useStyles();
 
   // Due to a bug in the swagger-ui-react component, the component needs
@@ -149,7 +198,13 @@ export const OpenApiDefinition = ({ definition }: OpenApiDefinitionProps) => {
 
   return (
     <div className={classes.root}>
-      <SwaggerUI spec={def} url="" deepLinking />
+      <SwaggerUI
+        spec={def}
+        url=""
+        deepLinking
+        oauth2RedirectUrl={`${window.location.protocol}//${window.location.host}/oauth2-redirect.html`}
+        {...swaggerUiProps}
+      />
     </div>
   );
 };

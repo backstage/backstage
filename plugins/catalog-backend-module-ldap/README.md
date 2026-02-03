@@ -8,3 +8,7 @@ groups from your Active Directory or another LDAP compatible server.
 
 See [Backstage documentation](https://backstage.io/docs/integrations/ldap/org) for details on how to install
 and configure the plugin.
+
+## Legacy backend
+
+You can find the legacy documentation at `docs/integrations/ldap/org--old.md`.

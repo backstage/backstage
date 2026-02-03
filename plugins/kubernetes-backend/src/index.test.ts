@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import '@backstage/backend-common';
-
 describe('test', () => {
   it('unbreaks the test runner', () => {
     expect(true).toBeTruthy();

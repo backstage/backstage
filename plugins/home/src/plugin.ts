@@ -13,19 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
+  createApiFactory,
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
+  identityApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
-import { createCardExtension } from './extensions';
-import { ToolkitContentProps } from './homePageComponents';
-
+import { createCardExtension } from '@backstage/plugin-home-react';
+import {
+  ToolkitContentProps,
+  VisitedByTypeProps,
+  FeaturedDocsCardProps,
+  QuickStartCardProps,
+} from './homePageComponents';
 import { rootRouteRef } from './routes';
+import { VisitsStorageApi, visitsApiRef } from './api';
+import { StarredEntitiesProps } from './homePageComponents/StarredEntities/Content';
 
 /** @public */
 export const homePlugin = createPlugin({
   id: 'home',
+  apis: [
+    createApiFactory({
+      api: visitsApiRef,
+      deps: {
+        storageApi: storageApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ storageApi, identityApi }) =>
+        VisitsStorageApi.create({ storageApi, identityApi }),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
@@ -108,6 +129,25 @@ export const HomePageRandomJoke = homePlugin.provide(
     name: 'HomePageRandomJoke',
     title: 'Random Joke',
     components: () => import('./homePageComponents/RandomJoke'),
+    description: 'Shows a random joke about optional category',
+    layout: {
+      height: { minRows: 4 },
+      width: { minColumns: 3 },
+    },
+    settings: {
+      schema: {
+        title: 'Random Joke settings',
+        type: 'object',
+        properties: {
+          defaultCategory: {
+            title: 'Category',
+            type: 'string',
+            enum: ['any', 'programming', 'dad'],
+            default: 'any',
+          },
+        },
+      },
+    },
   }),
 );
 
@@ -130,7 +170,7 @@ export const HomePageToolkit = homePlugin.provide(
  * @public
  */
 export const HomePageStarredEntities = homePlugin.provide(
-  createCardExtension({
+  createCardExtension<Partial<StarredEntitiesProps>>({
     name: 'HomePageStarredEntities',
     title: 'Your Starred Entities',
     components: () => import('./homePageComponents/StarredEntities'),
@@ -151,5 +191,56 @@ export const HeaderWorldClock = homePlugin.provide(
           m => m.HeaderWorldClock,
         ),
     },
+  }),
+);
+
+/**
+ * Display top visited pages for the homepage
+ * @public
+ */
+export const HomePageTopVisited = homePlugin.provide(
+  createCardExtension<Partial<VisitedByTypeProps>>({
+    name: 'HomePageTopVisited',
+    title: 'Top Visited',
+    components: () => import('./homePageComponents/VisitedByType/TopVisited'),
+  }),
+);
+
+/**
+ * Display recently visited pages for the homepage
+ * @public
+ */
+export const HomePageRecentlyVisited = homePlugin.provide(
+  createCardExtension<Partial<VisitedByTypeProps>>({
+    name: 'HomePageRecentlyVisited',
+    title: 'Recently Visited',
+    components: () =>
+      import('./homePageComponents/VisitedByType/RecentlyVisited'),
+  }),
+);
+
+/**
+ * A component to display specific Featured Docs.
+ *
+ * @public
+ */
+export const FeaturedDocsCard = homePlugin.provide(
+  createCardExtension<FeaturedDocsCardProps>({
+    name: 'FeaturedDocsCard',
+    title: 'Featured Docs',
+    components: () => import('./homePageComponents/FeaturedDocsCard'),
+  }),
+);
+
+/**
+ * A component to display Quick Start information.
+ *
+ * @public
+ */
+export const QuickStartCard = homePlugin.provide(
+  createCardExtension<QuickStartCardProps>({
+    name: 'QuickStartCard',
+    title: 'Quick Start',
+    components: () => import('./homePageComponents/QuickStart'),
   }),
 );

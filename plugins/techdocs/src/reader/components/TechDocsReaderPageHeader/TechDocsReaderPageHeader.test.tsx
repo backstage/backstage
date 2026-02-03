@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { act, waitFor } from '@testing-library/react';
+import { ReactNode } from 'react';
 
-import { ThemeProvider } from '@material-ui/core';
-
-import { lightTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  entityPresentationApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import {
   techdocsApiRef,
   TechDocsReaderPageProvider,
@@ -30,6 +29,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { rootRouteRef } from '../../../routes';
 
 import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
+import { waitFor } from '@testing-library/react';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -52,12 +52,32 @@ const mockTechDocsMetadata = {
   site_description: 'test-site-desc',
 };
 
+let useParamsPath = '/';
+jest.mock('react-router-dom', () => {
+  return {
+    ...(jest.requireActual('react-router-dom') as any),
+    useParams: () => ({ '*': useParamsPath }),
+  };
+});
+
 const getEntityMetadata = jest.fn();
 const getTechDocsMetadata = jest.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
   getTechDocsMetadata,
+};
+
+const forEntity = jest.fn();
+
+forEntity.mockReturnValue({
+  snapshot: {
+    primaryTitle: 'Test Entity',
+  },
+});
+
+const entityPresentationApiMock = {
+  forEntity,
 };
 
 const Wrapper = ({
@@ -69,15 +89,18 @@ const Wrapper = ({
   children,
 }: {
   entityRef?: CompoundEntityRef;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
-  <ThemeProvider theme={lightTheme}>
-    <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
-      <TechDocsReaderPageProvider entityRef={entityRef}>
-        {children}
-      </TechDocsReaderPageProvider>
-    </TestApiProvider>
-  </ThemeProvider>
+  <TestApiProvider
+    apis={[
+      [techdocsApiRef, techdocsApiMock],
+      [entityPresentationApiRef, entityPresentationApiMock],
+    ]}
+  >
+    <TechDocsReaderPageProvider entityRef={entityRef}>
+      {children}
+    </TechDocsReaderPageProvider>
+  </TestApiProvider>
 );
 
 describe('<TechDocsReaderPageHeader />', () => {
@@ -85,112 +108,126 @@ describe('<TechDocsReaderPageHeader />', () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
 
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageHeader />
-        </Wrapper>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-            '/docs': rootRouteRef,
-          },
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageHeader />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          '/docs': rootRouteRef,
         },
-      );
+      },
+    );
 
-      expect(rendered.container.innerHTML).toContain('header');
+    expect(rendered.container.innerHTML).toContain('header');
 
-      await waitFor(() => {
-        expect(rendered.getAllByText('test-site-name')).toHaveLength(2);
-      });
+    expect(rendered.getAllByText('test-site-name')).toHaveLength(2);
+    expect(rendered.getByText('test-site-desc')).toBeDefined();
 
-      expect(rendered.getByText('test-site-desc')).toBeDefined();
-    });
+    expect(rendered.getByRole('link', { name: 'Test Entity' })).toHaveAttribute(
+      'href',
+      '/catalog/test-namespace/test/test-name',
+    );
   });
 
   it('should render a techdocs page header even if metadata is not loaded', async () => {
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageHeader />
-        </Wrapper>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-            '/docs': rootRouteRef,
-          },
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageHeader />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          '/docs': rootRouteRef,
         },
-      );
+      },
+    );
 
-      expect(rendered.container.innerHTML).toContain('header');
-    });
+    expect(rendered.container.innerHTML).toContain('header');
   });
 
   it('should not render a techdocs page header if entity metadata is missing', async () => {
     getEntityMetadata.mockResolvedValue(undefined);
 
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageHeader />
-        </Wrapper>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-            '/docs': rootRouteRef,
-          },
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageHeader />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          '/docs': rootRouteRef,
         },
-      );
+      },
+    );
 
-      await waitFor(() => {
-        expect(rendered.container.innerHTML).not.toContain('header');
-      });
-    });
+    expect(rendered.container.innerHTML).not.toContain('header');
   });
 
   it('should not render a techdocs page header if techdocs metadata is missing', async () => {
     getTechDocsMetadata.mockResolvedValue(undefined);
 
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageHeader />
-        </Wrapper>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-            '/docs': rootRouteRef,
-          },
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageHeader />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          '/docs': rootRouteRef,
         },
-      );
+      },
+    );
 
-      await waitFor(() => {
-        expect(rendered.container.innerHTML).not.toContain('header');
-      });
+    expect(rendered.container.innerHTML).not.toContain('header');
+  });
+
+  it('The header title changes depending on the url params', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+
+    useParamsPath = 'foo/bar/baz/';
+    await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageHeader />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          '/docs': rootRouteRef,
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(document.title).toEqual(
+        'Test Entity | Foo | Bar | Baz | Backstage',
+      );
     });
   });
 
-  it('should render a link back to the component page', async () => {
+  it('The header title is abbreviated if path is too long', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
 
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageHeader />
-        </Wrapper>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-            '/docs': rootRouteRef,
-          },
+    useParamsPath = 'foo/bar/baz/qux/quux/';
+    await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageHeader />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          '/docs': rootRouteRef,
         },
-      );
+      },
+    );
 
-      await waitFor(() => {
-        expect(
-          rendered.getByRole('link', { name: 'test:test-namespace/test-name' }),
-        ).toHaveAttribute('href', '/catalog/test-namespace/test/test-name');
-      });
+    await waitFor(() => {
+      expect(document.title).toEqual(
+        'Test Entity | Foo | Bar | Baz | Qux | Quux | Backstage',
+      );
     });
   });
 });

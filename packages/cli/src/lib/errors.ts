@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
+import { CustomErrorBase, isError, stringifyError } from '@backstage/errors';
 import chalk from 'chalk';
 
-export class CustomError extends Error {
-  get name(): string {
-    return this.constructor.name;
-  }
-}
-
-export class ExitCodeError extends CustomError {
+export class ExitCodeError extends CustomErrorBase {
   readonly code: number;
 
   constructor(code: number, command?: string) {
@@ -35,14 +30,33 @@ export class ExitCodeError extends CustomError {
   }
 }
 
-export function exitWithError(error: Error): never {
-  if (error instanceof ExitCodeError) {
-    process.stderr.write(`\n${chalk.red(error.message)}\n\n`);
-    process.exit(error.code);
-  } else {
-    process.stderr.write(`\n${chalk.red(`${error}`)}\n\n`);
-    process.exit(1);
-  }
+function exit(message: string, code: number = 1): never {
+  process.stderr.write(`\n${chalk.red(message)}\n\n`);
+  process.exit(code);
 }
 
-export class NotFoundError extends CustomError {}
+export function exitWithError(error: unknown): never {
+  if (!isError(error)) {
+    process.stderr.write(`\n${chalk.red(stringifyError(error))}\n\n`);
+    process.exit(1);
+  }
+
+  switch (error.name) {
+    case 'InputError':
+      return exit(error.message, 74 /* input/output error */);
+    case 'NotFoundError':
+      return exit(error.message, 127 /* command not found */);
+    case 'NotImplementedError':
+      return exit(error.message, 64 /* command line usage error */);
+    case 'AuthenticationError':
+    case 'NotAllowedError':
+      return exit(error.message, 77 /* permissino denied */);
+    case 'ExitCodeError':
+      return exit(
+        error.message,
+        'code' in error && typeof error.code === 'number' ? error.code : 1,
+      );
+    default:
+      return exit(stringifyError(error), 1);
+  }
+}

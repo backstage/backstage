@@ -1,9 +1,0 @@
----
-title: backstage-plugin-api-linter
-author: Zalando
-authorUrl: https://github.com/zalando
-category: Linting
-description: API Linter is a quality assurance tool that checks the compliance of API's specifications to Zalando's API rules.
-documentation: https://github.com/zalando/backstage-plugin-api-linter
-iconUrl: https://raw.githubusercontent.com/zalando/zally/main/logo.png
-npmPackageName: backstage-plugin-api-linter

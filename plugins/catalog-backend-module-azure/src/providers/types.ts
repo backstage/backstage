@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
+
 export type AzureDevOpsConfig = {
   id: string;
   host: string;
   organization: string;
   project: string;
   repository: string;
+  branch?: string;
   path: string;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
+};
+
+export type AzureBlobStorageConfig = {
+  id: string;
+  containerName: string;
+  accountName: string;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };

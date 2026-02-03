@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 import { SearchContextProvider } from '../../context';
 import { SearchFilter } from './SearchFilter';
-
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn().mockReturnValue({}),
-}));
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import { searchApiRef } from '../../api';
 
 describe('SearchFilter', () => {
   const initialState = {
@@ -40,8 +40,17 @@ describe('SearchFilter', () => {
   const values = ['value1', 'value2'];
   const filters = { unrelated: 'unrelated' };
 
-  const query = jest.fn().mockResolvedValue({});
-  (useApi as jest.Mock).mockReturnValue({ query: query });
+  const configApiMock = mockApis.config({
+    data: {
+      search: {
+        query: {
+          pagelimit: 10,
+        },
+      },
+    },
+  });
+
+  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
 
   afterAll(() => {
     jest.resetAllMocks();
@@ -50,17 +59,26 @@ describe('SearchFilter', () => {
   it('Check that element was rendered and received props', async () => {
     const CustomFilter = (props: { name: string }) => <h6>{props.name}</h6>;
 
-    render(<SearchFilter name={name} component={CustomFilter} />);
+    await renderInTestApp(
+      <SearchFilter name={name} component={CustomFilter} />,
+    );
 
     expect(screen.getByRole('heading', { name })).toBeInTheDocument();
   });
 
   describe('Checkbox', () => {
     it('Renders field name and values when provided as props', async () => {
-      render(
-        <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Checkbox label={label} name={name} values={values} />
-        </SearchContextProvider>,
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider initialState={initialState}>
+            <SearchFilter.Checkbox label={label} name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -76,17 +94,24 @@ describe('SearchFilter', () => {
     });
 
     it('Renders correctly based on filter state', async () => {
-      render(
-        <SearchContextProvider
-          initialState={{
-            ...initialState,
-            filters: {
-              [name]: [values[1]],
-            },
-          }}
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
         >
-          <SearchFilter.Checkbox label={label} name={name} values={values} />
-        </SearchContextProvider>,
+          <SearchContextProvider
+            initialState={{
+              ...initialState,
+              filters: {
+                [name]: [values[1]],
+              },
+            }}
+          >
+            <SearchFilter.Checkbox label={label} name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -100,15 +125,22 @@ describe('SearchFilter', () => {
     });
 
     it('Renders correctly based on defaultValue', async () => {
-      render(
-        <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Checkbox
-            label={label}
-            name={name}
-            values={values}
-            defaultValue={[values[0]]}
-          />
-        </SearchContextProvider>,
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider initialState={initialState}>
+            <SearchFilter.Checkbox
+              label={label}
+              name={name}
+              values={values}
+              defaultValue={[values[0]]}
+            />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -122,10 +154,17 @@ describe('SearchFilter', () => {
     });
 
     it('Checking / unchecking a value sets filter state', async () => {
-      render(
-        <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Checkbox label={label} name={name} values={values} />
-        </SearchContextProvider>,
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider initialState={initialState}>
+            <SearchFilter.Checkbox label={label} name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -137,25 +176,34 @@ describe('SearchFilter', () => {
       // Check the box.
       await userEvent.click(checkBox);
       await waitFor(() => {
-        expect(query).toHaveBeenLastCalledWith(
+        expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: { field: [values[0]] } }),
+          { signal: expect.any(Object) },
         );
       });
 
       // Uncheck the box.
       await userEvent.click(checkBox);
       await waitFor(() => {
-        expect(query).toHaveBeenLastCalledWith(
+        expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: {} }),
+          { signal: expect.any(Object) },
         );
       });
     });
 
     it('Checking / unchecking a value maintains unrelated filter state', async () => {
-      render(
-        <SearchContextProvider initialState={{ ...initialState, filters }}>
-          <SearchFilter.Checkbox label={label} name={name} values={values} />
-        </SearchContextProvider>,
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider initialState={{ ...initialState, filters }}>
+            <SearchFilter.Checkbox label={label} name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -167,18 +215,20 @@ describe('SearchFilter', () => {
       // Check the box.
       await userEvent.click(checkBox);
       await waitFor(() => {
-        expect(query).toHaveBeenLastCalledWith(
+        expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: { ...filters, field: [values[0]] },
           }),
+          { signal: expect.any(Object) },
         );
       });
 
       // Uncheck the box.
       await userEvent.click(checkBox);
       await waitFor(() => {
-        expect(query).toHaveBeenLastCalledWith(
+        expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
+          { signal: expect.any(Object) },
         );
       });
     });
@@ -186,10 +236,17 @@ describe('SearchFilter', () => {
 
   describe('Select', () => {
     it('Renders field name and values when provided as props', async () => {
-      render(
-        <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Select label={label} name={name} values={values} />
-        </SearchContextProvider>,
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider initialState={initialState}>
+            <SearchFilter.Select label={label} name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -211,14 +268,21 @@ describe('SearchFilter', () => {
     });
 
     it('Renders values when provided asynchronously', async () => {
-      render(
-        <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Select
-            label={label}
-            name={name}
-            values={async () => values}
-          />
-        </SearchContextProvider>,
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider initialState={initialState}>
+            <SearchFilter.Select
+              label={label}
+              name={name}
+              values={async () => values}
+            />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -234,26 +298,35 @@ describe('SearchFilter', () => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      expect(
-        screen.getByRole('option', { name: values[0] }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('option', { name: values[1] }),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: values[0] }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('option', { name: values[1] }),
+        ).toBeInTheDocument();
+      });
     });
 
     it('Renders correctly based on filter state', async () => {
-      render(
-        <SearchContextProvider
-          initialState={{
-            ...initialState,
-            filters: {
-              [name]: values[0],
-            },
-          }}
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
         >
-          <SearchFilter.Select label={label} name={name} values={values} />
-        </SearchContextProvider>,
+          <SearchContextProvider
+            initialState={{
+              ...initialState,
+              filters: {
+                [name]: values[0],
+              },
+            }}
+          >
+            <SearchFilter.Select label={label} name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -279,15 +352,22 @@ describe('SearchFilter', () => {
     });
 
     it('Renders correctly based on defaultValue', async () => {
-      render(
-        <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Select
-            name={name}
-            label={label}
-            values={values}
-            defaultValue={values[0]}
-          />
-        </SearchContextProvider>,
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider initialState={initialState}>
+            <SearchFilter.Select
+              name={name}
+              label={label}
+              values={values}
+              defaultValue={values[0]}
+            />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -313,10 +393,17 @@ describe('SearchFilter', () => {
     });
 
     it('Selecting a value sets filter state', async () => {
-      render(
-        <SearchContextProvider initialState={initialState}>
-          <SearchFilter.Select label={label} name={name} values={values} />
-        </SearchContextProvider>,
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider initialState={initialState}>
+            <SearchFilter.Select label={label} name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -334,10 +421,11 @@ describe('SearchFilter', () => {
       await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
-        expect(query).toHaveBeenLastCalledWith(
+        expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: { [name]: values[0] },
           }),
+          { signal: expect.any(AbortSignal) },
         );
       });
 
@@ -350,24 +438,32 @@ describe('SearchFilter', () => {
       await userEvent.click(screen.getByRole('option', { name: 'All' }));
 
       await waitFor(() => {
-        expect(query).toHaveBeenLastCalledWith(
+        expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: {},
           }),
+          { signal: expect.any(AbortSignal) },
         );
       });
     });
 
     it('Selecting a value maintains unrelated filter state', async () => {
-      render(
-        <SearchContextProvider
-          initialState={{
-            ...initialState,
-            filters,
-          }}
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
         >
-          <SearchFilter.Select label={label} name={name} values={values} />
-        </SearchContextProvider>,
+          <SearchContextProvider
+            initialState={{
+              ...initialState,
+              filters,
+            }}
+          >
+            <SearchFilter.Select label={label} name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
       );
 
       await waitFor(() => {
@@ -385,10 +481,11 @@ describe('SearchFilter', () => {
       await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
-        expect(query).toHaveBeenLastCalledWith(
+        expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: { ...filters, [name]: values[0] },
           }),
+          { signal: expect.any(AbortSignal) },
         );
       });
 
@@ -401,8 +498,9 @@ describe('SearchFilter', () => {
       await userEvent.click(screen.getByRole('option', { name: 'All' }));
 
       await waitFor(() => {
-        expect(query).toHaveBeenLastCalledWith(
+        expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
+          { signal: expect.any(AbortSignal) },
         );
       });
     });

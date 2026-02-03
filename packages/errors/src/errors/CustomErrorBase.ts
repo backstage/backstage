@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { stringifyError } from '../serialization';
+import { stringifyError } from '../serialization/error';
 import { isError } from './assertion';
 
 /**
@@ -22,8 +22,11 @@ import { isError } from './assertion';
  *
  * @public
  * @example
- *```ts
- * class MyCustomError extends CustomErrorBase {}
+ *
+ * ```ts
+ * class MyCustomError extends CustomErrorBase {
+ *  name = 'MyCustomError' as const;
+ * }
  *
  * const e = new MyCustomError('Some message', cause);
  * // e.name === 'MyCustomError'
@@ -53,7 +56,13 @@ export class CustomErrorBase extends Error {
 
     Error.captureStackTrace?.(this, this.constructor);
 
-    this.name = this.constructor.name;
+    if (!this.name || this.name === 'Error') {
+      const baseName = this.constructor.name;
+      if (baseName !== 'Error') {
+        this.name = this.constructor.name;
+      }
+    }
+
     this.cause = isError(cause) ? cause : undefined;
   }
 }

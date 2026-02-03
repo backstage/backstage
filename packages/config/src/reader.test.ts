@@ -22,6 +22,15 @@ const DATA = {
   one: 1,
   true: true,
   false: false,
+  yes: 'yes',
+  no: 'no',
+  y: 'y',
+  n: 'n',
+  on: 'on',
+  off: 'off',
+  zeroString: '0',
+  oneString: '1',
+  stringFalse: 'false',
   null: null,
   string: 'string',
   emptyString: '',
@@ -34,40 +43,60 @@ const DATA = {
     null: null,
     string: 'string',
     strings: ['string1', 'string2'],
+    'with:colon': 'yes',
   },
   nestlings: [{ boolean: true }, { string: 'string' }, { number: 42 }] as {}[],
 };
 
 function expectValidValues(config: ConfigReader) {
-  expect(config.keys()).toEqual(Object.keys(DATA));
+  expect(config.keys()).toEqual(Object.keys(DATA).filter(k => k !== 'null'));
   expect(config.get('zero')).toBe(0);
   expect(config.has('zero')).toBe(true);
   expect(config.has('false')).toBe(true);
-  expect(config.has('null')).toBe(true);
+  expect(config.has('null')).toBe(false);
   expect(config.has('missing')).toBe(false);
   expect(config.has('nested.one')).toBe(true);
   expect(config.has('nested.missing')).toBe(false);
-  expect(config.has('nested.null')).toBe(true);
+  expect(config.has('nested.null')).toBe(false);
+  expect(config.has('nested.with:colon')).toBe(true);
   expect(config.getNumber('zero')).toBe(0);
   expect(config.getNumber('one')).toBe(1);
+  expect(config.getNumber('zeroString')).toBe(0);
+  expect(config.getNumber('oneString')).toBe(1);
   expect(config.getOptional('true')).toBe(true);
   expect(config.getBoolean('true')).toBe(true);
   expect(config.getBoolean('false')).toBe(false);
+  expect(config.getBoolean('stringFalse')).toBe(false);
+  expect(config.getBoolean('zero')).toBe(false);
+  expect(config.getBoolean('one')).toBe(true);
+  expect(config.getBoolean('zeroString')).toBe(false);
+  expect(config.getBoolean('oneString')).toBe(true);
+  expect(config.getBoolean('yes')).toBe(true);
+  expect(config.getBoolean('no')).toBe(false);
+  expect(config.getBoolean('y')).toBe(true);
+  expect(config.getBoolean('n')).toBe(false);
+  expect(config.getBoolean('on')).toBe(true);
+  expect(config.getBoolean('off')).toBe(false);
   expect(config.getString('string')).toBe('string');
   expect(config.get('strings')).toEqual(['string1', 'string2']);
   expect(config.getStringArray('strings')).toEqual(['string1', 'string2']);
   expect(config.getConfig('nested').getNumber('one')).toBe(1);
   expect(config.get('nested')).toEqual({
     one: 1,
-    null: null,
+    null: undefined,
     string: 'string',
     strings: ['string1', 'string2'],
+    'with:colon': 'yes',
   });
   expect(config.getConfig('nested').getString('string')).toBe('string');
+  expect(config.getString('nested.string')).toBe('string');
+  expect(config.getString('nested.with:colon')).toBe('yes');
   expect(config.getOptionalConfig('nested')!.getStringArray('strings')).toEqual(
     ['string1', 'string2'],
   );
   expect(config.getOptional('missing')).toBe(undefined);
+  expect(config.getOptionalConfig('null')).toBe(undefined);
+  expect(config.getOptionalConfig('null.nested')).toBe(undefined);
   expect(config.getOptionalConfig('missing')).toBe(undefined);
   expect(config.getOptionalConfigArray('missing')).toBe(undefined);
   expect(config.getNumber('zero')).toBe(0);
@@ -86,7 +115,7 @@ function expectValidValues(config: ConfigReader) {
 
 function expectInvalidValues(config: ConfigReader) {
   expect(() => config.getBoolean('string')).toThrow(
-    "Invalid type in config for key 'string' in 'ctx', got string, wanted boolean",
+    "Unable to convert config value for key 'string' in 'ctx' to a boolean",
   );
   expect(() => config.getNumber('string')).toThrow(
     "Unable to convert config value for key 'string' in 'ctx' to a number",
@@ -98,7 +127,7 @@ function expectInvalidValues(config: ConfigReader) {
     "Invalid type in config for key 'true' in 'ctx', got boolean, wanted number",
   );
   expect(() => config.getStringArray('null')).toThrow(
-    "Invalid type in config for key 'null' in 'ctx', got null, wanted string-array",
+    "Missing required config value at 'null' in 'ctx'",
   );
   expect(() => config.getString('emptyString')).toThrow(
     "Invalid type in config for key 'emptyString' in 'ctx', got empty-string, wanted string",
@@ -114,6 +143,9 @@ function expectInvalidValues(config: ConfigReader) {
   );
   expect(() => config.getConfig('one')).toThrow(
     "Invalid type in config for key 'one' in 'ctx', got number, wanted object",
+  );
+  expect(() => config.getConfig('null')).toThrow(
+    "Missing required config value at 'null'",
   );
   expect(() => config.getConfigArray('one')).toThrow(
     "Invalid type in config for key 'one' in 'ctx', got number, wanted object-array",
@@ -144,6 +176,7 @@ describe('ConfigReader', () => {
     expect(config.getOptionalString('x_x')).toBeUndefined();
     expect(config.getOptionalString('x-X')).toBeUndefined();
     expect(config.getOptionalString('x0')).toBeUndefined();
+    expect(config.getOptionalString('x-2')).toBeUndefined();
     expect(config.getOptionalString('X-x2')).toBeUndefined();
     expect(config.getOptionalString('x0_x0')).toBeUndefined();
     expect(config.getOptionalString('x_x-x_x')).toBeUndefined();
@@ -719,5 +752,43 @@ describe('ConfigReader.get()', () => {
     expect(data1.foo.bar).toEqual([]);
     expect(data1.foo.baz).toEqual({});
     expect(data2.x.y.z).toEqual({});
+  });
+
+  it('should treat null as explicitly undefined', () => {
+    const reader = ConfigReader.fromConfigs([
+      {
+        data: { obj: { a: 2, b: 2, c: 2 }, objB: { a: 2, b: null } },
+        context: 'fallback',
+      },
+      {
+        data: { obj: { a: 1, b: null }, objA: { a: 1, b: null } },
+        context: 'primary',
+      },
+    ]);
+
+    expect(reader.getOptionalNumber('obj.a')).toBe(1);
+    expect(reader.getOptionalNumber('obj.b')).toBe(undefined);
+    expect(reader.getOptionalNumber('obj.c')).toBe(2);
+
+    expect(reader.getConfig('obj').getOptionalNumber('a')).toBe(1);
+    expect(reader.getConfig('obj').getOptionalNumber('b')).toBe(undefined);
+    expect(reader.getConfig('obj').getOptionalNumber('c')).toBe(2);
+
+    expect(reader.getConfig('obj').get('a')).toBe(1);
+    expect(() => reader.getConfig('obj').get('b')).toThrow(
+      "Missing required config value at 'obj.b' in 'primary'",
+    );
+    expect(reader.getConfig('obj').get('c')).toBe(2);
+
+    expect(reader.getConfig('obj').getOptional('a')).toBe(1);
+    expect(reader.getConfig('obj').getOptional('b')).toBe(undefined);
+    expect(reader.getConfig('obj').getOptional('c')).toBe(2);
+
+    expect(reader.get('obj')).toEqual({ a: 1, c: 2 });
+    expect(reader.getConfig('obj').get()).toEqual({ a: 1, c: 2 });
+    expect(reader.getConfig('obj').keys()).toEqual(['a', 'c']);
+
+    expect(reader.get('objA')).toEqual({ a: 1 });
+    expect(reader.get('objB')).toEqual({ a: 2 });
   });
 });

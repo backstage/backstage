@@ -18,6 +18,11 @@ import { useMemo } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
+  RouteResolutionApi,
+  routeResolutionApiRef,
+  useApi,
+} from '@backstage/frontend-plugin-api';
+import {
   AnyParams,
   ExternalRouteRef,
   RouteFunc,
@@ -36,6 +41,14 @@ export interface RouteResolver {
       | ExternalRouteRef<Params, any>,
     sourceLocation: Parameters<typeof matchRoutes>[1],
   ): RouteFunc<Params> | undefined;
+}
+
+function useRouteResolutionApi(): RouteResolutionApi | undefined {
+  try {
+    return useApi(routeResolutionApiRef);
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -85,31 +98,53 @@ export function useRouteRef<Params extends AnyParams>(
     | SubRouteRef<Params>
     | ExternalRouteRef<Params, any>,
 ): RouteFunc<Params> | undefined {
-  const sourceLocation = useLocation();
+  const { pathname } = useLocation();
+  const routeResolutionApi = useRouteResolutionApi();
   const versionedContext = useVersionedContext<{ 1: RouteResolver }>(
     'routing-context',
   );
+
+  const resolver = versionedContext?.atVersion(1);
+
+  const newRouteFunc = useMemo(() => {
+    if (!routeResolutionApi) {
+      return null;
+    }
+
+    try {
+      return routeResolutionApi?.resolve(routeRef, {
+        sourcePath: pathname,
+      });
+    } catch {
+      return null;
+    }
+  }, [routeResolutionApi, routeRef, pathname]);
+
+  const legacyRouteFunc = useMemo(
+    () => resolver && resolver.resolve(routeRef, { pathname }),
+    [resolver, routeRef, pathname],
+  );
+
+  if (newRouteFunc !== null) {
+    const isOptional = 'optional' in routeRef && routeRef.optional;
+    if (!newRouteFunc && !isOptional) {
+      throw new Error(`No path for ${routeRef}`);
+    }
+    return newRouteFunc;
+  }
+
   if (!versionedContext) {
     throw new Error('Routing context is not available');
   }
 
-  const resolver = versionedContext.atVersion(1);
-  const routeFunc = useMemo(
-    () => resolver && resolver.resolve(routeRef, sourceLocation),
-    [resolver, routeRef, sourceLocation],
-  );
-
-  if (!versionedContext) {
-    throw new Error('useRouteRef used outside of routing context');
-  }
   if (!resolver) {
     throw new Error('RoutingContext v1 not available');
   }
 
   const isOptional = 'optional' in routeRef && routeRef.optional;
-  if (!routeFunc && !isOptional) {
+  if (!legacyRouteFunc && !isOptional) {
     throw new Error(`No path for ${routeRef}`);
   }
 
-  return routeFunc;
+  return legacyRouteFunc;
 }

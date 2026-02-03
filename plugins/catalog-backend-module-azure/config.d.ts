@@ -14,35 +14,7 @@
  * limitations under the License.
  */
 
-interface AzureDevOpsConfig {
-  /**
-   * (Optional) The DevOps host; leave empty for `dev.azure.com`, otherwise set to your self-hosted instance host.
-   * @visibility backend
-   */
-  host: string;
-  /**
-   * (Required) Your organization slug.
-   * @visibility backend
-   */
-  organization: string;
-  /**
-   * (Required) Your project slug.
-   * @visibility backend
-   */
-  project: string;
-  /**
-   * (Optional) The repository name. Wildcards are supported as show on the examples above.
-   * If not set, all repositories will be searched.
-   * @visibility backend
-   */
-  repository?: string;
-  /**
-   * (Optional) Where to find catalog-info.yaml files. Wildcards are supported.
-   * If not set, defaults to /catalog-info.yaml.
-   * @visibility backend
-   */
-  path?: string;
-}
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
 
 export interface Config {
   catalog?: {
@@ -53,7 +25,70 @@ export interface Config {
       /**
        * AzureDevopsEntityProvider configuration
        */
-      azureDevOps?: Record<string, AzureDevOpsConfig>;
+      azureDevOps?: {
+        [name: string]: {
+          /**
+           * (Optional) The DevOps host; defaults to `dev.azure.com` if left empty, otherwise set to your self-hosted instance host.
+           */
+          host?: string;
+          /**
+           * (Required) Your organization slug.
+           */
+          organization: string;
+          /**
+           * (Required) Your project slug.
+           */
+          project: string;
+          /**
+           * (Optional) The repository name. Wildcards are supported as show on the examples above.
+           * If not set, all repositories will be searched.
+           */
+          repository?: string;
+          /**
+           * (Optional) Where to find catalog-info.yaml files. Wildcards are supported.
+           * If not set, defaults to /catalog-info.yaml.
+           */
+          path?: string;
+          /**
+           * (Optional) TaskScheduleDefinition for the refresh.
+           */
+          schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+        };
+      };
+      /**
+       * AzureBlobEntityProvider configuration
+       */
+      azureBlob?:
+        | {
+            [name: string]: {
+              /**
+               * (Required) The Azure Blob Storage container name.
+               */
+              containerName: string;
+              /**
+               * (Required) The Azure Storage account name.
+               */
+              accountName: string;
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            };
+          }
+        | {
+            /**
+             * (Required) The Azure Blob Storage container name.
+             */
+            containerName: string;
+            /**
+             * (Required) The Azure Storage account name.
+             */
+            accountName: string;
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+          };
     };
   };
 }

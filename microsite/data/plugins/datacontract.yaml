@@ -1,0 +1,10 @@
+---
+title: Data Contract
+author: Jan Remunda
+authorUrl: https://www.remunda.cz/#backstage
+category: Discovery
+description: Ingest and visualize Data Contracts to your catalog via API Entities.
+documentation: https://www.npmjs.com/package/@remunda/backstage-plugin-datacontract
+iconUrl: https://www.remunda.cz/logos/datacontract.png
+npmPackageName: '@remunda/backstage-plugin-datacontract'
+addedDate: '2025-08-19'

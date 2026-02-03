@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
-import { Grid, Paper } from '@material-ui/core';
+import { ComponentType, PropsWithChildren } from 'react';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 
 import { TestApiProvider } from '@backstage/test-utils';
 
@@ -27,7 +28,7 @@ export default {
   title: 'Plugins/Search/SearchFilter',
   component: SearchFilter,
   decorators: [
-    (Story: ComponentType<{}>) => (
+    (Story: ComponentType<PropsWithChildren<{}>>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">
@@ -39,6 +40,7 @@ export default {
       </TestApiProvider>
     ),
   ],
+  tags: ['!manifest'],
 };
 
 export const CheckBoxFilter = () => {

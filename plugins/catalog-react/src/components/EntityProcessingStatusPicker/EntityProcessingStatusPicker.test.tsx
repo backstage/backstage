@@ -14,65 +14,31 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { fireEvent, render } from '@testing-library/react';
-import React from 'react';
+import { fireEvent, screen } from '@testing-library/react';
 import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityProcessingStatusPicker } from './EntityProcessingStatusPicker';
-
-const orphanAnnotation: Record<string, string> = {};
-orphanAnnotation['backstage.io/orphan'] = 'true';
-
-const sampleEntities: Entity[] = [
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'valid-component',
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'orphan-component',
-      annotations: orphanAnnotation,
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'error-component',
-      tags: ['Invalid Tag'],
-    },
-  },
-];
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<EntityProcessingStatusPicker/>', () => {
-  it('renders all processing status options', () => {
-    const rendered = render(
-      <MockEntityListContextProvider
-        value={{ entities: sampleEntities, backendEntities: sampleEntities }}
-      >
+  it('renders all processing status options', async () => {
+    await renderInTestApp(
+      <MockEntityListContextProvider value={{}}>
         <EntityProcessingStatusPicker />
       </MockEntityListContextProvider>,
     );
-    expect(rendered.getByText('Processing Status')).toBeInTheDocument();
+    expect(screen.getByText('Processing Status')).toBeInTheDocument();
 
-    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
-    expect(rendered.getByText('Is Orphan')).toBeInTheDocument();
-    expect(rendered.getByText('Has Error')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    expect(screen.getByText('Is Orphan')).toBeInTheDocument();
+    expect(screen.getByText('Has Error')).toBeInTheDocument();
   });
 
-  it('adds orphan to orphan filter', () => {
+  it('adds orphan to orphan filter', async () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
-          entities: sampleEntities,
-          backendEntities: sampleEntities,
           updateFilters,
         }}
       >
@@ -80,20 +46,18 @@ describe('<EntityProcessingStatusPicker/>', () => {
       </MockEntityListContextProvider>,
     );
 
-    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
-    fireEvent.click(rendered.getByText('Is Orphan'));
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    fireEvent.click(screen.getByText('Is Orphan'));
     expect(updateFilters).toHaveBeenCalledWith({
       orphan: new EntityOrphanFilter(true),
     });
   });
 
-  it('adds error to error filter', () => {
+  it('adds error to error filter', async () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
-          entities: sampleEntities,
-          backendEntities: sampleEntities,
           updateFilters,
         }}
       >
@@ -101,20 +65,18 @@ describe('<EntityProcessingStatusPicker/>', () => {
       </MockEntityListContextProvider>,
     );
 
-    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
-    fireEvent.click(rendered.getByText('Has Error'));
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    fireEvent.click(screen.getByText('Has Error'));
     expect(updateFilters).toHaveBeenCalledWith({
       error: new EntityErrorFilter(true),
     });
   });
 
-  it('remove orphan from orphan filter', () => {
+  it('remove orphan from orphan filter', async () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
-          entities: sampleEntities,
-          backendEntities: sampleEntities,
           updateFilters,
         }}
       >
@@ -122,20 +84,18 @@ describe('<EntityProcessingStatusPicker/>', () => {
       </MockEntityListContextProvider>,
     );
 
-    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
-    fireEvent.click(rendered.getByText('Is Orphan'));
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    fireEvent.click(screen.getByText('Is Orphan'));
     expect(updateFilters).toHaveBeenCalledWith({
       orphan: undefined,
     });
   });
 
-  it('remove error from error filter', () => {
+  it('remove error from error filter', async () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
-          entities: sampleEntities,
-          backendEntities: sampleEntities,
           updateFilters,
         }}
       >
@@ -143,8 +103,8 @@ describe('<EntityProcessingStatusPicker/>', () => {
       </MockEntityListContextProvider>,
     );
 
-    fireEvent.click(rendered.getByTestId('processing-status-picker-expand'));
-    fireEvent.click(rendered.getByText('Has Error'));
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    fireEvent.click(screen.getByText('Has Error'));
     expect(updateFilters).toHaveBeenCalledWith({
       error: undefined,
     });

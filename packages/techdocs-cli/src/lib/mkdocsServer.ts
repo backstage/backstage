@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-import { ChildProcess } from 'child_process';
-import { run, LogFunc } from './run';
+import { run, RunChildProcess, RunOnOutput } from '@backstage/cli-common';
 
-export const runMkdocsServer = async (options: {
+export const runMkdocsServer = (options: {
   port?: string;
   useDocker?: boolean;
   dockerImage?: string;
   dockerEntrypoint?: string;
-  stdoutLogFunc?: LogFunc;
-  stderrLogFunc?: LogFunc;
-}): Promise<ChildProcess> => {
+  dockerOptions?: string[];
+  onStdout?: RunOnOutput;
+  onStderr?: RunOnOutput;
+  mkdocsConfigFileName?: string;
+  mkdocsParameterClean?: boolean;
+  mkdocsParameterDirtyReload?: boolean;
+  mkdocsParameterStrict?: boolean;
+}): RunChildProcess => {
   const port = options.port ?? '8000';
   const useDocker = options.useDocker ?? true;
   const dockerImage = options.dockerImage ?? 'spotify/techdocs';
 
   if (useDocker) {
-    return await run(
-      'docker',
+    return run(
       [
+        'docker',
         'run',
         '--rm',
         '-w',
@@ -45,20 +49,41 @@ export const runMkdocsServer = async (options: {
         ...(options.dockerEntrypoint
           ? ['--entrypoint', options.dockerEntrypoint]
           : []),
+        ...(options.dockerOptions || []),
         dockerImage,
         'serve',
         '--dev-addr',
         `0.0.0.0:${port}`,
+        ...(options.mkdocsConfigFileName
+          ? ['--config-file', options.mkdocsConfigFileName]
+          : []),
+        ...(options.mkdocsParameterClean ? ['--clean'] : []),
+        ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
+        ...(options.mkdocsParameterStrict ? ['--strict'] : []),
       ],
       {
-        stdoutLogFunc: options.stdoutLogFunc,
-        stderrLogFunc: options.stderrLogFunc,
+        onStdout: options.onStdout,
+        onStderr: options.onStderr,
       },
     );
   }
 
-  return await run('mkdocs', ['serve', '--dev-addr', `127.0.0.1:${port}`], {
-    stdoutLogFunc: options.stdoutLogFunc,
-    stderrLogFunc: options.stderrLogFunc,
-  });
+  return run(
+    [
+      'mkdocs',
+      'serve',
+      '--dev-addr',
+      `127.0.0.1:${port}`,
+      ...(options.mkdocsConfigFileName
+        ? ['--config-file', options.mkdocsConfigFileName]
+        : []),
+      ...(options.mkdocsParameterClean ? ['--clean'] : []),
+      ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
+      ...(options.mkdocsParameterStrict ? ['--strict'] : []),
+    ],
+    {
+      onStdout: options.onStdout,
+      onStderr: options.onStderr,
+    },
+  );
 };

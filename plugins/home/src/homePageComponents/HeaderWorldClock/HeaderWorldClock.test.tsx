@@ -16,9 +16,6 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import { HeaderWorldClock, ClockConfig } from './HeaderWorldClock';
-import React from 'react';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
 
 describe('HeaderWorldClock with valid Time Zones', () => {
   it('displays Time Zones as expected', async () => {
@@ -42,9 +39,7 @@ describe('HeaderWorldClock with valid Time Zones', () => {
     ];
 
     const rendered = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <HeaderWorldClock clockConfigs={clockConfigs} />
-      </ThemeProvider>,
+      <HeaderWorldClock clockConfigs={clockConfigs} />,
     );
 
     expect(rendered.getByText('NYC')).toBeInTheDocument();
@@ -59,9 +54,7 @@ describe('HeaderWorldClock with no Time Zones provided', () => {
     const clockConfigs: ClockConfig[] = [];
 
     const rendered = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <HeaderWorldClock clockConfigs={clockConfigs} />
-      </ThemeProvider>,
+      <HeaderWorldClock clockConfigs={clockConfigs} />,
     );
 
     expect(rendered.container).toBeEmptyDOMElement();
@@ -78,9 +71,7 @@ describe('HeaderWorldClock with invalid Time Zone', () => {
     ];
 
     const rendered = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <HeaderWorldClock clockConfigs={clockConfigs} />
-      </ThemeProvider>,
+      <HeaderWorldClock clockConfigs={clockConfigs} />,
     );
 
     expect(rendered.getByText('GMT')).toBeInTheDocument();
@@ -105,14 +96,12 @@ describe('HeaderWorldClock with custom Time Format', () => {
     };
 
     const rendered = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <HeaderWorldClock
-          clockConfigs={clockConfigs}
-          customTimeFormat={timeFormat}
-        />
-      </ThemeProvider>,
+      <HeaderWorldClock
+        clockConfigs={clockConfigs}
+        customTimeFormat={timeFormat}
+      />,
     );
 
-    expect(rendered.getByText('09:10')).toBeInTheDocument();
+    expect(rendered.getByText('09:10')).toHaveAttribute('datetime', '09:10');
   });
 });

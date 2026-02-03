@@ -1,0 +1,253 @@
+name: Sync Patch Release
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.patches/**'
+
+concurrency:
+  group: sync-patch-release
+  cancel-in-progress: true
+
+jobs:
+  sync-patch-release:
+    name: Sync Patch Release
+    runs-on: ubuntu-latest
+    if: github.repository == 'backstage/backstage'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 20000
+          fetch-tags: true
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: Configure Git
+        run: |
+          git config --global user.email noreply@backstage.io
+          git config --global user.name 'Github patch release workflow'
+
+      - name: Check for patch files
+        id: check-patches
+        run: |
+          if [ -d ".patches" ] && [ "$(ls -A .patches/pr-*.txt 2>/dev/null)" ]; then
+            echo "has_patches=true" >> $GITHUB_OUTPUT
+            echo "Found patch files"
+          else
+            echo "has_patches=false" >> $GITHUB_OUTPUT
+            echo "No patch files found"
+          fi
+
+      - name: Find existing PR
+        id: find-pr
+        if: steps.check-patches.outputs.has_patches == 'true'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const branchName = 'patch-release';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Find PR with the branch as head
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              head: `${owner}:${branchName}`,
+              state: 'open',
+            });
+
+            if (pulls.length > 0) {
+              console.log(`Found existing PR: #${pulls[0].number}`);
+              core.setOutput('pr_number', pulls[0].number.toString());
+              core.setOutput('pr_exists', 'true');
+            } else {
+              console.log('No existing PR found');
+              core.setOutput('pr_exists', 'false');
+            }
+
+      - name: Close PR and delete branch if no patches
+        if: steps.check-patches.outputs.has_patches == 'false'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const branchName = 'patch-release';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Find PR with the branch as head
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              head: `${owner}:${branchName}`,
+              state: 'open',
+            });
+
+            if (pulls.length > 0) {
+              console.log(`Closing PR #${pulls[0].number}`);
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pulls[0].number,
+                state: 'closed',
+              });
+            }
+
+            // Delete the branch
+            try {
+              await github.rest.git.deleteRef({
+                owner,
+                repo,
+                ref: `heads/${branchName}`,
+              });
+              console.log(`Deleted branch ${branchName}`);
+            } catch (error) {
+              if (error.status === 422) {
+                console.log(`Branch ${branchName} does not exist, skipping deletion`);
+              } else {
+                throw error;
+              }
+            }
+
+      - name: Install Dependencies
+        if: steps.check-patches.outputs.has_patches == 'true'
+        run: yarn --immutable
+
+      - name: Read patch files for PR metadata
+        if: steps.check-patches.outputs.has_patches == 'true'
+        id: read-patches
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            // Read patch files from master branch to generate PR body
+            const fs = require('fs').promises;
+            const path = require('path');
+
+            const patchesDir = path.join(process.cwd(), '.patches');
+            let files = [];
+            try {
+              files = await fs.readdir(patchesDir);
+            } catch (error) {
+              console.log(`Error reading patches directory: ${error.message}`);
+              core.setOutput('pr_body', 'This patch release fixes issues.');
+              return;
+            }
+
+            const patchFiles = files.filter(f => /^pr-\d+\.txt$/.test(f));
+
+            const patches = [];
+            for (const file of patchFiles) {
+              const match = file.match(/^pr-(\d+)\.txt$/);
+              if (match) {
+                const prNumber = parseInt(match[1], 10);
+                const filePath = path.join(patchesDir, file);
+                let content = '';
+                try {
+                  content = await fs.readFile(filePath, 'utf8');
+                } catch (error) {
+                  console.log(`Error reading ${file}: ${error.message}`);
+                }
+                const description = content.trim() || '<empty>';
+                patches.push({ prNumber, description });
+              }
+            }
+
+            if (patches.length === 0) {
+              console.log('No patches found, using default values');
+              core.setOutput('pr_body', 'This patch release fixes issues.');
+              core.setOutput('pr_numbers', '[]');
+              return;
+            }
+
+            patches.sort((a, b) => a.prNumber - b.prNumber);
+            const prNumbers = patches.map(p => p.prNumber);
+            const descriptions = patches.map(p => p.description);
+
+            const descriptionList = descriptions.map(desc => `- ${desc}`).join('\n');
+            const body = `This patch release fixes the following issues:\n\n${descriptionList}`;
+
+            core.setOutput('pr_body', body);
+            core.setOutput('pr_numbers', JSON.stringify(prNumbers));
+
+      - name: Run patch release script
+        if: steps.check-patches.outputs.has_patches == 'true'
+        id: run-script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          HUSKY: '0'
+          PATCH_RELEASE_BRANCH: patch-release
+        run: |
+          # The script will handle finding the release version, creating the patch branch,
+          # and deleting patch files. Run the patch script with --from-dir flag to read from .patches/ directory
+          # The script will write the patch branch to GITHUB_OUTPUT
+          node scripts/patch-release-for-pr.js --from-dir
+
+          # Ensure the branch is pushed (script pushes it, but force push in case of conflicts)
+          git push origin patch-release --force
+
+      - name: Create or update PR
+        if: steps.check-patches.outputs.has_patches == 'true'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          PR_EXISTS: ${{ steps.find-pr.outputs.pr_exists }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.pr_number }}
+          PR_BODY: ${{ steps.read-patches.outputs.pr_body }}
+          PATCH_BRANCH: ${{ steps.run-script.outputs.patch_branch }}
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const branchName = 'patch-release';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const title = 'Patch Release';
+            const body = process.env.PR_BODY;
+            const prExists = process.env.PR_EXISTS === 'true';
+            const prNumber = process.env.PR_NUMBER;
+            const patchBranch = process.env.PATCH_BRANCH;
+
+            if (prExists && prNumber) {
+              console.log(`Updating PR #${prNumber}`);
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: parseInt(prNumber, 10),
+                title,
+                body,
+              });
+            } else {
+              // Use the patch branch from the script
+              if (!patchBranch) {
+                throw new Error('Patch branch not provided from script. Make sure the script outputs the patch branch name.');
+              }
+
+              const baseBranch = patchBranch;
+              console.log(`Creating new PR with base branch: ${baseBranch}`);
+
+              const { data: pr } = await github.rest.pulls.create({
+                owner,
+                repo,
+                title,
+                body,
+                head: branchName,
+                base: baseBranch,
+              });
+              console.log(`Created PR #${pr.number}`);
+            }

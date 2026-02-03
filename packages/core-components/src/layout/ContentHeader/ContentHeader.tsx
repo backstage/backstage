@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * TODO favoriteable capability
- */
-
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
+
+/**
+ * TODO: favoriteable capability
+ */
 
 /** @public */
 export type ContentHeaderClassKey =
@@ -73,10 +73,7 @@ type ContentHeaderTitleProps = {
   className?: string;
 };
 
-const ContentHeaderTitle = ({
-  title = 'Unknown page',
-  className,
-}: ContentHeaderTitleProps) => (
+const ContentHeaderTitle = ({ title, className }: ContentHeaderTitleProps) => (
   <Typography
     variant="h4"
     component="h2"
@@ -87,10 +84,30 @@ const ContentHeaderTitle = ({
   </Typography>
 );
 
+type ContentHeaderDescriptionProps = {
+  description?: string;
+  className?: string;
+};
+
+const ContentHeaderDescription = ({
+  description,
+  className,
+}: ContentHeaderDescriptionProps) =>
+  description ? (
+    <Typography
+      variant="body2"
+      className={className}
+      data-testid="header-description"
+    >
+      {description}
+    </Typography>
+  ) : null;
+
 type ContentHeaderProps = {
   title?: ContentHeaderTitleProps['title'];
   titleComponent?: ReactNode;
-  description?: string;
+  description?: ContentHeaderDescriptionProps['description'];
+  descriptionComponent?: ReactNode;
   textAlign?: 'left' | 'right' | 'center';
 };
 
@@ -107,6 +124,7 @@ export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
     title,
     titleComponent: TitleComponent = undefined,
     children,
+    descriptionComponent: DescriptionComponent = undefined,
     textAlign = 'left',
   } = props;
   const classes = useStyles({ textAlign })();
@@ -117,20 +135,25 @@ export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
     <ContentHeaderTitle title={title} className={classes.title} />
   );
 
+  const renderedDescription = DescriptionComponent ? (
+    DescriptionComponent
+  ) : (
+    <ContentHeaderDescription
+      description={description}
+      className={classes.description}
+    />
+  );
+
   return (
     <>
       <Helmet title={title} />
-      <div className={classes.container}>
-        <div className={classes.leftItemsBox}>
+      <Box className={classes.container}>
+        <Box className={classes.leftItemsBox}>
           {renderedTitle}
-          {description && (
-            <Typography className={classes.description} variant="body2">
-              {description}
-            </Typography>
-          )}
-        </div>
-        <div className={classes.rightItemsBox}>{children}</div>
-      </div>
+          {renderedDescription}
+        </Box>
+        <Box className={classes.rightItemsBox}>{children}</Box>
+      </Box>
     </>
   );
 }

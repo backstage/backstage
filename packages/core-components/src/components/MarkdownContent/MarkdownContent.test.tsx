@@ -14,67 +14,87 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { MarkdownContent } from './MarkdownContent';
+import { screen } from '@testing-library/react';
 
 describe('<MarkdownContent />', () => {
   it('render MarkdownContent component', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent content={'# H1\n' + '## H2\n' + '### H3'} />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent content={'# H1\n' + '## H2\n' + '### H3'} />,
     );
-    expect(rendered.getByText('H1', { selector: 'h1' })).toBeInTheDocument();
-    expect(rendered.getByText('H2', { selector: 'h2' })).toBeInTheDocument();
-    expect(rendered.getByText('H3', { selector: 'h3' })).toBeInTheDocument();
+    expect(screen.getByText('H1', { selector: 'h1' })).toBeInTheDocument();
+    expect(screen.getByText('H2', { selector: 'h2' })).toBeInTheDocument();
+    expect(screen.getByText('H3', { selector: 'h3' })).toBeInTheDocument();
   });
 
   it('render MarkdownContent component with GitHub flavored Markdown dialect', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(<MarkdownContent content="https://example.com" />),
-    );
+    await renderInTestApp(<MarkdownContent content="https://example.com" />);
     expect(
-      rendered.getByText('https://example.com', { selector: 'a' }),
+      screen.getByText('https://example.com', { selector: 'a' }),
     ).toBeInTheDocument();
   });
 
   it('Render MarkdownContent component with common mark dialect', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent content="https://example.com" dialect="common-mark" />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent content="https://example.com" dialect="common-mark" />,
     );
     expect(
-      rendered.getByText('https://example.com', { selector: 'p' }),
+      screen.getByText('https://example.com', { selector: 'p' }),
     ).toBeInTheDocument();
   });
 
-  it('render MarkdownContent component with CodeSnippet for code blocks', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent content={'```typescript\njest(test: string);\n```'} />,
-      ),
+  it('Render MarkdownContent component without custom class', async () => {
+    await renderInTestApp(
+      <MarkdownContent content="https://example.com" dialect="common-mark" />,
     );
-    const fp1 = await rendered.findByText('jest(test:', { selector: 'span' });
+    const content = screen.getByText('https://example.com', { selector: 'p' });
+
+    expect(
+      Array.from(content.parentElement?.classList?.values() ?? []).map(cls =>
+        cls.replace(/-\d+$/, ''),
+      ),
+    ).toEqual(['BackstageMarkdownContent-markdown']);
+  });
+
+  it('Render MarkdownContent component with custom class', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content="https://example.com"
+        dialect="common-mark"
+        className="custom-class"
+      />,
+    );
+    const content = screen.getByText('https://example.com', { selector: 'p' });
+
+    expect(
+      Array.from(content.parentElement?.classList?.values() ?? []).map(cls =>
+        cls.replace(/-\d+$/, ''),
+      ),
+    ).toEqual(['BackstageMarkdownContent-markdown', 'custom-class']);
+  });
+
+  it('render MarkdownContent component with CodeSnippet for code blocks', async () => {
+    await renderInTestApp(
+      <MarkdownContent content={'```typescript\njest(test: string);\n```'} />,
+    );
+    const fp1 = await screen.findByText('jest(test:', { selector: 'span' });
     expect(fp1).toBeInTheDocument();
-    const fp2 = rendered.getByText('string', { selector: 'span' });
+    const fp2 = screen.getByText('string', { selector: 'span' });
     expect(fp2).toBeInTheDocument();
-    expect(rendered.getByText(');', { selector: 'span' })).toBeInTheDocument();
+    expect(screen.getByText(');', { selector: 'span' })).toBeInTheDocument();
   });
 
   it('render MarkdownContent component with transformed link', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent
-          content="[Title](https://backstage.io/link)"
-          transformLinkUri={href => {
-            return `${href}-modified`;
-          }}
-        />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent
+        content="[Title](https://backstage.io/link)"
+        transformLinkUri={href => {
+          return `${href}-modified`;
+        }}
+      />,
     );
-    const fp1 = rendered.getByText('Title', {
+    const fp1 = screen.getByText('Title', {
       selector: 'a',
     });
     expect(fp1).toBeInTheDocument();
@@ -84,20 +104,111 @@ describe('<MarkdownContent />', () => {
   });
 
   it('render MarkdownContent component with transformed image', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent
-          content="![Image](https://backstage.io/blog/assets/6/header.png)"
-          transformImageUri={() => {
-            return `https://example.com/blog/assets/6/header.png`;
-          }}
-        />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent
+        content="![Image](https://backstage.io/blog/assets/6/header.png)"
+        transformImageUri={() => {
+          return `https://example.com/blog/assets/6/header.png`;
+        }}
+      />,
     );
-    const fp1 = rendered.getByAltText('Image');
+    const fp1 = screen.getByAltText('Image');
     expect(fp1).toBeInTheDocument();
     expect(fp1.getAttribute('src')).toEqual(
       'https://example.com/blog/assets/6/header.png',
     );
+  });
+
+  it('render MarkdownContent component with link target set to _blank', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content="Take a look at the [README](https://github.com/backstage/backstage/blob/master/README.md) file."
+        linkTarget="_blank"
+      />,
+    );
+    const readme = screen.getByText('README', {
+      selector: 'a',
+    });
+    expect(readme).toBeInTheDocument();
+    expect(readme.getAttribute('href')).toEqual(
+      'https://github.com/backstage/backstage/blob/master/README.md',
+    );
+    expect(readme.getAttribute('target')).toEqual('_blank');
+  });
+
+  it('render MarkdownContent component with headings given proper ids', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content={
+          '# Lorem ipsum\n' +
+          '## bing bong\n' +
+          '### The FitnessGram Pacer Test is a multistage aerobic capacity test'
+        }
+      />,
+    );
+
+    expect(screen.getByText('Lorem ipsum').getAttribute('id')).toEqual(
+      'lorem-ipsum',
+    );
+    expect(screen.getByText('bing bong').getAttribute('id')).toEqual(
+      'bing-bong',
+    );
+    expect(
+      screen
+        .getByText(
+          'The FitnessGram Pacer Test is a multistage aerobic capacity test',
+        )
+        .getAttribute('id'),
+    ).toEqual(
+      'the-fitnessgram-pacer-test-is-a-multistage-aerobic-capacity-test',
+    );
+  });
+
+  it('render MarkdownContent component with br tags for new lines in GFM dialect', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content="<p>Line 1</p><br /><p>Line 2</p><br><p>Line 3</p><br />"
+        dialect="gfm"
+      />,
+    );
+
+    const line1 = screen.getByText(/Line 1/);
+    const line2 = screen.getByText(/Line 2/);
+    const line3 = screen.getByText(/Line 3/);
+
+    expect(line1.nextSibling?.nodeName).toBe('BR');
+    expect(line2.previousSibling?.nodeName).toBe('BR');
+    expect(line2.nextSibling?.nodeName).toBe('BR');
+    expect(line3.previousSibling?.nodeName).toBe('BR');
+  });
+
+  it('render MarkdownContent component without allowing inline styles in GFM dialect', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content='<div style="color: blue; border: 1px solid black; padding: 10px;">This is a custom HTML block with inline styles.</div>'
+        dialect="gfm"
+      />,
+    );
+
+    const divElement = screen.getByText(
+      'This is a custom HTML block with inline styles.',
+    );
+    expect(divElement).toBeInTheDocument();
+    expect(divElement).not.toHaveStyle('color: blue');
+    expect(divElement).not.toHaveStyle('border: 1px solid black');
+    expect(divElement).not.toHaveStyle('padding: 10px');
+  });
+
+  it('render MarkdownContent component without disallowed elements in GFM dialect', async () => {
+    const { container } = await renderInTestApp(
+      <MarkdownContent
+        content='<script>alert("XSS Attack!");</script><style>body { background-color: red; }</style><p>Safe Content</p>'
+        dialect="gfm"
+      />,
+    );
+
+    expect(screen.getByText('Safe Content')).toBeInTheDocument();
+    expect(container.querySelector('script')).toBeNull();
+    expect(container.querySelector('style')).toBeNull();
   });
 });

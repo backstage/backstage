@@ -13,11 +13,11 @@ Options:
 
 Commands:
   generate|build [options]
+  help [command]
   migrate [options]
   publish [options]
-  serve:mkdocs [options]
   serve [options]
-  help [command]
+  serve:mkdocs [options]
 ```
 
 ### `techdocs-cli generate`
@@ -26,17 +26,20 @@ Commands:
 Usage: techdocs-cli generate|build [options]
 
 Options:
-  --source-dir <PATH>
-  --output-dir <PATH>
+  --defaultPlugin [defaultPlugins...]
   --docker-image <DOCKER_IMAGE>
-  --no-pull
-  --no-docker
-  --techdocs-ref <HOST_TYPE:URL>
   --etag <ETAG>
-  -v --verbose
-  --omitTechdocsCoreMkdocsPlugin
   --legacyCopyReadmeMdToIndexMd
+  --no-docker
+  --no-pull
+  --omitTechdocsCoreMkdocsPlugin
+  --output-dir <PATH>
+  --runAsDefaultUser
+  --site-name
+  --source-dir <PATH>
+  --techdocs-ref <HOST_TYPE:URL>
   -h, --help
+  -v --verbose
 ```
 
 ### `techdocs-cli migrate`
@@ -45,22 +48,21 @@ Options:
 Usage: techdocs-cli migrate [options]
 
 Options:
-  --publisher-type <TYPE>
-  --storage-name <BUCKET/CONTAINER NAME>
-  --azureAccountName <AZURE ACCOUNT NAME>
-  --azureAccountKey <AZURE ACCOUNT KEY>
-  --awsRoleArn <AWS ROLE ARN>
   --awsEndpoint <AWS ENDPOINT>
+  --awsRoleArn <AWS ROLE ARN>
   --awsS3ForcePathStyle
-  --awsBucketRootPath
+  --azureAccountKey <AZURE ACCOUNT KEY>
+  --azureAccountName <AZURE ACCOUNT NAME>
+  --concurrency <MAX CONCURRENT REQS>
+  --osAuthUrl <OPENSTACK SWIFT AUTHURL>
   --osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>
   --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>
-  --osAuthUrl <OPENSTACK SWIFT AUTHURL>
   --osSwiftUrl <OPENSTACK SWIFT SWIFTURL>
+  --publisher-type <TYPE>
   --removeOriginal
-  --concurrency <MAX CONCURRENT REQS>
-  -v --verbose
+  --storage-name <BUCKET/CONTAINER NAME>
   -h, --help
+  -v --verbose
 ```
 
 ### `techdocs-cli publish`
@@ -69,22 +71,25 @@ Options:
 Usage: techdocs-cli publish [options]
 
 Options:
-  --publisher-type <TYPE>
-  --storage-name <BUCKET/CONTAINER NAME>
-  --entity <NAMESPACE/KIND/NAME>
-  --legacyUseCaseSensitiveTripletPaths
-  --azureAccountName <AZURE ACCOUNT NAME>
-  --azureAccountKey <AZURE ACCOUNT KEY>
-  --awsRoleArn <AWS ROLE ARN>
+  --awsBucketRootPath <AWS BUCKET ROOT PATH>
   --awsEndpoint <AWS ENDPOINT>
-  --awsS3sse <AWS SSE>
+  --awsMaxAttempts <AWS MAX ATTEMPTS>
+  --awsProxy <HTTPS Proxy>
+  --awsRoleArn <AWS ROLE ARN>
   --awsS3ForcePathStyle
+  --awsS3sse <AWS SSE>
+  --azureAccountKey <AZURE ACCOUNT KEY>
+  --azureAccountName <AZURE ACCOUNT NAME>
+  --directory <PATH>
+  --entity <NAMESPACE/KIND/NAME>
+  --gcsBucketRootPath <GCS BUCKET ROOT PATH>
+  --legacyUseCaseSensitiveTripletPaths
+  --osAuthUrl <OPENSTACK SWIFT AUTHURL>
   --osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>
   --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>
-  --osAuthUrl <OPENSTACK SWIFT AUTHURL>
   --osSwiftUrl <OPENSTACK SWIFT SWIFTURL>
-  --gcsBucketRootPath
-  --directory <PATH>
+  --publisher-type <TYPE>
+  --storage-name <BUCKET/CONTAINER NAME>
   -h, --help
 ```
 
@@ -94,12 +99,20 @@ Options:
 Usage: techdocs-cli serve [options]
 
 Options:
-  -i, --docker-image <DOCKER_IMAGE>
   --docker-entrypoint <DOCKER_ENTRYPOINT>
-  --no-docker
+  --docker-option <DOCKER_OPTION...>
+  --mkdocs-parameter-clean
+  --mkdocs-parameter-dirtyreload
+  --mkdocs-parameter-strict
   --mkdocs-port <PORT>
-  -v --verbose
+  --no-docker
+  --preview-app-bundle-path <PATH_TO_BUNDLE>
+  --preview-app-port <PORT>
+  --site-name
+  -c, --mkdocs-config-file-name <FILENAME>
   -h, --help
+  -i, --docker-image <DOCKER_IMAGE>
+  -v --verbose
 ```
 
 ### `techdocs-cli serve:mkdocs`
@@ -108,10 +121,12 @@ Options:
 Usage: techdocs-cli serve:mkdocs [options]
 
 Options:
-  -i, --docker-image <DOCKER_IMAGE>
   --docker-entrypoint <DOCKER_ENTRYPOINT>
+  --docker-option <DOCKER_OPTION...>
   --no-docker
+  --site-name
+  -h, --help
+  -i, --docker-image <DOCKER_IMAGE>
   -p, --port <PORT>
   -v --verbose
-  -h, --help
 ```

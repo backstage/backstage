@@ -2,9 +2,12 @@
 id: discovery
 title: AWS S3 Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from an AWS S3 Bucket
 ---
+
+:::info
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/aws-s3/discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+:::
 
 The AWS S3 integration has a special entity provider for discovering catalog
 entities located in an S3 Bucket. If you have a bucket that contains multiple
@@ -20,7 +23,7 @@ a `roleArn` or none of these (e.g., profile- or instance-based credentials).
 At production deployments, you likely manage these with the permissions attached
 to your instance.
 
-At your configuration, you add a provider config per bucket:
+In your configuration, you add a provider config per bucket:
 
 ```yaml
 # app-config.yaml
@@ -32,6 +35,11 @@ catalog:
         bucketName: sample-bucket
         prefix: prefix/ # optional
         region: us-east-2 # optional, uses the default region otherwise
+        schedule: # same options as in SchedulerServiceTaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
 ```
 
 For simple setups, you can omit the provider ID at the config
@@ -47,32 +55,25 @@ catalog:
       bucketName: sample-bucket
       prefix: prefix/ # optional
       region: us-east-2 # optional, uses the default region otherwise
+      schedule: # same options as in SchedulerServiceTaskScheduleDefinition
+        # supports cron, ISO duration, "human duration" as used in code
+        frequency: { minutes: 30 }
+        # supports ISO duration, "human duration" as used in code
+        timeout: { minutes: 3 }
 ```
 
 As this provider is not one of the default providers, you will first need to install
 the AWS catalog plugin:
 
-```bash
-# From the Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-aws
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-aws
 ```
 
-Once you've done that, you'll also need to add the segment below to `packages/backend/src/plugins/catalog.ts`:
+Then update your backend by adding the following line:
 
-```ts
-/* packages/backend/src/plugins/catalog.ts */
-
-import { AwsS3EntityProvider } from '@backstage/plugin-catalog-backend-module-aws';
-
-const builder = await CatalogBuilder.create(env);
-/** ... other processors and/or providers ... */
-builder.addEntityProvider(
-  AwsS3EntityProvider.fromConfig(env.config, {
-    logger: env.logger,
-    schedule: env.scheduler.createScheduledTaskRunner({
-      frequency: { minutes: 30 },
-      timeout: { minutes: 3 },
-    }),
-  }),
-);
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-aws'));
+/* highlight-add-end */
 ```

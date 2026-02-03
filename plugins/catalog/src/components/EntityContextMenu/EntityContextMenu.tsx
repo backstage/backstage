@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-import {
-  Divider,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  MenuList,
-  Popover,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import Divider from '@material-ui/core/Divider';
+import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Popover from '@material-ui/core/Popover';
+import Tooltip from '@material-ui/core/Tooltip';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
-import React, { useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { useEntityPermission } from '@backstage/plugin-catalog-react';
-import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
-import { BackstageTheme } from '@backstage/theme';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
+import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
+import { useApi, alertApiRef } from '@backstage/core-plugin-api';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { EntityContextMenuProvider } from '../../context';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => {
+  (theme: Theme) => {
     return {
       button: {
         color: theme.page.fontColor,
@@ -58,6 +62,7 @@ interface ExtraContextMenuItem {
 interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
+  contextMenuItems?: React.JSX.Element[];
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
 }
@@ -66,9 +71,11 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
+    contextMenuItems,
     onUnregisterEntity,
     onInspectEntity,
   } = props;
+  const { t } = useTranslationRef(catalogTranslationRef);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
   const unregisterPermission = useEntityPermission(
@@ -76,7 +83,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   );
   const isAllowed = unregisterPermission.allowed;
 
-  const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
+  const onOpen = (event: SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -84,39 +91,89 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     setAnchorEl(undefined);
   };
 
-  const extraItems = UNSTABLE_extraContextMenuItems && [
-    ...UNSTABLE_extraContextMenuItems.map(item => (
-      <MenuItem
-        key={item.title}
-        onClick={() => {
-          onClose();
-          item.onClick();
-        }}
-      >
-        <ListItemIcon>
-          <item.Icon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText primary={item.title} />
-      </MenuItem>
-    )),
-    <Divider key="the divider is here!" />,
+  const alertApi = useApi(alertApiRef);
+  const [copyState, copyToClipboard] = useCopyToClipboard();
+  useEffect(() => {
+    if (!copyState.error && copyState.value) {
+      alertApi.post({
+        message: t('entityContextMenu.copiedMessage'),
+        severity: 'info',
+        display: 'transient',
+      });
+    }
+  }, [copyState, alertApi, t]);
+
+  const extraItems = UNSTABLE_extraContextMenuItems?.length
+    ? [
+        ...UNSTABLE_extraContextMenuItems.map(item => (
+          <MenuItem
+            key={item.title}
+            onClick={() => {
+              onClose();
+              item.onClick();
+            }}
+          >
+            <ListItemIcon>
+              <item.Icon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={item.title} />
+          </MenuItem>
+        )),
+        <Divider key="the divider is here!" />,
+      ]
+    : null;
+
+  const defaultMenuItems = [
+    <UnregisterEntity
+      unregisterEntityOptions={UNSTABLE_contextMenuOptions}
+      isUnregisterAllowed={isAllowed}
+      onUnregisterEntity={onUnregisterEntity}
+      onClose={onClose}
+      key="unregister-entity"
+    />,
+    <MenuItem
+      onClick={() => {
+        onClose();
+        onInspectEntity();
+      }}
+      key="inspect-entity"
+    >
+      <ListItemIcon>
+        <BugReportIcon fontSize="small" />
+      </ListItemIcon>
+      <ListItemText primary={t('entityContextMenu.inspectMenuTitle')} />
+    </MenuItem>,
+    <MenuItem
+      onClick={() => {
+        onClose();
+        copyToClipboard(window.location.toString());
+      }}
+      key="copy-url"
+    >
+      <ListItemIcon>
+        <FileCopyTwoToneIcon fontSize="small" />
+      </ListItemIcon>
+      <ListItemText primary={t('entityContextMenu.copyURLMenuTitle')} />
+    </MenuItem>,
   ];
 
   return (
     <>
-      <IconButton
-        aria-label="more"
-        aria-controls="long-menu"
-        aria-haspopup="true"
-        aria-expanded={!!anchorEl}
-        role="button"
-        onClick={onOpen}
-        data-testid="menu-button"
-        className={classes.button}
-        id="long-menu"
-      >
-        <MoreVert />
-      </IconButton>
+      <Tooltip title={t('entityContextMenu.moreButtonTitle')} arrow>
+        <IconButton
+          aria-label="more"
+          aria-controls="long-menu"
+          aria-haspopup="true"
+          aria-expanded={!!anchorEl}
+          role="button"
+          onClick={onOpen}
+          data-testid="menu-button"
+          className={classes.button}
+          id="long-menu"
+        >
+          <MoreVert />
+        </IconButton>
+      </Tooltip>
       <Popover
         open={Boolean(anchorEl)}
         onClose={onClose}
@@ -124,26 +181,19 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         aria-labelledby="long-menu"
+        PaperProps={{
+          style: { minWidth: 200 },
+        }}
       >
-        <MenuList>
+        <MenuList autoFocusItem={Boolean(anchorEl)}>
           {extraItems}
-          <UnregisterEntity
-            unregisterEntityOptions={UNSTABLE_contextMenuOptions}
-            isUnregisterAllowed={isAllowed}
-            onUnregisterEntity={onUnregisterEntity}
-            onClose={onClose}
-          />
-          <MenuItem
-            onClick={() => {
-              onClose();
-              onInspectEntity();
-            }}
-          >
-            <ListItemIcon>
-              <BugReportIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Inspect entity" />
-          </MenuItem>
+          {contextMenuItems === undefined ? (
+            defaultMenuItems
+          ) : (
+            <EntityContextMenuProvider onMenuClose={onClose}>
+              {contextMenuItems}
+            </EntityContextMenuProvider>
+          )}
         </MenuList>
       </Popover>
     </>

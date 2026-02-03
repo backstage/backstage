@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
-const { resolve: resolvePath } = require('path');
+const { resolve: resolvePath } = require('node:path');
 const fs = require('fs-extra');
 const { default: parseChangeset } = require('@changesets/parse');
 

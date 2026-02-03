@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useForm, UseFormRegisterReturn } from 'react-hook-form';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -27,6 +26,8 @@ import { InfoCard } from '../InfoCard/InfoCard';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import { GridItem } from './styles';
 import { UserIdentity } from './UserIdentity';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // accept base64url format according to RFC7515 (https://tools.ietf.org/html/rfc7515#section-3)
 const ID_TOKEN_REGEX = /^[a-z0-9_\-]+\.[a-z0-9_\-]+\.[a-z0-9_\-]+$/i;
@@ -43,6 +44,9 @@ const useFormStyles = makeStyles(
     button: {
       alignSelf: 'center',
       marginTop: theme.spacing(2),
+    },
+    subTitle: {
+      whiteSpace: 'pre-line',
     },
   }),
   { name: 'BackstageCustomProvider' },
@@ -61,18 +65,21 @@ const asInputRef = (renderResult: UseFormRegisterReturn) => {
   };
 };
 
-const Component: ProviderComponent = ({ onSignInSuccess }) => {
+const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => {
   const classes = useFormStyles();
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
   const { register, handleSubmit, formState } = useForm<Data>({
     mode: 'onChange',
   });
 
   const { errors } = formState;
 
-  const handleResult = ({ userId }: Data) => {
+  const handleResult = ({ userId, idToken }: Data) => {
+    onSignInStarted();
     onSignInSuccess(
       UserIdentity.fromLegacy({
         userId,
+        getIdToken: idToken !== undefined ? async () => idToken : undefined,
         profile: {
           email: `${userId}@example.com`,
         },
@@ -82,18 +89,16 @@ const Component: ProviderComponent = ({ onSignInSuccess }) => {
 
   return (
     <GridItem>
-      <InfoCard title="Custom User" variant="fullHeight">
-        <Typography variant="body1">
-          Enter your own User ID and credentials.
-          <br />
-          This selection will not be stored.
+      <InfoCard title={t('signIn.customProvider.title')} variant="fullHeight">
+        <Typography variant="body1" className={classes.subTitle}>
+          {t('signIn.customProvider.subtitle')}
         </Typography>
 
         <form className={classes.form} onSubmit={handleSubmit(handleResult)}>
           <FormControl>
             <TextField
               {...asInputRef(register('userId', { required: true }))}
-              label="User ID"
+              label={t('signIn.customProvider.userId')}
               margin="normal"
               error={Boolean(errors.userId)}
             />
@@ -109,10 +114,10 @@ const Component: ProviderComponent = ({ onSignInSuccess }) => {
                   validate: token =>
                     !token ||
                     ID_TOKEN_REGEX.test(token) ||
-                    'Token is not a valid OpenID Connect JWT Token',
+                    t('signIn.customProvider.tokenInvalid'),
                 }),
               )}
-              label="ID Token (optional)"
+              label={t('signIn.customProvider.idToken')}
               margin="normal"
               autoComplete="off"
               error={Boolean(errors.idToken)}
@@ -128,7 +133,7 @@ const Component: ProviderComponent = ({ onSignInSuccess }) => {
             className={classes.button}
             disabled={!formState?.isDirty || !isEmpty(errors)}
           >
-            Continue
+            {t('signIn.customProvider.continue')}
           </Button>
         </form>
       </InfoCard>

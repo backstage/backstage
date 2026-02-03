@@ -16,23 +16,23 @@
 
 import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
-import React from 'react';
+import { waitFor, screen } from '@testing-library/react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { HasSystemsCard } from './HasSystemsCard';
 
 describe('<HasSystemsCard />', () => {
-  const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
-  let Wrapper: React.ComponentType;
+  const catalogApi = catalogApiMock.mock();
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, { getEntities }]]}>
+    Wrapper = ({ children }: { children?: ReactNode }) => (
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         {children}
       </TestApiProvider>
     );
@@ -51,7 +51,7 @@ describe('<HasSystemsCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasSystemsCard />
@@ -64,8 +64,10 @@ describe('<HasSystemsCard />', () => {
       },
     );
 
-    expect(getByText('Has systems')).toBeInTheDocument();
-    expect(getByText(/No system is part of this domain/i)).toBeInTheDocument();
+    expect(screen.getByText('Has systems')).toBeInTheDocument();
+    expect(
+      screen.getByText(/No system is part of this domain/i),
+    ).toBeInTheDocument();
   });
 
   it('shows related systems', async () => {
@@ -83,7 +85,7 @@ describe('<HasSystemsCard />', () => {
         },
       ],
     };
-    getEntities.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [
         {
           apiVersion: 'v1',
@@ -97,7 +99,7 @@ describe('<HasSystemsCard />', () => {
       ],
     });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasSystemsCard />
@@ -111,8 +113,8 @@ describe('<HasSystemsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Has systems')).toBeInTheDocument();
-      expect(getByText(/target-name/i)).toBeInTheDocument();
+      expect(screen.getByText('Has systems')).toBeInTheDocument();
+      expect(screen.getByText(/target-name/i)).toBeInTheDocument();
     });
   });
 });

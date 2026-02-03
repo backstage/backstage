@@ -1,91 +1,75 @@
 name: Build and push Docker image
 on:
+  workflow_dispatch:
+
   repository_dispatch:
     types: [release-published]
+
+env:
+  RELEASE_VERSION: v${{ github.event.client_payload.version }}
+  TAG_VERSION: ghcr.io/${{ github.repository_owner }}/backstage:${{ github.event.client_payload.version }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22.x]
+
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           path: backstage
-          ref: v${{ github.event.client_payload.version }}
+          ref: ${{ github.event.client_payload.version && env.RELEASE_VERSION || github.ref }}
 
-      - name: setup-node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16.x
-          registry-url: https://registry.npmjs.org/
-
-      # Beginning of yarn setup, keep in sync between all workflows.
-      # TODO(Rugvip): move this to composite action once all features we use are supported
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
-      # Cache every node_modules folder inside the monorepo
-      - name: cache all node_modules
-        id: cache-modules
-        uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          # We use both yarn.lock and package.json as cache keys to ensure that
-          # changes to local monorepo packages bust the cache.
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
-
-      # If we get a cache hit for node_modules, there's no need to bring in the global
-      # yarn cache or run yarn install, as all dependencies will be installed already.
-
-      - name: find location of global yarn cache
-        id: yarn-cache
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: cache global yarn cache
-        uses: actions/cache@v2
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
       - name: yarn install
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
-      # End of yarn setup
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: create-app
         run: npx @backstage/create-app
         env:
           BACKSTAGE_APP_NAME: example-app
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
       - name: yarn build
-        run: yarn build
+        run: yarn build:backend
         working-directory: ./example-app
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: './example-app'
           file: ./example-app/packages/backend/Dockerfile
-          push: true
+          push: ${{ (github.event_name == 'repository_dispatch') && (github.event.action == 'release-published') }}
+          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.repository_owner }}/backstage:latest
-            ghcr.io/${{ github.repository_owner }}/backstage:${{ github.event.client_payload.version }}
+            ${{ github.event.client_payload.version && env.TAG_VERSION || '' }}
           labels: |
             org.opencontainers.image.description=Docker image generated from the latest Backstage release; this contains what you would get out of the box by running npx @backstage/create-app and building a Docker image from the generated source. This is meant to ease the process of evaluating Backstage for the first time, but also has the severe limitation that there is no way to install additional plugins relevant to your infrastructure.

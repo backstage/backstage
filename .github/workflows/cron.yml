@@ -7,8 +7,14 @@ on:
 jobs:
   cron:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: backstage/actions/cron@v0.5.3
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: backstage/actions/cron@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}

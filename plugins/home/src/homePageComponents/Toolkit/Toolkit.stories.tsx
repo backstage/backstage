@@ -16,15 +16,18 @@
 
 import { InfoCard } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { Grid } from '@material-ui/core';
-import React, { ComponentType } from 'react';
+import Grid from '@material-ui/core/Grid';
+import { ComponentType, PropsWithChildren } from 'react';
 import { ComponentAccordion } from '../../componentRenderers';
 import { HomePageToolkit } from '../../plugin';
 import { TemplateBackstageLogoIcon } from '../../assets';
 
 export default {
   title: 'Plugins/Home/Components/Toolkit',
-  decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+  decorators: [
+    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+  ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {
@@ -41,7 +44,7 @@ export const Default = () => {
   );
 };
 
-export const InAccordian = () => {
+export const InAccordion = () => {
   const ExpandedComponentAccordion = (props: any) => (
     <ComponentAccordion expanded {...props} />
   );

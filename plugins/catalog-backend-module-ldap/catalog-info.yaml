@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-ldap
+  title: '@backstage/plugin-catalog-backend-module-ldap'
+  description: A Backstage catalog backend module that helps integrate towards LDAP
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: catalog-maintainers

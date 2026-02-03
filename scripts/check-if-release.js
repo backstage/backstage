@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -24,10 +24,11 @@
 //
 // needs_release = 'true' | 'false'
 
-const { execFile: execFileCb } = require('child_process');
-const { resolve: resolvePath } = require('path');
-const { promises: fs } = require('fs');
-const { promisify } = require('util');
+const { execFile: execFileCb } = require('node:child_process');
+const { resolve: resolvePath } = require('node:path');
+const { promises: fs } = require('node:fs');
+const { promisify } = require('node:util');
+const { EOL } = require('node:os');
 
 const parentRef = process.env.COMMIT_SHA_BEFORE || 'HEAD^';
 
@@ -52,6 +53,10 @@ async function runPlain(cmd, ...args) {
 
 async function main() {
   process.cwd(resolvePath(__dirname, '..'));
+
+  if (!process.env.GITHUB_OUTPUT) {
+    throw new Error('GITHUB_OUTPUT environment variable not set');
+  }
 
   const diff = await runPlain(
     'git',
@@ -103,7 +108,7 @@ async function main() {
 
   if (newVersions.length === 0) {
     console.log('No package version bumps detected, no release needed');
-    console.log(`::set-output name=needs_release::false`);
+    await fs.appendFile(process.env.GITHUB_OUTPUT, `needs_release=false${EOL}`);
     return;
   }
 
@@ -114,7 +119,7 @@ async function main() {
       `  ${name.padEnd(maxLength, ' ')} ${oldVersion} to ${newVersion}`,
     );
   }
-  console.log(`::set-output name=needs_release::true`);
+  await fs.appendFile(process.env.GITHUB_OUTPUT, `needs_release=true${EOL}`);
 }
 
 main().catch(error => {

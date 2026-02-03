@@ -1,4 +1,4 @@
-name: E2E Test Techdocs
+name: E2E Techdocs
 on:
   pull_request:
     paths:
@@ -7,10 +7,15 @@ on:
       - 'packages/techdocs-cli/**'
       - 'packages/techdocs-cli-embedded-app/**'
       - 'plugins/techdocs/**'
+  push:
+    branches: [master]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   verify:
@@ -18,28 +23,39 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [22.x, 24.x]
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=4096 --experimental-vm-modules
 
+    name: Techdocs
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
 
-      - name: install dependencies
-        run: yarn install --frozen-lockfile
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.9'
 
-      - name: generate types
-        run: yarn tsc
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: yarn install
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: build techdocs-cli
         working-directory: packages/techdocs-cli
         run: yarn build
 
       - name: Install mkdocs & techdocs-core
-        run: python -m pip install mkdocs-techdocs-core
+        run: python -m pip install mkdocs-techdocs-core==1.1.7 mkdocs==1.4.0
 
       - name: techdocs-cli e2e test
         working-directory: packages/techdocs-cli

@@ -7,7 +7,7 @@ description: Documentation on Reading Backstage Configuration
 ## Config API
 
 There's a common configuration API for by both frontend and backend plugins. An
-API reference can be found [here](../reference/config.config.md).
+API reference can be found [here](https://backstage.io/api/stable/types/_backstage_config.Config.html).
 
 The configuration API is tailored towards failing fast in case of missing or bad
 config. That's because configuration errors can always be considered programming
@@ -37,8 +37,11 @@ app:
 
 We can access the `baseUrl` using `config.getString('app.baseUrl')`. Because of
 this syntax, configuration keys are not allowed to contain dots. In fact,
-configuration keys are validated using the following RegEx:
-`/^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i`.
+configuration keys are validated using the following regular expression:
+`/^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i`. This basically means that keys
+must only contain the letters `a` through `z` and digits, in groups separated by
+dashes or underscores. Additionally, the very first character of each such group
+must be a letter, not a digit.
 
 Another option of accessing the `baseUrl` value is to create a sub-view of the
 configuration, `config.getConfig('app').getString('baseUrl')`. When reading out
@@ -62,8 +65,9 @@ each sub-view to be handled individually.
 
 ```ts
 for (const itemKey of config.keys('my-plugin.items')) {
-  const itemConfig = config.getConfig(`my-plugin.items`).getConfig(key);
-  const item = createItemFromConfig(itemConfig);
+  const itemConfig = config.getConfig(`my-plugin.items`).getConfig(itemKey);
+  const title = itemConfig.getString('title');
+  // ...
 }
 ```
 
@@ -76,7 +80,8 @@ much more detailed and relevant error messages. For example, if
 `itemConfig.getString('title')` fails in the above example because a boolean was
 supplied, the user will receive an error message with the full path, e.g.
 `my-plugin.items.b.title`, as well as the name of the config file with the bad
-value.
+value. Conversely, if you try to access missing fields in raw JSON, you tend to
+end up with very technical and hard-to-understand type errors from javascript.
 
 Note that no matter what method is used for reading out nested config, the same
 merging rules apply. You will always get the same value for any way of accessing
@@ -110,7 +115,7 @@ example `getString`. These will throw an error if there is no value available.
 
 ## Accessing ConfigApi in Frontend Plugins
 
-The [ConfigApi](../reference/core-plugin-api.configapi.md) in the frontend is a
+The [ConfigApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ConfigApi.html) in the frontend is a
 [UtilityApi](../api/utility-apis.md). It's accessible as usual via the
 `configApiRef` exported from `@backstage/core-plugin-api`:
 
@@ -136,6 +141,33 @@ from `@backstage/core-plugin-api`.
 
 ## Accessing ConfigApi in Backend Plugins
 
-In backend plugins the configuration is passed in via options from the main
-backend package. See for example
-[packages/backend/src/plugins/auth.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/backend/src/plugins/auth.ts#L23).
+In the backend system, plugins are able to directly access config through dependencies. You can access config like so,
+
+```ts title="plugins/your-plugin-backend/src/plugin.ts"
+export const yourPlugin = createBackendPlugin({
+  pluginId: 'yourPlugin',
+  register(env) {
+    env.registerInit({
+      deps: {
+        httpRouter: coreServices.httpRouter,
+        logger: coreServices.logger,
+        // highlight-next-line
+        config: coreServices.rootConfig,
+      },
+      async init({
+        httpRouter,
+        logger,
+        // highlight-next-line
+        config,
+      }) {
+        // highlight-next-line
+        console.log(config.getOptionalString('backend.test.property'));
+      },
+    });
+  },
+});
+```
+
+### Old Backend System
+
+In the old backend system plugins, the configuration is passed in via options from the main backend package.

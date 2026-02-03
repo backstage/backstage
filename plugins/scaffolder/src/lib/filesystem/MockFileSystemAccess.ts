@@ -17,7 +17,13 @@
 import { TemplateDirectoryAccess, TemplateFileAccess } from './types';
 
 class MockFileAccess implements TemplateFileAccess {
-  constructor(readonly path: string, private content: string) {}
+  readonly path: string;
+  private content: string;
+
+  constructor(path: string, content: string) {
+    this.path = path;
+    this.content = content;
+  }
 
   async file(): Promise<File> {
     const blob = new Blob([this.content]);
@@ -40,6 +46,10 @@ class MockDirectoryAccess implements TemplateDirectoryAccess {
     this.files = Object.entries(inputFiles).map(
       ([path, content]) => new MockFileAccess(path, content),
     );
+  }
+
+  createFile(): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 
   async listFiles(): Promise<TemplateFileAccess[]> {

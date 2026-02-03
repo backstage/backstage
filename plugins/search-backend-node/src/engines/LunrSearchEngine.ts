@@ -18,14 +18,13 @@ import {
   IndexableDocument,
   IndexableResultSet,
   SearchQuery,
-  QueryTranslator,
-  SearchEngine,
 } from '@backstage/plugin-search-common';
+import { QueryTranslator, SearchEngine } from '../types';
 import { MissingIndexError } from '../errors';
 import lunr from 'lunr';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Type of translated query for the Lunr Search Engine.
@@ -43,7 +42,7 @@ type LunrResultEnvelope = {
 };
 
 /**
- * Translator repsonsible for translating search term and filters to a query that the Lunr Search Engine understands.
+ * Translator responsible for translating search term and filters to a query that the Lunr Search Engine understands.
  * @public
  */
 export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
@@ -55,12 +54,12 @@ export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
-  protected logger: Logger;
+  protected logger: LoggerService;
   protected highlightPreTag: string;
   protected highlightPostTag: string;
 
-  constructor({ logger }: { logger: Logger }) {
-    this.logger = logger;
+  constructor(options: { logger: LoggerService }) {
+    this.logger = options.logger;
     this.docStore = {};
     const uuidTag = uuid();
     this.highlightPreTag = `<${uuidTag}>`;
@@ -71,8 +70,9 @@ export class LunrSearchEngine implements SearchEngine {
     term,
     filters,
     types,
+    pageLimit,
   }: SearchQuery): ConcreteLunrQuery => {
-    const pageSize = 25;
+    const pageSize = pageLimit || 25;
 
     return {
       lunrQueryBuilder: q => {
@@ -114,10 +114,16 @@ export class LunrSearchEngine implements SearchEngine {
 
             // Require that the given field has the given value
             if (['string', 'number', 'boolean'].includes(typeof value)) {
-              q.term(lunr.tokenizer(value?.toString()), {
-                presence: lunr.Query.presence.REQUIRED,
-                fields: [field],
-              });
+              q.term(
+                lunr
+                  .tokenizer(value?.toString())
+                  .map(lunr.stopWordFilter)
+                  .filter(element => element !== undefined),
+                {
+                  presence: lunr.Query.presence.REQUIRED,
+                  fields: [field],
+                },
+              );
             } else if (Array.isArray(value)) {
               // Illustrate how multi-value filters could work.
               // But warn that Lurn supports this poorly.
@@ -146,12 +152,37 @@ export class LunrSearchEngine implements SearchEngine {
 
   async getIndexer(type: string) {
     const indexer = new LunrSearchEngineIndexer();
+    const indexerLogger = this.logger.child({ documentType: type });
+    let errorThrown: Error | undefined;
+
+    indexer.on('error', err => {
+      errorThrown = err;
+    });
 
     indexer.on('close', () => {
       // Once the stream is closed, build the index and store the documents in
       // memory for later retrieval.
-      this.lunrIndices[type] = indexer.buildIndex();
-      this.docStore = { ...this.docStore, ...indexer.getDocumentStore() };
+      const newDocuments = indexer.getDocumentStore();
+      const docStoreExists = this.lunrIndices[type] !== undefined;
+      const documentsIndexed = Object.keys(newDocuments).length;
+
+      // Do not set the index if there was an error or if no documents were
+      // indexed. This ensures search continues to work for an index, even in
+      // case of transient issues in underlying collators.
+      if (!errorThrown && documentsIndexed > 0) {
+        this.lunrIndices[type] = indexer.buildIndex();
+        this.docStore = { ...this.docStore, ...newDocuments };
+      } else {
+        indexerLogger.warn(
+          `Index for ${type} was not ${
+            docStoreExists ? 'replaced' : 'created'
+          }: ${
+            errorThrown
+              ? 'an error was encountered'
+              : 'indexer received 0 documents'
+          }`,
+        );
+      }
     });
 
     return indexer;
@@ -231,6 +262,7 @@ export class LunrSearchEngine implements SearchEngine {
           }),
         },
       })),
+      numberOfResults: results.length,
       nextPageCursor,
       previousPageCursor,
     };
@@ -276,8 +308,13 @@ export function parseHighlightFields({
   const highlightFieldPositions = Object.values(positionMetadata).reduce(
     (fieldPositions, metadata) => {
       Object.keys(metadata).map(fieldKey => {
-        fieldPositions[fieldKey] = fieldPositions[fieldKey] ?? [];
-        fieldPositions[fieldKey].push(...metadata[fieldKey].position);
+        const validFieldMetadataPositions = metadata[
+          fieldKey
+        ]?.position?.filter(position => Array.isArray(position));
+        if (validFieldMetadataPositions.length) {
+          fieldPositions[fieldKey] = fieldPositions[fieldKey] ?? [];
+          fieldPositions[fieldKey].push(...validFieldMetadataPositions);
+        }
       });
 
       return fieldPositions;
@@ -291,11 +328,11 @@ export function parseHighlightFields({
 
       const highlightedField = positions.reduce((content, pos) => {
         return (
-          `${content.substring(0, pos[0])}${preTag}` +
-          `${content.substring(pos[0], pos[0] + pos[1])}` +
-          `${postTag}${content.substring(pos[0] + pos[1])}`
+          `${String(content).substring(0, pos[0])}${preTag}` +
+          `${String(content).substring(pos[0], pos[0] + pos[1])}` +
+          `${postTag}${String(content).substring(pos[0] + pos[1])}`
         );
-      }, doc[field]);
+      }, doc[field] ?? '');
 
       return [field, highlightedField];
     }),

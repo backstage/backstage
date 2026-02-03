@@ -15,3 +15,11 @@
  */
 
 import '@testing-library/jest-dom';
+
+Object.defineProperty(global, 'TextEncoder', {
+  value: require('node:util').TextEncoder,
+});
+
+Object.defineProperty(global, 'TextDecoder', {
+  value: require('node:util').TextDecoder,
+});

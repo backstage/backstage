@@ -16,23 +16,23 @@
 
 import { Entity, RELATION_DEPENDS_ON } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
-import React from 'react';
+import { waitFor, screen } from '@testing-library/react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { DependsOnResourcesCard } from './DependsOnResourcesCard';
 
 describe('<DependsOnResourcesCard />', () => {
-  const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
-  let Wrapper: React.ComponentType;
+  const catalogApi = catalogApiMock.mock();
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, { getEntities }]]}>
+    Wrapper = ({ children }: { children?: ReactNode }) => (
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         {children}
       </TestApiProvider>
     );
@@ -51,7 +51,7 @@ describe('<DependsOnResourcesCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <DependsOnResourcesCard />
@@ -64,9 +64,9 @@ describe('<DependsOnResourcesCard />', () => {
       },
     );
 
-    expect(getByText('Depends on resources')).toBeInTheDocument();
+    expect(screen.getByText('Depends on resources')).toBeInTheDocument();
     expect(
-      getByText(/No resource is a dependency of this component/i),
+      screen.getByText(/No resource is a dependency of this component/i),
     ).toBeInTheDocument();
   });
 
@@ -85,7 +85,7 @@ describe('<DependsOnResourcesCard />', () => {
         },
       ],
     };
-    getEntities.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [
         {
           apiVersion: 'v1',
@@ -99,7 +99,7 @@ describe('<DependsOnResourcesCard />', () => {
       ],
     });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <DependsOnResourcesCard />
@@ -113,8 +113,8 @@ describe('<DependsOnResourcesCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Depends on resources')).toBeInTheDocument();
-      expect(getByText(/target-name/i)).toBeInTheDocument();
+      expect(screen.getByText('Depends on resources')).toBeInTheDocument();
+      expect(screen.getByText(/target-name/i)).toBeInTheDocument();
     });
   });
 });

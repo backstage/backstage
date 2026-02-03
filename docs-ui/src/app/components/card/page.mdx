@@ -1,0 +1,86 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  cardPropDefs,
+  cardHeaderPropDefs,
+  cardBodyPropDefs,
+  cardFooterPropDefs,
+} from './props-definition';
+import {
+  cardUsageSnippet,
+  defaultSnippet,
+  headerAndBodySnippet,
+  withLongBodySnippet,
+} from './snippets';
+import { Default, HeaderAndBody, WithLongBody } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { CardDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Card"
+  description="A container with header, body, and footer sections for grouped content."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={cardUsageSnippet} />
+
+## API reference
+
+All Card components extend `HTMLDivElement` attributes.
+
+### Card
+
+<PropsTable data={cardPropDefs} />
+
+### CardHeader
+
+Fixed at the top of the card.
+
+<PropsTable data={cardHeaderPropDefs} />
+
+### CardBody
+
+Scrollable content area that fills available space.
+
+<PropsTable data={cardBodyPropDefs} />
+
+### CardFooter
+
+Fixed at the bottom of the card.
+
+<PropsTable data={cardFooterPropDefs} />
+
+## Examples
+
+### Header and body only
+
+Cards can omit the footer section.
+
+<Snippet
+  align="center"
+  py={4}
+  layout="side-by-side"
+  preview={<HeaderAndBody />}
+  code={headerAndBodySnippet}
+/>
+
+### Scrollable body
+
+When body content exceeds the available height, CardBody scrolls while header and footer remain fixed.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithLongBody />}
+  code={withLongBodySnippet}
+/>
+
+<Theming definition={CardDefinition} />
+
+<ChangelogComponent component="card" />

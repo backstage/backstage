@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import Box from '@material-ui/core/Box';
 import { useTheme } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
-import { CopyTextButton } from '../CopyTextButton';
-import { LightAsync } from 'react-syntax-highlighter';
+import type {} from 'react-syntax-highlighter';
+import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
 import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
 import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
+
+import { CopyTextButton } from '../CopyTextButton';
 
 /**
  * Properties for {@link CodeSnippet}
@@ -57,6 +58,14 @@ export interface CodeSnippetProps {
    */
   highlightedNumbers?: number[];
   /**
+   * Whether to style the `<code>` block with `white-space: pre-wrap` or `white-space: pre`
+   *
+   * @remarks
+   *
+   * Default: false (`white-space: pre`)
+   */
+  wrapLongLines?: boolean;
+  /**
    * Custom styles applied to code
    *
    * @remarks
@@ -78,21 +87,23 @@ export function CodeSnippet(props: CodeSnippetProps) {
     language,
     showLineNumbers = false,
     highlightedNumbers,
+    wrapLongLines,
     customStyle,
     showCopyCodeButton = false,
   } = props;
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   const mode = theme.palette.type === 'dark' ? dark : docco;
   const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
 
   return (
-    <div style={{ position: 'relative' }}>
+    <Box position="relative">
       <LightAsync
         customStyle={customStyle}
         language={language}
         style={mode}
         showLineNumbers={showLineNumbers}
         wrapLines
+        wrapLongLines={wrapLongLines}
         lineNumberStyle={{ color: theme.palette.textVerySubtle }}
         lineProps={(lineNumber: number) =>
           highlightedNumbers?.includes(lineNumber)
@@ -107,10 +118,10 @@ export function CodeSnippet(props: CodeSnippetProps) {
         {text}
       </LightAsync>
       {showCopyCodeButton && (
-        <div style={{ position: 'absolute', top: 0, right: 0 }}>
+        <Box position="absolute" top={0} right={0}>
           <CopyTextButton text={text} />
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

@@ -16,21 +16,23 @@
 
 import { ApiEntity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { Alert } from '@material-ui/lab';
-import React from 'react';
-import { apiDocsConfigRef } from '../../config';
-import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
-
 import { CardTab, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import Alert from '@material-ui/lab/Alert';
+import { apiDocsConfigRef } from '../../config';
+import { apiDocsTranslationRef } from '../../translation';
+import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
 
+/** @public */
 export const ApiDefinitionCard = () => {
   const { entity } = useEntity<ApiEntity>();
   const config = useApi(apiDocsConfigRef);
   const { getApiDefinitionWidget } = config;
+  const { t } = useTranslationRef(apiDocsTranslationRef);
 
   if (!entity) {
-    return <Alert severity="error">Could not fetch the API</Alert>;
+    return <Alert severity="error">{t('apiDefinitionCard.error.title')}</Alert>;
   }
 
   const definitionWidget = getApiDefinitionWidget(entity);
@@ -42,7 +44,7 @@ export const ApiDefinitionCard = () => {
         <CardTab label={definitionWidget.title} key="widget">
           {definitionWidget.component(entity.spec.definition)}
         </CardTab>
-        <CardTab label="Raw" key="raw">
+        <CardTab label={t('apiDefinitionCard.rawButtonTitle')} key="raw">
           <PlainApiDefinitionWidget
             definition={entity.spec.definition}
             language={definitionWidget.rawLanguage || entity.spec.type}

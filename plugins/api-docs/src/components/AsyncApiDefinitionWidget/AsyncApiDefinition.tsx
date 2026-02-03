@@ -17,11 +17,17 @@
 import AsyncApi from '@asyncapi/react-component';
 import '@asyncapi/react-component/styles/default.css';
 import { makeStyles, alpha, darken } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
-import React from 'react';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+/** @public */
+export type AsyncApiResolver = {
+  schema: string;
+  order: number;
+  canRead: boolean;
+  read(uri: any): Promise<string>;
+};
+
+const useStyles = makeStyles(theme => ({
   root: {
     fontFamily: 'inherit',
     '& .bg-white': {
@@ -76,6 +82,8 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
       ...theme.typography.button,
       borderRadius: theme.shape.borderRadius,
       color: theme.palette.primary.main,
+      // override whatever may be in the theme's typography to ensure consistency with asyncapi
+      textTransform: 'inherit',
     },
     '& a': {
       color: theme.palette.link,
@@ -117,8 +125,11 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     },
     '& .prose': {
       color: theme.palette.text.secondary,
-      '& h3': {
+      '& h3, code': {
         color: theme.palette.text.primary,
+      },
+      '& a': {
+        color: theme.palette.link,
       },
     },
     '& .bg-gray-100, .bg-gray-200': {
@@ -142,31 +153,55 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-const fetchResolver = {
-  order: 199, // Use 199 as the built-in http resolver is 200
-  canRead: /^https?:\/\//,
-  async read(file: any) {
-    const response = await fetch(file.url);
+const httpsFetchResolver: AsyncApiResolver = {
+  schema: 'https',
+  order: 1,
+  canRead: true,
+  async read(uri: any) {
+    const response = await fetch(uri.toString());
     return response.text();
   },
 };
 
-const config = {
-  parserOptions: {
-    resolve: { fetch: fetchResolver },
+const httpFetchResolver: AsyncApiResolver = {
+  schema: 'http',
+  order: 1,
+  canRead: true,
+  async read(uri: any) {
+    const response = await fetch(uri.toString());
+    return response.text();
   },
 };
 
 type Props = {
   definition: string;
+  resolvers?: AsyncApiResolver[];
 };
 
-export const AsyncApiDefinition = ({ definition }: Props): JSX.Element => {
+export const AsyncApiDefinition = ({
+  definition,
+  resolvers,
+}: Props): JSX.Element => {
   const classes = useStyles();
   const theme = useTheme();
   const classNames = `${classes.root} ${
     theme.palette.type === 'dark' ? classes.dark : ''
   }`;
+
+  const config = {
+    parserOptions: {
+      __unstable: {
+        resolver: {
+          resolvers: [httpsFetchResolver, httpFetchResolver],
+        },
+      },
+    },
+  };
+
+  // Overwrite default resolvers if custom ones are set
+  if (resolvers) {
+    config.parserOptions.__unstable.resolver.resolvers = resolvers;
+  }
 
   return (
     <div className={classNames}>

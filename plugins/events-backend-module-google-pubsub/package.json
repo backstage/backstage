@@ -1,0 +1,53 @@
+{
+  "name": "@backstage/plugin-events-backend-module-google-pubsub",
+  "version": "0.1.8-next.0",
+  "description": "The google-pubsub backend module for the events plugin.",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "events",
+    "pluginPackage": "@backstage/plugin-events-backend"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/events-backend-module-google-pubsub"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "config.d.ts",
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@google-cloud/pubsub": "^4.10.0",
+    "@opentelemetry/api": "^1.9.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-events-backend": "workspace:^",
+    "wait-for-expect": "^3.0.2"
+  },
+  "configSchema": "config.d.ts"
+}

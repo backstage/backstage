@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { EntitySearchBar } from './EntitySearchBar';
-import { DefaultEntityFilters } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('EntitySearchBar', () => {
   it('should display search value and execute set callback', async () => {
     const updateFilters = jest.fn();
 
-    const filters: DefaultEntityFilters = {
-      text: new EntityTextFilter('hello'),
-    };
-
-    const { getByDisplayValue } = render(
-      <MockEntityListContextProvider value={{ updateFilters, filters }}>
+    await renderInTestApp(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: {
+            text: 'hello',
+          },
+        }}
+      >
         <EntitySearchBar />
       </MockEntityListContextProvider>,
     );
 
-    const searchInput = getByDisplayValue('hello');
+    const searchInput = screen.getByDisplayValue('hello');
     expect(searchInput).toBeInTheDocument();
 
     fireEvent.change(searchInput, { target: { value: 'world' } });

@@ -15,8 +15,9 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { Card, CardContent, CardHeader } from '@material-ui/core';
-import React from 'react';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
 import YAML from 'yaml';
 import { CodeSnippet } from '@backstage/core-components';
 import { trimEnd } from 'lodash';

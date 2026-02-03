@@ -37,6 +37,12 @@ auth:
       development:
         clientId: ${AUTH_BITBUCKET_CLIENT_ID}
         clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
+        signIn:
+          resolvers:
+            # See https://backstage.io/docs/auth/bitbucket/provider#resolvers for more resolvers
+            - resolver: userIdMatchingUserEntityAnnotation
 ```
 
 The Bitbucket provider is a structure with two configuration keys:
@@ -45,44 +51,46 @@ The Bitbucket provider is a structure with two configuration keys:
   `b59241722e3c3b4816e2`
 - `clientSecret`: The Secret tied to the generated Key.
 
+### Optional
+
+- `sessionDuration`: Lifespan of the user session.
+
+### Resolvers
+
+This provider includes several resolvers out of the box that you can use:
+
+- `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found, it will throw a `NotFoundError`.
+- `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
+- `userIdMatchingUserEntityAnnotation`: Matches the `userId` from the auth provider with the User entity that has a matching `bitbucket.org/user-id` annotation. If no match is found, it will throw a `NotFoundError`.
+- `usernameMatchingUserEntityAnnotation`: Matches the `username` from the auth provider with the User entity that has a matching `bitbucket.org/username` annotation. If no match is found, it will throw a `NotFoundError`.
+
+:::note Note
+
+The resolvers will be tried in order but will only be skipped if they throw a `NotFoundError`.
+
+:::
+
+If these resolvers do not fit your needs, you can build a custom resolver; this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
+
+## Backend Installation
+
+To add the provider to the backend, we will first need to install the package by running this command:
+
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-bitbucket-provider
+```
+
+Then we will need to add this line:
+
+```ts title="in packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend-module-bitbucket-provider'));
+/* highlight-add-end */
+```
+
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `bitbucketAuthApi` reference and
 `SignInPage` component as shown in
-[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
-
-## Using Bitbucket for sign-in
-
-In order to use the Bitbucket provider for sign-in, you must configure it with a
-`signIn.resolver`. See the
-[Sign-In Resolver documentation](../identity-resolver.md) for more details on
-how this is done. Note that for the Bitbucket provider, you'll want to use
-`bitbucket` as the provider ID, and `providers.bitbucket.create` for the provider
-factory.
-
-The `@backstage/plugin-auth-backend` plugin also comes with two built-in
-resolves that can be used if desired. The first one is the
-`bitbucketUsernameSignInResolver`, which identifies users by matching their
-Bitbucket username to `bitbucket.org/username` annotations of `User` entities in
-the catalog. Note that you must populate your catalog with matching entities or
-users will not be able to sign in.
-
-The second resolver is the `bitbucketUserIdSignInResolver`, which works the
-same way, but uses the Bitbucket user ID instead, and matches on the
-`bitbucket.org/user-id` annotation.
-
-The following is an example of how to use one of the built-in resolvers:
-
-```ts
-import { providers } from '@backstage/plugin-auth-backend';
-
-// ...
-  providerFactories: {
-    bitbucket: providers.bitbucket.create({
-      signIn: {
-        resolver:
-          providers.bitbucket.resolvers.usernameMatchingUserEntityAnnotation(),
-      },
-    }),
-  },
-```
+[Adding the provider to the sign-in page](../index.md#sign-in-configuration).

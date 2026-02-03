@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { showLoginPopup } from './loginPopup';
+import { openLoginPopup } from './loginPopup';
 
-describe('showLoginPopup', () => {
+describe('openLoginPopup', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  it('should show an auth popup', async () => {
+  it('should open an auth popup', async () => {
     const popupMock = { closed: false };
     const openSpy = jest
       .spyOn(window, 'open')
@@ -29,19 +29,18 @@ describe('showLoginPopup', () => {
     const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
     const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
 
-    const payloadPromise = showLoginPopup({
-      url: 'my-origin/api/backend/auth/start?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fa%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fb',
+    const payloadPromise = openLoginPopup({
+      url: 'http://my-origin/api/backend/auth/start?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fa%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fb',
       name: 'test-popup',
-      origin: 'my-origin',
     });
 
-    expect(openSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
     expect(openSpy.mock.calls[0][0]).toBe(
-      'my-origin/api/backend/auth/start?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fa%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fb',
+      'http://my-origin/api/backend/auth/start?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fa%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fb',
     );
     expect(openSpy.mock.calls[0][1]).toBe('test-popup');
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(0);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(0);
 
     const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
 
@@ -57,16 +56,16 @@ describe('showLoginPopup', () => {
 
     // None of these should be accepted
     listener({ source: popupMock } as MessageEvent);
-    listener({ origin: 'my-origin' } as MessageEvent);
+    listener({ origin: 'http://my-origin' } as MessageEvent);
     listener({ data: { type: 'authorization_response' } } as MessageEvent);
     listener({
       source: popupMock,
-      origin: 'my-origin',
+      origin: 'http://my-origin',
       data: {},
     } as MessageEvent);
     listener({
       source: popupMock,
-      origin: 'my-origin',
+      origin: 'http://my-origin',
       data: { type: 'not-auth-result', response: {} },
     } as MessageEvent);
 
@@ -79,7 +78,7 @@ describe('showLoginPopup', () => {
     // This should be accepted as a valid sessions response
     listener({
       source: popupMock,
-      origin: 'my-origin',
+      origin: 'http://my-origin',
       data: {
         type: 'authorization_response',
         response: myResponse,
@@ -88,9 +87,9 @@ describe('showLoginPopup', () => {
 
     await expect(payloadPromise).resolves.toBe(myResponse);
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should fail if popup returns error', async () => {
@@ -101,21 +100,20 @@ describe('showLoginPopup', () => {
     const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
     const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
 
-    const payloadPromise = showLoginPopup({
-      url: 'url',
+    const payloadPromise = openLoginPopup({
+      url: 'http://my-origin',
       name: 'name',
-      origin: 'my-origin',
     });
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(0);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(0);
 
     const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
 
     listener({
       source: popupMock,
-      origin: 'my-origin',
+      origin: 'http://my-origin',
       data: {
         type: 'authorization_response',
         error: {
@@ -130,9 +128,9 @@ describe('showLoginPopup', () => {
       message: 'NOPE',
     });
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should fail if popup is closed', async () => {
@@ -145,20 +143,19 @@ describe('showLoginPopup', () => {
 
     openSpy.mockReturnValue(popupMock as Window);
 
-    const payloadPromise = showLoginPopup({
-      url: 'url',
+    const payloadPromise = openLoginPopup({
+      url: 'http://origin',
       name: 'name',
-      origin: 'origin',
     });
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(0);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(0);
 
     const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
     listener({
       source: popupMock,
-      origin: 'origin',
+      origin: 'http://origin',
       data: {
         type: 'config_info',
         targetOrigin: 'http://localhost',
@@ -172,9 +169,9 @@ describe('showLoginPopup', () => {
       'Login failed, popup was closed',
     );
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should indicate if origin does not match', async () => {
@@ -187,16 +184,15 @@ describe('showLoginPopup', () => {
 
     openSpy.mockReturnValue(popupMock as Window);
 
-    const payloadPromise = showLoginPopup({
-      url: 'url',
+    const payloadPromise = openLoginPopup({
+      url: 'http://origin',
       name: 'name',
-      origin: 'origin',
     });
 
     const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
     listener({
       source: popupMock,
-      origin: 'origin',
+      origin: 'http://origin',
       data: {
         type: 'config_info',
         targetOrigin: 'http://differenthost',
@@ -210,8 +206,8 @@ describe('showLoginPopup', () => {
       'Login failed, Incorrect app origin, expected http://differenthost',
     );
 
-    expect(openSpy).toBeCalledTimes(1);
-    expect(addEventListenerSpy).toBeCalledTimes(1);
-    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
   });
 });

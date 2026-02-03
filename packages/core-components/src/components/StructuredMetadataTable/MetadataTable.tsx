@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import {
-  withStyles,
   createStyles,
-  WithStyles,
   Theme,
+  WithStyles,
+  withStyles,
 } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import { ReactNode } from 'react';
 
 export type MetadataTableTitleCellClassKey = 'root';
 
 const tableTitleCellStyles = (theme: Theme) =>
   createStyles({
     root: {
-      fontWeight: 'bolder',
+      fontWeight: theme.typography.fontWeightBold,
       whiteSpace: 'nowrap',
       paddingRight: theme.spacing(4),
       border: '0',
@@ -53,9 +54,7 @@ export type MetadataTableListClassKey = 'root';
 const listStyles = (theme: Theme) =>
   createStyles({
     root: {
-      listStyle: 'none',
       margin: theme.spacing(0, 0, -1, 0),
-      padding: '0',
     },
   });
 
@@ -81,7 +80,7 @@ export const MetadataTable = ({
   children,
 }: {
   dense?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
   <Table size={dense ? 'small' : 'medium'}>
     <TableBody>{children}</TableBody>
@@ -94,7 +93,7 @@ export const MetadataTableItem = ({
   ...rest
 }: {
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
   <TableRow>
     {title && <TitleCell>{title}</TitleCell>}
@@ -105,17 +104,19 @@ export const MetadataTableItem = ({
 );
 
 interface StyleProps extends WithStyles {
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export const MetadataList = withStyles(listStyles, {
   name: 'BackstageMetadataTableList',
 })(({ classes, children }: StyleProps) => (
-  <ul className={classes.root}>{children}</ul>
+  <List disablePadding className={classes.root}>
+    {children}
+  </List>
 ));
 
 export const MetadataListItem = withStyles(listItemStyles, {
   name: 'BackstageMetadataTableListItem',
 })(({ classes, children }: StyleProps) => (
-  <li className={classes.root}>{children}</li>
+  <ListItem className={classes.root}>{children}</ListItem>
 ));

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
+
 export interface Config {
   catalog?: {
     processors?: {
@@ -44,6 +46,314 @@ export interface Config {
           userNamespace?: string;
         }>;
       };
+    };
+
+    providers?: {
+      /**
+       * GithubEntityProvider configuration
+       *
+       * Uses "default" as default id for the single config variant.
+       */
+      github?:
+        | {
+            /**
+             * (Optional) The hostname of your GitHub Enterprise instance.
+             * Default: `github.com`.
+             */
+            host?: string;
+            /**
+             * (Required, unless `app` is set) Name of your organization account/workspace.
+             */
+            organization?: string;
+            /**
+             * (Required, unless `organization` is set) ID of your GitHub App.
+             */
+            app?: number;
+            /**
+             * (Optional) Path where to look for `catalog-info.yaml` files.
+             * You can use wildcards - `*` or `**` - to search the path and/or the filename
+             * Default: `/catalog-info.yaml`.
+             */
+            catalogPath?: string;
+            /**
+             * (Optional) Whether to validate locations that exist before emitting them.
+             * Default: `false`.
+             */
+            validateLocationsExist?: boolean;
+            /**
+             * (Optional) Filter configuration.
+             */
+            filters?: {
+              /**
+               * (Optional) String used to filter results based on the branch name.
+               */
+              branch?: string;
+              /**
+               * (Optional) Regular expression used to filter results based on the repository name.
+               */
+              repository?: string;
+              /**
+               * (Optional) Allow Forks to be evaluated.
+               */
+              allowForks?: boolean;
+              /**
+               * (Optional) GitHub topic-based filters.
+               */
+              topic?: {
+                /**
+                 * (Optional) An array of strings used to filter in results based on their associated GitHub topics.
+                 * If configured, only repositories with one (or more) topic(s) present in the inclusion
+                 * filter will be ingested.
+                 *
+                 * If `include` and `exclude` are used, `exclude` has higher priority.
+                 */
+                include?: string[];
+                /**
+                 * (Optional) An array of strings used to filter out results based on their associated GitHub topics.
+                 * If configured, all repositories _except_ those with one (or more) topics(s) present in
+                 * the exclusion filter will be ingested.
+                 *
+                 * If `include` and `exclude` are used, `exclude` has higher priority.
+                 */
+                exclude?: string[];
+              };
+              /**
+               * (Optional) GitHub repository visibility filter.
+               */
+              visibility?: Array<'private' | 'internal' | 'public'>;
+              /**
+               * (Optional) Whether to include archived repositories.
+               * Default: `false`.
+               */
+              allowArchived?: boolean;
+            };
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of repositories to fetch per page when querying repositories.
+               * Default: `25`.
+               */
+              repositories?: number;
+            };
+          }
+        | {
+            [name: string]: {
+              /**
+               * (Optional) The hostname of your GitHub Enterprise instance.
+               * Default: `github.com`.
+               */
+              host?: string;
+              /**
+               * (Required, unless `app` is set) Name of your organization account/workspace.
+               */
+              organization?: string;
+              /**
+               * (Required, unless `organization` is set) ID of your GitHub App.
+               */
+              app?: number;
+              /**
+               * (Optional) Path where to look for `catalog-info.yaml` files.
+               * You can use wildcards - `*` or `**` - to search the path and/or the filename
+               * Default: `/catalog-info.yaml`.
+               */
+              catalogPath?: string;
+              /**
+               * (Optional) Whether to validate locations that exist before emitting them.
+               * Default: `false`.
+               */
+              validateLocationsExist?: boolean;
+              /**
+               * (Optional) Filter configuration.
+               */
+              filters?: {
+                /**
+                 * (Optional) String used to filter results based on the branch name.
+                 */
+                branch?: string;
+                /**
+                 * (Optional) Regular expression used to filter results based on the repository name.
+                 */
+                repository?: string;
+                /**
+                 * (Optional) GitHub topic-based filters.
+                 */
+                allowForks?: boolean;
+                /**
+                 * (Optional) Allow Forks to be evaluated.
+                 */
+                topic?: {
+                  /**
+                   * (Optional) An array of strings used to filter in results based on their associated GitHub topics.
+                   * If configured, only repositories with one (or more) topic(s) present in the inclusion
+                   * filter will be ingested.
+                   *
+                   * If `include` and `exclude` are used, `exclude` has higher priority.
+                   */
+                  include?: string[];
+                  /**
+                   * (Optional) An array of strings used to filter out results based on their associated GitHub topics.
+                   * If configured, all repositories _except_ those with one (or more) topics(s) present in
+                   * the exclusion filter will be ingested.
+                   *
+                   * If `include` and `exclude` are used, `exclude` has higher priority.
+                   */
+                  exclude?: string[];
+                };
+                /**
+                 * (Optional) GitHub repository visibility filter.
+                 */
+                visibility?: Array<'private' | 'internal' | 'public'>;
+                /**
+                 * (Optional) Whether to include archived repositories.
+                 * Default: `false`.
+                 */
+                allowArchived?: boolean;
+              };
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+
+              /**
+               * (Optional) Page sizes for GitHub GraphQL API queries.
+               * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+               */
+              pageSizes?: {
+                /**
+                 * (Optional) Number of repositories to fetch per page when querying repositories.
+                 * Default: `25`.
+                 */
+                repositories?: number;
+              };
+            };
+          };
+
+      /**
+       * Configuration for catalogModuleGithubOrgEntityProvider
+       */
+      githubOrg?:
+        | {
+            /**
+             * A stable id for this provider. Entities from this provider will
+             * be associated with this ID, so you should take care not to change
+             * it over time since that may lead to orphaned entities and/or
+             * conflicts.
+             *
+             * @example "ghe"
+             */
+            id: string;
+
+            /**
+             * The target that this provider should consume.
+             *
+             * @example "https://mycompany.github.com"
+             */
+            githubUrl: string;
+
+            /**
+             * The list of the GitHub orgs to consume. By default will consume all accessible
+             * orgs on the given GitHub instance (support for GitHub App integration only).
+             */
+            orgs?: string[];
+
+            /**
+             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * Default: `false`.
+             */
+            excludeSuspendedUsers?: boolean;
+
+            /**
+             * The refresh schedule to use.
+             */
+            schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of teams to fetch per page when querying organization teams.
+               * Default: `25`.
+               */
+              teams?: number;
+              /**
+               * (Optional) Number of team members to fetch per page when querying team members.
+               * Default: `50`.
+               */
+              teamMembers?: number;
+              /**
+               * (Optional) Number of organization members to fetch per page when querying org members.
+               * Default: `50`.
+               */
+              organizationMembers?: number;
+            };
+          }
+        | Array<{
+            /**
+             * A stable id for this provider. Entities from this provider will
+             * be associated with this ID, so you should take care not to change
+             * it over time since that may lead to orphaned entities and/or
+             * conflicts.
+             *
+             * @example "ghe"
+             */
+            id: string;
+
+            /**
+             * The target that this provider should consume.
+             *
+             * @example "https://mycompany.github.com"
+             */
+            githubUrl: string;
+
+            /**
+             * The list of the GitHub orgs to consume. By default will consume all accessible
+             * orgs on the given GitHub instance (support for GitHub App integration only).
+             */
+            orgs?: string[];
+
+            /**
+             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * Default: `false`.
+             */
+            excludeSuspendedUsers?: boolean;
+
+            /**
+             * The refresh schedule to use.
+             */
+            schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of teams to fetch per page when querying organization teams.
+               * Default: `25`.
+               */
+              teams?: number;
+              /**
+               * (Optional) Number of team members to fetch per page when querying team members.
+               * Default: `50`.
+               */
+              teamMembers?: number;
+              /**
+               * (Optional) Number of organization members to fetch per page when querying org members.
+               * Default: `50`.
+               */
+              organizationMembers?: number;
+            };
+          }>;
     };
   };
 }

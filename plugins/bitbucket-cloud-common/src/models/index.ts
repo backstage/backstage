@@ -33,33 +33,19 @@ export namespace Models {
    * @public
    */
   export interface Account extends ModelObject {
-    /**
-     * The status of the account. Currently the only possible value is "active", but more values may be added in the future.
-     */
-    account_status?: string;
     created_on?: string;
     display_name?: string;
-    has_2fa_enabled?: boolean;
     links?: AccountLinks;
-    /**
-     * Account name defined by the owner. Should be used instead of the "username" field. Note that "nickname" cannot be used in place of "username" in URLs and queries, as "nickname" is not guaranteed to be unique.
-     */
-    nickname?: string;
-    username?: string;
     uuid?: string;
-    website?: string;
   }
 
   /**
+   * Links related to an Account.
    * @public
    */
   export interface AccountLinks {
+    [key: string]: unknown;
     avatar?: Link;
-    followers?: Link;
-    following?: Link;
-    html?: Link;
-    repositories?: Link;
-    self?: Link;
   }
 
   /**
@@ -80,6 +66,7 @@ export namespace Models {
    */
   export interface BaseCommit extends ModelObject {
     author?: Author;
+    committer?: Committer;
     date?: string;
     hash?: string;
     message?: string;
@@ -120,7 +107,7 @@ export namespace Models {
    * @public
    */
   export type BaseCommitSummaryMarkupEnum =
-    typeof BaseCommitSummaryMarkupEnum[keyof typeof BaseCommitSummaryMarkupEnum];
+    (typeof BaseCommitSummaryMarkupEnum)[keyof typeof BaseCommitSummaryMarkupEnum];
 
   /**
    * A branch object, representing a branch in a repository.
@@ -152,6 +139,9 @@ export namespace Models {
     MergeCommit: 'merge_commit',
     Squash: 'squash',
     FastForward: 'fast_forward',
+    SquashFastForward: 'squash_fast_forward',
+    RebaseFastForward: 'rebase_fast_forward',
+    RebaseMerge: 'rebase_merge',
   } as const;
 
   /**
@@ -159,7 +149,7 @@ export namespace Models {
    * @public
    */
   export type BranchMergeStrategiesEnum =
-    typeof BranchMergeStrategiesEnum[keyof typeof BranchMergeStrategiesEnum];
+    (typeof BranchMergeStrategiesEnum)[keyof typeof BranchMergeStrategiesEnum];
 
   /**
    * A repository commit object.
@@ -204,7 +194,19 @@ export namespace Models {
    * @public
    */
   export type CommitFileAttributesEnum =
-    typeof CommitFileAttributesEnum[keyof typeof CommitFileAttributesEnum];
+    (typeof CommitFileAttributesEnum)[keyof typeof CommitFileAttributesEnum];
+
+  /**
+   * The committer of a change in a repository
+   * @public
+   */
+  export interface Committer extends ModelObject {
+    /**
+     * The raw committer value from the repository. This may be the only value available if the committer does not match a user in Bitbucket.
+     */
+    raw?: string;
+    user?: Account;
+  }
 
   /**
    * A link to a resource related to this object.
@@ -256,6 +258,28 @@ export namespace Models {
   }
 
   /**
+   * A paginated list of branches.
+   * @public
+   */
+  export interface PaginatedBranches extends Paginated<Branch> {
+    /**
+     * The values of the current page.
+     */
+    values?: Set<Branch>;
+  }
+
+  /**
+   * A paginated list of projects
+   * @public
+   */
+  export interface PaginatedProjects extends Paginated<Project> {
+    /**
+     * The values of the current page.
+     */
+    values?: Set<Project>;
+  }
+
+  /**
    * A paginated list of repositories.
    * @public
    */
@@ -264,6 +288,17 @@ export namespace Models {
      * The values of the current page.
      */
     values?: Set<Repository>;
+  }
+
+  /**
+   * A paginated list of workspaces.
+   * @public
+   */
+  export interface PaginatedWorkspaces extends Paginated<Workspace> {
+    /**
+     * The values of the current page.
+     */
+    values?: Set<Workspace>;
   }
 
   /**
@@ -278,7 +313,7 @@ export namespace Models {
     participated_on?: string;
     role?: ParticipantRoleEnum;
     state?: ParticipantStateEnum;
-    user?: User;
+    user?: Account;
   }
 
   /**
@@ -293,7 +328,7 @@ export namespace Models {
    * @public
    */
   export type ParticipantRoleEnum =
-    typeof ParticipantRoleEnum[keyof typeof ParticipantRoleEnum];
+    (typeof ParticipantRoleEnum)[keyof typeof ParticipantRoleEnum];
 
   /**
    * @public
@@ -308,7 +343,7 @@ export namespace Models {
    * @public
    */
   export type ParticipantStateEnum =
-    typeof ParticipantStateEnum[keyof typeof ParticipantStateEnum];
+    (typeof ParticipantStateEnum)[keyof typeof ParticipantStateEnum];
 
   /**
    * A Bitbucket project.
@@ -386,7 +421,19 @@ export namespace Models {
      * The concatenation of the repository owner's username and the slugified name, e.g. "evzijst/interruptingcow". This is the same string used in Bitbucket URLs.
      */
     full_name?: string;
+    /**
+     *
+     * The issue tracker for this repository is enabled. Issue Tracker
+     * features are not supported for repositories in workspaces
+     * administered through admin.atlassian.com.
+     */
     has_issues?: boolean;
+    /**
+     *
+     * The wiki for this repository is enabled. Wiki
+     * features are not supported for repositories in workspaces
+     * administered through admin.atlassian.com.
+     */
     has_wiki?: boolean;
     is_private?: boolean;
     language?: string;
@@ -436,7 +483,7 @@ export namespace Models {
    * @public
    */
   export type RepositoryForkPolicyEnum =
-    typeof RepositoryForkPolicyEnum[keyof typeof RepositoryForkPolicyEnum];
+    (typeof RepositoryForkPolicyEnum)[keyof typeof RepositoryForkPolicyEnum];
 
   /**
    * @public
@@ -449,7 +496,7 @@ export namespace Models {
    * @public
    */
   export type RepositoryScmEnum =
-    typeof RepositoryScmEnum[keyof typeof RepositoryScmEnum];
+    (typeof RepositoryScmEnum)[keyof typeof RepositoryScmEnum];
 
   /**
    * @public
@@ -516,17 +563,94 @@ export namespace Models {
    * A team object.
    * @public
    */
-  export interface Team extends Account {}
+  export interface Team extends Account {
+    links?: TeamLinks;
+  }
 
   /**
-   * A user object.
+   * Links related to a Team.
    * @public
    */
-  export interface User extends Account {
+  export interface TeamLinks extends AccountLinks {
+    html?: Link;
+    members?: Link;
+    projects?: Link;
+    repositories?: Link;
+    self?: Link;
+  }
+
+  /**
+   * A Bitbucket workspace.
+   *             Workspaces are used to organize repositories.
+   * @public
+   */
+  export interface Workspace extends ModelObject {
+    created_on?: string;
     /**
-     * The user's Atlassian account ID.
+     * Controls the rules for forking repositories within this workspace.
+     *
+     * * **allow_forks**: unrestricted forking
+     * * **internal_only**: prevents forking of private repositories outside the workspace or to public repositories
      */
-    account_id?: string;
-    is_staff?: boolean;
+    forking_mode?: WorkspaceForkingModeEnum;
+    /**
+     * Indicates whether the workspace enforces private content, or whether it allows public content.
+     */
+    is_privacy_enforced?: boolean;
+    /**
+     * Indicates whether the workspace is publicly accessible, or whether it is
+     * private to the members and consequently only visible to members.
+     */
+    is_private?: boolean;
+    links?: WorkspaceLinks;
+    /**
+     * The name of the workspace.
+     */
+    name?: string;
+    /**
+     * The short label that identifies this workspace.
+     */
+    slug?: string;
+    updated_on?: string;
+    /**
+     * The workspace's immutable id.
+     */
+    uuid?: string;
+  }
+
+  /**
+   * Controls the rules for forking repositories within this workspace.
+   *
+   * * **allow_forks**: unrestricted forking
+   * * **internal_only**: prevents forking of private repositories outside the workspace or to public repositories
+   * @public
+   */
+  export const WorkspaceForkingModeEnum = {
+    AllowForks: 'allow_forks',
+    InternalOnly: 'internal_only',
+  } as const;
+
+  /**
+   * Controls the rules for forking repositories within this workspace.
+   *
+   * * **allow_forks**: unrestricted forking
+   * * **internal_only**: prevents forking of private repositories outside the workspace or to public repositories
+   * @public
+   */
+  export type WorkspaceForkingModeEnum =
+    (typeof WorkspaceForkingModeEnum)[keyof typeof WorkspaceForkingModeEnum];
+
+  /**
+   * @public
+   */
+  export interface WorkspaceLinks {
+    avatar?: Link;
+    html?: Link;
+    members?: Link;
+    owners?: Link;
+    projects?: Link;
+    repositories?: Link;
+    self?: Link;
+    snippets?: Link;
   }
 }

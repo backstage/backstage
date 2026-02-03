@@ -18,7 +18,11 @@ import {
   Permission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
+import {
+  BackstageCredentials,
+  BackstageUserInfo,
+} from '@backstage/backend-plugin-api';
 
 /**
  * A query to be evaluated by the {@link PermissionPolicy}.
@@ -32,6 +36,44 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
  */
 export type PolicyQuery = {
   permission: Permission;
+};
+
+/**
+ * The context within which a policy query is evaluated.
+ *
+ * @public
+ */
+export type PolicyQueryUser = {
+  /**
+   * The token used to authenticate the user within Backstage.
+   *
+   * @deprecated User the `credentials` field in combination with `coreServices.auth` to generate a request token instead.
+   */
+  token: string;
+
+  /**
+   * The number of seconds until the token expires. If not set, it can be assumed that the token does not expire.
+   *
+   * @deprecated This field is deprecated and will be removed in a future release.
+   */
+  expiresInSeconds?: number;
+
+  /**
+   * A plaintext description of the identity that is encapsulated within the token.
+   *
+   * @deprecated Use the `info` field instead.
+   */
+  identity: BackstageUserIdentity;
+
+  /**
+   * The credentials of the user making the request.
+   */
+  credentials: BackstageCredentials;
+
+  /**
+   * The information for the user making the request.
+   */
+  info: BackstageUserInfo;
 };
 
 /**
@@ -51,8 +93,5 @@ export type PolicyQuery = {
  * @public
  */
 export interface PermissionPolicy {
-  handle(
-    request: PolicyQuery,
-    user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision>;
+  handle(request: PolicyQuery, user?: PolicyQueryUser): Promise<PolicyDecision>;
 }

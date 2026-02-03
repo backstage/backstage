@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import BottomNavigationAction, {
   BottomNavigationActionProps,
 } from '@material-ui/core/BottomNavigationAction';
-import { makeStyles } from '@material-ui/core/styles';
-import React, { useContext } from 'react';
+import { Theme, makeStyles } from '@material-ui/core/styles';
+import { ReactNode, ChangeEvent, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useSidebarPinState } from '.';
-import { Link } from '../../components';
-import { SidebarConfigContext, SidebarConfig } from './config';
-import { MobileSidebarContext } from './MobileSidebar';
+import { Link } from '../../components/Link/Link';
+import { SidebarConfig, SidebarConfigContext } from './config';
+import { MobileSidebarContext } from './MobileSidebarContext';
+import { useSidebarPinState } from './SidebarPinStateContext';
 
 /**
  * Props for the `SidebarGroup`
@@ -45,10 +44,10 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
   /**
    * React children
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
-const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
+const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
   theme => ({
     root: {
       flexGrow: 0,
@@ -69,7 +68,7 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
 );
 
 /**
- * Returns a MUI `BottomNavigationAction`, which is aware of the current location & the selected item in the `BottomNavigation`,
+ * Returns a Material UI `BottomNavigationAction`, which is aware of the current location & the selected item in the `BottomNavigation`,
  * such that it will highlight a `MobileSidebarGroup` either on location change or if the selected item changes.
  *
  * @param props `to`: pathname of link; `value`: index of the selected item
@@ -83,7 +82,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
 
-  const onChange = (_: React.ChangeEvent<{}>, value: number) => {
+  const onChange = (_: ChangeEvent<{}>, value: number) => {
     if (value === selectedMenuItemIndex) {
       setSelectedMenuItemIndex(-1);
     } else {
@@ -100,6 +99,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   return (
     // Material UI issue: https://github.com/mui-org/material-ui/issues/27820
     <BottomNavigationAction
+      aria-label={label}
       label={label}
       icon={icon}
       component={Link as any}
@@ -115,6 +115,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
 /**
  * Groups items of the `Sidebar` together.
  *
+ * @remarks
  * On bigger screens, this won't have any effect at the moment.
  * On small screens, it will add an action to the bottom navigation - either triggering an overlay menu or acting as a link
  *

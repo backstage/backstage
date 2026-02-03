@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /**
    * Configuration options for the techdocs-backend plugin
    * @see http://backstage.io/docs/features/techdocs/configuration
    */
-  techdocs: {
+  techdocs?: {
     /**
      * Documentation building process depends on the builder attr
      * @visibility frontend
      */
-    builder: 'local' | 'external';
+    builder?: 'local' | 'external';
 
     /**
      * Techdocs generator information
@@ -57,6 +59,11 @@ export interface Config {
          * will be broken in these scenarios.
          */
         legacyCopyReadmeMdToIndexMd?: boolean;
+
+        /**
+         * List of mkdocs plugins which should be added as default to all mkdocs.yml files.
+         */
+        defaultPlugins?: string[];
       };
     };
 
@@ -67,9 +74,12 @@ export interface Config {
       | {
           type: 'local';
 
+          /**
+           *  Optional when 'type' is set to local
+           */
           local?: {
             /**
-             * Directory to store generated static files.
+             * (Optional) Directory to store generated static files.
              */
             publishDirectory?: string;
           };
@@ -82,8 +92,21 @@ export interface Config {
            */
           awsS3?: {
             /**
+             * (Optional) The AWS account ID where the storage bucket is located.
+             * Credentials for the account ID will be sourced from the 'aws' app config section.
+             * See the
+             * [integration-aws-node package](https://github.com/backstage/backstage/blob/master/packages/integration-aws-node/README.md)
+             * for details on how to configure the credentials in the app config.
+             * If account ID is not set and no credentials are set, environment variables or aws config file will be used to authenticate.
+             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+             */
+            accountId?: string;
+            /**
              * (Optional) Credentials used to access a storage bucket.
-             * If not set, environment variables or aws config file will be used to authenticate.
+             * This section is now deprecated. Configuring the account ID is now preferred, with credentials in the 'aws'
+             * app config section.
+             * If not set and no account ID is set, environment variables or aws config file will be used to authenticate.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
              * @visibility secret
@@ -101,34 +124,34 @@ export interface Config {
               secretAccessKey?: string;
               /**
                * ARN of role to be assumed
-               * @visibility backend
                */
               roleArn?: string;
             };
             /**
              * (Required) Cloud Storage Bucket Name
-             * @visibility backend
              */
             bucketName: string;
+            /**
+             * (Optional) Location in storage bucket to save files
+             * If not set, the default location will be the root of the storage bucket
+             */
+            bucketRootPath?: string;
             /**
              * (Optional) AWS Region.
              * If not set, AWS_REGION environment variable or aws config file will be used.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
-             * @visibility secret
              */
             region?: string;
             /**
              * (Optional) AWS Endpoint.
              * The endpoint URI to send requests to. The default endpoint is built from the configured region.
              * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
-             * @visibility secret
              */
             endpoint?: string;
             /**
              * (Optional) Whether to use path style URLs when communicating with S3.
              * Defaults to false.
              * This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used to host tech docs.
-             * @visibility backend
              */
             s3ForcePathStyle?: boolean;
 
@@ -167,17 +190,14 @@ export interface Config {
             };
             /**
              * (Required) Cloud Storage Container Name
-             * @visibility backend
              */
             containerName: string;
             /**
              * (Required) Auth url sometimes OpenStack uses different port check your OpenStack apis.
-             * @visibility backend
              */
             authUrl: string;
             /**
              * (Required) Swift URL
-             * @visibility backend
              */
             swiftUrl: string;
           };
@@ -190,10 +210,15 @@ export interface Config {
            */
           azureBlobStorage?: {
             /**
-             * (Required) Credentials used to access a storage container.
+             * (Optional) Connection string of the storage container.
              * @visibility secret
              */
-            credentials: {
+            connectionString?: string;
+            /**
+             * (Optional) Credentials used to access a storage container.
+             * @visibility secret
+             */
+            credentials?: {
               /**
                * Account access name
                * @visibility secret
@@ -209,7 +234,6 @@ export interface Config {
             };
             /**
              * (Required) Cloud Storage Container Name
-             * @visibility backend
              */
             containerName: string;
           };
@@ -223,7 +247,6 @@ export interface Config {
           googleGcs?: {
             /**
              * (Required) Cloud Storage Bucket Name
-             * @visibility backend
              */
             bucketName: string;
             /**
@@ -233,6 +256,17 @@ export interface Config {
              * @visibility secret
              */
             credentials?: string;
+            /**
+             * (Optional) GCP project ID that contains the bucket. Should be
+             * set if credentials is not set, or if the service account in
+             * the credentials belongs to a different project to the bucket.
+             */
+            projectId?: string;
+            /**
+             * (Optional) Location in storage bucket to save files
+             * If not set, the default location will be the root of the storage bucket
+             */
+            bucketRootPath?: string;
           };
         };
 
@@ -242,7 +276,7 @@ export interface Config {
      */
     cache?: {
       /**
-       * The cache time-to-live for TechDocs sites (in milliseconds). Set this
+       * The cache time-to-live for TechDocs sites, in milliseconds for a number or a human duration. Set this
        * to a non-zero value to cache TechDocs sites and assets as they are
        * read from storage.
        *
@@ -250,16 +284,16 @@ export interface Config {
        * and to pass a PluginCacheManager instance to TechDocs Backend's
        * createRouter method in your backend.
        */
-      ttl: number;
+      ttl: number | HumanDuration | string;
 
       /**
-       * The time (in milliseconds) that the TechDocs backend will wait for
+       * The time (in milliseconds for a number or a human duration) that the TechDocs backend will wait for
        * a cache service to respond before continuing on as though the cached
        * object was not found (e.g. when the cache sercice is unavailable).
        *
        * Defaults to 1000 milliseconds.
        */
-      readTimeout?: number;
+      readTimeout?: number | HumanDuration | string;
     };
 
     /**

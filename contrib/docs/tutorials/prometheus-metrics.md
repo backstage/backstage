@@ -1,5 +1,8 @@
 # Prometheus
 
+> [!NOTE]
+> The Prometheus metrics have been marked as deprecated and will be removed at a later point. The recommendation is to use the OpenTelemetry metrics by following the [Setup OpenTelemetry](https://backstage.io/docs/tutorials/setup-opentelemetry) documentation
+
 ## Overview
 
 This is a small tutorial that goes over how to setup your Backstage instance to output metrics in a format that can be pulled in by Prometheus.
@@ -11,8 +14,8 @@ This is a small tutorial that goes over how to setup your Backstage instance to 
    ```diff
    // packages/backend/package.json
        "dependencies": {
-   +   "express-prom-bundle": "^6.3.6",
-   +   "prom-client": "^14.0.1",
+   +   "express-prom-bundle": "^7.0.0",
+   +   "prom-client": "^15.0.0",
    ```
 
 2. Now we want to run `yarn install` from the root of the project to get those dependencies in place
@@ -106,3 +109,7 @@ There are some custom metrics that have been added to Backstage will be output f
 - `catalog_processing_duration_seconds`: Time spent executing the full processing flow
 - `catalog_processors_duration_seconds`: Time spent executing catalog processors
 - `catalog_processing_queue_delay_seconds`: The amount of delay between being scheduled for processing, and the start of actually being processed
+- `scaffolder_task_count`: Tracks successful task runs.
+- `scaffolder_task_duration`: a histogram which tracks the duration of a task run
+- `scaffolder_step_count`: a count that tracks each step run
+- `scaffolder_step_duration`: a histogram which tracks the duration of each step run

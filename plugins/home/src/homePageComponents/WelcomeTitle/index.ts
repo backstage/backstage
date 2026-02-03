@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { WelcomeTitle } from './WelcomeTitle';
+export type { WelcomeTitleLanguageProps } from './WelcomeTitle';

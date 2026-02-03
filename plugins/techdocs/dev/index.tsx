@@ -16,7 +16,7 @@
 
 import { createDevApp } from '@backstage/dev-utils';
 import { NotFoundError } from '@backstage/errors';
-import React from 'react';
+import { Component as ReactComponent } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   TechDocsReaderPageContent,
@@ -25,11 +25,7 @@ import {
   techdocsStorageApiRef,
 } from '../src';
 
-import {
-  configApiRef,
-  discoveryApiRef,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
+import { configApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
 import { TechDocsReaderPageProvider } from '@backstage/plugin-techdocs-react';
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
@@ -104,7 +100,7 @@ function createPage({
     }
   }
 
-  class Component extends React.Component {
+  class Component extends ReactComponent {
     constructor(props: {}) {
       super(props);
 
@@ -135,7 +131,6 @@ createDevApp()
     deps: {
       configApi: configApiRef,
       discoveryApi: discoveryApiRef,
-      identityApi: identityApiRef,
     },
     factory: () => apiBridge,
   })

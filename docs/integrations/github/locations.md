@@ -28,9 +28,11 @@ integrations:
       token: ${GHE_TOKEN}
 ```
 
-> Note: A public GitHub provider is added automatically at startup for
-> convenience, so you only need to list it if you want to supply a
-> [token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+:::note Note
+
+A public GitHub provider is added automatically at startup for convenience, so you only need to list it if you want to supply a [token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+
+:::
 
 Directly under the `github` key is a list of provider configurations, where you
 can list the various GitHub-compatible providers you want to be able to fetch

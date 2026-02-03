@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { isChildPath } from '@backstage/backend-common';
+import { isChildPath, LoggerService } from '@backstage/backend-plugin-api';
+import { NotAllowedError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
 import { assertError, ForwardedError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { SpawnOptionsWithoutStdio, spawn } from 'child_process';
+import { SpawnOptionsWithoutStdio, spawn } from 'node:child_process';
 import fs from 'fs-extra';
 import gitUrlParse from 'git-url-parse';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
-import path, { resolve as resolvePath } from 'path';
-import { PassThrough, Writable } from 'stream';
-import { Logger } from 'winston';
+import path, { resolve as resolvePath } from 'node:path';
+import { PassThrough, Writable } from 'node:stream';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { SupportedGeneratorKey } from './types';
+import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
 
 // TODO: Implement proper support for more generators.
@@ -101,9 +101,14 @@ export const getRepoUrlFromLocationAnnotation = (
   if (locationType === 'url') {
     const integration = scmIntegrations.byUrl(target);
 
-    // We only support it for github and gitlab for now as the edit_uri
+    // We only support it for github, gitlab, bitbucketServer and harness for now as the edit_uri
     // is not properly supported for others yet.
-    if (integration && ['github', 'gitlab'].includes(integration.type)) {
+    if (
+      integration &&
+      ['github', 'gitlab', 'bitbucketServer', 'harness'].includes(
+        integration.type,
+      )
+    ) {
       // handle the case where a user manually writes url:https://github.com/backstage/backstage i.e. without /blob/...
       const { filepathtype } = gitUrlParse(target);
       if (filepathtype === '') {
@@ -112,7 +117,7 @@ export const getRepoUrlFromLocationAnnotation = (
 
       const sourceFolder = integration.resolveUrl({
         url: `./${docsFolder}`,
-        base: target,
+        base: target.endsWith('/') ? target : `${target}/`,
       });
       return {
         repo_url: target,
@@ -125,12 +130,26 @@ export const getRepoUrlFromLocationAnnotation = (
 };
 
 class UnknownTag {
-  constructor(public readonly data: any, public readonly type?: string) {}
+  public readonly data: any;
+  public readonly type?: string;
+
+  constructor(data: any, type?: string) {
+    this.data = data;
+    this.type = type;
+  }
 }
 
 export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
   new Type('', {
     kind: 'scalar',
+    multi: true,
+    representName: o => (o as UnknownTag).type,
+    represent: o => (o as UnknownTag).data ?? '',
+    instanceOf: UnknownTag,
+    construct: (data: string, type?: string) => new UnknownTag(data, type),
+  }),
+  new Type('tag:', {
+    kind: 'mapping',
     multi: true,
     representName: o => (o as UnknownTag).type,
     represent: o => (o as UnknownTag).data ?? '',
@@ -148,37 +167,150 @@ export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
 ]);
 
 /**
- * Finds and loads the contents of either an mkdocs.yml or mkdocs.yaml file,
- * depending on which is present (MkDocs supports both as of v1.2.2).
+ * Generates a mkdocs.yml configuration file
  *
- * @param inputDir - base dir to be searched for either an mkdocs.yml or
- *   mkdocs.yaml file.
+ * @param inputDir - base dir to where the mkdocs.yml file will be created
+ * @param siteOptions - options for the site: `name` property will be used in mkdocs.yml for the
+ * required `site_name` property, default value is "Documentation Site"
+ */
+export const generateMkdocsYml = async (
+  inputDir: string,
+  siteOptions?: { name?: string },
+) => {
+  try {
+    // TODO(awanlin): Use a provided default mkdocs.yml
+    // from config or some specified location. If this is
+    // not provided then fall back to generating bare
+    // minimum mkdocs.yml file
+
+    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    const defaultSiteName = siteOptions?.name ?? 'Documentation Site';
+    const defaultMkdocsContent: DefaultMkdocsContent = {
+      site_name: defaultSiteName,
+      docs_dir: 'docs',
+      plugins: ['techdocs-core'],
+    };
+
+    await fs.writeFile(
+      mkdocsYmlPath,
+      yaml.dump(defaultMkdocsContent, { schema: MKDOCS_SCHEMA }),
+    );
+  } catch (error) {
+    throw new ForwardedError('Could not generate mkdocs.yml file', error);
+  }
+};
+
+/**
+ * Finds and loads the contents of an mkdocs.yml, mkdocs.yaml file, a file
+ * with a specified name or an ad-hoc created file with minimal config.
+ * @public
+ *
+ * @param inputDir - base dir to be searched for either an mkdocs.yml or mkdocs.yaml file.
+ * @param options - name: default mkdocs site_name to be used with a ad hoc file default value is "Documentation Site"
+ *                  mkdocsConfigFileName (optional): a non-default file name to be used as the config
  */
 export const getMkdocsYml = async (
   inputDir: string,
-): Promise<{ path: string; content: string }> => {
+  options?: { name?: string; mkdocsConfigFileName?: string },
+): Promise<{ path: string; content: string; configIsTemporary: boolean }> => {
   let mkdocsYmlPath: string;
   let mkdocsYmlFileString: string;
   try {
-    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yaml');
-    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-  } catch {
-    try {
-      mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    if (options?.mkdocsConfigFileName) {
+      mkdocsYmlPath = path.join(inputDir, options.mkdocsConfigFileName);
+      if (!(await fs.pathExists(mkdocsYmlPath))) {
+        throw new Error(`The specified file ${mkdocsYmlPath} does not exist`);
+      }
+
       mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
-    } catch (error) {
-      throw new ForwardedError(
-        'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml for validation',
-        error,
-      );
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+        configIsTemporary: false,
+      };
     }
+
+    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yaml');
+    if (await fs.pathExists(mkdocsYmlPath)) {
+      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+        configIsTemporary: false,
+      };
+    }
+
+    mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
+    if (await fs.pathExists(mkdocsYmlPath)) {
+      mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+      return {
+        path: mkdocsYmlPath,
+        content: mkdocsYmlFileString,
+        configIsTemporary: false,
+      };
+    }
+
+    // No mkdocs file, generate it
+    await generateMkdocsYml(inputDir, options);
+    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+  } catch (error) {
+    throw new ForwardedError(
+      'Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation',
+      error,
+    );
   }
 
   return {
     path: mkdocsYmlPath,
     content: mkdocsYmlFileString,
+    configIsTemporary: true,
   };
 };
+
+/**
+ * Allowlist of MkDocs configuration keys supported by TechDocs.
+ *
+ * @see https://www.mkdocs.org/user-guide/configuration/
+ */
+export const ALLOWED_MKDOCS_KEYS = new Set([
+  // Site information
+  'site_name',
+  'site_url',
+  'site_description',
+  'site_author',
+  // Repository
+  'repo_url',
+  'repo_name',
+  'edit_uri',
+  'edit_uri_template',
+  // Build directories
+  'docs_dir',
+  'site_dir',
+  // Documentation layout
+  'nav',
+  'exclude_docs',
+  'not_in_nav',
+  // Build settings
+  'theme',
+  'plugins',
+  'markdown_extensions',
+  'extra',
+  'extra_css',
+  'extra_templates',
+  // Preview controls
+  'use_directory_urls',
+  'strict',
+  'dev_addr',
+  'watch',
+  // Metadata
+  'copyright',
+  'remote_branch',
+  'remote_name',
+  'validation',
+  // Deprecated
+  'google_analytics',
+  'INHERIT',
+]);
 
 /**
  * Validating mkdocs config file for incorrect/insecure values
@@ -202,6 +334,7 @@ export const validateMkdocsYaml = async (
   }
 
   const parsedMkdocsYml: Record<string, any> = mkdocsYml;
+
   if (
     parsedMkdocsYml.docs_dir &&
     !isChildPath(inputDir, resolvePath(inputDir, parsedMkdocsYml.docs_dir))
@@ -215,6 +348,29 @@ export const validateMkdocsYaml = async (
 };
 
 /**
+ * Validates that the docs directory doesn't contain symlinks pointing outside
+ * the input directory. This prevents path traversal attacks where malicious
+ * symlinks could be used to read arbitrary files from the host filesystem.
+ *
+ * @param docsDir - The docs directory to validate (absolute path)
+ * @param inputDir - The root input directory that symlinks must stay within
+ */
+export const validateDocsDirectory = async (
+  docsDir: string,
+  inputDir: string,
+): Promise<void> => {
+  const files = await getFileTreeRecursively(docsDir);
+
+  for (const file of files) {
+    if (!isChildPath(inputDir, file)) {
+      throw new NotAllowedError(
+        `Path ${file} is not allowed to refer to a location outside ${inputDir}`,
+      );
+    }
+  }
+};
+
+/**
  * Update docs/index.md file before TechDocs generator uses it to generate docs site,
  * falling back to docs/README.md or README.md in case a default docs/index.md
  * is not provided.
@@ -225,7 +381,7 @@ export const patchIndexPreBuild = async ({
   docsDir = 'docs',
 }: {
   inputDir: string;
-  logger: Logger;
+  logger: LoggerService;
   docsDir?: string;
 }) => {
   const docsPath = path.join(inputDir, docsDir);
@@ -269,7 +425,7 @@ export const patchIndexPreBuild = async ({
  */
 export const createOrUpdateMetadata = async (
   techdocsMetadataPath: string,
-  logger: Logger,
+  logger: LoggerService,
 ): Promise<void> => {
   const techdocsMetadataDir = techdocsMetadataPath
     .split(path.sep)

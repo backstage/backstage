@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { CopyTextButton } from './CopyTextButton';
 
 export default {
   title: 'Inputs/CopyTextButton',
   component: CopyTextButton,
+  tags: ['!manifest'],
 };
 
 export const Default = () => (

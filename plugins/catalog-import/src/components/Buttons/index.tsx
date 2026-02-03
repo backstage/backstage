@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { Button, CircularProgress } from '@material-ui/core';
+import { LinkButton } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
+
+import { catalogImportTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -60,11 +65,29 @@ export const NextButton = (
 };
 
 export const BackButton = (props: ComponentProps<typeof Button>) => {
+  const { t } = useTranslationRef(catalogImportTranslationRef);
   const classes = useStyles();
 
   return (
     <Button variant="outlined" className={classes.button} {...props}>
-      {props.children || 'Back'}
+      {props.children || t('buttons.back')}
     </Button>
+  );
+};
+
+export const ViewComponentButton = (
+  props: ComponentProps<typeof LinkButton>,
+) => {
+  const classes = useStyles();
+
+  return (
+    <LinkButton
+      color="primary"
+      variant="contained"
+      className={classes.button}
+      {...props}
+    >
+      {props.children}
+    </LinkButton>
   );
 };

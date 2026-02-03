@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  GetEntitiesRequest,
-  GetEntitiesResponse,
-} from '@backstage/catalog-client';
 import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
-import {
-  CatalogApi,
-  catalogApiRef,
-  EntityProvider,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { queryByText } from '@testing-library/react';
-import React from 'react';
 import { catalogIndexRouteRef } from '../../../routes';
 import { OwnershipCard } from './OwnershipCard';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const items = [
   {
@@ -44,11 +36,21 @@ const items = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/my-team',
-        target: {
-          name: 'my-team',
-          namespace: 'default',
-          kind: 'group',
-        },
+      },
+    ],
+  },
+  {
+    kind: 'Resource',
+    metadata: {
+      name: 'my-resource',
+    },
+    spec: {
+      type: 'database',
+    },
+    relations: [
+      {
+        type: 'ownedBy',
+        targetRef: 'group:default/my-team',
       },
     ],
   },
@@ -64,11 +66,6 @@ const items = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/my-team',
-        target: {
-          name: 'my-team',
-          namespace: 'default',
-          kind: 'group',
-        },
       },
     ],
   },
@@ -85,11 +82,6 @@ const items = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/my-team',
-        target: {
-          name: 'my-team',
-          namespace: 'default',
-          kind: 'group',
-        },
       },
     ],
   },
@@ -107,18 +99,6 @@ const items = [
     ],
   },
 ] as Entity[];
-
-const getEntitiesMock = (
-  request?: GetEntitiesRequest,
-): Promise<GetEntitiesResponse> => {
-  const filterKinds =
-    Array.isArray(request?.filter) && Array.isArray(request?.filter[0].kind)
-      ? request?.filter[0].kind ?? []
-      : []; // we expect the request to be like { filter: [{ kind: ['API','System'], 'relations.ownedBy': [group:default/my-team], .... }]. If changed in OwnerShipCard, let's change in also here
-  return Promise.resolve({
-    items: items.filter(item => filterKinds.find(k => k === item.kind)),
-  } as GetEntitiesResponse);
-};
 
 describe('OwnershipCard', () => {
   const groupEntity: GroupEntity = {
@@ -139,12 +119,30 @@ describe('OwnershipCard', () => {
     ],
   };
 
-  it('displays entity counts', async () => {
-    const catalogApi: jest.Mocked<CatalogApi> = {
-      getEntities: jest.fn(),
-    } as any;
+  const userEntity: UserEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      name: 'the-user',
+    },
+    spec: {
+      memberOf: ['my-team'],
+    },
+    relations: [
+      {
+        type: 'memberOf',
+        targetRef: 'group:default/my-team',
+      },
+      {
+        type: 'memberOf',
+        targetRef: 'group:custom/some-team',
+      },
+    ],
+  };
 
-    catalogApi.getEntities.mockImplementation(getEntitiesMock);
+  it('displays entity counts', async () => {
+    const catalogApi = catalogApiMock({ entities: items });
+    const mockedGetEntities = jest.spyOn(catalogApi, 'getEntities');
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -159,10 +157,10 @@ describe('OwnershipCard', () => {
       },
     );
 
-    expect(catalogApi.getEntities).toHaveBeenCalledWith({
+    expect(mockedGetEntities).toHaveBeenCalledWith({
       filter: [
         {
-          kind: ['Component', 'API', 'System'],
+          kind: ['Component', 'API', 'System', 'Resource'],
           'relations.ownedBy': ['group:default/my-team'],
         },
       ],
@@ -177,28 +175,24 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI')).toBeInTheDocument();
     expect(
-      queryByText(getByText('OPENAPI').parentElement!, '1'),
+      queryByText(getByText('OPENAPI').closest('a')!, '1'),
     ).toBeInTheDocument();
     expect(getByText('SERVICE')).toBeInTheDocument();
     expect(
-      queryByText(getByText('SERVICE').parentElement!, '1'),
+      queryByText(getByText('SERVICE').closest('a')!, '1'),
     ).toBeInTheDocument();
     expect(getByText('LIBRARY')).toBeInTheDocument();
     expect(
-      queryByText(getByText('LIBRARY').parentElement!, '1'),
+      queryByText(getByText('LIBRARY').closest('a')!, '1'),
     ).toBeInTheDocument();
     expect(getByText('SYSTEM')).toBeInTheDocument();
     expect(
-      queryByText(getByText('SYSTEM').parentElement!, '1'),
+      queryByText(getByText('SYSTEM').closest('a')!, '1'),
     ).toBeInTheDocument();
   });
 
   it('applies CustomFilterDefinition', async () => {
-    const catalogApi: jest.Mocked<CatalogApi> = {
-      getEntities: jest.fn(),
-    } as any;
-
-    catalogApi.getEntities.mockImplementation(getEntitiesMock);
+    const catalogApi = catalogApiMock({ entities: items });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -215,21 +209,23 @@ describe('OwnershipCard', () => {
 
     expect(getByText('SYSTEM')).toBeInTheDocument();
     expect(
-      queryByText(getByText('SYSTEM').parentElement!, '1'),
+      queryByText(getByText('SYSTEM').closest('a')!, '1'),
     ).toBeInTheDocument();
+    expect(
+      queryByText(getByText('SYSTEM').closest('a')!, 'System'),
+    ).not.toBeInTheDocument();
     expect(getByText('OPENAPI')).toBeInTheDocument();
     expect(
-      queryByText(getByText('OPENAPI').parentElement!, '1'),
+      queryByText(getByText('OPENAPI').closest('a')!, '1'),
     ).toBeInTheDocument();
-    expect(() => getByText('LIBRARY')).toThrowError();
+    expect(
+      queryByText(getByText('OPENAPI').closest('a')!, 'API'),
+    ).toBeInTheDocument();
+    expect(() => getByText('LIBRARY')).toThrow();
   });
 
   it('links to the catalog with the group filter', async () => {
-    const catalogApi: jest.Mocked<CatalogApi> = {
-      getEntities: jest.fn(),
-    } as any;
-
-    catalogApi.getEntities.mockImplementation(getEntitiesMock);
+    const catalogApi = catalogApiMock({ entities: items });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -244,43 +240,20 @@ describe('OwnershipCard', () => {
       },
     );
 
-    expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
-      'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
-    );
+    const href = getByText('OPENAPI').closest('a')?.href ?? '';
+    // This env does not support URLSearchParams
+    const queryParams = decodeURIComponent(href);
+
+    expect(queryParams).toContain('filters[owners]=my-team');
   });
 
   it('links to the catalog with the user and groups filters from an user profile', async () => {
-    const userEntity: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: {
-        name: 'the-user',
-      },
-      spec: {
-        memberOf: ['my-team'],
-      },
-      relations: [
-        {
-          type: 'memberOf',
-          targetRef: 'group:default/my-team',
-        },
-        {
-          type: 'memberOf',
-          targetRef: 'group:custom/some-team',
-        },
-      ],
-    };
-    const catalogApi: jest.Mocked<CatalogApi> = {
-      getEntities: jest.fn(),
-    } as any;
-
-    catalogApi.getEntities.mockImplementation(getEntitiesMock);
+    const catalogApi = catalogApiMock({ entities: items });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={userEntity}>
-          <OwnershipCard />
+          <OwnershipCard relationAggregation="aggregated" />
         </EntityProvider>
       </TestApiProvider>,
       {
@@ -290,19 +263,17 @@ describe('OwnershipCard', () => {
       },
     );
 
-    expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
-      'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=user%3Athe-user&filters%5Bowners%5D=my-team&filters%5Bowners%5D=custom%2Fsome-team&filters%5Buser%5D=all',
+    const href = getByText('OPENAPI').closest('a')?.href ?? '';
+    // This env does not support URLSearchParams
+    const queryParams = decodeURIComponent(href);
+    expect(queryParams).toMatch(
+      /filters\[owners\]=custom\/some\-team.*filters\[owners\]=user:the-user/,
     );
   });
 
   describe('OwnershipCard relations', () => {
     it('shows relations toggle', async () => {
-      const catalogApi: jest.Mocked<CatalogApi> = {
-        getEntities: jest.fn(),
-      } as any;
-
-      catalogApi.getEntities.mockImplementation(getEntitiesMock);
+      const catalogApi = catalogApiMock({ entities: items });
 
       const { getByTitle } = await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -321,11 +292,7 @@ describe('OwnershipCard', () => {
     });
 
     it('hides relations toggle', async () => {
-      const catalogApi: jest.Mocked<CatalogApi> = {
-        getEntities: jest.fn(),
-      } as any;
-
-      catalogApi.getEntities.mockImplementation(getEntitiesMock);
+      const catalogApi = catalogApiMock({ entities: items });
 
       const rendered = await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -342,12 +309,9 @@ describe('OwnershipCard', () => {
 
       expect(rendered.queryByText('Direct Relations')).toBeNull();
     });
-    it('overrides relation type', async () => {
-      const catalogApi: jest.Mocked<CatalogApi> = {
-        getEntities: jest.fn(),
-      } as any;
 
-      catalogApi.getEntities.mockImplementation(getEntitiesMock);
+    it('overrides relation type', async () => {
+      const catalogApi = catalogApiMock({ entities: items });
 
       const { getByTitle } = await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -363,6 +327,63 @@ describe('OwnershipCard', () => {
       );
 
       expect(getByTitle('Aggregated Relations')).toBeInTheDocument();
+    });
+
+    it('defaults to aggregated for User entity kind', async () => {
+      const catalogApi = catalogApiMock({ entities: items });
+
+      const { getByLabelText } = await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={userEntity}>
+            <OwnershipCard />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      expect(getByLabelText('Ownership Type Switch')).toBeChecked();
+    });
+
+    it('defaults to direct for all entity kinds except User', async () => {
+      const catalogApi = catalogApiMock({ entities: items });
+
+      const { getByLabelText } = await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={groupEntity}>
+            <OwnershipCard />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      expect(getByLabelText('Ownership Type Switch')).not.toBeChecked();
+    });
+
+    it('defaults to provided relationsType', async () => {
+      const catalogApi = catalogApiMock({ entities: items });
+
+      const { getByLabelText } = await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={userEntity}>
+            <OwnershipCard relationsType="direct" />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      expect(getByLabelText('Ownership Type Switch')).not.toBeChecked();
     });
   });
 });

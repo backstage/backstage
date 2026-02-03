@@ -16,23 +16,23 @@
 
 import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
-import React from 'react';
+import { waitFor, screen } from '@testing-library/react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { HasSubcomponentsCard } from './HasSubcomponentsCard';
 
 describe('<HasSubcomponentsCard />', () => {
-  const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
-  let Wrapper: React.ComponentType;
+  const catalogApi = catalogApiMock.mock();
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, { getEntities }]]}>
+    Wrapper = ({ children }: { children?: ReactNode }) => (
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         {children}
       </TestApiProvider>
     );
@@ -51,7 +51,7 @@ describe('<HasSubcomponentsCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasSubcomponentsCard />
@@ -64,9 +64,9 @@ describe('<HasSubcomponentsCard />', () => {
       },
     );
 
-    expect(getByText('Has subcomponents')).toBeInTheDocument();
+    expect(screen.getByText('Has subcomponents')).toBeInTheDocument();
     expect(
-      getByText(/No subcomponent is part of this component/i),
+      screen.getByText(/No subcomponent is part of this component/i),
     ).toBeInTheDocument();
   });
 
@@ -85,7 +85,7 @@ describe('<HasSubcomponentsCard />', () => {
         },
       ],
     };
-    getEntities.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [
         {
           apiVersion: 'v1',
@@ -99,7 +99,7 @@ describe('<HasSubcomponentsCard />', () => {
       ],
     });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <HasSubcomponentsCard />
@@ -113,8 +113,57 @@ describe('<HasSubcomponentsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Has subcomponents')).toBeInTheDocument();
-      expect(getByText(/target-name/i)).toBeInTheDocument();
+      expect(screen.getByText('Has subcomponents')).toBeInTheDocument();
+      expect(screen.getByText(/target-name/i)).toBeInTheDocument();
+    });
+  });
+
+  it('allows overriding the entity kind', async () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'my-component',
+        namespace: 'my-namespace',
+      },
+      relations: [
+        {
+          targetRef: 'custom:my-namespace/target-name',
+          type: RELATION_HAS_PART,
+        },
+      ],
+    };
+
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
+      items: [
+        {
+          apiVersion: 'v1',
+          kind: 'Custom',
+          metadata: {
+            name: 'target-name',
+            namespace: 'my-namespace',
+          },
+          spec: {},
+        },
+      ],
+    });
+
+    await renderInTestApp(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <HasSubcomponentsCard kind="Custom" />
+        </EntityProvider>
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Has subcomponents')).toBeInTheDocument();
+      expect(screen.getByText(/target-name/i)).toBeInTheDocument();
     });
   });
 });

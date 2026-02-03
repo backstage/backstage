@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /**
    * Configuration options for the catalog plugin.
@@ -25,7 +27,7 @@ export interface Config {
      * An undefined list of matchers means match all, an empty list of
      * matchers means match none.
      *
-     * This is commonly used to put in what amounts to a whitelist of kinds
+     * This is commonly used to put in what amounts to an allowlist of kinds
      * that regular users of Backstage are permitted to register locations
      * for. This can be used to stop them from registering yaml files
      * describing for example a Group entity called "admin" that they make
@@ -36,8 +38,42 @@ export interface Config {
        * Allow entities of these particular kinds.
        *
        * E.g. ["Component", "API", "Template", "Location"]
+       *
+       * You can also specify the type of the entity by using an object with `kind` and optional `spec.type` properties.
+       * E.g. [{ kind: "Component", 'spec.type': "service" }]
        */
-      allow: Array<string>;
+      allow: Array<string | { kind: string; 'spec.type'?: string }>;
+      /**
+       * Limit this rule to a specific location
+       *
+       * Example with a fixed location
+       *  { "type": "url", "exact": "https://github.com/a/b/blob/file.yaml"}
+       *
+       * Example using a Regex
+       *  { "type": "url", "pattern": "https://github.com/org/*\/blob/master/*.yaml"}
+       *
+       * Using both exact and pattern will result in an error starting the application
+       */
+      locations?: Array<{
+        /**
+         * The type of location, e.g. "url".
+         */
+        type: string;
+        /**
+         * The exact location, e.g.
+         * "https://github.com/org/repo/blob/master/users.yaml".
+         *
+         * The exact location can also be used to match on locations
+         * that contain glob characters themselves, e.g.
+         * "https://github.com/org/*\/blob/master/*.yaml".
+         */
+        exact?: string;
+        /**
+         * The pattern allowed for the location, e.g.
+         * "https://github.com/org/*\/blob/master/*.yaml".
+         */
+        pattern?: string;
+      }>;
     }>;
 
     /**
@@ -50,7 +86,6 @@ export interface Config {
      * be used in combination with static locations to only serve operator
      * provided locations. Effectively this removes the ability to register new
      * components to a running backstage instance.
-     *
      */
     readonly?: boolean;
 
@@ -105,5 +140,122 @@ export interface Config {
         allow: Array<string>;
       }>;
     }>;
+
+    /**
+     * Enables the compatibility layer for relations in returned entities that
+     * ensures that all relations objects have both `target` and `targetRef`.
+     *
+     * Enabling this option significantly increases the memory usage of the
+     * catalog, and slightly reduces performance, but may avoid breaking consumers that
+     * rely on the existence of `target` in the relations objects.
+     */
+    enableRelationsCompatibility?: boolean;
+
+    /**
+     * Disables the default backstage processors.
+     *
+     * Enabling this option allows more complete control of which processors are included
+     * in the backstage processing loop.
+     *
+     */
+    disableDefaultProcessors?: boolean;
+
+    /**
+     * The strategy to use for entities that are orphaned, i.e. no longer have
+     * any other entities or providers referencing them. The default value is
+     * "delete".
+     */
+    orphanStrategy?: 'keep' | 'delete';
+
+    /**
+     * The strategy to use for entities that are referenced by providers that are orphaned,
+     * i.e. entities with no providers currently configured in the catalog. The default value is
+     * "delete".
+     */
+    orphanProviderStrategy?: 'keep' | 'delete';
+
+    /**
+     * The strategy to use when stitching together the final entities. The default mode is "deferred".
+     */
+    stitchingStrategy?:
+      | {
+          /** Perform stitching in-band immediately when needed */
+          mode: 'immediate';
+        }
+      | {
+          /** Defer stitching to be performed asynchronously */
+          mode: 'deferred';
+          /** Polling interval for tasks in seconds */
+          pollingInterval?: HumanDuration | string;
+          /** How long to wait for a stitch to complete before giving up in seconds */
+          stitchTimeout?: HumanDuration | string;
+        };
+
+    /**
+     * The interval at which the catalog should process its entities.
+     * @remarks
+     *
+     * Example:
+     *
+     * ```yaml
+     * catalog:
+     *   processingInterval: { minutes: 30 }
+     * ```
+     *
+     * or to disabled processing:
+     *
+     * ```yaml
+     * catalog:
+     *  processingInterval: false
+     * ```
+     *
+     * Note that this is only a suggested minimum, and the actual interval may
+     * be longer. Internally, the catalog will scale up this number by a small
+     * factor and choose random numbers in that range to spread out the load. If
+     * the catalog is overloaded and cannot process all entities during the
+     * interval, the time taken between processing runs of any given entity may
+     * also be longer than specified here.
+     *
+     * Setting this value too low risks exhausting rate limits on external
+     * systems that are queried by processors, such as version control systems
+     * housing catalog-info files.
+     */
+    processingInterval?: HumanDuration | false;
+
+    /**
+     * Provider-specific additional configuration options.
+     */
+    providerOptions?: {
+      /**
+       * Key is the provider name, value is an object with additional configuration
+       */
+      [name: string]: {
+        /**
+         * Determines whether this provider is disabled or not. If not specified,
+         * defaults to false.
+         */
+        disabled?: boolean;
+      };
+    };
+
+    /**
+     * Processor-specific additional configuration options.
+     */
+    processorOptions?: {
+      /**
+       * Key is the processor name, value is an object with additional configuration
+       */
+      [name: string]: {
+        /**
+         * Determines whether this processor is disabled or not. If not specified,
+         * defaults to false.
+         */
+        disabled?: boolean;
+        /**
+         * The default priority is 20, and lower value means that the processor runs earlier.
+         */
+        priority?: number;
+      };
+    };
   };
 }

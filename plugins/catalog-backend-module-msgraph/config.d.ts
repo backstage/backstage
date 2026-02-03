@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
+
 export interface Config {
-  /**
-   * Configuration options for the catalog plugin.
-   */
   catalog?: {
-    /**
-     * List of processor-specific options and attributes
-     */
     processors?: {
       /**
        * MicrosoftGraphOrgReaderProcessor configuration
@@ -75,6 +71,12 @@ export interface Config {
            */
           groupFilter?: string;
           /**
+           * The fields to be fetched on query.
+           *
+           * E.g. ["id", "displayName", "description"]
+           */
+          userSelect?: string[];
+          /**
            * The search criteria to apply to extract users by groups memberships.
            *
            * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
@@ -103,9 +105,7 @@ export interface Config {
         }>;
       };
     };
-    /**
-     * List of provider-specific options and attributes
-     */
+
     providers?: {
       /**
        * MicrosoftGraphOrgEntityProvider configuration.
@@ -116,7 +116,7 @@ export interface Config {
              * The prefix of the target that this matches on, e.g.
              * "https://graph.microsoft.com/v1.0", with no trailing slash.
              */
-            target: string;
+            target?: string;
             /**
              * The auth authority used.
              *
@@ -138,7 +138,22 @@ export interface Config {
              */
             clientSecret?: string;
 
+            /**
+             * By default, the Microsoft Graph API only provides the basic feature set
+             * for querying. Certain features are limited to advanced query capabilities
+             * (see https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
+             * and need to be enabled.
+             *
+             * Some features like `$expand` are not available for advanced queries, though.
+             */
+            queryMode?: string;
             user?: {
+              /**
+               * The url path to fetch groups, defaults to `/users`.
+               *
+               * E.g. "groups/{id}/transitiveMembers/microsoft.graph.user/".
+               */
+              path?: string;
               /**
                * The "expand" argument to apply to users.
                *
@@ -151,9 +166,26 @@ export interface Config {
                * E.g. "accountEnabled eq true and userType eq 'member'"
                */
               filter?: string;
+              /**
+               * Set to false to not load user photos.
+               * This can be useful for huge organizations.
+               */
+              loadPhotos?: boolean;
+              /**
+               * The fields to be fetched on query.
+               *
+               * E.g. ["id", "displayName", "description"]
+               */
+              select?: string[];
             };
 
             group?: {
+              /**
+               * The url path to fetch groups, defaults to `/groups`.
+               *
+               * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+               */
+              path?: string;
               /**
                * The "expand" argument to apply to groups.
                *
@@ -178,9 +210,20 @@ export interface Config {
                * E.g. ["id", "displayName", "description"]
                */
               select?: string[];
+              /**
+               * Whether to ingest groups that are members of the found/filtered/searched groups.
+               * Default value is `false`.
+               */
+              includeSubGroups?: boolean;
             };
 
             userGroupMember?: {
+              /**
+               * The url path to fetch groups, defaults to `/groups`.
+               *
+               * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+               */
+              path?: string;
               /**
                * The filter to apply to extract users by groups memberships.
                *
@@ -194,15 +237,19 @@ export interface Config {
                */
               search?: string;
             };
+
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
           }
-        | Record<
-            string,
-            {
+        | {
+            [name: string]: {
               /**
                * The prefix of the target that this matches on, e.g.
                * "https://graph.microsoft.com/v1.0", with no trailing slash.
                */
-              target: string;
+              target?: string;
               /**
                * The auth authority used.
                *
@@ -224,16 +271,60 @@ export interface Config {
                */
               clientSecret: string;
 
+              /**
+               * By default, the Microsoft Graph API only provides the basic feature set
+               * for querying. Certain features are limited to advanced query capabilities
+               * (see https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
+               * and need to be enabled.
+               *
+               * Some features like `$expand` are not available for advanced queries, though.
+               */
+              queryMode?: string;
               user?: {
+                /**
+                 * The url path to fetch groups, defaults to `/groups`.
+                 *
+                 * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+                 */
+                path?: string;
+                /**
+                 * The "expand" argument to apply to users.
+                 *
+                 * E.g. "manager".
+                 */
+                expand?: string;
                 /**
                  * The filter to apply to extract users.
                  *
                  * E.g. "accountEnabled eq true and userType eq 'member'"
                  */
                 filter?: string;
+                /**
+                 * Set to false to not load user photos.
+                 * This can be useful for huge organizations.
+                 */
+                loadPhotos?: boolean;
+                /**
+                 * The fields to be fetched on query.
+                 *
+                 * E.g. ["id", "displayName", "description"]
+                 */
+                select?: string[];
               };
 
               group?: {
+                /**
+                 * The url path to fetch groups, defaults to `/groups`.
+                 *
+                 * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+                 */
+                path?: string;
+                /**
+                 * The "expand" argument to apply to groups.
+                 *
+                 * E.g. "member".
+                 */
+                expand?: string;
                 /**
                  * The filter to apply to extract groups.
                  *
@@ -252,9 +343,20 @@ export interface Config {
                  * E.g. ["id", "displayName", "description"]
                  */
                 select?: string[];
+                /**
+                 * Whether to ingest groups that are members of the found/filtered/searched groups.
+                 * Default value is `false`.
+                 */
+                includeSubGroups?: boolean;
               };
 
               userGroupMember?: {
+                /**
+                 * The url path to fetch groups, defaults to `/groups`.
+                 *
+                 * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+                 */
+                path?: string;
                 /**
                  * The filter to apply to extract users by groups memberships.
                  *
@@ -268,8 +370,13 @@ export interface Config {
                  */
                 search?: string;
               };
-            }
-          >;
+
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            };
+          };
     };
   };
 }

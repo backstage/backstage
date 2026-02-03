@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import IlloSvgUrl from './illo.svg';
 
 const useStyles = makeStyles(theme => ({
@@ -29,7 +28,7 @@ const useStyles = makeStyles(theme => ({
       position: 'relative',
       top: 'unset',
       right: 'unset',
-      margin: `${theme.spacing(10)}px auto ${theme.spacing(4)}px`,
+      margin: theme.spacing(10, 'auto', 4),
     },
   },
 }));

@@ -8,8 +8,10 @@
 Usage: backstage-create-app [options]
 
 Options:
-  -V, --version
+  --next
   --path [directory]
   --skip-install
+  --template-path [directory]
+  -V, --version
   -h, --help
 ```

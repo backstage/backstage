@@ -14,21 +14,102 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import {
+  ScaffolderApi,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { fireEvent } from '@testing-library/react';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
-import { render, fireEvent } from '@testing-library/react';
 
 describe('GitlabRepoPicker', () => {
+  const scaffolderApiMock: Partial<ScaffolderApi> = {
+    autocomplete: jest.fn().mockImplementation(opts =>
+      Promise.resolve({
+        results: [{ title: `${opts.resource}_example` }],
+      }),
+    ),
+  };
+
+  describe('GitlabRepoPicker - isDisabled', () => {
+    it('disables owner input when isDisabled is true', async () => {
+      const { getByRole } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            isDisabled
+          />
+        </TestApiProvider>,
+      );
+
+      expect(getByRole('textbox')).toBeDisabled();
+    });
+
+    it('does not disable owner input when isDisabled is false', async () => {
+      const { getByRole } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            isDisabled={false}
+          />
+        </TestApiProvider>,
+      );
+
+      expect(getByRole('textbox')).not.toBeDisabled();
+    });
+
+    it('disables select input when allowedOwners are provided and isDisabled is true', async () => {
+      const allowedOwners = ['owner1', 'owner2'];
+      const { getByRole } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            allowedOwners={allowedOwners}
+            isDisabled
+          />
+        </TestApiProvider>,
+      );
+
+      expect(getByRole('combobox')).toBeDisabled();
+    });
+
+    it('does not disable select input when allowedOwners are provided and isDisabled is false', async () => {
+      const allowedOwners = ['owner1', 'owner2'];
+      const { getByRole } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            allowedOwners={allowedOwners}
+            isDisabled={false}
+          />
+        </TestApiProvider>,
+      );
+
+      expect(getByRole('combobox')).not.toBeDisabled();
+    });
+  });
+
   describe('owner field', () => {
     it('renders a select if there is a list of allowed owners', async () => {
       const allowedOwners = ['owner1', 'owner2'];
-      const { findByText } = render(
-        <GitlabRepoPicker
-          onChange={jest.fn()}
-          rawErrors={[]}
-          state={{ repoName: 'repo' }}
-          allowedOwners={allowedOwners}
-        />,
+      const { findByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            allowedOwners={allowedOwners}
+          />
+          ,
+        </TestApiProvider>,
       );
 
       expect(await findByText('owner1')).toBeInTheDocument();
@@ -38,13 +119,16 @@ describe('GitlabRepoPicker', () => {
     it('calls onChange when the owner is changed to a different owner', async () => {
       const onChange = jest.fn();
       const allowedOwners = ['owner1', 'owner2'];
-      const { getByRole } = render(
-        <GitlabRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ repoName: 'repo' }}
-          allowedOwners={allowedOwners}
-        />,
+      const { getByRole } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            allowedOwners={allowedOwners}
+          />
+          ,
+        </TestApiProvider>,
       );
 
       await fireEvent.change(getByRole('combobox'), {
@@ -54,16 +138,19 @@ describe('GitlabRepoPicker', () => {
       expect(onChange).toHaveBeenCalledWith({ owner: 'owner2' });
     });
 
-    it('is disabled picked when only one allowed owner', () => {
+    it('is disabled picked when only one allowed owner', async () => {
       const onChange = jest.fn();
       const allowedOwners = ['owner1'];
-      const { getByRole } = render(
-        <GitlabRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ repoName: 'repo' }}
-          allowedOwners={allowedOwners}
-        />,
+      const { getByRole } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            allowedOwners={allowedOwners}
+          />
+          ,
+        </TestApiProvider>,
       );
 
       expect(getByRole('combobox')).toBeDisabled();
@@ -71,15 +158,21 @@ describe('GitlabRepoPicker', () => {
 
     it('should display free text if no allowed owners are passed', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
-        <GitlabRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ repoName: 'repo' }}
-        />,
+      const { getAllByRole } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+          />
+        </TestApiProvider>,
       );
       const ownerField = getAllByRole('textbox')[0];
-      fireEvent.change(ownerField, { target: { value: 'my-mock-owner' } });
+      ownerField.focus();
+      fireEvent.change(ownerField, {
+        target: { value: 'my-mock-owner' },
+      });
+      ownerField.blur();
 
       expect(onChange).toHaveBeenCalledWith({ owner: 'my-mock-owner' });
     });

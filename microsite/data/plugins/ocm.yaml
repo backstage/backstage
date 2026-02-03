@@ -1,0 +1,10 @@
+---
+title: Multi Cluster View with OCM
+author: Red Hat
+authorUrl: https://redhat.com
+category: Infrastructure
+description: View clusters from OCM's MultiClusterHub and MultiCluster Engine in Backstage.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/ocm/plugins/ocm/README.md
+iconUrl: /img/ocm.svg
+npmPackageName: '@backstage-community/plugin-ocm'
+addedDate: '2023-05-15'

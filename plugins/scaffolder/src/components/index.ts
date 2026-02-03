@@ -14,8 +14,37 @@
  * limitations under the License.
  */
 export * from './fields';
-export type { RepoUrlPickerUiOptions } from './fields';
+
+export {
+  EntityPickerFieldSchema,
+  type EntityPickerUiOptions,
+} from './fields/EntityPicker';
+export {
+  EntityTagsPickerFieldSchema,
+  type EntityTagsPickerUiOptions,
+} from './fields/EntityTagsPicker';
+export {
+  MyGroupsPickerFieldSchema,
+  MyGroupsPickerSchema,
+  type MyGroupsPickerUiOptions,
+} from './fields/MyGroupsPicker';
+export {
+  OwnedEntityPickerFieldSchema,
+  type OwnedEntityPickerUiOptions,
+} from './fields/OwnedEntityPicker';
+export {
+  OwnerPickerFieldSchema,
+  type OwnerPickerUiOptions,
+} from './fields/OwnerPicker';
+export {
+  repoPickerValidation,
+  RepoUrlPickerFieldSchema,
+  type RepoUrlPickerUiOptions,
+} from './fields/RepoUrlPicker';
+
 export { TemplateTypePicker } from './TemplateTypePicker';
-export * from './secrets';
-export { TaskPage } from './TaskPage';
+
 export type { RouterProps } from './Router';
+export { OngoingTask as TaskPage } from './OngoingTask';
+
+export type { ReviewStepProps } from '@backstage/plugin-scaffolder-react';

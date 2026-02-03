@@ -1,9 +1,10 @@
 ---
-title: DORA Metrics
-author: Okay
-authorUrl: https://www.okayhq.com
-category: Metrics
-description: Embed dashboards (like DORA metrics) in your team or service pages from any dev tools (including Github, Gitlab, Jira, Argo, CircleCI, Buildkite, Pagerduty, Rollbar, Sentry, etc).
-documentation: https://github.com/OkayHQ/backstage-plugin
-iconUrl: img/okay.png
-npmPackageName: '@okayhq/backstage-plugin'
+title: Liatrio DORA Metrics
+author: Liatrio
+authorUrl: https://github.com/liatrio
+category: Observability
+description: Provide a seamless way to display DORA Metrics in your developer portals.
+documentation: https://github.com/liatrio/backstage-dora-plugin/tree/main
+iconUrl: /img/liatrio-icon.png
+npmPackageName: '@liatrio/backstage-dora-plugin'
+addedDate: '2024-10-14'

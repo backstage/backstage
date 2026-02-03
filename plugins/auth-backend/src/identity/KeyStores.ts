@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { pickBy } from 'lodash';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-
+import { AuthDatabase } from '../database/AuthDatabase';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
-import { MemoryKeyStore } from './MemoryKeyStore';
 import { FirestoreKeyStore } from './FirestoreKeyStore';
+import { MemoryKeyStore } from './MemoryKeyStore';
 import { KeyStore } from './types';
+import { StaticKeyStore } from './StaticKeyStore';
 
 type Options = {
-  logger?: Logger;
-  database?: PluginDatabaseManager;
+  logger: LoggerService;
+  database: AuthDatabase;
 };
 
 export class KeyStores {
@@ -37,25 +37,16 @@ export class KeyStores {
    *
    * @returns a KeyStore store
    */
-  static async fromConfig(
-    config: Config,
-    options?: Options,
-  ): Promise<KeyStore> {
-    const { logger, database } = options ?? {};
+  static async fromConfig(config: Config, options: Options): Promise<KeyStore> {
+    const { logger, database } = options;
 
     const ks = config.getOptionalConfig('auth.keyStore');
     const provider = ks?.getOptionalString('provider') ?? 'database';
 
-    logger?.info(`Configuring "${provider}" as KeyStore provider`);
+    logger.info(`Configuring "${provider}" as KeyStore provider`);
 
     if (provider === 'database') {
-      if (!database) {
-        throw new Error('This KeyStore provider requires a database');
-      }
-
-      return await DatabaseKeyStore.create({
-        database: await database.getClient(),
-      });
+      return new DatabaseKeyStore(await database.get());
     }
 
     if (provider === 'memory') {
@@ -82,6 +73,10 @@ export class KeyStores {
       await FirestoreKeyStore.verifyConnection(keyStore, logger);
 
       return keyStore;
+    }
+
+    if (provider === 'static') {
+      return await StaticKeyStore.fromConfig(config);
     }
 
     throw new Error(`Unknown KeyStore provider: ${provider}`);

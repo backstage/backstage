@@ -14,22 +14,33 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
-import { createCatalogPermissionRule } from './util';
+import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
+import { createPermissionRule } from '@backstage/plugin-permission-node';
+import { z } from 'zod';
 
 /**
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for entities with a specified label in its metadata.
  * @alpha
  */
-export const hasLabel = createCatalogPermissionRule({
+export const hasLabel = createPermissionRule({
   name: 'HAS_LABEL',
-  description: 'Allow entities which have the specified label metadata.',
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-  apply: (resource: Entity, label: string) =>
-    !!resource.metadata.labels?.hasOwnProperty(label),
-  toQuery: (label: string) => ({
-    key: `metadata.labels.${label}`,
+  description: 'Allow entities with the specified label',
+  resourceRef: catalogEntityPermissionResourceRef,
+  paramsSchema: z.object({
+    label: z.string().describe('Name of the label to match on'),
+    value: z.string().optional().describe('Value of the label to match on'),
   }),
+  apply: (resource, { label, value }) =>
+    !!resource.metadata.labels?.hasOwnProperty(label) &&
+    (value === undefined ? true : resource.metadata.labels?.[label] === value),
+  toQuery: ({ label, value }) =>
+    value === undefined
+      ? {
+          key: `metadata.labels.${label}`,
+        }
+      : {
+          key: `metadata.labels.${label}`,
+          values: [value],
+        },
 });

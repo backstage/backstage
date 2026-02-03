@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
+
 export interface Config {
   catalog?: {
-    /**
-     * List of processor-specific options and attributes
-     */
     processors?: {
       /**
        * AwsOrganizationCloudAccountProcessor configuration
@@ -27,14 +26,17 @@ export interface Config {
         provider: {
           /**
            * The role to be assumed by this processor
+           * @deprecated Use `accountId` instead.
            */
           roleArn?: string;
+
+          /**
+           * The AWS account ID to query for organizational data
+           */
+          accountId?: string;
         };
       };
     };
-    /**
-     * List of provider-specific options and attributes
-     */
     providers?: {
       /**
        * AwsS3EntityProvider configuration
@@ -45,46 +47,59 @@ export interface Config {
         | {
             /**
              * (Required) AWS S3 Bucket Name
-             * @visibility backend
              */
             bucketName: string;
             /**
              * (Optional) AWS S3 Object key prefix
              * If not set, all keys will be accepted, no filtering will be applied.
-             * @visibility backend
              */
             prefix?: string;
             /**
              * (Optional) AWS Region.
              * If not set, AWS_REGION environment variable or aws config file will be used.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
-             * @visibility backend
              */
             region?: string;
+            /**
+             * (Optional) AWS Account id.
+             * If not set, main account is used.
+             * @see https://github.com/backstage/backstage/blob/master/packages/integration-aws-node/README.md
+             */
+            accountId?: string;
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
           }
-        | Record<
-            string,
-            {
+        | {
+            [name: string]: {
               /**
                * (Required) AWS S3 Bucket Name
-               * @visibility backend
                */
               bucketName: string;
               /**
                * (Optional) AWS S3 Object key prefix
                * If not set, all keys will be accepted, no filtering will be applied.
-               * @visibility backend
                */
               prefix?: string;
               /**
                * (Optional) AWS Region.
                * If not set, AWS_REGION environment variable or aws config file will be used.
                * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
-               * @visibility backend
                */
               region?: string;
-            }
-          >;
+              /**
+               * (Optional) AWS Account id.
+               * If not set, main account is used.
+               * @see https://github.com/backstage/backstage/blob/master/packages/integration-aws-node/README.md
+               */
+              accountId?: string;
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            };
+          };
     };
   };
 }

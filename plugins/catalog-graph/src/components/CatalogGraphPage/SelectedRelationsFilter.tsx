@@ -13,46 +13,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  makeStyles,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Autocomplete } from '@material-ui/lab';
-import React, { useCallback, useMemo } from 'react';
-import { RelationPairs } from '../EntityRelationsGraph';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { useCallback, useMemo } from 'react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
+import { useRelations } from '../../hooks';
 
-const useStyles = makeStyles({
-  formControl: {
-    maxWidth: 300,
+/** @public */
+export type SelectedRelationsFilterClassKey = 'formControl';
+
+const useStyles = makeStyles(
+  {
+    formControl: {
+      maxWidth: 300,
+    },
   },
-});
+  { name: 'PluginCatalogGraphSelectedRelationsFilter' },
+);
 
 export type Props = {
-  relationPairs: RelationPairs;
+  relations?: string[];
   value: string[] | undefined;
   onChange: (value: string[] | undefined) => void;
 };
 
-export const SelectedRelationsFilter = ({
-  relationPairs,
-  value,
-  onChange,
-}: Props) => {
+export const SelectedRelationsFilter = (props: Props) => {
+  const { relations: incomingRelations, value, onChange } = props;
+
   const classes = useStyles();
-  const relations = useMemo(() => relationPairs.flat(), [relationPairs]);
+
+  const { relations, includeRelation } = useRelations({
+    relations: incomingRelations,
+  });
+
+  const defaultValue = useMemo(
+    () => relations.filter(rel => includeRelation(rel)),
+    [relations, includeRelation],
+  );
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
 
   const handleChange = useCallback(
     (_: unknown, v: string[]) => {
-      onChange(relations.every(r => v.includes(r)) ? undefined : v);
+      onChange(v);
     },
-    [relations, onChange],
+    [onChange],
   );
 
   const handleEmpty = useCallback(() => {
@@ -61,15 +74,17 @@ export const SelectedRelationsFilter = ({
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Relations</Typography>
+      <Typography variant="button">
+        {t('catalogGraphPage.selectedRelationsFilter.title')}
+      </Typography>
       <Autocomplete
         className={classes.formControl}
         multiple
         limitTags={4}
         disableCloseOnSelect
-        aria-label="Relations"
+        aria-label={t('catalogGraphPage.selectedRelationsFilter.title')}
         options={relations}
-        value={value ?? relations}
+        value={value ?? defaultValue}
         onChange={handleChange}
         onBlur={handleEmpty}
         renderOption={(option, { selected }) => (

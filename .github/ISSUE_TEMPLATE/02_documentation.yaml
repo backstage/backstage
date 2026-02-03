@@ -1,0 +1,99 @@
+name: '📖 Report an issue in the documentation'
+description: 'Report an issue in the Backstage documentation'
+labels:
+  - domain:docs
+  - type:documentation
+  - needs:triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template is used to report issues in the Backstage documentation.
+
+        The documentation at [backstage.io](https://backstage.io) is only updated when a new release is made. Before reporting an issue here, please verify that the issue also exists in the ["next"](https://backstage.io/docs/next/overview/what-is-backstage) version of the documentation, which you can access using the top-right dropdown menu.
+  # This field is managed by .common.yaml
+  - id: issue-labels
+    type: checkboxes
+    attributes:
+      label: '📜 Issue Labels'
+      options:
+        - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
+          required: true
+  # This field is managed by .common.yaml
+  - id: project-area
+    type: dropdown
+    attributes:
+      label: '🗃️ Project Area'
+      description: Which project area is this issue most closely related to? This will help find an owner for the issue faster.
+      options:
+        - Unknown
+        - Auditor
+        - Auth
+        - Catalog
+        - CLI Tooling
+        - Core Framework
+        - Design System
+        - Documentation
+        - Events System
+        - Home
+        - Kubernetes Plugin
+        - Management of this repository
+        - Microsite
+        - Notifications
+        - OpenAPI Tooling
+        - Permission Framework
+        - Search
+        - Software Templates
+        - TechDocs
+    validations:
+      required: true
+  # This field is managed by .common.yaml
+  - type: dropdown
+    id: integration
+    attributes:
+      label: '🔗 External Integration'
+      description: Is this issue related to an integration with any particular external system?
+      options:
+        - N/A
+        - AWS
+        - Azure
+        - Azure DevOps
+        - Bitbucket Cloud
+        - Bitbucket Server
+        - GCP
+        - Gerrit
+        - Gitea
+        - GitHub
+        - GitLab
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: '📝 Description'
+      description: Describe the problem you have found in the documentation.
+      placeholder: |
+        Please provide links to the specific pages and sections that need to be corrected, and describe the problem you have found.
+  # This field is managed by .common.yaml
+  - id: read-code-of-conduct
+    type: checkboxes
+    attributes:
+      label: 'Have you read the Code of Conduct?'
+      options:
+        - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
+          required: true
+  - type: dropdown
+    attributes:
+      label: Are you willing to submit PR?
+      description: This is absolutely not required, but we are happy to guide you in the contribution process.
+      options:
+        - Undecided
+        - Yes, and I have enough information to get started
+        - Yes, but I would like some more guidance
+        - No, but I'm happy to collaborate on a PR with someone else
+        - No, I don't have time to work on this right now
+    validations:
+      required: true

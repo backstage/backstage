@@ -20,31 +20,6 @@
  * @packageDocumentation
  */
 
-export type {
-  DeferredEntity,
-  LocationSpec,
-  EntityRelationSpec,
-  CatalogProcessor,
-  CatalogProcessorParser,
-  CatalogProcessorCache,
-  CatalogProcessorEmit,
-  CatalogProcessorLocationResult,
-  CatalogProcessorEntityResult,
-  CatalogProcessorRelationResult,
-  CatalogProcessorErrorResult,
-  CatalogProcessorRefreshKeysResult,
-  CatalogProcessorResult,
-  EntityProvider,
-  EntityProviderConnection,
-  EntityProviderMutation,
-} from '@backstage/plugin-catalog-node';
-export { processingResult } from '@backstage/plugin-catalog-node';
-
-export * from './catalog';
-export * from './ingestion';
-export * from './modules';
-export * from './permissions';
-export * from './processing';
-export * from './search';
-export * from './service';
-export * from './util';
+export { catalogPlugin as default } from './service/CatalogPlugin';
+export * from './processors';
+export * from './constants';

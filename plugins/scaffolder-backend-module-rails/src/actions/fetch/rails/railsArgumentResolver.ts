@@ -14,46 +14,52 @@
  * limitations under the License.
  */
 
-import { sep as separatorPath } from 'path';
+import { sep as separatorPath } from 'node:path';
 
-enum Webpacker {
-  react = 'react',
-  vue = 'vue',
-  angular = 'angular',
-  elm = 'elm',
-  stimulus = 'stimulus',
-}
+const Webpacker = {
+  react: 'react',
+  vue: 'vue',
+  angular: 'angular',
+  elm: 'elm',
+  stimulus: 'stimulus',
+} as const;
 
-enum Database {
-  mysql = 'mysql',
-  postgresql = 'postgresql',
-  sqlite3 = 'sqlite3',
-  oracle = 'oracle',
-  sqlserver = 'sqlserver',
-  jdbcmysql = 'jdbcmysql',
-  jdbcsqlite3 = 'jdbcsqlite3',
-  jdbcpostgresql = 'jdbcpostgresql',
-  jdbc = 'jdbc',
-}
+const Database = {
+  mysql: 'mysql',
+  postgresql: 'postgresql',
+  sqlite3: 'sqlite3',
+  oracle: 'oracle',
+  sqlserver: 'sqlserver',
+  jdbcmysql: 'jdbcmysql',
+  jdbcsqlite3: 'jdbcsqlite3',
+  jdbcpostgresql: 'jdbcpostgresql',
+  jdbc: 'jdbc',
+} as const;
 
-enum RailsVersion {
-  dev = 'dev',
-  edge = 'edge',
-  master = 'master',
-  fromImage = 'fromImage',
-}
+const RailsVersion = {
+  dev: 'dev',
+  edge: 'edge',
+  master: 'master',
+  fromImage: 'fromImage',
+} as const;
 
 export type RailsRunOptions = {
-  minimal?: boolean;
   api?: boolean;
-  template?: string;
-  webpacker?: Webpacker;
-  database?: Database;
-  railsVersion?: RailsVersion;
-  skipBundle?: boolean;
-  skipWebpackInstall?: boolean;
-  skipTest?: boolean;
+  database?: (typeof Database)[keyof typeof Database];
   force?: boolean;
+  minimal?: boolean;
+  railsVersion?: (typeof RailsVersion)[keyof typeof RailsVersion];
+  skipActionCable?: boolean;
+  skipActionMailbox?: boolean;
+  skipActionMailer?: boolean;
+  skipActionText?: boolean;
+  skipActiveStorage?: boolean;
+  skipBundle?: boolean;
+  skipTest?: boolean;
+  skipWebpackInstall?: boolean;
+  skipActiveRecord?: boolean;
+  template?: string;
+  webpacker?: (typeof Webpacker)[keyof typeof Webpacker];
 };
 
 export const railsArgumentResolver = (
@@ -79,8 +85,32 @@ export const railsArgumentResolver = (
     argumentsToRun.push('--skip-webpack-install');
   }
 
+  if (options?.skipActiveRecord) {
+    argumentsToRun.push('--skip-active-record');
+  }
+
   if (options?.skipTest) {
     argumentsToRun.push('--skip-test');
+  }
+
+  if (options?.skipActionCable) {
+    argumentsToRun.push('--skip-action-cable');
+  }
+
+  if (options?.skipActionMailer) {
+    argumentsToRun.push('--skip-action-mailer');
+  }
+
+  if (options?.skipActionMailbox) {
+    argumentsToRun.push('--skip-action-mailbox');
+  }
+
+  if (options?.skipActiveStorage) {
+    argumentsToRun.push('--skip-active-storage');
+  }
+
+  if (options?.skipActionText) {
+    argumentsToRun.push('--skip-action-text');
   }
 
   if (options?.force) {
@@ -89,7 +119,9 @@ export const railsArgumentResolver = (
 
   if (
     options?.webpacker &&
-    Object.values(Webpacker).includes(options?.webpacker as Webpacker)
+    Object.values(Webpacker).includes(
+      options?.webpacker as (typeof Webpacker)[keyof typeof Webpacker],
+    )
   ) {
     argumentsToRun.push('--webpack');
     argumentsToRun.push(options.webpacker);
@@ -97,7 +129,9 @@ export const railsArgumentResolver = (
 
   if (
     options?.database &&
-    Object.values(Database).includes(options?.database as Database)
+    Object.values(Database).includes(
+      options?.database as (typeof Database)[keyof typeof Database],
+    )
   ) {
     argumentsToRun.push('--database');
     argumentsToRun.push(options.database);
@@ -105,7 +139,9 @@ export const railsArgumentResolver = (
 
   if (
     options?.railsVersion !== RailsVersion.fromImage &&
-    Object.values(RailsVersion).includes(options?.railsVersion as RailsVersion)
+    Object.values(RailsVersion).includes(
+      options?.railsVersion as (typeof RailsVersion)[keyof typeof RailsVersion],
+    )
   ) {
     argumentsToRun.push(`--${options.railsVersion}`);
   }

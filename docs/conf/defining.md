@@ -23,6 +23,17 @@ Each package is searched for a schema at a single point of entry, a top-level
 inlined JSON schema, or a relative path to a schema file. Supported schema file
 formats are `.json` or `.d.ts`.
 
+```jsonc title="package.json"
+{
+  // ...
+  "files": [
+    // ...
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
+}
+```
+
 > When defining a schema file, be sure to include the file in your
 > `package.json` > `"files"` field as well!
 
@@ -73,13 +84,16 @@ receive schema validation and autocompletion. For example:
 ## Visibility
 
 The `https://backstage.io/schema/config-v1` meta schema is a superset of JSON
-Schema Draft 07. The single addition is a custom `visibility` keyword, which is
-used to indicate whether the given config value should be visible in the
-frontend or not. The possible values are `frontend`, `backend`, and `secret`,
-where `backend` is the default. A visibility of `secret` has the same scope at
-runtime, but it will be treated with more care in certain contexts, and defining
-both `frontend` and `secret` for the same value in two different schemas will
-result in an error during schema merging.
+Schema Draft 07. The only additions are the custom `visibility` and
+`deepVisibility` keywords, which are used to indicate whether the given config
+value should be visible in the frontend or not. The `visibility` marker applies
+only to the field it's on, while the `deepVisibility` marker applies to the
+field it's on and downwards in the hierarchy as well. The possible values are
+`frontend`, `backend`, and `secret`, where `backend` is the default. A
+visibility of `secret` has the same scope at runtime, but it will be treated
+with more care in certain contexts, and defining both `frontend` and `secret`
+for the same value in two different schemas will result in an error during
+schema merging.
 
 The visibility only applies to the direct parent of where the keyword is placed
 in the schema. For example, if you set the visibility to `frontend` for a subset
@@ -94,17 +108,38 @@ declare the visibility of a leaf node of `type: "string"`.
 | `backend`    | (Default) Only in backend                                          |
 | `secret`     | Only in backend and may be excluded from logs for security reasons |
 
-You can set visibility with an `@visibility` comment in the `Config` Typescript
-interface.
+You can set visibility with a `@visibility` or `@deepVisibility` comment in the
+`Config` Typescript interface.
 
 ```ts
 export interface Config {
   app: {
     /**
      * Frontend root URL
+     * NOTE: Visibility applies to only this field
      * @visibility frontend
      */
     baseUrl: string;
+
+    /**
+     * Some custom complex type
+     * NOTE: Visibility applies recursively downward
+     * This is particularly useful for complex types like durations
+     * @deepVisibility frontend
+     */
+    customSchedule: HumanDuration;
+  };
+
+  backend: {
+    /**
+     * Some custom credentials type
+     * NOTE: Visibility applies recursively downward, and this would NOT have
+     * been safe if the regular visibility keyword had been used
+     * @deepVisibility secret
+     */
+    customCredentials: {
+      password: string;
+    };
   };
 }
 ```
@@ -127,7 +162,7 @@ may need to pass in all files using one or multiple `--config <path>` options.
 > to change for different deployment environments should be static
 > configuration, while it should otherwise be avoided.
 
-When defining configuration for your plugin, keep keys camelCased and stick to
+When defining configuration for your plugin, keep keys on `camelCase` form and stick to
 existing casing conventions such as `baseUrl` rather than `baseURL`.
 
 It is also usually best to prefer objects over arrays, as it makes it possible

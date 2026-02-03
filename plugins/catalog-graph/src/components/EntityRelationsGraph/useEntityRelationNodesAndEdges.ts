@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { MouseEvent, useState } from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
-import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
-import { EntityEdge, EntityNode } from './types';
+import useDebounce from 'react-use/esm/useDebounce';
+import { RelationPairs } from '../../lib/types';
+import { EntityEdge, EntityNode } from '../../lib/types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { useRelations } from '../../hooks/useRelations';
+import { buildGraph } from '../../lib/graph';
+import {
+  BuiltInTransformations,
+  builtInTransformations,
+  GraphTransformer,
+  TransformationContext,
+} from '../../lib/graph-transformations';
 
 /**
  * Generate nodes and edges to render the entity graph.
@@ -30,8 +38,9 @@ export function useEntityRelationNodesAndEdges({
   mergeRelations = true,
   kinds,
   relations,
+  entityFilter,
   onNodeClick,
-  relationPairs = ALL_RELATION_PAIRS,
+  relationPairs: incomingRelationPairs,
 }: {
   rootEntityRefs: string[];
   maxDepth?: number;
@@ -39,6 +48,7 @@ export function useEntityRelationNodesAndEdges({
   mergeRelations?: boolean;
   kinds?: string[];
   relations?: string[];
+  entityFilter?: (entity: Entity) => boolean;
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
 }): {
@@ -57,7 +67,13 @@ export function useEntityRelationNodesAndEdges({
       maxDepth,
       kinds,
       relations,
+      entityFilter,
     },
+  });
+
+  const { relationPairs, includeRelation } = useRelations({
+    relations,
+    relationPairs: incomingRelationPairs,
   });
 
   useDebounce(
@@ -71,12 +87,15 @@ export function useEntityRelationNodesAndEdges({
         const focused = rootEntityRefs.includes(entityRef);
         const node: EntityNode = {
           id: entityRef,
-          title: entity.metadata?.title ?? undefined,
-          kind: entity.kind,
-          name: entity.metadata.name,
-          namespace: entity.metadata.namespace ?? DEFAULT_NAMESPACE,
+          entity,
           focused,
           color: focused ? 'secondary' : 'primary',
+          // @deprecated
+          kind: entity.kind,
+          name: entity.metadata.name,
+          namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+          title: entity.metadata.title,
+          spec: entity.spec,
         };
 
         if (onNodeClick) {
@@ -86,75 +105,64 @@ export function useEntityRelationNodesAndEdges({
         return node;
       });
 
-      const edges: EntityEdge[] = [];
-      const visitedNodes = new Set<string>();
-      const nodeQueue = [...rootEntityRefs];
+      const edges = buildGraph({
+        rootEntityRefs,
+        entities,
+        includeRelation,
+        kinds,
+        mergeRelations,
+        relationPairs,
+        unidirectional,
+      });
 
-      while (nodeQueue.length > 0) {
-        const entityRef = nodeQueue.pop()!;
-        const entity = entities[entityRef];
-        visitedNodes.add(entityRef);
+      const transformationContext: TransformationContext = {
+        nodeDistances: new Map(),
+        edges,
+        nodes,
 
-        if (entity) {
-          entity?.relations?.forEach(rel => {
-            // Check if the related entity should be displayed, if not, ignore
-            // the relation too
-            if (!entities[rel.targetRef]) {
-              return;
-            }
+        rootEntityRefs,
+        unidirectional,
+        maxDepth,
+      };
 
-            if (relations && !relations.includes(rel.type)) {
-              return;
-            }
-
-            if (
-              kinds &&
-              !kinds.some(kind =>
-                rel.targetRef.startsWith(`${kind.toLocaleLowerCase('en-US')}:`),
-              )
-            ) {
-              return;
-            }
-
-            if (!unidirectional || !visitedNodes.has(rel.targetRef)) {
-              if (mergeRelations) {
-                const pair = relationPairs.find(
-                  ([l, r]) => l === rel.type || r === rel.type,
-                ) ?? [rel.type];
-                const [left] = pair;
-
-                edges.push({
-                  from: left === rel.type ? entityRef : rel.targetRef,
-                  to: left === rel.type ? rel.targetRef : entityRef,
-                  relations: pair,
-                  label: 'visible',
-                });
-              } else {
-                edges.push({
-                  from: entityRef,
-                  to: rel.targetRef,
-                  relations: [rel.type],
-                  label: 'visible',
-                });
-              }
-            }
-
-            if (!visitedNodes.has(rel.targetRef)) {
-              nodeQueue.push(rel.targetRef);
-              visitedNodes.add(rel.targetRef);
-            }
-          });
+      const runTransformation = (
+        transformation: BuiltInTransformations | GraphTransformer,
+      ) => {
+        if (typeof transformation === 'function') {
+          transformation(transformationContext);
+        } else {
+          builtInTransformations[transformation](transformationContext);
         }
+      };
+
+      runTransformation('reduce-edges');
+      runTransformation('set-distances');
+      if (unidirectional) {
+        runTransformation('strip-distant-edges');
+      }
+      if (mergeRelations || unidirectional) {
+        // Merge relations even if only unidirectional, the next transformer
+        // 'remove-backward-edges' needs to know about all relations before it
+        // strips away the backward ones
+        runTransformation('merge-relations');
+      }
+      if (unidirectional && !mergeRelations) {
+        runTransformation('order-forward');
+        runTransformation('remove-backward-edges');
       }
 
-      setNodesAndEdges({ nodes, edges });
+      setNodesAndEdges({
+        nodes: transformationContext.nodes,
+        edges: transformationContext.edges,
+      });
     },
     100,
     [
+      maxDepth,
       entities,
       rootEntityRefs,
       kinds,
-      relations,
+      includeRelation,
       unidirectional,
       mergeRelations,
       onNodeClick,

@@ -17,11 +17,21 @@
 import { Config } from '@backstage/config';
 
 /**
+ * The default Google Cloud Storage host.
+ *
+ */
+export const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
+
+/**
  * The configuration parameters for a single Google Cloud Storage provider.
  *
  * @public
  */
 export type GoogleGcsIntegrationConfig = {
+  /**
+   * The host of the target that this matches on.
+   */
+  host: string;
   /**
    * Service account email used to authenticate requests.
    */
@@ -42,15 +52,19 @@ export function readGoogleGcsIntegrationConfig(
   config: Config,
 ): GoogleGcsIntegrationConfig {
   if (!config) {
-    return {};
+    return { host: GOOGLE_GCS_HOST };
   }
 
   if (!config.has('clientEmail') && !config.has('privateKey')) {
-    return {};
+    return { host: GOOGLE_GCS_HOST };
   }
 
   const privateKey = config.getString('privateKey').split('\\n').join('\n');
-
   const clientEmail = config.getString('clientEmail');
-  return { clientEmail: clientEmail, privateKey: privateKey };
+
+  return {
+    host: GOOGLE_GCS_HOST,
+    clientEmail,
+    privateKey,
+  };
 }

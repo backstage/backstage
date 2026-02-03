@@ -1,0 +1,7 @@
+{
+  "name": "@internal/inline-dep-missing",
+  "files": [
+    "dist",
+    "type-utils"
+  ]
+}

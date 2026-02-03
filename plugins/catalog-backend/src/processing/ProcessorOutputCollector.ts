@@ -15,14 +15,15 @@
  */
 
 import {
-  Entity,
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
+  Entity,
+  stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
-import { Logger } from 'winston';
 import {
+  CatalogProcessor,
   CatalogProcessorResult,
   DeferredEntity,
   EntityRelationSpec,
@@ -34,6 +35,7 @@ import {
   validateEntityEnvelope,
 } from './util';
 import { RefreshKeyData } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Helper class for aggregating all of the emitted data from processors.
@@ -45,13 +47,25 @@ export class ProcessorOutputCollector {
   private readonly refreshKeys = new Array<RefreshKeyData>();
   private done = false;
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly parentEntity: Entity,
-  ) {}
+  private readonly logger: LoggerService;
+  private readonly parentEntity: Entity;
 
-  get onEmit(): (i: CatalogProcessorResult) => void {
-    return i => this.receive(i);
+  constructor(logger: LoggerService, parentEntity: Entity) {
+    this.logger = logger;
+    this.parentEntity = parentEntity;
+  }
+
+  generic(): (i: CatalogProcessorResult) => void {
+    return i => this.receive(this.logger, i);
+  }
+
+  forProcessor(
+    processor: CatalogProcessor,
+  ): (i: CatalogProcessorResult) => void {
+    const logger = this.logger.child({
+      processor: processor.getProcessorName(),
+    });
+    return i => this.receive(logger, i);
   }
 
   results() {
@@ -64,9 +78,9 @@ export class ProcessorOutputCollector {
     };
   }
 
-  private receive(i: CatalogProcessorResult) {
+  private receive(logger: LoggerService, i: CatalogProcessorResult) {
     if (this.done) {
-      this.logger.warn(
+      logger.warn(
         `Item of type "${
           i.type
         }" was emitted after processing had completed. Stack trace: ${
@@ -84,33 +98,51 @@ export class ProcessorOutputCollector {
         entity = validateEntityEnvelope(i.entity);
       } catch (e) {
         assertError(e);
-        this.logger.debug(`Envelope validation failed at ${location}, ${e}`);
+        logger.debug(`Envelope validation failed at ${location}, ${e}`);
         this.errors.push(e);
+        return;
+      }
+
+      // The processor contract says you should return the "trunk" (current)
+      // entity, not emit it. But it happens that this is misunderstood or
+      // accidentally forgotten. This can lead to circular references which at
+      // best is wasteful, so we try to be helpful by ignoring such emitted
+      // entities.
+      const entityRef = stringifyEntityRef(entity);
+      if (entityRef === stringifyEntityRef(this.parentEntity)) {
+        logger.warn(
+          `Ignored emitted entity ${entityRef} whose ref was identical to the one being processed. This commonly indicates mistakenly emitting the input entity instead of returning it.`,
+        );
         return;
       }
 
       // Note that at this point, we have only validated the envelope part of
       // the entity data. Annotations are not part of that, so we have to be
-      // defensive. If the annotations were malformed (e.g. were not a valid
-      // object), we just skip over this step and let the full entity
-      // validation at the next step of processing catch that.
+      // defensive and report an error if the annotations isn't a valid object, to avoid
+      // hiding errors when adding location annotations.
       const annotations = entity.metadata.annotations || {};
-      if (typeof annotations === 'object' && !Array.isArray(annotations)) {
-        const originLocation = getEntityOriginLocationRef(this.parentEntity);
-        entity = {
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            annotations: {
-              ...annotations,
-              [ANNOTATION_ORIGIN_LOCATION]: originLocation,
-              [ANNOTATION_LOCATION]: location,
-            },
-          },
-        };
+      if (typeof annotations !== 'object' || Array.isArray(annotations)) {
+        this.errors.push(
+          new Error('metadata.annotations must be a valid object'),
+        );
+        return;
       }
+      const originLocation = getEntityOriginLocationRef(this.parentEntity);
+      entity = {
+        ...entity,
+        metadata: {
+          ...entity.metadata,
+          annotations: {
+            ...annotations,
+            [ANNOTATION_ORIGIN_LOCATION]: originLocation,
+            [ANNOTATION_LOCATION]: location,
+          },
+        },
+      };
 
-      this.deferredEntities.push({ entity, locationKey: location });
+      const locationKey =
+        i.locationKey === undefined ? location : i.locationKey ?? undefined;
+      this.deferredEntities.push({ entity, locationKey });
     } else if (i.type === 'location') {
       const entity = locationSpecToLocationEntity({
         location: i.location,

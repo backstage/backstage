@@ -1,14 +1,13 @@
 ---
 id: cli
 title: TechDocs CLI
-# prettier-ignore
 description: TechDocs CLI - a utility command line interface for managing TechDocs sites in Backstage.
 ---
 
 Utility command line interface for managing TechDocs sites in
 [Backstage](https://github.com/backstage/backstage).
 
-https://backstage.io/docs/features/techdocs/techdocs-overview
+https://backstage.io/docs/features/techdocs/
 
 ## Features
 
@@ -70,6 +69,11 @@ a Backstage app server on port 3000. The Backstage app has a custom TechDocs API
 implementation, which uses the MkDocs preview server as a proxy to fetch the
 generated documentation files and assets.
 
+Backstage instances might differ from the provided preview app in appearance and
+behavior. To preview documentation with a different app, use
+`--preview-app-bundle-path` with a path to the bundle of the app to use instead.
+Typically, a `dist` or `build` directory.
+
 NOTE: When using a custom `techdocs` docker image, make sure the entry point is
 also `ENTRYPOINT ["mkdocs"]` or override with `--docker-entrypoint`.
 
@@ -81,12 +85,21 @@ Usage: techdocs-cli serve [options]
 Serve a documentation project locally in a Backstage app-like environment
 
 Options:
-  -i, --docker-image <DOCKER_IMAGE>        The mkdocs docker container to use (default: "spotify/techdocs")
-  --docker-entrypoint <DOCKER_ENTRYPOINT>  Override the image entrypoint
-  --no-docker                              Do not use Docker, use MkDocs executable in current user environment.
-  --mkdocs-port <PORT>                     Port for MkDocs server to use (default: "8000")
-  -v --verbose                             Enable verbose output. (default: false)
-  -h, --help                               display help for command
+  -i, --docker-image <DOCKER_IMAGE>           The mkdocs docker container to use (default: "spotify/techdocs")
+  --docker-entrypoint <DOCKER_ENTRYPOINT>     Override the image entrypoint
+  --docker-option <DOCKER_OPTION...>          Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12"
+                                              (can be added multiple times).
+  --no-docker                                 Do not use Docker, use MkDocs executable in current user environment.
+  --mkdocs-parameter-clean                    Pass "--clean" parameter to mkdocs server running in containerized environment.
+  --mkdocs-parameter-dirtyreload              Pass "--dirtyreload" parameter to mkdocs server running in containerized environment.
+  --mkdocs-parameter-strict                   Pass "--strict" parameter to mkdocs server running in containerized environment.
+  --mkdocs-port <PORT>                        Port for MkDocs server to use (default: "8000")
+  --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using a web app other than the included one.
+  --preview-app-port <PORT>                   Port where the preview will be served.
+                                              Can only be used with "--preview-app-bundle-path". (default: "3000")
+  -c, --mkdocs-config-file-name <FILENAME>    Yaml file to use as config by mkdocs.
+  -v --verbose                                Enable verbose output. (default: false)
+  -h, --help                                  display help for command
 ```
 
 ### Generate TechDocs site from a documentation project
@@ -131,10 +144,12 @@ Options:
                                   if not found.
   --etag <ETAG>                   A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored
                                   in techdocs_metadata.json.
+  --defaultPlugin <PLUGIN_NAME>   Plugins which should be added automatically to the mkdocs.yaml file. (default: [])
   --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
                                   Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
   --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
                                   in case a default <docs-dir>/index.md is not provided. (default: false)
+  --runAsDefaultUser              Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
   -v --verbose                    Enable verbose output. (default: false)
   -h, --help                      display help for command
 ```
@@ -166,29 +181,38 @@ Usage: techdocs-cli publish [options]
 Publish generated TechDocs site to an external storage AWS S3, Google GCS, etc.
 
 Options:
-  --publisher-type <TYPE>                  (Required always) awsS3 | googleGcs | azureBlobStorage
-                                           - same as techdocs.publisher.type in Backstage
-                                           app-config.yaml
-  --storage-name <BUCKET/CONTAINER NAME>   (Required always) In case of AWS/GCS, use the bucket
-                                           name. In case of Azure, use container name. Same as
-                                           techdocs.publisher.[TYPE].bucketName
-  --entity <NAMESPACE/KIND/NAME>           (Required always) Entity uid separated by / in
-                                           namespace/kind/name order (case-sensitive). Example:
-                                           default/Component/myEntity
-  --legacyUseCaseSensitiveTripletPaths     Publishes objects with cased entity triplet prefix when set (e.g. namespace/Kind/name).
-                                           Only use if your TechDocs backend is configured the same way
-  --azureAccountName <AZURE ACCOUNT NAME>  (Required for Azure) specify when --publisher-type
-                                           azureBlobStorage
-  --azureAccountKey <AZURE ACCOUNT KEY>    Azure Storage Account key to use for authentication.
-                                           If not specified, you must set AZURE_TENANT_ID,
-                                           AZURE_CLIENT_ID & AZURE_CLIENT_SECRET as environment
-                                           variables.
-  --awsRoleArn <AWS ROLE ARN>              Optional AWS ARN of role to be assumed.
-  --awsEndpoint <AWS ENDPOINT>             Optional AWS endpoint to send requests to.
-  --awsS3ForcePathStyle                    Optional AWS S3 option to force path style.
-  --directory <PATH>                       Path of the directory containing generated files to
-                                           publish (default: "./site/")
-  -h, --help                               display help for command
+  --publisher-type <TYPE>                                       (Required always) awsS3 | googleGcs | azureBlobStorage | openStackSwift - same as techdocs.publisher.type in Backstage app-config.yaml
+  --storage-name <BUCKET/CONTAINER NAME>                        (Required always) In case of AWS/GCS, use the bucket name. In case of Azure, use container name. Same as
+                                                                techdocs.publisher.[TYPE].bucketName
+  --entity <NAMESPACE/KIND/NAME>                                (Required always) Entity uid separated by / in namespace/kind/name order (case-sensitive). Example: default/Component/myEntity
+  --legacyUseCaseSensitiveTripletPaths                          Publishes objects with cased entity triplet prefix when set (e.g. namespace/Kind/name). Only use if your TechDocs backend is configured
+                                                                the same way. (default: false)
+  --azureAccountName <AZURE ACCOUNT NAME>                       (Required for Azure) specify when --publisher-type azureBlobStorage
+  --azureAccountKey <AZURE ACCOUNT KEY>                         Azure Storage Account key to use for authentication. If not specified, you must set AZURE_TENANT_ID, AZURE_CLIENT_ID &
+                                                                AZURE_CLIENT_SECRET as environment variables.
+  --awsRoleArn <AWS ROLE ARN>                                   Optional AWS ARN of role to be assumed.
+  --awsEndpoint <AWS ENDPOINT>                                  Optional AWS endpoint to send requests to.
+  --awsProxy <HTTPS Proxy>                                      Optional Proxy to use for AWS requests.
+  --awsS3sse <AWS SSE>                                          Optional AWS S3 Server Side Encryption.
+  --awsS3ForcePathStyle                                         Optional AWS S3 option to force path style.
+  --awsBucketRootPath <AWS BUCKET ROOT PATH>                    Optional sub-directory to store files in Amazon S3
+  --awsMaxAttempts <AWS MAX ATTEMPTS>                           Optional maximum number of retries for AWS S3 operations. If not specified, default value of 3 is used.
+  --osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>  (Required for OpenStack) specify when --publisher-type openStackSwift
+  --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>    (Required for OpenStack) specify when --publisher-type openStackSwift
+  --osAuthUrl <OPENSTACK SWIFT AUTHURL>                         (Required for OpenStack) specify when --publisher-type openStackSwift
+  --osSwiftUrl <OPENSTACK SWIFT SWIFTURL>                       (Required for OpenStack) specify when --publisher-type openStackSwift
+  --gcsBucketRootPath <GCS BUCKET ROOT PATH>                    Optional sub-directory to store files in Google cloud storage
+  --directory <PATH>                                            Path of the directory containing generated files to publish (default: "./site/")
+  -h, --help                                                    display help for command
+```
+
+#### Publishing from behind a proxy
+
+For users attempting to publish TechDocs content behind a proxy, the TechDocs CLI leverages `global-agent` to navigate the proxy to successfully connect to that location. To enable `global-agent`, the following variables need to be set prior to running the techdocs-cli command:
+
+```bash
+export GLOBAL_AGENT_HTTPS_PROXY=${HTTP_PROXY}
+export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}
 ```
 
 ### Migrate content for case-insensitive access
@@ -233,7 +257,7 @@ details.
 
 You need to make sure that your environment is able to authenticate with the
 target cloud provider. `techdocs-cli` uses the official Node.js clients provided
-by AWS (v2), Google Cloud and Azure. You can authenticate using environment
+by AWS (v3), Google Cloud and Azure. You can authenticate using environment
 variables and/or by other means (`~/.aws/credentials`, `~/.config/gcloud` etc.)
 
 Refer to the Authentication section of the following documentation depending

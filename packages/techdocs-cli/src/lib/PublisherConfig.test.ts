@@ -23,7 +23,7 @@ describe('getValidPublisherConfig', () => {
       publisherType: 'unknown publisher',
     } as unknown as OptionValues;
 
-    expect(() => PublisherConfig.getValidConfig(invalidConfig)).toThrowError(
+    expect(() => PublisherConfig.getValidConfig(invalidConfig)).toThrow(
       `Unknown publisher type ${invalidConfig.publisherType}`,
     );
   });
@@ -34,7 +34,7 @@ describe('getValidPublisherConfig', () => {
         publisherType: 'azureBlobStorage',
       } as unknown as OptionValues;
 
-      expect(() => PublisherConfig.getValidConfig(config)).toThrowError(
+      expect(() => PublisherConfig.getValidConfig(config)).toThrow(
         'azureBlobStorage requires --azureAccountName to be specified',
       );
     });
@@ -104,7 +104,7 @@ describe('getValidPublisherConfig', () => {
         osSecret: 'someSecret',
       } as unknown as OptionValues;
 
-      expect(() => PublisherConfig.getValidConfig(config)).toThrowError(
+      expect(() => PublisherConfig.getValidConfig(config)).toThrow(
         `openStackSwift requires the following params to be specified: ${[
           'osAuthUrl',
           'osSwiftUrl',

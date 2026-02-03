@@ -3,11 +3,47 @@ on:
   issues:
     types: [opened]
 
+permissions:
+  contents: read
+
 jobs:
   sync:
+    permissions:
+      contents: read # for github/issue-labeler to get repo contents
+      issues: write # for github/issue-labeler to create or remove labels
     runs-on: ubuntu-latest
 
     if: github.repository == 'backstage/backstage'
     steps:
-      - name: Issue sync
-        uses: backstage/actions/issue-sync@v0.5.3
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      # We need to checkout the `.github/ISSUE_TEMPLATE` for the advanced labeler action to be able to read the templates
+      # While at it we might as well checkout all of `.github` so that the labeling actions don't need to fetch their configs
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          sparse-checkout: .github
+
+      - name: Add issue labels
+        uses: github/issue-labeler@c1b0f9f52a63158c4adc09425e858e87b32e9685 # v3.4
+        with:
+          include-title: 1
+          include-body: 0
+          configuration-path: .github/issue-labeler.yml
+          enable-versioned-regex: 0
+          not-before: 2024-04-19T15:03:51Z
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+
+      # These two steps add labels based on user input in the issue form
+      - name: Parse issue form
+        uses: stefanbuck/github-issue-parser@10dcc54158ba4c137713d9d69d70a2da63b6bda3 # v3
+        id: issue-parser
+        with:
+          template-path: .github/ISSUE_TEMPLATE/.common.yaml
+      - name: Add advanced issue labels
+        uses: redhat-plumbers-in-action/advanced-issue-labeler@9e55064634b67244f7deb4211452b4a7217b93de # v2
+        with:
+          issue-form: ${{ steps.issue-parser.outputs.jsonString }}
+          token: ${{ secrets.GITHUB_TOKEN }}

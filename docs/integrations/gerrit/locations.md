@@ -11,6 +11,8 @@ or registered with the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
 plugin.
 
+Gerrit 3.9+ supports inline editing via URL. The integration enables this by default, following Gerrit's [official URL pattern](https://gerrit-review.googlesource.com/Documentation/user-inline-edit.html#create_from_url) for inline edits.
+
 ## Configuration
 
 To use this integration, add at least one Gerrit configuration to your root `app-config.yaml`:
@@ -19,9 +21,10 @@ To use this integration, add at least one Gerrit configuration to your root `app
 integrations:
   gerrit:
     - host: gerrit.company.com
+      gitilesBaseUrl: https://gerrit.company.com/gitiles
       baseUrl: https://gerrit.company.com/gerrit
       cloneUrl: https://gerrit.company.com/clone
-      gitilesBaseUrl: https://gerrit.company.com/gitiles
+      disableEditUrl: false
       username: ${GERRIT_USERNAME}
       password: ${GERRIT_PASSWORD}
 ```
@@ -31,16 +34,13 @@ you can list the Gerrit instances you want to fetch data from. Each entry is
 a structure with up to six elements:
 
 - `host`: The host of the Gerrit instance, e.g. `gerrit.company.com`.
+- `gitilesBaseUrl`: The base url of the Gitiles instance.
 - `baseUrl` (optional): Needed if the Gerrit instance is not reachable at
   the base of the `host` option (e.g. `https://gerrit.company.com`) set the
   address here. This is the address that you would open in a browser.
 - `cloneUrl` (optional): The base URL for HTTP clones. Will default to `baseUrl` if
   not set. The address used to clone a repo is the `cloneUrl` plus the repo name.
-- `gitilesBaseUrl` (optional): This is needed for creating a valid user-friendly URL
-  that can be used for browsing the content of the provider. If not set a default
-  value will be created in the same way as the "baseUrl" option. There is no
-  requirement to have Gitiles for the Backstage Gerrit integration but without it
-  some links in the Backstage UI will be broken.
+- `disableEditUrl` (optional): Disable the edit mode.
 - `username` (optional): The Gerrit username to use in API requests. If
   neither a username nor password are supplied, anonymous access will be used.
 - `password` (optional): The password or http token for the Gerrit user.

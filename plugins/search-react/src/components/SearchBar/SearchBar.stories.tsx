@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
-import { Grid, makeStyles, Paper } from '@material-ui/core';
+import { ComponentType, PropsWithChildren } from 'react';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { searchApiRef, MockSearchApi } from '../../api';
 import { SearchContextProvider } from '../../context';
@@ -27,70 +28,72 @@ import { SearchBar } from './SearchBar';
 export default {
   title: 'Plugins/Search/SearchBar',
   component: SearchBar,
-  decorators: [
-    (Story: ComponentType<{}>) => (
-      <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
-        <SearchContextProvider>
-          <Grid container direction="row">
-            <Grid item xs={12}>
-              <Story />
-            </Grid>
-          </Grid>
-        </SearchContextProvider>
-      </TestApiProvider>
-    ),
+  loaders: [
+    async () => ({ component: (await import('./SearchBar')).SearchBar }),
   ],
+  decorators: [
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
+      wrapInTestApp(
+        <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+          <SearchContextProvider>
+            <Grid container direction="row">
+              <Grid item xs={12}>
+                <Story />
+              </Grid>
+            </Grid>
+          </SearchContextProvider>
+        </TestApiProvider>,
+      ),
+  ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {
-  return (
-    <Paper style={{ padding: '8px 0' }}>
-      <SearchBar />
-    </Paper>
-  );
+  return <SearchBar />;
 };
 
 export const CustomPlaceholder = () => {
-  return (
-    <Paper style={{ padding: '8px 0' }}>
-      <SearchBar placeholder="This is a custom placeholder" />
-    </Paper>
-  );
+  return <SearchBar placeholder="This is a custom placeholder" />;
+};
+
+export const CustomLabel = () => {
+  return <SearchBar label="This is a custom label" />;
 };
 
 export const Focused = () => {
   return (
-    <Paper style={{ padding: '8px 0' }}>
-      {/* decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus */}
-      {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-      <SearchBar autoFocus />
-    </Paper>
+    // decision up to adopter, read https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-autofocus.md#no-autofocus
+    // eslint-disable-next-line jsx-a11y/no-autofocus
+    <SearchBar autoFocus />
   );
 };
 
 export const WithoutClearButton = () => {
-  return (
-    <Paper style={{ padding: '8px 0' }}>
-      <SearchBar clearButton={false} />
-    </Paper>
-  );
+  return <SearchBar clearButton={false} />;
 };
 
-const useStyles = makeStyles({
-  search: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '8px 0',
+const useStyles = makeStyles(theme => ({
+  searchBarRoot: {
+    padding: '8px 16px',
+    background: theme.palette.background.paper,
+    boxShadow: theme.shadows[1],
     borderRadius: '50px',
-    margin: 'auto',
   },
-});
+  searchBarOutline: {
+    borderStyle: 'none',
+  },
+}));
 
 export const CustomStyles = () => {
   const classes = useStyles();
   return (
-    <Paper className={classes.search}>
-      <SearchBar />
-    </Paper>
+    <SearchBar
+      InputProps={{
+        classes: {
+          root: classes.searchBarRoot,
+          notchedOutline: classes.searchBarOutline,
+        },
+      }}
+    />
   );
 };

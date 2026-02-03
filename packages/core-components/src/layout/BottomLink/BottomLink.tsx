@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
-import React from 'react';
+import { MouseEvent } from 'react';
 import { Link } from '../../components/Link';
 
 /** @public */
 export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       maxWidth: 'fit-content',
@@ -47,7 +46,7 @@ const useStyles = makeStyles<BackstageTheme>(
 export type BottomLinkProps = {
   link: string;
   title: string;
-  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 };
 
 /**
@@ -61,7 +60,7 @@ export function BottomLink(props: BottomLinkProps) {
   const classes = useStyles();
 
   return (
-    <div>
+    <Box>
       <Divider />
       <Link to={link} onClick={onClick} underline="none">
         <Box display="flex" alignItems="center" className={classes.root}>
@@ -73,6 +72,6 @@ export function BottomLink(props: BottomLinkProps) {
           <ArrowIcon className={classes.arrow} />
         </Box>
       </Link>
-    </div>
+    </Box>
   );
 }

@@ -1,0 +1,247 @@
+/*
+ * Copyright 2020 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as GoogleCloud from '@google-cloud/storage';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { DefaultReadTreeResponseFactory } from './tree';
+import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
+import { UrlReaderPredicateTuple } from './types';
+import packageinfo from '../../../../package.json';
+import { mockServices } from '@backstage/backend-test-utils';
+import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
+import { Readable } from 'node:stream';
+
+const bucketGetFilesMock = jest.fn();
+class Bucket {
+  getFiles(query: any) {
+    return bucketGetFilesMock(query);
+  }
+  file(_name: string) {
+    return {
+      createReadStream: () => Readable.from(Buffer.from('mock content')),
+    };
+  }
+}
+class Storage {
+  bucket() {
+    return new Bucket();
+  }
+}
+jest.spyOn(GoogleCloud, 'Storage').mockReturnValue(new Storage() as any);
+
+describe('GcsUrlReader', () => {
+  const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
+    return GoogleGcsUrlReader.factory({
+      config: new ConfigReader(config),
+      logger: mockServices.logger.mock(),
+      treeResponseFactory: DefaultReadTreeResponseFactory.create({
+        config: new ConfigReader({}),
+      }),
+    });
+  };
+
+  it('does not create a reader without the googleGcs field', () => {
+    const entries = createReader({
+      integrations: {},
+    });
+    expect(entries).toHaveLength(0);
+  });
+
+  it('creates a reader with credentials correctly configured', () => {
+    const entries = createReader({
+      integrations: {
+        googleGcs: {
+          privateKey: '--- BEGIN KEY ---- fakekey --- END KEY ---',
+          clientEmail: 'someone@example.com',
+        },
+      },
+    });
+    expect(entries).toHaveLength(1);
+  });
+
+  it('creates a reader with default credentials provider', () => {
+    const entries = createReader({
+      integrations: {
+        googleGcs: {},
+      },
+    });
+    expect(entries).toHaveLength(1);
+  });
+  it('check if userAgent has been called with this key value', async () => {
+    const getStorage: any = {
+      userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
+    };
+    jest.mock('@google-cloud/storage', () => {
+      return {
+        Storage: jest.fn(() => getStorage),
+      };
+    });
+    const getUserAgent = getStorage.userAgent.toString();
+    expect(getUserAgent).toBe(
+      `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
+    );
+  });
+
+  describe('predicates', () => {
+    const readers = createReader({
+      integrations: {
+        googleGcs: {},
+      },
+    });
+    const predicate = readers[0].predicate;
+
+    it('returns true for the correct google cloud storage host', () => {
+      expect(predicate(new URL('https://storage.cloud.google.com'))).toBe(true);
+    });
+    it('returns true for a url with the full path and the correct host', () => {
+      expect(
+        predicate(
+          new URL(
+            'https://storage.cloud.google.com/team1/service1/catalog-info.yaml',
+          ),
+        ),
+      ).toBe(true);
+    });
+    it('returns false for the wrong hostname under cloud.google.com', () => {
+      expect(predicate(new URL('https://storage2.cloud.google.com'))).toBe(
+        false,
+      );
+    });
+    it('returns false for a partially correct host', () => {
+      expect(predicate(new URL('https://cloud.google.com'))).toBe(false);
+    });
+    it('returns false for a completely different host', () => {
+      expect(predicate(new URL('https://a.example.com/test'))).toBe(false);
+    });
+  });
+
+  describe('search', () => {
+    const { reader } = createReader({ integrations: { googleGcs: {} } })[0];
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('throws if search url does not end with *', async () => {
+      const glob = 'https://storage.cloud.google.com/bucket/*no-asterisk';
+      await expect(() => reader.search(glob)).rejects.toThrow(
+        'GcsUrlReader only supports prefix-based searches',
+      );
+    });
+
+    it('throws if search url looks truly glob-y', async () => {
+      const glob = 'https://storage.cloud.google.com/bucket/**/path*';
+      await expect(() => reader.search(glob)).rejects.toThrow(
+        'GcsUrlReader only supports prefix-based searches',
+      );
+    });
+
+    it('searches with expected prefix and pagination', () => {
+      bucketGetFilesMock.mockResolvedValue([[]]);
+      const glob = 'https://storage.cloud.google.com/bucket/path/some-prefix-*';
+
+      reader.search(glob);
+      expect(bucketGetFilesMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          autoPaginate: true,
+          prefix: 'path/some-prefix-',
+        }),
+      );
+    });
+
+    it('returns valid SearchResponse object', async () => {
+      const expectedFile = { name: 'path/some-prefix-1.txt' };
+      bucketGetFilesMock.mockResolvedValue([[expectedFile]]);
+      const glob = 'https://storage.cloud.google.com/bucket/path/some-prefix-*';
+
+      const result = await reader.search(glob);
+      expect(result.files).toHaveLength(1);
+      expect(result.files[0].url).toEqual(
+        'https://storage.cloud.google.com/bucket/path/some-prefix-1.txt',
+      );
+    });
+
+    it('returns single file if there is no wildcard', async () => {
+      reader.readUrl = jest.fn().mockResolvedValue({
+        buffer: async () => Buffer.from('content'),
+        etag: 'etag',
+      } as UrlReaderServiceReadUrlResponse);
+      const data = await reader.search(
+        'https://storage.cloud.google.com/bucket/path/some-prefix-1.txt',
+      );
+      expect(reader.readUrl).toHaveBeenCalledTimes(1);
+      expect(data.etag).toBe('etag');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://storage.cloud.google.com/bucket/path/some-prefix-1.txt',
+      );
+      expect((await data.files[0].content()).toString()).toEqual('content');
+    });
+  });
+
+  describe('readTree', () => {
+    const { reader } = createReader({ integrations: { googleGcs: {} } })[0];
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('returns files with relative paths', async () => {
+      const mockFile1 = {
+        name: 'prefix/file1.yaml',
+        metadata: { updated: '2024-01-01T00:00:00Z' },
+        createReadStream: () => Readable.from(Buffer.from('content1')),
+      };
+      const mockFile2 = {
+        name: 'prefix/subdir/file2.yaml',
+        metadata: { updated: '2024-01-02T00:00:00Z' },
+        createReadStream: () => Readable.from(Buffer.from('content2')),
+      };
+      bucketGetFilesMock.mockResolvedValue([[mockFile1, mockFile2]]);
+
+      const result = await reader.readTree(
+        'https://storage.cloud.google.com/bucket/prefix/',
+      );
+      const files = await result.files();
+
+      expect(files).toHaveLength(2);
+      expect(files[0].path).toBe('file1.yaml');
+      expect(files[1].path).toBe('subdir/file2.yaml');
+    });
+
+    it('calls getFiles with correct prefix', async () => {
+      bucketGetFilesMock.mockResolvedValue([[]]);
+
+      await reader.readTree(
+        'https://storage.cloud.google.com/bucket/some/prefix/',
+      );
+
+      expect(bucketGetFilesMock).toHaveBeenCalledWith({
+        autoPaginate: true,
+        prefix: 'some/prefix/',
+      });
+    });
+
+    it('throws if readTree url contains glob pattern', async () => {
+      await expect(
+        reader.readTree('https://storage.cloud.google.com/bucket/path/*'),
+      ).rejects.toThrow(
+        'GcsUrlReader readTree does not support glob patterns, use search instead',
+      );
+    });
+  });
+});

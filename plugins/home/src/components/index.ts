@@ -15,4 +15,6 @@
  */
 
 export { HomepageCompositionRoot } from './HomepageCompositionRoot';
-export { SettingsModal } from './SettingsModal';
+export * from './CustomHomepage';
+export * from './VisitListener';
+export * from './VisitList';

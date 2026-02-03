@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ReactElement } from 'react';
 import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
 import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 import { GrpcApiDefinitionWidget } from '../GrpcApiDefinitionWidget';
+import { TrpcApiDefinitionWidget } from '../TrpcDefinitionWidget';
 
+/** @public */
 export type ApiDefinitionWidget = {
   type: string;
   title: string;
-  component: (definition: string) => React.ReactElement;
+  component: (definition: string) => ReactElement;
   rawLanguage?: string;
 };
 
+/** @public */
 export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
   return [
     {
@@ -57,6 +60,13 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       title: 'gRPC',
       component: definition => (
         <GrpcApiDefinitionWidget definition={definition} />
+      ),
+    },
+    {
+      type: 'trpc',
+      title: 'tRPC',
+      component: definition => (
+        <TrpcApiDefinitionWidget definition={definition} />
       ),
     },
   ];

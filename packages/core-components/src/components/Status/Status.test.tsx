@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 
 import {
@@ -28,42 +27,58 @@ import {
 
 describe('<StatusOK />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusOK />);
+    const { getByLabelText, getByTestId } = await renderInTestApp(<StatusOK />);
     expect(getByLabelText('Status ok')).toBeInTheDocument();
+    expect(getByTestId('status-ok')).toBeInTheDocument();
   });
 });
 
 describe('<StatusWarning />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusWarning />);
+    const { getByLabelText, getByTestId } = await renderInTestApp(
+      <StatusWarning />,
+    );
     expect(getByLabelText('Status warning')).toBeInTheDocument();
+    expect(getByTestId('status-warning')).toBeInTheDocument();
   });
 });
 
 describe('<StatusError />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusError />);
+    const { getByLabelText, getByTestId } = await renderInTestApp(
+      <StatusError />,
+    );
     expect(getByLabelText('Status error')).toBeInTheDocument();
+    expect(getByTestId('status-error')).toBeInTheDocument();
   });
 });
 
 describe('<StatusPending />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusPending />);
+    const { getByLabelText, getByTestId } = await renderInTestApp(
+      <StatusPending />,
+    );
     expect(getByLabelText('Status pending')).toBeInTheDocument();
+    expect(getByTestId('status-pending')).toBeInTheDocument();
   });
 });
 
 describe('<StatusRunning />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusRunning />);
+    const { getByLabelText, getByTestId } = await renderInTestApp(
+      <StatusRunning />,
+    );
     expect(getByLabelText('Status running')).toBeInTheDocument();
+    expect(getByTestId('status-running')).toBeInTheDocument();
   });
 });
 
 describe('<StatusAborted />', () => {
   it('renders without exploding', async () => {
-    const { getByLabelText } = await renderInTestApp(<StatusAborted />);
+    const { getByLabelText, getByTestId } = await renderInTestApp(
+      <StatusAborted />,
+    );
     expect(getByLabelText('Status aborted')).toBeInTheDocument();
+    expect(getByTestId('status-aborted')).toBeInTheDocument();
   });
 });

@@ -15,18 +15,14 @@
  */
 
 import { LogViewer } from '@backstage/core-components';
-import {
-  Button,
-  createStyles,
-  Drawer,
-  Grid,
-  IconButton,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Drawer from '@material-ui/core/Drawer';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Close from '@material-ui/icons/Close';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -86,7 +82,9 @@ export const TechDocsBuildLogsDrawerContent = ({
           <Close />
         </IconButton>
       </Grid>
-      <LogViewer text={logText} classes={{ root: classes.logs }} />
+      <Grid item xs>
+        <LogViewer text={logText} classes={{ root: classes.logs }} />
+      </Grid>
     </Grid>
   );
 };

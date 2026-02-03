@@ -15,27 +15,9 @@
  */
 
 export * from './conditions';
-export {
-  DEFAULT_NAMESPACE,
-  ANNOTATION_EDIT_URL,
-  ANNOTATION_VIEW_URL,
-  ANNOTATION_KUBERNETES_API_SERVER,
-  ANNOTATION_KUBERNETES_API_SERVER_CA,
-  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-} from './constants';
-export type {
-  AlphaEntity,
-  Entity,
-  EntityLink,
-  EntityMeta,
-  EntityRelation,
-} from './Entity';
+export * from './constants';
+export type { Entity, EntityLink, EntityMeta, EntityRelation } from './Entity';
 export type { EntityEnvelope } from './EntityEnvelope';
-export type {
-  EntityStatus,
-  EntityStatusItem,
-  EntityStatusLevel,
-} from './EntityStatus';
 export * from './policies';
 export {
   getCompoundEntityRef,

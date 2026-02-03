@@ -15,55 +15,44 @@
  */
 
 /* eslint-disable jest/no-disabled-tests */
-import React from 'react';
-import { render } from '@testing-library/react';
-import { renderInTestApp, wrapInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 
 import { TrendLine } from './TrendLine';
 
 describe('TrendLine', () => {
   describe('when no data is present', () => {
     it('renders null without throwing', async () => {
-      const rendered = await renderInTestApp(
-        <TrendLine data={[]} title="sparkline" />,
-      );
-      expect(rendered.queryByTitle('sparkline')).not.toBeInTheDocument();
+      await renderInTestApp(<TrendLine data={[]} title="sparkline" />);
+      expect(screen.queryByTitle('sparkline')).not.toBeInTheDocument();
     });
   });
 
   describe('when one datapoint is present', () => {
     it('renders as a straight line', async () => {
-      const rendered = await renderInTestApp(
-        <TrendLine data={[0.5]} title="sparkline" />,
-      );
-      expect(rendered.getByTitle('sparkline')).toBeInTheDocument();
+      await renderInTestApp(<TrendLine data={[0.5]} title="sparkline" />);
+      expect(screen.getByTitle('sparkline')).toBeInTheDocument();
     });
   });
 
   describe.skip('when the data finishes above the success threshold', () => {
-    it('renders with the correct color', () => {
-      const rendered = render(
-        wrapInTestApp(<TrendLine data={[0.5, 0.95]} title="sparkline" />),
-      );
-      expect(rendered.getByTitle('sparkline')).toBeInTheDocument();
+    it('renders with the correct color', async () => {
+      await renderInTestApp(<TrendLine data={[0.5, 0.95]} title="sparkline" />);
+      expect(screen.getByTitle('sparkline')).toBeInTheDocument();
     });
   });
 
-  describe.skip('when the data finishes within the the warning threshold', () => {
-    it('renders with the correct color', () => {
-      const rendered = render(
-        wrapInTestApp(<TrendLine data={[0.5, 0.65]} title="sparkline" />),
-      );
-      expect(rendered.getByTitle('sparkline')).toBeInTheDocument();
+  describe.skip('when the data finishes within the warning threshold', () => {
+    it('renders with the correct color', async () => {
+      await renderInTestApp(<TrendLine data={[0.5, 0.65]} title="sparkline" />);
+      expect(screen.getByTitle('sparkline')).toBeInTheDocument();
     });
   });
 
-  describe.skip('when the data finishes within the the error threshold', () => {
-    it('renders with the correct color', () => {
-      const rendered = render(
-        wrapInTestApp(<TrendLine data={[0.5, 0.4]} title="sparkline" />),
-      );
-      expect(rendered.getByTitle('sparkline')).toBeInTheDocument();
+  describe.skip('when the data finishes within the error threshold', () => {
+    it('renders with the correct color', async () => {
+      await renderInTestApp(<TrendLine data={[0.5, 0.4]} title="sparkline" />);
+      expect(screen.getByTitle('sparkline')).toBeInTheDocument();
     });
   });
 });

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import debounce from 'lodash/debounce';
 import { useTechDocsReaderPage } from './context';
 
@@ -39,9 +39,28 @@ export const useShadowRootElements = <
   selectors: string[],
 ): TReturnedElement[] => {
   const shadowRoot = useShadowRoot();
-  if (!shadowRoot) return [];
+  const [root, setRootNode] = useState(shadowRoot?.firstChild);
+
+  useEffect(() => {
+    let observer: MutationObserver;
+    if (shadowRoot) {
+      observer = new MutationObserver(() => {
+        setRootNode(shadowRoot?.firstChild);
+      });
+      observer.observe(shadowRoot, {
+        attributes: true,
+        characterData: true,
+        childList: true,
+        subtree: true,
+      });
+    }
+    return () => observer?.disconnect();
+  }, [shadowRoot]);
+
+  if (!root || !(root instanceof HTMLElement)) return [];
+
   return selectors
-    .map(selector => shadowRoot?.querySelectorAll<TReturnedElement>(selector))
+    .map(selector => root.querySelectorAll<TReturnedElement>(selector))
     .filter(nodeList => nodeList.length)
     .map(nodeList => Array.from(nodeList))
     .flat();
@@ -57,10 +76,10 @@ const isValidSelection = (newSelection: Selection) => {
 };
 
 /**
- * Hook for retreiving a selection within the ShadowRoot.
+ * Hook for retrieving a selection within the ShadowRoot.
  * @public
  */
-export const useShadowRootSelection = (wait: number = 0) => {
+export const useShadowRootSelection = (waitMillis: number = 0) => {
   const shadowRoot = useShadowRoot();
   const [selection, setSelection] = useState<Selection | null>(null);
   const handleSelectionChange = useMemo(
@@ -78,17 +97,19 @@ export const useShadowRootSelection = (wait: number = 0) => {
         } else {
           setSelection(null);
         }
-      }, wait),
-    [shadowRoot, setSelection, wait],
+      }, waitMillis),
+    [shadowRoot, setSelection, waitMillis],
   );
 
   useEffect(() => {
     window.document.addEventListener('selectionchange', handleSelectionChange);
-    return () =>
+    return () => {
+      handleSelectionChange.cancel();
       window.document.removeEventListener(
         'selectionchange',
         handleSelectionChange,
       );
+    };
   }, [handleSelectionChange]);
 
   return selection;

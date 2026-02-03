@@ -14,33 +14,48 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
-import { InfoCardVariants } from '@backstage/core-components';
-import React from 'react';
+import { ComponentEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
+import {
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   asComponentEntities,
   componentEntityColumns,
   componentEntityHelpLink,
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface HasComponentsCardProps {
   variant?: InfoCardVariants;
+  title?: string;
+  columns?: TableColumn<ComponentEntity>[];
+  tableOptions?: TableOptions;
 }
 
 export function HasComponentsCard(props: HasComponentsCardProps) {
-  const { variant = 'gridItem' } = props;
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const {
+    variant = 'gridItem',
+    title = t('hasComponentsCard.title'),
+    columns = componentEntityColumns,
+    tableOptions = {},
+  } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Has components"
+      title={title}
       entityKind="Component"
       relationType={RELATION_HAS_PART}
-      columns={componentEntityColumns}
-      emptyMessage="No component is part of this system"
+      columns={columns}
+      emptyMessage={t('hasComponentsCard.emptyMessage')}
       emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asComponentEntities}
+      tableOptions={tableOptions}
     />
   );
 }

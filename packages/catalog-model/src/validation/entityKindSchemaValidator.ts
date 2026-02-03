@@ -15,7 +15,7 @@
  */
 
 import { Schema } from 'ajv';
-import { Entity } from '../entity';
+import { Entity } from '../entity/Entity';
 import { compileAjvSchema, throwAjvError } from './ajv';
 
 /**

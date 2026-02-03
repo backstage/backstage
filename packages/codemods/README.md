@@ -35,4 +35,4 @@ npx jscodeshift --parser=tsx --extensions=tsx,js,ts,tsx --transform=node_modules
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)
+- [Backstage Documentation](https://backstage.io/docs)

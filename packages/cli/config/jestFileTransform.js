@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-const path = require('path');
+const path = require('node:path');
 
 module.exports = {
   process(src, filename) {
     const assetFilename = JSON.stringify(path.basename(filename));
 
     if (filename.match(/\.icon\.svg$/)) {
-      return `const React = require('react');
+      return {
+        code: `const React = require('react');
       const SvgIcon = require('@material-ui/core/SvgIcon').default;
       module.exports = {
         __esModule: true,
@@ -34,9 +35,10 @@ module.exports = {
             children: ${assetFilename}
           })
         })
-      };`;
+      };`,
+      };
     }
 
-    return `module.exports = ${assetFilename};`;
+    return { code: `module.exports = ${assetFilename};` };
   },
 };

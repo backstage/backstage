@@ -14,144 +14,302 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
-import * as winston from 'winston';
-
-import { getVoidLogger, resolvePackagePath } from '@backstage/backend-common';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
-import { TemplateActionRegistry } from '../actions';
+import {
+  DefaultTemplateActionRegistry,
+  TemplateActionRegistry,
+} from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
+import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
-import { TaskContext, TaskSecrets } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import {
+  createTemplateAction,
+  TaskContext,
+  TaskSecrets,
+} from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  createMockDirectory,
+  mockCredentials,
+  mockServices,
+} from '@backstage/backend-test-utils';
+import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 
-// The Stream module is lazy loaded, so make sure it's in the module cache before mocking fs
-void winston.transports.Stream;
-
-const realFiles = Object.fromEntries(
-  [
-    resolvePackagePath(
-      '@backstage/plugin-scaffolder-backend',
-      'assets',
-      'nunjucks.js.txt',
-    ),
-  ].map(k => [k, mockFs.load(k)]),
-);
-
-describe('DefaultWorkflowRunner', () => {
-  const logger = getVoidLogger();
-  let actionRegistry = new TemplateActionRegistry();
+describe('NunjucksWorkflowRunner', () => {
+  let actionRegistry: TemplateActionRegistry;
   let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
+  let fakeTaskLog: jest.Mock;
+  let stripAnsi: typeof import('strip-ansi').default;
+
+  const logger = mockServices.logger.mock();
+  const mockDir = createMockDirectory();
+
+  const mockedPermissionApi: jest.Mocked<PermissionEvaluator> = {
+    authorizeConditional: jest.fn(),
+  } as unknown as jest.Mocked<PermissionEvaluator>;
 
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
+      scaffolder: {
+        defaultEnvironment: {
+          parameters: {
+            region: 'us-east-1',
+          },
+          secrets: {
+            AWS_ACCESS_KEY: 'test-secret-value',
+          },
+        },
+      },
       integrations: {
         github: [{ host: 'github.com', token: 'token' }],
       },
     }),
   );
 
-  const createMockTaskWithSpec = (
-    spec: TaskSpec,
-    secrets?: TaskSecrets,
-  ): TaskContext => ({
-    spec,
-    secrets,
-    complete: async () => {},
-    done: false,
-    emitLog: async () => {},
-    getWorkspaceName: () => Promise.resolve('test-workspace'),
+  const credentials = mockCredentials.user();
+
+  const token = mockCredentials.service.token({
+    onBehalfOf: credentials,
+    targetPluginId: 'catalog',
   });
 
-  beforeEach(() => {
-    winston.format.simple(); // put logform the require cache before mocking fs
-    mockFs({
-      '/tmp': mockFs.directory(),
-      ...realFiles,
-    });
+  const createMockTaskWithSpec = (
+    {
+      apiVersion = 'scaffolder.backstage.io/v1beta3',
+      output = {},
+      parameters = {},
+      ...spec
+    }: Partial<TaskSpec>,
+    secrets?: TaskSecrets,
+    isDryRun?: boolean,
+  ): TaskContext => ({
+    spec: {
+      apiVersion,
+      output,
+      parameters,
+      ...spec,
+    } as TaskSpec,
+    secrets,
+    isDryRun,
+    complete: async () => {},
+    done: false,
+    emitLog: fakeTaskLog,
+    cancelSignal: new AbortController().signal,
+    getWorkspaceName: () => Promise.resolve('test-workspace'),
+    getInitiatorCredentials: () => Promise.resolve(credentials),
+  });
 
-    jest.resetAllMocks();
-    actionRegistry = new TemplateActionRegistry();
+  function expectTaskLog(message: string) {
+    expect(fakeTaskLog.mock.calls.map(args => stripAnsi(args[0]))).toContain(
+      message,
+    );
+  }
+
+  beforeEach(async () => {
+    mockDir.clear();
+
+    // This one is ESM-only
+    stripAnsi = await import('strip-ansi').then(m => m.default);
+
+    actionRegistry = new DefaultTemplateActionRegistry(
+      actionsRegistryServiceMock(),
+      mockServices.logger.mock(),
+    );
     fakeActionHandler = jest.fn();
+    fakeTaskLog = jest.fn();
 
-    actionRegistry.register({
-      id: 'jest-mock-action',
-      description: 'Mock action for testing',
-      handler: fakeActionHandler,
-    });
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-mock-action',
+        description: 'Mock action for testing',
+        handler: fakeActionHandler,
+      }),
+    );
 
-    actionRegistry.register({
-      id: 'jest-validated-action',
-      description: 'Mock action for testing',
-      handler: fakeActionHandler,
-      schema: {
-        input: {
-          type: 'object',
-          required: ['foo'],
-          properties: {
-            foo: {
-              type: 'number',
-            },
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-validated-action',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: fakeActionHandler,
+        schema: {
+          input: {
+            foo: z => z.number(),
           },
         },
-      },
-    });
+      }),
+    );
 
-    actionRegistry.register({
-      id: 'output-action',
-      description: 'Mock action for testing',
-      handler: async ctx => {
-        ctx.output('mock', 'backstage');
-        ctx.output('shouldRun', true);
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-zod-validated-action',
+        description: 'Mock ac',
+        supportsDryRun: true,
+        schema: {
+          input: {
+            foo: zod => zod.number(),
+          },
+          output: {
+            test: zod => zod.string(),
+          },
+        },
+        handler: fakeActionHandler,
+      }),
+    );
+
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'output-action',
+        description: 'Mock action for testing',
+        handler: async ctx => {
+          ctx.output('mock', 'backstage');
+          ctx.output('shouldRun', true);
+        },
+      }),
+    );
+
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'checkpoints-action',
+        description: 'Mock action with checkpoints',
+        schema: {
+          output: z =>
+            z.object({
+              key1: z.string(),
+              key2: z.string(),
+              key3: z.string(),
+              key4: z.string(),
+              key5: z.string(),
+            }),
+        },
+        handler: async ctx => {
+          const key1 = await ctx.checkpoint({
+            key: 'key1',
+            fn: async () => 'updated',
+          });
+          const key2 = await ctx.checkpoint({
+            key: 'key2',
+            fn: async () => 'updated',
+          });
+          const key3 = await ctx.checkpoint({
+            key: 'key3',
+            fn: async () => 'updated',
+          });
+
+          const key4 = await ctx.checkpoint({
+            key: 'key4',
+            fn: () => {},
+          });
+
+          const key5 = await ctx.checkpoint({
+            key: 'key5',
+            fn: async () => {},
+          });
+
+          ctx.output('key1', key1);
+          ctx.output('key2', key2);
+          ctx.output('key3', key3);
+
+          // @ts-expect-error - not valid output type
+          ctx.output('key4', key4);
+          // @ts-expect-error - not valid output type
+          ctx.output('key5', key5);
+        },
+      }),
+    );
+
+    mockedPermissionApi.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
+
+    const config = new ConfigReader({
+      scaffolder: {
+        defaultEnvironment: {
+          parameters: {
+            region: 'us-east-1',
+          },
+          secrets: {
+            AWS_ACCESS_KEY: 'test-secret-value',
+          },
+        },
       },
     });
 
     runner = new NunjucksWorkflowRunner({
       actionRegistry,
       integrations,
-      workingDirectory: '/tmp',
+      workingDirectory: mockDir.path,
       logger,
+      permissions: mockedPermissionApi,
+      config,
     });
   });
 
   afterEach(() => {
-    mockFs.restore();
+    mockDir.clear();
+
+    jest.resetAllMocks();
   });
 
   it('should throw an error if the action does not exist', async () => {
     const task = createMockTaskWithSpec({
-      apiVersion: 'scaffolder.backstage.io/v1beta3',
-      parameters: {},
-      output: {},
       steps: [{ id: 'test', name: 'name', action: 'does-not-exist' }],
     });
 
-    await expect(runner.execute(task)).rejects.toThrowError(
-      "Template action with ID 'does-not-exist' is not registered.",
+    await expect(runner.execute(task)).rejects.toThrow(
+      /Template action with ID 'does-not-exist' is not registered/,
     );
   });
 
   describe('validation', () => {
     it('should throw an error if the action has a schema and the input does not match', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [{ id: 'test', name: 'name', action: 'jest-validated-action' }],
       });
 
-      await expect(runner.execute(task)).rejects.toThrowError(
-        /Invalid input passed to action jest-validated-action, instance requires property \"foo\"/,
+      await expect(runner.execute(task)).rejects.toThrow(
+        /Invalid input passed to action jest-validated-action, instance requires property "foo"/,
       );
+    });
+
+    it('should throw an error if the action has a zod schema and the input does not match', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'test', name: 'name', action: 'jest-zod-validated-action' },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow(
+        /Invalid input passed to action jest-zod-validated-action, instance requires property \"foo\"/,
+      );
+    });
+
+    it('should run the action when the zod validation passes', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-zod-validated-action',
+            input: { foo: 1 },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
     });
 
     it('should run the action when the validation passes', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [
           {
             id: 'test',
@@ -169,10 +327,22 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should pass metadata through', async () => {
       const entityRef = `template:default/templateName`;
+
+      const userEntity: UserEntity = {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'User',
+        metadata: {
+          name: 'user',
+        },
+        spec: {
+          profile: {
+            displayName: 'Bogdan Nechyporenko',
+            email: 'bnechyporenko@company.com',
+          },
+        },
+      };
+
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [
           {
             id: 'test',
@@ -182,6 +352,9 @@ describe('DefaultWorkflowRunner', () => {
           },
         ],
         templateInfo: { entityRef },
+        user: {
+          entity: userEntity,
+        },
       });
 
       await runner.execute(task);
@@ -189,15 +362,15 @@ describe('DefaultWorkflowRunner', () => {
       expect(fakeActionHandler.mock.calls[0][0].templateInfo).toEqual({
         entityRef,
       });
+
+      expect(fakeActionHandler.mock.calls[0][0].user).toEqual({
+        entity: userEntity,
+      });
     });
 
     it('should pass token through', async () => {
-      const fakeToken = 'secret';
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
-          parameters: {},
-          output: {},
           steps: [
             {
               id: 'test',
@@ -208,22 +381,40 @@ describe('DefaultWorkflowRunner', () => {
           ],
         },
         {
-          backstageToken: fakeToken,
+          backstageToken: token,
+          initiatorCredentials: JSON.stringify(credentials),
         },
       );
 
       await runner.execute(task);
 
       expect(fakeActionHandler.mock.calls[0][0].secrets).toEqual(
-        expect.objectContaining({ backstageToken: fakeToken }),
+        expect.objectContaining({ backstageToken: token }),
       );
+    });
+
+    it('should pass step info through', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-validated-action',
+            input: { foo: 1 },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].step.id).toEqual('test');
+      expect(fakeActionHandler.mock.calls[0][0].step.name).toEqual('name');
     });
   });
 
   describe('conditionals', () => {
     it('should execute steps conditionally', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           { id: 'test', name: 'test', action: 'output-action' },
           {
@@ -236,7 +427,6 @@ describe('DefaultWorkflowRunner', () => {
         output: {
           result: '${{ steps.conditional.output.mock }}',
         },
-        parameters: {},
       });
 
       const { output } = await runner.execute(task);
@@ -246,7 +436,6 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should skips steps conditionally', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           { id: 'test', name: 'test', action: 'output-action' },
           {
@@ -259,7 +448,6 @@ describe('DefaultWorkflowRunner', () => {
         output: {
           result: '${{ steps.conditional.output.mock }}',
         },
-        parameters: {},
       });
 
       const { output } = await runner.execute(task);
@@ -269,7 +457,6 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should skips steps using the negating equals operator', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           { id: 'test', name: 'test', action: 'output-action' },
           {
@@ -282,19 +469,55 @@ describe('DefaultWorkflowRunner', () => {
         output: {
           result: '${{ steps.conditional.output.mock }}',
         },
-        parameters: {},
       });
 
       const { output } = await runner.execute(task);
 
       expect(output.result).toBeUndefined();
     });
+    describe('should apply boolean step conditions', () => {
+      it('executes when true', async () => {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'conditional',
+              name: 'conditional',
+              action: 'output-action',
+              if: true,
+            },
+          ],
+          output: {
+            result: '${{ steps.conditional.output.mock }}',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+        expect(output.result).toBe('backstage');
+      });
+      it('skips when false', async () => {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'conditional',
+              name: 'conditional',
+              action: 'output-action',
+              if: false,
+            },
+          ],
+          output: {
+            result: '${{ steps.conditional.output.mock }}',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+        expect(output.result).toBeUndefined();
+      });
+    });
   });
 
   describe('templating', () => {
     it('should template the input to an action', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -302,10 +525,10 @@ describe('DefaultWorkflowRunner', () => {
             action: 'jest-mock-action',
             input: {
               foo: '${{parameters.input | lower }}',
+              region: '${{environment.parameters.region}}',
             },
           },
         ],
-        output: {},
         parameters: {
           input: 'BACKSTAGE',
         },
@@ -314,14 +537,15 @@ describe('DefaultWorkflowRunner', () => {
       await runner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ input: { foo: 'backstage' } }),
+        expect.objectContaining({
+          input: { foo: 'backstage', region: 'us-east-1' },
+        }),
       );
     });
 
     it('should not try and parse something that is not parsable', async () => {
       jest.spyOn(logger, 'error');
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -332,7 +556,6 @@ describe('DefaultWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           input: 'BACKSTAGE',
         },
@@ -345,7 +568,6 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should keep the original types for the input and not parse things that are not meant to be parsed', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -357,7 +579,6 @@ describe('DefaultWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           number: 0,
           string: '1',
@@ -373,7 +594,6 @@ describe('DefaultWorkflowRunner', () => {
 
     it('should template complex values into the action', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -384,7 +604,6 @@ describe('DefaultWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           complex: { bar: 'BACKSTAGE' },
         },
@@ -399,7 +618,6 @@ describe('DefaultWorkflowRunner', () => {
 
     it('supports really complex structures', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -410,7 +628,6 @@ describe('DefaultWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           complex: {
             bar: 'BACKSTAGE',
@@ -428,7 +645,6 @@ describe('DefaultWorkflowRunner', () => {
 
     it('supports numbers as first class too', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -439,7 +655,6 @@ describe('DefaultWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           complex: {
             bar: 'BACKSTAGE',
@@ -455,9 +670,59 @@ describe('DefaultWorkflowRunner', () => {
       );
     });
 
+    it('should deal with checkpoints', async () => {
+      const task = {
+        ...createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'checkpoints-action',
+              input: { foo: 1 },
+            },
+          ],
+          output: {
+            key1: '${{steps.test.output.key1}}',
+            key2: '${{steps.test.output.key2}}',
+            key3: '${{steps.test.output.key3}}',
+            key4: '${{steps.test.output.key4}}',
+            key5: '${{steps.test.output.key5}}',
+            key6: '${{steps.test.output.key6}}',
+          },
+        }),
+        getTaskState: (): Promise<
+          | {
+              state: JsonObject;
+            }
+          | undefined
+        > => {
+          return Promise.resolve({
+            state: {
+              checkpoints: {
+                ['v1.task.checkpoint.test.key1']: {
+                  status: 'success',
+                  value: 'initial',
+                },
+                ['v1.task.checkpoint.test2.key2']: {
+                  status: 'failed',
+                  reason: 'fatal error',
+                },
+              },
+            },
+          });
+        },
+      };
+      const result = await runner.execute(task);
+
+      expect(result.output.key1).toEqual('initial');
+      expect(result.output.key2).toEqual('updated');
+      expect(result.output.key3).toEqual('updated');
+      expect(result.output.key4).toEqual(undefined);
+      expect(result.output.key5).toEqual(undefined);
+    });
+
     it('should template the output from simple actions', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -469,12 +734,410 @@ describe('DefaultWorkflowRunner', () => {
         output: {
           foo: '${{steps.test.output.mock | upper}}',
         },
-        parameters: {},
       });
 
       const { output } = await runner.execute(task);
 
       expect(output.foo).toEqual('BACKSTAGE');
+    });
+
+    it('should include task ID in the templated context', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              values: {
+                taskId: '${{context.task.id}}',
+              },
+            },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { values: { taskId: 'test-workspace' } },
+        }),
+      );
+    });
+  });
+
+  describe('redactions', () => {
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact secrets that are passed with the task', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: '${{ secrets.secret }}',
+              },
+            },
+          ],
+        },
+        { secret: 'my-secret-value' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact secrets that are passed in the environment', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: '${{ environment.secrets.AWS_ACCESS_KEY }}',
+              },
+            },
+          ],
+        },
+        { secret: 'my-secret-value' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact meta fields properly', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.child({ thing: ctx.input.secret }).info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: '${{ secrets.secret }}',
+              },
+            },
+          ],
+        },
+        { secret: 'my-secret-value' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: *** {"thing":"***"}');
+    });
+  });
+
+  describe('each', () => {
+    it('should run a step repeatedly - flat values', async () => {
+      const colors = ['blue', 'green', 'red'];
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.colors}}',
+            action: 'jest-mock-action',
+            input: { color: '${{each.value}}' },
+          },
+        ],
+        parameters: {
+          colors,
+        },
+      });
+      await runner.execute(task);
+
+      colors.forEach((color, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"${color}"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({ input: { color } }),
+        );
+      });
+    });
+
+    it('should run a step repeatedly - flat values with secrets', async () => {
+      const secrets = {
+        s1: 'secret-value1',
+        s2: 'secret-value2',
+        s3: 'secret-value3',
+      };
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: [
+                '${{ secrets.s1 }}',
+                '${{ secrets.s2 }}',
+                '${{ secrets.s3 }}',
+              ],
+              action: 'jest-mock-action',
+              input: { secret: '${{each.value}}' },
+            },
+          ],
+        },
+        secrets,
+      );
+      await runner.execute(task);
+
+      Object.values(secrets).forEach((secret, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"***"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({ input: { secret } }),
+        );
+      });
+    });
+
+    it('should run a step repeatedly - object list', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.settings}}',
+            action: 'jest-mock-action',
+            input: {
+              key: '${{each.key}}',
+              value: '${{each.value}}',
+            },
+          },
+        ],
+        parameters: {
+          settings: [{ color: 'blue' }],
+        },
+      });
+      await runner.execute(task);
+
+      expectTaskLog(
+        'info: Running step each: {"key":"0","value":"[object Object]"}',
+      );
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { key: '0', value: { color: 'blue' } },
+        }),
+      );
+    });
+
+    it('should run a step repeatedly - object list with secrets', async () => {
+      const secrets = {
+        s1: 'secret-value1',
+        s2: 'secret-value2',
+      };
+      const names = ['Service1', 'Service2'];
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: [
+                { name: names[0], token: '${{ secrets.s1 }}' },
+                { name: names[1], token: '${{ secrets.s2 }}' },
+              ],
+              action: 'jest-mock-action',
+              input: {
+                name: '${{each.value.name}}',
+                token: '${{each.value.token}}',
+              },
+            },
+          ],
+        },
+        secrets,
+      );
+      await runner.execute(task);
+
+      Object.values(secrets).forEach((secret, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"[object Object]"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            input: { name: names[idx], token: secret },
+          }),
+        );
+      });
+    });
+
+    it('should run a step repeatedly - object', async () => {
+      const settings = {
+        color: 'blue',
+        transparent: 'yes',
+      };
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.settings}}',
+            action: 'jest-mock-action',
+            input: { key: '${{each.key}}', value: '${{each.value}}' },
+          },
+        ],
+        parameters: {
+          settings,
+        },
+      });
+      await runner.execute(task);
+
+      for (const [key, value] of Object.entries(settings)) {
+        expectTaskLog(
+          `info: Running step each: {"key":"${key}","value":"${value}"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            input: { key, value },
+          }),
+        );
+      }
+    });
+
+    it('should run a step repeatedly with validation of single-expression value', async () => {
+      const numbers = [5, 7, 9];
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.numbers}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value}}' },
+          },
+        ],
+        parameters: {
+          numbers,
+        },
+      });
+      await runner.execute(task);
+
+      numbers.forEach((foo, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"${foo}"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            input: { foo },
+          }),
+        );
+      });
+    });
+
+    it('should validate each action iteration', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.data}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value.foo}}' },
+          },
+        ],
+        parameters: {
+          data: [
+            {
+              foo: 0,
+            },
+            {},
+          ],
+        },
+      });
+      await expect(runner.execute(task)).rejects.toThrow(
+        'Invalid input passed to action jest-validated-action[1], instance requires property "foo"',
+      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it('should validate each parameter renders to a valid value', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.data}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value}}' },
+          },
+        ],
+      });
+      await expect(runner.execute(task)).rejects.toThrow(
+        'Invalid value on action jest-validated-action.each parameter, "${{parameters.data}}" cannot be resolved to a value',
+      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
     });
   });
 
@@ -482,7 +1145,6 @@ describe('DefaultWorkflowRunner', () => {
     it('should pass through the secrets to the context', async () => {
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -491,8 +1153,6 @@ describe('DefaultWorkflowRunner', () => {
               input: {},
             },
           ],
-          output: {},
-          parameters: {},
         },
         { foo: 'bar' },
       );
@@ -500,14 +1160,15 @@ describe('DefaultWorkflowRunner', () => {
       await runner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ secrets: { foo: 'bar' } }),
+        expect.objectContaining({
+          secrets: { foo: 'bar' },
+        }),
       );
     });
 
     it('should be able to template secrets into the input of an action', async () => {
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -515,11 +1176,10 @@ describe('DefaultWorkflowRunner', () => {
               action: 'jest-mock-action',
               input: {
                 b: '${{ secrets.foo }}',
+                aws_key: '${{ environment.secrets.AWS_ACCESS_KEY }}',
               },
             },
           ],
-          output: {},
-          parameters: {},
         },
         { foo: 'bar' },
       );
@@ -527,14 +1187,47 @@ describe('DefaultWorkflowRunner', () => {
       await runner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ input: { b: 'bar' } }),
+        expect.objectContaining({
+          input: { b: 'bar', aws_key: 'test-secret-value' },
+        }),
+      );
+    });
+
+    it('should separate task secrets from environment secrets', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-mock-action',
+              input: {
+                b: '${{ secrets.foo }}',
+                aws_key: '${{ secrets.AWS_ACCESS_KEY }}',
+                env_aws_key: '${{ environment.secrets.AWS_ACCESS_KEY }}',
+              },
+            },
+          ],
+        },
+        { foo: 'bar', AWS_ACCESS_KEY: 'another-value-from-task' },
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: {
+            b: 'bar',
+            aws_key: 'another-value-from-task',
+            env_aws_key: 'test-secret-value',
+          },
+        }),
       );
     });
 
     it('does not allow templating of secrets as an output', async () => {
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -547,8 +1240,8 @@ describe('DefaultWorkflowRunner', () => {
           ],
           output: {
             b: '${{ secrets.foo }}',
+            c: '${{ environment.secrets.AWS_ACCESS_KEY }}',
           },
-          parameters: {},
         },
         { foo: 'bar' },
       );
@@ -556,13 +1249,13 @@ describe('DefaultWorkflowRunner', () => {
       const executedTask = await runner.execute(task);
 
       expect(executedTask.output.b).toBeUndefined();
+      expect(executedTask.output.c).toBeUndefined();
     });
   });
 
   describe('user', () => {
     it('allows access to the user entity at the templating level', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -592,7 +1285,6 @@ describe('DefaultWorkflowRunner', () => {
   describe('filters', () => {
     it('provides the parseRepoUrl filter', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -616,6 +1308,380 @@ describe('DefaultWorkflowRunner', () => {
         owner: 'owner',
         repo: 'repo',
       });
+    });
+
+    describe('parseEntityRef', () => {
+      it('parses entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: '${{ parameters.entity | parseEntityRef }}',
+          },
+          parameters: {
+            entity: 'component:default/ben',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual({
+          kind: 'component',
+          namespace: 'default',
+          name: 'ben',
+        });
+      });
+
+      it('provides default kind for parsing entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: `\${{ parameters.entity | parseEntityRef({ defaultKind:"user" }) }}`,
+          },
+          parameters: {
+            entity: 'ben',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual({
+          kind: 'user',
+          namespace: 'default',
+          name: 'ben',
+        });
+      });
+
+      it('provides default namespace for parsing entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: `\${{ parameters.entity | parseEntityRef({ defaultNamespace:"namespace-b" }) }}`,
+          },
+          parameters: {
+            entity: 'user:ben',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual({
+          kind: 'user',
+          namespace: 'namespace-b',
+          name: 'ben',
+        });
+      });
+
+      it('provides default kind and namespace for parsing entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: `\${{ parameters.entity | parseEntityRef({ defaultKind:"user", defaultNamespace:"namespace-b" }) }}`,
+          },
+          parameters: {
+            entity: 'ben',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual({
+          kind: 'user',
+          namespace: 'namespace-b',
+          name: 'ben',
+        });
+      });
+
+      it.each(['undefined', 'null', 'None', 'group', 0, '{}', '[]'])(
+        'ignores invalid context "%s" for parsing entity refF',
+        async kind => {
+          const task = createMockTaskWithSpec({
+            steps: [
+              {
+                id: 'test',
+                name: 'name',
+                action: 'output-action',
+                input: {},
+              },
+            ],
+            output: {
+              foo: `\${{ parameters.entity | parseEntityRef(${kind}) }}`,
+            },
+            parameters: {
+              entity: 'user:default/ben',
+            },
+          });
+
+          const { output } = await runner.execute(task);
+
+          expect(output.foo).toEqual({
+            kind: 'user',
+            namespace: 'default',
+            name: 'ben',
+          });
+        },
+      );
+
+      it('fails when unable to parse entity ref', async () => {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+          output: {
+            foo: `\${{ parameters.entity | parseEntityRef({ defaultNamespace:"namespace-b" }) }}`,
+          },
+          parameters: {
+            entity: 'ben',
+          },
+        });
+
+        const { output } = await runner.execute(task);
+
+        expect(output.foo).toEqual(
+          `\${{ parameters.entity | parseEntityRef({ defaultNamespace:"namespace-b" }) }}`,
+        );
+      });
+    });
+
+    it('provides the pick filter', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{ parameters.entity | parseEntityRef | pick("kind") }}',
+        },
+        parameters: {
+          entity: 'component:default/ben',
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual('component');
+    });
+
+    it('should allow deep nesting of picked objects', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{ parameters.entity | pick("something.deeply.nested") }}',
+        },
+        parameters: {
+          entity: {
+            something: {
+              deeply: {
+                nested: 'component',
+              },
+            },
+          },
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual('component');
+    });
+  });
+
+  describe('dry run', () => {
+    it('sets isDryRun flag correctly', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-validated-action',
+              input: { foo: 1 },
+            },
+          ],
+        },
+        {
+          backstageToken: token,
+        },
+        true,
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
+    });
+
+    it('should have metadata in action context during dry run', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          templateInfo: {
+            entityRef: 'dryRun-Entity',
+            entity: { metadata: { name: 'test-template' } },
+          },
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-validated-action',
+              input: { foo: 1 },
+            },
+          ],
+        },
+        {
+          backstageToken: token,
+        },
+        true,
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
+      expect(
+        fakeActionHandler.mock.calls[0][0].templateInfo.entity.metadata.name,
+      ).toEqual('test-template');
+    });
+
+    it('should have step info in action context during dry run', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          templateInfo: {
+            entityRef: 'dryRun-Entity',
+            entity: { metadata: { name: 'test-template' } },
+          },
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-validated-action',
+              input: { foo: 1 },
+            },
+          ],
+        },
+        {
+          backstageToken: token,
+        },
+        true,
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
+      expect(fakeActionHandler.mock.calls[0][0].step.id).toEqual('test');
+      expect(fakeActionHandler.mock.calls[0][0].step.name).toEqual('name');
+    });
+  });
+
+  describe('permissions', () => {
+    it('should throw an error if an actions is not authorized', async () => {
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-validated-action',
+            input: { foo: 1 },
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow(
+        /Unauthorized action: jest-validated-action. The action is not allowed/,
+      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it(`shouldn't execute actions who aren't authorized`, async () => {
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'scaffolder',
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+          conditions: {
+            anyOf: [
+              {
+                resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                rule: 'HAS_NUMBER_PROPERTY',
+                params: {
+                  key: 'foo',
+                  value: 1,
+                },
+              },
+            ],
+          },
+        },
+      ]);
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test1',
+            name: 'valid action',
+            action: 'jest-validated-action',
+            input: { foo: 1 },
+          },
+          {
+            id: 'test2',
+            name: 'invalid action',
+            action: 'jest-validated-action',
+            input: { foo: 2 },
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow(
+        `Unauthorized action: jest-validated-action. The action is not allowed. Input: ${JSON.stringify(
+          { foo: 2 },
+          null,
+          2,
+        )}`,
+      );
+      expect(fakeActionHandler).toHaveBeenCalled();
+      expect(mockedPermissionApi.authorizeConditional).toHaveBeenCalledTimes(1);
     });
   });
 });

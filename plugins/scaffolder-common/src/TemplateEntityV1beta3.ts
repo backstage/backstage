@@ -45,23 +45,33 @@ export interface TemplateEntityV1beta3 extends Entity {
      * The type that the Template will create. For example service, website or library.
      */
     type: string;
+
+    /**
+     * Template specific configuration of the presentation layer.
+     */
+    presentation?: TemplatePresentationV1beta3;
+
+    /**
+     * Recovery strategy for the template
+     */
+    EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
+
+    /**
+     * Form hooks to be run
+     */
+    EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
+
     /**
      * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
      * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
      * variables passed from the user into each action in the template.
      */
-    parameters?: JsonObject | JsonObject[];
+    parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
     /**
      * A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
      * javascript action and some optional input parameters that may or may not have been collected from the end user.
      */
-    steps: Array<{
-      id?: string;
-      name?: string;
-      action: string;
-      input?: JsonObject;
-      if?: string | boolean;
-    }>;
+    steps: Array<TemplateEntityStepV1beta3>;
     /**
      * The output is an object where template authors can pull out information from template actions and return them in a known standard way.
      */
@@ -70,7 +80,102 @@ export interface TemplateEntityV1beta3 extends Entity {
      * The owner entityRef of the TemplateEntity
      */
     owner?: string;
+    /**
+     * Specifies the lifecycle phase of the TemplateEntity
+     */
+    lifecycle?: string;
   };
+}
+
+/**
+ * Depends on how you designed your task you might tailor the behaviour for each of them.
+ *
+ * @public
+ */
+export interface TemplateRecoveryV1beta3 extends JsonObject {
+  /**
+   *
+   * none - not recover, let the task be marked as failed
+   * startOver - do recover, start the execution of the task from the first step.
+   *
+   * @public
+   */
+  EXPERIMENTAL_strategy?: 'none' | 'startOver';
+}
+
+/**
+ * The presentation of the template.
+ *
+ * @public
+ */
+export interface TemplatePresentationV1beta3 extends JsonObject {
+  /**
+   * Overrides default buttons' text
+   */
+  buttonLabels?: {
+    /**
+     * The text for the button which leads to the previous template page
+     */
+    backButtonText?: string;
+    /**
+     * The text for the button which starts the execution of the template
+     */
+    createButtonText?: string;
+    /**
+     * The text for the button which opens template's review/summary
+     */
+    reviewButtonText?: string;
+  };
+}
+
+/**
+ * Step that is part of a Template Entity.
+ *
+ * @public
+ */
+export interface TemplateEntityStepV1beta3 extends JsonObject {
+  id?: string;
+  name?: string;
+  action: string;
+  input?: JsonObject;
+  if?: string | boolean;
+  'backstage:permissions'?: TemplatePermissionsV1beta3;
+}
+
+/**
+ * The shape of each entry of parameters which gets rendered
+ * as a separate step in the wizard input
+ *
+ * @public
+ */
+export type TemplateParameterSchema = {
+  title: string;
+  description?: string;
+  presentation?: TemplatePresentationV1beta3;
+  steps: Array<{
+    title: string;
+    description?: string;
+    schema: JsonObject;
+  }>;
+  EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
+};
+
+/**
+ * Parameter that is part of a Template Entity.
+ *
+ * @public
+ */
+export interface TemplateParametersV1beta3 extends JsonObject {
+  'backstage:permissions'?: TemplatePermissionsV1beta3;
+}
+
+/**
+ *  Access control properties for parts of a template.
+ *
+ * @public
+ */
+export interface TemplatePermissionsV1beta3 extends JsonObject {
+  tags?: string[];
 }
 
 const validator = entityKindSchemaValidator(schema);
@@ -86,3 +191,13 @@ export const templateEntityV1beta3Validator: KindValidator = {
     return validator(data) === data;
   },
 };
+
+/**
+ * Typeguard for filtering entities and ensuring v1beta3 entities
+ * @public
+ */
+export const isTemplateEntityV1beta3 = (
+  entity: Entity,
+): entity is TemplateEntityV1beta3 =>
+  entity.apiVersion === 'scaffolder.backstage.io/v1beta3' &&
+  entity.kind === 'Template';

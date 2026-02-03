@@ -7,37 +7,46 @@ on:
     paths:
       - '.github/workflows/verify_windows.yml'
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [22.x, 24.x]
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=8192 --experimental-vm-modules
       INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
       INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
       INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       # Windows file operation slowness means there's no point caching this
       - name: yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: lint
-        run: yarn backstage-cli repo lint
+        run: yarn backstage-cli repo lint --successCache
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -46,9 +55,8 @@ jobs:
         run: yarn lint:type-deps
 
       - name: test
-        run: yarn lerna -- run test
+        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --successCache
         env:
-          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
 
       # credit: https://github.com/appleboy/discord-action/issues/3#issuecomment-731426861

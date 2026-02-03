@@ -16,6 +16,7 @@
 
 import {
   CompoundEntityRef,
+  Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -23,58 +24,64 @@ import {
   DependencyGraphTypes,
 } from '@backstage/core-components';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { CircularProgress, makeStyles, useTheme } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import React, { MouseEvent, useEffect, useMemo } from 'react';
-import { CustomLabel } from './CustomLabel';
-import { CustomNode } from './CustomNode';
-import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
-import { Direction, EntityEdge, EntityNode } from './types';
+import { MouseEvent, useEffect, useMemo } from 'react';
+import { DefaultRenderLabel } from './DefaultRenderLabel';
+import { DefaultRenderNode } from './DefaultRenderNode';
+import { RelationPairs } from '../../lib/types';
+import { Direction, EntityEdge, EntityNode } from '../../lib/types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
-const useStyles = makeStyles(theme => ({
-  progress: {
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    marginLeft: '-20px',
-    marginTop: '-20px',
-  },
-  container: {
-    position: 'relative',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  graph: {
-    width: '100%',
-    flex: 1,
-    // Right now there is no good way to style edges between nodes, we have to
-    // fallback to these hacks:
-    '& path[marker-end]': {
-      transition: 'filter 0.1s ease-in-out',
+/** @public */
+export type EntityRelationsGraphClassKey = 'progress' | 'container' | 'graph';
+
+const useStyles = makeStyles(
+  theme => ({
+    progress: {
+      position: 'absolute',
+      left: '50%',
+      top: '50%',
+      marginLeft: '-20px',
+      marginTop: '-20px',
     },
-    '& path[marker-end]:hover': {
-      filter: `drop-shadow(2px 2px 4px ${theme.palette.primary.dark});`,
+    container: {
+      position: 'relative',
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
     },
-    '& g[data-testid=label]': {
-      transition: 'transform 0s',
+    graph: {
+      width: '100%',
+      flex: 1,
+      // Right now there is no good way to style edges between nodes, we have to
+      // fall back to these hacks:
+      '& path[marker-end]': {
+        transition: 'filter 0.1s ease-in-out',
+      },
+      '& path[marker-end]:hover': {
+        filter: `drop-shadow(2px 2px 4px ${theme.palette.primary.dark});`,
+      },
+      '& g[data-testid=label]': {
+        transition: 'transform 0s',
+      },
     },
-  },
-}));
+  }),
+  { name: 'PluginCatalogGraphEntityRelationsGraph' },
+);
 
 /**
- * Core building block for custom entity relations diagrams.
- *
  * @public
  */
-export const EntityRelationsGraph = (props: {
+export type EntityRelationsGraphProps = {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
   maxDepth?: number;
   unidirectional?: boolean;
   mergeRelations?: boolean;
   kinds?: string[];
   relations?: string[];
+  entityFilter?: (entity: Entity) => boolean;
   direction?: Direction;
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
@@ -82,21 +89,37 @@ export const EntityRelationsGraph = (props: {
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
-}) => {
+  renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EntityEdge>;
+  curve?: 'curveStepBefore' | 'curveMonotoneX';
+  showArrowHeads?: boolean;
+  allowFullscreen?: boolean;
+};
+
+/**
+ * Core building block for custom entity relations diagrams.
+ *
+ * @public
+ */
+export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
   const {
     rootEntityNames,
-    maxDepth = Number.POSITIVE_INFINITY,
+    maxDepth = 2,
     unidirectional = true,
     mergeRelations = true,
     kinds,
     relations,
+    entityFilter,
     direction = Direction.LEFT_RIGHT,
     onNodeClick,
-    relationPairs = ALL_RELATION_PAIRS,
+    relationPairs,
     className,
     zoom = 'enabled',
     renderNode,
     renderLabel,
+    renderEdge,
+    curve,
+    showArrowHeads,
+    allowFullscreen,
   } = props;
 
   const theme = useTheme();
@@ -117,6 +140,7 @@ export const EntityRelationsGraph = (props: {
     mergeRelations,
     kinds,
     relations,
+    entityFilter,
     onNodeClick,
     relationPairs,
   });
@@ -134,15 +158,20 @@ export const EntityRelationsGraph = (props: {
         <DependencyGraph
           nodes={nodes}
           edges={edges}
-          renderNode={renderNode || CustomNode}
-          renderLabel={renderLabel || CustomLabel}
+          renderNode={renderNode || DefaultRenderNode}
+          renderLabel={renderLabel || DefaultRenderLabel}
+          renderEdge={renderEdge}
           direction={direction}
           className={classes.graph}
+          fit="contain"
           paddingX={theme.spacing(4)}
           paddingY={theme.spacing(4)}
           labelPosition={DependencyGraphTypes.LabelPosition.RIGHT}
           labelOffset={theme.spacing(1)}
           zoom={zoom}
+          curve={curve}
+          showArrowHeads={showArrowHeads}
+          allowFullscreen={allowFullscreen}
         />
       )}
     </div>

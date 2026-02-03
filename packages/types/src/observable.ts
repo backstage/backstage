@@ -46,7 +46,7 @@ export type Subscription = {
 // We get the actual runtime polyfill from zen-observable
 declare global {
   interface SymbolConstructor {
-    readonly observable: symbol;
+    readonly observable: unique symbol;
   }
 }
 

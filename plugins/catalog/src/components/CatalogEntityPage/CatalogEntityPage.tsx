@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Outlet } from 'react-router';
+import { Outlet } from 'react-router-dom';
 import { AsyncEntityProvider } from '@backstage/plugin-catalog-react';
 import { useEntityFromUrl } from './useEntityFromUrl';
 

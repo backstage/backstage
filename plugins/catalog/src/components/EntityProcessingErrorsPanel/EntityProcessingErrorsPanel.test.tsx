@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import { AlphaEntity, stringifyEntityRef } from '@backstage/catalog-model';
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
-import React from 'react';
+import { screen } from '@testing-library/react';
 import { EntityProcessingErrorsPanel } from './EntityProcessingErrorsPanel';
 
 describe('<EntityProcessErrors />', () => {
-  const getEntityAncestors: jest.MockedFunction<
-    CatalogApi['getEntityAncestors']
-  > = jest.fn();
-  const apis = TestApiRegistry.from([catalogApiRef, { getEntityAncestors }]);
+  const catalogApi = catalogApiMock.mock();
+  const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
   it('renders EntityProcessErrors if the entity has errors', async () => {
     const entity: AlphaEntity = {
@@ -96,11 +95,11 @@ describe('<EntityProcessErrors />', () => {
       },
     };
 
-    getEntityAncestors.mockResolvedValue({
+    catalogApi.getEntityAncestors.mockResolvedValue({
       rootEntityRef: stringifyEntityRef(entity),
       items: [{ entity, parentEntityRefs: [] }],
     });
-    const { getByText, queryByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
           <EntityProcessingErrorsPanel />
@@ -109,14 +108,14 @@ describe('<EntityProcessErrors />', () => {
     );
 
     expect(
-      getByText(
+      screen.getByText(
         'Error: Policy check failed; caused by Error: Malformed envelope, /metadata/labels should be object',
       ),
     ).toBeInTheDocument();
-    expect(getByText('Error: Foo')).toBeInTheDocument();
-    expect(queryByText('Error: This should not be rendered')).toBeNull();
+    expect(screen.getByText('Error: Foo')).toBeInTheDocument();
+    expect(screen.queryByText('Error: This should not be rendered')).toBeNull();
     expect(
-      queryByText('The error below originates from'),
+      screen.queryByText('The error below originates from'),
     ).not.toBeInTheDocument();
   });
 
@@ -197,14 +196,14 @@ describe('<EntityProcessErrors />', () => {
         ],
       },
     };
-    getEntityAncestors.mockResolvedValue({
+    catalogApi.getEntityAncestors.mockResolvedValue({
       rootEntityRef: stringifyEntityRef(entity),
       items: [
         { entity, parentEntityRefs: [stringifyEntityRef(parent)] },
         { entity: parent, parentEntityRefs: [] },
       ],
     });
-    const { getByText, queryByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
           <EntityProcessingErrorsPanel />
@@ -218,12 +217,14 @@ describe('<EntityProcessErrors />', () => {
     );
 
     expect(
-      getByText(
+      screen.getByText(
         'Error: Policy check failed; caused by Error: Malformed envelope, /metadata/labels should be object',
       ),
     ).toBeInTheDocument();
-    expect(getByText('Error: Foo')).toBeInTheDocument();
-    expect(queryByText('Error: This should not be rendered')).toBeNull();
-    expect(queryByText('The error below originates from')).toBeInTheDocument();
+    expect(screen.getByText('Error: Foo')).toBeInTheDocument();
+    expect(screen.queryByText('Error: This should not be rendered')).toBeNull();
+    expect(
+      screen.getByText('The error below originates from'),
+    ).toBeInTheDocument();
   });
 });

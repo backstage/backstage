@@ -14,20 +14,32 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { IconButton, ListItemIcon, Menu, MenuItem } from '@material-ui/core';
+import { MouseEvent, useState } from 'react';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import SignOutIcon from '@material-ui/icons/MeetingRoom';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  identityApiRef,
+  errorApiRef,
+  useApi,
+  useAnalytics,
+} from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
+/** @public */
 export const UserSettingsMenu = () => {
+  const errorApi = useApi(errorApiRef);
   const identityApi = useApi(identityApiRef);
-  const [open, setOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<undefined | HTMLElement>(
-    undefined,
-  );
+  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<undefined | HTMLElement>(undefined);
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+  const analytics = useAnalytics();
 
-  const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpen = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
     setOpen(true);
   };
@@ -41,17 +53,23 @@ export const UserSettingsMenu = () => {
     <>
       <IconButton
         data-testid="user-settings-menu"
-        aria-label="more"
+        aria-label={t('signOutMenu.moreIconTitle')}
         onClick={handleOpen}
       >
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem data-testid="sign-out" onClick={() => identityApi.signOut()}>
+        <MenuItem
+          data-testid="sign-out"
+          onClick={() => {
+            identityApi.signOut().catch(error => errorApi.post(error));
+            analytics.captureEvent('signOut', 'success');
+          }}
+        >
           <ListItemIcon>
             <SignOutIcon />
           </ListItemIcon>
-          Sign Out
+          {t('signOutMenu.title')}
         </MenuItem>
       </Menu>
     </>

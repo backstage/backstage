@@ -1,0 +1,60 @@
+//
+{{>licenseInfo}}
+{{#apiInfo}}
+{{#apis}}
+{{#imports}}
+import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
+{{/imports}}
+
+{{#operations}}
+
+{{#operation}}
+/**
+  * @public
+  */
+export type {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}} = {
+    {{#hasPathParams}}
+    path: {
+        {{#pathParams}}
+            {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/pathParams}}
+    },
+    {{/hasPathParams}}
+    {{#hasBodyParam}}
+        {{#bodyParam}}
+        body: {{{dataType}}},
+        {{/bodyParam}}
+    {{/hasBodyParam}}
+    {{#hasQueryParams}}
+    query: {
+        {{#queryParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/queryParams}}
+    },
+    {{/hasQueryParams}}
+    {{#hasHeaderParams}}
+    header: {
+        {{#headerParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/headerParams}}
+    },
+    {{/hasHeaderParams}}
+    response: {{#responses}} {{{dataType}}}{{^dataType}}void{{/dataType}} {{^-last}} | {{/-last}} {{/responses}}
+}
+{{/operation}}
+{{/operations}}
+{{/apis}}
+
+export type EndpointMap = {
+    {{#apis}}
+    {{#operations}}
+    {{#operation}}
+    
+    '#{{#lambda.lowercase}}{{httpMethod}}{{/lambda.lowercase}}|{{path}}': {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+    
+    {{/operation}}
+    {{/operations}}
+    {{/apis}}
+}
+
+{{/apiInfo}}

@@ -4,59 +4,87 @@
 # The last matching pattern takes precedence.
 # https://help.github.com/articles/about-codeowners/
 
-*                                                   @backstage/reviewers
-yarn.lock                                           @backstage/reviewers @backstage-service
-*/yarn.lock                                         @backstage/reviewers @backstage-service
-/.changeset/cost-insights-*                         @backstage/reviewers @backstage/silver-lining
-/.changeset                                         @backstage/reviewers @backstage/techdocs-core
-/cypress/src/integration/plugins/techdocs.spec.ts   @backstage/reviewers @backstage/techdocs-core
-/docs/assets/search                                 @backstage/reviewers @backstage/techdocs-core
-/docs/features/search                               @backstage/reviewers @backstage/techdocs-core
-/docs/features/techdocs                             @backstage/reviewers @backstage/techdocs-core
-/docs/plugins/integrating-search-into-plugins.md    @backstage/reviewers @backstage/techdocs-core
-/packages/techdocs-cli                              @backstage/reviewers @backstage/techdocs-core
-/packages/techdocs-cli-embedded-app                 @backstage/reviewers @backstage/techdocs-core
-/plugins/allure                                     @backstage/reviewers @deepak-bhardwaj-ps
-/plugins/apache-airflow                             @backstage/reviewers @cmpadden
-/plugins/api-docs                                   @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/azure-devops                               @backstage/reviewers @marleypowell @awanlin
-/plugins/azure-devops-backend                       @backstage/reviewers @marleypowell @awanlin
-/plugins/azure-devops-common                        @backstage/reviewers @marleypowell @awanlin
-/plugins/bitbucket-cloud-common                     @backstage/reviewers @pjungermann
-/plugins/bitrise                                    @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/catalog-backend-module-aws                 @backstage/reviewers @pjungermann
-/plugins/catalog-backend-module-bitbucket-cloud     @backstage/reviewers @pjungermann
-/plugins/catalog-backend-module-msgraph             @backstage/reviewers @pjungermann
-/plugins/catalog-graph                              @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/circleci                                   @backstage/reviewers @adamdmharvey
-/plugins/cloudbuild                                 @backstage/reviewers @trivago/ebarrios
-/plugins/code-coverage                              @backstage/reviewers @alde @nissayeva
-/plugins/code-coverage-backend                      @backstage/reviewers @alde @nissayeva
-/plugins/cost-insights                              @backstage/reviewers @backstage/silver-lining
-/plugins/explore                                    @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/explore-react                              @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/fossa                                      @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/gcalendar                                  @backstage/reviewers @szubster @ptychu @kielosz @alexrybch
-/plugins/git-release-manager                        @backstage/reviewers @erikengervall
-/plugins/home                                       @backstage/reviewers @backstage/techdocs-core
-/plugins/ilert                                      @backstage/reviewers @yacut
-/plugins/jenkins                                    @backstage/reviewers @timja
-/plugins/jenkins-backend                            @backstage/reviewers @timja
-/plugins/kafka                                      @backstage/reviewers @nirga
-/plugins/kafka-backend                              @backstage/reviewers @nirga
-/plugins/kubernetes                                 @backstage/reviewers @backstage/warpspeed
-/plugins/kubernetes-*                               @backstage/reviewers @backstage/warpspeed
-/plugins/newrelic-dashboard                         @backstage/reviewers @mufaddal7
-/plugins/scaffolder-backend-module-rails            @backstage/reviewers @angeliski
-/plugins/scaffolder-backend-module-yeoman           @backstage/reviewers @pawelmitka
-/plugins/search                                     @backstage/reviewers @backstage/techdocs-core
-/plugins/search-*                                   @backstage/reviewers @backstage/techdocs-core
-/plugins/sonarqube                                  @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/stack-overflow                             @backstage/reviewers @backstage/techdocs-core
-/plugins/stack-overflow-backend                     @backstage/reviewers @backstage/techdocs-core
-/plugins/techdocs                                   @backstage/reviewers @backstage/techdocs-core
-/plugins/techdocs-*                                 @backstage/reviewers @backstage/techdocs-core
-/tech-insights-backend                              @backstage/reviewers @xantier @iain-b
-/tech-insights-backend-module-jsonfc                @backstage/reviewers @xantier @iain-b
-/tech-insights-tech-insights-common                 @backstage/reviewers @xantier @iain-b
-/tech-insights-tech-insights-node                   @backstage/reviewers @xantier @iain-b
+*                                                 @backstage/maintainers @backstage/reviewers
+yarn.lock                                         @backstage/maintainers @backstage-service
+*/yarn.lock                                       @backstage/maintainers @backstage-service
+/.changeset                                       @backstage/operations-maintainers
+/.changeset/*.md
+/.github                                          @backstage/operations-maintainers
+/.github/vale                                     @backstage/maintainers @backstage/documentation-maintainers
+/.patches                                         @backstage/operations-maintainers
+/beps/0001-notifications-system                   @backstage/maintainers @backstage/notifications-maintainers
+/docs                                             @backstage/maintainers @backstage/documentation-maintainers
+/docs/assets/search                               @backstage/search-maintainers
+/docs/auth                                        @backstage/auth-maintainers
+/docs/backend-system                              @backstage/framework-maintainers
+/docs/deployment                                  @backstage/tooling-maintainers
+/docs/dls                                         @backstage/design-system-maintainers
+/docs/features/search                             @backstage/search-maintainers
+/docs/features/techdocs                           @backstage/techdocs-maintainers
+/docs/permissions                                 @backstage/permission-maintainers
+/docs/plugins/integrating-search-into-plugins.md  @backstage/search-maintainers
+/docs/releases                                    @backstage/operations-maintainers
+/docs/tooling                                     @backstage/tooling-maintainers
+/microsite                                        @backstage/maintainers @backstage/documentation-maintainers
+/microsite/data/plugins                           @backstage/maintainers
+/microsite/static                                 @backstage/maintainers @backstage/documentation-maintainers
+/packages                                         @backstage/framework-maintainers
+/packages/backend-openapi-utils                   @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
+/packages/catalog-client                          @backstage/catalog-maintainers
+/packages/catalog-model                           @backstage/catalog-maintainers
+/packages/cli                                     @backstage/tooling-maintainers
+/packages/cli-*                                   @backstage/tooling-maintainers
+/packages/cli/src/commands/onboard                @backstage/sharks
+/packages/e2e-test                                @backstage/operations-maintainers
+/packages/eslint-plugin                           @backstage/tooling-maintainers
+/packages/release-manifests                       @backstage/operations-maintainers
+/packages/repo-tools                              @backstage/tooling-maintainers
+/packages/techdocs-cli                            @backstage/techdocs-maintainers
+/packages/techdocs-cli-embedded-app               @backstage/techdocs-maintainers
+/packages/ui                                      @backstage/design-system-maintainers
+/packages/yarn-plugin                             @backstage/tooling-maintainers
+/plugins/app                                      @backstage/framework-maintainers
+/plugins/app-*                                    @backstage/framework-maintainers
+/plugins/auth                                     @backstage/auth-maintainers
+/plugins/auth-*                                   @backstage/auth-maintainers
+/plugins/api-docs                                 @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/bitbucket-cloud-common                   @backstage/maintainers @backstage/reviewers @pjungermann
+/plugins/catalog                                  @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
+/plugins/catalog-*                                @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
+/plugins/catalog-backend-module-aws               @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-bitbucket-cloud   @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-backstage-openapi @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
+/plugins/catalog-backend-module-gitea             @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
+/plugins/catalog-backend-module-msgraph           @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
+/plugins/catalog-graph                            @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @backstage/sda-se-reviewers
+/plugins/devtools                                 @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/devtools-backend                         @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/devtools-common                          @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/events-*                                 @backstage/maintainers @backstage/reviewers @backstage/events-maintainers
+/plugins/home                                     @backstage/home-maintainers
+/plugins/home-*                                   @backstage/home-maintainers
+/plugins/kubernetes                               @backstage/kubernetes-maintainers
+/plugins/kubernetes-*                             @backstage/kubernetes-maintainers
+/plugins/notifications                            @backstage/maintainers @backstage/notifications-maintainers
+/plugins/notifications-*                          @backstage/maintainers @backstage/notifications-maintainers
+/plugins/scaffolder-backend-module-notifications  @backstage/maintainers @backstage/notifications-maintainers
+/plugins/permission-*                             @backstage/permission-maintainers
+/plugins/scaffolder                               @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
+/plugins/scaffolder-*                             @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
+/plugins/search                                   @backstage/search-maintainers
+/plugins/search-*                                 @backstage/search-maintainers
+/plugins/signals                                  @backstage/maintainers @backstage/notifications-maintainers
+/plugins/signals-*                                @backstage/maintainers @backstage/notifications-maintainers
+/plugins/techdocs                                 @backstage/techdocs-maintainers
+/plugins/techdocs-*                               @backstage/techdocs-maintainers
+/plugins/user-settings                            @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/user-settings-backend                    @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/user-settings-common                     @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+
+/scripts                                          @backstage/operations-maintainers
+
+/packages/backend-plugin-api/src/services/definitions/AuditorService.ts   @backstage/maintainers @backstage/auditor-maintainers
+/packages/backend-defaults/src/entrypoints/auditor                        @backstage/maintainers @backstage/auditor-maintainers
+/packages/backend-defaults/report-auditor.api.md                          @backstage/maintainers @backstage/auditor-maintainers
+/docs/backend-system/core-services/auditor.md                             @backstage/maintainers @backstage/auditor-maintainers @backstage/documentation-maintainers

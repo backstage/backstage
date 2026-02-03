@@ -14,21 +14,37 @@
  * limitations under the License.
  */
 
+import { Page, Content, Header } from '@backstage/core-components';
 import {
-  HomePageRandomJoke,
-  ComponentAccordion,
-  ComponentTabs,
-  ComponentTab,
+  HomePageCompanyLogo,
+  TemplateBackstageLogo,
+  HomePageStarredEntities,
+  HomePageToolkit,
+  HomePageTopVisited,
+  HomePageRecentlyVisited,
   WelcomeTitle,
   HeaderWorldClock,
   ClockConfig,
-  HomePageStarredEntities,
 } from '@backstage/plugin-home';
-import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
-import { HomePageCalendar } from '@backstage/plugin-gcalendar';
+import { SearchContextProvider } from '@backstage/plugin-search-react';
 import Grid from '@material-ui/core/Grid';
-import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { tools, useLogoStyles } from './shared';
+
+const useStyles = makeStyles(theme => ({
+  searchBarInput: {
+    maxWidth: '60vw',
+    margin: 'auto',
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: '50px',
+    boxShadow: theme.shadows[1],
+  },
+  searchBarOutline: {
+    borderStyle: 'none',
+  },
+}));
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -55,69 +71,55 @@ const timeFormat: Intl.DateTimeFormatOptions = {
   hour12: false,
 };
 
-export const homePage = (
-  <Page themeId="home">
-    <Header title={<WelcomeTitle />} pageTitleOverride="Home">
-      <HeaderWorldClock
-        clockConfigs={clockConfigs}
-        customTimeFormat={timeFormat}
-      />
-    </Header>
-    <Content>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <HomePageSearchBar />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HomePageRandomJoke />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HomePageRandomJoke
-            defaultCategory="any"
-            Renderer={ComponentAccordion}
+export const HomePage = () => {
+  const classes = useStyles();
+  const { svg, path, container } = useLogoStyles();
+
+  return (
+    <SearchContextProvider>
+      <Page themeId="home">
+        <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+          <HeaderWorldClock
+            clockConfigs={clockConfigs}
+            customTimeFormat={timeFormat}
           />
-          <HomePageRandomJoke
-            title="Another Random Joke"
-            Renderer={ComponentAccordion}
-          />
-          <HomePageRandomJoke
-            title="One More Random Joke"
-            defaultCategory="programming"
-            Renderer={ComponentAccordion}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <ComponentTabs
-            title="Random Jokes"
-            tabs={[
-              {
-                label: 'Programming',
-                Component: () => (
-                  <HomePageRandomJoke
-                    defaultCategory="programming"
-                    Renderer={ComponentTab}
-                  />
-                ),
-              },
-              {
-                label: 'Any',
-                Component: () => (
-                  <HomePageRandomJoke
-                    defaultCategory="any"
-                    Renderer={ComponentTab}
-                  />
-                ),
-              },
-            ]}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HomePageCalendar />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HomePageStarredEntities />
-        </Grid>
-      </Grid>
-    </Content>
-  </Page>
-);
+        </Header>
+        <Content>
+          <Grid container justifyContent="center" spacing={2}>
+            <HomePageCompanyLogo
+              className={container}
+              logo={<TemplateBackstageLogo classes={{ svg, path }} />}
+            />
+            <Grid container item xs={12} justifyContent="center">
+              <HomePageSearchBar
+                InputProps={{
+                  classes: {
+                    root: classes.searchBarInput,
+                    notchedOutline: classes.searchBarOutline,
+                  },
+                }}
+                placeholder="Search"
+              />
+            </Grid>
+            <Grid container item xs={12}>
+              <Grid item xs={12} md={6}>
+                <HomePageTopVisited />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <HomePageRecentlyVisited />
+              </Grid>
+            </Grid>
+            <Grid container item xs={12}>
+              <Grid item xs={7}>
+                <HomePageStarredEntities />
+              </Grid>
+              <Grid item xs={5}>
+                <HomePageToolkit tools={tools} />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    </SearchContextProvider>
+  );
+};

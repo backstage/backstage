@@ -15,21 +15,21 @@
  */
 
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import {
   GroupTransformer,
   LdapClient,
   LdapProviderConfig,
-  readLdapConfig,
+  readLdapLegacyConfig,
   readLdapOrg,
   UserTransformer,
 } from '../ldap';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Extracts teams and users out of an LDAP server.
@@ -38,14 +38,14 @@ import {
  */
 export class LdapOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: LdapProviderConfig[];
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly groupTransformer?: GroupTransformer;
   private readonly userTransformer?: UserTransformer;
 
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       groupTransformer?: GroupTransformer;
       userTransformer?: UserTransformer;
     },
@@ -56,13 +56,13 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       configRoot.getOptionalConfig('catalog.processors.ldapOrg');
     return new LdapOrgReaderProcessor({
       ...options,
-      providers: config ? readLdapConfig(config) : [],
+      providers: config ? readLdapLegacyConfig(config) : [],
     });
   }
 
   constructor(options: {
     providers: LdapProviderConfig[];
-    logger: Logger;
+    logger: LoggerService;
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
   }) {
@@ -109,6 +109,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       client,
       provider.users,
       provider.groups,
+      provider.vendor,
       {
         groupTransformer: this.groupTransformer,
         userTransformer: this.userTransformer,

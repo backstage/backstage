@@ -14,34 +14,24 @@
  * limitations under the License.
  */
 
-import { CatalogClient } from '@backstage/catalog-client';
 import { createDevApp } from '@backstage/dev-utils';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
-  catalogApiRef,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
-import { scaffolderApiRef, ScaffolderClient } from '../src';
+import { ScaffolderClient } from '../src';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderPage } from '../src/plugin';
 import {
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { CatalogEntityPage } from '@backstage/plugin-catalog';
+import { CatalogEntityPage, catalogPlugin } from '@backstage/plugin-catalog';
 
 createDevApp()
-  .addPage({
-    path: '/catalog/:kind/:namespace/:name',
-    element: <CatalogEntityPage />,
-  })
-  .registerApi({
-    api: catalogApiRef,
-    deps: { discoveryApi: discoveryApiRef },
-    factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
-  })
+  .registerPlugin(catalogPlugin)
   .registerApi({
     api: starredEntitiesApiRef,
     deps: {},
@@ -64,8 +54,30 @@ createDevApp()
       }),
   })
   .addPage({
+    path: '/catalog/:kind/:namespace/:name',
+    element: <CatalogEntityPage />,
+  })
+  .addPage({
     path: '/create',
     title: 'Create',
     element: <ScaffolderPage />,
+  })
+  .addPage({
+    path: '/create-groups',
+    title: 'Groups',
+    element: (
+      <ScaffolderPage
+        groups={[
+          {
+            filter: e => e.metadata.tags?.includes('techdocs') || false,
+            title: 'Techdocs',
+          },
+          {
+            filter: e => e.metadata.tags?.includes('react') || false,
+            title: 'React',
+          },
+        ]}
+      />
+    ),
   })
   .render();

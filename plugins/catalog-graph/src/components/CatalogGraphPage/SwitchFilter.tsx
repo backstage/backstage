@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Box, FormControlLabel, makeStyles, Switch } from '@material-ui/core';
-import React, { useCallback } from 'react';
+import Box from '@material-ui/core/Box';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import { makeStyles } from '@material-ui/core/styles';
+import { ChangeEvent, useCallback } from 'react';
 
 export type Props = {
   label: string;
@@ -22,18 +25,24 @@ export type Props = {
   onChange: (value: boolean) => void;
 };
 
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-    maxWidth: 300,
+/** @public */
+export type SwitchFilterClassKey = 'root';
+
+const useStyles = makeStyles(
+  {
+    root: {
+      width: '100%',
+      maxWidth: 300,
+    },
   },
-});
+  { name: 'PluginCatalogGraphSwitchFilter' },
+);
 
 export const SwitchFilter = ({ label, value, onChange }: Props) => {
   const classes = useStyles();
 
   const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       onChange(event.target.checked);
     },
     [onChange],

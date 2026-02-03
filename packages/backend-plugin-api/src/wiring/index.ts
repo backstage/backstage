@@ -14,5 +14,27 @@
  * limitations under the License.
  */
 
-export type { BackendRegistrable } from './types';
-export * from './types';
+import { type CreateBackendModuleOptions } from './createBackendModule';
+import { type CreateBackendPluginOptions } from './createBackendPlugin';
+import { type CreateExtensionPointOptions } from './createExtensionPoint';
+
+export { createBackendModule } from './createBackendModule';
+export { createBackendPlugin } from './createBackendPlugin';
+export { createExtensionPoint } from './createExtensionPoint';
+export {
+  createBackendFeatureLoader,
+  type CreateBackendFeatureLoaderOptions,
+} from './createBackendFeatureLoader';
+
+export type {
+  BackendModuleRegistrationPoints,
+  BackendPluginRegistrationPoints,
+  ExtensionPoint,
+  ExtensionPointFactoryContext,
+} from './types';
+
+export type {
+  CreateBackendPluginOptions,
+  CreateBackendModuleOptions,
+  CreateExtensionPointOptions,
+};

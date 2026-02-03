@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,18 @@
  * limitations under the License.
  */
 
-/**
- * CLI for developing Backstage plugins and apps
- *
- * @packageDocumentation
- */
+import { CliInitializer } from './wiring/CliInitializer';
 
-import { program } from 'commander';
-import chalk from 'chalk';
-import { exitWithError } from './lib/errors';
-import { version } from './lib/version';
-import { registerCommands } from './commands';
-
-const main = (argv: string[]) => {
-  program.name('backstage-cli').version(version);
-
-  registerCommands(program);
-
-  program.on('command:*', () => {
-    console.log();
-    console.log(chalk.red(`Invalid command: ${program.args.join(' ')}`));
-    console.log();
-    program.outputHelp();
-    process.exit(1);
-  });
-
-  program.parse(argv);
-};
-
-process.on('unhandledRejection', rejection => {
-  if (rejection instanceof Error) {
-    exitWithError(rejection);
-  } else {
-    exitWithError(new Error(`Unknown rejection: '${rejection}'`));
-  }
-});
-
-main(process.argv);
+(async () => {
+  const initializer = new CliInitializer();
+  initializer.add(import('./modules/build'));
+  initializer.add(import('./modules/config'));
+  initializer.add(import('./modules/create-github-app'));
+  initializer.add(import('./modules/info'));
+  initializer.add(import('./modules/lint'));
+  initializer.add(import('./modules/maintenance'));
+  initializer.add(import('./modules/migrate'));
+  initializer.add(import('./modules/new'));
+  initializer.add(import('./modules/test'));
+  await initializer.run();
+})();

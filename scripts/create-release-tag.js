@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -17,8 +17,9 @@
  */
 
 const { Octokit } = require('@octokit/rest');
-const path = require('path');
+const path = require('node:path');
 const fs = require('fs-extra');
+const { EOL } = require('node:os');
 
 const baseOptions = {
   owner: 'backstage',
@@ -58,14 +59,17 @@ async function createGitTag(octokit, commitSha, tagName) {
 }
 
 async function main() {
-  if (!process.env.GITHUB_SHA) {
-    throw new Error('GITHUB_SHA is not set');
+  const commitSha = process.env.RELEASE_SHA ?? process.env.GITHUB_SHA;
+  if (!commitSha) {
+    throw new Error('RELEASE_SHA or GITHUB_SHA is not set');
   }
   if (!process.env.GITHUB_TOKEN) {
     throw new Error('GITHUB_TOKEN is not set');
   }
+  if (!process.env.GITHUB_OUTPUT) {
+    throw new Error('GITHUB_OUTPUT environment variable not set');
+  }
 
-  const commitSha = process.env.GITHUB_SHA;
   const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
   const releaseVersion = await getCurrentReleaseTag();
@@ -74,8 +78,11 @@ async function main() {
   console.log(`Creating release tag ${tagName} at ${commitSha}`);
   await createGitTag(octokit, commitSha, tagName);
 
-  console.log(`::set-output name=tag_name::${tagName}`);
-  console.log(`::set-output name=version::${releaseVersion}`);
+  await fs.appendFile(process.env.GITHUB_OUTPUT, `tag_name=${tagName}${EOL}`);
+  await fs.appendFile(
+    process.env.GITHUB_OUTPUT,
+    `version=${releaseVersion}${EOL}`,
+  );
 }
 
 main().catch(error => {

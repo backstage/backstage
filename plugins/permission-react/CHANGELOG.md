@@ -1,5 +1,864 @@
 # @backstage/plugin-permission-react
 
+## 0.4.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/config@1.3.6
+
+## 0.4.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.4.39-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.4.38
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/config@1.3.6
+
+## 0.4.38-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.4.37
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.4.37-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+
+## 0.4.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/core-plugin-api@1.10.9
+
+## 0.4.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.4.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.9.0
+
+## 0.4.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/config@1.3.2
+
+## 0.4.34-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.9.0-next.0
+
+## 0.4.34-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.6
+
+## 0.4.33
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.33-next.0
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.31
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.31-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/plugin-permission-common@0.8.4-next.0
+
+## 0.4.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.1
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.4.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.1-next.0
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
+## 0.4.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/core-plugin-api@1.10.1
+
+## 0.4.27
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.4.27-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.4.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.4.26
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.4.26-next.0
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.4.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+
+## 0.4.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+
+## 0.4.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+
+## 0.4.24
+
+### Patch Changes
+
+- 28b2cfb: Improve API Reference documentation
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+
+## 0.4.23
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/config@1.2.0
+
+## 0.4.23-next.1
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.14-next.0
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3-next.0
+
+## 0.4.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.4.22
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.4.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.4.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+
+## 0.4.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+
+## 0.4.20
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.4.20-next.1
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.4.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.4.19
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- b1acd9b: Updated README
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/config@1.1.1
+
+## 0.4.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.11
+
+## 0.4.19-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-permission-common@0.7.11
+
+## 0.4.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/config@1.1.1
+
+## 0.4.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
+## 0.4.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
+## 0.4.17
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/config@1.1.1
+
+## 0.4.17-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
+## 0.4.16
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
+## 0.4.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/config@1.1.1-next.0
+  - @backstage/plugin-permission-common@0.7.9-next.0
+
+## 0.4.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/plugin-permission-common@0.7.8
+
+## 0.4.15
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-permission-common@0.7.8
+
+## 0.4.15-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/plugin-permission-common@0.7.8-next.2
+
+## 0.4.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.1
+
+## 0.4.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.0
+
+## 0.4.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.4.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.4.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3-next.1
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.7-next.0
+
+## 0.4.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3-next.0
+  - @backstage/config@1.0.8
+
+## 0.4.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/plugin-permission-common@0.7.7-next.0
+
+## 0.4.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2
+  - @backstage/config@1.0.8
+  - @backstage/plugin-permission-common@0.7.6
+
+## 0.4.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.2-next.0
+  - @backstage/plugin-permission-common@0.7.6-next.0
+  - @backstage/config@1.0.7
+
+## 0.4.12
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5
+  - @backstage/core-plugin-api@1.5.1
+  - @backstage/config@1.0.7
+
+## 0.4.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.1-next.1
+  - @backstage/config@1.0.7
+  - @backstage/plugin-permission-common@0.7.5-next.0
+
+## 0.4.12-next.0
+
+### Patch Changes
+
+- e0c6e8b9c3c: Update peer dependencies
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.5-next.0
+  - @backstage/core-plugin-api@1.5.1-next.0
+  - @backstage/config@1.0.7
+
+## 0.4.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.7.4
+  - @backstage/config@1.0.7
+
+## 0.4.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.0-next.2
+  - @backstage/config@1.0.7-next.0
+
+## 0.4.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.1
+  - @backstage/plugin-permission-common@0.7.4-next.0
+  - @backstage/config@1.0.7-next.0
+
+## 0.4.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.1-next.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-permission-common@0.7.3
+
+## 0.4.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.4.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-permission-common@0.7.3
+
+## 0.4.9
+
+### Patch Changes
+
+- 1a53a735b7: Updated dependency `swr` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0
+  - @backstage/config@1.0.6
+  - @backstage/plugin-permission-common@0.7.3
+
+## 0.4.9-next.1
+
+### Patch Changes
+
+- 1a53a735b7: Updated dependency `swr` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.3.0-next.1
+  - @backstage/config@1.0.6-next.0
+  - @backstage/plugin-permission-common@0.7.3-next.0
+
+## 0.4.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.6-next.0
+  - @backstage/core-plugin-api@1.2.1-next.0
+  - @backstage/plugin-permission-common@0.7.3-next.0
+
+## 0.4.8
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0
+  - @backstage/plugin-permission-common@0.7.2
+  - @backstage/config@1.0.5
+
+## 0.4.8-next.3
+
+### Patch Changes
+
+- 2e701b3796: Internal refactor to use `react-router-dom` rather than `react-router`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.2-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/core-plugin-api@1.2.0-next.2
+
+## 0.4.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.2.0-next.2
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
+## 0.4.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.1-next.1
+  - @backstage/config@1.0.5-next.1
+  - @backstage/plugin-permission-common@0.7.2-next.1
+
+## 0.4.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.1-next.0
+  - @backstage/plugin-permission-common@0.7.2-next.0
+  - @backstage/config@1.0.5-next.0
+
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.0
+  - @backstage/plugin-permission-common@0.7.1
+  - @backstage/config@1.0.4
+
+## 0.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.1.0-next.0
+  - @backstage/plugin-permission-common@0.7.1-next.0
+  - @backstage/config@1.0.4-next.0
+
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.0
+  - @backstage/core-plugin-api@1.0.7
+  - @backstage/config@1.0.3
+
+## 0.4.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.0-next.2
+  - @backstage/config@1.0.3-next.2
+  - @backstage/core-plugin-api@1.0.7-next.2
+
+## 0.4.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.7-next.1
+  - @backstage/config@1.0.3-next.1
+  - @backstage/plugin-permission-common@0.6.5-next.1
+
+## 0.4.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.3-next.0
+  - @backstage/core-plugin-api@1.0.7-next.0
+  - @backstage/plugin-permission-common@0.6.5-next.0
+
+## 0.4.5
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- 817f3196f6: **DEPRECATION**: The `PermissionedRoute` component has been deprecated in favor of the new `RequirePermission` component. This is because the usage pattern of `PermissionedRoute` is not compatible with React Router v6 stable.
+
+  Embed the type from `react-router` instead of exporting it directly.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6
+  - @backstage/config@1.0.2
+  - @backstage/plugin-permission-common@0.6.4
+
+## 0.4.5-next.2
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+- Updated dependencies
+  - @backstage/config@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.6-next.3
+  - @backstage/plugin-permission-common@0.6.4-next.2
+
+## 0.4.5-next.1
+
+### Patch Changes
+
+- 817f3196f6: Updated React Router dependencies to be peer dependencies.
+- 817f3196f6: **DEPRECATION**: The `PermissionedRoute` component has been deprecated in favor of the new `RequirePermission` component. This is because the usage pattern of `PermissionedRoute` is not compatible with React Router v6 stable.
+
+  Embed the type from `react-router` instead of exporting it directly.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.1
+
+## 0.4.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.6-next.0
+  - @backstage/plugin-permission-common@0.6.4-next.0
+
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.5
+
 ## 0.4.4-next.0
 
 ### Patch Changes

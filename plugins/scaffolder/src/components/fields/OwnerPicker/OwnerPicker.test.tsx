@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
+import { type EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { FieldProps } from '@rjsf/core';
-import React from 'react';
+import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { OwnerPicker } from './OwnerPicker';
+import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
+import { fireEvent, screen } from '@testing-library/react';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -28,34 +35,43 @@ const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
 });
 
 describe('<OwnerPicker />', () => {
-  let entities: Entity[];
+  const entities: Entity[] = [
+    makeEntity('Group', 'default', 'team-a'),
+    makeEntity('Group', 'default', 'squad-b'),
+  ];
   const onChange = jest.fn();
   const schema = {};
   const required = false;
-  let uiSchema: { 'ui:options': { allowedKinds?: string[] } };
+  let uiSchema: {
+    'ui:options': {
+      allowedKinds?: string[];
+      defaultKind?: string;
+      allowArbitraryValues?: boolean;
+      defaultNamespace?: string | false;
+      catalogFilter?: EntityFilterQuery;
+    };
+  };
   const rawErrors: string[] = [];
   const formData = undefined;
 
-  let props: FieldProps;
+  let props: FieldProps<string>;
 
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
+  const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
-  let Wrapper: React.ComponentType;
+  });
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    entities = [
-      makeEntity('Group', 'default', 'team-a'),
-      makeEntity('Group', 'default', 'squad-b'),
-    ];
-
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+    Wrapper = ({ children }: { children?: ReactNode }) => (
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
         {children}
       </TestApiProvider>
     );
@@ -63,7 +79,7 @@ describe('<OwnerPicker />', () => {
 
   afterEach(() => jest.resetAllMocks());
 
-  describe('without allowedKinds', () => {
+  describe('without catalogFilter and allowedKinds', () => {
     beforeEach(() => {
       uiSchema = { 'ui:options': {} };
       props = {
@@ -74,8 +90,6 @@ describe('<OwnerPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
     it('searches for users and groups', async () => {
@@ -85,11 +99,89 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: {
-          kind: ['Group', 'User'],
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: {
+            kind: ['Group', 'User'],
+          },
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
+          ],
+        }),
+      );
+    });
+  });
+
+  describe('ui:disabled OwnerPicker', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
         },
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+    it('Prevents user from modifying input when ui:disabled is true', async () => {
+      props.uiSchema = { 'ui:disabled': true };
+      props.formData = 'group:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <OwnerPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      // Expect input to be disabled
+      expect(input).toBeDisabled();
+      expect(input).toHaveValue('group:default/myentity');
+    });
+
+    it('Allows user to edit when ui:disabled is false', async () => {
+      props.uiSchema = { 'ui:disabled': false };
+      props.formData = 'group:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <OwnerPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+      expect(input).not.toBeDisabled();
+
+      fireEvent.change(input, {
+        target: { value: 'group:default/mynewentity' },
       });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('group:default/mynewentity');
+      expect(onChange).toHaveBeenCalledWith('group:default/mynewentity');
     });
   });
 
@@ -104,22 +196,122 @@ describe('<OwnerPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
-    it('searches for users and groups', async () => {
+    it('searches for users', async () => {
       await renderInTestApp(
         <Wrapper>
           <OwnerPicker {...props} />
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: {
-          kind: ['User'],
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: {
+            kind: ['User'],
+          },
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
+          ],
+        }),
+      );
+    });
+  });
+
+  describe('with catalogFilter', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'spec.type': 'team',
+            },
+          ],
         },
-      });
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('searches for group entities of type team', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <OwnerPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['Group'],
+              'spec.type': 'team',
+            },
+          ],
+        }),
+      );
+    });
+  });
+
+  describe('catalogFilter should take precedence over allowedKinds', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          allowedKinds: ['User'],
+          catalogFilter: [
+            {
+              kind: ['Group', 'User'],
+            },
+            {
+              'spec.type': ['team', 'business-unit'],
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+    });
+
+    it('searches for users and groups or teams and business units', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <OwnerPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['Group', 'User'],
+            },
+            {
+              'spec.type': ['team', 'business-unit'],
+            },
+          ],
+        }),
+      );
     });
   });
 });

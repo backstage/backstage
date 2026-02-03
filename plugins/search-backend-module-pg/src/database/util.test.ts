@@ -16,6 +16,8 @@
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { queryPostgresMajorVersion } from './util';
 
+jest.setTimeout(60_000);
+
 describe('util', () => {
   describe('unsupported', () => {
     const databases = TestDatabases.create({
@@ -31,13 +33,12 @@ describe('util', () => {
           async () => await queryPostgresMajorVersion(knex),
         ).rejects.toThrow();
       },
-      60_000,
     );
   });
 
   describe('supported', () => {
     const databases = TestDatabases.create({
-      ids: ['POSTGRES_13', 'POSTGRES_9'],
+      ids: ['POSTGRES_18', 'POSTGRES_14'],
     });
 
     if (databases.eachSupportedId().length < 1) {
@@ -50,13 +51,12 @@ describe('util', () => {
       'should get postgres major version, %p',
       async databaseId => {
         const knex = await databases.init(databaseId);
-        const expectedVersion = +databaseId.substr(9);
+        const expectedVersion = +databaseId.slice(9);
 
         await expect(queryPostgresMajorVersion(knex)).resolves.toBe(
           expectedVersion,
         );
       },
-      60_000,
     );
   });
 });

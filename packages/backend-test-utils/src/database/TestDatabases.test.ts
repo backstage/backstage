@@ -14,25 +14,12 @@
  * limitations under the License.
  */
 
-import knexFactory from 'knex';
-import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
-import { startMysqlContainer } from './startMysqlContainer';
-import { startPostgresContainer } from './startPostgresContainer';
 import { TestDatabases } from './TestDatabases';
 
-const itIfDocker = isDockerDisabledForTests() ? it.skip : it;
+jest.setTimeout(60_000);
 
 describe('TestDatabases', () => {
-  const OLD_ENV = process.env;
-  beforeEach(() => {
-    jest.resetModules();
-    process.env = { ...OLD_ENV };
-  });
-  afterAll(() => {
-    process.env = OLD_ENV;
-  });
-
-  describe('each', () => {
+  describe('each create', () => {
     const dbs = TestDatabases.create();
 
     it.each(dbs.eachSupportedId())(
@@ -49,109 +36,6 @@ describe('TestDatabases', () => {
           { a: 1 },
         ]);
       },
-      60_000,
     );
   });
-
-  itIfDocker(
-    'obeys a provided connection string for postgres 13',
-    async () => {
-      const dbs = TestDatabases.create();
-      const { host, port, user, password, stop } = await startPostgresContainer(
-        'postgres:13',
-      );
-
-      try {
-        // Leave a mark
-        process.env.BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING = `postgresql://${user}:${password}@${host}:${port}`;
-        const input = await dbs.init('POSTGRES_13');
-        await input.schema.createTable('a', table =>
-          table.string('x').primary(),
-        );
-        await input.insert({ x: 'y' }).into('a');
-
-        // Look for the mark
-        const database = input.client.config.connection.database;
-        const output = knexFactory({
-          client: 'pg',
-          connection: { host, port, user, password, database },
-        });
-        // eslint-disable-next-line jest/no-standalone-expect
-        await expect(output.select('x').from('a')).resolves.toEqual([
-          { x: 'y' },
-        ]);
-      } finally {
-        await stop();
-      }
-    },
-    60_000,
-  );
-
-  itIfDocker(
-    'obeys a provided connection string for postgres 9',
-    async () => {
-      const dbs = TestDatabases.create();
-      const { host, port, user, password, stop } = await startPostgresContainer(
-        'postgres:9',
-      );
-
-      try {
-        // Leave a mark
-        process.env.BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING = `postgresql://${user}:${password}@${host}:${port}`;
-        const input = await dbs.init('POSTGRES_9');
-        await input.schema.createTable('a', table =>
-          table.string('x').primary(),
-        );
-        await input.insert({ x: 'y' }).into('a');
-
-        // Look for the mark
-        const database = input.client.config.connection.database;
-        const output = knexFactory({
-          client: 'pg',
-          connection: { host, port, user, password, database },
-        });
-        // eslint-disable-next-line jest/no-standalone-expect
-        await expect(output.select('x').from('a')).resolves.toEqual([
-          { x: 'y' },
-        ]);
-      } finally {
-        await stop();
-      }
-    },
-    60_000,
-  );
-
-  itIfDocker(
-    'obeys a provided connection string for mysql 8',
-    async () => {
-      const dbs = TestDatabases.create();
-      const { host, port, user, password, stop } = await startMysqlContainer(
-        'mysql:8',
-      );
-
-      try {
-        // Leave a mark
-        process.env.BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING = `mysql://${user}:${password}@${host}:${port}/ignored`;
-        const input = await dbs.init('MYSQL_8');
-        await input.schema.createTable('a', table =>
-          table.string('x').primary(),
-        );
-        await input.insert({ x: 'y' }).into('a');
-
-        // Look for the mark
-        const database = input.client.config.connection.database;
-        const output = knexFactory({
-          client: 'mysql2',
-          connection: { host, port, user, password, database },
-        });
-        // eslint-disable-next-line jest/no-standalone-expect
-        await expect(output.select('x').from('a')).resolves.toEqual([
-          { x: 'y' },
-        ]);
-      } finally {
-        await stop();
-      }
-    },
-    60_000,
-  );
 });

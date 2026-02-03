@@ -17,6 +17,7 @@
 export const defaultPreviewTemplate = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
   - title: Fill in some steps
+    ui:ObjectFieldTemplate: TwoColumn
     required:
       - name
     properties:
@@ -30,8 +31,8 @@ parameters:
         description: Owner of the component
         ui:field: OwnerPicker
         ui:options:
-          allowedKinds:
-            - Group
+          catalogFilter:
+            kind: Group
   - title: Choose a location
     required:
       - repoUrl

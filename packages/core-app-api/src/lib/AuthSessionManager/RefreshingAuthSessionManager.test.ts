@@ -16,6 +16,7 @@
 
 import { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
 import { SessionState } from '@backstage/core-plugin-api';
+import { AuthConnectorRefreshSessionOptions } from '../AuthConnector';
 
 const defaultOptions = {
   sessionScopes: (session: { scopes: Set<string> }) => session.scopes,
@@ -38,16 +39,16 @@ describe('RefreshingAuthSessionManager', () => {
 
     expect(stateSubscriber.mock.calls).toEqual([[SessionState.SignedOut]]);
     await manager.getSession({});
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
 
     expect(stateSubscriber.mock.calls).toEqual([
       [SessionState.SignedOut],
       [SessionState.SignedIn],
     ]);
     await manager.getSession({});
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
 
-    expect(refreshSession).toBeCalledTimes(1);
+    expect(refreshSession).toHaveBeenCalledWith({ scopes: new Set() });
     expect(stateSubscriber.mock.calls).toEqual([
       [SessionState.SignedOut],
       [SessionState.SignedIn],
@@ -76,13 +77,13 @@ describe('RefreshingAuthSessionManager', () => {
       expired: false,
     });
     await manager.getSession({ scopes: new Set(['a']) });
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
 
     await manager.getSession({ scopes: new Set(['a']) });
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
 
     await manager.getSession({ scopes: new Set(['b']) });
-    expect(createSession).toBeCalledTimes(2);
+    expect(createSession).toHaveBeenCalledTimes(2);
   });
 
   it('should check for session expiry', async () => {
@@ -102,12 +103,12 @@ describe('RefreshingAuthSessionManager', () => {
     });
 
     await manager.getSession({ scopes: new Set(['a']) });
-    expect(createSession).toBeCalledTimes(1);
-    expect(refreshSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
+    expect(refreshSession).toHaveBeenCalledWith({ scopes: new Set(['a']) });
 
     await manager.getSession({ scopes: new Set(['a']) });
-    expect(createSession).toBeCalledTimes(1);
-    expect(refreshSession).toBeCalledTimes(2);
+    expect(createSession).toHaveBeenCalledTimes(1);
+    expect(refreshSession).toHaveBeenCalledTimes(2);
   });
 
   it('should handle user closed popup', async () => {
@@ -133,11 +134,11 @@ describe('RefreshingAuthSessionManager', () => {
     } as any);
 
     expect(await manager.getSession({ optional: true })).toBe(undefined);
-    expect(createSession).toBeCalledTimes(0);
-    expect(refreshSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(0);
+    expect(refreshSession).toHaveBeenCalledWith({ scopes: new Set() });
   });
 
-  it('should forward option to instantly show auth popup and not attempt refresh', async () => {
+  it('should forward option to instantly show auth popup after attempting refresh', async () => {
     const createSession = jest.fn();
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
@@ -146,12 +147,12 @@ describe('RefreshingAuthSessionManager', () => {
     } as any);
 
     expect(await manager.getSession({ instantPopup: true })).toBe(undefined);
-    expect(createSession).toBeCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
     expect(createSession).toHaveBeenCalledWith({
       scopes: new Set(),
       instantPopup: true,
     });
-    expect(refreshSession).toBeCalledTimes(0);
+    expect(refreshSession).toHaveBeenCalledTimes(1);
   });
 
   it('should remove session straight away', async () => {
@@ -164,5 +165,136 @@ describe('RefreshingAuthSessionManager', () => {
     await manager.removeSession();
     expect(removeSession).toHaveBeenCalled();
     expect(await manager.getSession({ optional: true })).toBe(undefined);
+  });
+
+  it('should handle two simultaneous session refreshes with same scopes', async () => {
+    const createSession = jest.fn();
+    const refreshSession = jest.fn(
+      async (options?: AuthConnectorRefreshSessionOptions) => ({
+        scopes: options?.scopes ?? new Set(),
+        expired: false,
+      }),
+    );
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    const sessionPromise1 = manager.getSession({ scopes: new Set(['a']) });
+    const sessionPromise2 = manager.getSession({ scopes: new Set(['a']) });
+
+    const [session1, session2] = await Promise.all([
+      sessionPromise1,
+      sessionPromise2,
+    ]);
+
+    expect(session1).toEqual({ scopes: new Set(['a']), expired: false });
+    expect(session2).toEqual({ scopes: new Set(['a']), expired: false });
+    expect(refreshSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle two simultaneous session refreshes with different scopes', async () => {
+    const createSession = jest.fn();
+    const refreshSession = jest.fn(
+      async (options?: AuthConnectorRefreshSessionOptions) => ({
+        scopes: options?.scopes ?? new Set(),
+        expired: false,
+      }),
+    );
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    const sessionPromise1 = manager.getSession({ scopes: new Set(['a']) });
+    const sessionPromise2 = manager.getSession({ scopes: new Set(['b']) });
+
+    const [session1, session2] = await Promise.all([
+      sessionPromise1,
+      sessionPromise2,
+    ]);
+
+    expect(session1).toEqual({ scopes: new Set(['a']), expired: false });
+    expect(session2).toEqual({ scopes: new Set(['a', 'b']), expired: false });
+    expect(refreshSession).toHaveBeenCalledTimes(2);
+  });
+
+  it('should handle multiple simultaneous session refreshes with different scopes', async () => {
+    const createSession = jest.fn();
+    const refreshSession = jest.fn(
+      async (options?: AuthConnectorRefreshSessionOptions) => ({
+        scopes: options?.scopes ?? new Set(),
+        expired: false,
+      }),
+    );
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    const sessionPromise1 = manager.getSession({ scopes: new Set(['a']) });
+    const sessionPromise2 = manager.getSession({ scopes: new Set(['a', 'b']) });
+    const sessionPromise3 = manager.getSession({ scopes: new Set(['b', 'c']) });
+    const sessionPromise4 = manager.getSession({ scopes: new Set(['a', 'c']) });
+
+    const [session1, session2, session3, session4] = await Promise.all([
+      sessionPromise1,
+      sessionPromise2,
+      sessionPromise3,
+      sessionPromise4,
+    ]);
+
+    expect(session1).toEqual({ scopes: new Set(['a']), expired: false });
+    expect(session2).toEqual({ scopes: new Set(['a', 'b']), expired: false });
+    expect(session3).toEqual({
+      scopes: new Set(['a', 'b', 'c']),
+      expired: false,
+    });
+    expect(session4).toEqual({
+      scopes: new Set(['a', 'b', 'c']),
+      expired: false,
+    });
+    expect(refreshSession).toHaveBeenCalledTimes(3);
+  });
+
+  it("should fall back to create a new session if refresh doesn't provide the correct scopes", async () => {
+    const createSession = jest
+      .fn()
+      .mockResolvedValue({ scopes: new Set(['c']), expired: false });
+    const refreshSession = jest
+      .fn()
+      .mockResolvedValue({ scopes: new Set(['b']), expired: false });
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    const session = await manager.getSession({ scopes: new Set(['a']) });
+
+    expect(session).toEqual({ scopes: new Set(['c']), expired: false });
+    expect(refreshSession).toHaveBeenCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create a new session if refresh fails with existing expired session', async () => {
+    const createSession = jest.fn();
+    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    createSession.mockResolvedValue({
+      scopes: new Set(['a']),
+      expired: true,
+    });
+    await manager.getSession({ scopes: new Set(['a']) });
+    expect(refreshSession).toHaveBeenCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
+
+    await manager.getSession({ scopes: new Set(['a']) });
+    // call refresh session only once
+    expect(refreshSession).toHaveBeenCalledTimes(2);
+    expect(createSession).toHaveBeenCalledTimes(2);
   });
 });

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { act, render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { useNavigateToQuery } from './util';
-import { Routes, Route } from 'react-router-dom';
 import { rootRouteRef } from '../plugin';
 
 const navigate = jest.fn();
@@ -36,23 +33,14 @@ describe('util', () => {
         return <div>test</div>;
       };
 
-      await act(async () => {
-        await render(
-          wrapInTestApp(
-            <Routes>
-              <Route element={<MyComponent />} />
-            </Routes>,
-            {
-              mountedRoutes: {
-                '/search': rootRouteRef,
-              },
-            },
-          ),
-        );
-
-        expect(navigate).toHaveBeenCalledTimes(1);
-        expect(navigate).toHaveBeenCalledWith('/search?query=test');
+      await renderInTestApp(<MyComponent />, {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
       });
+
+      expect(navigate).toHaveBeenCalled();
+      expect(navigate).toHaveBeenCalledWith('/search?query=test');
     });
   });
 });

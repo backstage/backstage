@@ -29,14 +29,16 @@ export type {
 } from './components/AboutCard';
 export { AboutContent, AboutField } from './components/AboutCard';
 export * from './components/CatalogKindHeader';
-export * from './components/CatalogSearchResultListItem';
 export * from './components/CatalogTable';
 export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
+export * from './components/EntityRelationWarning';
 export * from './components/EntityProcessingErrorsPanel';
 export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
 export * from './overridableComponents';
+export * from './components/EntityLabelsCard';
+export * from './components/CatalogSearchResultListItem';
 export {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -48,9 +50,12 @@ export {
   EntityHasComponentsCard,
   EntityHasResourcesCard,
   EntityHasSubcomponentsCard,
+  EntityHasSubdomainsCard,
   EntityHasSystemsCard,
   EntityLinksCard,
+  EntityLabelsCard,
   RelatedEntitiesCard,
+  CatalogSearchResultListItem,
 } from './plugin';
 
 export type { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
@@ -59,6 +64,8 @@ export type { DependsOnResourcesCardProps } from './components/DependsOnResource
 export type {
   EntityLinksEmptyStateClassKey,
   EntityLinksCardProps,
+  Breakpoint,
+  ColumnBreakpoints,
 } from './components/EntityLinksCard';
 export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
 export type { DefaultCatalogPageProps } from './components/CatalogPage';
@@ -66,5 +73,7 @@ export type { EntityContextMenuClassKey } from './components/EntityContextMenu';
 export type { HasComponentsCardProps } from './components/HasComponentsCard';
 export type { HasResourcesCardProps } from './components/HasResourcesCard';
 export type { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
+export type { HasSubdomainsCardProps } from './components/HasSubdomainsCard';
 export type { HasSystemsCardProps } from './components/HasSystemsCard';
 export type { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
+export type { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';

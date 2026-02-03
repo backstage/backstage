@@ -14,47 +14,33 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import mock from 'mock-fs';
-import os from 'os';
-import { Writable } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { Logger } from 'winston';
 import { createDebugLogAction } from './log';
-import { join } from 'path';
+import { join } from 'node:path';
+import yaml from 'yaml';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import fs from 'fs-extra';
 
 describe('debug:log', () => {
-  const logStream = {
-    write: jest.fn(),
-  } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
+  const logger = {
+    info: jest.fn(),
+  } as unknown as jest.Mocked<Logger>;
 
-  const mockTmpDir = os.tmpdir();
-  const mockContext = {
-    input: {},
-    baseUrl: 'somebase',
-    workspacePath: mockTmpDir,
-    logger: getVoidLogger(),
-    logStream,
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
-  };
+  const mockDir = createMockDirectory();
+  const workspacePath = mockDir.resolve('workspace');
+
+  const mockContext = createMockActionContext({ workspacePath, logger });
 
   const action = createDebugLogAction();
 
   beforeEach(() => {
-    mock({
-      [`${mockContext.workspacePath}/README.md`]: '',
-      [`${mockContext.workspacePath}/a-directory/index.md`]: '',
+    mockDir.setContent({
+      [`${mockContext.workspacePath}/README.md`]: 'This is a README file',
+      [`${mockContext.workspacePath}/a-directory/index.md`]:
+        'This is a markdown file',
     });
     jest.resetAllMocks();
-  });
-
-  afterEach(() => {
-    mock.restore();
-  });
-
-  it('should do nothing', async () => {
-    await action.handler(mockContext);
-
-    expect(logStream.write).toBeCalledTimes(0);
   });
 
   it('should log the workspace content, if active', async () => {
@@ -67,11 +53,10 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toBeCalledTimes(1);
-    expect(logStream.write).toBeCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('README.md'),
     );
-    expect(logStream.write).toBeCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining(join('a-directory', 'index.md')),
     );
   });
@@ -86,9 +71,99 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toBeCalledTimes(1);
-    expect(logStream.write).toBeCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('Hello Backstage!'),
+    );
+  });
+
+  it('should log the workspace content from an example, if active', async () => {
+    const example = action.examples?.find(
+      sample => sample.description === 'List the workspace directory',
+    )?.example as string;
+    expect(typeof example).toEqual('string');
+    const context = {
+      ...mockContext,
+      ...yaml.parse(example).steps[0],
+    };
+
+    await action.handler(context);
+
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('README.md'),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining(join('a-directory', 'index.md')),
+    );
+  });
+
+  it('should log the workspace content with file contents from an example, if active', async () => {
+    const example = action.examples?.find(
+      sample =>
+        sample.description ===
+        'List the workspace directory with file contents',
+    )?.example as string;
+    expect(typeof example).toEqual('string');
+    const context = {
+      ...mockContext,
+      ...yaml.parse(example).steps[0],
+    };
+
+    await action.handler(context);
+
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('README.md'),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining(join('a-directory', 'index.md')),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('This is a README file'),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('This is a markdown file'),
+    );
+  });
+
+  it('should log message from an example', async () => {
+    const example = action.examples?.find(
+      sample => sample.description === 'Write a debug message',
+    )?.example as string;
+
+    const context = {
+      ...mockContext,
+      ...yaml.parse(example).steps[0],
+    };
+
+    await action.handler(context);
+
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Hello Backstage!'),
+    );
+  });
+
+  it('should handle symlinks to external paths', async () => {
+    const externalContent = 'external-file-content';
+    const externalPath = mockDir.resolve('external.txt');
+    await fs.writeFile(externalPath, externalContent);
+
+    const linkPath = join(mockContext.workspacePath, 'link');
+    await fs.symlink(externalPath, linkPath);
+
+    const context = {
+      ...mockContext,
+      input: {
+        listWorkspace: 'with-contents' as const,
+      },
+    };
+
+    await action.handler(context);
+
+    expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('link'));
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining(externalContent),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('[skipped]'),
     );
   });
 });

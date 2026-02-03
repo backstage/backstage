@@ -69,7 +69,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   >();
 
   private readonly observable = new ObservableImpl<Set<string>>(subscriber => {
-    // forward the the latest value
+    // forward the latest value
     subscriber.next(new Set(this.starredEntities));
 
     this.subscribers.add(subscriber);

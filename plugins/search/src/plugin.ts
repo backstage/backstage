@@ -23,8 +23,9 @@ import {
   createRoutableExtension,
   discoveryApiRef,
   createComponentExtension,
-  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
+import { SidebarSearchModalProps } from './components/SidebarSearchModal';
 
 export const rootRouteRef = createRouteRef({
   id: 'search',
@@ -38,9 +39,9 @@ export const searchPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: searchApiRef,
-      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ discoveryApi, identityApi }) => {
-        return new SearchClient({ discoveryApi, identityApi });
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({ discoveryApi, fetchApi }) => {
+        return new SearchClient({ discoveryApi, fetchApi });
       },
     }),
   ],
@@ -63,7 +64,9 @@ export const SearchPage = searchPlugin.provide(
 /**
  * @public
  */
-export const SidebarSearchModal = searchPlugin.provide(
+export const SidebarSearchModal = searchPlugin.provide<
+  (props: SidebarSearchModalProps) => JSX.Element | null
+>(
   createComponentExtension({
     name: 'SidebarSearchModal',
     component: {

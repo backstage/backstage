@@ -26,8 +26,8 @@ import {
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import path from 'path';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import path from 'node:path';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 export function isLocationEntity(entity: Entity): entity is LocationEntity {
   return entity.kind === 'Location';

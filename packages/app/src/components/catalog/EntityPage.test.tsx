@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { EntityLayout } from '@internal/plugin-catalog-customized';
+import { EntityLayout, catalogPlugin } from '@backstage/plugin-catalog';
 import {
   EntityProvider,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
+  catalogApiRef,
 } from '@backstage/plugin-catalog-react';
-import { githubActionsApiRef } from '@backstage/plugin-github-actions';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  MockPermissionApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import React from 'react';
 import { cicdContent } from './EntityPage';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('EntityPage Test', () => {
   const entity = {
@@ -47,19 +46,16 @@ describe('EntityPage Test', () => {
     },
   };
 
-  const mockedApi = {
-    listWorkflowRuns: jest.fn().mockResolvedValue([]),
-  };
-  const mockPermissionApi = new MockPermissionApi();
+  const rootRouteRef = catalogPlugin.routes.catalogIndex;
 
   describe('cicdContent', () => {
     it('Should render GitHub Actions View', async () => {
       const rendered = await renderInTestApp(
         <TestApiProvider
           apis={[
-            [githubActionsApiRef, mockedApi],
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-            [permissionApiRef, mockPermissionApi],
+            [permissionApiRef, mockApis.permission()],
+            [catalogApiRef, catalogApiMock()],
           ]}
         >
           <EntityProvider entity={entity}>
@@ -70,14 +66,18 @@ describe('EntityPage Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog': rootRouteRef,
+          },
+        },
       );
 
       expect(rendered.getByText('ExampleComponent')).toBeInTheDocument();
 
       await expect(
-        rendered.findByText('No Workflow Data'),
+        rendered.findByText('No CI/CD available for this entity'),
       ).resolves.toBeInTheDocument();
-      expect(rendered.getByText('Create new Workflow')).toBeInTheDocument();
     });
   });
 });

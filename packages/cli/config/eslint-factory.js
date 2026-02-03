@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { join: joinPath } = require('path');
+const { join: joinPath } = require('node:path');
 
 /**
  * Creates a ESLint configuration that extends the base Backstage configuration.
@@ -24,6 +24,7 @@ const { join: joinPath } = require('path');
  * - `tsRules`: Additional ESLint rules to apply to TypeScript
  * - `testRules`: Additional ESLint rules to apply to tests
  * - `restrictedImports`: Additional paths to add to no-restricted-imports
+ * - `restrictedImportsPattern`: Additional patterns to add to no-restricted-imports
  * - `restrictedSrcImports`: Additional paths to add to no-restricted-imports in src files
  * - `restrictedTestImports`: Additional paths to add to no-restricted-imports in test files
  * - `restrictedSyntax`: Additional patterns to add to no-restricted-syntax
@@ -44,6 +45,7 @@ function createConfig(dir, extraConfig = {}) {
     testRules,
 
     restrictedImports,
+    restrictedImportPatterns,
     restrictedSrcImports,
     restrictedTestImports,
     restrictedSyntax,
@@ -60,11 +62,11 @@ function createConfig(dir, extraConfig = {}) {
       '@spotify/eslint-config-typescript',
       'prettier',
       'plugin:jest/recommended',
-      'plugin:monorepo/recommended',
+      'plugin:@backstage/recommended',
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
-    plugins: ['import', ...(plugins ?? [])],
+    plugins: ['import', 'unused-imports', 'deprecation', ...(plugins ?? [])],
     env: {
       jest: true,
       ...env,
@@ -76,45 +78,24 @@ function createConfig(dir, extraConfig = {}) {
       ...parserOptions,
     },
     ignorePatterns: [
-      '.eslintrc.js',
+      '.eslintrc.*',
       '**/dist/**',
       '**/dist-types/**',
       ...(ignorePatterns ?? []),
     ],
     rules: {
+      'deprecation/deprecation': 'off',
       'no-shadow': 'off',
       'no-redeclare': 'off',
       '@typescript-eslint/no-shadow': 'error',
       '@typescript-eslint/no-redeclare': 'error',
       'no-undef': 'off',
       'import/newline-after-import': 'error',
-      'import/no-extraneous-dependencies': [
-        'error',
-        {
-          devDependencies: dir
-            ? [
-                `!${joinPath(dir, 'src/**')}`,
-                joinPath(dir, 'src/**/*.test.*'),
-                joinPath(dir, 'src/**/*.stories.*'),
-                joinPath(dir, 'src/setupTests.*'),
-              ]
-            : [
-                // Legacy config for packages that don't provide a dir
-                '**/*.test.*',
-                '**/*.stories.*',
-                '**/src/setupTests.*',
-                '**/dev/**',
-              ],
-          optionalDependencies: true,
-          peerDependencies: true,
-          bundledDependencies: true,
-        },
-      ],
       'no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-expressions': 'error',
       '@typescript-eslint/consistent-type-assertions': 'error',
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         {
           vars: 'all',
           args: 'after-used',
@@ -131,12 +112,12 @@ function createConfig(dir, extraConfig = {}) {
             ...(restrictedSrcImports ?? []),
           ],
           patterns: [
-            // Avoid cross-package imports
-            '**/../../**/*/src/**',
-            '**/../../**/*/src',
             // Prevent imports of stories or tests
             '*.stories*',
             '*.test*',
+            '**/__testUtils__/**',
+            '**/__mocks__/**',
+            ...(restrictedImportPatterns ?? []),
           ],
         },
       ],
@@ -159,7 +140,14 @@ function createConfig(dir, extraConfig = {}) {
         },
       },
       {
-        files: ['**/*.test.*', '**/*.stories.*', 'src/setupTests.*', '!src/**'],
+        files: [
+          '**/*.test.*',
+          '**/*.stories.*',
+          '**/__testUtils__/**',
+          '**/__mocks__/**',
+          'src/setupTests.*',
+          '!src/**',
+        ],
         rules: {
           ...testRules,
           'no-restricted-syntax': [
@@ -174,8 +162,23 @@ function createConfig(dir, extraConfig = {}) {
                 ...(restrictedImports ?? []),
                 ...(restrictedTestImports ?? []),
               ],
-              // Avoid cross-package imports
-              patterns: ['**/../../**/*/src/**', '**/../../**/*/src'],
+            },
+          ],
+        },
+      },
+      {
+        files: ['**/src/**/generated/**/*.ts'],
+        rules: {
+          ...tsRules,
+          'no-unused-vars': 'off',
+          'unused-imports/no-unused-imports': 'error',
+          'unused-imports/no-unused-vars': [
+            'error',
+            {
+              vars: 'all',
+              varsIgnorePattern: '^_',
+              args: 'none',
+              argsIgnorePattern: '^_',
             },
           ],
         },
@@ -198,6 +201,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
     case 'frontend':
     case 'frontend-plugin':
     case 'frontend-plugin-module':
+    case 'frontend-dynamic-container':
       return createConfig(dir, {
         ...extraConfig,
         extends: [
@@ -218,7 +222,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
         },
         restrictedImports: [
           {
-            // Importing the entire MUI icons packages kills build performance as the list of icons is huge.
+            // Importing the entire Material UI icons packages impedes build performance as the list of icons is huge.
             name: '@material-ui/icons',
             message: "Please import '@material-ui/icons/<Icon>' instead.",
           },
@@ -226,11 +230,40 @@ function createConfigForRole(dir, role, extraConfig = {}) {
             name: '@material-ui/icons/', // because this is possible too ._.
             message: "Please import '@material-ui/icons/<Icon>' instead.",
           },
-          ...require('module').builtinModules,
+          {
+            // https://mui.com/material-ui/guides/minimizing-bundle-size/
+            name: '@mui/material',
+            message: "Please import '@mui/material/...' instead.",
+          },
+          ...require('node:module').builtinModules,
           ...(extraConfig.restrictedImports ?? []),
         ],
+        // https://mui.com/material-ui/guides/minimizing-bundle-size/
+        restrictedImportPatterns: [
+          '@mui/*/*/*',
+          ...(extraConfig.restrictedImportPatterns ?? []),
+        ],
+        rules: {
+          'react/react-in-jsx-scope': 'off',
+          'no-restricted-syntax': [
+            'warn',
+            {
+              message:
+                'React default imports are deprecated. Follow the https://backstage.io/docs/tutorials/jsx-transform-migration migration guide for details.',
+              selector:
+                "ImportDeclaration[source.value='react'][specifiers.0.type='ImportDefaultSpecifier']",
+            },
+            {
+              message:
+                'React default imports are deprecated. Follow the https://backstage.io/docs/tutorials/jsx-transform-migration migration guide for details. If you need a global type that collides with a React named export (such as `MouseEvent`), try using `globalThis.MouseHandler`.',
+              selector:
+                "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier, ImportNamespaceSpecifier)",
+            },
+          ],
+          ...extraConfig.rules,
+        },
         tsRules: {
-          'react/prop-types': 0,
+          'react/prop-types': 'off',
           ...extraConfig.tsRules,
         },
       });
@@ -263,7 +296,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
         restrictedSrcSyntax: [
           {
             message:
-              "`__dirname` doesn't refer to the same dir in production builds, try `resolvePackagePath()` from `@backstage/backend-common` instead.",
+              "`__dirname` doesn't refer to the same dir in production builds, try `resolvePackagePath()` from `@backstage/backend-plugin-api` instead.",
             selector: 'Identifier[name="__dirname"]',
           },
           ...(extraConfig.restrictedSrcSyntax ?? []),

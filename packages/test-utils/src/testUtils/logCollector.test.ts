@@ -34,7 +34,7 @@ describe('logCollector', () => {
     expect(logs.error).toEqual(['c', '3']);
   });
 
-  it('should collect some logs asynchrnously', async () => {
+  it('should collect some logs asynchronously', async () => {
     const logs = await withLogCollector(async () => {
       console.log('a');
       console.warn('b');
@@ -70,7 +70,7 @@ describe('logCollector', () => {
     expect(missedLogs.error).toEqual(['c', '3']);
   });
 
-  it('should collect specific logs asynchrnously', async () => {
+  it('should collect specific logs asynchronously', async () => {
     const missedLogs = await withLogCollector(async () => {
       const logs = await withLogCollector(['error'], async () => {
         console.log('a');

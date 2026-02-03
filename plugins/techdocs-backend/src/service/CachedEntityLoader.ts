@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CatalogClient } from '@backstage/catalog-client';
-import { CacheClient } from '@backstage/backend-common';
+
+import {
+  AuthService,
+  BackstageCredentials,
+  CacheService,
+} from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
   CompoundEntityRef,
@@ -22,25 +27,29 @@ import {
 } from '@backstage/catalog-model';
 
 export type CachedEntityLoaderOptions = {
-  catalog: CatalogClient;
-  cache: CacheClient;
+  auth: AuthService;
+  catalog: CatalogApi;
+  cache: CacheService;
 };
 
 export class CachedEntityLoader {
-  private readonly catalog: CatalogClient;
-  private readonly cache: CacheClient;
+  private readonly auth: AuthService;
+  private readonly catalog: CatalogApi;
+  private readonly cache: CacheService;
   private readonly readTimeout = 1000;
 
-  constructor({ catalog, cache }: CachedEntityLoaderOptions) {
+  constructor({ auth, catalog, cache }: CachedEntityLoaderOptions) {
+    this.auth = auth;
     this.catalog = catalog;
     this.cache = cache;
   }
 
   async load(
+    credentials: BackstageCredentials,
     entityRef: CompoundEntityRef,
     token: string | undefined,
   ): Promise<Entity | undefined> {
-    const cacheKey = this.getCacheKey(entityRef, token);
+    const cacheKey = this.getCacheKey(entityRef, credentials);
     let result = await this.getFromCache(cacheKey);
 
     if (result) {
@@ -67,12 +76,14 @@ export class CachedEntityLoader {
 
   private getCacheKey(
     entityName: CompoundEntityRef,
-    token: string | undefined,
+    credentials: BackstageCredentials,
   ): string {
     const key = ['catalog', stringifyEntityRef(entityName)];
 
-    if (token) {
-      key.push(token);
+    if (this.auth.isPrincipal(credentials, 'user')) {
+      key.push(credentials.principal.userEntityRef);
+    } else if (this.auth.isPrincipal(credentials, 'service')) {
+      key.push(credentials.principal.subject);
     }
 
     return key.join(':');

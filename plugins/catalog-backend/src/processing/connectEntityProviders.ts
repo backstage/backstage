@@ -17,26 +17,36 @@
 import {
   Entity,
   entityEnvelopeSchemaValidator,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { ProcessingDatabase } from '../database/types';
+import { ProviderDatabase } from '../database/types';
 import {
   EntityProvider,
   EntityProviderConnection,
+  EntityProviderRefreshOptions,
   EntityProviderMutation,
 } from '@backstage/plugin-catalog-node';
+import type { ExtensionPointFactoryContext } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
+
+export type EntityProviderEntry = {
+  provider: EntityProvider;
+  context?: ExtensionPointFactoryContext;
+};
 
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
+  private readonly config: {
+    id: string;
+    providerDatabase: ProviderDatabase;
+  };
 
-  constructor(
-    private readonly config: {
-      id: string;
-      processingDatabase: ProcessingDatabase;
-    },
-  ) {}
+  constructor(config: { id: string; providerDatabase: ProviderDatabase }) {
+    this.config = config;
+  }
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
-    const db = this.config.processingDatabase;
+    const db = this.config.providerDatabase;
 
     if (mutation.type === 'full') {
       this.check(mutation.entities.map(e => e.entity));
@@ -49,16 +59,37 @@ class Connection implements EntityProviderConnection {
       });
     } else if (mutation.type === 'delta') {
       this.check(mutation.added.map(e => e.entity));
-      this.check(mutation.removed.map(e => e.entity));
+      this.check(
+        mutation.removed
+          .map(e => ('entity' in e ? e.entity : undefined))
+          .filter((e): e is Entity => Boolean(e)),
+      );
       await db.transaction(async tx => {
         await db.replaceUnprocessedEntities(tx, {
           sourceKey: this.config.id,
           type: 'delta',
           added: mutation.added,
-          removed: mutation.removed,
+          removed: mutation.removed.map(r =>
+            'entityRef' in r
+              ? r
+              : {
+                  entityRef: stringifyEntityRef(r.entity),
+                  locationKey: r.locationKey,
+                },
+          ),
         });
       });
     }
+  }
+
+  async refresh(options: EntityProviderRefreshOptions): Promise<void> {
+    const db = this.config.providerDatabase;
+
+    await db.transaction(async (tx: any) => {
+      return db.refreshByRefreshKeys(tx, {
+        keys: options.keys,
+      });
+    });
   }
 
   private check(entities: Entity[]) {
@@ -73,16 +104,30 @@ class Connection implements EntityProviderConnection {
 }
 
 export async function connectEntityProviders(
-  db: ProcessingDatabase,
-  providers: EntityProvider[],
+  db: ProviderDatabase,
+  providers: EntityProviderEntry[],
 ) {
   await Promise.all(
-    providers.map(async provider => {
+    providers.map(async entry => {
+      const { provider, context } = entry;
       const connection = new Connection({
         id: provider.getProviderName(),
-        processingDatabase: db,
+        providerDatabase: db,
       });
-      return provider.connect(connection);
+      try {
+        await provider.connect(connection);
+      } catch (error: unknown) {
+        if (context) {
+          context.reportModuleStartupFailure({
+            error: new ForwardedError(
+              `Failed to connect entity provider '${provider.getProviderName()}'`,
+              error,
+            ),
+          });
+          return;
+        }
+        throw error;
+      }
     }),
   );
 }

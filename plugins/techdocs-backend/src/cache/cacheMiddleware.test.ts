@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
-import { createCacheMiddleware, TechDocsCache } from '.';
+import { createCacheMiddleware } from './cacheMiddleware';
+import { TechDocsCache } from './TechDocsCache';
+import { mockServices } from '@backstage/backend-test-utils';
 
 /**
  * Mocks cached HTTP response.
@@ -56,7 +57,7 @@ describe('createCacheMiddleware', () => {
       invalidateMultiple: jest.fn().mockResolvedValue(undefined),
     } as unknown as jest.Mocked<TechDocsCache>;
     const router = await createCacheMiddleware({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       cache,
     });
     app = express().use(router);

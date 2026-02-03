@@ -1,7 +1,6 @@
 ---
 id: extending-the-model
 title: Extending the model
-# prettier-ignore
 description: Documentation on extending the catalog model
 ---
 
@@ -29,23 +28,23 @@ Backstage comes with a number of catalog concepts out of the box:
 
 We'll list different possibilities for extending this below.
 
-## Adding a New apiVersion of an Existing Kind
+## Adding a New `apiVersion` of an Existing Kind
 
 Example intents:
 
 > "I want to evolve this core kind, tweaking the semantics a bit so I will bump
-> the apiVersion a step"
+> the `apiVersion` a step"
 
 > "This core kind is a decent fit but we want to evolve it at will so we'll move
-> it to our own company's apiVersion space and use that instead of
+> it to our own company's `apiVersion` space and use that instead of
 > `backstage.io`."
 
-The `backstage.io` apiVersion space is reserved for use by the Backstage
+The `backstage.io` `apiVersion` space is reserved for use by the Backstage
 maintainers. Please do not change or add versions within that space.
 
-If you add an [apiVersion](descriptor-format.md#apiversion-and-kind-required)
+If you add an [`apiVersion`](descriptor-format.md#apiversion-and-kind-required)
 space of your own, you are effectively branching out from the underlying kind
-and making your own. An entity kind is identified by the apiVersion + kind pair,
+and making your own. An entity kind is identified by the `apiVersion` + `kind` pair,
 so even though the resulting entity may be similar to the core one, there will
 be no guarantees that plugins will be able to parse or understand its data. See
 below about adding a new kind.
@@ -58,7 +57,7 @@ Example intents:
 > thing that is a poor fit for either of the builtins."
 
 > "This core kind is a decent fit but we want to evolve it at will so we'll move
-> it to our own company's apiVersion space and use that instead of
+> it to our own company's `apiVersion` space and use that instead of
 > `backstage.io`."
 
 A [kind](descriptor-format.md#apiversion-and-kind-required) is an overarching
@@ -68,7 +67,7 @@ variety of needs that one may want to model in Backstage. The primary ambition
 is to map things to these kinds, but sometimes you may want or need to extend
 beyond them.
 
-Introducing a new apiVersion is basically the same as adding a new kind. Bear in
+Introducing a new `apiVersion` is basically the same as adding a new kind. Bear in
 mind that most plugins will be compiled against the builtin
 `@backstage/catalog-model` package and have expectations that kinds align with
 that.
@@ -120,7 +119,7 @@ the infrastructure tooling through plugins. Different plugins are used for
 managing different types of components.
 
 For example, the
-[Lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse)
+[Lighthouse plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/lighthouse/plugins/lighthouse)
 only makes sense for Websites. The more specific you can be in how you model
 your software, the easier it is to provide plugins that are contextual.
 
@@ -139,11 +138,12 @@ Example intents:
 > data in annotation values, not just strings."
 
 After pieces of raw entity data have been read from a location, they are passed
-through a fixed number of so called `Validators`, as part of the entity policy
-check step. They ensure that the types and syntax of the base envelope and
-metadata make sense - in short, things that aren't entity-kind-specific. Some or
-all of these validators can be replaced when building the backend catalog using
-the `CatalogBuilder`.
+through a field format validation step. This ensures that the types and syntax
+of the base envelope and metadata make sense - in short, things that aren't
+entity-kind-specific. Some or all of these validators can be replaced when
+building the backend using the catalog's dedicated `catalogModelExtensionPoint`
+(or directly on the `CatalogBuilder` if you are still using the old backend
+system).
 
 The risk and impact of this type of extension varies, based on what it is that
 you want to do. For example, extending the valid character set for kinds,
@@ -154,8 +154,55 @@ aren't careful about encoding arguments. Supporting non-strings in annotations
 may be possible but has not yet been tried out in the real world - there is
 likely to be some level of plugin breakage that can be hard to predict.
 
+You must also be careful about not making the rules _more strict_ than they used
+to be after populating the catalog with data. This risks making previously valid
+entities start having processing errors and fail to update.
+
 Before making this kind of extension, we recommend that you contact the
 Backstage maintainers or a support partner to discuss your use case.
+
+This is an example of relaxing the format rules of the `metadata.name` field:
+
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+
+const myCatalogCustomizations = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'catalog-customization',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        catalogModel: catalogModelExtensionPoint,
+      },
+      async init({ catalogModel }) {
+        catalogModel.setFieldValidators({
+          // This is only one of many methods that you can pass into
+          // setFieldValidators; your editor of choice should help you
+          // find the others. The length checks and regexp inside are
+          // just examples and can be adjusted as needed, but take care
+          // to test your changes thoroughly to ensure that you get
+          // them right.
+          isValidEntityName(value) {
+            return (
+              typeof value === 'string' &&
+              value.length >= 1 &&
+              value.length <= 63 &&
+              /^[A-Za-z0-9@+_.-]+$/.test(value)
+            );
+          },
+        });
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+// ... add other backend features and the catalog backend itself here ...
+backend.add(myCatalogCustomizations);
+backend.start();
+```
 
 ## Changing the Validation Rules for Core Entity Fields
 
@@ -170,6 +217,7 @@ its schema. There is a builtin processor that implements this for all known core
 kinds and matches the data against their fixed validation schema. This processor
 can be replaced when building the backend catalog using the `CatalogBuilder`,
 with a processor of your own that validates the data differently.
+This replacement processor must have a name that matches the builtin processor, `BuiltinKindsEntityProcessor`.
 
 This type of extension is high risk, and may have high impact across the
 ecosystem depending on the type of change that is made. It is therefore not
@@ -438,7 +486,7 @@ with a new Entity type.
 ### Creating a custom entity definition
 
 The first step of introducing a custom entity is to define what shape and schema
-it has. We do this both using a TypeScript type, along with a JSONSchema schema.
+it has. We do this using a TypeScript type, as well as a JSONSchema schema.
 
 Most of the time you will want to have at least the TypeScript type of your
 extension available in both frontend and backend code, which means you likely
@@ -446,8 +494,11 @@ want to have an isomorphic package that houses these types. Within the Backstage
 main repo the package naming pattern of `<plugin>-common` is used for isomorphic
 packages, and you may choose to adopt this pattern as well.
 
+You can generate an isomorphic plugin package by running: `yarn new` and then
+selecting "plugin-common" from the list of options
+
 There's at this point no existing templates for generating isomorphic plugins
-using the `@backstage/cli`. Perhaps the simplest wat to get started right now is
+using the `@backstage/cli`. Perhaps the simplest way to get started right now is
 to copy the contents of one of the existing packages in the main repository,
 such as `plugins/scaffolder-common`, and rename the folder and file contents to
 the desired name. This example uses _foobar_ as the plugin name so the plugin
@@ -466,31 +517,52 @@ The next step is to create a custom processor for your new entity kind. This
 will be used within the catalog to make sure that it's able to ingest and
 validate entities of our new kind. Just like with the definition package, you
 can find inspiration in for example the existing
-[ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend/src/processor/ScaffolderEntitiesProcessor.ts).
+[ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-scaffolder-entity-model/src/processor/ScaffolderEntitiesProcessor.ts).
+
+The custom processor should be created as a separate module for the catalog plugin. For information on how to set that up, see the [plugin docs](../../plugins/backend-plugin.md#creating-a-backend-plugin). Use `yarn new` and select `backend-module` instead to create a module. For our case, the module ID will be `foobar` and the plugin ID will be `catalog`.
+
 We also provide a high-level example of what a catalog process for a custom
 entity might look like:
 
 ```ts
-import { CatalogProcessor, processingResult } from '@backstage/catalog-backend';
-import { entityKindSchemaValidator } from '@backstage/catalog-model';
+import { CatalogProcessor, CatalogProcessorEmit, processingResult } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common'
+import { Entity, entityKindSchemaValidator } from '@backstage/catalog-model';
+
+// For an example of the JSONSchema format and how to use $ref markers to the
+// base definitions, see:
+// https://github.com/backstage/backstage/tree/master/packages/catalog-model/src/schema/kinds/Component.v1alpha1.schema.json
+import { foobarEntityV1alpha1Schema } from '@internal/catalog-model';
 
 export class FoobarEntitiesProcessor implements CatalogProcessor {
   // You often end up wanting to support multiple versions of your kind as you
-  // iterate on the definition, so we keep each version inside this array.
+  // iterate on the definition, so we keep each version inside this array as a
+  // convenient pattern.
   private readonly validators = [
-    // This is where we use the JSONSchema that we export from our isomorphic package
+    // This is where we use the JSONSchema that we export from our isomorphic
+    // package
     entityKindSchemaValidator(foobarEntityV1alpha1Schema),
   ];
 
-  // validateEntityKind is responsible for signaling to the catalog processing engine
-  // that this entity is valid and should therefore be submitted for further processing.
+  // Return processor name
+  getProcessorName(): string {
+    return 'FoobarEntitiesProcessor'
+  }
+
+  // validateEntityKind is responsible for signaling to the catalog processing
+  // engine that this entity is valid and should therefore be submitted for
+  // further processing.
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
+      // If the validator throws an exception, the entity will be marked as
+      // invalid.
       if (validator(entity)) {
         return true;
       }
     }
 
+    // Returning false signals that we don't know what this is, passing the
+    // responsibility to other processors to try to validate it instead.
     return false;
   }
 
@@ -505,8 +577,8 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
     ) {
       const foobarEntity = entity as FoobarEntityV1alpha1;
 
-      // Here we can modify the entity or emit results related to the entity
-      // Typically you will want to emit any relations associated with the entity here
+      // Typically you will want to emit any relations associated with the
+      // entity here.
       emit(processingResult.relation({ ... }))
     }
 
@@ -515,16 +587,43 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 }
 ```
 
-Once the processor is created it can be wired up to the catalog via the
-`CatalogBuilder` in `packages/backend/src/plugins/catalog.ts`:
+#### New Backend
 
-```diff
-+ import { FoobarEntitiesProcessor implements CatalogProcessor {
- } from '@internal/plugin-foobar-backend';
+To use your custom processor, you'll need to add the module to your backend as well as integrate your module with the catalog plugin.
 
- // ...
+```ts title="plugins/catalog-backend-module-foobar/src/index.ts"
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+/* highlight-add-next-line */
+import { FoobarEntitiesProcessor } from './providers';
 
-     const builder = await CatalogBuilder.create(env);
-+    builder.addProcessor(new FoobarEntitiesProcessor());
-     const { processingEngine, router } = await builder.build();
+export const catalogModuleFoobarEntitiesProcessor = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'foobar',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+      },
+      async init({ catalog }) {
+        catalog.addProcessor(new FoobarEntitiesProcessor());
+      },
+    });
+  },
+});
+
+export default catalogModuleFoobarEntitiesProcessor;
 ```
+
+This module can then be installed to your backend like so,
+
+```ts
+backend.add(import('@internal/plugin-catalog-backend-module-foobar'));
+```
+
+#### Legacy Backend
+
+Look through the [legacy documentation](./extending-the-model--old.md).

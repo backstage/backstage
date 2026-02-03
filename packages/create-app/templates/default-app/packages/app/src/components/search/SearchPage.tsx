@@ -1,5 +1,4 @@
-import React from 'react';
-import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
+import { makeStyles, Theme, Grid, Paper } from '@material-ui/core';
 
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
@@ -10,10 +9,10 @@ import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 
 import { SearchType } from '@backstage/plugin-search';
 import {
-  DefaultResultListItem,
   SearchBar,
   SearchFilter,
   SearchResult,
+  SearchPagination,
   useSearch,
 } from '@backstage/plugin-search-react';
 import {
@@ -109,42 +108,10 @@ const SearchPage = () => {
             </Paper>
           </Grid>
           <Grid item xs={9}>
+            <SearchPagination />
             <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(({ type, document, highlight, rank }) => {
-                    switch (type) {
-                      case 'software-catalog':
-                        return (
-                          <CatalogSearchResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                      case 'techdocs':
-                        return (
-                          <TechDocsSearchResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                      default:
-                        return (
-                          <DefaultResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                    }
-                  })}
-                </List>
-              )}
+              <CatalogSearchResultListItem icon={<CatalogIcon />} />
+              <TechDocsSearchResultListItem icon={<DocsIcon />} />
             </SearchResult>
           </Grid>
         </Grid>

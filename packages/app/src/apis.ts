@@ -20,48 +20,58 @@ import {
   ScmAuth,
 } from '@backstage/integration-react';
 import {
-  costInsightsApiRef,
-  ExampleCostInsightsClient,
-} from '@backstage/plugin-cost-insights';
-import {
-  graphQlBrowseApiRef,
-  GraphQLEndpoints,
-} from '@backstage/plugin-graphiql';
-import {
   AnyApiFactory,
   configApiRef,
   createApiFactory,
-  errorApiRef,
-  githubAuthApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
+import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
+import { formDecoratorsApiRef } from '@backstage/plugin-scaffolder/alpha';
+import { DefaultScaffolderFormDecoratorsApi } from '@backstage/plugin-scaffolder/alpha';
+import { mockDecorator } from './components/scaffolder/decorators';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderClient } from '@backstage/plugin-scaffolder';
 
 export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: discoveryApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) => AuthProxyDiscoveryApi.fromConfig(configApi),
+  }),
   createApiFactory({
     api: scmIntegrationsApiRef,
     deps: { configApi: configApiRef },
     factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
   }),
 
-  ScmAuth.createDefaultApiFactory(),
-
   createApiFactory({
-    api: graphQlBrowseApiRef,
-    deps: { errorApi: errorApiRef, githubAuthApi: githubAuthApiRef },
-    factory: ({ errorApi, githubAuthApi }) =>
-      GraphQLEndpoints.from([
-        GraphQLEndpoints.create({
-          id: 'gitlab',
-          title: 'GitLab',
-          url: 'https://gitlab.com/api/graphql',
-        }),
-        GraphQLEndpoints.github({
-          id: 'github',
-          title: 'GitHub',
-          errorApi,
-          githubAuthApi,
-        }),
-      ]),
+    api: scaffolderApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      fetchApi: fetchApiRef,
+      scmIntegrationsApi: scmIntegrationsApiRef,
+      identityApi: identityApiRef,
+    },
+    factory: ({ discoveryApi, fetchApi, scmIntegrationsApi, identityApi }) =>
+      new ScaffolderClient({
+        useLongPollingLogs: true,
+        discoveryApi,
+        fetchApi,
+        scmIntegrationsApi,
+        identityApi,
+      }),
   }),
 
-  createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
+  createApiFactory({
+    api: formDecoratorsApiRef,
+    deps: {},
+    factory: () =>
+      DefaultScaffolderFormDecoratorsApi.create({
+        decorators: [mockDecorator],
+      }),
+  }),
+
+  ScmAuth.createDefaultApiFactory(),
 ];

@@ -65,6 +65,18 @@ export interface Config {
         }>;
       }>;
     };
+
+    routes?: {
+      /**
+       * Maps external route references to regular route references. Both the
+       * key and the value is expected to be on the form `<pluginId>.<routeId>`.
+       * If the value is `false`, the route will be disabled even if it has a
+       * default mapping.
+       *
+       * @deepVisibility frontend
+       */
+      bindings?: { [externalRouteRefId: string]: string | false };
+    };
   };
 
   /**
@@ -89,6 +101,11 @@ export interface Config {
     name?: string;
   };
 
+  /**
+   * This config was used by the HomepageTimer but has been replaced  by the HeaderWorldClock in the home plugin
+   *
+   * @deprecated in favor of the HeaderWorldClock which is found in the home plugin
+   */
   homepage?: {
     clocks?: Array<{
       /** @visibility frontend */
@@ -109,5 +126,51 @@ export interface Config {
      * @visibility frontend
      */
     environment?: string;
+  };
+
+  /**
+   * Enable redirect authentication flow type, instead of a popup for authentication.
+   * @defaultValue false
+   * @visibility frontend
+   */
+  enableExperimentalRedirectFlow?: boolean;
+
+  /**
+   * Discovery options.
+   *
+   * @visibility frontend
+   */
+  discovery?: {
+    /**
+     * Endpoints
+     *
+     * A list of target baseUrls and the associated plugins.
+     *
+     * @visibility frontend
+     */
+    endpoints?: Array<{
+      /**
+       * The target baseUrl to use for the plugin
+       *
+       * Can be either a string or an object with internal and external keys. (Internal is used for the backend, external for the frontend)
+       * Targets with `{{pluginId}}` or `{{ pluginId }} in the url will be replaced with the pluginId.
+       *
+       * @visibility frontend
+       */
+      target:
+        | string
+        | {
+            /**
+             * @visibility frontend
+             */
+            external?: string;
+          };
+      /**
+       * Array of plugins which use the target baseUrl.
+       *
+       * @visibility frontend
+       */
+      plugins: Array<string>;
+    }>;
   };
 }

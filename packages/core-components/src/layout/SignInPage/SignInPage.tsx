@@ -18,13 +18,14 @@ import {
   BackstageIdentityResponse,
   configApiRef,
   SignInPageProps,
+  useAnalytics,
   useApi,
 } from '@backstage/core-plugin-api';
 import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { useState } from 'react';
+import { ComponentType, ReactNode, useState } from 'react';
 import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
@@ -35,14 +36,26 @@ import { Page } from '../Page';
 import { getSignInProviders, useSignInProviders } from './providers';
 import { GridItem, useStyles } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useSearchParams } from 'react-router-dom';
 
-type MultiSignInPageProps = SignInPageProps & {
+type CommonSignInPageProps = SignInPageProps & {
+  /**
+   * Error component to be rendered instead of the default error panel in case
+   * sign in fails.
+   */
+  ErrorComponent?: ComponentType<{ error?: Error }>;
+};
+
+type MultiSignInPageProps = CommonSignInPageProps & {
   providers: IdentityProviders;
   title?: string;
+  titleComponent?: ReactNode;
   align?: 'center' | 'left';
 };
 
-type SingleSignInPageProps = SignInPageProps & {
+type SingleSignInPageProps = CommonSignInPageProps & {
   provider: SignInProviderConfig;
   auto?: boolean;
 };
@@ -53,6 +66,7 @@ export const MultiSignInPage = ({
   onSignInSuccess,
   providers = [],
   title,
+  titleComponent,
   align = 'left',
 }: MultiSignInPageProps) => {
   const configApi = useApi(configApiRef);
@@ -72,7 +86,13 @@ export const MultiSignInPage = ({
     <Page themeId="home">
       <Header title={configApi.getString('app.title')} />
       <Content>
-        {title && <ContentHeader title={title} textAlign={align} />}
+        {(title || titleComponent) && (
+          <ContentHeader
+            title={title}
+            titleComponent={titleComponent}
+            textAlign={align}
+          />
+        )}
         <Grid
           container
           justifyContent={align === 'center' ? align : 'flex-start'}
@@ -91,10 +111,13 @@ export const SingleSignInPage = ({
   provider,
   auto,
   onSignInSuccess,
+  ErrorComponent,
 }: SingleSignInPageProps) => {
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  const analytics = useAnalytics();
 
   const [error, setError] = useState<Error>();
 
@@ -102,6 +125,10 @@ export const SingleSignInPage = ({
   // showLoginPage is used to prevent a glitch-like experience where the sign-in page is
   // displayed for a split second when the user is already logged-in.
   const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
+
+  // User was redirected back to sign in page with error from auth redirect flow
+  const [searchParams, _setSearchParams] = useSearchParams();
+  const errorParam = searchParams.get('error');
 
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
@@ -115,7 +142,7 @@ export const SingleSignInPage = ({
       }
 
       // If no session exists, show the sign-in page
-      if (!identityResponse && (showPopup || auto)) {
+      if (!identityResponse && (showPopup || auto) && !errorParam) {
         // Unless auto is set to true, this step should not happen.
         // When user intentionally clicks the Sign In button, autoShowPopup is set to true
         setShowLoginPage(true);
@@ -142,6 +169,7 @@ export const SingleSignInPage = ({
           profile,
         }),
       );
+      analytics.captureEvent('signIn', 'success');
     } catch (err: any) {
       // User closed the sign-in modal
       setError(err);
@@ -149,7 +177,12 @@ export const SingleSignInPage = ({
     }
   };
 
-  useMountEffect(() => login({ checkExisting: true }));
+  useMountEffect(() => {
+    if (errorParam) {
+      setError(new Error(errorParam));
+    }
+    login({ checkExisting: true });
+  });
 
   return showLoginPage ? (
     <Page themeId="home">
@@ -174,16 +207,20 @@ export const SingleSignInPage = ({
                     login({ showPopup: true });
                   }}
                 >
-                  Sign In
+                  {t('signIn.title')}
                 </Button>
               }
             >
               <Typography variant="body1">{provider.message}</Typography>
-              {error && error.name !== 'PopupRejectedError' && (
-                <Typography variant="body1" color="error">
-                  {error.message}
-                </Typography>
-              )}
+              {error &&
+                error.name !== 'PopupRejectedError' &&
+                (ErrorComponent ? (
+                  <ErrorComponent error={error} />
+                ) : (
+                  <Typography variant="body1" color="error">
+                    {error.message}
+                  </Typography>
+                ))}
             </InfoCard>
           </GridItem>
         </Grid>

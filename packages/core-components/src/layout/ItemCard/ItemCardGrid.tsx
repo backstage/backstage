@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import Box from '@material-ui/core/Box';
 import {
   createStyles,
   makeStyles,
   Theme,
   WithStyles,
 } from '@material-ui/core/styles';
-import React from 'react';
+import { ReactNode } from 'react';
 
 /** @public */
 export type ItemCardGridClassKey = 'root';
@@ -42,14 +42,15 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
   /**
    * The Card items of the grid.
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
  * A default grid to use when arranging "item cards" - cards that let users
  * select among several options.
  *
- * The immediate children are expected to be MUI Card components.
+ * @remarks
+ * The immediate children are expected to be Material UI Card components.
  *
  * Styles for the grid can be overridden using the `classes` prop, e.g.:
  *
@@ -64,8 +65,8 @@ export function ItemCardGrid(props: ItemCardGridProps) {
   const { children, ...otherProps } = props;
   const classes = useStyles(otherProps);
   return (
-    <div className={classes.root} {...otherProps}>
+    <Box className={classes.root} {...otherProps}>
       {children}
-    </div>
+    </Box>
   );
 }

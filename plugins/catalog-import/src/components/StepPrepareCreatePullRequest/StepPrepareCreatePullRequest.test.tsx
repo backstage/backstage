@@ -16,11 +16,16 @@
 
 import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { TestApiProvider, MockConfigApi } from '@backstage/test-utils';
-import { TextField } from '@material-ui/core';
-import { act, render, screen } from '@testing-library/react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import TextField from '@material-ui/core/TextField';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { ReactNode } from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { asInputRef } from '../helpers';
 import {
@@ -35,27 +40,16 @@ describe('<StepPrepareCreatePullRequest />', () => {
     preparePullRequest: jest.fn(),
   };
 
-  const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getLocationByRef: jest.fn(),
-    getLocationById: jest.fn(),
-    removeLocationById: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-  };
+  const catalogApi = catalogApiMock.mock();
 
   const errorApi: jest.Mocked<typeof errorApiRef.T> = {
     error$: jest.fn(),
     post: jest.fn(),
   };
 
-  const configApi = new MockConfigApi({});
+  const configApi = mockApis.config();
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children?: ReactNode }) => (
     <TestApiProvider
       apis={[
         [catalogImportApiRef, catalogImportApi],
@@ -100,8 +94,8 @@ describe('<StepPrepareCreatePullRequest />', () => {
   it('renders without exploding', async () => {
     catalogApi.getEntities.mockReturnValue(Promise.resolve({ items: [] }));
 
-    await act(async () => {
-      const { findByText } = render(
+    await renderInTestApp(
+      <Wrapper>
         <StepPrepareCreatePullRequest
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
@@ -115,19 +109,18 @@ describe('<StepPrepareCreatePullRequest />', () => {
               </>
             );
           }}
-        />,
-        {
-          wrapper: Wrapper,
-        },
-      );
+        />
+      </Wrapper>,
+    );
 
-      const title = await findByText('My title');
-      const description = await findByText('body', { selector: 'strong' });
-      expect(title).toBeInTheDocument();
-      expect(title).toBeVisible();
-      expect(description).toBeInTheDocument();
-      expect(description).toBeVisible();
+    const title = await screen.findByText('My title');
+    const description = await screen.findByText('body', {
+      selector: 'strong',
     });
+    expect(title).toBeInTheDocument();
+    expect(title).toBeVisible();
+    expect(description).toBeInTheDocument();
+    expect(description).toBeVisible();
   });
 
   it('should submit created PR', async () => {
@@ -139,8 +132,8 @@ describe('<StepPrepareCreatePullRequest />', () => {
       }),
     );
 
-    await act(async () => {
-      render(
+    await renderInTestApp(
+      <Wrapper>
         <StepPrepareCreatePullRequest
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
@@ -162,18 +155,15 @@ describe('<StepPrepareCreatePullRequest />', () => {
               </>
             );
           }}
-        />,
-        {
-          wrapper: Wrapper,
-        },
-      );
+        />
+      </Wrapper>,
+    );
 
-      await userEvent.type(await screen.findByLabelText('name'), '-changed');
-      await userEvent.type(await screen.findByLabelText('owner'), '-changed');
-      await userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
-    });
+    await userEvent.type(await screen.findByLabelText('name'), '-changed');
+    await userEvent.type(await screen.findByLabelText('owner'), '-changed');
+    await userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
 
-    expect(catalogImportApi.submitPullRequest).toBeCalledTimes(1);
+    expect(catalogImportApi.submitPullRequest).toHaveBeenCalledTimes(1);
     expect(catalogImportApi.submitPullRequest.mock.calls[0]).toMatchObject([
       {
         body: 'My **body**',
@@ -189,7 +179,7 @@ spec:
         title: 'My title',
       },
     ]);
-    expect(onPrepareFn).toBeCalledTimes(1);
+    expect(onPrepareFn).toHaveBeenCalledTimes(1);
     expect(onPrepareFn.mock.calls[0]).toMatchObject([
       {
         type: 'repository',
@@ -223,8 +213,8 @@ spec:
       new Error('some error'),
     );
 
-    await act(async () => {
-      render(
+    await renderInTestApp(
+      <Wrapper>
         <StepPrepareCreatePullRequest
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
@@ -238,20 +228,17 @@ spec:
               </>
             );
           }}
-        />,
-        {
-          wrapper: Wrapper,
-        },
-      );
+        />
+      </Wrapper>,
+    );
 
-      await userEvent.click(
-        await screen.findByRole('button', { name: /Create PR/i }),
-      );
-    });
+    await userEvent.click(
+      await screen.findByRole('button', { name: /Create PR/i }),
+    );
 
     expect(screen.getByText('some error')).toBeInTheDocument();
-    expect(catalogImportApi.submitPullRequest).toBeCalledTimes(1);
-    expect(onPrepareFn).toBeCalledTimes(0);
+    expect(catalogImportApi.submitPullRequest).toHaveBeenCalledTimes(1);
+    expect(onPrepareFn).toHaveBeenCalledTimes(0);
   });
 
   it('should load groups', async () => {
@@ -270,30 +257,25 @@ spec:
       }),
     );
 
-    await act(async () => {
-      render(
+    await renderInTestApp(
+      <Wrapper>
         <StepPrepareCreatePullRequest
           analyzeResult={analyzeResult}
           onPrepare={onPrepareFn}
           renderFormFields={renderFormFieldsFn}
-        />,
-        {
-          wrapper: Wrapper,
-        },
-      );
+        />
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1);
     });
 
-    expect(catalogApi.getEntities).toBeCalledTimes(1);
-    expect(renderFormFieldsFn).toBeCalled();
+    expect(renderFormFieldsFn).toHaveBeenCalled();
     expect(renderFormFieldsFn.mock.calls[0][0]).toMatchObject({
-      groups: [],
-      groupsLoading: true,
+      groups: ['my-group'],
+      groupsLoading: false,
     });
-    expect(
-      renderFormFieldsFn.mock.calls[
-        renderFormFieldsFn.mock.calls.length - 1
-      ][0],
-    ).toMatchObject({ groups: ['my-group'], groupsLoading: false });
   });
 
   describe('generateEntities', () => {

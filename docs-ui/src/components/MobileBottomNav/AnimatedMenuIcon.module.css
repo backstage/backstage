@@ -1,0 +1,40 @@
+.icon {
+  display: block;
+}
+
+.topLine,
+.middleLine,
+.bottomLine {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Menu state (default) */
+.topLine {
+  transform-origin: 10px 5px;
+  transform: rotate(0deg);
+}
+
+.middleLine {
+  opacity: 1;
+  transform-origin: 10px 10px;
+}
+
+.bottomLine {
+  transform-origin: 10px 15px;
+  transform: rotate(0deg);
+}
+
+/* Close state (when open) */
+.icon[data-open='true'] .topLine {
+  transform-origin: 10px 5px;
+  transform: translateY(5px) rotate(45deg);
+}
+
+.icon[data-open='true'] .middleLine {
+  opacity: 0;
+}
+
+.icon[data-open='true'] .bottomLine {
+  transform-origin: 10px 15px;
+  transform: translateY(-5px) rotate(-45deg);
+}

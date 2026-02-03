@@ -16,22 +16,45 @@
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, ForwardedError } from '@backstage/errors';
-import aws, { Credentials } from 'aws-sdk';
-import { ListObjectsV2Output } from 'aws-sdk/clients/s3';
-import { CredentialsOptions } from 'aws-sdk/lib/credentials';
+
+// Maximum size in bytes for a single upload part (5MB)
+const MAX_SINGLE_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
+import {
+  GetObjectCommand,
+  CopyObjectCommand,
+  DeleteObjectCommand,
+  HeadBucketCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  PutObjectCommandInput,
+  ListObjectsV2CommandOutput,
+  ListObjectsV2Command,
+  S3Client,
+  S3ServiceException,
+} from '@aws-sdk/client-s3';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { Upload } from '@aws-sdk/lib-storage';
+import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
+import { HttpsProxyAgent } from 'hpagent';
 import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
-import path from 'path';
-import { Readable } from 'stream';
-import { Logger } from 'winston';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
   getFileTreeRecursively,
   getHeadersForFileExtension,
   getStaleFiles,
+  isValidContentPath,
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
   normalizeExternalStorageRootPath,
@@ -43,6 +66,8 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -60,20 +85,22 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
 };
 
 export class AwsS3Publish implements PublisherBase {
-  private readonly storageClient: aws.S3;
+  public readonly storageClient: S3Client;
   private readonly bucketName: string;
   private readonly legacyPathCasing: boolean;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly bucketRootPath: string;
   private readonly sse?: 'aws:kms' | 'AES256';
+  private readonly maxAttempts: number;
 
   constructor(options: {
-    storageClient: aws.S3;
+    storageClient: S3Client;
     bucketName: string;
     legacyPathCasing: boolean;
-    logger: Logger;
+    logger: LoggerService;
     bucketRootPath: string;
     sse?: 'aws:kms' | 'AES256';
+    maxAttempts: number;
   }) {
     this.storageClient = options.storageClient;
     this.bucketName = options.bucketName;
@@ -81,9 +108,13 @@ export class AwsS3Publish implements PublisherBase {
     this.logger = options.logger;
     this.bucketRootPath = options.bucketRootPath;
     this.sse = options.sse;
+    this.maxAttempts = options.maxAttempts;
   }
 
-  static fromConfig(config: Config, logger: Logger): PublisherBase {
+  static async fromConfig(
+    config: Config,
+    logger: LoggerService,
+  ): Promise<PublisherBase> {
     let bucketName = '';
     try {
       bucketName = config.getString('techdocs.publisher.awsS3.bucketName');
@@ -103,21 +134,35 @@ export class AwsS3Publish implements PublisherBase {
       | 'AES256'
       | undefined;
 
-    // Credentials is an optional config. If missing, the default ways of authenticating AWS SDK V2 will be used.
-    // 1. AWS environment variables
-    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
-    // 2. AWS shared credentials file at ~/.aws/credentials
-    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html
-    // 3. IAM Roles for EC2
-    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-iam.html
-    const credentialsConfig = config.getOptionalConfig(
-      'techdocs.publisher.awsS3.credentials',
-    );
-    const credentials = AwsS3Publish.buildCredentials(credentialsConfig);
-
     // AWS Region is an optional config. If missing, default AWS env variable AWS_REGION
     // or AWS shared credentials file at ~/.aws/credentials will be used.
     const region = config.getOptionalString('techdocs.publisher.awsS3.region');
+
+    // Credentials can optionally be configured by specifying the AWS account ID, which will retrieve credentials
+    // for the account from the 'aws' section of the app config.
+    // Credentials can also optionally be directly configured in the techdocs awsS3 config, but this method is
+    // deprecated.
+    // If no credentials are configured, the AWS SDK V3's default credential chain will be used.
+    const accountId = config.getOptionalString(
+      'techdocs.publisher.awsS3.accountId',
+    );
+    const credentialsConfig = config.getOptionalConfig(
+      'techdocs.publisher.awsS3.credentials',
+    );
+
+    const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+
+    const scmIntegrations = ScmIntegrations.fromConfig(config);
+    const awsS3Integrations = scmIntegrations.awsS3.list();
+
+    const sdkCredentialProvider = await AwsS3Publish.buildCredentials(
+      credsManager,
+      logger,
+      awsS3Integrations,
+      accountId,
+      credentialsConfig,
+      region,
+    );
 
     // AWS endpoint is an optional config. If missing, the default endpoint is built from
     // the configured region.
@@ -125,17 +170,39 @@ export class AwsS3Publish implements PublisherBase {
       'techdocs.publisher.awsS3.endpoint',
     );
 
+    // AWS HTTPS proxy is an optional config. If missing, no proxy is used
+    const httpsProxy = config.getOptionalString(
+      'techdocs.publisher.awsS3.httpsProxy',
+    );
+
     // AWS forcePathStyle is an optional config. If missing, it defaults to false. Needs to be enabled for cases
     // where endpoint url points to locally hosted S3 compatible storage like Localstack
-    const s3ForcePathStyle = config.getOptionalBoolean(
+    const forcePathStyle = config.getOptionalBoolean(
       'techdocs.publisher.awsS3.s3ForcePathStyle',
     );
 
-    const storageClient = new aws.S3({
-      credentials,
+    // AWS MAX ATTEMPTS is an optional config. If missing, default value of 5 is used
+    const maxAttempts = config.getOptionalNumber(
+      'techdocs.publisher.awsS3.maxAttempts',
+    );
+
+    const storageClient = new S3Client({
+      customUserAgent: 'backstage-aws-techdocs-s3-publisher',
+      credentialDefaultProvider: () => sdkCredentialProvider,
       ...(region && { region }),
       ...(endpoint && { endpoint }),
-      ...(s3ForcePathStyle && { s3ForcePathStyle }),
+      ...(forcePathStyle && { forcePathStyle }),
+      // Enhanced retry configuration for better reliability
+      maxAttempts: maxAttempts || 5,
+      retryMode: 'adaptive',
+      // Enhanced connection settings for large file uploads
+      requestHandler: new NodeHttpHandler({
+        ...(httpsProxy && {
+          httpsAgent: new HttpsProxyAgent({ proxy: httpsProxy }),
+        }),
+        connectionTimeout: 60000,
+        socketTimeout: 120000,
+      }),
     });
 
     const legacyPathCasing =
@@ -150,38 +217,207 @@ export class AwsS3Publish implements PublisherBase {
       legacyPathCasing,
       logger,
       sse,
+      maxAttempts: maxAttempts || 5,
     });
   }
 
-  private static buildCredentials(
-    config?: Config,
-  ): Credentials | CredentialsOptions | undefined {
-    if (!config) {
-      return undefined;
-    }
-
-    const accessKeyId = config.getOptionalString('accessKeyId');
-    const secretAccessKey = config.getOptionalString('secretAccessKey');
-    let explicitCredentials: Credentials | undefined;
-    if (accessKeyId && secretAccessKey) {
-      explicitCredentials = new Credentials({
+  private static buildStaticCredentials(
+    accessKeyId: string,
+    secretAccessKey: string,
+  ): AwsCredentialIdentityProvider {
+    return async () => {
+      return Promise.resolve({
         accessKeyId,
         secretAccessKey,
       });
+    };
+  }
+
+  private static async buildCredentials(
+    credsManager: AwsCredentialsManager,
+    logger: LoggerService,
+    awsS3Integrations: AwsS3Integration[],
+    accountId?: string,
+    credentialsConfig?: Config,
+    region?: string,
+  ): Promise<AwsCredentialIdentityProvider> {
+    // Pull credentials for the specified account ID from the 'aws' config section
+    if (accountId) {
+      return (await credsManager.getCredentialProvider({ accountId }))
+        .sdkCredentialProvider;
     }
 
-    const roleArn = config.getOptionalString('roleArn');
+    const explicitCredentials = await AwsS3Publish.getExplicitCredentials({
+      credsManager,
+      credentialsConfig,
+      awsS3Integrations,
+      logger,
+    });
+
+    const roleArn = credentialsConfig?.getOptionalString('roleArn');
     if (roleArn) {
-      return new aws.ChainableTemporaryCredentials({
+      return fromTemporaryCredentials({
         masterCredentials: explicitCredentials,
         params: {
           RoleSessionName: 'backstage-aws-techdocs-s3-publisher',
           RoleArn: roleArn,
         },
+        clientConfig: { region },
       });
     }
 
     return explicitCredentials;
+  }
+  /**
+   * Custom retry wrapper for S3 operations with detailed error handling.
+   */
+  public async retryOperation<TOutput>(
+    operation: () => Promise<TOutput>,
+    operationName: string,
+    maxAttempts: number = 3,
+    shouldRetry: (
+      error: S3ServiceException,
+    ) => boolean = this.defaultShouldRetry.bind(this),
+  ): Promise<TOutput> {
+    for (let attempt = 1; attempt < maxAttempts; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        const e = error as S3ServiceException;
+        if (!shouldRetry(e)) {
+          this.logger.error(`${operationName} failed: ${e.message}`);
+          throw e;
+        }
+
+        this.logger.warn(`${operationName} failed, retrying...`, {
+          attempt,
+          maxAttempts,
+          error: e.message,
+          errorCode: e.name,
+          httpStatusCode: e.$metadata?.httpStatusCode,
+        });
+
+        // Enhanced exponential backoff with jitter
+        const baseDelay = operationName.startsWith('Upload-') ? 2000 : 1000;
+        const backoffDelay = Math.min(
+          baseDelay * Math.pow(2, attempt - 1),
+          30000,
+        );
+        const jitter = Math.random() * 1000;
+        await new Promise(resolve =>
+          setTimeout(resolve, backoffDelay + jitter),
+        );
+      }
+    }
+    return await operation();
+  }
+
+  /**
+   * Determines if an S3 operation should be retried based on the error details.
+   */
+  private defaultShouldRetry(error: S3ServiceException): boolean {
+    const httpStatusCode = error.$metadata?.httpStatusCode;
+    const errorCode = error.name;
+
+    // Truly transient errors that should always be retried
+    const transientErrors = [
+      'NetworkingError',
+      'TimeoutError',
+      'ConnectionError',
+      'RequestTimeout',
+      'ServiceUnavailable',
+      'SlowDown',
+      'ThrottlingException',
+    ];
+
+    // Server errors are always considered transient
+    if (httpStatusCode && httpStatusCode >= 500) {
+      return true;
+    }
+
+    // Specific 4xx errors that are known to be transient
+    if (httpStatusCode && httpStatusCode >= 400 && httpStatusCode < 500) {
+      const retriable4xxErrors = [
+        'RequestTimeout',
+        'RequestTimeoutException',
+        'PriorRequestNotComplete',
+      ];
+      return retriable4xxErrors.includes(errorCode);
+    }
+
+    // Check against known transient errors
+    return transientErrors.some(
+      retriableError =>
+        errorCode === retriableError || error.message.includes(retriableError),
+    );
+  }
+
+  private static async getExplicitCredentials({
+    credentialsConfig,
+    awsS3Integrations,
+    credsManager,
+    logger,
+  }: {
+    credentialsConfig?: Config;
+    awsS3Integrations: AwsS3Integration[];
+    credsManager: AwsCredentialsManager;
+    logger: LoggerService;
+  }): Promise<AwsCredentialIdentityProvider> {
+    const accessKeyId = credentialsConfig?.getOptionalString('accessKeyId');
+    const secretAccessKey =
+      credentialsConfig?.getOptionalString('secretAccessKey');
+
+    if (accessKeyId && secretAccessKey) {
+      return AwsS3Publish.buildStaticCredentials(accessKeyId, secretAccessKey);
+    }
+
+    if (awsS3Integrations.length > 0) {
+      if (awsS3Integrations.length === 1) {
+        const singleAwsS3IntegrationConfig = awsS3Integrations[0].config;
+
+        const singleAwsS3IntegrationAccessKeyId =
+          singleAwsS3IntegrationConfig.accessKeyId;
+
+        const singleAwsS3IntegrationSecretAccessKey =
+          singleAwsS3IntegrationConfig.secretAccessKey;
+
+        if (
+          singleAwsS3IntegrationAccessKeyId &&
+          singleAwsS3IntegrationSecretAccessKey
+        ) {
+          return AwsS3Publish.buildStaticCredentials(
+            singleAwsS3IntegrationAccessKeyId,
+            singleAwsS3IntegrationSecretAccessKey,
+          );
+        }
+      } else {
+        if (accessKeyId) {
+          const targetAwsS3IntegrationConfig = awsS3Integrations.find(
+            c => c.config.accessKeyId === accessKeyId,
+          );
+
+          if (!targetAwsS3IntegrationConfig) {
+            logger.warn(
+              `No AWS S3 integration config under integrations.awsS3 found for access key id ${accessKeyId}.`,
+            );
+          }
+          const targetAwsS3IntegrationAccessKeyId =
+            targetAwsS3IntegrationConfig?.config.accessKeyId;
+          const targetAwsS3IntegrationSecretAccessKey =
+            targetAwsS3IntegrationConfig?.config.secretAccessKey;
+          if (
+            targetAwsS3IntegrationAccessKeyId &&
+            targetAwsS3IntegrationSecretAccessKey
+          ) {
+            return AwsS3Publish.buildStaticCredentials(
+              targetAwsS3IntegrationAccessKeyId,
+              targetAwsS3IntegrationSecretAccessKey,
+            );
+          }
+        }
+      }
+    }
+    return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
   }
 
   /**
@@ -190,9 +426,9 @@ export class AwsS3Publish implements PublisherBase {
    */
   async getReadiness(): Promise<ReadinessResponse> {
     try {
-      await this.storageClient
-        .headBucket({ Bucket: this.bucketName })
-        .promise();
+      await this.storageClient.send(
+        new HeadBucketCommand({ Bucket: this.bucketName }),
+      );
 
       this.logger.info(
         `Successfully connected to the AWS S3 bucket ${this.bucketName}.`,
@@ -206,13 +442,15 @@ export class AwsS3Publish implements PublisherBase {
           'explicitly defining credentials and region in techdocs.publisher.awsS3 in app config or ' +
           'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
       );
-      this.logger.error(`from AWS client library`, error);
+      this.logger.error(
+        `from AWS client library`,
+        error instanceof Error ? error : new Error(String(error)),
+      );
       return {
         isAvailable: false,
       };
     }
   }
-
   /**
    * Upload all the files from the generated `directory` to the S3 bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
@@ -226,6 +464,9 @@ export class AwsS3Publish implements PublisherBase {
     const bucketRootPath = this.bucketRootPath;
     const sse = this.sse;
 
+    // Track timing for performance monitoring
+    const publishStartTime = Date.now();
+
     // First, try to retrieve a list of all individual files currently existing
     let existingFiles: string[] = [];
     try {
@@ -235,9 +476,20 @@ export class AwsS3Publish implements PublisherBase {
         useLegacyPathCasing,
         bucketRootPath,
       );
-      existingFiles = await this.getAllObjectsFromBucket({
-        prefix: remoteFolder,
-      });
+      const response = await this.retryOperation(
+        async () => {
+          const listCommand = new ListObjectsV2Command({
+            Bucket: this.bucketName,
+            Prefix: remoteFolder,
+          });
+          return this.storageClient.send(listCommand);
+        },
+        'ListObjects',
+        this.maxAttempts,
+      );
+      existingFiles = (response.Contents || [])
+        .map(f => f.Key || '')
+        .filter(f => !!f);
     } catch (e) {
       assertError(e);
       this.logger.error(
@@ -256,22 +508,99 @@ export class AwsS3Publish implements PublisherBase {
       await bulkStorageOperation(
         async absoluteFilePath => {
           const relativeFilePath = path.relative(directory, absoluteFilePath);
-          const fileStream = fs.createReadStream(absoluteFilePath);
-
-          const params = {
+          const s3Key = getCloudPathForLocalPath(
+            entity,
+            relativeFilePath,
+            useLegacyPathCasing,
+            bucketRootPath,
+          );
+          // Create params without the Body because the body must be the
+          // actual file contents (Buffer or Readable), not the path string.
+          // For multipart uploads we attach a Readable stream to avoid
+          // buffering large files in memory. For simple uploads we attach
+          // a Buffer read from disk.
+          const params: PutObjectCommandInput = {
             Bucket: this.bucketName,
-            Key: getCloudPathForLocalPath(
-              entity,
-              relativeFilePath,
-              useLegacyPathCasing,
-              bucketRootPath,
-            ),
-            Body: fileStream,
+            Key: s3Key,
             ...(sse && { ServerSideEncryption: sse }),
-          } as aws.S3.PutObjectRequest;
+          };
 
-          objects.push(params.Key);
-          return this.storageClient.upload(params).promise();
+          objects.push(params.Key!);
+          // Get file stats before upload
+          const stats = await fs.stat(absoluteFilePath);
+          const fileSizeInBytes = stats.size;
+
+          // Check if this is a large file that requires multipart upload
+          if (fileSizeInBytes >= MAX_SINGLE_UPLOAD_BYTES) {
+            // Try multipart upload for large files
+            try {
+              // Create stream and Upload inside retry closure so stream is
+              // recreated on each retry attempt (streams are consumable once).
+              await this.retryOperation(
+                () => {
+                  // Create a fresh stream on each attempt
+                  const fileStream = fs.createReadStream(absoluteFilePath);
+                  const uploadParams = { ...params, Body: fileStream };
+
+                  const upload = new Upload({
+                    client: this.storageClient,
+                    params: uploadParams,
+                    partSize: MAX_SINGLE_UPLOAD_BYTES,
+                    queueSize: 3,
+                    leavePartsOnError: false,
+                  });
+                  return upload.done();
+                },
+                `Upload-${params.Key}`,
+                this.maxAttempts,
+              );
+              return;
+            } catch (multipartError) {
+              const s3Error = multipartError as any;
+              const errorName = s3Error?.name || 'Unknown';
+
+              // For specific multipart errors, attempt simple upload fallback
+              if (errorName === 'InvalidPart' || errorName === 'NoSuchUpload') {
+                this.logger.warn(
+                  `Multipart upload failed for ${params.Key}, attempting simple upload fallback.`,
+                );
+              } else {
+                // Non-recoverable multipart error, throw it
+                this.logger.error(
+                  `Multipart upload failed for ${params.Key}: ${
+                    multipartError instanceof Error
+                      ? multipartError.message
+                      : String(multipartError)
+                  }`,
+                );
+                throw multipartError;
+              }
+            }
+          }
+
+          // Use simple upload for small files or as fallback from multipart
+          try {
+            const fileContent = await fs.readFile(absoluteFilePath);
+            const putParams = { ...params, Body: fileContent };
+            await this.retryOperation(
+              () => this.storageClient.send(new PutObjectCommand(putParams)),
+              `Upload-${params.Key}`,
+              this.maxAttempts,
+            );
+
+            if (fileSizeInBytes >= MAX_SINGLE_UPLOAD_BYTES) {
+              this.logger.info(
+                `Simple upload fallback succeeded for ${params.Key}`,
+              );
+            }
+          } catch (error) {
+            this.logger.error(
+              `Upload failed for ${params.Key}: ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            );
+            throw error;
+          }
         },
         absoluteFilesToUpload,
         { concurrencyLimit: 10 },
@@ -301,17 +630,21 @@ export class AwsS3Publish implements PublisherBase {
 
       await bulkStorageOperation(
         async relativeFilePath => {
-          return await this.storageClient
-            .deleteObject({
-              Bucket: this.bucketName,
-              Key: relativeFilePath,
-            })
-            .promise();
+          return this.retryOperation(
+            async () => {
+              const deleteCommand = new DeleteObjectCommand({
+                Bucket: this.bucketName,
+                Key: relativeFilePath,
+              });
+              return this.storageClient.send(deleteCommand);
+            },
+            'DeleteObject',
+            this.maxAttempts,
+          );
         },
         staleFiles,
         { concurrencyLimit: 10 },
       );
-
       this.logger.info(
         `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: ${staleFiles.length}`,
       );
@@ -319,6 +652,13 @@ export class AwsS3Publish implements PublisherBase {
       const errorMessage = `Unable to delete file(s) from AWS S3. ${error}`;
       this.logger.error(errorMessage);
     }
+    const publishEndTime = Date.now();
+    const publishDurationMs = publishEndTime - publishStartTime;
+    this.logger.info(
+      `Successfully published ${objects.length} files for ${
+        entity.metadata.name
+      } in ${Math.round(publishDurationMs / 1000)}s`,
+    );
     return { objects };
   }
 
@@ -333,16 +673,29 @@ export class AwsS3Publish implements PublisherBase {
           : lowerCaseEntityTriplet(entityTriplet);
 
         const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
-
-        const stream = this.storageClient
-          .getObject({
-            Bucket: this.bucketName,
-            Key: `${entityRootDir}/techdocs_metadata.json`,
-          })
-          .createReadStream();
+        if (!isValidContentPath(this.bucketRootPath, entityRootDir)) {
+          this.logger.error(
+            `Invalid content path found while fetching TechDocs metadata: ${entityRootDir}`,
+          );
+          throw new Error(`Metadata Not Found`);
+        }
 
         try {
-          const techdocsMetadataJson = await streamToBuffer(stream);
+          const resp = await this.retryOperation(
+            async () => {
+              const getCommand = new GetObjectCommand({
+                Bucket: this.bucketName,
+                Key: `${entityRootDir}/techdocs_metadata.json`,
+              });
+              return this.storageClient.send(getCommand);
+            },
+            'GetTechDocsMetadata',
+            this.maxAttempts,
+          );
+
+          const techdocsMetadataJson = await streamToBuffer(
+            resp.Body as Readable,
+          );
           if (!techdocsMetadataJson) {
             throw new Error(
               `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
@@ -370,29 +723,32 @@ export class AwsS3Publish implements PublisherBase {
    */
   docsRouter(): express.Handler {
     return async (req, res) => {
-      // Decode and trim the leading forward slash
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
-
-      // Root path is removed from the Uri so that legacy casing can be applied
-      // to the entity triplet without manipulating the root path
-      const decodedUriNoRoot = path.relative(this.bucketRootPath, decodedUri);
 
       // filePath example - /default/component/documented-component/index.html
       const filePathNoRoot = this.legacyPathCasing
-        ? decodedUriNoRoot
-        : lowerCaseEntityTripletInStoragePath(decodedUriNoRoot);
+        ? decodedUri
+        : lowerCaseEntityTripletInStoragePath(decodedUri);
 
-      // Re-prepend the root path to the relative file path
+      // Prepend the root path to the relative file path
       const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
+      if (!isValidContentPath(this.bucketRootPath, filePath)) {
+        this.logger.error(
+          `Attempted to fetch TechDocs content for a file outside of the bucket root: ${filePathNoRoot}`,
+        );
+        res.status(404).send('File Not Found');
+        return;
+      }
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      const stream = this.storageClient
-        .getObject({ Bucket: this.bucketName, Key: filePath })
-        .createReadStream();
       try {
+        const resp = await this.storageClient.send(
+          new GetObjectCommand({ Bucket: this.bucketName, Key: filePath }),
+        );
+
         // Inject response headers
         for (const [headerKey, headerValue] of Object.entries(
           responseHeaders,
@@ -400,7 +756,18 @@ export class AwsS3Publish implements PublisherBase {
           res.setHeader(headerKey, headerValue);
         }
 
-        res.send(await streamToBuffer(stream));
+        (resp.Body as Readable)
+          .on('error', err => {
+            this.logger.warn(
+              `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
+            );
+            if (!res.headersSent) {
+              res.status(404).send('File Not Found');
+            } else {
+              res.destroy();
+            }
+          })
+          .pipe(res);
       } catch (err) {
         assertError(err);
         this.logger.warn(
@@ -423,13 +790,19 @@ export class AwsS3Publish implements PublisherBase {
         : lowerCaseEntityTriplet(entityTriplet);
 
       const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
+      if (!isValidContentPath(this.bucketRootPath, entityRootDir)) {
+        this.logger.error(
+          `Invalid content path found while checking if docs have been generated: ${entityRootDir}`,
+        );
+        return Promise.resolve(false);
+      }
 
-      await this.storageClient
-        .headObject({
+      await this.storageClient.send(
+        new HeadObjectCommand({
           Bucket: this.bucketName,
           Key: `${entityRootDir}/index.html`,
-        })
-        .promise();
+        }),
+      );
       return Promise.resolve(true);
     } catch (e) {
       return Promise.resolve(false);
@@ -461,22 +834,22 @@ export class AwsS3Publish implements PublisherBase {
           }
 
           try {
-            this.logger.verbose(`Migrating ${file}`);
-            await this.storageClient
-              .copyObject({
+            this.logger.debug(`Migrating ${file}`);
+            await this.storageClient.send(
+              new CopyObjectCommand({
                 Bucket: this.bucketName,
                 CopySource: [this.bucketName, file].join('/'),
                 Key: newPath,
-              })
-              .promise();
+              }),
+            );
 
             if (removeOriginal) {
-              await this.storageClient
-                .deleteObject({
+              await this.storageClient.send(
+                new DeleteObjectCommand({
                   Bucket: this.bucketName,
                   Key: file,
-                })
-                .promise();
+                }),
+              );
             }
           } catch (e) {
             assertError(e);
@@ -495,16 +868,22 @@ export class AwsS3Publish implements PublisherBase {
   ): Promise<string[]> {
     const objects: string[] = [];
     let nextContinuation: string | undefined;
-    let allObjects: ListObjectsV2Output;
+    let allObjects: ListObjectsV2CommandOutput;
     // Iterate through every file in the root of the publisher.
     do {
-      allObjects = await this.storageClient
-        .listObjectsV2({
-          Bucket: this.bucketName,
-          ContinuationToken: nextContinuation,
-          ...(prefix ? { Prefix: prefix } : {}),
-        })
-        .promise();
+      const currentToken = nextContinuation;
+      allObjects = await this.retryOperation(
+        async () => {
+          const listCommand = new ListObjectsV2Command({
+            Bucket: this.bucketName,
+            ContinuationToken: currentToken,
+            ...(prefix ? { Prefix: prefix } : {}),
+          });
+          return this.storageClient.send(listCommand);
+        },
+        'GetAllObjects',
+        this.maxAttempts,
+      );
       objects.push(
         ...(allObjects.Contents || []).map(f => f.Key || '').filter(f => !!f),
       );

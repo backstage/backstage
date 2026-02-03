@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useEffect } from 'react';
+import { useApi, configApiRef, useAnalytics } from '@backstage/core-plugin-api';
 import { ErrorPage } from '@backstage/core-components';
+import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
+import { useLocation } from 'react-router-dom';
 
 type Props = {
   errorMessage?: string;
@@ -25,9 +27,19 @@ type Props = {
 export const TechDocsNotFound = ({ errorMessage }: Props) => {
   const techdocsBuilder =
     useApi(configApiRef).getOptionalString('techdocs.builder');
+  const analyticsApi = useAnalytics();
+  const { entityRef } = useTechDocsReaderPage();
+  const location = useLocation();
+
+  useEffect(() => {
+    const { pathname, search, hash } = location;
+    analyticsApi.captureEvent('not-found', `${pathname}${search}${hash}`, {
+      attributes: entityRef,
+    });
+  }, [analyticsApi, entityRef, location]);
 
   let additionalInfo = '';
-  if (techdocsBuilder !== 'local') {
+  if (![undefined, 'local'].includes(techdocsBuilder)) {
     additionalInfo =
       "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not " +
       "generate docs if they are not found. Make sure the project's docs are generated and published by some external " +

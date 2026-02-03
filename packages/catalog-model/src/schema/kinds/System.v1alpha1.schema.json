@@ -12,7 +12,8 @@
       },
       "spec": {
         "owner": "artist-relations-team",
-        "domain": "artists"
+        "domain": "artists",
+        "type": "service"
       }
     }
   ],
@@ -44,6 +45,12 @@
               "type": "string",
               "description": "An entity reference to the domain that the system belongs to.",
               "examples": ["artists"],
+              "minLength": 1
+            },
+            "type": {
+              "type": "string",
+              "description": "The type of system. There is currently no enforced set of values for this field, so it is left up to the adopting organization to choose a nomenclature that matches their catalog hierarchy.",
+              "examples": ["product", "service", "feature-set"],
               "minLength": 1
             }
           }

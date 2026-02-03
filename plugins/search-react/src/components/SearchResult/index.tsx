@@ -14,5 +14,17 @@
  * limitations under the License.
  */
 
-export { SearchResult, SearchResultComponent } from './SearchResult';
-export type { SearchResultProps } from './SearchResult';
+export {
+  SearchResult,
+  SearchResultApi,
+  SearchResultContext,
+  SearchResultComponent,
+  SearchResultState,
+} from './SearchResult';
+
+export type {
+  SearchResultProps,
+  SearchResultApiProps,
+  SearchResultContextProps,
+  SearchResultStateProps,
+} from './SearchResult';

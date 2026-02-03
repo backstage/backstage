@@ -18,10 +18,9 @@ import { Config } from '@backstage/config';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
   processingResult,
-} from '@backstage/plugin-catalog-backend';
-import { Logger } from 'winston';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   GroupTransformer,
   MicrosoftGraphClient,
@@ -31,6 +30,7 @@ import {
   readMicrosoftGraphOrg,
   UserTransformer,
 } from '../microsoftGraph';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Extracts teams and users out of the Microsoft Graph API.
@@ -40,7 +40,7 @@ import {
  */
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: MicrosoftGraphProviderConfig[];
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly userTransformer?: UserTransformer;
   private readonly groupTransformer?: GroupTransformer;
   private readonly organizationTransformer?: OrganizationTransformer;
@@ -48,7 +48,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
       organizationTransformer?: OrganizationTransformer;
@@ -63,7 +63,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
 
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
-    logger: Logger;
+    logger: LoggerService;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
@@ -102,7 +102,9 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
 
     // Read out all the raw data
     const startTimestamp = Date.now();
-    this.logger.info('Reading Microsoft Graph users and groups');
+    this.logger.info('Reading Microsoft Graph users and groups', {
+      tenantId: provider.tenantId,
+    });
 
     // We create a client each time as we need one that matches the specific provider
     const client = MicrosoftGraphClient.create(provider);
@@ -112,6 +114,8 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
       {
         userExpand: provider.userExpand,
         userFilter: provider.userFilter,
+        userSelect: provider.userSelect,
+        loadUserPhotos: provider.loadUserPhotos,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,
         groupExpand: provider.groupExpand,
@@ -129,6 +133,12 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
       `Read ${users.length} users and ${groups.length} groups from Microsoft Graph in ${duration} seconds`,
+      {
+        groupCount: groups.length,
+        readDuration: duration,
+        tenantId: provider.tenantId,
+        userCount: users.length,
+      },
     );
 
     // Done!

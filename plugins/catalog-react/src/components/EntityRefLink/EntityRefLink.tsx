@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  CompoundEntityRef,
-  DEFAULT_NAMESPACE,
-  parseEntityRef,
-} from '@backstage/catalog-model';
-import React, { forwardRef } from 'react';
-import { entityRouteRef } from '../../routes';
-import { humanizeEntityRef } from './humanize';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { Tooltip } from '@material-ui/core';
+import { ReactNode, forwardRef } from 'react';
+import { entityRouteParams, entityRouteRef } from '../../routes';
+import { EntityDisplayName } from '../EntityDisplayName';
 
 /**
  * Props for {@link EntityRefLink}.
@@ -35,8 +29,12 @@ import { Tooltip } from '@material-ui/core';
 export type EntityRefLinkProps = {
   entityRef: Entity | CompoundEntityRef | string;
   defaultKind?: string;
+  defaultNamespace?: string;
+  /** @deprecated This option should no longer be used; presentation is requested through the {@link entityPresentationApiRef} instead */
   title?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
+  hideIcon?: boolean;
+  disableTooltip?: boolean;
 } & Omit<LinkProps, 'to'>;
 
 /**
@@ -46,48 +44,46 @@ export type EntityRefLinkProps = {
  */
 export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
-    const { entityRef, defaultKind, title, children, ...linkProps } = props;
-    const entityRoute = useRouteRef(entityRouteRef);
+    const {
+      entityRef,
+      defaultKind,
+      defaultNamespace,
+      title,
+      children,
+      hideIcon,
+      disableTooltip,
+      ...linkProps
+    } = props;
+    const entityRoute = useEntityRoute(props.entityRef);
 
-    let kind;
-    let namespace;
-    let name;
-
-    if (typeof entityRef === 'string') {
-      const parsed = parseEntityRef(entityRef);
-      kind = parsed.kind;
-      namespace = parsed.namespace;
-      name = parsed.name;
-    } else if ('metadata' in entityRef) {
-      kind = entityRef.kind;
-      namespace = entityRef.metadata.namespace;
-      name = entityRef.metadata.name;
-    } else {
-      kind = entityRef.kind;
-      namespace = entityRef.namespace;
-      name = entityRef.name;
-    }
-
-    kind = kind.toLocaleLowerCase('en-US');
-    namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
-
-    const routeParams = { kind, namespace, name };
-    const formattedEntityRefTitle = humanizeEntityRef(
-      { kind, namespace, name },
-      { defaultKind },
+    const content = children ?? title ?? (
+      <EntityDisplayName
+        entityRef={entityRef}
+        defaultKind={defaultKind}
+        defaultNamespace={defaultNamespace}
+        hideIcon={hideIcon}
+        disableTooltip={disableTooltip}
+      />
     );
 
-    const link = (
-      <Link {...linkProps} ref={ref} to={entityRoute(routeParams)}>
-        {children}
-        {!children && (title ?? formattedEntityRefTitle)}
+    return (
+      <Link {...linkProps} ref={ref} to={entityRoute}>
+        {content}
       </Link>
-    );
-
-    return title ? (
-      <Tooltip title={formattedEntityRefTitle}>{link}</Tooltip>
-    ) : (
-      link
     );
   },
 ) as (props: EntityRefLinkProps) => JSX.Element;
+
+// Hook that computes the route to a given entity / ref. This is a bit
+// contrived, because it tries to retain the casing of the entity name if
+// present, but not of other parts. This is in an attempt to make slightly more
+// nice-looking URLs.
+function useEntityRoute(
+  entityRef: Entity | CompoundEntityRef | string,
+): string {
+  const entityRoute = useRouteRef(entityRouteRef);
+
+  const routeParams = entityRouteParams(entityRef, { encodeParams: true });
+
+  return entityRoute(routeParams);
+}

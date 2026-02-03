@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import React, { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode, useContext } from 'react';
 
 /**
  * Type of `SidebarPinStateContext`
  *
- * @public @deprecated
- * Use `SidebarPinState` instead.
+ * @public
+ * @deprecated Use `SidebarPinState` instead.
  */
 export type SidebarPinStateContextType = {
   isPinned: boolean;
@@ -80,21 +81,21 @@ const VersionedSidebarPinStateContext = createVersionedContext<{
  *
  * @public
  */
-export const SidebarPinStateProvider = ({
-  children,
-  value,
-}: {
+export function SidebarPinStateProvider(props: {
   children: ReactNode;
   value: SidebarPinStateContextType;
-}) => (
-  <LegacySidebarPinStateContext.Provider value={value}>
-    <VersionedSidebarPinStateContext.Provider
-      value={createVersionedValueMap({ 1: value })}
-    >
-      {children}
-    </VersionedSidebarPinStateContext.Provider>
-  </LegacySidebarPinStateContext.Provider>
-);
+}) {
+  const { children, value } = props;
+  return (
+    <LegacySidebarPinStateContext.Provider value={value}>
+      <VersionedSidebarPinStateContext.Provider
+        value={createVersionedValueMap({ 1: value })}
+      >
+        {children}
+      </VersionedSidebarPinStateContext.Provider>
+    </LegacySidebarPinStateContext.Provider>
+  );
+}
 
 /**
  * Hook to read and update sidebar pin state, which controls whether or not the

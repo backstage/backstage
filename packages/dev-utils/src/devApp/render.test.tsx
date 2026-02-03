@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { render } from '@testing-library/react';
 import { createDevApp } from './render';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 const anyEnv = (process.env = { ...process.env }) as any;
 
 describe('DevAppBuilder', () => {
   it('should be able to render a component in a dev app', async () => {
     anyEnv.APP_CONFIG = [
-      { context: 'test', data: { app: { title: 'Test App' } } },
+      {
+        context: 'test',
+        data: {
+          app: { title: 'Test App' },
+          backend: { baseUrl: 'http://localhost' },
+        },
+      },
     ];
 
     const MyComponent = () => {

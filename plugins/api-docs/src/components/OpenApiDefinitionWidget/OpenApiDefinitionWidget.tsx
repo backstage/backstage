@@ -15,26 +15,36 @@
  */
 
 import { Progress } from '@backstage/core-components';
-import React, { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 
 // The swagger-ui component and related CSS has a significant size, only load it
 // if the element is actually used.
-const LazyOpenApiDefinition = React.lazy(() =>
+const LazyOpenApiDefinition = lazy(() =>
   import('./OpenApiDefinition').then(m => ({
     default: m.OpenApiDefinition,
   })),
 );
 
+/** @public */
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
+  requestInterceptor?: (req: any) => any | Promise<any>;
+  supportedSubmitMethods?: string[];
 };
 
+/** @public */
 export const OpenApiDefinitionWidget = (
   props: OpenApiDefinitionWidgetProps,
 ) => {
+  const validSubmitMethods = props.supportedSubmitMethods?.map(method =>
+    method.toLocaleLowerCase(),
+  );
   return (
     <Suspense fallback={<Progress />}>
-      <LazyOpenApiDefinition {...props} />
+      <LazyOpenApiDefinition
+        {...props}
+        supportedSubmitMethods={validSubmitMethods as any}
+      />
     </Suspense>
   );
 };

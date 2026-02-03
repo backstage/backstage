@@ -13,16 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  ActiveDirectoryVendor,
+  AEDirVendor,
+  DefaultLdapVendor,
+  FreeIpaVendor,
+  GoogleLdapVendor,
+  LdapVendor,
+  LLDAPVendor,
+} from './vendors';
 
 export { LdapClient } from './client';
 export { mapStringAttr } from './util';
-export { readLdapConfig } from './config';
+export { readProviderConfigs, readLdapLegacyConfig } from './config';
 export type {
   LdapProviderConfig,
   GroupConfig,
   UserConfig,
   BindConfig,
   TLSConfig,
+  VendorConfig,
 } from './config';
 export type { LdapVendor } from './vendors';
 export {
@@ -36,3 +46,16 @@ export {
   readLdapOrg,
 } from './read';
 export type { GroupTransformer, UserTransformer } from './types';
+/**
+ * An LDAP Vendor types.
+ *
+ * @public
+ */
+export const vendors = {
+  activeDirectory: ActiveDirectoryVendor as LdapVendor,
+  aeDir: AEDirVendor as LdapVendor,
+  freeIpa: FreeIpaVendor as LdapVendor,
+  googleLdap: GoogleLdapVendor as LdapVendor,
+  lldap: LLDAPVendor as LdapVendor,
+  default: DefaultLdapVendor as LdapVendor,
+} as const;

@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiProvider,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
 
 import { IssueLink } from './IssueLink';
 
-const defaultProps = {
+const defaultGithubProps = {
   repository: {
     type: 'github',
     name: 'backstage',
@@ -40,45 +39,75 @@ const defaultProps = {
   },
 };
 
-describe('FeedbackLink', () => {
-  const apiSpy = new MockAnalyticsApi();
+const defaultGitlabProps = {
+  repository: {
+    type: 'gitlab',
+    name: 'backstageSubgroup/backstage',
+    owner: 'backstage',
+    protocol: 'https',
+    resource: 'gitlab.com',
+  },
+  template: {
+    title: 'Documentation feedback',
+    body: '## Documentation Feedback 📝',
+  },
+};
 
-  it('Should open new issue tab', () => {
-    render(
-      wrapInTestApp(
-        <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
-          <IssueLink {...defaultProps} />
-        </TestApiProvider>,
-      ),
+describe('FeedbackLink', () => {
+  const analytics = mockApis.analytics();
+
+  it('Should open new Github issue tab', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analytics]]}>
+        <IssueLink {...defaultGithubProps} />
+      </TestApiProvider>,
     );
 
     const link = screen.getByText(/Open new Github issue/);
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute('target', '_blank');
-    const encodedTitle = encodeURIComponent(defaultProps.template.title);
-    const encodedBody = encodeURIComponent(defaultProps.template.body);
+    const encodedTitle = encodeURIComponent(defaultGithubProps.template.title);
+    const encodedBody = encodeURIComponent(defaultGithubProps.template.body);
     expect(link).toHaveAttribute(
       'href',
       `https://github.com/backstage/backstage/issues/new?title=${encodedTitle}&body=${encodedBody}`,
     );
   });
 
+  it('Should open new Gitlab issue tab', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analytics]]}>
+        <IssueLink {...defaultGitlabProps} />
+      </TestApiProvider>,
+    );
+
+    const link = screen.getByText(/Open new Gitlab issue/);
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('target', '_blank');
+    const encodedTitle = encodeURIComponent(defaultGithubProps.template.title);
+    const encodedBody = encodeURIComponent(defaultGithubProps.template.body);
+    expect(link).toHaveAttribute(
+      'href',
+      `https://gitlab.com/backstage/backstageSubgroup/backstage/issues/new?issue[title]=${encodedTitle}&issue[description]=${encodedBody}`,
+    );
+  });
+
   it('Should track click events', async () => {
-    render(
-      wrapInTestApp(
-        <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
-          <IssueLink {...defaultProps} />
-        </TestApiProvider>,
-      ),
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analytics]]}>
+        <IssueLink {...defaultGithubProps} />
+      </TestApiProvider>,
     );
 
     fireEvent.click(screen.getByText(/Open new Github issue/));
 
     await waitFor(() => {
-      expect(apiSpy.getEvents()[0]).toMatchObject({
-        action: 'click',
-        subject: 'Open new  Github  issue',
-      });
+      expect(analytics.captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'click',
+          subject: 'Open new  Github  issue',
+        }),
+      );
     });
   });
 });

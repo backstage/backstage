@@ -1,0 +1,16 @@
+{
+  "name": "@internal/inline",
+  "backstage": {
+    "inline": true
+  },
+  "files": [
+    "dist",
+    "type-utils"
+  ],
+  "dependencies": {
+    "@internal/inline-dep-valid": "workspace:^"
+  },
+  "peerDependencies": {
+    "react": "*"
+  }
+}

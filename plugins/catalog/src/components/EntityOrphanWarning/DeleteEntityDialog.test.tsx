@@ -15,10 +15,10 @@
  */
 
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { ReactNode } from 'react';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -30,9 +30,7 @@ describe('DeleteEntityDialog', () => {
     alert$: jest.fn(),
   };
 
-  const catalogClient: jest.Mocked<CatalogApi> = {
-    removeEntityByUid: jest.fn(),
-  } as any;
+  const catalogClient = catalogApiMock.mock();
 
   const entity = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -48,7 +46,7 @@ describe('DeleteEntityDialog', () => {
     spec: {},
   };
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children?: ReactNode }) => (
     <TestApiProvider
       apis={[
         [catalogApiRef, catalogClient],
@@ -80,7 +78,7 @@ describe('DeleteEntityDialog', () => {
     await userEvent.click(screen.getByText('Cancel'));
 
     await waitFor(() => {
-      expect(onClose).toBeCalled();
+      expect(onClose).toHaveBeenCalled();
     });
   });
 
@@ -101,8 +99,8 @@ describe('DeleteEntityDialog', () => {
     await userEvent.click(screen.getByText('Delete'));
 
     await waitFor(() => {
-      expect(catalogClient.removeEntityByUid).toBeCalledWith('123');
-      expect(onConfirm).toBeCalled();
+      expect(catalogClient.removeEntityByUid).toHaveBeenCalledWith('123');
+      expect(onConfirm).toHaveBeenCalled();
     });
   });
 
@@ -124,8 +122,8 @@ describe('DeleteEntityDialog', () => {
     await userEvent.click(screen.getByText('Delete'));
 
     await waitFor(() => {
-      expect(catalogClient.removeEntityByUid).toBeCalledWith('123');
-      expect(alertApi.post).toBeCalledWith({ message: 'no no no' });
+      expect(catalogClient.removeEntityByUid).toHaveBeenCalledWith('123');
+      expect(alertApi.post).toHaveBeenCalledWith({ message: 'no no no' });
     });
   });
 });

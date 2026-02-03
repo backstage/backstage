@@ -15,7 +15,13 @@
  */
 
 import { WebStorage } from './WebStorage';
-import { ErrorApi, StorageApi } from '@backstage/core-plugin-api';
+import {
+  ErrorApi,
+  StorageApi,
+  StorageValueSnapshot,
+} from '@backstage/core-plugin-api';
+import { buckets } from './WebStorage';
+import { JsonValue } from '@backstage/types';
 
 describe('WebStorage Storage API', () => {
   const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
@@ -30,6 +36,11 @@ describe('WebStorage Storage API', () => {
       ...args,
     });
   };
+
+  afterEach(() => {
+    buckets.clear();
+  });
+
   it('should return undefined for values which are unset', async () => {
     const storage = createWebStorage();
 
@@ -249,5 +260,51 @@ describe('WebStorage Storage API', () => {
     expect(() => {
       snapshot.value.baz.push({ foo: 'buzz' });
     }).toThrow(/Cannot add property 1, object is not extensible/);
+  });
+
+  it('should forward storage events accurately', async () => {
+    const storage = createWebStorage();
+    const bucket = storage.forBucket('foo');
+
+    localStorage.setItem('/foo/bar%2Fbaz', '"x"');
+    localStorage.setItem('/foo/bar/baz', '"y"');
+
+    expect(bucket.snapshot('bar/baz').value).toBe('x');
+    expect(bucket.forBucket('bar').snapshot('baz').value).toBe('y');
+
+    const notifyPromise = new Promise<StorageValueSnapshot<JsonValue>>(
+      resolve => {
+        const subscription = bucket.observe$('bar/baz').subscribe({
+          next: snapshot => {
+            resolve(snapshot);
+            subscription.unsubscribe();
+          },
+        });
+      },
+    );
+
+    await expect(
+      Promise.race([notifyPromise, 'not-yet-resolved']),
+    ).resolves.toBe('not-yet-resolved');
+
+    window.dispatchEvent(new StorageEvent('storage', { key: '/foo/bar/baz' }));
+
+    localStorage.setItem('/foo/bar%2Fbaz', '"z"');
+
+    await expect(
+      Promise.race([notifyPromise, 'not-yet-resolved']),
+    ).resolves.toBe('not-yet-resolved');
+
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: '/foo/bar%2Fbaz' }),
+    );
+
+    await expect(notifyPromise).resolves.toEqual({
+      key: 'bar/baz',
+      presence: 'present',
+      value: 'z',
+    });
+
+    expect(bucket.snapshot('bar/baz').value).toEqual('z');
   });
 });

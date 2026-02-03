@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
-const { resolve: resolvePath, join: joinPath, dirname } = require('path');
-const fs = require('fs').promises;
-const { existsSync } = require('fs');
+const { resolve: resolvePath, join: joinPath, dirname } = require('node:path');
+const fs = require('node:fs').promises;
+const { existsSync } = require('node:fs');
 
 const IGNORED_DIRS = ['node_modules', 'dist', 'bin', '.git'];
 
@@ -77,6 +77,13 @@ async function verifyUrl(basePath, absUrl, docPages) {
     return undefined;
   }
 
+  if (basePath.startsWith('.changeset/')) {
+    if (absUrl.match(/^https?:\/\//)) {
+      return undefined;
+    }
+    return { url, basePath, problem: 'out-of-changeset' };
+  }
+
   let path = '';
 
   if (url.startsWith('/')) {
@@ -90,6 +97,17 @@ async function verifyUrl(basePath, absUrl, docPages) {
         }
         return { url, basePath, problem: 'doc-missing' };
       }
+    }
+
+    if (url.startsWith('/api/stable/')) {
+      const apiPath = resolvePath(
+        projectRoot,
+        `type-docs/${url.slice('/api/stable/'.length)}`,
+      );
+      if (existsSync(apiPath)) {
+        return undefined;
+      }
+      return { url, basePath, apiPath, problem: 'api-missing' };
     }
 
     const staticPath = resolvePath(projectRoot, 'microsite/static', `.${url}`);
@@ -130,6 +148,16 @@ async function verifyFile(filePath, docPages) {
     }
   }
 
+  const multiLineLinks =
+    content.match(/\[[^\]\n]+?\n[^\]\n]*?(?:\n[^\]\n]*?)?\]\(/g) || [];
+  badUrls.push(
+    ...multiLineLinks.map(url => ({
+      url,
+      basePath: filePath,
+      problem: 'multi-line',
+    })),
+  );
+
   return badUrls;
 }
 
@@ -164,6 +192,8 @@ async function findExternalDocsLinks(dir) {
 async function main() {
   process.chdir(projectRoot);
 
+  const isCI = Boolean(process.env.CI);
+
   const files = await listFiles('.');
   const mdFiles = files.filter(f => f.endsWith('.md'));
   const badUrls = [];
@@ -176,10 +206,28 @@ async function main() {
     badUrls.push(...badFileUrls);
   }
 
+  const hasReference = existsSync(resolvePath(projectRoot, 'docs/reference'));
+  if (!hasReference) {
+    console.log(
+      "Skipping API reference link validation, no docs/reference/ dir. Reference docs can be built with 'yarn build:api-docs'",
+    );
+  }
+
+  const hasApiDocs = existsSync(resolvePath(projectRoot, 'type-docs'));
+  if (!hasApiDocs) {
+    console.log(
+      "Skipping API docs link validation, no type-docs/ dir. API docs can be built with 'yarn backstage-repo-tools package-docs'",
+    );
+  }
+
   if (badUrls.length) {
     console.log(`Found ${badUrls.length} bad links within repo`);
-    for (const { url, basePath, problem } of badUrls) {
+    for (const badUrl of badUrls) {
+      const { url, basePath, problem } = badUrl;
       if (problem === 'missing') {
+        if (url.startsWith('../reference/') && !isCI && !hasReference) {
+          continue;
+        }
         console.error(
           `Unable to reach ${url} from root or microsite/static/, linked from ${basePath}`,
         );
@@ -195,6 +243,10 @@ async function main() {
             '',
           )}`,
         );
+      } else if (problem === 'out-of-changeset') {
+        console.error('Links in changesets must use absolute URLs');
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
       } else if (problem === 'doc-missing') {
         const suggestion =
           docPages.get(url) ||
@@ -203,8 +255,16 @@ async function main() {
         console.error(`  From: ${basePath}`);
         console.error(`  To: ${url}`);
         if (suggestion) {
-          console.error(`  Replace With: ${suggestion}`);
+          console.error(`  Replace with: ${suggestion}`);
         }
+      } else if (problem === 'api-missing') {
+        if (!hasApiDocs) {
+          continue;
+        }
+        console.error('Invalid API docs link');
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
+        console.error(`  Resolved path: ${badUrl.apiPath}`);
       } else if (problem === 'not-relative') {
         console.error('Links within /docs/ must be relative');
         console.error(`  From: ${basePath}`);
@@ -215,6 +275,10 @@ async function main() {
         );
         console.error(`  From: ${basePath}`);
         console.error(`  To: ${url}`);
+      } else if (problem === 'multi-line') {
+        console.error(`Links are not allowed to span multiple lines:`);
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url.replace(/\n/g, '\n      ')}`);
       }
     }
     process.exit(1);

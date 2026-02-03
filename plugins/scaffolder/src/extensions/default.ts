@@ -13,40 +13,106 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityPicker } from '../components/fields/EntityPicker/EntityPicker';
-import { EntityNamePicker } from '../components/fields/EntityNamePicker/EntityNamePicker';
+import {
+  EntityPicker,
+  EntityPickerSchema,
+} from '../components/fields/EntityPicker/EntityPicker';
+import {
+  EntityNamePicker,
+  EntityNamePickerSchema,
+} from '../components/fields/EntityNamePicker/EntityNamePicker';
 import { entityNamePickerValidation } from '../components/fields/EntityNamePicker/validation';
-import { EntityTagsPicker } from '../components/fields/EntityTagsPicker/EntityTagsPicker';
-import { OwnerPicker } from '../components/fields/OwnerPicker/OwnerPicker';
-import { RepoUrlPicker } from '../components/fields/RepoUrlPicker/RepoUrlPicker';
+import {
+  EntityTagsPicker,
+  EntityTagsPickerSchema,
+} from '../components/fields/EntityTagsPicker/EntityTagsPicker';
+import {
+  OwnerPicker,
+  OwnerPickerSchema,
+} from '../components/fields/OwnerPicker/OwnerPicker';
+import {
+  RepoUrlPicker,
+  RepoUrlPickerSchema,
+} from '../components/fields/RepoUrlPicker/RepoUrlPicker';
 import { repoPickerValidation } from '../components/fields/RepoUrlPicker/validation';
-import { OwnedEntityPicker } from '../components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import {
+  OwnedEntityPicker,
+  OwnedEntityPickerSchema,
+} from '../components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import {
+  MyGroupsPicker,
+  MyGroupsPickerSchema,
+} from '../components/fields/MyGroupsPicker/MyGroupsPicker';
+
+import { SecretInput } from '../components/fields/SecretInput';
+import {
+  MultiEntityPicker,
+  MultiEntityPickerSchema,
+  validateMultiEntityPickerValidation,
+} from '../components/fields/MultiEntityPicker/MultiEntityPicker';
+import { RepoBranchPicker } from '../components/fields/RepoBranchPicker/RepoBranchPicker';
+import { RepoBranchPickerSchema } from '../components/fields/RepoBranchPicker/schema';
+import {
+  RepoOwnerPicker,
+  RepoOwnerPickerSchema,
+} from '../components/fields/RepoOwnerPicker';
 
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
     component: EntityPicker,
     name: 'EntityPicker',
+    schema: EntityPickerSchema,
   },
   {
     component: EntityNamePicker,
     name: 'EntityNamePicker',
     validation: entityNamePickerValidation,
+    schema: EntityNamePickerSchema,
   },
   {
     component: EntityTagsPicker,
     name: 'EntityTagsPicker',
+    schema: EntityTagsPickerSchema,
   },
   {
     component: RepoUrlPicker,
     name: 'RepoUrlPicker',
     validation: repoPickerValidation,
+    schema: RepoUrlPickerSchema,
   },
   {
     component: OwnerPicker,
     name: 'OwnerPicker',
+    schema: OwnerPickerSchema,
   },
   {
     component: OwnedEntityPicker,
     name: 'OwnedEntityPicker',
+    schema: OwnedEntityPickerSchema,
+  },
+  {
+    component: MyGroupsPicker,
+    name: 'MyGroupsPicker',
+    schema: MyGroupsPickerSchema,
+  },
+  {
+    component: SecretInput,
+    name: 'Secret',
+  },
+  {
+    component: MultiEntityPicker,
+    name: 'MultiEntityPicker',
+    schema: MultiEntityPickerSchema,
+    validation: validateMultiEntityPickerValidation,
+  },
+  {
+    component: RepoBranchPicker,
+    name: 'RepoBranchPicker',
+    schema: RepoBranchPickerSchema,
+  },
+  {
+    component: RepoOwnerPicker,
+    name: 'RepoOwnerPicker',
+    schema: RepoOwnerPickerSchema,
   },
 ];

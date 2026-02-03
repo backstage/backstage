@@ -25,10 +25,14 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { JsonArray } from '@backstage/types';
-import { Chip, Grid, makeStyles, Typography } from '@material-ui/core';
-import React from 'react';
+import Chip from '@material-ui/core/Chip';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import { MarkdownContent } from '@backstage/core-components';
 import { AboutField } from './AboutField';
 import { LinksGridList } from '../EntityLinksCard/LinksGridList';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { catalogTranslationRef } from '../../alpha/translation';
 
 const useStyles = makeStyles({
   description: {
@@ -73,6 +77,8 @@ function getLocationTargetHref(
 export function AboutContent(props: AboutContentProps) {
   const { entity } = props;
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
+
   const isSystem = entity.kind.toLocaleLowerCase('en-US') === 'system';
   const isResource = entity.kind.toLocaleLowerCase('en-US') === 'resource';
   const isComponent = entity.kind.toLocaleLowerCase('en-US') === 'component';
@@ -110,14 +116,22 @@ export function AboutContent(props: AboutContentProps) {
 
   return (
     <Grid container>
-      <AboutField label="Description" gridSizes={{ xs: 12 }}>
-        <Typography variant="body2" paragraph className={classes.description}>
-          {entity?.metadata?.description || 'No description'}
-        </Typography>
+      <AboutField
+        label={t('aboutCard.descriptionField.label')}
+        gridSizes={{ xs: 12 }}
+      >
+        <MarkdownContent
+          className={classes.description}
+          content={
+            entity?.metadata?.description ||
+            t('aboutCard.descriptionField.value')
+          }
+        />
       </AboutField>
       <AboutField
-        label="Owner"
-        value="No Owner"
+        label={t('aboutCard.ownerField.label')}
+        value={t('aboutCard.ownerField.value')}
+        className={classes.description}
         gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {ownedByRelations.length > 0 && (
@@ -126,8 +140,8 @@ export function AboutContent(props: AboutContentProps) {
       </AboutField>
       {(isSystem || partOfDomainRelations.length > 0) && (
         <AboutField
-          label="Domain"
-          value="No Domain"
+          label={t('aboutCard.domainField.label')}
+          value={t('aboutCard.domainField.value')}
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
           {partOfDomainRelations.length > 0 && (
@@ -143,8 +157,8 @@ export function AboutContent(props: AboutContentProps) {
         isResource ||
         partOfSystemRelations.length > 0) && (
         <AboutField
-          label="System"
-          value="No System"
+          label={t('aboutCard.systemField.label')}
+          value={t('aboutCard.systemField.value')}
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
           {partOfSystemRelations.length > 0 && (
@@ -157,8 +171,8 @@ export function AboutContent(props: AboutContentProps) {
       )}
       {isComponent && partOfComponentRelations.length > 0 && (
         <AboutField
-          label="Parent Component"
-          value="No Parent Component"
+          label={t('aboutCard.parentComponentField.label')}
+          value={t('aboutCard.parentComponentField.value')}
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
           <EntityRefLinks
@@ -175,7 +189,7 @@ export function AboutContent(props: AboutContentProps) {
         isLocation ||
         typeof entity?.spec?.type === 'string') && (
         <AboutField
-          label="Type"
+          label={t('aboutCard.typeField.label')}
           value={entity?.spec?.type as string}
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         />
@@ -184,22 +198,25 @@ export function AboutContent(props: AboutContentProps) {
         isComponent ||
         typeof entity?.spec?.lifecycle === 'string') && (
         <AboutField
-          label="Lifecycle"
+          label={t('aboutCard.lifecycleField.label')}
           value={entity?.spec?.lifecycle as string}
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         />
       )}
       <AboutField
-        label="Tags"
-        value="No Tags"
+        label={t('aboutCard.tagsField.label')}
+        value={t('aboutCard.tagsField.value')}
         gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
-        {(entity?.metadata?.tags || []).map(t => (
-          <Chip key={t} size="small" label={t} />
+        {(entity?.metadata?.tags || []).map(tag => (
+          <Chip key={tag} size="small" label={tag} />
         ))}
       </AboutField>
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (
-        <AboutField label="Targets" gridSizes={{ xs: 12 }}>
+        <AboutField
+          label={t('aboutCard.targetsField.label')}
+          gridSizes={{ xs: 12 }}
+        >
           <LinksGridList
             cols={1}
             items={((entity.spec.targets as JsonArray) || [entity.spec.target])

@@ -15,13 +15,15 @@
  */
 
 import { OptionValues } from 'commander';
-import path from 'path';
+import path from 'node:path';
 import openBrowser from 'react-dev-utils/openBrowser';
-import { findPaths } from '@backstage/cli-common';
+import { findPaths, RunOnOutput } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
-import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
+import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
+import fs from 'fs-extra';
+import { checkIfDockerIsOperational } from './utils';
 
 function findPreviewBundlePath(): string {
   try {
@@ -42,6 +44,10 @@ function findPreviewBundlePath(): string {
   }
 }
 
+function getPreviewAppPath(opts: OptionValues): string {
+  return opts.previewAppBundlePath ?? findPreviewBundlePath();
+}
+
 export default async function serve(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
 
@@ -52,10 +58,6 @@ export default async function serve(opts: OptionValues) {
     ? true
     : false;
 
-  // TODO: Backstage app port should also be configurable as a CLI option. However, since we bundle
-  // a backstage app, we define app.baseUrl in the app-config.yaml.
-  // Hence, it is complicated to make this configurable.
-  const backstagePort = 3000;
   const backstageBackendPort = 7007;
 
   const mkdocsDockerAddr = `http://0.0.0.0:${opts.mkdocsPort}`;
@@ -63,9 +65,24 @@ export default async function serve(opts: OptionValues) {
   const mkdocsExpectedDevAddr = opts.docker
     ? mkdocsDockerAddr
     : mkdocsLocalAddr;
+  const mkdocsConfigFileName = opts.mkdocsConfigFileName;
+  const siteName = opts.siteName;
+
+  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml('./', {
+    name: siteName,
+    mkdocsConfigFileName,
+  });
+
+  // Validate that Docker is up and running
+  if (opts.docker) {
+    const isDockerOperational = await checkIfDockerIsOperational(logger);
+    if (!isDockerOperational) {
+      return;
+    }
+  }
 
   let mkdocsServerHasStarted = false;
-  const mkdocsLogFunc: LogFunc = data => {
+  const mkdocsLogFunc: RunOnOutput = data => {
     // Sometimes the lines contain an unnecessary extra new line
     const logLines = data.toString().split('\n');
     const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
@@ -89,13 +106,18 @@ export default async function serve(opts: OptionValues) {
   // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
   // Had me questioning this whole implementation for half an hour.
   logger.info('Starting mkdocs server.');
-  const mkdocsChildProcess = await runMkdocsServer({
+  const mkdocsChildProcess = runMkdocsServer({
     port: opts.mkdocsPort,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
+    dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
-    stdoutLogFunc: mkdocsLogFunc,
-    stderrLogFunc: mkdocsLogFunc,
+    onStdout: mkdocsLogFunc,
+    onStderr: mkdocsLogFunc,
+    mkdocsConfigFileName: mkdocsYmlPath,
+    mkdocsParameterClean: opts.mkdocsParameterClean,
+    mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyreload,
+    mkdocsParameterStrict: opts.mkdocsParameterStrict,
   });
 
   // Wait until mkdocs server has started so that Backstage starts with docs loaded
@@ -114,18 +136,19 @@ export default async function serve(opts: OptionValues) {
     );
   }
 
-  const port = isDevMode ? backstageBackendPort : backstagePort;
+  const port = isDevMode ? backstageBackendPort : opts.previewAppPort;
+  const previewAppPath = getPreviewAppPath(opts);
   const httpServer = new HTTPServer(
-    findPreviewBundlePath(),
+    previewAppPath,
     port,
-    opts.mkdocsPort,
+    mkdocsExpectedDevAddr,
     opts.verbose,
   );
 
   httpServer
     .serve()
     .catch(err => {
-      logger.error(err);
+      logger.error('Failed to start HTTP server', err);
       mkdocsChildProcess.kill();
       process.exit(1);
     })
@@ -137,5 +160,11 @@ export default async function serve(opts: OptionValues) {
       );
     });
 
-  await waitForSignal([mkdocsChildProcess]);
+  await mkdocsChildProcess.waitForExit();
+
+  if (configIsTemporary) {
+    process.on('exit', async () => {
+      fs.rmSync(mkdocsYmlPath, {});
+    });
+  }
 }

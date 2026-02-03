@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '../entity';
+import { Entity } from '../entity/Entity';
 
 /**
  * Validates entities of a certain kind.

@@ -15,31 +15,28 @@
  */
 
 import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  makeStyles,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useEntityList } from '../../hooks';
-import { Autocomplete } from '@material-ui/lab';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { CatalogAutocomplete } from '../CatalogAutocomplete';
 
 /** @public */
 export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
 const useStyles = makeStyles(
   {
+    root: {},
     input: {},
+    label: {},
   },
-  {
-    name: 'CatalogReactEntityProcessingStatusPickerPicker',
-  },
+  { name: 'CatalogReactEntityProcessingStatusPickerPicker' },
 );
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -49,6 +46,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const EntityProcessingStatusPicker = () => {
   const classes = useStyles();
   const { updateFilters } = useEntityList();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const [selectedAdvancedItems, setSelectedAdvancedItems] = useState<string[]>(
     [],
@@ -69,43 +67,35 @@ export const EntityProcessingStatusPicker = () => {
   const availableAdvancedItems = ['Is Orphan', 'Has Error'];
 
   return (
-    <Box pb={1} pt={1}>
-      <Typography variant="button" component="label">
-        Processing Status
-        <Autocomplete
-          multiple
-          options={availableAdvancedItems}
-          value={selectedAdvancedItems}
-          onChange={(_: object, value: string[]) => {
-            setSelectedAdvancedItems(value);
-            orphanChange(value.includes('Is Orphan'));
-            errorChange(value.includes('Has Error'));
-          }}
-          renderOption={(option, { selected }) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  icon={icon}
-                  checkedIcon={checkedIcon}
-                  checked={selected}
-                />
-              }
-              label={option}
-            />
-          )}
-          size="small"
-          popupIcon={
-            <ExpandMoreIcon data-testid="processing-status-picker-expand" />
-          }
-          renderInput={params => (
-            <TextField
-              {...params}
-              className={classes.input}
-              variant="outlined"
-            />
-          )}
-        />
-      </Typography>
+    <Box className={classes.root} pb={1} pt={1}>
+      <CatalogAutocomplete<string, true>
+        label={t('entityProcessingStatusPicker.title')}
+        multiple
+        disableCloseOnSelect
+        options={availableAdvancedItems}
+        value={selectedAdvancedItems}
+        onChange={(_: object, value: string[]) => {
+          setSelectedAdvancedItems(value);
+          orphanChange(value.includes('Is Orphan'));
+          errorChange(value.includes('Has Error'));
+        }}
+        renderOption={(option, { selected }) => (
+          <FormControlLabel
+            control={
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                checked={selected}
+              />
+            }
+            onClick={event => event.preventDefault()}
+            label={option}
+          />
+        )}
+        name="processing-status-picker"
+        LabelProps={{ className: classes.label }}
+        TextFieldProps={{ className: classes.input }}
+      />
     </Box>
   );
 };

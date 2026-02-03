@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { Link } from './Link';
-import { Route, useLocation, NavLink as RouterNavLink } from 'react-router-dom';
+import {
+  Route,
+  useLocation,
+  NavLink as RouterNavLink,
+  Routes,
+} from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
 
@@ -32,7 +37,7 @@ export default {
   title: 'Navigation/Link',
   component: Link,
   decorators: [
-    (Story: ComponentType<{}>) =>
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <div>
           <div>
@@ -43,6 +48,7 @@ export default {
         { mountedRoutes: { '/hello': routeRef } },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {
@@ -50,11 +56,11 @@ export const Default = () => {
 
   return (
     <>
-      <Link to={link()}>This link</Link>&nbsp;will utilise the react-router
+      <Link to={link()}>This link</Link>&nbsp;will utilize the react-router
       MemoryRouter's navigation
-      <Route path={link()}>
-        <h1>Hi there!</h1>
-      </Route>
+      <Routes>
+        <Route path={link()} element={<h1>Hi there!</h1>} />
+      </Routes>
     </>
   );
 };
@@ -75,9 +81,9 @@ export const PassProps = () => {
       </Link>
       &nbsp;has props for both material-ui's component as well as for
       react-router-dom's
-      <Route path={link()}>
-        <h1>Hi there!</h1>
-      </Route>
+      <Routes>
+        <Route path={link()} element={<h1>Hi there!</h1>} />
+      </Routes>
     </>
   );
 };

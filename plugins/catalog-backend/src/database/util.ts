@@ -15,11 +15,19 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
 
 export function generateStableHash(entity: Entity) {
   return createHash('sha1')
     .update(stableStringify({ ...entity }))
     .digest('hex');
+}
+
+export function generateTargetKey(target: string) {
+  return target.length > 255
+    ? `${target.slice(0, 180)}#sha256:${createHash('sha256')
+        .update(target)
+        .digest('hex')}`
+    : target;
 }

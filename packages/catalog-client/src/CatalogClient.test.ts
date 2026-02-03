@@ -18,8 +18,13 @@ import { Entity } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
-import { CATALOG_FILTER_EXISTS, GetEntitiesResponse } from './types/api';
+import {
+  CATALOG_FILTER_EXISTS,
+  GetEntitiesResponse,
+  QueryEntitiesResponse,
+} from './types/api';
 import { DiscoveryApi } from './types/discovery';
+import { GetLocations200ResponseInner } from './schema/openapi';
 
 const server = setupServer();
 const token = 'fake-token';
@@ -82,9 +87,12 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe(
-            '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
-          );
+          const queryParams = new URLSearchParams(req.url.search);
+          expect(queryParams.getAll('filter')).toEqual([
+            'a=1,b=2,b=3,ö==',
+            'a=2',
+            'c',
+          ]);
           return res(ctx.json([]));
         }),
       );
@@ -116,7 +124,8 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D,c');
+          const queryParams = new URLSearchParams(req.url.search);
+          expect(queryParams.getAll('filter')).toEqual(['a=1,b=2,b=3,ö==,c']);
           return res(ctx.json([]));
         }),
       );
@@ -136,12 +145,45 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
+    it('builds search filters property even those with URL unsafe values', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities(
+        {
+          filter: [
+            {
+              '!@#$%': 't?i=1&a:2',
+              '^&*(){}[]': ['t%^url*encoded2', 'url'],
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [], totalItems: 0 });
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+
+      const queryParams = new URLSearchParams(
+        mockedEndpoint.mock.calls[0][0].url.search,
+      );
+      expect(queryParams.getAll('filter')).toEqual([
+        '!@#$%=t?i=1&a:2,^&*(){}[]=t%^url*encoded2,^&*(){}[]=url',
+      ]);
+    });
+
     it('builds entity field selectors properly', async () => {
       expect.assertions(2);
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?fields=a.b,%C3%B6');
+          const queryParams = new URLSearchParams(req.url.search);
+          expect(queryParams.getAll('fields')).toEqual(['a.b,ö']);
           return res(ctx.json([]));
         }),
       );
@@ -181,7 +223,7 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?offset=1&limit=2&after=%3D');
+          expect(req.url.search).toBe('?limit=2&offset=1&after=%3D');
           return res(ctx.json([]));
         }),
       );
@@ -192,6 +234,374 @@ describe('CatalogClient', () => {
       );
 
       expect(response.items).toEqual([]);
+    });
+
+    it('handles ordering properly', async () => {
+      expect.assertions(2);
+      const sortedEntities = [
+        { apiVersion: '1', kind: 'Component', metadata: { name: 'b' } },
+        { apiVersion: '1', kind: 'Component', metadata: { name: 'a' } },
+      ];
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          const queryParams = new URLSearchParams(req.url.search);
+          expect(queryParams.getAll('order')).toEqual([
+            'asc:kind',
+            'desc:metadata.name',
+          ]);
+          return res(ctx.json(sortedEntities));
+        }),
+      );
+
+      const response = await client.getEntities(
+        {
+          order: [
+            { field: 'kind', order: 'asc' },
+            { field: 'metadata.name', order: 'desc' },
+          ],
+        },
+        { token },
+      );
+
+      expect(response.items).toEqual(sortedEntities);
+    });
+  });
+
+  describe('getEntitiesByRefs', () => {
+    it('encodes and decodes the query correctly', async () => {
+      const entity = {
+        apiVersion: '1',
+        kind: 'Component',
+        metadata: {
+          name: 'Test2',
+          namespace: 'test1',
+        },
+      };
+      server.use(
+        rest.post(`${mockBaseUrl}/entities/by-refs`, async (req, res, ctx) => {
+          expect(req.url.search).toBe('?filter=kind%3DAPI%2Ckind%3DComponent');
+          await expect(req.json()).resolves.toEqual({
+            entityRefs: ['k:n/a', 'k:n/b'],
+            fields: ['a', 'b'],
+          });
+          return res(ctx.json({ items: [entity, null] }));
+        }),
+      );
+
+      const response = await client.getEntitiesByRefs(
+        {
+          entityRefs: ['k:n/a', 'k:n/b'],
+          fields: ['a', 'b'],
+          filter: {
+            kind: ['API', 'Component'],
+          },
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [entity, undefined] });
+    });
+  });
+
+  describe('queryEntities', () => {
+    const defaultResponse: QueryEntitiesResponse = {
+      items: [
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test2',
+            namespace: 'test1',
+          },
+        },
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test1',
+            namespace: 'test1',
+          },
+        },
+      ],
+      pageInfo: {
+        nextCursor: 'next',
+        prevCursor: 'prev',
+      },
+      totalItems: 10,
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/entities/by-query`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+    });
+
+    it('should fetch entities from correct endpoint', async () => {
+      const response = await client.queryEntities({}, { token });
+      expect(response?.items).toEqual(defaultResponse.items);
+      expect(response?.totalItems).toEqual(defaultResponse.totalItems);
+      expect(response?.pageInfo.nextCursor).toBeDefined();
+      expect(response?.pageInfo.prevCursor).toBeDefined();
+    });
+
+    it('builds multiple entity search filters properly', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities(
+        {
+          filter: [
+            {
+              a: '1',
+              b: ['2', '3'],
+              ö: '=',
+            },
+            {
+              a: '2',
+            },
+            {
+              c: CATALOG_FILTER_EXISTS,
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [], totalItems: 0 });
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+
+      const queryParams = new URLSearchParams(
+        mockedEndpoint.mock.calls[0][0].url.search,
+      );
+      expect(queryParams.getAll('filter')).toEqual([
+        'a=1,b=2,b=3,ö==',
+        'a=2',
+        'c',
+      ]);
+    });
+
+    it('builds search filters property even those with URL unsafe values', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities(
+        {
+          filter: [
+            {
+              '!@#$%': 't?i=1&a:2',
+              '^&*(){}[]': ['t%^url*encoded2', 'url'],
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [], totalItems: 0 });
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+      const queryParams = new URLSearchParams(
+        mockedEndpoint.mock.calls[0][0].url.search,
+      );
+      expect(queryParams.getAll('filter')).toEqual([
+        '!@#$%=t?i=1&a:2,^&*(){}[]=t%^url*encoded2,^&*(){}[]=url',
+      ]);
+    });
+
+    it('should send query params correctly on initial request', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        fields: ['a', 'b'],
+        limit: 100,
+        fullTextFilter: {
+          term: 'query',
+        },
+        orderFields: [
+          { field: 'metadata.name', order: 'asc' },
+          { field: 'metadata.uid', order: 'desc' },
+        ],
+      });
+
+      const queryParams = new URLSearchParams(
+        mockedEndpoint.mock.calls[0][0].url.search,
+      );
+      expect(queryParams.getAll('fields')).toEqual(['a,b']);
+      expect(queryParams.getAll('limit')).toEqual(['100']);
+      expect(queryParams.getAll('fullTextFilterTerm')).toEqual(['query']);
+      expect(queryParams.getAll('orderField')).toEqual([
+        'metadata.name,asc',
+        'metadata.uid,desc',
+      ]);
+    });
+
+    it('should ignore initial query params if cursor is passed', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        fields: ['a', 'b'],
+        limit: 100,
+        fullTextFilter: {
+          term: 'query',
+        },
+        orderFields: [{ field: 'metadata.name', order: 'asc' }],
+        cursor: 'cursor',
+      });
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?fields=a,b&limit=100&cursor=cursor',
+      );
+    });
+
+    it('should return paginated functions if next and prev cursors are present', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((_req, res, ctx) =>
+        res(
+          ctx.json({
+            items: [
+              {
+                apiVersion: 'v1',
+                kind: 'CustomKind',
+                metadata: {
+                  namespace: 'default',
+                  name: 'e1',
+                },
+              },
+              {
+                apiVersion: 'v1',
+                kind: 'CustomKind',
+                metadata: {
+                  namespace: 'default',
+                  name: 'e2',
+                },
+              },
+            ],
+            pageInfo: {
+              nextCursor: 'nextcursor',
+              prevCursor: 'prevcursor',
+            },
+            totalItems: 100,
+          } as QueryEntitiesResponse),
+        ),
+      );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities({
+        limit: 2,
+      });
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe('?limit=2');
+
+      expect(response?.pageInfo.nextCursor).toBeDefined();
+      expect(response?.pageInfo.prevCursor).toBeDefined();
+
+      await client.queryEntities({ cursor: response!.pageInfo.nextCursor! });
+      expect(mockedEndpoint.mock.calls[1][0].url.search).toBe(
+        '?cursor=nextcursor',
+      );
+
+      await client.queryEntities({ cursor: response!.pageInfo.prevCursor! });
+      expect(mockedEndpoint.mock.calls[2][0].url.search).toBe(
+        '?cursor=prevcursor',
+      );
+    });
+
+    it('should handle errors', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) => res(ctx.status(401)));
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await expect(() => client.queryEntities()).rejects.toThrow(
+        /Request failed with 401 Unauthorized/,
+      );
+    });
+  });
+
+  describe('streamEntities', () => {
+    const defaultResponse: QueryEntitiesResponse = {
+      items: [
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test2',
+            namespace: 'test1',
+          },
+        },
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test1',
+            namespace: 'test1',
+          },
+        },
+      ],
+      pageInfo: {
+        nextCursor: 'next',
+        prevCursor: 'prev',
+      },
+      totalItems: 10,
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/entities/by-query`, (req, res, ctx) => {
+          const cursor = req.url.searchParams.get('cursor');
+          if (cursor === 'next') {
+            return res(ctx.json({ items: [], pageInfo: {}, totalItems: 0 }));
+          }
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+    });
+
+    it('should stream entities', async () => {
+      const stream = client.streamEntities({}, { token });
+      const results: Entity[][] = [];
+      for await (const entityPage of stream) {
+        results.push(entityPage);
+      }
+      expect(results).toEqual([defaultResponse.items, []]);
+    });
+
+    it('should handle errors', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) => res(ctx.status(401)));
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const stream = client.streamEntities({}, { token });
+      await expect(async () => {
+        const results = [];
+        for await (const entity of stream) {
+          results.push(entity);
+        }
+      }).rejects.toThrow(/Request failed with 401 Unauthorized/);
     });
   });
 
@@ -249,6 +659,88 @@ describe('CatalogClient', () => {
     });
   });
 
+  describe('getLocations', () => {
+    const defaultResponse = [
+      {
+        data: {
+          id: '42',
+          type: 'url',
+          target: 'https://example.com',
+        },
+      },
+      {
+        data: {
+          id: '43',
+          type: 'url',
+          target: 'https://example.com',
+        },
+      },
+    ] satisfies GetLocations200ResponseInner[];
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/locations`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+    });
+
+    it('should return locations from correct endpoint', async () => {
+      const response = await client.getLocations({}, { token });
+      expect(response).toEqual({
+        items: [
+          {
+            id: '42',
+            type: 'url',
+            target: 'https://example.com',
+          },
+          {
+            id: '43',
+            type: 'url',
+            target: 'https://example.com',
+          },
+        ],
+      });
+    });
+
+    it('should return empty list with empty result', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/locations`, (_, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+
+      const response = await client.getLocations({}, { token });
+      expect(response).toEqual({ items: [] });
+    });
+
+    it('should forward token', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/locations`, (req, res, ctx) => {
+          expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+
+      await client.getLocations({}, { token });
+    });
+
+    it('should not forward token if omitted', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/locations`, (req, res, ctx) => {
+          expect(req.headers.get('authorization')).toBeNull();
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+
+      await client.getLocations();
+    });
+  });
+
   describe('getLocationById', () => {
     const defaultResponse = {
       data: {
@@ -293,6 +785,154 @@ describe('CatalogClient', () => {
       );
 
       await client.getLocationById('42');
+    });
+  });
+
+  describe('getLocationByEntity', () => {
+    const defaultResponse = {
+      data: {
+        kind: 'c',
+        namespace: 'ns',
+        name: 'n',
+      },
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/locations/by-entity/c/ns/n`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+    });
+
+    it('should locations from correct endpoint', async () => {
+      const response = await client.getLocationByEntity(
+        { kind: 'c', namespace: 'ns', name: 'n' },
+        { token },
+      );
+      expect(response).toEqual(defaultResponse);
+    });
+
+    it('forwards authorization token', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/locations/by-entity/c/ns/n`,
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
+            return res(ctx.json(defaultResponse));
+          },
+        ),
+      );
+
+      await client.getLocationByEntity(
+        { kind: 'c', namespace: 'ns', name: 'n' },
+        { token },
+      );
+    });
+
+    it('skips authorization header if token is omitted', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/locations/by-entity/c/ns/n`,
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBeNull();
+            return res(ctx.json(defaultResponse));
+          },
+        ),
+      );
+
+      await client.getLocationByEntity({
+        kind: 'c',
+        namespace: 'ns',
+        name: 'n',
+      });
+    });
+  });
+
+  describe('validateEntity', () => {
+    it('returns valid false when validation fails', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+          return res(
+            ctx.status(400),
+            ctx.json({
+              errors: [
+                {
+                  message: 'Missing name',
+                },
+              ],
+            }),
+          );
+        }),
+      );
+
+      expect(
+        await client.validateEntity(
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: '',
+            },
+          },
+          'url:http://example.com',
+        ),
+      ).toMatchObject({
+        valid: false,
+        errors: [
+          {
+            message: 'Missing name',
+          },
+        ],
+      });
+    });
+
+    it('returns valid true when validation fails', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+          return res(ctx.status(200), ctx.text(''));
+        }),
+      );
+
+      expect(
+        await client.validateEntity(
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'good',
+            },
+          },
+          'url:http://example.com',
+        ),
+      ).toMatchObject({
+        valid: true,
+      });
+    });
+
+    it('throws unexpected error', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+          return res(ctx.status(500), ctx.json({}));
+        }),
+      );
+
+      await expect(() =>
+        client.validateEntity(
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'good',
+            },
+          },
+          'url:http://example.com',
+        ),
+      ).rejects.toThrow(/Request failed with 500 Internal Server Error/);
     });
   });
 });

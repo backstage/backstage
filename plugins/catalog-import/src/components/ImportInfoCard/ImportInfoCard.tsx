@@ -16,10 +16,13 @@
 
 import { InfoCard } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Chip, Typography } from '@material-ui/core';
-import React from 'react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import Chip from '@material-ui/core/Chip';
+import Typography from '@material-ui/core/Typography';
+
 import { catalogImportApiRef } from '../../api';
 import { useCatalogFilename } from '../../hooks';
+import { catalogImportTranslationRef } from '../../translation';
 
 /**
  * Props for {@link ImportInfoCard}.
@@ -42,8 +45,9 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
     exampleRepositoryUrl = 'https://github.com/backstage/backstage',
   } = props;
 
+  const { t } = useTranslationRef(catalogImportTranslationRef);
   const configApi = useApi(configApiRef);
-  const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
   const catalogImportApi = useApi(catalogImportApiRef);
 
   const hasGithubIntegration = configApi.has('integrations.github');
@@ -52,46 +56,53 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
 
   return (
     <InfoCard
-      title="Register an existing component"
+      title={t('importInfoCard.title')}
       titleTypographyProps={{ component: 'h3' }}
       deepLink={{
-        title: 'Learn more about the Software Catalog',
-        link: 'https://backstage.io/docs/features/software-catalog/software-catalog-overview',
+        title: t('importInfoCard.deepLinkTitle'),
+        link: 'https://backstage.io/docs/features/software-catalog/',
       }}
     >
       <Typography variant="body2" paragraph>
-        Enter the URL to your source code repository to add it to {appTitle}.
+        {t('importInfoCard.linkDescription', { appTitle })}
       </Typography>
       <Typography component="h4" variant="h6">
-        Link to an existing entity file
+        {t('importInfoCard.fileLinkTitle')}
       </Typography>
       <Typography variant="subtitle2" color="textSecondary" paragraph>
-        Example: <code>{exampleLocationUrl}</code>
+        {t('importInfoCard.examplePrefix')}
+        <code>{exampleLocationUrl}</code>
       </Typography>
       <Typography variant="body2" paragraph>
-        The wizard analyzes the file, previews the entities, and adds them to
-        the {appTitle} catalog.
+        {t('importInfoCard.fileLinkDescription', { appTitle })}
       </Typography>
       {hasGithubIntegration && (
         <>
           <Typography component="h4" variant="h6">
-            Link to a repository{' '}
-            <Chip label="GitHub only" variant="outlined" size="small" />
+            {t('importInfoCard.githubIntegration.title')}
+            <Chip
+              label={t('importInfoCard.githubIntegration.label')}
+              variant="outlined"
+              size="small"
+              style={{ marginLeft: 8, marginBottom: 0 }}
+            />
           </Typography>
           <Typography variant="subtitle2" color="textSecondary" paragraph>
-            Example: <code>{exampleRepositoryUrl}</code>
+            {t('importInfoCard.examplePrefix')}
+            <code>{exampleRepositoryUrl}</code>
           </Typography>
           <Typography variant="body2" paragraph>
-            The wizard discovers all <code>{catalogFilename}</code> files in the
-            repository, previews the entities, and adds them to the {appTitle}{' '}
-            catalog.
+            {t('importInfoCard.exampleDescription', {
+              catalogFilename: <code>{catalogFilename}</code>,
+              appTitle,
+            })}
           </Typography>
           {catalogImportApi.preparePullRequest && (
             <Typography variant="body2" paragraph>
-              If no entities are found, the wizard will prepare a Pull Request
-              that adds an example <code>{catalogFilename}</code> and prepares
-              the {appTitle} catalog to load all entities as soon as the Pull
-              Request is merged.
+              {t('importInfoCard.preparePullRequestDescription', {
+                catalogFilename: <code>{catalogFilename}</code>,
+                appTitle,
+              })}
             </Typography>
           )}
         </>

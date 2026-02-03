@@ -18,9 +18,21 @@ import { DefaultAuthConnector } from './DefaultAuthConnector';
 import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
 import { UrlPatternDiscovery } from '../../apis';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { registerMswTestHooks } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { ConfigReader } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
+
+jest.mock('../loginPopup', () => {
+  return {
+    openLoginPopup: jest.fn(),
+  };
+});
+
+const configApi: ConfigApi = new ConfigReader({
+  enableExperimentalRedirectFlow: false,
+});
 
 const defaultOptions = {
   discoveryApi: UrlPatternDiscovery.compile('http://my-host/api/{{pluginId}}'),
@@ -36,32 +48,35 @@ const defaultOptions = {
     scopes: new Set(res.scopes.split(' ')),
     expiresAt: new Date(Date.now() + expiresInSeconds * 1000),
   }),
+  configApi: configApi,
 };
 
 describe('DefaultAuthConnector', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  it('should refresh a session', async () => {
+  it('should refresh a session with scope', async () => {
     server.use(
-      rest.get('*', (_req, res, ctx) =>
+      rest.get('*', (req, res, ctx) =>
         res(
           ctx.json({
             idToken: 'mock-id-token',
             accessToken: 'mock-access-token',
-            scopes: 'a b c',
+            scopes: req.url.searchParams.get('scope') || 'default-scope',
             expiresInSeconds: '60',
           }),
         ),
       ),
     );
 
-    const helper = new DefaultAuthConnector<any>(defaultOptions);
-    const session = await helper.refreshSession();
+    const connector = new DefaultAuthConnector<any>(defaultOptions);
+    const session = await connector.refreshSession({
+      scopes: new Set(['a', 'b', 'c']),
+    });
     expect(session.idToken).toBe('mock-id-token');
     expect(session.accessToken).toBe('mock-access-token');
     expect(session.scopes).toEqual(new Set(['a', 'b', 'c']));
@@ -76,8 +91,8 @@ describe('DefaultAuthConnector', () => {
       ),
     );
 
-    const helper = new DefaultAuthConnector(defaultOptions);
-    await expect(helper.refreshSession()).rejects.toThrow(
+    const connector = new DefaultAuthConnector(defaultOptions);
+    await expect(connector.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, Error: Network NOPE',
     );
   });
@@ -85,19 +100,19 @@ describe('DefaultAuthConnector', () => {
   it('should handle failure response when refreshing session', async () => {
     server.use(rest.get('*', (_req, res, ctx) => res(ctx.status(401, 'NOPE'))));
 
-    const helper = new DefaultAuthConnector(defaultOptions);
-    await expect(helper.refreshSession()).rejects.toThrow(
+    const connector = new DefaultAuthConnector(defaultOptions);
+    await expect(connector.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, NOPE',
     );
   });
 
   it('should fail if popup was rejected', async () => {
     const mockOauth = new MockOAuthApi();
-    const helper = new DefaultAuthConnector({
+    const connector = new DefaultAuthConnector({
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });
-    const promise = helper.createSession({ scopes: new Set(['a', 'b']) });
+    const promise = connector.createSession({ scopes: new Set(['a', 'b']) });
     await mockOauth.rejectAll();
     await expect(promise).rejects.toMatchObject({ name: 'RejectedError' });
   });
@@ -105,27 +120,27 @@ describe('DefaultAuthConnector', () => {
   it('should create a session', async () => {
     const mockOauth = new MockOAuthApi();
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue({
         idToken: 'my-id-token',
         accessToken: 'my-access-token',
         scopes: 'a b',
         expiresInSeconds: 3600,
       });
-    const helper = new DefaultAuthConnector({
+    const connector = new DefaultAuthConnector({
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });
 
-    const sessionPromise = helper.createSession({
+    const sessionPromise = connector.createSession({
       scopes: new Set(['a', 'b']),
     });
 
     await mockOauth.triggerAll();
 
-    expect(popupSpy).toBeCalledTimes(1);
+    expect(popupSpy).toHaveBeenCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url: 'http://my-host/api/auth/my-provider/start?scope=a%20b&origin=http%3A%2F%2Flocalhost&env=production',
+      url: 'http://my-host/api/auth/my-provider/start?scope=a%20b&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
     });
 
     await expect(sessionPromise).resolves.toEqual({
@@ -138,42 +153,113 @@ describe('DefaultAuthConnector', () => {
 
   it('should instantly show popup if option is set', async () => {
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue('my-session');
-    const helper = new DefaultAuthConnector({
+    const connector = new DefaultAuthConnector({
       ...defaultOptions,
       oauthRequestApi: new MockOAuthApi(),
       sessionTransform: str => str,
     });
 
-    const sessionPromise = helper.createSession({
+    const sessionPromise = connector.createSession({
       scopes: new Set(),
       instantPopup: true,
     });
 
     await expect(sessionPromise).resolves.toBe('my-session');
 
-    expect(popupSpy).toBeCalledTimes(1);
+    expect(popupSpy).toHaveBeenCalledTimes(1);
+    expect(popupSpy).toHaveBeenCalledWith({
+      name: 'My Provider Login',
+      url: 'http://my-host/api/auth/my-provider/start?scope=&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
+      width: 450,
+      height: 730,
+    });
+  });
+
+  it('should show popup fullscreen', async () => {
+    const popupSpy = jest
+      .spyOn(loginPopup, 'openLoginPopup')
+      .mockResolvedValue('my-session');
+
+    jest.spyOn(window.screen, 'width', 'get').mockReturnValue(1000);
+    jest.spyOn(window.screen, 'height', 'get').mockReturnValue(1000);
+
+    const connector = new DefaultAuthConnector({
+      ...defaultOptions,
+      oauthRequestApi: new MockOAuthApi(),
+      sessionTransform: str => str,
+      popupOptions: {
+        size: {
+          fullscreen: true,
+        },
+      },
+    });
+
+    const sessionPromise = connector.createSession({
+      scopes: new Set(),
+      instantPopup: true,
+    });
+
+    await expect(sessionPromise).resolves.toBe('my-session');
+
+    expect(popupSpy).toHaveBeenCalledWith({
+      height: 1000,
+      name: 'My Provider Login',
+      url: 'http://my-host/api/auth/my-provider/start?scope=&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
+      width: 1000,
+    });
+  });
+
+  it('should show popup with special width and height', async () => {
+    const popupSpy = jest
+      .spyOn(loginPopup, 'openLoginPopup')
+      .mockResolvedValue('my-session');
+    const connector = new DefaultAuthConnector({
+      ...defaultOptions,
+      oauthRequestApi: new MockOAuthApi(),
+      sessionTransform: str => str,
+      popupOptions: {
+        size: {
+          width: 500,
+          height: 1000,
+        },
+      },
+    });
+
+    const sessionPromise = connector.createSession({
+      scopes: new Set(),
+      instantPopup: true,
+    });
+
+    await expect(sessionPromise).resolves.toBe('my-session');
+
+    expect(popupSpy).toHaveBeenCalledWith({
+      name: 'My Provider Login',
+      url: 'http://my-host/api/auth/my-provider/start?scope=&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
+      width: 500,
+      height: 1000,
+    });
   });
 
   it('should use join func to join scopes', async () => {
     const mockOauth = new MockOAuthApi();
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue({ scopes: '' });
-    const helper = new DefaultAuthConnector({
+    const connector = new DefaultAuthConnector({
       ...defaultOptions,
       joinScopes: scopes => `-${[...scopes].join('')}-`,
       oauthRequestApi: mockOauth,
     });
 
-    helper.createSession({ scopes: new Set(['a', 'b']) });
+    connector.createSession({ scopes: new Set(['a', 'b']) });
 
     await mockOauth.triggerAll();
 
-    expect(popupSpy).toBeCalledTimes(1);
+    expect(popupSpy).toHaveBeenCalledTimes(1);
     expect(popupSpy.mock.calls[0][0]).toMatchObject({
-      url: 'http://my-host/api/auth/my-provider/start?scope=-ab-&origin=http%3A%2F%2Flocalhost&env=production',
+      url: 'http://my-host/api/auth/my-provider/start?scope=-ab-&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
     });
   });
 });

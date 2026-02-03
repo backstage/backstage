@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Progress } from './Progress';
 
 export default {
   title: 'Feedback/Progress',
   component: Progress,
+  tags: ['!manifest'],
 };
 
 export const progress = () => <Progress />;

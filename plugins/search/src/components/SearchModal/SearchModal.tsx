@@ -13,47 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { PropsWithChildren } from 'react';
+import { useContent } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Grid,
-  List,
-  Paper,
-  useTheme,
-} from '@material-ui/core';
-import LaunchIcon from '@material-ui/icons/Launch';
-import { makeStyles } from '@material-ui/core/styles';
-import {
-  DefaultResultListItem,
-  SearchContextProvider,
   SearchBar,
+  SearchContextProvider,
   SearchResult,
   SearchResultPager,
-  useSearch,
-  useSearchContextCheck,
 } from '@backstage/plugin-search-react';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { Link, useContent } from '@backstage/core-components';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
+import { useTheme } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import CloseIcon from '@material-ui/icons/Close';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { rootRouteRef } from '../../plugin';
+import { SearchResultSet } from '@backstage/plugin-search-common';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchTranslationRef } from '../../translation';
 
 /**
  * @public
- **/
+ */
 export interface SearchModalChildrenProps {
   /**
    * A function that should be invoked when navigating away from the modal.
    */
   toggleModal: () => void;
+
+  /**
+   * Ability to provide custom components to render the result items
+   */
+  resultItemComponents?:
+    | ReactNode
+    | ((resultSet: SearchResultSet) => JSX.Element);
 }
 
 /**
  * @public
- **/
+ */
 export interface SearchModalProps {
   /**
    * If true, it renders the modal.
@@ -76,16 +84,30 @@ export interface SearchModalProps {
    * place of the default.
    */
   children?: (props: SearchModalChildrenProps) => JSX.Element;
+
+  /**
+   * Optional ability to pass in result item component renderers.
+   */
+  resultItemComponents?: SearchModalChildrenProps['resultItemComponents'];
 }
 
 const useStyles = makeStyles(theme => ({
-  container: {
-    borderRadius: 30,
-    display: 'flex',
-    height: '2.4em',
+  dialogTitle: {
+    gap: theme.spacing(1),
+    display: 'grid',
+    alignItems: 'center',
+    gridTemplateColumns: '1fr auto',
+    '&> button': {
+      marginTop: theme.spacing(1),
+    },
   },
   input: {
     flex: 1,
+  },
+  button: {
+    '&:hover': {
+      background: 'none',
+    },
   },
   // Reduces default height of the modal, keeping a gap of 128px between the top and bottom of the page.
   paperFullWidth: { height: 'calc(100% - 128px)' },
@@ -93,29 +115,49 @@ const useStyles = makeStyles(theme => ({
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
 
-export const Modal = ({ toggleModal }: SearchModalProps) => {
-  const getSearchLink = useRouteRef(rootRouteRef);
+export const Modal = ({
+  toggleModal,
+  resultItemComponents,
+}: SearchModalChildrenProps) => {
   const classes = useStyles();
-
-  const { term } = useSearch();
-  const { focusContent } = useContent();
+  const navigate = useNavigate();
   const { transitions } = useTheme();
+  const { focusContent } = useContent();
+  const { t } = useTranslationRef(searchTranslationRef);
 
-  const handleResultClick = () => {
-    toggleModal();
+  const searchRootRoute = useRouteRef(rootRouteRef)();
+  const searchBarRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    searchBarRef?.current?.focus();
+  });
+
+  const handleSearchResultClick = useCallback(() => {
     setTimeout(focusContent, transitions.duration.leavingScreen);
-  };
+  }, [focusContent, transitions]);
 
-  const handleKeyPress = () => {
-    handleResultClick();
-  };
+  // This handler is called when "enter" is pressed
+  const handleSearchBarSubmit = useCallback(() => {
+    // Using ref to get the current field value without waiting for a query debounce
+    const query = searchBarRef.current?.value ?? '';
+    navigate(`${searchRootRoute}?query=${query}`);
+    handleSearchResultClick();
+  }, [navigate, handleSearchResultClick, searchRootRoute]);
 
   return (
     <>
       <DialogTitle>
-        <Paper className={classes.container}>
-          <SearchBar className={classes.input} />
-        </Paper>
+        <Box className={classes.dialogTitle}>
+          <SearchBar
+            className={classes.input}
+            inputProps={{ ref: searchBarRef }}
+            onSubmit={handleSearchBarSubmit}
+          />
+
+          <IconButton aria-label="close" onClick={toggleModal}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
       <DialogContent>
         <Grid
@@ -125,39 +167,23 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
           alignItems="center"
         >
           <Grid item>
-            <Link
-              onClick={() => {
-                toggleModal();
-                setTimeout(focusContent, transitions.duration.leavingScreen);
-              }}
-              to={`${getSearchLink()}?query=${term}`}
+            <Button
+              className={classes.button}
+              color="primary"
+              endIcon={<ArrowForwardIcon />}
+              onClick={handleSearchBarSubmit}
+              disableRipple
             >
-              <span className={classes.viewResultsLink}>View Full Results</span>
-              <LaunchIcon color="primary" />
-            </Link>
+              {t('searchModal.viewFullResults')}
+            </Button>
           </Grid>
         </Grid>
         <Divider />
-        <SearchResult>
-          {({ results }) => (
-            <List>
-              {results.map(({ document, highlight }) => (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  key={`${document.location}-btn`}
-                  onClick={handleResultClick}
-                  onKeyPress={handleKeyPress}
-                >
-                  <DefaultResultListItem
-                    key={document.location}
-                    result={document}
-                    highlight={highlight}
-                  />
-                </div>
-              ))}
-            </List>
-          )}
+        <SearchResult
+          onClick={handleSearchResultClick}
+          onKeyDown={handleSearchResultClick}
+        >
+          {resultItemComponents}
         </SearchResult>
       </DialogContent>
       <DialogActions className={classes.dialogActionsContainer}>
@@ -171,24 +197,18 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
   );
 };
 
-const Context = ({ children }: PropsWithChildren<{}>) => {
-  // Checks if there is a parent context already defined and, if not, creates a new local context.
-  const hasParentContext = useSearchContextCheck();
-  if (hasParentContext) {
-    return <>{children}</>;
-  }
-  return <SearchContextProvider>{children}</SearchContextProvider>;
-};
-
 /**
  * @public
  */
-export const SearchModal = ({
-  open = true,
-  hidden,
-  toggleModal,
-  children,
-}: SearchModalProps) => {
+export const SearchModal = (props: SearchModalProps) => {
+  const {
+    open = true,
+    hidden,
+    toggleModal,
+    children,
+    resultItemComponents,
+  } = props;
+
   const classes = useStyles();
 
   return (
@@ -197,18 +217,26 @@ export const SearchModal = ({
         paperFullWidth: classes.paperFullWidth,
       }}
       onClose={toggleModal}
-      aria-labelledby="search-modal-title"
+      aria-label="Search Modal"
+      aria-modal="true"
       fullWidth
       maxWidth="lg"
       open={open}
       hidden={hidden}
     >
       {open && (
-        <Context>
-          {(children && children({ toggleModal })) ?? (
-            <Modal toggleModal={toggleModal} />
+        <SearchContextProvider inheritParentContextIfAvailable>
+          {(children &&
+            children({
+              toggleModal,
+              resultItemComponents: resultItemComponents || [],
+            })) ?? (
+            <Modal
+              toggleModal={toggleModal}
+              resultItemComponents={resultItemComponents}
+            />
           )}
-        </Context>
+        </SearchContextProvider>
       )}
     </Dialog>
   );

@@ -99,6 +99,18 @@ function setPaginatedResultItemType(modelsModule) {
     });
 }
 
+function fixTeamLinksExtension(modelsModule) {
+  const accountLinks = modelsModule.getInterfaceOrThrow('AccountLinks');
+  const teamLinks = modelsModule.getInterfaceOrThrow('TeamLinks');
+  teamLinks.addExtends(accountLinks.getName());
+  accountLinks.getProperties().forEach(prop => {
+    const other = teamLinks.getProperty(prop.getName());
+    if (other && other.getText() === prop.getText()) {
+      other.remove();
+    }
+  });
+}
+
 const project = new tsMorph.Project({
   tsConfigFilePath: '../../tsconfig.json',
   skipAddingFilesFromTsConfig: true,
@@ -111,5 +123,6 @@ const modelsModule = modelsFile.getModuleOrThrow('Models');
 cleanupWrongAllOfModels(modelsModule);
 makePaginatedGeneric(modelsModule);
 setPaginatedResultItemType(modelsModule);
+fixTeamLinksExtension(modelsModule);
 
 project.saveSync();

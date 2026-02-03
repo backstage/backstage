@@ -58,9 +58,9 @@ describe('readBitbucketIntegrationConfig', () => {
       buildConfig({
         host: 'a.com',
         apiBaseUrl: 'https://a.com/api',
-        token: 't',
+        token: 't\n\n\n',
         username: 'u',
-        appPassword: 'p',
+        appPassword: '\n\n\np',
       }),
     );
     expect(output).toEqual({

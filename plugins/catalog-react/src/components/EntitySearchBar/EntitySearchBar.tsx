@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import {
-  FormControl,
-  IconButton,
-  Input,
-  InputAdornment,
-  makeStyles,
-  Toolbar,
-} from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
+import IconButton from '@material-ui/core/IconButton';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Toolbar from '@material-ui/core/Toolbar';
+import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
-import React, { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
@@ -40,9 +40,7 @@ const useStyles = makeStyles(
     },
     input: {},
   }),
-  {
-    name: 'CatalogReactEntitySearchBar',
-  },
+  { name: 'CatalogReactEntitySearchBar' },
 );
 
 /**
@@ -51,9 +49,19 @@ const useStyles = makeStyles(
  */
 export const EntitySearchBar = () => {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
-  const { filters, updateFilters } = useEntityList();
-  const [search, setSearch] = useState(filters.text?.value ?? '');
+  const {
+    updateFilters,
+    queryParameters: { text: textParameter },
+  } = useEntityList();
+
+  const queryParamTextFilter = useMemo(
+    () => [textParameter].flat()[0],
+    [textParameter],
+  );
+
+  const [search, setSearch] = useState(queryParamTextFilter ?? '');
 
   useDebounce(
     () => {
@@ -65,6 +73,12 @@ export const EntitySearchBar = () => {
     [search, updateFilters],
   );
 
+  useEffect(() => {
+    if (queryParamTextFilter) {
+      setSearch(queryParamTextFilter);
+    }
+  }, [queryParamTextFilter]);
+
   return (
     <Toolbar className={classes.searchToolbar}>
       <FormControl>
@@ -72,7 +86,7 @@ export const EntitySearchBar = () => {
           aria-label="search"
           id="input-with-icon-adornment"
           className={classes.input}
-          placeholder="Search"
+          placeholder={t('entitySearchBar.placeholder')}
           autoComplete="off"
           onChange={event => setSearch(event.target.value)}
           value={search}

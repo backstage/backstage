@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   ChangeEvent,
   MouseEvent,
   useMemo,
@@ -33,11 +33,11 @@ import {
   Slider,
   IconButton,
   Typography,
+  Theme,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 
-import { BackstageTheme } from '@backstage/theme';
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 
 const boxShadow =
@@ -70,7 +70,7 @@ const StyledSlider = withStyles(theme => ({
     left: '50%',
     transform: 'scale(1) translate(-50%, -5px) !important',
     '& *': {
-      color: theme.palette.common.black,
+      color: theme.palette.textSubtle,
       fontSize: theme.typography.caption.fontSize,
       background: 'transparent',
     },
@@ -116,7 +116,7 @@ const marks = [
   },
 ];
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   container: {
     color: theme.palette.textSubtle,
     display: 'flex',
@@ -139,7 +139,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
 
 export const TextSizeAddon = () => {
   const classes = useStyles();
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   const [body] = useShadowRootElements(['body']);
 
   const [value, setValue] = useState<number>(() => {
@@ -182,7 +182,7 @@ export const TextSizeAddon = () => {
     if (!body) return;
     const htmlFontSize =
       (
-        theme.typography as BackstageTheme['typography'] & {
+        theme.typography as Theme['typography'] & {
           htmlFontSize?: number;
         }
       )?.htmlFontSize ?? 16;

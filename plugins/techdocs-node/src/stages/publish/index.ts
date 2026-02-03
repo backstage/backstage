@@ -18,9 +18,11 @@ export type {
   PublisherBase,
   PublisherType,
   PublisherFactory,
+  PublisherBuilder,
   PublishRequest,
   PublishResponse,
   MigrateRequest,
   ReadinessResponse,
   TechDocsMetadata,
+  PublisherSettings,
 } from './types';

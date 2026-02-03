@@ -33,9 +33,11 @@ describe('isEntityOwner', () => {
           },
         ],
       };
-      expect(isEntityOwner.apply(component, ['user:default/spiderman'])).toBe(
-        true,
-      );
+      expect(
+        isEntityOwner.apply(component, {
+          claims: ['user:default/spiderman'],
+        }),
+      ).toBe(true);
     });
 
     it('returns false when entity is not owned by the given user', () => {
@@ -52,9 +54,11 @@ describe('isEntityOwner', () => {
           },
         ],
       };
-      expect(isEntityOwner.apply(component, ['user:default/spiderman'])).toBe(
-        false,
-      );
+      expect(
+        isEntityOwner.apply(component, {
+          claims: ['user:default/spiderman'],
+        }),
+      ).toBe(false);
     });
 
     it('returns false when entity does not have an owner', () => {
@@ -65,15 +69,21 @@ describe('isEntityOwner', () => {
           name: 'some-component',
         },
       };
-      expect(isEntityOwner.apply(component, ['user:default/spiderman'])).toBe(
-        false,
-      );
+      expect(
+        isEntityOwner.apply(component, {
+          claims: ['user:default/spiderman'],
+        }),
+      ).toBe(false);
     });
   });
 
   describe('toQuery', () => {
     it('returns an appropriate catalog-backend filter', () => {
-      expect(isEntityOwner.toQuery(['user:default/spiderman'])).toEqual({
+      expect(
+        isEntityOwner.toQuery({
+          claims: ['user:default/spiderman'],
+        }),
+      ).toEqual({
         key: 'relations.ownedBy',
         values: ['user:default/spiderman'],
       });

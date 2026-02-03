@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-import { dirname, resolve as resolvePath } from 'path';
+import fs from 'node:fs';
+import { dirname, resolve as resolvePath } from 'node:path';
 
 /**
  * A function that takes a set of path fragments and resolves them into a
@@ -64,7 +64,7 @@ export function findRootPath(
 ): string | undefined {
   let path = searchDir;
 
-  // Some sanity check to avoid infinite loop
+  // Some confidence check to avoid infinite loop
   for (let i = 0; i < 1000; i++) {
     const packagePath = resolvePath(path, 'package.json');
     const exists = fs.existsSync(packagePath);
@@ -141,7 +141,7 @@ export function findPaths(searchDir: string): Paths {
           try {
             const content = fs.readFileSync(path, 'utf8');
             const data = JSON.parse(content);
-            return Boolean(data.workspaces?.packages);
+            return Boolean(data.workspaces);
           } catch (error) {
             throw new Error(
               `Failed to parse package.json file while searching for root, ${error}`,

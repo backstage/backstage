@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import capitalize from 'lodash/capitalize';
-import { Box } from '@material-ui/core';
+import { useEffect } from 'react';
+import Box from '@material-ui/core/Box';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/core-components';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Props for {@link EntityTypePicker}.
@@ -38,33 +39,38 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
   const alertApi = useApi(alertApiRef);
   const { error, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   useEffect(() => {
     if (error) {
       alertApi.post({
-        message: `Failed to load entity types`,
+        message: t('entityTypePicker.errorMessage'),
         severity: 'error',
       });
     }
     if (initialFilter) {
       setSelectedTypes([initialFilter]);
     }
-  }, [error, alertApi, initialFilter, setSelectedTypes]);
+  }, [error, alertApi, initialFilter, setSelectedTypes, t]);
 
   if (availableTypes.length === 0 || error) return null;
 
+  availableTypes.sort((a, b) =>
+    a.toLocaleLowerCase('en-US').localeCompare(b.toLocaleLowerCase('en-US')),
+  );
+
   const items = [
-    { value: 'all', label: 'All' },
+    { value: 'all', label: t('entityTypePicker.optionAllTitle') },
     ...availableTypes.map((type: string) => ({
       value: type,
-      label: capitalize(type),
+      label: type,
     })),
   ];
 
   return hidden ? null : (
     <Box pb={1} pt={1}>
       <Select
-        label="Type"
+        label={t('entityTypePicker.title')}
         items={items}
         selected={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
         onChange={value =>

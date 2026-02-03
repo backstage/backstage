@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { Transformer } from './index';
+import type { Transformer } from './transformer';
 import {
-  replaceGitHubUrlType,
+  replaceGithubUrlType,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createElement } from 'react';
 import parseGitUrl from 'git-url-parse';
+import { renderReactElement } from './renderReactElement';
 
 // requires repo
 export const addGitFeedbackLink = (
@@ -59,7 +59,7 @@ export const addGitFeedbackLink = (
     // Convert GitHub edit url to blob type so it can be parsed by git-url-parse correctly
     const gitUrl =
       integration?.type === 'github'
-        ? replaceGitHubUrlType(sourceURL.href, 'blob')
+        ? replaceGithubUrlType(sourceURL.href, 'blob')
         : sourceURL.href;
     const gitInfo = parseGitUrl(gitUrl);
     const repoPath = `/${gitInfo.organization}/${gitInfo.name}`;
@@ -75,7 +75,7 @@ export const addGitFeedbackLink = (
       default:
         return dom;
     }
-    ReactDOM.render(React.createElement(FeedbackOutlinedIcon), feedbackLink);
+    renderReactElement(createElement(FeedbackOutlinedIcon), feedbackLink);
     feedbackLink.style.paddingLeft = '5px';
     feedbackLink.title = 'Leave feedback for this page';
     feedbackLink.id = 'git-feedback-link';

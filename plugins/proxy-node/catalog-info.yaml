@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-proxy-node
+  title: '@backstage/plugin-proxy-node'
+  description: The plugin-proxy-node module for @backstage/plugin-proxy-backend
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

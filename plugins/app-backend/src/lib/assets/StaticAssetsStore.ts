@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import partition from 'lodash/partition';
 import { StaticAsset, StaticAssetInput, StaticAssetProvider } from './types';
+import {
+  DatabaseService,
+  LoggerService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-app-backend',
@@ -29,13 +32,14 @@ const migrationsDir = resolvePackagePath(
 interface StaticAssetRow {
   path: string;
   content: Buffer;
+  namespace: string | null;
   last_modified_at: Date;
 }
 
 /** @internal */
 export interface StaticAssetsStoreOptions {
-  database: Knex;
-  logger: Logger;
+  database: DatabaseService;
+  logger: LoggerService;
 }
 
 /**
@@ -45,18 +49,33 @@ export interface StaticAssetsStoreOptions {
  */
 export class StaticAssetsStore implements StaticAssetProvider {
   #db: Knex;
-  #logger: Logger;
+  #logger: LoggerService;
+  #namespace: string;
 
   static async create(options: StaticAssetsStoreOptions) {
-    await options.database.migrate.latest({
-      directory: migrationsDir,
-    });
-    return new StaticAssetsStore(options);
+    const { database } = options;
+    const client = await database.getClient();
+
+    if (!database.migrations?.skip) {
+      await client.migrate.latest({
+        directory: migrationsDir,
+      });
+    }
+
+    return new StaticAssetsStore(client, options.logger);
   }
 
-  private constructor(options: StaticAssetsStoreOptions) {
-    this.#db = options.database;
-    this.#logger = options.logger;
+  private constructor(client: Knex, logger: LoggerService, namespace?: string) {
+    this.#db = client;
+    this.#logger = logger;
+    this.#namespace = namespace ?? 'default';
+  }
+
+  /**
+   * Creates a new store with the provided namespace, using the same underlying storage.
+   */
+  withNamespace(namespace: string): StaticAssetsStore {
+    return new StaticAssetsStore(this.#db, this.#logger, namespace);
   }
 
   /**
@@ -66,12 +85,12 @@ export class StaticAssetsStore implements StaticAssetProvider {
    * updated, but the contents will not.
    */
   async storeAssets(assets: StaticAssetInput[]) {
-    const existingRows = await this.#db<StaticAssetRow>(
-      'static_assets_cache',
-    ).whereIn(
-      'path',
-      assets.map(a => a.path),
-    );
+    const existingRows = await this.#db<StaticAssetRow>('static_assets_cache')
+      .where('namespace', this.#namespace)
+      .whereIn(
+        'path',
+        assets.map(a => a.path),
+      );
     const existingAssetPaths = new Set(existingRows.map(r => r.path));
 
     const [modified, added] = partition(assets, asset =>
@@ -86,6 +105,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
       .update({
         last_modified_at: this.#db.fn.now(),
       })
+      .where('namespace', this.#namespace)
       .whereIn(
         'path',
         modified.map(a => a.path),
@@ -98,8 +118,9 @@ export class StaticAssetsStore implements StaticAssetProvider {
         .insert({
           path: asset.path,
           content: await asset.content(),
+          namespace: this.#namespace,
         })
-        .onConflict('path')
+        .onConflict(['namespace', 'path'])
         .ignore();
     }
   }
@@ -110,6 +131,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
   async getAsset(path: string): Promise<StaticAsset | undefined> {
     const [row] = await this.#db<StaticAssetRow>('static_assets_cache').where({
       path,
+      namespace: this.#namespace,
     });
     if (!row) {
       return undefined;
@@ -129,14 +151,21 @@ export class StaticAssetsStore implements StaticAssetProvider {
    */
   async trimAssets(options: { maxAgeSeconds: number }) {
     const { maxAgeSeconds } = options;
+    let lastModifiedInterval = this.#db.raw(
+      `now() + interval '${-maxAgeSeconds} seconds'`,
+    );
+    if (this.#db.client.config.client.includes('mysql')) {
+      lastModifiedInterval = this.#db.raw(
+        `date_sub(now(), interval ${maxAgeSeconds} second)`,
+      );
+    } else if (this.#db.client.config.client.includes('sqlite3')) {
+      lastModifiedInterval = this.#db.raw(`datetime('now', ?)`, [
+        `-${maxAgeSeconds} seconds`,
+      ]);
+    }
     await this.#db<StaticAssetRow>('static_assets_cache')
-      .where(
-        'last_modified_at',
-        '<=',
-        this.#db.client.config.client.includes('sqlite3')
-          ? this.#db.raw(`datetime('now', ?)`, [`-${maxAgeSeconds} seconds`])
-          : this.#db.raw(`now() + interval '${-maxAgeSeconds} seconds'`),
-      )
+      .where('namespace', this.#namespace)
+      .where('last_modified_at', '<=', lastModifiedInterval)
       .delete();
   }
 }

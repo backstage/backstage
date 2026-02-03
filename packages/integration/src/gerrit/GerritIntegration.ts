@@ -20,7 +20,7 @@ import {
   GerritIntegrationConfig,
   readGerritIntegrationConfigs,
 } from './config';
-import { parseGerritGitilesUrl, builldGerritGitilesUrl } from './core';
+import { buildGerritEditUrl, parseGitilesUrlRef } from './core';
 
 /**
  * A Gerrit based integration.
@@ -60,8 +60,8 @@ export class GerritIntegration implements ScmIntegration {
     const { url, base, lineNumber } = options;
     let updated;
     if (url.startsWith('/')) {
-      const { branch, project } = parseGerritGitilesUrl(this.config, base);
-      return builldGerritGitilesUrl(this.config, project, branch, url);
+      const { basePath } = parseGitilesUrlRef(this.config, base);
+      return basePath + url;
     }
     if (url) {
       updated = new URL(url, base);
@@ -75,7 +75,16 @@ export class GerritIntegration implements ScmIntegration {
   }
 
   resolveEditUrl(url: string): string {
-    // Not applicable for gerrit.
-    return url;
+    if (this.config.disableEditUrl) {
+      return url;
+    }
+
+    const parsed = parseGitilesUrlRef(this.config, url);
+    return buildGerritEditUrl(
+      this.config,
+      parsed.project,
+      parsed.ref,
+      parsed.path,
+    );
   }
 }

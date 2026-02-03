@@ -13,19 +13,67 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { parseEntityRef } from '@backstage/catalog-model';
-import { AuthenticationError } from '@backstage/errors';
-import { exportJWK, generateKeyPair, importJWK, JWK, SignJWT } from 'jose';
+
+import { exportJWK, generateKeyPair, JWK } from 'jose';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  BackstageSignInResult,
+  TokenParams,
+  tokenTypes,
+} from '@backstage/plugin-auth-node';
+import { AnyJWK, KeyStore, TokenIssuer } from './types';
+import { JsonValue } from '@backstage/types';
+import { issueUserToken } from './issueUserToken';
 
-import { AnyJWK, KeyStore, TokenIssuer, TokenParams } from './types';
+/**
+ * The payload contents of a valid Backstage JWT token
+ */
+export interface BackstageTokenPayload {
+  /**
+   * The issuer of the token, currently the discovery URL of the auth backend
+   */
+  iss: string;
 
-const MS_IN_S = 1000;
+  /**
+   * The entity ref of the user
+   */
+  sub: string;
+
+  /**
+   * The entity refs that the user claims ownership through
+   */
+  ent: string[];
+
+  /**
+   * A hard coded audience string
+   */
+  aud: typeof tokenTypes.user.audClaim;
+
+  /**
+   * Standard expiry in epoch seconds
+   */
+  exp: number;
+
+  /**
+   * Standard issue time in epoch seconds
+   */
+  iat: number;
+
+  /**
+   * A separate user identity proof that the auth service can convert to a limited user token
+   */
+  uip: string;
+
+  /**
+   * Any other custom claims that the adopter may have added
+   */
+  [claim: string]: JsonValue;
+}
 
 type Options = {
-  logger: Logger;
+  logger: LoggerService;
   /** Value of the issuer claim in issued tokens */
   issuer: string;
   /** Key store used for storing signing keys */
@@ -39,6 +87,10 @@ type Options = {
    * If not, add a knex migration file in the migrations folder.
    * More info on supported algorithms: https://github.com/panva/jose */
   algorithm?: string;
+  /**
+   * A list of claims to omit from issued tokens and only store in the user info database
+   */
+  omitClaimsFromToken?: string[];
 };
 
 /**
@@ -57,10 +109,11 @@ type Options = {
  */
 export class TokenFactory implements TokenIssuer {
   private readonly issuer: string;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly keyStore: KeyStore;
   private readonly keyDurationSeconds: number;
   private readonly algorithm: string;
+  private readonly omitClaimsFromToken?: string[];
 
   private keyExpiry?: Date;
   private privateKeyPromise?: Promise<JWK>;
@@ -71,41 +124,22 @@ export class TokenFactory implements TokenIssuer {
     this.keyStore = options.keyStore;
     this.keyDurationSeconds = options.keyDurationSeconds;
     this.algorithm = options.algorithm ?? 'ES256';
+    this.omitClaimsFromToken = options.omitClaimsFromToken;
   }
 
-  async issueToken(params: TokenParams): Promise<string> {
+  async issueToken(
+    params: TokenParams & { claims: { ent: string[] } },
+  ): Promise<BackstageSignInResult> {
     const key = await this.getKey();
 
-    const iss = this.issuer;
-    const sub = params.claims.sub;
-    const ent = params.claims.ent;
-    const aud = 'backstage';
-    const iat = Math.floor(Date.now() / MS_IN_S);
-    const exp = iat + this.keyDurationSeconds;
-
-    // Validate that the subject claim is a valid EntityRef
-    try {
-      parseEntityRef(sub);
-    } catch (error) {
-      throw new Error(
-        '"sub" claim provided by the auth resolver is not a valid EntityRef.',
-      );
-    }
-
-    this.logger.info(`Issuing token for ${sub}, with entities ${ent ?? []}`);
-
-    if (!key.alg) {
-      throw new AuthenticationError('No algorithm was provided in the key');
-    }
-
-    return new SignJWT({ iss, sub, ent, aud, iat, exp })
-      .setProtectedHeader({ alg: key.alg, kid: key.kid })
-      .setIssuer(iss)
-      .setAudience(aud)
-      .setSubject(sub)
-      .setIssuedAt(iat)
-      .setExpirationTime(exp)
-      .sign(await importJWK(key));
+    return issueUserToken({
+      issuer: this.issuer,
+      key,
+      keyDurationSeconds: this.keyDurationSeconds,
+      logger: this.logger,
+      omitClaimsFromToken: this.omitClaimsFromToken,
+      params,
+    });
   }
 
   // This will be called by other services that want to verify ID tokens.

@@ -14,26 +14,50 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
-import { TemplateAction, TemplateActionRegistry } from '../actions';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { TemplateActionRegistry } from '../actions';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /** @internal */
-export class DecoratedActionsRegistry extends TemplateActionRegistry {
+export class DecoratedActionsRegistry implements TemplateActionRegistry {
+  private readonly innerActions: Map<string, TemplateAction> = new Map();
+  private readonly innerRegistry: TemplateActionRegistry;
+
   constructor(
-    private readonly innerRegistry: TemplateActionRegistry,
-    extraActions: Array<TemplateAction<JsonObject>>,
+    innerRegistry: TemplateActionRegistry,
+    extraActions: Array<TemplateAction>,
   ) {
-    super();
+    this.innerRegistry = innerRegistry;
     for (const action of extraActions) {
-      this.register(action);
+      this.innerActions.set(action.id, action);
     }
   }
 
-  get(actionId: string): TemplateAction<JsonObject> {
+  async get(
+    actionId: string,
+    options: { credentials: BackstageCredentials },
+  ): Promise<TemplateAction> {
     try {
-      return super.get(actionId);
-    } catch {
-      return this.innerRegistry.get(actionId);
+      return await this.innerRegistry.get(actionId, options);
+    } catch (e) {
+      if (!this.innerActions.has(actionId)) {
+        throw e;
+      }
+      return this.innerActions.get(actionId)!;
     }
+  }
+
+  async list(options: {
+    credentials: BackstageCredentials;
+  }): Promise<Map<string, TemplateAction<any, any, any>>> {
+    const inner = await this.innerRegistry.list(options);
+    return new Map<string, TemplateAction<any, any, any>>([
+      ...inner,
+      ...this.innerActions,
+    ]);
+  }
+
+  register(action: TemplateAction<any, any, any>): void {
+    this.innerRegistry.register(action);
   }
 }

@@ -1,7 +1,6 @@
 ---
 id: adopting
 title: Strategies for adopting
-# prettier-ignore
 description: Documentation on some general best practices that have been key to Backstage's success inside Spotify
 ---
 
@@ -86,7 +85,7 @@ Examples of tactics we have used to evangelize Backstage internally:
   as to send out weekly digest emails showing how usage metrics have changed for
   individual plugins.
 
-- Pro-actively identify new plugins. Reach out to teams that own internal UIs or
+- Pro-actively identify new plugins. Reach out to teams that own internal user interfaces or
   platforms that you think would make sense to consolidate into Backstage.
 
 ## KPIs and metrics
@@ -94,31 +93,31 @@ Examples of tactics we have used to evangelize Backstage internally:
 These are some of the metrics that you can use to verify if Backstage has a
 successful impact on your software development process:
 
-- **Onboarding time** Time until new engineers are productive. At Spotify we
+- **Onboarding time** - Time until new engineers are productive. At Spotify we
   measure this as the time until the employee has merged their 10th PR (this
   metric was down 55% two years after deploying Backstage). Even though you may
   not be onboarding engineers at a rapid pace, this metric is a great proxy for
   the overall complexity of your ecosystem. Reducing it will therefore benefit
   your whole engineering organization, not just new joiners.
 
-- **Number of merges per developer/day** Less time spent jumping between
+- **Number of merges per developer/day** - Less time spent jumping between
   different tools and looking for information means more time to focus on
   shipping code. A second level of bottlenecks can be identified if you
   categorize contributions by domain (services, web, data, etc).
 
-- **Deploys to production** Cousin to the metric above: How many times does an
+- **Deploys to production** - Cousin to the metric above: How many times does an
   engineer push changes into production.
 
-- **MTTR** With clear ownership of all the pieces in your microservices
+- **MTTR** - With clear ownership of all the pieces in your microservices
   ecosystem and all tools integrated into one place, Backstage makes it quicker
   for teams to find the root cause of failures, and fix them.
 
-- **Context switching** Reducing context switching can help engineers stay in
+- **Context switching** - Reducing context switching can help engineers stay in
   the "zone". We measure the number of different tools an engineer has to
   interact with in order to get a certain job done (e.g. push a change, follow
   it into production and validate it did not break anything).
 
-- **T-shapedness** A
+- **T-shapedness** - A
   [T-shaped](https://medium.com/@jchyip/why-t-shaped-people-e8706198e437)
   engineer is someone that is able to contribute to different domains of
   engineering. Teams with T-shaped people have fewer bottlenecks and can
@@ -126,10 +125,10 @@ successful impact on your software development process:
   since tools and infrastructure are consistent between domains, and information
   is available centrally.
 
-- **eNPS** Surveys asking about how productive people feel, how easy it is to
+- **eNPS** - Surveys asking about how productive people feel, how easy it is to
   find information and overall satisfaction with internal tools.
 
-- **Fragmentation** _(Experimental)_ Backstage
+- **Fragmentation** _(Experimental)_ - Backstage
   [Software Templates](../features/software-templates/index.md) help drive
   standardization in your software ecosystem. By measuring the variance in
   technology between different software components it is possible to get a sense
@@ -153,10 +152,14 @@ Backstage as _the_ platform:
   percentage of engineers is below 50%. Most engineers actually use Backstage on
   a daily basis.
 
-Again, any feedback is appreciated. Please use the Edit button at the top of the
+Again, any feedback is appreciated. Please use the Edit button at the bottom of the
 page to make a suggestion.
 
-_**Note!** It might be tempting to try to optimize Backstage usage and
+:::note Note
+
+It might be tempting to try to optimize Backstage usage and
 "engagement". Even though you want to consolidate all your tooling and technical
 documentation in Backstage, it is important to remember that time spent in
-Backstage is time not spent writing code_ 🙃
+Backstage is time not spent writing code 🙃
+
+:::

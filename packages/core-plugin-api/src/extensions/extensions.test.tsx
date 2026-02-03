@@ -15,8 +15,7 @@
  */
 
 import { withLogCollector } from '@backstage/test-utils';
-import { render, screen } from '@testing-library/react';
-import React from 'react';
+import { act, render, screen } from '@testing-library/react';
 import { useAnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp, ErrorBoundaryFallbackProps } from '../app';
 import { createPlugin } from '../plugin';
@@ -61,11 +60,19 @@ describe('extensions', () => {
     const Component = () => <div />;
     const routeRef = createRouteRef({ id: 'foo' });
 
-    const extension1 = createComponentExtension({
-      component: {
-        sync: Component,
-      },
+    let extension1: ReturnType<typeof createComponentExtension>;
+    const { warn } = withLogCollector(['warn'], () => {
+      extension1 = createComponentExtension({
+        component: {
+          sync: Component,
+        },
+      });
     });
+    expect(warn).toEqual([
+      expect.stringMatching(
+        /^Declaring extensions without name is DEPRECATED. /,
+      ),
+    ]);
 
     const extension2 = createRoutableExtension({
       name: 'Extension2',
@@ -73,7 +80,7 @@ describe('extensions', () => {
       mountPoint: routeRef,
     });
 
-    const ExtensionComponent1 = plugin.provide(extension1);
+    const ExtensionComponent1 = plugin.provide(extension1!);
     const ExtensionComponent2 = plugin.provide(extension2);
 
     const element1 = <ExtensionComponent1 />;
@@ -109,7 +116,60 @@ describe('extensions', () => {
       render(<BrokenComponent />);
     });
     screen.getByText('Error in my-plugin');
-    expect(errors[0]).toMatch('Test error');
+    expect(errors).toEqual([
+      expect.stringContaining('Error: Test error'),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining('Error: Test error'),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining('The above error occurred in'),
+    ]);
+  });
+
+  it('should handle failed lazy loads', async () => {
+    const BrokenComponent = plugin.provide(
+      createComponentExtension({
+        name: 'BrokenComponent',
+        component: {
+          lazy: async () => {
+            if (true as boolean) {
+              throw new Error('Test error');
+            }
+            return () => <div />;
+          },
+        },
+      }),
+    );
+
+    mocked(useApp).mockReturnValue({
+      getComponents: () => ({
+        Progress: () => null,
+        ErrorBoundaryFallback: (props: ErrorBoundaryFallbackProps) => (
+          <>
+            Error in {props.plugin?.getId()}: {String(props.error)}
+          </>
+        ),
+      }),
+    });
+
+    const { error: errors } = await withLogCollector(['error'], async () => {
+      await act(async () => {
+        render(<BrokenComponent />);
+      });
+    });
+    screen.getByText(
+      'Error in my-plugin: Error: Failed lazy loading of the BrokenComponent extension, try to reload the page; caused by Error: Test error',
+    );
+    expect(errors).toEqual([
+      expect.stringContaining(
+        'Error: Failed lazy loading of the BrokenComponent extension, try to reload the page',
+      ),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining(
+        'Error: Failed lazy loading of the BrokenComponent extension, try to reload the page',
+      ),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining('The above error occurred in'),
+    ]);
   });
 
   it('should wrap extended component with analytics context', async () => {

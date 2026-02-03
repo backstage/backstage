@@ -49,7 +49,7 @@ spec:
 
   # here's the steps that are executed in series in the scaffolder backend
   steps:
-    - id: fetch-base
+    - id: fetchBase
       name: Fetch Base
       action: fetch:template
       input:
@@ -57,7 +57,7 @@ spec:
         values:
           name: ${{ parameters.name }}
 
-    - id: fetch-docs
+    - id: fetchDocs
       name: Fetch Docs
       action: fetch:plain
       input:
@@ -68,15 +68,15 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: 'main'
 
     - id: register
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 ```
 
@@ -86,12 +86,17 @@ contains more information about the required fields.
 Once we have a `template.yaml` ready, we can then add it to the software catalog
 for use by the scaffolder.
 
-> Note: When you add or modify a template, you will need to refresh the location entity.
-> Otherwise, Backstage won't display the template in the available templates,
-> or it will keep showing the old template. You can refresh the location instance by
-> going into `Catalog` web page, choosing `Locations` instead of `Components`, and selecting the correct location entity.
-> From there, you can click on the refresh icon representing "Scheduled entity refresh" action.
-> Afterwards, you should see your template updated.
+:::note Note
+
+When you add or modify a template, you will need to refresh the location entity.
+Otherwise, Backstage won't display the template in the available templates,
+or it will keep showing the old template. You can refresh the location instance by
+going into `Catalog` web page, choosing `Locations` instead of `Components`, and selecting the correct
+location entity.
+From there, you can click on the refresh icon representing "Scheduled entity refresh" action.
+Afterwards, you should see your template updated.
+
+:::
 
 You can add the template files to the catalog through
 [static location configuration](../software-catalog/configuration.md#static-location-configuration),
@@ -113,3 +118,7 @@ configured differently should be running on `/catalog-import`.
 
 For information about writing your own templates, you can check out the docs
 [here](./writing-templates.md)
+
+If you are looking for a method to discover templates without the need for manual ingestion, there are several options available. One approach is to utilize Discovery providers, such as [GitHub Discovery](https://backstage.io/docs/integrations/github/discovery).
+
+Alternatively, you can choose to set up an external integration. This involves connecting your system to external sources or platforms that may host templates relevant to your needs, as mentioned in [External Integration](https://backstage.io/docs/features/software-catalog/external-integrations/).

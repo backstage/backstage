@@ -16,19 +16,20 @@
 
 import { InputError } from '@backstage/errors';
 import { EntityPagination } from '../../catalog/types';
-import { parseIntegerParam, parseStringParam } from './common';
 
 /**
  * Parses the pagination related parameters out of a query, e.g.
  * /entities?offset=100&limit=10
  */
-export function parseEntityPaginationParams(
-  params: Record<string, unknown>,
-): EntityPagination | undefined {
-  const offset = parseIntegerParam(params.offset, 'offset');
-  const limit = parseIntegerParam(params.limit, 'limit');
-  const after = parseStringParam(params.after, 'after');
-
+export function parseEntityPaginationParams({
+  limit,
+  offset,
+  after,
+}: {
+  offset?: number;
+  limit?: number;
+  after?: string;
+}): EntityPagination | undefined {
   if (offset === undefined && limit === undefined && after === undefined) {
     return undefined;
   }

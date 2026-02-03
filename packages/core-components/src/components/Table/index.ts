@@ -22,6 +22,7 @@ export type {
   TableColumn,
   TableFilter,
   TableProps,
+  TableOptions,
   TableState,
   TableClassKey,
   FiltersContainerClassKey,

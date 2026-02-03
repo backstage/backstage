@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { isError } from '@backstage/errors';
-import { PendingOAuthRequest } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  PendingOAuthRequest,
+  useApi,
+} from '@backstage/core-plugin-api';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import Box from '@material-ui/core/Box';
 
 export type LoginRequestListItemClassKey = 'root';
 
-const useItemStyles = makeStyles<Theme>(
+const useItemStyles = makeStyles(
   theme => ({
     root: {
-      paddingLeft: theme.spacing(3),
+      paddingLeft: theme.spacing(2),
+    },
+    button: {
+      marginLeft: theme.spacing(2),
     },
   }),
   { name: 'BackstageLoginRequestListItem' },
@@ -44,6 +54,8 @@ type RowProps = {
 const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
   const classes = useItemStyles();
   const [error, setError] = useState<string>();
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  const configApi = useApi(configApiRef);
 
   const handleContinue = async () => {
     setBusy(true);
@@ -57,19 +69,43 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
   };
 
   const IconComponent = request.provider.icon;
+  const message =
+    request.provider.message ??
+    t('oauthRequestDialog.message', {
+      appTitle: configApi.getString('app.title'),
+      provider: request.provider.title,
+    });
 
   return (
     <ListItem disabled={busy} classes={{ root: classes.root }}>
       <ListItemAvatar>
         <IconComponent fontSize="large" />
       </ListItemAvatar>
-      <ListItemText
-        primary={request.provider.title}
-        secondary={error && <Typography color="error">{error}</Typography>}
-      />
-      <Button color="primary" variant="contained" onClick={handleContinue}>
-        Log in
-      </Button>
+      <Box display="flex" alignItems="center" flex={1}>
+        <Box flex={1}>
+          <ListItemText
+            primary={request.provider.title}
+            secondary={
+              <>
+                {message && (
+                  <Typography variant="subtitle2" color="textSecondary">
+                    {message}
+                  </Typography>
+                )}
+                {error && <Typography color="error">{error}</Typography>}
+              </>
+            }
+          />
+        </Box>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={handleContinue}
+          className={classes.button}
+        >
+          {t('oauthRequestDialog.login')}
+        </Button>
+      </Box>
     </ListItem>
   );
 };

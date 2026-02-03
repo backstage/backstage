@@ -17,36 +17,36 @@
 import { z } from 'zod';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import {
-  errorHandler,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  BackstageIdentityResponse,
-  IdentityClient,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   EvaluatePermissionResponse,
-  EvaluatePermissionRequest,
   IdentifiedPermissionMessage,
-  EvaluatePermissionRequestBatch,
-  EvaluatePermissionResponseBatch,
   isResourcePermission,
   PermissionAttributes,
+  PermissionMessageBatch,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
   PermissionPolicy,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
-import { Config } from '@backstage/config';
+import {
+  AuthService,
+  BackstageCredentials,
+  BackstageNonePrincipal,
+  BackstageUserPrincipal,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+  RootConfigService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 
 const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
   action: z
@@ -59,98 +59,132 @@ const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
     .optional(),
 });
 
-const permissionSchema = z.union([
+const basicPermissionSchema = z.object({
+  type: z.literal('basic'),
+  name: z.string(),
+  attributes: attributesSchema,
+});
+
+const resourcePermissionSchema = z.object({
+  type: z.literal('resource'),
+  name: z.string(),
+  attributes: attributesSchema,
+  resourceType: z.string(),
+});
+
+const evaluatePermissionRequestSchema = z.union([
   z.object({
-    type: z.literal('basic'),
-    name: z.string(),
-    attributes: attributesSchema,
+    id: z.string(),
+    resourceRef: z.undefined().optional(),
+    permission: basicPermissionSchema,
   }),
   z.object({
-    type: z.literal('resource'),
-    name: z.string(),
-    attributes: attributesSchema,
-    resourceType: z.string(),
+    id: z.string(),
+    resourceRef: z
+      .union([z.string(), z.array(z.string()).nonempty()])
+      .optional(),
+    permission: resourcePermissionSchema,
   }),
 ]);
 
-const evaluatePermissionRequestSchema: z.ZodSchema<
-  IdentifiedPermissionMessage<EvaluatePermissionRequest>
-> = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: permissionSchema,
+const evaluatePermissionRequestBatchSchema = z.object({
+  items: z.array(evaluatePermissionRequestSchema),
 });
-
-const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
-  z.object({
-    items: z.array(evaluatePermissionRequestSchema),
-  });
 
 /**
  * Options required when constructing a new {@link express#Router} using
  * {@link createRouter}.
  *
- * @public
+ * @internal
  */
 export interface RouterOptions {
-  logger: Logger;
-  discovery: PluginEndpointDiscovery;
+  logger: LoggerService;
+  discovery: DiscoveryService;
   policy: PermissionPolicy;
-  identity: IdentityClient;
-  config: Config;
+  identity?: IdentityApi;
+  config: RootConfigService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
 }
 
 const handleRequest = async (
-  requests: IdentifiedPermissionMessage<EvaluatePermissionRequest>[],
-  user: BackstageIdentityResponse | undefined,
+  requests: z.infer<typeof evaluatePermissionRequestBatchSchema>['items'],
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
-  authHeader?: string,
-): Promise<IdentifiedPermissionMessage<EvaluatePermissionResponse>[]> => {
+  credentials: BackstageCredentials<
+    BackstageNonePrincipal | BackstageUserPrincipal
+  >,
+  auth: AuthService,
+  userInfo: UserInfoService,
+): Promise<
+  IdentifiedPermissionMessage<InternalEvaluatePermissionResponse>[]
+> => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
       ApplyConditionsResponseEntry
     >(batch =>
-      permissionIntegrationClient.applyConditions(pluginId, batch, authHeader),
+      permissionIntegrationClient.applyConditions(pluginId, credentials, batch),
     );
   });
 
+  let user: PolicyQueryUser | undefined;
+  if (auth.isPrincipal(credentials, 'user')) {
+    const info = await userInfo.getUserInfo(credentials);
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog', // TODO: unknown at this point
+    });
+    user = {
+      identity: {
+        type: 'user',
+        userEntityRef: credentials.principal.userEntityRef,
+        ownershipEntityRefs: info.ownershipEntityRefs,
+      },
+      token,
+      credentials,
+      info,
+    };
+  }
+
   return Promise.all(
-    requests.map(({ id, resourceRef, ...request }) =>
-      policy.handle(request, user).then(decision => {
-        if (decision.result !== AuthorizeResult.CONDITIONAL) {
-          return {
-            id,
+    requests.map(request =>
+      policy
+        .handle({ permission: request.permission }, user)
+        .then(async decision => {
+          if (decision.result !== AuthorizeResult.CONDITIONAL) {
+            return {
+              id: request.id,
+              ...decision,
+            };
+          }
+
+          if (!isResourcePermission(request.permission)) {
+            throw new Error(
+              `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
+            );
+          }
+
+          if (decision.resourceType !== request.permission.resourceType) {
+            throw new Error(
+              `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
+            );
+          }
+
+          if (!request.resourceRef) {
+            return {
+              id: request.id,
+              ...decision,
+            };
+          }
+
+          return applyConditionsLoaderFor(decision.pluginId).load({
+            id: request.id,
+            resourceRef: request.resourceRef,
             ...decision,
-          };
-        }
-
-        if (!isResourcePermission(request.permission)) {
-          throw new Error(
-            `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
-          );
-        }
-
-        if (decision.resourceType !== request.permission.resourceType) {
-          throw new Error(
-            `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
-          );
-        }
-
-        if (!resourceRef) {
-          return {
-            id,
-            ...decision,
-          };
-        }
-
-        return applyConditionsLoaderFor(decision.pluginId).load({
-          id,
-          resourceRef,
-          ...decision,
-        });
-      }),
+          });
+        }),
     ),
   );
 };
@@ -159,12 +193,13 @@ const handleRequest = async (
  * Creates a new {@link express#Router} which provides the backend API
  * for the permission system.
  *
- * @public
+ * @internal
  */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { policy, discovery, identity, config, logger } = options;
+  const { policy, discovery, config, logger, auth, httpAuth, userInfo } =
+    options;
 
   if (!config.getOptionalBoolean('permission.enabled')) {
     logger.warn(
@@ -172,27 +207,32 @@ export async function createRouter(
     );
   }
 
+  const disabledDefaultAuthPolicy =
+    config.getOptionalBoolean(
+      'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+    ) ?? false;
+
   const permissionIntegrationClient = new PermissionIntegrationClient({
     discovery,
+    auth,
   });
 
   const router = Router();
   router.use(express.json());
 
   router.get('/health', (_, response) => {
-    response.send({ status: 'ok' });
+    response.json({ status: 'ok' });
   });
 
   router.post(
     '/authorize',
     async (
-      req: Request<EvaluatePermissionRequestBatch>,
-      res: Response<EvaluatePermissionResponseBatch>,
+      req: Request,
+      res: Response<PermissionMessageBatch<InternalEvaluatePermissionResponse>>,
     ) => {
-      const token = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
-      const user = token ? await identity.authenticate(token) : undefined;
+      const credentials = await httpAuth.credentials(req, {
+        allow: ['user', 'none'],
+      });
 
       const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
         req.body,
@@ -204,19 +244,43 @@ export async function createRouter(
 
       const body = parseResult.data;
 
+      if (
+        (auth.isPrincipal(credentials, 'none') && !disabledDefaultAuthPolicy) ||
+        (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
+      ) {
+        if (
+          body.items.some(
+            r =>
+              isResourcePermission(r.permission) && r.resourceRef === undefined,
+          )
+        ) {
+          throw new InputError(
+            'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',
+          );
+        }
+      }
+
       res.json({
         items: await handleRequest(
           body.items,
-          user,
           policy,
           permissionIntegrationClient,
-          req.header('authorization'),
+          credentials,
+          auth,
+          userInfo,
         ),
       });
     },
   );
 
-  router.use(errorHandler());
-
   return router;
 }
+
+/**
+ * @internal
+ */
+type InternalEvaluatePermissionResponse =
+  | EvaluatePermissionResponse
+  | {
+      result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
+    };

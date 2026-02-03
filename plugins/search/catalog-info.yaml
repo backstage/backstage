@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-search
+  title: '@backstage/plugin-search'
+  description: The Backstage plugin that provides your backstage app with search
+spec:
+  lifecycle: production
+  type: backstage-frontend-plugin
+  owner: search-maintainers

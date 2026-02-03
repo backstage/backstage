@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { IdentityClient } from '@backstage/plugin-auth-node';
+import { mockServices } from '@backstage/backend-test-utils';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
 
 describe('createRouter', () => {
@@ -26,8 +24,8 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter({
-      logger: getVoidLogger(),
-      identity: {} as IdentityClient,
+      logger: mockServices.logger.mock(),
+      httpAuth: mockServices.httpAuth.mock(),
     });
     app = express().use(router);
   });

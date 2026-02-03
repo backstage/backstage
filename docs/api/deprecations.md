@@ -20,13 +20,13 @@ In order to provide more flexibility in what types of themes can be used and how
 they are applied, the `theme` property on the `AppTheme` type is being
 deprecated and replaced by a `Provider` property instead. The `Provider`
 property is a React component that will be mounted at the root of the app
-whenever that theme is active. This also removes the tight connection to MUI and
+whenever that theme is active. This also removes the tight connection to Material UI and
 opens up for other type of themes, and removes the hardcoded usage of
 `<CssBaseline>`.
 
 To migrate an existing theme, remove the `theme` property and move it over to a
-new `Provider` component, using `ThemeProvider` from MUI to provide the new
-theme, along with `<CssBaseline>`. For example a theme that currently looks like
+new `Provider` component, using `ThemeProvider` from Material UI to provide the new
+theme, along with `<CssBaseline>`. For example, a theme that currently looks like
 this:
 
 ```tsx
@@ -84,8 +84,8 @@ migrate to your own custom API.
 First, you'll need to define a new Utility API reference. If you're only using
 the API for sign-in, you can put the definition in `packages/app/src/apis.ts`.
 However, if you need to access your auth API inside plugins you you'll need to
-export it from a common package. If you don't already have one we recommended
-creating `@internal/apis` and from there export the API reference.
+export it from a common package. If you don't already have one, we recommend
+creating `@internal/apis` and from there exporting the API reference.
 
 ```ts
 // `ProfileInfoApi & BackstageIdentityApi & SessionApi` are required for sign-in
@@ -101,7 +101,7 @@ export const acmeAuthApiRef: ApiRef<
 });
 ```
 
-Next you'll want to wire up the API inside `packages/app/src/apis.ts`, which
+Next, you'll want to wire up the API inside `packages/app/src/apis.ts`, which
 varies depending on which API you're replacing. If you for example are replacing
 the `oauth2ApiRef`, the factory might look like this:
 
@@ -124,7 +124,7 @@ createApiFactory({
 ```
 
 Provider specific factory implementations, copy the code you need into the
-factory method depending on which apiRef you previously used.
+factory method depending on which API ref you previously used.
 
 ```ts
 // samlAuthApiRef

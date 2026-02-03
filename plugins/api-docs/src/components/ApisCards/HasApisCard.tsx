@@ -15,13 +15,13 @@
  */
 
 import { ApiEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   EntityTable,
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
+import { useMemo } from 'react';
 import { createSpecApiTypeColumn } from './presets';
 import {
   CodeSnippet,
@@ -30,22 +30,37 @@ import {
   Link,
   Progress,
   TableColumn,
+  TableOptions,
   WarningPanel,
 } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { apiDocsTranslationRef } from '../../translation';
 
-type Props = {
+/**
+ * @public
+ */
+export const HasApisCard = (props: {
   variant?: InfoCardVariants;
-};
-
-const columns: TableColumn<ApiEntity>[] = [
-  EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
-  EntityTable.columns.createOwnerColumn(),
-  createSpecApiTypeColumn(),
-  EntityTable.columns.createSpecLifecycleColumn(),
-  EntityTable.columns.createMetadataDescriptionColumn(),
-];
-
-export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
+  title?: string;
+  columns?: TableColumn<ApiEntity>[];
+  tableOptions?: TableOptions;
+}) => {
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const presetColumns: TableColumn<ApiEntity>[] = useMemo(() => {
+    return [
+      EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
+      EntityTable.columns.createOwnerColumn(),
+      createSpecApiTypeColumn(t),
+      EntityTable.columns.createSpecLifecycleColumn(),
+      EntityTable.columns.createMetadataDescriptionColumn(),
+    ];
+  }, [t]);
+  const {
+    variant = 'gridItem',
+    title = t('hasApisCard.title'),
+    columns = presetColumns,
+    tableOptions = {},
+  } = props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_HAS_PART,
@@ -54,7 +69,7 @@ export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
 
   if (loading) {
     return (
-      <InfoCard variant={variant} title="APIs">
+      <InfoCard variant={variant} title={title}>
         <Progress />
       </InfoCard>
     );
@@ -62,10 +77,10 @@ export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
 
   if (error || !entities) {
     return (
-      <InfoCard variant={variant} title="APIs">
+      <InfoCard variant={variant} title={title}>
         <WarningPanel
           severity="error"
-          title="Could not load APIs"
+          title={t('hasApisCard.error.title')}
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
       </InfoCard>
@@ -74,22 +89,24 @@ export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
 
   return (
     <EntityTable
-      title="APIs"
+      title={title}
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">
-            This {entity.kind.toLocaleLowerCase('en-US')} does not contain any
-            APIs.
+            {t('hasApisCard.emptyContent.title', {
+              entity: entity.kind.toLocaleLowerCase('en-US'),
+            })}
           </Typography>
           <Typography variant="body2">
             <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api">
-              Learn how to change this.
+              {t('apisCardHelpLinkTitle')}
             </Link>
           </Typography>
         </div>
       }
       columns={columns}
+      tableOptions={tableOptions}
       entities={entities as ApiEntity[]}
     />
   );

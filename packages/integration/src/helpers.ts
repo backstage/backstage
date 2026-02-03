@@ -84,8 +84,10 @@ export function defaultScmResolveUrl(options: {
 
   if (url.startsWith('/')) {
     // If it is an absolute path, move relative to the repo root
-    const { filepath } = parseGitUrl(base);
-    updated = new URL(base);
+    const { href, filepath } = parseGitUrl(base);
+
+    updated = new URL(href);
+
     const repoRootPath = trimEnd(
       updated.pathname.substring(0, updated.pathname.length - filepath.length),
       '/',
@@ -103,4 +105,21 @@ export function defaultScmResolveUrl(options: {
     updated.hash = `L${lineNumber}`;
   }
   return updated.toString();
+}
+
+/**
+ * Sets up handlers for request mocking
+ *
+ * Copied from test-utils, as that is a frontend-only package
+ *
+ * @param worker - service worker
+ */
+export function registerMswTestHooks(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}) {
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => worker.close());
+  afterEach(() => worker.resetHandlers());
 }

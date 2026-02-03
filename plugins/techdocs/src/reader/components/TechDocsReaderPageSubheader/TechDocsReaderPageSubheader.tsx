@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent, useState, useCallback } from 'react';
+import { MouseEvent, useState, useCallback } from 'react';
 
-import {
-  Box,
-  makeStyles,
-  Toolbar,
-  ToolbarProps,
-  Menu,
-  Tooltip,
-  IconButton,
-} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import Toolbar from '@material-ui/core/Toolbar';
+import { ToolbarProps } from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
+import Menu from '@material-ui/core/Menu';
+import Box from '@material-ui/core/Box';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 import {
@@ -39,6 +37,9 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     minHeight: 'auto',
     padding: theme.spacing(3, 3, 0),
+    '@media print': {
+      display: 'none',
+    },
   },
 }));
 
@@ -47,9 +48,7 @@ const useStyles = makeStyles(theme => ({
  * Please use the Tech Docs add-ons to customize it
  * @public
  */
-export const TechDocsReaderPageSubheader = ({
-  toolbarProps,
-}: {
+export const TechDocsReaderPageSubheader = (props: {
   toolbarProps?: ToolbarProps;
 }) => {
   const classes = useStyles();
@@ -81,7 +80,7 @@ export const TechDocsReaderPageSubheader = ({
   if (entityMetadataLoading === false && !entityMetadata) return null;
 
   return (
-    <Toolbar classes={classes} {...toolbarProps}>
+    <Toolbar classes={classes} {...props.toolbarProps}>
       <Box
         display="flex"
         justifyContent="flex-end"
@@ -109,7 +108,7 @@ export const TechDocsReaderPageSubheader = ({
               onClose={handleClose}
               keepMounted
             >
-              {settingsAddons}
+              <div>{settingsAddons}</div>
             </Menu>
           </>
         ) : null}

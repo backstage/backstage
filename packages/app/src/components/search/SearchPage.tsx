@@ -19,33 +19,31 @@ import {
   Content,
   DocsIcon,
   Header,
-  Lifecycle,
   Page,
   useSidebarPinState,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
-import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
-  catalogApiRef,
   CATALOG_FILTER_EXISTS,
+  catalogApiRef,
 } from '@backstage/plugin-catalog-react';
 import { SearchType } from '@backstage/plugin-search';
 import {
-  DefaultResultListItem,
   SearchBar,
   SearchFilter,
+  SearchPagination,
   SearchResult,
   SearchResultPager,
   useSearch,
 } from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
-import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
-import React from 'react';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import { Theme } from '@material-ui/core/styles/createTheme';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  bar: {
-    padding: theme.spacing(1, 0),
-  },
   filter: {
     '& + &': {
       marginTop: theme.spacing(2.5),
@@ -62,22 +60,22 @@ const SearchPage = () => {
   const { isMobile } = useSidebarPinState();
   const { types } = useSearch();
   const catalogApi = useApi(catalogApiRef);
+  const configApi = useApi(configApiRef);
 
   return (
     <Page themeId="home">
-      {!isMobile && <Header title="Search" subtitle={<Lifecycle alpha />} />}
+      {!isMobile && <Header title="Search" />}
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
-            <Paper className={classes.bar}>
-              <SearchBar debounceTime={100} />
-            </Paper>
+            <SearchBar debounceTime={100} />
           </Grid>
           {!isMobile && (
             <Grid item xs={3}>
               <SearchType.Accordion
-                name="Result Type"
-                defaultValue="software-catalog"
+                name="Result type"
+                defaultValue={configApi.getOptionalString('search.defaultType')}
+                showCounts
                 types={[
                   {
                     value: 'software-catalog',
@@ -100,15 +98,18 @@ const SearchPage = () => {
                     values={async () => {
                       // Return a list of entities which are documented.
                       const { items } = await catalogApi.getEntities({
-                        fields: ['metadata.name'],
+                        fields: ['metadata.name', 'metadata.title'],
                         filter: {
                           'metadata.annotations.backstage.io/techdocs-ref':
                             CATALOG_FILTER_EXISTS,
                         },
                       });
 
-                      const names = items.map(entity => entity.metadata.name);
-                      names.sort();
+                      const names = items.map(entity => ({
+                        value: entity.metadata.name,
+                        label: entity.metadata.title ?? entity.metadata.name,
+                      }));
+                      names.sort((a, b) => a.label.localeCompare(b.label));
                       return names;
                     }}
                   />
@@ -119,7 +120,7 @@ const SearchPage = () => {
                   name="kind"
                   values={['Component', 'Template']}
                 />
-                <SearchFilter.Checkbox
+                <SearchFilter.Select
                   className={classes.filter}
                   label="Lifecycle"
                   name="lifecycle"
@@ -129,44 +130,10 @@ const SearchPage = () => {
             </Grid>
           )}
           <Grid item xs>
+            <SearchPagination />
             <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(({ type, document, highlight, rank }) => {
-                    switch (type) {
-                      case 'software-catalog':
-                        return (
-                          <CatalogSearchResultListItem
-                            icon={<CatalogIcon />}
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                      case 'techdocs':
-                        return (
-                          <TechDocsSearchResultListItem
-                            icon={<DocsIcon />}
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                      default:
-                        return (
-                          <DefaultResultListItem
-                            key={document.location}
-                            result={document}
-                            highlight={highlight}
-                            rank={rank}
-                          />
-                        );
-                    }
-                  })}
-                </List>
-              )}
+              <CatalogSearchResultListItem icon={<CatalogIcon />} />
+              <TechDocsSearchResultListItem icon={<DocsIcon />} />
             </SearchResult>
             <SearchResultPager />
           </Grid>

@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import { AlphaEntity } from '@backstage/catalog-model';
-import {
-  Box,
-  DialogContentText,
-  List,
-  ListItem,
-  ListItemIcon,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import { AlphaEntity } from '@backstage/catalog-model/alpha';
+import Box from '@material-ui/core/Box';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
-import React from 'react';
 import { EntityRefLink } from '../../EntityRefLink';
 import {
   Container,
@@ -35,7 +33,10 @@ import {
   ListItemText,
   ListSubheader,
 } from './common';
-import { EntityKindIcon } from './EntityKindIcon';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { CopyTextButton } from '@backstage/core-components';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles({
   root: {
@@ -59,12 +60,16 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
     sortBy(relations, r => r.targetRef),
     'type',
   );
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
+  const entityRef = stringifyEntityRef(props.entity);
   return (
     <>
-      <DialogContentText variant="h2">Overview</DialogContentText>
+      <DialogContentText variant="h2">
+        {t('inspectEntityDialog.overviewPage.title')}
+      </DialogContentText>
       <div className={classes.root}>
-        <Container title="Identity">
+        <Container title={t('inspectEntityDialog.overviewPage.identity.title')}>
           <List dense>
             <ListItem>
               <ListItemText primary="apiVersion" secondary={apiVersion} />
@@ -74,29 +79,44 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
             </ListItem>
             {spec?.type && (
               <ListItem>
-                <ListItemText primary="spec.type" secondary={spec.type} />
+                <ListItemText
+                  primary="spec.type"
+                  secondary={spec.type?.toString()}
+                />
               </ListItem>
             )}
             {metadata.uid && (
               <ListItem>
                 <ListItemText primary="uid" secondary={metadata.uid} />
+                <ListItemSecondaryAction>
+                  <CopyTextButton text={metadata.uid} />
+                </ListItemSecondaryAction>
               </ListItem>
             )}
             {metadata.etag && (
               <ListItem>
                 <ListItemText primary="etag" secondary={metadata.etag} />
+                <ListItemSecondaryAction>
+                  <CopyTextButton text={metadata.etag} />
+                </ListItemSecondaryAction>
               </ListItem>
             )}
+            <ListItem>
+              <ListItemText primary="entityRef" secondary={entityRef} />
+              <ListItemSecondaryAction>
+                <CopyTextButton text={entityRef} />
+              </ListItemSecondaryAction>
+            </ListItem>
           </List>
         </Container>
 
-        <Container title="Metadata">
+        <Container title={t('inspectEntityDialog.overviewPage.metadata.title')}>
           {!!Object.keys(metadata.annotations || {}).length && (
             <List
               dense
               subheader={
                 <ListSubheader>
-                  Annotations
+                  {t('inspectEntityDialog.overviewPage.annotations')}
                   <HelpIcon to="https://backstage.io/docs/features/software-catalog/well-known-annotations" />
                 </ListSubheader>
               }
@@ -107,14 +127,28 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
             </List>
           )}
           {!!Object.keys(metadata.labels || {}).length && (
-            <List dense subheader={<ListSubheader>Labels</ListSubheader>}>
+            <List
+              dense
+              subheader={
+                <ListSubheader>
+                  {t('inspectEntityDialog.overviewPage.labels')}
+                </ListSubheader>
+              }
+            >
               {Object.entries(metadata.labels!).map(entry => (
                 <KeyValueListItem key={entry[0]} indent entry={entry} />
               ))}
             </List>
           )}
           {!!metadata.tags?.length && (
-            <List dense subheader={<ListSubheader>Tags</ListSubheader>}>
+            <List
+              dense
+              subheader={
+                <ListSubheader>
+                  {t('inspectEntityDialog.overviewPage.tags')}
+                </ListSubheader>
+              }
+            >
               {metadata.tags.map((tag, index) => (
                 <ListItem key={`${tag}-${index}`}>
                   <ListItemIcon />
@@ -127,7 +161,7 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
 
         {!!relations.length && (
           <Container
-            title="Relations"
+            title={t('inspectEntityDialog.overviewPage.relation.title')}
             helpLink="https://backstage.io/docs/features/software-catalog/well-known-relations"
           >
             {Object.entries(groupedRelations).map(
@@ -136,9 +170,6 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
                   <List dense subheader={<ListSubheader>{type}</ListSubheader>}>
                     {groupRelations.map(group => (
                       <ListItem key={group.targetRef}>
-                        <ListItemIcon>
-                          <EntityKindIcon entityRef={group.targetRef} />
-                        </ListItemIcon>
                         <ListItemText
                           primary={
                             <EntityRefLink entityRef={group.targetRef} />
@@ -155,7 +186,7 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
 
         {!!status.items?.length && (
           <Container
-            title="Status"
+            title={t('inspectEntityDialog.overviewPage.status.title')}
             helpLink="https://backstage.io/docs/features/software-catalog/well-known-statuses"
           >
             {status.items.map((item, index) => (

@@ -13,51 +13,72 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { PropsWithChildren } from 'react';
+import { ApiProvider } from '@backstage/core-app-api';
 import {
   RELATION_CHILD_OF,
   RELATION_HAS_MEMBER,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
-import { ALL_RELATION_PAIRS } from '../EntityRelationsGraph';
+import { ALL_RELATIONS } from '../../lib/types';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
+
+function GraphContext(props: PropsWithChildren<{}>) {
+  return (
+    <ApiProvider
+      apis={TestApiRegistry.from([
+        catalogGraphApiRef,
+        new DefaultCatalogGraphApi(),
+      ])}
+    >
+      {props.children}
+    </ApiProvider>
+  );
+}
 
 describe('<SelectedRelationsFilter/>', () => {
-  test('should render current value', () => {
-    const { getByText } = render(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
-        onChange={() => {}}
-      />,
+  test('should render current value', async () => {
+    await renderInTestApp(
+      <GraphContext>
+        <SelectedRelationsFilter
+          relations={ALL_RELATIONS}
+          value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
+          onChange={() => {}}
+        />
+      </GraphContext>,
     );
 
-    expect(getByText(RELATION_OWNED_BY)).toBeInTheDocument();
-    expect(getByText(RELATION_CHILD_OF)).toBeInTheDocument();
+    expect(screen.getByText(RELATION_OWNED_BY)).toBeInTheDocument();
+    expect(screen.getByText(RELATION_CHILD_OF)).toBeInTheDocument();
   });
 
   test('should select value', async () => {
     const onChange = jest.fn();
-    const { getByText, getByLabelText } = render(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
-        onChange={onChange}
-      />,
+    await renderInTestApp(
+      <GraphContext>
+        <SelectedRelationsFilter
+          relations={ALL_RELATIONS}
+          value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
+          onChange={onChange}
+        />
+      </GraphContext>,
     );
 
-    await userEvent.click(getByLabelText('Open'));
+    await userEvent.click(screen.getByLabelText('Open'));
 
     await waitFor(() =>
-      expect(getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
+      expect(screen.getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
     );
 
-    await userEvent.click(getByText(RELATION_HAS_MEMBER));
+    await userEvent.click(screen.getByText(RELATION_HAS_MEMBER));
 
     await waitFor(() => {
-      expect(onChange).toBeCalledWith([
+      expect(onChange).toHaveBeenCalledWith([
         RELATION_OWNED_BY,
         RELATION_CHILD_OF,
         RELATION_HAS_MEMBER,
@@ -65,46 +86,54 @@ describe('<SelectedRelationsFilter/>', () => {
     });
   });
 
-  test('should return undefined if all values are selected', async () => {
+  test('should return all known relations if all values are selected', async () => {
     const onChange = jest.fn();
-    const { getByText, getByLabelText } = render(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={ALL_RELATION_PAIRS.flatMap(p => p).filter(
-          r => r !== RELATION_HAS_MEMBER,
-        )}
-        onChange={onChange}
-      />,
+    await renderInTestApp(
+      <GraphContext>
+        <SelectedRelationsFilter
+          relations={ALL_RELATIONS}
+          value={ALL_RELATIONS.filter(r => r !== RELATION_HAS_MEMBER)}
+          onChange={onChange}
+        />
+      </GraphContext>,
     );
 
-    await userEvent.click(getByLabelText('Open'));
+    await userEvent.click(screen.getByLabelText('Open'));
 
     await waitFor(() =>
-      expect(getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
+      expect(screen.getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
     );
 
-    await userEvent.click(getByText(RELATION_HAS_MEMBER));
+    await userEvent.click(screen.getByText(RELATION_HAS_MEMBER));
 
     await waitFor(() => {
-      expect(onChange).toBeCalledWith(undefined);
+      // Same as ALL_RELATIONS but with RELATION_HAS_MEMBER at the end
+      const allRelationsOrdered = [
+        ...ALL_RELATIONS.filter(rel => rel !== RELATION_HAS_MEMBER),
+        RELATION_HAS_MEMBER,
+      ];
+
+      expect(onChange).toHaveBeenCalledWith(allRelationsOrdered);
     });
   });
 
   test('should return all values when cleared', async () => {
     const onChange = jest.fn();
-    const { getByRole } = render(
-      <SelectedRelationsFilter
-        relationPairs={ALL_RELATION_PAIRS}
-        value={[]}
-        onChange={onChange}
-      />,
+    await renderInTestApp(
+      <GraphContext>
+        <SelectedRelationsFilter
+          relations={ALL_RELATIONS}
+          value={[]}
+          onChange={onChange}
+        />
+      </GraphContext>,
     );
 
-    await userEvent.click(getByRole('combobox'));
+    await userEvent.click(screen.getByRole('combobox'));
     await userEvent.tab();
 
     await waitFor(() => {
-      expect(onChange).toBeCalledWith(undefined);
+      expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
 });

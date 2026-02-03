@@ -15,31 +15,17 @@ You need to configure the action in your backend:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-rails
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-rails
 ```
 
-Configure the action (you can check
-the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to
-see all options):
+Then ensure that both the scaffolder and this module are added to your backend:
 
 ```typescript
-const actions = [
-  createFetchRailsAction({
-    integrations,
-    reader: env.reader,
-    containerRunner,
-  }),
-];
-
-return await createRouter({
-  containerRunner,
-  catalogClient,
-  actions,
-  logger: env.logger,
-  config: env.config,
-  database: env.database,
-  reader: env.reader,
-});
+// In packages/backend/src/index.ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-scaffolder-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend-module-rails'));
 ```
 
 After that you can use the action in your template:
@@ -74,16 +60,16 @@ spec:
           description: Owner of the component
           ui:field: OwnerPicker
           ui:options:
-            allowedKinds:
-              - Group
+            catalogFilter:
+              kind: Group
         system:
           title: System
           type: string
           description: System of the component
           ui:field: EntityPicker
           ui:options:
-            allowedKinds:
-              - System
+            catalogFilter:
+              kind: System
             defaultKind: System
 
     - title: Choose a location
@@ -206,7 +192,7 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
     - name: Results
@@ -218,10 +204,10 @@ spec:
   output:
     links:
       - title: Repository
-        url: ${{ steps.publish.output.remoteUrl }}
+        url: ${{ steps['publish'].output.remoteUrl }}
       - title: Open in catalog
         icon: catalog
-        entityRef: ${{ steps.register.output.entityRef }}
+        entityRef: ${{ steps['register'].output.entityRef }}
 ```
 
 ### What you need to run that action
@@ -245,17 +231,4 @@ steps:
         owner: ${{ parameters.owner }}
         system: ${{ parameters.system }}
         railsArguments: ${{ parameters.railsArguments }}
-```
-
-You also need to configure the list of allowed images as part of the creating the action for the scaffolder backend:
-
-```typescript
-const actions = [
-  createFetchRailsAction({
-    integrations,
-    reader: env.reader,
-    containerRunner,
-    allowedImageNames: ['repository/rails:tag'],
-  }),
-];
 ```

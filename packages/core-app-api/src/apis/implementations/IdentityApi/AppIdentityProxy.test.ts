@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { withLogCollector } from '@backstage//test-utils';
+import { withLogCollector } from '@backstage/test-utils';
 import { AppIdentityProxy } from './AppIdentityProxy';
 
 describe('AppIdentityProxy', () => {
@@ -83,12 +83,9 @@ describe('AppIdentityProxy', () => {
   it('should navigate to target URL on sign out', async () => {
     const proxy = new AppIdentityProxy();
     proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/foo' });
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: {},
-    });
 
+    const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
     await proxy.signOut();
-    expect(location.href).toBe('/foo');
+    expect(navigateSpy).toHaveBeenCalledWith('/foo');
   });
 });

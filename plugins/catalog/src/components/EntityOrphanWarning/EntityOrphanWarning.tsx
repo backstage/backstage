@@ -16,12 +16,14 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { Alert } from '@material-ui/lab';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { Alert, Button } from '@backstage/ui';
 
 /**
  * Returns true if the given entity has the orphan annotation given by the
@@ -44,6 +46,7 @@ export function EntityOrphanWarning() {
   const catalogLink = useRouteRef(rootRouteRef);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const { entity } = useEntity();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
@@ -52,10 +55,21 @@ export function EntityOrphanWarning() {
 
   return (
     <>
-      <Alert severity="warning" onClick={() => setConfirmationDialogOpen(true)}>
-        This entity is not referenced by any location and is therefore not
-        receiving updates. Click here to delete.
-      </Alert>
+      <Alert
+        status="warning"
+        icon
+        title={t('deleteEntity.description')}
+        customActions={
+          <Button
+            size="small"
+            variant="tertiary"
+            destructive
+            onPress={() => setConfirmationDialogOpen(true)}
+          >
+            {t('deleteEntity.actionButtonTitle')}
+          </Button>
+        }
+      />
       <DeleteEntityDialog
         open={confirmationDialogOpen}
         entity={entity!}

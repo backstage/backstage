@@ -14,167 +14,166 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-import lodash from 'lodash';
+import { chunk as lodashChunk, isEqual } from 'lodash';
+import { z } from 'zod';
 import {
+  Cursor,
+  EntitiesBatchRequest,
+  EntitiesBatchResponse,
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
-  EntitiesSearchFilter,
   EntityAncestryResponse,
   EntityFacetsRequest,
   EntityFacetsResponse,
-  EntityFilter,
+  EntityOrder,
   EntityPagination,
+  QueryEntitiesRequest,
+  QueryEntitiesResponse,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
   DbPageInfo,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
+  DbRelationsRow,
   DbSearchRow,
 } from '../database/tables';
+import { Stitcher } from '../stitching/types';
 
-function parsePagination(input?: EntityPagination): {
-  limit?: number;
-  offset?: number;
-} {
+import {
+  expandLegacyCompoundRelationsInEntity,
+  isQueryEntitiesCursorRequest,
+  isQueryEntitiesInitialRequest,
+} from './util';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
+import { processRawEntitiesResult } from './response';
+
+const DEFAULT_LIMIT = 200;
+
+function parsePagination(input?: EntityPagination): EntityPagination {
   if (!input) {
     return {};
   }
 
   let { limit, offset } = input;
 
-  if (input.after !== undefined) {
-    let cursor;
-    try {
-      const json = Buffer.from(input.after, 'base64').toString('utf8');
-      cursor = JSON.parse(json);
-    } catch {
-      throw new InputError('Malformed after cursor, could not be parsed');
+  if (input.after === undefined) {
+    return { limit, offset };
+  }
+
+  let cursor;
+  try {
+    const json = Buffer.from(input.after, 'base64').toString('utf8');
+    cursor = JSON.parse(json);
+  } catch {
+    throw new InputError('Malformed after cursor, could not be parsed');
+  }
+
+  if (cursor.limit !== undefined) {
+    if (!Number.isInteger(cursor.limit)) {
+      throw new InputError('Malformed after cursor, limit was not an number');
     }
-    if (cursor.limit !== undefined) {
-      if (!Number.isInteger(cursor.limit)) {
-        throw new InputError('Malformed after cursor, limit was not an number');
-      }
-      limit = cursor.limit;
+    limit = cursor.limit;
+  }
+
+  if (cursor.offset !== undefined) {
+    if (!Number.isInteger(cursor.offset)) {
+      throw new InputError('Malformed after cursor, offset was not a number');
     }
-    if (cursor.offset !== undefined) {
-      if (!Number.isInteger(cursor.offset)) {
-        throw new InputError('Malformed after cursor, offset was not a number');
-      }
-      offset = cursor.offset;
-    }
+    offset = cursor.offset;
   }
 
   return { limit, offset };
 }
 
-function stringifyPagination(input: { limit: number; offset: number }) {
-  const json = JSON.stringify({ limit: input.limit, offset: input.offset });
+function stringifyPagination(
+  input: Required<Omit<EntityPagination, 'after'>>,
+): string {
+  const { limit, offset } = input;
+  const json = JSON.stringify({ limit, offset });
   const base64 = Buffer.from(json, 'utf8').toString('base64');
   return base64;
 }
 
-function addCondition(
-  queryBuilder: Knex.QueryBuilder,
-  db: Knex,
-  filter: EntitiesSearchFilter,
-  negate: boolean = false,
-) {
-  // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
-  // make a lot of sense. However, it had abysmal performance on sqlite
-  // when datasets grew large, so we're using IN instead.
-  const matchQuery = db<DbSearchRow>('search')
-    .select('entity_id')
-    .where({ key: filter.key.toLowerCase() })
-    .andWhere(function keyFilter() {
-      if (filter.values) {
-        if (filter.values.length === 1) {
-          this.where({ value: filter.values[0].toLowerCase() });
-        } else {
-          this.andWhere(
-            'value',
-            'in',
-            filter.values.map(v => v.toLowerCase()),
-          );
-        }
-      }
-    });
-  queryBuilder.andWhere('entity_id', negate ? 'not in' : 'in', matchQuery);
-}
-
-function isEntitiesSearchFilter(
-  filter: EntitiesSearchFilter | EntityFilter,
-): filter is EntitiesSearchFilter {
-  return filter.hasOwnProperty('key');
-}
-
-function isOrEntityFilter(
-  filter: { anyOf: EntityFilter[] } | EntityFilter,
-): filter is { anyOf: EntityFilter[] } {
-  return filter.hasOwnProperty('anyOf');
-}
-
-function isNegationEntityFilter(
-  filter: { not: EntityFilter } | EntityFilter,
-): filter is { not: EntityFilter } {
-  return filter.hasOwnProperty('not');
-}
-
-function parseFilter(
-  filter: EntityFilter,
-  query: Knex.QueryBuilder,
-  db: Knex,
-  negate: boolean = false,
-): Knex.QueryBuilder {
-  if (isEntitiesSearchFilter(filter)) {
-    return query.andWhere(function filterFunction() {
-      addCondition(this, db, filter, negate);
-    });
-  }
-
-  if (isNegationEntityFilter(filter)) {
-    return parseFilter(filter.not, query, db, !negate);
-  }
-
-  return query[negate ? 'andWhereNot' : 'andWhere'](function filterFunction() {
-    if (isOrEntityFilter(filter)) {
-      for (const subFilter of filter.anyOf ?? []) {
-        this.orWhere(subQuery => parseFilter(subFilter, subQuery, db));
-      }
-    } else {
-      for (const subFilter of filter.allOf ?? []) {
-        this.andWhere(subQuery => parseFilter(subFilter, subQuery, db));
-      }
-    }
-  });
-}
-
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
-  constructor(private readonly database: Knex) {}
+  private readonly database: Knex;
+  private readonly logger: LoggerService;
+  private readonly stitcher: Stitcher;
+  private readonly enableRelationsCompatibility: boolean;
+
+  constructor(options: {
+    database: Knex;
+    logger: LoggerService;
+    stitcher: Stitcher;
+    enableRelationsCompatibility?: boolean;
+  }) {
+    this.database = options.database;
+    this.logger = options.logger;
+    this.stitcher = options.stitcher;
+    this.enableRelationsCompatibility = Boolean(
+      options.enableRelationsCompatibility,
+    );
+  }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
+    const { limit, offset } = parsePagination(request?.pagination);
 
     let entitiesQuery =
       db<DbFinalEntitiesRow>('final_entities').select('final_entities.*');
+
+    request?.order?.forEach(({ field }, index) => {
+      const alias = `order_${index}`;
+      entitiesQuery = entitiesQuery.leftOuterJoin(
+        { [alias]: 'search' },
+        function search(inner) {
+          inner
+            .on(`${alias}.entity_id`, 'final_entities.entity_id')
+            .andOn(`${alias}.key`, db.raw('?', [field]));
+        },
+      );
+    });
+
+    entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
+
     if (request?.filter) {
-      entitiesQuery = parseFilter(request.filter, entitiesQuery, db);
+      entitiesQuery = applyEntityFilterToQuery({
+        filter: request.filter,
+        targetQuery: entitiesQuery,
+        onEntityIdField: 'final_entities.entity_id',
+        knex: db,
+      });
     }
 
-    // TODO: move final_entities to use entity_ref
-    entitiesQuery = entitiesQuery
-      .whereNotNull('final_entities.final_entity')
-      .orderBy('entity_id', 'asc');
+    request?.order?.forEach(({ order }, index) => {
+      if (db.client.config.client === 'pg') {
+        // pg correctly orders by the column value and handling nulls in one go
+        entitiesQuery = entitiesQuery.orderBy([
+          { column: `order_${index}.value`, order, nulls: 'last' },
+        ]);
+      } else {
+        // sqlite and mysql translate the above statement ONLY into "order by (value is null) asc"
+        // no matter what the order is, for some reason, so we have to manually add back the statement
+        // that translates to "order by value <order>" while avoiding to give an order
+        entitiesQuery = entitiesQuery.orderBy([
+          { column: `order_${index}.value`, order: undefined, nulls: 'last' },
+          { column: `order_${index}.value`, order },
+        ]);
+      }
+    });
 
-    const { limit, offset } = parsePagination(request?.pagination);
+    if (!request?.order) {
+      entitiesQuery = entitiesQuery.orderBy('final_entities.entity_ref', 'asc'); // default sort
+    } else {
+      entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
+    }
+
     if (limit !== undefined) {
       entitiesQuery = entitiesQuery.limit(limit + 1);
     }
@@ -183,7 +182,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     let rows = await entitiesQuery;
-
     let pageInfo: DbPageInfo;
     if (limit === undefined || rows.length <= limit) {
       pageInfo = { hasNextPage: false };
@@ -198,41 +196,337 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       };
     }
 
-    let entities: Entity[] = rows.map(e => JSON.parse(e.final_entity!));
-
-    if (request?.fields) {
-      entities = entities.map(e => request.fields!(e));
-    }
-
-    // TODO(freben): This is added as a compatibility guarantee, until we can be
-    // sure that all adopters have re-stitched their entities so that the new
-    // targetRef field is present on them, and that they have stopped consuming
-    // the now-removed old field
-    // TODO(jhaals): Remove this in April 2022
-    for (const entity of entities) {
-      if (entity.relations) {
-        for (const relation of entity.relations as any) {
-          if (!relation.targetRef && relation.target) {
-            // This is the case where an old-form entity, not yet stitched with
-            // the updated code, was in the database
-            relation.targetRef = stringifyEntityRef(relation.target);
-          } else if (!relation.target && relation.targetRef) {
-            // This is the case where a new-form entity, stitched with the
-            // updated code, was in the database but we still want to produce
-            // the old data shape as well for compatibility reasons
-            relation.target = parseEntityRef(relation.targetRef);
-          }
-        }
-      }
-    }
-
     return {
-      entities,
+      entities: processRawEntitiesResult(
+        rows.map(r => r.final_entity!),
+        this.enableRelationsCompatibility
+          ? e => {
+              expandLegacyCompoundRelationsInEntity(e);
+              if (request?.fields) {
+                return request.fields(e);
+              }
+              return e;
+            }
+          : request?.fields,
+      ),
       pageInfo,
     };
   }
 
+  async entitiesBatch(
+    request: EntitiesBatchRequest,
+  ): Promise<EntitiesBatchResponse> {
+    const lookup = new Map<string, string>();
+
+    for (const chunk of lodashChunk(request.entityRefs, 200)) {
+      let query = this.database<DbFinalEntitiesRow>('final_entities')
+        .select({
+          entityRef: 'final_entities.entity_ref',
+          entity: 'final_entities.final_entity',
+        })
+        .whereIn('final_entities.entity_ref', chunk);
+
+      if (request?.filter) {
+        query = applyEntityFilterToQuery({
+          filter: request.filter,
+          targetQuery: query,
+          onEntityIdField: 'final_entities.entity_id',
+          knex: this.database,
+        });
+      }
+
+      for (const row of await query) {
+        lookup.set(row.entityRef, row.entity ? row.entity : null);
+      }
+    }
+
+    const items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
+
+    return { items: processRawEntitiesResult(items, request.fields) };
+  }
+
+  async queryEntities(
+    request: QueryEntitiesRequest,
+  ): Promise<QueryEntitiesResponse> {
+    const limit = request.limit ?? DEFAULT_LIMIT;
+
+    const cursor: Omit<Cursor, 'orderFieldValues'> & {
+      orderFieldValues?: (string | null)[];
+      skipTotalItems: boolean;
+    } = {
+      orderFields: [],
+      isPrevious: false,
+      ...parseCursorFromRequest(request),
+    };
+
+    // For performance reasons we invoke the count query only on the first
+    // request. The result is then embedded into the cursor for subsequent
+    // requests. Threfore this can be undefined here, but will then get
+    // populated further down.
+    const shouldComputeTotalItems =
+      cursor.totalItems === undefined && !cursor.skipTotalItems;
+    const isFetchingBackwards = cursor.isPrevious;
+
+    if (cursor.orderFields.length > 1) {
+      this.logger.warn(`Only one sort field is supported, ignoring the rest`);
+    }
+
+    const sortField = cursor.orderFields.at(0);
+
+    // The first part of the query builder is a subquery that applies all of the
+    // filtering.
+    const dbQuery = this.database.with(
+      'filtered',
+      ['entity_id', 'final_entity', ...(sortField ? ['value'] : [])],
+      inner => {
+        inner
+          .from<DbFinalEntitiesRow>('final_entities')
+          .whereNotNull('final_entity');
+
+        if (sortField) {
+          inner
+            .distinct()
+            .leftOuterJoin('search', qb =>
+              qb
+                .on('search.entity_id', 'final_entities.entity_id')
+                .andOnVal('search.key', sortField.field),
+            )
+            .select({
+              entity_id: 'final_entities.entity_id',
+              final_entity: 'final_entities.final_entity',
+              value: 'search.value',
+            });
+        } else {
+          inner.select({
+            entity_id: 'final_entities.entity_id',
+            final_entity: 'final_entities.final_entity',
+          });
+        }
+
+        // Add regular filters, if given
+        if (cursor.filter) {
+          applyEntityFilterToQuery({
+            filter: cursor.filter,
+            targetQuery: inner,
+            onEntityIdField: 'final_entities.entity_id',
+            knex: this.database,
+          });
+        }
+
+        // Add full text search filters, if given
+        const normalizedFullTextFilterTerm =
+          cursor.fullTextFilter?.term?.trim();
+        const textFilterFields = cursor.fullTextFilter?.fields ?? [
+          sortField?.field || 'metadata.uid',
+        ];
+        if (normalizedFullTextFilterTerm) {
+          if (
+            textFilterFields.length === 1 &&
+            textFilterFields[0] === sortField?.field
+          ) {
+            // If there is one item, apply the like query to the top level query which is already
+            //   filtered based on the singular sortField.
+            inner.andWhereRaw(
+              'search.value like ?',
+              `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+            );
+          } else {
+            const matchQuery = this.database<DbSearchRow>('search')
+              .select('search.entity_id')
+              // textFilterFields must be lowercased to match searchable keys in database, i.e. spec.profile.displayName -> spec.profile.displayname
+              .whereIn(
+                'search.key',
+                textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
+              )
+              .andWhere(function keyFilter() {
+                this.andWhereRaw(
+                  'search.value like ?',
+                  `%${normalizedFullTextFilterTerm.toLocaleLowerCase(
+                    'en-US',
+                  )}%`,
+                );
+              });
+            inner.andWhere('final_entities.entity_id', 'in', matchQuery);
+          }
+        }
+      },
+    );
+
+    // Only pay the cost of counting the number of items if needed
+    if (shouldComputeTotalItems) {
+      // Note the intentional cross join here. The filtered_count dataset is
+      // always exactly one row, so it won't grow the result unnecessarily. But
+      // it's also important that there IS at least one row, because even if the
+      // filtered dataset is empty, we still want to know the total number of
+      // items.
+      dbQuery
+        .with('filtered_count', ['count'], inner =>
+          inner.from('filtered').count('*', { as: 'count' }),
+        )
+        .fromRaw('filtered_count, filtered')
+        .select('count', 'filtered.*');
+    } else {
+      dbQuery.from('filtered').select('*');
+    }
+
+    const isOrderingDescending = sortField?.order === 'desc';
+
+    // Move forward (or backward) in the set to the correct cursor position
+    if (cursor.orderFieldValues) {
+      if (cursor.orderFieldValues.length === 2) {
+        // The first will be the sortField value, the second the entity_id
+        const [first, second] = cursor.orderFieldValues;
+        dbQuery.andWhere(function nested() {
+          this.where(
+            'filtered.value',
+            isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+            first,
+          )
+            .orWhere('filtered.value', '=', first)
+            .andWhere(
+              'filtered.entity_id',
+              isFetchingBackwards !== isOrderingDescending ? '<' : '>',
+              second,
+            );
+        });
+      } else if (cursor.orderFieldValues.length === 1) {
+        // This will be the entity_id
+        const [first] = cursor.orderFieldValues;
+        dbQuery.andWhere('entity_id', isFetchingBackwards ? '<' : '>', first);
+      }
+    }
+
+    // Add the ordering
+    let order = sortField?.order ?? 'asc';
+    if (isFetchingBackwards) {
+      order = invertOrder(order);
+    }
+    if (this.database.client.config.client === 'pg') {
+      // pg correctly orders by the column value and handling nulls in one go
+      dbQuery.orderBy([
+        ...(sortField
+          ? [
+              {
+                column: 'filtered.value',
+                order,
+                nulls: 'last',
+              },
+            ]
+          : []),
+        {
+          column: 'filtered.entity_id',
+          order,
+        },
+      ]);
+    } else {
+      // sqlite and mysql translate the above statement ONLY into "order by (value is null) asc"
+      // no matter what the order is, for some reason, so we have to manually add back the statement
+      // that translates to "order by value <order>" while avoiding to give an order
+      dbQuery.orderBy([
+        ...(sortField
+          ? [
+              {
+                column: 'filtered.value',
+                order: undefined,
+                nulls: 'last',
+              },
+              {
+                column: 'filtered.value',
+                order,
+              },
+            ]
+          : []),
+        {
+          column: 'filtered.entity_id',
+          order,
+        },
+      ]);
+    }
+
+    // Apply a manually set initial offset
+    if (
+      isQueryEntitiesInitialRequest(request) &&
+      request.offset !== undefined
+    ) {
+      dbQuery.offset(request.offset);
+    }
+    // fetch an extra item to check if there are more items.
+    dbQuery.limit(isFetchingBackwards ? limit : limit + 1);
+
+    const rows = shouldComputeTotalItems || limit > 0 ? await dbQuery : [];
+
+    let totalItems: number;
+    if (cursor.totalItems !== undefined) {
+      totalItems = cursor.totalItems;
+    } else if (cursor.skipTotalItems) {
+      totalItems = 0;
+    } else if (rows.length) {
+      totalItems = Number(rows[0].count);
+    } else {
+      totalItems = 0;
+    }
+
+    if (isFetchingBackwards) {
+      rows.reverse();
+    }
+    const hasMoreResults =
+      limit > 0 && (isFetchingBackwards || rows.length > limit);
+
+    // discard the extra item only when fetching forward.
+    if (rows.length > limit) {
+      rows.length -= 1;
+    }
+
+    const isInitialRequest = cursor.firstSortFieldValues === undefined;
+
+    const firstRow = rows[0];
+    const lastRow = rows[rows.length - 1];
+
+    const firstSortFieldValues =
+      cursor.firstSortFieldValues || sortFieldsFromRow(firstRow, sortField);
+
+    const nextCursor: Cursor | undefined = hasMoreResults
+      ? {
+          ...cursor,
+          orderFieldValues: sortFieldsFromRow(lastRow, sortField),
+          firstSortFieldValues,
+          isPrevious: false,
+          totalItems,
+        }
+      : undefined;
+
+    const prevCursor: Cursor | undefined =
+      !isInitialRequest &&
+      rows.length > 0 &&
+      !isEqual(
+        sortFieldsFromRow(firstRow, sortField),
+        cursor.firstSortFieldValues,
+      )
+        ? {
+            ...cursor,
+            orderFieldValues: sortFieldsFromRow(firstRow, sortField),
+            firstSortFieldValues: cursor.firstSortFieldValues,
+            isPrevious: true,
+            totalItems,
+          }
+        : undefined;
+
+    return {
+      items: processRawEntitiesResult(
+        rows.map(r => r.final_entity!),
+        request.fields,
+      ),
+      pageInfo: {
+        ...(!!prevCursor && { prevCursor }),
+        ...(!!nextCursor && { nextCursor }),
+      },
+      totalItems,
+    };
+  }
+
   async removeEntityByUid(uid: string): Promise<void> {
+    const dbConfig = this.database.client.config;
+
     // Clear the hashed state of the immediate parents of the deleted entity.
     // This makes sure that when they get reprocessed, their output is written
     // down again. The reason for wanting to do this, is that if the user
@@ -241,32 +535,89 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // means it'll never try to write down the children again (it assumes that
     // they already exist). This means that without the code below, the database
     // never "heals" from accidental deletes.
-    await this.database<DbRefreshStateRow>('refresh_state')
-      .update({
-        result_hash: 'child-was-deleted',
+    if (dbConfig.client.includes('mysql')) {
+      // MySQL doesn't support the syntax we need to do this in a single query,
+      // http://dev.mysql.com/doc/refman/5.6/en/update.html
+      const results = await this.database<DbRefreshStateRow>('refresh_state')
+        .select('entity_id')
+        .whereIn('entity_ref', function parents(builder) {
+          return builder
+            .from<DbRefreshStateRow>('refresh_state')
+            .innerJoin<DbRefreshStateReferencesRow>(
+              'refresh_state_references',
+              {
+                'refresh_state_references.target_entity_ref':
+                  'refresh_state.entity_ref',
+              },
+            )
+            .where('refresh_state.entity_id', '=', uid)
+            .select('refresh_state_references.source_entity_ref');
+        });
+      await this.database<DbRefreshStateRow>('refresh_state')
+        .update({
+          result_hash: 'child-was-deleted',
+          next_update_at: this.database.fn.now(),
+        })
+        .whereIn(
+          'entity_id',
+          results.map(key => key.entity_id),
+        );
+    } else {
+      await this.database<DbRefreshStateRow>('refresh_state')
+        .update({
+          result_hash: 'child-was-deleted',
+          next_update_at: this.database.fn.now(),
+        })
+        .whereIn('entity_ref', function parents(builder) {
+          return builder
+            .from<DbRefreshStateRow>('refresh_state')
+            .innerJoin<DbRefreshStateReferencesRow>(
+              'refresh_state_references',
+              {
+                'refresh_state_references.target_entity_ref':
+                  'refresh_state.entity_ref',
+              },
+            )
+            .where('refresh_state.entity_id', '=', uid)
+            .select('refresh_state_references.source_entity_ref');
+        });
+    }
+
+    // Stitch the entities that the deleted one had relations to. If we do not
+    // do this, the entities in the other end of the relations will still look
+    // like they have a relation to the entity that was deleted, despite not
+    // having any corresponding rows in the relations table.
+    const relationPeers = await this.database
+      .from<DbRelationsRow>('relations')
+      .innerJoin<DbRefreshStateReferencesRow>('refresh_state', {
+        'refresh_state.entity_ref': 'relations.target_entity_ref',
       })
-      .whereIn('entity_ref', function parents(builder) {
-        return builder
-          .from<DbRefreshStateRow>('refresh_state')
-          .innerJoin<DbRefreshStateReferencesRow>('refresh_state_references', {
-            'refresh_state_references.target_entity_ref':
-              'refresh_state.entity_ref',
+      .where('relations.originating_entity_id', '=', uid)
+      .andWhere('refresh_state.entity_id', '!=', uid)
+      .select({ ref: 'relations.target_entity_ref' })
+      .union(other =>
+        other
+          .from<DbRelationsRow>('relations')
+          .innerJoin<DbRefreshStateReferencesRow>('refresh_state', {
+            'refresh_state.entity_ref': 'relations.source_entity_ref',
           })
-          .where('refresh_state.entity_id', '=', uid)
-          .select('refresh_state_references.source_entity_ref');
-      });
+          .where('relations.originating_entity_id', '=', uid)
+          .andWhere('refresh_state.entity_id', '!=', uid)
+          .select({ ref: 'relations.source_entity_ref' }),
+      );
 
     await this.database<DbRefreshStateRow>('refresh_state')
       .where('entity_id', uid)
       .delete();
+
+    await this.stitcher.stitch({
+      entityRefs: new Set(relationPeers.map(p => p.ref)),
+    });
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {
-    const [rootRow] = await this.database<DbRefreshStateRow>('refresh_state')
-      .leftJoin<DbFinalEntitiesRow>('final_entities', {
-        'refresh_state.entity_id': 'final_entities.entity_id',
-      })
-      .where('refresh_state.entity_ref', '=', rootRef)
+    const [rootRow] = await this.database<DbFinalEntitiesRow>('final_entities')
+      .where('final_entities.entity_ref', '=', rootRef)
       .select({
         entityJson: 'final_entities.final_entity',
       });
@@ -291,16 +642,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       const parentRows = await this.database<DbRefreshStateReferencesRow>(
         'refresh_state_references',
       )
-        .innerJoin<DbRefreshStateRow>('refresh_state', {
-          'refresh_state_references.source_entity_ref':
-            'refresh_state.entity_ref',
-        })
         .innerJoin<DbFinalEntitiesRow>('final_entities', {
-          'refresh_state.entity_id': 'final_entities.entity_id',
+          'refresh_state_references.source_entity_ref':
+            'final_entities.entity_ref',
         })
         .where('refresh_state_references.target_entity_ref', '=', currentRef)
         .select({
-          parentEntityRef: 'refresh_state.entity_ref',
+          parentEntityRef: 'final_entities.entity_ref',
           parentEntityJson: 'final_entities.final_entity',
         });
 
@@ -326,47 +674,99 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   }
 
   async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {
-    const { entities } = await this.entities({
-      filter: request.filter,
-      authorizationToken: request.authorizationToken,
-    });
+    const query = this.database<DbSearchRow>('search')
+      .whereIn(
+        'search.key',
+        request.facets.map(f => f.toLocaleLowerCase('en-US')),
+      )
+      .whereNotNull('search.original_value')
+      .select({
+        facet: 'search.key',
+        value: 'search.original_value',
+        count: this.database.raw('count(DISTINCT search.entity_id)'),
+      })
+      .groupBy(['search.key', 'search.original_value']);
+
+    if (request.filter) {
+      applyEntityFilterToQuery({
+        filter: request.filter,
+        targetQuery: query,
+        onEntityIdField: 'search.entity_id',
+        knex: this.database,
+      });
+    }
+
+    const rows = await query;
 
     const facets: EntityFacetsResponse['facets'] = {};
-
     for (const facet of request.facets) {
-      const values = entities
-        .map(entity => {
-          // TODO(freben): Generalize this code to handle any field that may
-          // have dots in its key?
-          if (facet.startsWith('metadata.annotations.')) {
-            return entity.metadata.annotations?.[
-              facet.substring('metadata.annotations.'.length)
-            ];
-          } else if (facet.startsWith('metadata.labels.')) {
-            return entity.metadata.labels?.[
-              facet.substring('metadata.labels.'.length)
-            ];
-          }
-          return lodash.get(entity, facet);
-        })
-        .flatMap(field => {
-          if (typeof field === 'string') {
-            return [field];
-          } else if (Array.isArray(field)) {
-            return field.filter(i => typeof i === 'string');
-          }
-          return [];
-        })
-        .sort();
-
-      const counts = lodash.countBy(values, lodash.identity);
-
-      facets[facet] = Object.entries(counts).map(([value, count]) => ({
-        value,
-        count,
-      }));
+      const facetLowercase = facet.toLocaleLowerCase('en-US');
+      facets[facet] = rows
+        .filter(row => row.facet === facetLowercase)
+        .map(row => ({
+          value: String(row.value),
+          count: Number(row.count),
+        }));
     }
 
     return { facets };
   }
+}
+
+const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
+  z
+    .object({
+      key: z.string(),
+      values: z.array(z.string()).optional(),
+    })
+    .or(z.object({ not: entityFilterParser }))
+    .or(z.object({ anyOf: z.array(entityFilterParser) }))
+    .or(z.object({ allOf: z.array(entityFilterParser) })),
+);
+
+export const cursorParser: z.ZodSchema<Cursor> = z.object({
+  orderFields: z.array(
+    z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
+  ),
+  orderFieldValues: z.array(z.string().or(z.null())),
+  filter: entityFilterParser.optional(),
+  isPrevious: z.boolean(),
+  query: z.string().optional(),
+  firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
+  totalItems: z.number().optional(),
+});
+
+function parseCursorFromRequest(
+  request?: QueryEntitiesRequest,
+): Partial<Cursor> & { skipTotalItems: boolean } {
+  if (isQueryEntitiesInitialRequest(request)) {
+    const {
+      filter,
+      orderFields: sortFields = [],
+      fullTextFilter,
+      skipTotalItems = false,
+    } = request;
+    return { filter, orderFields: sortFields, fullTextFilter, skipTotalItems };
+  }
+  if (isQueryEntitiesCursorRequest(request)) {
+    return {
+      ...request.cursor,
+      // Doesn't matter here
+      skipTotalItems: false,
+    };
+  }
+  return {
+    skipTotalItems: false,
+  };
+}
+
+function invertOrder(order: EntityOrder['order']) {
+  return order === 'asc' ? 'desc' : 'asc';
+}
+
+function sortFieldsFromRow(
+  row: DbSearchRow & DbFinalEntitiesRow,
+  sortField?: EntityOrder | undefined,
+) {
+  return sortField ? [row?.value, row?.entity_id] : [row?.entity_id];
 }

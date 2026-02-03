@@ -18,16 +18,21 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { CatalogApi } from '@backstage/catalog-client';
-import { InputError, AuthenticationError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import express, { Request } from 'express';
-import { KubernetesObjectsProvider } from '../types/types';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { requirePermission } from '../auth/requirePermission';
+import { kubernetesResourcesReadPermission } from '@backstage/plugin-kubernetes-common';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
-  catalogApi: CatalogApi,
+  catalog: CatalogService,
   objectsProvider: KubernetesObjectsProvider,
+  httpAuth: HttpAuthService,
+  permissionApi: PermissionEvaluator,
 ) => {
   const getEntityByReq = async (req: Request<any>) => {
     const rawEntityRef = req.body.entityRef;
@@ -44,36 +49,43 @@ export const addResourceRoutesToRouter = (
       throw new InputError(`Invalid entity ref, ${error}`);
     }
 
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.headers.authorization,
-    );
-
-    if (!token) {
-      throw new AuthenticationError('No Backstage token');
-    }
-
-    const entity = await catalogApi.getEntityByRef(entityRef, {
-      token: token,
+    const entity = await catalog.getEntityByRef(entityRef, {
+      credentials: await httpAuth.credentials(req),
     });
-
     if (!entity) {
       throw new InputError(
         `Entity ref missing, ${stringifyEntityRef(entityRef)}`,
       );
     }
+
     return entity;
   };
 
   router.post('/resources/workloads/query', async (req, res) => {
+    await requirePermission(
+      permissionApi,
+      kubernetesResourcesReadPermission,
+      httpAuth,
+      req,
+    );
     const entity = await getEntityByReq(req);
-    const response = await objectsProvider.getKubernetesObjectsByEntity({
-      entity,
-      auth: req.body.auth,
-    });
+    const response = await objectsProvider.getKubernetesObjectsByEntity(
+      {
+        entity,
+        auth: req.body.auth,
+      },
+      { credentials: await httpAuth.credentials(req) },
+    );
     res.json(response);
   });
 
   router.post('/resources/custom/query', async (req, res) => {
+    await requirePermission(
+      permissionApi,
+      kubernetesResourcesReadPermission,
+      httpAuth,
+      req,
+    );
     const entity = await getEntityByReq(req);
 
     if (!req.body.customResources) {
@@ -84,11 +96,14 @@ export const addResourceRoutesToRouter = (
       throw new InputError('at least 1 customResource is required');
     }
 
-    const response = await objectsProvider.getCustomResourcesByEntity({
-      entity,
-      customResources: req.body.customResources,
-      auth: req.body.auth,
-    });
+    const response = await objectsProvider.getCustomResourcesByEntity(
+      {
+        entity,
+        customResources: req.body.customResources,
+        auth: req.body.auth,
+      },
+      { credentials: await httpAuth.credentials(req) },
+    );
     res.json(response);
   });
 };

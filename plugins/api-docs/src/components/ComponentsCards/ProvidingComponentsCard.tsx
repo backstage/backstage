@@ -18,35 +18,40 @@ import {
   ComponentEntity,
   RELATION_API_PROVIDED_BY,
 } from '@backstage/catalog-model';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   EntityTable,
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import {
   CodeSnippet,
   InfoCard,
   InfoCardVariants,
   Link,
   Progress,
+  TableColumn,
   WarningPanel,
 } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { apiDocsTranslationRef } from '../../translation';
 
-type Props = {
+/** @public */
+export const ProvidingComponentsCard = (props: {
   variant?: InfoCardVariants;
-};
-
-export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+  columns?: TableColumn<ComponentEntity>[];
+}) => {
+  const { variant = 'gridItem', columns = EntityTable.componentEntityColumns } =
+    props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_API_PROVIDED_BY,
   });
+  const { t } = useTranslationRef(apiDocsTranslationRef);
 
   if (loading) {
     return (
-      <InfoCard variant={variant} title="Providers">
+      <InfoCard variant={variant} title={t('providingComponentsCard.title')}>
         <Progress />
       </InfoCard>
     );
@@ -54,10 +59,10 @@ export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
 
   if (error || !entities) {
     return (
-      <InfoCard variant={variant} title="Providers">
+      <InfoCard variant={variant} title={t('providingComponentsCard.title')}>
         <WarningPanel
           severity="error"
-          title="Could not load components"
+          title={t('providingComponentsCard.error.title')}
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
       </InfoCard>
@@ -66,21 +71,21 @@ export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
 
   return (
     <EntityTable
-      title="Providers"
+      title={t('providingComponentsCard.title')}
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">
-            No component provides this API.
+            {t('providingComponentsCard.emptyContent.title')}
           </Typography>
           <Typography variant="body2">
             <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
-              Learn how to change this.
+              {t('apisCardHelpLinkTitle')}
             </Link>
           </Typography>
         </div>
       }
-      columns={EntityTable.componentEntityColumns}
+      columns={columns}
       entities={entities as ComponentEntity[]}
     />
   );

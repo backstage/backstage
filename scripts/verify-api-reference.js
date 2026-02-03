@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @backstage/no-undeclared-imports */
 
-const { resolve: resolvePath } = require('path');
-const { promises: fs } = require('fs');
+const { resolve: resolvePath } = require('node:path');
+const { promises: fs } = require('node:fs');
 
 async function main() {
   const indexContent = await fs.readFile(

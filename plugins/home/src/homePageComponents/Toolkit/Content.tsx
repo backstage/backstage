@@ -15,13 +15,10 @@
  */
 
 import { Link } from '@backstage/core-components';
-import {
-  makeStyles,
-  List,
-  ListItemIcon,
-  ListItemText,
-} from '@material-ui/core';
-import React from 'react';
+import List from '@material-ui/core/List';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
 import { useToolkit, Tool } from './Context';
 
 const useStyles = makeStyles(theme => ({
@@ -53,15 +50,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 /**
- * Props for Toolkit content component {@link Content}.
- *
- * @public
- */
-export type ToolkitContentProps = {
-  tools: Tool[];
-};
-
-/**
  * A component to display a list of tools for the user.
  *
  * @public
@@ -84,4 +72,13 @@ export const Content = (props: ToolkitContentProps) => {
       ))}
     </List>
   );
+};
+
+/**
+ * Props for Toolkit Content component.
+ *
+ * @public
+ */
+export type ToolkitContentProps = {
+  tools: Tool[];
 };

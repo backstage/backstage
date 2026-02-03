@@ -1,5 +1,220 @@
 # @backstage/errors
 
+## 1.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+
+## 1.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+
+## 1.2.6
+
+### Patch Changes
+
+- 1d4b5b9: Trim `error.cause.stack` in addition to `error.stack` when trimming stack traces from serialized errors.
+- Updated dependencies
+  - @backstage/types@1.2.0
+
+## 1.2.6-next.0
+
+### Patch Changes
+
+- 1d4b5b9: Trim `error.cause.stack` in addition to `error.stack` when trimming stack traces from serialized errors.
+- Updated dependencies
+  - @backstage/types@1.2.0
+
+## 1.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.0
+
+## 1.2.4
+
+### Patch Changes
+
+- 2636075: Fixed an issue that was causing ResponseError not to report the HTTP status from the provided response.
+- Updated dependencies
+  - @backstage/types@1.1.1
+
+## 1.2.4-next.0
+
+### Patch Changes
+
+- 2636075: Fixed an issue that was causing ResponseError not to report the HTTP status from the provided response.
+- Updated dependencies
+  - @backstage/types@1.1.1
+
+## 1.2.3
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/types@1.1.1
+
+## 1.2.3-next.0
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/types@1.1.1
+
+## 1.2.2
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/types@1.1.1
+
+## 1.2.2-next.0
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/types@1.1.1-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- e205b3e6ede8: Set `this.name` in all error classes that extend `CustomErrorBase` class to their actual name
+- Updated dependencies
+  - @backstage/types@1.1.0
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- e205b3e6ede8: Set `this.name` in all error classes that extend `CustomErrorBase` class to their actual name
+- Updated dependencies
+  - @backstage/types@1.1.0
+
+## 1.2.0
+
+### Minor Changes
+
+- c4e8fefd9f13: Added `ServiceUnavailableError`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.0
+
+## 1.2.0-next.0
+
+### Minor Changes
+
+- c4e8fefd9f13: Added `ServiceUnavailableError`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.5
+
+### Patch Changes
+
+- 3bf83a2aabf: Added `NotImplementedError`, which can be used when the server does not recognize the request method and is incapable of supporting it for any resource.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.5-next.0
+
+### Patch Changes
+
+- 3bf83a2aabf: Added `NotImplementedError`, which can be used when the server does not recognize the request method and is incapable of supporting it for any resource.
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.4
+
+### Patch Changes
+
+- ac6cc9f7bd: Removed a circular import
+- Updated dependencies
+  - @backstage/types@1.0.2
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.1
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.2-next.0
+
+## 1.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.1-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.0.0
+
+## 1.1.1
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 7d47def9c4: Removed dependency on `@types/jest`.
+
 ## 1.1.0
 
 ### Minor Changes

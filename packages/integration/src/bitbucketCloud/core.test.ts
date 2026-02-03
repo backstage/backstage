@@ -16,7 +16,7 @@
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { registerMswTestHooks } from '../helpers';
 import { BitbucketCloudIntegrationConfig } from './config';
 import {
   getBitbucketCloudDefaultBranch,
@@ -25,34 +25,102 @@ import {
   getBitbucketCloudRequestOptions,
 } from './core';
 
+// Mock constants
+const BITBUCKET_CLOUD_HOST = 'bitbucket.org';
+const BITBUCKET_CLOUD_API_BASE_URL = 'https://api.bitbucket.org/2.0';
+const BITBUCKET_CLOUD_OAUTH_TOKEN_URL =
+  'https://bitbucket.org/site/oauth2/access_token';
+
 describe('bitbucketCloud core', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('getBitbucketCloudRequestOptions', () => {
-    it('insert basic auth when needed', () => {
+    it('insert basic auth when needed', async () => {
+      const withUsernameAndToken: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+        username: 'some-user@domain.com',
+        token: 'my-token',
+      };
+      // TODO: appPassword can be removed once fully
+      // deprecated by BitBucket on 9th June 2026.
       const withUsernameAndPassword: BitbucketCloudIntegrationConfig = {
-        host: 'bitbucket.org',
-        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
         username: 'some-user',
         appPassword: 'my-secret',
       };
-      const withoutUsernameAndPassword: BitbucketCloudIntegrationConfig = {
-        host: 'bitbucket.org',
-        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      const withoutUsername: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
       };
       expect(
-        (
-          getBitbucketCloudRequestOptions(withUsernameAndPassword)
-            .headers as any
-        ).Authorization,
+        (await getBitbucketCloudRequestOptions(withUsernameAndToken)).headers
+          .Authorization,
+      ).toEqual('Basic c29tZS11c2VyQGRvbWFpbi5jb206bXktdG9rZW4=');
+      expect(
+        (await getBitbucketCloudRequestOptions(withUsernameAndPassword)).headers
+          .Authorization,
       ).toEqual('Basic c29tZS11c2VyOm15LXNlY3JldA==');
       expect(
-        (
-          getBitbucketCloudRequestOptions(withoutUsernameAndPassword)
-            .headers as any
-        ).Authorization,
+        (await getBitbucketCloudRequestOptions(withoutUsername)).headers
+          .Authorization,
       ).toBeUndefined();
+    });
+
+    it('handles OAuth token fetch errors', async () => {
+      // Test error handling
+      worker.use(
+        rest.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, (_, res, ctx) =>
+          res(ctx.status(401), ctx.json({ error: 'invalid_client' })),
+        ),
+      );
+
+      const withOAuth: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+        clientId: 'test-client-id',
+        clientSecret: 'test-client-secret',
+      };
+
+      await expect(getBitbucketCloudRequestOptions(withOAuth)).rejects.toThrow(
+        /Failed to fetch OAuth token/,
+      );
+    });
+
+    it('uses OAuth Bearer token and caches it', async () => {
+      // Test OAuth + caching
+      let callCount = 0;
+      worker.use(
+        rest.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, (_, res, ctx) => {
+          callCount++;
+          return res(
+            ctx.status(200),
+            ctx.json({
+              access_token: 'test-oauth-token',
+              expires_in: 3600,
+            }),
+          );
+        }),
+      );
+
+      const withOAuth: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+        clientId: 'test-client-id',
+        clientSecret: 'test-client-secret',
+      };
+
+      // First call should fetch token
+      const result1 = await getBitbucketCloudRequestOptions(withOAuth);
+      expect(result1.headers.Authorization).toEqual('Bearer test-oauth-token');
+      expect(callCount).toBe(1);
+
+      // Second call should use cached token (proves caching works)
+      const result2 = await getBitbucketCloudRequestOptions(withOAuth);
+      expect(result2.headers.Authorization).toEqual('Bearer test-oauth-token');
+      expect(callCount).toBe(1); // Still 1, proving cache was used
     });
   });
 

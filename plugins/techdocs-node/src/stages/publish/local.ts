@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
-  PluginEndpointDiscovery,
+  DiscoveryService,
+  LoggerService,
   resolvePackagePath,
   resolveSafeChildPath,
-} from '@backstage/backend-common';
+} from '@backstage/backend-plugin-api';
 import {
   Entity,
   CompoundEntityRef,
@@ -26,10 +28,9 @@ import {
 import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
-import os from 'os';
+import os from 'node:os';
 import createLimiter from 'p-limit';
-import path from 'path';
-import { Logger } from 'winston';
+import path from 'node:path';
 import {
   PublisherBase,
   PublishRequest,
@@ -51,13 +52,13 @@ import { ForwardedError } from '@backstage/errors';
  */
 export class LocalPublish implements PublisherBase {
   private readonly legacyPathCasing: boolean;
-  private readonly logger: Logger;
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly logger: LoggerService;
+  private readonly discovery: DiscoveryService;
   private readonly staticDocsDir: string;
 
   constructor(options: {
-    logger: Logger;
-    discovery: PluginEndpointDiscovery;
+    logger: LoggerService;
+    discovery: DiscoveryService;
     legacyPathCasing: boolean;
     staticDocsDir: string;
   }) {
@@ -69,8 +70,8 @@ export class LocalPublish implements PublisherBase {
 
   static fromConfig(
     config: Config,
-    logger: Logger,
-    discovery: PluginEndpointDiscovery,
+    logger: LoggerService,
+    discovery: DiscoveryService,
   ): PublisherBase {
     const legacyPathCasing =
       config.getOptionalBoolean(
@@ -299,7 +300,7 @@ export class LocalPublish implements PublisherBase {
           // Otherwise, copy or move the file.
           await new Promise<void>(resolve => {
             const migrate = removeOriginal ? fs.move : fs.copyFile;
-            this.logger.verbose(`Migrating ${relativeFile}`);
+            this.logger.debug(`Migrating ${relativeFile}`);
             migrate(file, newFile, err => {
               if (err) {
                 this.logger.warn(

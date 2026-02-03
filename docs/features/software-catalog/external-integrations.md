@@ -1,7 +1,6 @@
 ---
 id: external-integrations
 title: External integrations
-# prettier-ignore
 description: Documentation on External integrations to integrate systems with Backstage
 ---
 
@@ -53,9 +52,7 @@ Some defining traits of entity providers:
 
 ### Creating an Entity Provider
 
-The recommended way of instantiating the catalog backend classes is to use the
-`CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
+The recommended way of instantiating the catalog backend classes is to use the `CatalogBuilder`.
 We will create a new
 [`EntityProvider`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/provider.ts)
 subclass that can be added to this catalog builder.
@@ -66,60 +63,79 @@ have to supply a (unique) name, and accept a connection from the environment
 through which you can issue writes. The rest is up to the individual provider
 implementation.
 
-It is up to you where you put the code for this new processor class. For quick
+It is up to you where you put the code for this new provider class. For quick
 experimentation you could place it in your backend package, but we recommend
-putting all extensions like this in a backend plugin package of their own in the
-`plugins` folder of your Backstage repo.
+putting all extensions like this in a backend module package of their own in the
+`plugins` folder of your Backstage repo:
+
+```sh
+yarn new --select backend-plugin-module --option pluginId=catalog
+```
 
 The class will have this basic structure:
 
-```ts
-import { UrlReader } from '@backstage/backend-common';
+```ts title="plugins/catalog-backend-module-frobs/src/FrobsProvider.ts"
 import { Entity } from '@backstage/catalog-model';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
+import {
+  SchedulerServiceTaskRunner,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Provides entities from fictional frobs service.
  */
 export class FrobsProvider implements EntityProvider {
   private readonly env: string;
-  private readonly reader: UrlReader;
+  private readonly reader: UrlReaderService;
   private connection?: EntityProviderConnection;
+  private taskRunner: SchedulerServiceTaskRunner;
 
-  /** [1] **/
-  constructor(env: string, reader: UrlReader) {
+  /** [1] */
+  constructor(
+    env: string,
+    reader: UrlReaderService,
+    taskRunner: SchedulerServiceTaskRunner,
+  ) {
     this.env = env;
     this.reader = reader;
+    this.taskRunner = taskRunner;
   }
 
-  /** [2] **/
+  /** [2] */
   getProviderName(): string {
     return `frobs-${this.env}`;
   }
 
-  /** [3] **/
+  /** [3] */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
+    await this.taskRunner.run({
+      id: this.getProviderName(),
+      fn: async () => {
+        await this.run();
+      },
+    });
   }
 
-  /** [4] **/
+  /** [4] */
   async run(): Promise<void> {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
-    const raw = await this.reader.read(
+    const response = await this.reader.readUrl(
       `https://frobs-${this.env}.example.com/data`,
     );
-    const data = JSON.parse(raw.toString());
+    const data = JSON.parse((await response.buffer()).toString());
 
-    /** [5] **/
+    /** [5] */
     const entities: Entity[] = frobsToEntities(data);
 
-    /** [6] **/
+    /** [6] */
     await this.connection.applyMutation({
       type: 'full',
       entities: entities.map(entity => ({
@@ -159,7 +175,12 @@ Check out the numbered markings - let's go through them one by one.
    the outcome of that. This example issues a `fetch` to the right service and
    issues a full refresh of its entity bucket based on that.
 5. The method translates the foreign data model to the native `Entity` form, as
-   expected by the catalog.
+   expected by the catalog. The `Entity` must include the
+   `backstage.io/managed-by-location` and
+   `backstage.io/managed-by-origin-location annotations`; otherwise, it will not
+   appear in the Catalog and will generate warning logs. The
+   [Well-known Annotations](./well-known-annotations.md#backstageiomanaged-by-location)
+   documentation has guidance on what values to use for these.
 6. Finally, we issue a "mutation" to the catalog. This persists the entities in
    our own bucket, along with an optional `locationKey` that's used for conflict
    checks. But this is a bigger topic - mutations warrant their own explanatory
@@ -178,7 +199,7 @@ bucket is accessible.
 There are two different types of mutation.
 
 The first is `'full'`, which means to figuratively throw away the contents of
-the bucket and replacing it with all of the new contents specified. Under the
+the bucket and replacing it with all the new contents specified. Under the
 hood, this is actually implemented through a highly efficient delta mechanism
 for performance reasons, since it is common that the difference from one run to
 the other is actually very small. This strategy is convenient for providers that
@@ -230,26 +251,28 @@ others.
 You should now be able to add this class to your backend in
 `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-+import { FrobsProvider } from '../path/to/class';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { FrobsProvider } from '../path/to/class';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = CatalogBuilder.create(env);
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = CatalogBuilder.create(env);
+  /* highlight-add-start */
+  const taskRunner = env.scheduler.createScheduledTaskRunner({
+    frequency: { minutes: 30 },
+    timeout: { minutes: 10 },
+  });
+  const frobs = new FrobsProvider('production', env.reader, taskRunner);
+  builder.addEntityProvider(frobs);
+  /* highlight-add-end */
 
-+  const frobs = new FrobsProvider('production', env.reader);
-+  builder.addEntityProvider(frobs);
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
 
-   const { processingEngine, router } = await builder.build();
-   await processingEngine.start();
-
-+  await env.scheduler.scheduleTask({
-+    id: 'run_frobs_refresh',
-+    fn: async () => { await frobs.run(); },
-+    frequency: { minutes: 30 },
-+    timeout: { minutes: 10 },
-+  });
+  // ..
+}
 ```
 
 Note that we used the builtin scheduler facility to regularly call the `run`
@@ -260,6 +283,268 @@ the `connect` call has been made to the provider.
 
 Start up the backend - it should now start reading from the previously
 registered location and you'll see your entities start to appear in Backstage.
+
+#### New Backend System
+
+To install the provider using the new backend system you will need to create a module and add it to your backend. The following is a very simplified example of what that would look like:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { FrobsProvider } from './path/to/class';
+
+export const catalogModuleFrobsProvider = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'frobs-provider',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+        reader: coreServices.urlReader,
+        /* highlight-add-start */
+        scheduler: coreServices.scheduler,
+        /* highlight-add-end */
+      },
+      async init({ catalog, reader, scheduler }) {
+        const taskRunner = scheduler.createScheduledTaskRunner({
+          frequency: { minutes: 30 },
+          timeout: { minutes: 10 },
+        });
+        const frobs = new FrobsProvider('dev', reader, taskRunner);
+        catalog.addEntityProvider(frobs);
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+
+backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(catalogModuleFrobsProvider);
+
+// Other plugins ...
+
+backend.start();
+```
+
+#### Follow-up: Config Defined Schedule
+
+If you want to go a step further and increase the configurability of your new `FrobsProvider`, you can define the schedule that the task runs at in `app-config.yaml` instead of requiring code changes to adjust.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    frobs-provider:
+      schedule:
+        initialDelay: { seconds: 30 }
+        frequency: { hours: 1 }
+        timeout: { minutes: 50 }
+```
+
+This approach will also allow you to customize the schedule per environment. You can also [add a schema to your config](../../conf/defining.md).
+
+#### New Backend
+
+```ts title="packages/backend/src/index.ts"
+import {
+  SchedulerServiceTaskScheduleDefinition,
+  /* highlight-add-start */
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+  /* highlight-add-end */
+} from '@backstage/backend-plugin-api';
+
+export const catalogModuleFrobsProvider = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'frobs-provider',
+  register(env) {
+    env.registerInit({
+      deps: {
+        // ... other deps
+        /* highlight-add-start */
+        rootConfig: coreServices.rootConfig,
+        /* highlight-add-end */
+      },
+      async init({ catalog, reader, scheduler, rootConfig }) {
+        /* highlight-add-start */
+        const config = rootConfig.getConfig('catalog.providers.frobs-provider'); // Generally, catalog config goes under catalog.providers.pluginId
+        // Add a default schedule if you don't define one in config.
+        const schedule = config.has('schedule')
+          ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+              config.getConfig('schedule'),
+            )
+          : {
+              frequency: { minutes: 30 },
+              timeout: { minutes: 10 },
+            };
+        const taskRunner: SchedulerServiceTaskRunner =
+          scheduler.createScheduledTaskRunner(schedule);
+        /* highlight-add-end */
+
+        // rest of your code
+      },
+    });
+  },
+});
+```
+
+#### Old Backend
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { FrobsProvider } from '../path/to/class';
+import {
+  /* highlight-add-start */
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+  /* highlight-add-end */
+} from '@backstage/backend-plugin-api';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  /* highlight-add-start */
+  const config = env.config.getConfig('catalog.providers.frobs-provider'); // Generally, catalog config goes under catalog.providers.pluginId
+  // Add a default schedule if you don't define one in config.
+  const schedule = config.has('schedule')
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
+    : {
+        frequency: { minutes: 30 },
+        timeout: { minutes: 10 },
+      };
+  const taskRunner = env.scheduler.createScheduledTaskRunner(schedule);
+  /* highlight-add-end */
+
+  // ..
+}
+```
+
+### Example User Entity Provider
+
+If you have a 3rd party entity provider such as an internal HR system that you wish to use you are not limited to using our entity providers, (or simply wish to add to existing entity providers with your own data).
+
+We can create an entity provider to read entities that are based off that provider.
+
+We create a basic entity provider as shown above. In the example below we might want to extract our users from an HR system, I am assuming the HR system already has the slackUserId to get that information please see the [Slack Api](https://api.slack.com/methods).
+
+```typescript
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+} from '@backstage/catalog-model';
+import {
+  EntityProvider,
+  EntityProviderConnection,
+} from '@backstage/plugin-catalog-backend';
+import { WebClient } from '@slack/web-api';
+import { kebabCase } from 'lodash';
+
+interface Staff {
+  displayName: string;
+  slackUserId: string;
+  jobTitle: string;
+  photoUrl: string;
+  address: string;
+  email: string;
+}
+
+export class UserEntityProvider implements EntityProvider {
+  private readonly getStaffUrl: string;
+  protected readonly slackTeam: string;
+  protected readonly slackToken: string;
+  protected connection?: EntityProviderConnection;
+
+  static fromConfig(config: Config, options: { logger: Logger }) {
+    const getStaffUrl = config.getString('staff.url');
+    const slackToken = config.getString('slack.token');
+    const slackTeam = config.getString('slack.team');
+    return new UserEntityProvider({
+      ...options,
+      getStaffUrl,
+      slackToken,
+      slackTeam,
+    });
+  }
+
+  private constructor(options: {
+    getStaffUrl: string;
+    slackToken: string;
+    slackTeam: string;
+  }) {
+    this.getStaffUrl = options.getStaffUrl;
+    this.slackToken = options.slackToken;
+    this.slackTeam = options.slackTeam;
+  }
+
+  async getAllStaff(): Promise<Staff[]> {
+    return await axios.get(this.getStaffUrl);
+  }
+
+  public async connect(connection: EntityProviderConnection): Promise<void> {
+    this.connection = connection;
+  }
+
+  async run(): Promise<void> {
+    if (!this.connection) {
+      throw new Error('User Connection Not initialized');
+    }
+
+    const userResources: UserEntity[] = [];
+    const staff = await this.getAllStaff();
+
+    for (const user of staff) {
+      // we can add any links here in this case it would be adding a slack link to the users so you can directly slack them.
+      const links =
+        user.slackUserId != null && user.slackUserId.length > 0
+          ? [
+              {
+                url: `slack://user?team=${this.slackTeam}&id=${user.slackUserId}`,
+                title: 'Slack',
+                icon: 'message',
+              },
+            ]
+          : undefined;
+      const userEntity: UserEntity = {
+        kind: 'User',
+        apiVersion: 'backstage.io/v1alpha1',
+        metadata: {
+          annotations: {
+            [ANNOTATION_LOCATION]: 'hr-user-https://www.hrurl.com/',
+            [ANNOTATION_ORIGIN_LOCATION]: 'hr-user-https://www.hrurl.com/',
+          },
+          links,
+          // name of the entity
+          name: kebabCase(user.displayName),
+          // name for display purposes could be anything including email
+          title: user.displayName,
+        },
+        spec: {
+          profile: {
+            displayName: user.displayName,
+            email: user.email,
+            picture: user.photoUrl,
+          },
+          memberOf: [],
+        },
+      };
+
+      userResources.push(userEntity);
+    }
+
+    await this.connection.applyMutation({
+      type: 'full',
+      entities: userResources.map(entity => ({
+        entity,
+        locationKey: 'hr-user-https://www.hrurl.com/',
+      })),
+    });
+  }
+}
+```
 
 ## Custom Processors
 
@@ -309,7 +594,7 @@ startup. They are at the heart of all catalog logic, and have the ability to
 read the contents of locations, modify in-flight entities that were read out of
 a location, perform validation, and more. The catalog comes with a set of
 builtin processors, that have the ability to read from a list of well known
-location types, to perform the basic processing needs, etc, but more can be
+location types, to perform the basic processing needs, etc., but more can be
 added by the organization that adopts Backstage.
 
 We will now show the process of creating a new processor and location type,
@@ -336,8 +621,7 @@ feeding it into the ingestion loop. For this kind of an integration, you'd
 typically want to add it to the list of statically always-available locations in
 the config.
 
-```yaml
-# In app-config.yaml
+```yaml title="app-config.yaml"
 catalog:
   locations:
     - type: system-x
@@ -350,32 +634,39 @@ does so!
 
 ### Creating a Catalog Data Reader Processor
 
-The recommended way of instantiating the catalog backend classes is to use the
-`CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
+The recommended way of instantiating the catalog backend classes is to use the `CatalogBuilder`.
 We will create a new
 [`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/processor.ts)
 subclass that can be added to this catalog builder.
 
 It is up to you where you put the code for this new processor class. For quick
 experimentation you could place it in your backend package, but we recommend
-putting all extensions like this in a backend plugin package of their own in the
-`plugins` folder of your Backstage repo.
+putting all extensions like this in a backend module package of their own in the
+`plugins` folder of your Backstage repo:
+
+```sh
+yarn new --select backend-module --option pluginId=catalog
+```
 
 The class will have this basic structure:
 
 ```ts
-import { UrlReader } from '@backstage/backend-common';
 import {
   processingResult,
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
 } from '@backstage/plugin-catalog-node';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
+
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 // A processor that reads from the fictional System-X
 export class SystemXReaderProcessor implements CatalogProcessor {
-  constructor(private readonly reader: UrlReader) {}
+  constructor(private readonly reader: UrlReaderService) {}
+
+  getProcessorName(): string {
+    return 'SystemXReaderProcessor';
+  }
 
   async readLocation(
     location: LocationSpec,
@@ -390,11 +681,10 @@ export class SystemXReaderProcessor implements CatalogProcessor {
 
     try {
       // Use the builtin reader facility to grab data from the
-      // API. If you prefer, you can just use plain fetch here
-      // (from the node-fetch package), or any other method of
-      // your choosing.
-      const data = await this.reader.read(location.target);
-      const json = JSON.parse(data.toString());
+      // API. If you prefer, you can just use plain fetch here,
+      // or any other method of your choosing.
+      const response = await this.reader.readUrl(location.target);
+      const json = JSON.parse((await response.buffer()).toString());
       // Repeatedly call emit(processingResult.entity(location, <entity>))
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
@@ -419,18 +709,62 @@ The key points to note are:
 You should now be able to add this class to your backend in
 `packages/backend/src/plugins/catalog.ts`:
 
-```diff
-+import { SystemXReaderProcessor } from '../path/to/class';
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { SystemXReaderProcessor } from '../path/to/class';
 
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = CatalogBuilder.create(env);
-+  builder.addProcessor(new SystemXReaderProcessor(env.reader));
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(new SystemXReaderProcessor(env.reader));
+
+  // ..
+}
 ```
 
 Start up the backend - it should now start reading from the previously
 registered location and you'll see your entities start to appear in Backstage.
+
+#### Installing Processor Using New Backend System
+
+To install the processor using the new backend system you will need to create a module and add it to your backend. The following is a very simplified example of what that would look like:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { SystemXReaderProcessor } from '../path/to/class';
+
+export const catalogModuleSystemXReaderProcessor = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'system-x-reader-processor',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+        reader: coreServices.urlReader,
+      },
+      async init({ catalog, reader }) {
+        catalog.addProcessor(new SystemXReaderProcessor(reader));
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+
+backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(catalogModuleSystemXReaderProcessor);
+
+// Other plugins ...
+
+backend.start();
+```
 
 ### Caching processing results
 
@@ -441,13 +775,13 @@ sent. Luckily many external systems provide ETag support to check for changes
 which usually doesn't count towards the quota and saves resources both
 internally and externally.
 
-The catalog has built in support for leveraging ETags when refreshing external
+The catalog has built in support for leveraging `ETag`s when refreshing external
 locations in GitHub. This example aims to demonstrate how to add the same
 behavior for `system-x` that we implemented earlier.
 
 ```ts
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import {
   processingResult,
   CatalogProcessor,
@@ -470,7 +804,7 @@ type CacheItem = {
 };
 
 export class SystemXReaderProcessor implements CatalogProcessor {
-  constructor(private readonly reader: UrlReader) {}
+  constructor(private readonly reader: UrlReaderService) {}
 
   getProcessorName() {
     // The processor name must be unique.
@@ -495,7 +829,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       // We send the ETag from the previous run if it exists.
       // The previous ETag will be set in the headers for the outgoing request and system-x
       // is going to throw NOT_MODIFIED (HTTP 304) if the ETag matches.
-      const response = await this.reader.readUrl?.(location.target, {
+      const response = await this.reader.readUrl(location.target, {
         etag: cacheItem?.etag,
       });
       if (!response) {
@@ -513,7 +847,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       }
 
       // For this example the JSON payload is a single entity.
-      const entity: Entity = JSON.parse(response.buffer.toString());
+      const entity: Entity = JSON.parse((await response.buffer()).toString());
       emit(processingResult.entity(location, entity));
 
       // Update the cache with the new ETag and entity used for the next run.
@@ -525,12 +859,468 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       if (error.name === 'NotModifiedError' && cacheItem) {
         // The ETag matches and we have a cached value from the previous run.
         emit(processingResult.entity(location, cacheItem.entity));
+      } else {
+        const message = `Unable to read ${location.type}, ${error}`;
+        emit(processingResult.generalError(location, message));
       }
-      const message = `Unable to read ${location.type}, ${error}`;
-      emit(processingResult.generalError(location, message));
     }
 
     return true;
   }
 }
 ```
+
+### Supporting different metadata file formats
+
+Sometimes you might already have files in GitHub or some provider that Backstage already supports but the metadata format that you use is not the same as `catalog-info.yaml` files. In this case you can implement a custom parser that can read the files and convert them on-the-fly to the `Entity` format that Backstage expects, and it will integrate seamlessly into Catalog so that you can use things like the `GithubEntityProvider` to read these files.
+
+What you will need to do is to provide a custom `CatalogProcessorParser` and provide that to `builder.setEntityDataParser`.
+
+Let's say my format looks something like this:
+
+```yaml
+id: my-service
+type: service
+author: user@backstage.com
+```
+
+We need to build a custom parser that can read this format and convert it to the `Entity` format that Backstage expects.
+
+```ts title="packages/backend/src/lib/customEntityDataParser.ts"
+import {
+  CatalogProcessorParser,
+  CatalogProcessorResult,
+  LocationSpec,
+  processingResult,
+} from '@backstage/plugin-catalog-node';
+import yaml from 'yaml';
+import {
+  Entity,
+  stringifyLocationRef,
+  ANNOTATION_ORIGIN_LOCATION,
+  ANNOTATION_LOCATION,
+} from '@backstage/catalog-model';
+import _ from 'lodash';
+import parseGitUrl from 'git-url-parse';
+
+// This implementation will map whatever your own format is into valid Entity objects.
+const makeEntityFromCustomFormatJson = (
+  component: { id: string; type: string; author: string },
+  location: LocationSpec,
+): Entity => {
+  return {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      name: component.id,
+      namespace: 'default',
+      annotations: {
+        [ANNOTATION_LOCATION]: `${location.type}:${location.target}`,
+        [ANNOTATION_ORIGIN_LOCATION]: `${location.type}:${location.target}`,
+      },
+    },
+    spec: {
+      type: component.type,
+      owner: component.author,
+      lifecycle: 'experimental',
+    },
+  };
+};
+
+export const customEntityDataParser: CatalogProcessorParser = async function* ({
+  data,
+  location,
+}) {
+  let documents: yaml.Document.Parsed[];
+  try {
+    // let's treat the incoming file always as yaml, you can of course change this if your format is not yaml.
+    documents = yaml.parseAllDocuments(data.toString('utf8')).filter(d => d);
+  } catch (e) {
+    // if we failed to parse as yaml throw some errors.
+    const loc = stringifyLocationRef(location);
+    const message = `Failed to parse YAML at ${loc}, ${e}`;
+    yield processingResult.generalError(location, message);
+    return;
+  }
+
+  for (const document of documents) {
+    // If there's errors parsing the document as yaml, we should throw an error.
+    if (document.errors?.length) {
+      const loc = stringifyLocationRef(location);
+      const message = `YAML error at ${loc}, ${document.errors[0]}`;
+      yield processingResult.generalError(location, message);
+    } else {
+      // Convert the document to JSON
+      const json = document.toJSON();
+      if (_.isPlainObject(json)) {
+        // Is this a catalog-info.yaml file?
+        if (json.apiVersion) {
+          yield processingResult.entity(location, json as Entity);
+        } else {
+          // let's treat this like it's our custom format instead.
+          yield processingResult.entity(
+            location,
+            makeEntityFromCustomFormatJson(json, location),
+          );
+        }
+      } else if (json === null) {
+        // Ignore null values, these happen if there is an empty document in the
+        // YAML file, for example if --- is added to the end of the file.
+      } else {
+        // We don't support this format.
+        const message = `Expected object at root, got ${typeof json}`;
+        yield processingResult.generalError(location, message);
+      }
+    }
+  }
+};
+```
+
+This is a lot of code right now, as this is a pretty niche use-case, so we don't currently provide many helpers for you to be able to provide custom implementations easier or to compose together different parsers.
+
+You then should be able to provide this `customEntityDataParser` to the `CatalogBuilder`:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { customEntityDataParser } from '../lib/customEntityDataParser';
+
+...
+
+builder.setEntityDataParser(customEntityDataParser);
+```
+
+#### Using Custom Entity Data Parser with New Backend System
+
+To use a custom entity data parse with the new backend system you will need to create a module and add it to your backend. The following is a very simplified example of what that would look like:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { customEntityDataParser } from '../lib/customEntityDataParser';
+
+export const catalogModuleCustomDataParser = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'custom-data-parser',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogModelExtensionPoint,
+        reader: coreServices.urlReader,
+      },
+      async init({ catalog, reader }) {
+        catalog.setEntityDataParser(customEntityDataParser);
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+
+backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(catalogModuleCustomDataParser);
+
+// Other plugins ...
+
+backend.start();
+```
+
+## Incremental Entity Provider
+
+For large data sources that may not fit into memory but support pagination, the Incremental Entity Provider offers an efficient way to ingest data incrementally, handling deletions and updates seamlessly while minimizing memory usage.
+
+You can find more details about [why it was created](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion#why-did-we-create-it) and its [requirements](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion#requirements).
+
+### Installation
+
+1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
+
+2. Add the following code to the `packages/backend/src/index.ts` file:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+/* highlight-add-start */
+backend.add(
+  import(
+    '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha'
+  ),
+);
+/* highlight-add-end */
+
+backend.start();
+```
+
+### Writing an Incremental Entity Provider
+
+To create an Incremental Entity Provider, you need to know how to retrieve a single page of data from an API with pagination. The `IncrementalEntityProvider` facilitates this by requiring:
+
+- **getProviderName:** A unique name to avoid conflicts with other providers.
+- **next:** Fetches a specific page of entities, moving the cursor forward.
+- **around:** Handles setup and tear-down, wrapping the process that iterates through multiple pages.
+
+For more information on compatibility, refer to the [requirements](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion#requirements).
+
+In this tutorial, we'll implement an Incremental Entity Provider that interacts with an imaginary API to fetch a list of imaginary services.
+
+```ts
+interface MyApiClient {
+  getServices(page: number): MyPaginatedResults<Service>;
+}
+
+interface MyPaginatedResults<T> {
+  items: T[];
+  totalPages: number;
+}
+
+interface Service {
+  name: string;
+}
+```
+
+These are the only 3 methods that you need to implement. `getProviderName()` is pretty self-explanatory and it's identical to the `getProviderName()` method on a regular Entity Provider.
+
+```ts
+import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
+
+// This will include your pagination information, let's say our API accepts a `page` parameter.
+// In this case, the cursor will include `page`
+interface Cursor {
+  page: number;
+}
+
+// This interface describes the type of data that will be passed to your burst function.
+interface Context {
+  apiClient: MyApiClient;
+}
+
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
+  getProviderName() {
+    return `MyIncrementalEntityProvider`;
+  }
+}
+```
+
+`around` method is used for setup and tear-down. For example, if you need to create a client that will connect to the API, you would do that here.
+
+```ts
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
+  getProviderName() {
+    return `MyIncrementalEntityProvider`;
+  }
+
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
+    const apiClient = new MyApiClient();
+
+    await burst({ apiClient });
+
+    // If you need to do any teardown, you can do it here.
+  }
+}
+```
+
+If you need to pass a token to your API, then you can create a constructor that will receive a token and use the token to setup the client.
+
+```ts
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
+  private readonly token: string;
+
+  constructor(token: string) {
+    this.token = token;
+  }
+
+  getProviderName() {
+    return `MyIncrementalEntityProvider`;
+  }
+
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
+    const apiClient = new MyApiClient(this.token);
+
+    await burst({ apiClient });
+  }
+}
+```
+
+The last step is to implement the actual `next` method that will accept the cursor, call the API, process the result and return the result.
+
+```ts
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+} from '@backstage/catalog-model';
+import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
+
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
+  private readonly token: string;
+  private readonly mySource: string;
+
+  constructor(token: string, mySource: string) {
+    this.token = token;
+    this.mySource = mySource;
+  }
+
+  getProviderName() {
+    return `MyIncrementalEntityProvider`;
+  }
+
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
+    const apiClient = new MyApiClient(this.token);
+
+    await burst({ apiClient });
+  }
+
+  async next(
+    context: Context,
+    cursor: Cursor = { page: 1 },
+  ): Promise<EntityIteratorResult<Cursor>> {
+    const { apiClient } = context;
+    const location = `${this.getProviderName()}:${this.mySource}`;
+
+    // call your API with the current cursor
+    const data = await apiClient.getServices(cursor);
+
+    // calculate the next page
+    const nextPage = page + 1;
+
+    // figure out if there are any more pages to fetch
+    const done = nextPage > data.totalPages;
+
+    // convert returned items into entities
+    const entities = data.items.map(item => ({
+      entity: {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: {
+          name: item.name,
+          annotations: {
+            // You need to define these, otherwise they'll fail validation
+            [ANNOTATION_LOCATION]: location,
+            [ANNOTATION_ORIGIN_LOCATION]: location,
+          },
+        },
+        spec: {
+          type: 'service',
+          lifecycle: 'production', // Ideally your source has this information
+          owner: 'unknown', // Ideally your source has this information
+        },
+      },
+    }));
+
+    // create the next cursor
+    const nextCursor = {
+      page: nextPage,
+    };
+
+    return {
+      done,
+      entities,
+      cursor: nextCursor,
+    };
+  }
+}
+```
+
+Now that you have your new Incremental Entity Provider, we can connect it to the catalog.
+
+### Installing the Incremental Entity Provider
+
+We'll assume you followed the [Installation](#installation) instructions. Now create a module inside `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`.
+
+```ts title="packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts"
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { incrementalIngestionProvidersExtensionPoint } from '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha';
+
+export const catalogModuleCustomIncrementalIngestionProvider =
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'custom-incremental-ingestion-provider',
+    register(env) {
+      env.registerInit({
+        deps: {
+          incrementalBuilder: incrementalIngestionProvidersExtensionPoint,
+          config: coreServices.rootConfig,
+        },
+        async init({ incrementalBuilder, config }) {
+          // Assuming the token for the API comes from config
+          const token = config.getString('myApiClient.token');
+          const myEntityProvider = new MyIncrementalEntityProvider(token);
+
+          const options = {
+            // How long should it attempt to read pages from the API in a
+            // single burst? Keep this short. The Incremental Entity Provider
+            // will attempt to read as many pages as it can in this time
+            burstLength: { seconds: 3 },
+
+            // How long should it wait between bursts?
+            burstInterval: { seconds: 3 },
+
+            // How long should it rest before re-ingesting again?
+            restLength: { day: 1 },
+
+            // Optional back-off configuration - how long should it wait to retry
+            // in the event of an error?
+            backoff: [
+              { seconds: 5 },
+              { seconds: 30 },
+              { minutes: 10 },
+              { hours: 3 },
+            ],
+
+            // Optional. Use this to prevent removal of entities above a given
+            // percentage. This can be helpful if a data source is flaky and
+            // sometimes returns a successful status, but fewer than expected
+            // assets to add or maintain in the catalog.
+            rejectRemovalsAbovePercentage: 5,
+
+            // Optional. Similar to rejectRemovalsAbovePercentage, except it
+            // applies to complete, 100% failure of a data source. If true,
+            // a data source that returns a successful status but does not
+            // provide any assets to turn into entities will have its empty
+            // data set rejected.
+            rejectEmptySourceCollections: true,
+          };
+
+          incrementalBuilder.addProvider({
+            provider: myEntityProvider,
+            options,
+          });
+        },
+      });
+    },
+  });
+```
+
+Add the module to `packages/backend/src/index.ts`
+
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-next-line */
+import { catalogModuleCustomIncrementalIngestionProvider } from './extensions/catalogCustomIncrementalIngestion';
+
+const backend = createBackend();
+
+backend.add(
+  import(
+    '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha'
+  ),
+);
+
+/* highlight-add-next-line */
+backend.add(catalogModuleCustomIncrementalIngestionProvider);
+
+backend.start();
+```
+
+For a deep dive into the technical details of the Incremental Entity Provider, see [the README](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion).

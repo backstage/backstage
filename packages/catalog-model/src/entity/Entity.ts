@@ -15,7 +15,6 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { EntityStatus } from './EntityStatus';
 
 /**
  * The parts of the format that's common to all versions/kinds of entity.
@@ -53,25 +52,6 @@ export type Entity = {
    */
   relations?: EntityRelation[];
 };
-
-/**
- * A version of the {@link Entity} type that contains unstable alpha fields.
- *
- * @remarks
- *
- * Available via the `@backstage/catalog-model/alpha` import.
- *
- * @alpha
- */
-export interface AlphaEntity extends Entity {
-  /**
-   * The current status of the entity, as claimed by various sources.
-   *
-   * The keys are implementation defined and the values can be any JSON object
-   * with semantics that match that implementation.
-   */
-  status?: EntityStatus;
-}
 
 /**
  * Metadata fields common to all versions/kinds of entity.

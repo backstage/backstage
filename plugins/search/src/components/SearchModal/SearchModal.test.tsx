@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
@@ -28,16 +27,25 @@ import {
 
 import { SearchModal } from './SearchModal';
 
+const navigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => navigate,
+}));
+
 describe('SearchModal', () => {
-  const query = jest.fn().mockResolvedValue({ results: [] });
+  const configApiMock = new ConfigReader({ app: { title: 'Mock app' } });
+  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
 
   const apiRegistry = TestApiRegistry.from(
-    [configApiRef, new ConfigReader({ app: { title: 'Mock app' } })],
-    [searchApiRef, { query }],
+    [configApiRef, configApiMock],
+    [searchApiRef, searchApiMock],
   );
 
   beforeEach(() => {
-    query.mockClear();
+    navigate.mockClear();
+    searchApiMock.query.mockClear();
   });
 
   const toggleModal = jest.fn();
@@ -55,7 +63,6 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(query).toHaveBeenCalledTimes(1);
   });
 
   it('Should use parent search context if defined', async () => {
@@ -80,7 +87,9 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(query).toHaveBeenCalledWith(initialState);
+    expect(searchApiMock.query).toHaveBeenCalledWith(initialState, {
+      signal: expect.any(AbortSignal),
+    });
   });
 
   it('Should create a local search context if a parent is not defined', async () => {
@@ -96,11 +105,20 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(query).toHaveBeenCalledWith({
-      term: '',
-      filters: {},
-      types: [],
-      pageCursor: undefined,
+
+    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    await userEvent.type(input, 'text');
+
+    await waitFor(() => {
+      expect(searchApiMock.query).toHaveBeenCalledWith(
+        {
+          term: 'text',
+          filters: {},
+          types: [],
+          pageCursor: undefined,
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
   });
 
@@ -133,7 +151,6 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(query).toHaveBeenCalledTimes(1);
     await userEvent.keyboard('{Escape}');
     expect(toggleModal).toHaveBeenCalledTimes(1);
   });
@@ -152,5 +169,87 @@ describe('SearchModal', () => {
 
     expect(getByTestId('search-bar-next')).toBeInTheDocument();
     expect(getByTestId('search-bar-next')).not.toBeVisible();
+  });
+
+  it('should focus on its search bar when opened', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden={false} toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByLabelText('Search')).toHaveFocus();
+  });
+
+  it("Don't wait query debounce time when enter is pressed", async () => {
+    const initialState = {
+      term: 'term',
+      filters: {},
+      types: [],
+      pageCursor: '',
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchModal open hidden={false} toggleModal={toggleModal} />
+        </SearchContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(searchApiMock.query).toHaveBeenCalledWith(
+      expect.objectContaining({ term: 'term' }),
+      { signal: expect.any(AbortSignal) },
+    );
+
+    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    await userEvent.clear(input);
+    await userEvent.type(input, 'new term{enter}');
+
+    expect(navigate).toHaveBeenCalledWith('/search?query=new term');
+  });
+
+  it('should navigate with correct search terms to full results', async () => {
+    const initialState = {
+      term: 'term',
+      filters: {},
+      types: [],
+      pageCursor: '',
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchContextProvider initialState={initialState}>
+          <SearchModal open hidden={false} toggleModal={toggleModal} />
+        </SearchContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(searchApiMock.query).toHaveBeenCalledWith(
+      expect.objectContaining({ term: 'term' }),
+      { signal: expect.any(AbortSignal) },
+    );
+
+    const fullResultsBtn = screen.getByRole('button', {
+      name: /view full results/i,
+    });
+    await userEvent.click(fullResultsBtn);
+
+    expect(navigate).toHaveBeenCalledWith('/search?query=term');
   });
 });

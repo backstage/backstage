@@ -15,11 +15,13 @@
  */
 
 import {
-  ProfileInfo,
   BackstageIdentityResponse,
+  ProfileInfo,
 } from '@backstage/core-plugin-api';
+import { OAuthApiCreateOptions } from '../types.ts';
+import { AuthConnector, PopupOptions } from '../../../../lib';
 
-export type { OAuth2CreateOptions } from './OAuth2';
+export type { PopupOptions } from '../../../../lib/AuthConnector';
 /**
  * Session information for generic OAuth2 auth.
  *
@@ -30,8 +32,27 @@ export type OAuth2Session = {
     idToken: string;
     accessToken: string;
     scopes: Set<string>;
-    expiresAt: Date;
+    expiresAt?: Date;
   };
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
+  backstageIdentity?: BackstageIdentityResponse;
+};
+
+/**
+ * OAuth2 create options.
+ * @public
+ */
+export type OAuth2CreateOptions = OAuthApiCreateOptions & {
+  scopeTransform?: (scopes: string[]) => string[];
+  popupOptions?: PopupOptions;
+};
+
+/**
+ * OAuth2 create options with custom auth connector.
+ * @public
+ */
+export type OAuth2CreateOptionsWithAuthConnector = {
+  scopeTransform?: (scopes: string[]) => string[];
+  defaultScopes?: string[];
+  authConnector: AuthConnector<OAuth2Session>;
 };

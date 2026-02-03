@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, Typography } from '@material-ui/core';
-import React from 'react';
+
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import { UserSettingsSignInAvatar } from './UserSettingsSignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from '../useUserProfileInfo';
 import { InfoCard } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
+/** @public */
 export const UserSettingsProfileCard = () => {
   const { profile, displayName } = useUserProfile();
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   return (
-    <InfoCard title="Profile" variant="gridItem">
+    <InfoCard title={t('profileCard.title')} variant="gridItem">
       <Grid container spacing={6}>
         <Grid item>
           <UserSettingsSignInAvatar size={96} />
@@ -35,9 +40,11 @@ export const UserSettingsProfileCard = () => {
               <Typography variant="subtitle1" gutterBottom>
                 {displayName}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {profile.email}
-              </Typography>
+              {profile.email && (
+                <Typography variant="body2" color="textSecondary">
+                  {profile.email}
+                </Typography>
+              )}
             </Grid>
           </Grid>
           <Grid item>

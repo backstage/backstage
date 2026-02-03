@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import {
   CompoundEntityRef,
   parseEntityRef,
@@ -24,27 +24,17 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { TokenManager } from '@backstage/backend-common';
-
-type UserQuery = {
-  annotations: Record<string, string>;
-};
-
-type MemberClaimQuery = {
-  entityRefs: string[];
-  logger?: Logger;
-};
 
 /**
  * A catalog client tailored for reading out identity data from the catalog.
  */
 export class CatalogIdentityClient {
-  private readonly catalogApi: CatalogApi;
-  private readonly tokenManager: TokenManager;
+  private readonly catalog: CatalogService;
+  private readonly auth: AuthService;
 
-  constructor(options: { catalogApi: CatalogApi; tokenManager: TokenManager }) {
-    this.catalogApi = options.catalogApi;
-    this.tokenManager = options.tokenManager;
+  constructor(options: { catalog: CatalogService; auth: AuthService }) {
+    this.catalog = options.catalog;
+    this.auth = options.auth;
   }
 
   /**
@@ -52,7 +42,9 @@ export class CatalogIdentityClient {
    *
    * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
    */
-  async findUser(query: UserQuery): Promise<UserEntity> {
+  async findUser(query: {
+    annotations: Record<string, string>;
+  }): Promise<UserEntity> {
     const filter: Record<string, string> = {
       kind: 'user',
     };
@@ -60,8 +52,10 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    const { token } = await this.tokenManager.getToken();
-    const { items } = await this.catalogApi.getEntities({ filter }, { token });
+    const { items } = await this.catalog.getEntities(
+      { filter },
+      { credentials: await this.auth.getOwnServiceCredentials() },
+    );
 
     if (items.length !== 1) {
       if (items.length > 1) {
@@ -81,7 +75,10 @@ export class CatalogIdentityClient {
    *
    * Returns a superset of the entity names that can be passed directly to `issueToken` as `ent`.
    */
-  async resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]> {
+  async resolveCatalogMembership(query: {
+    entityRefs: string[];
+    logger?: LoggerService;
+  }): Promise<string[]> {
     const { entityRefs, logger } = query;
     const resolvedEntityRefs = entityRefs
       .map((ref: string) => {
@@ -103,9 +100,12 @@ export class CatalogIdentityClient {
       'metadata.namespace': ref.namespace,
       'metadata.name': ref.name,
     }));
-    const { token } = await this.tokenManager.getToken();
-    const entities = await this.catalogApi
-      .getEntities({ filter }, { token })
+
+    const entities = await this.catalog
+      .getEntities(
+        { filter },
+        { credentials: await this.auth.getOwnServiceCredentials() },
+      )
       .then(r => r.items);
 
     if (entityRefs.length !== entities.length) {

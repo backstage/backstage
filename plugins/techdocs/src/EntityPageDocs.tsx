@@ -14,23 +14,55 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
-import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  getCompoundEntityRef,
+  parseEntityRef,
+} from '@backstage/catalog-model';
+import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
+import { getEntityRootTechDocsPath } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsReaderPage } from './plugin';
-import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
+import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
+import { useEntityPageTechDocsRedirect } from './search/hooks/useTechDocsLocation';
 
-type EntityPageDocsProps = { entity: Entity };
+type EntityPageDocsProps = {
+  entity: Entity;
+  /**
+   * Show or hide the content search bar, defaults to true.
+   */
+  withSearch?: boolean;
+};
 
-export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
-  const entityRef = getCompoundEntityRef(entity);
+export const EntityPageDocs = ({
+  entity,
+  withSearch = true,
+}: EntityPageDocsProps) => {
+  let entityRef = getCompoundEntityRef(entity);
+
+  const searchResultUrlMapper = useEntityPageTechDocsRedirect(entityRef);
+
+  if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
+    try {
+      entityRef = parseEntityRef(
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION],
+      );
+    } catch {
+      // not a fan of this but we don't care if the parseEntityRef fails
+    }
+  }
+
+  const defaultPath = getEntityRootTechDocsPath(entity);
 
   return (
     <TechDocsReaderPage entityRef={entityRef}>
       <TechDocsReaderPageSubheader />
-      <TechDocsReaderPageContent withSearch={false} />
+      <TechDocsReaderPageContent
+        withSearch={withSearch}
+        searchResultUrlMapper={searchResultUrlMapper}
+        defaultPath={defaultPath}
+      />
     </TechDocsReaderPage>
   );
 };

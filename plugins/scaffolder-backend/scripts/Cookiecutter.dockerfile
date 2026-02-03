@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.23
 
 RUN apk add --update \
 	git \
@@ -8,4 +8,4 @@ RUN apk add --update \
 	g++ && \
 	pip install cookiecutter && \
 	apk del g++ py-pip python-dev && \
-	rm -rf /var/cache/apk/* 
+	rm -rf /var/cache/apk/*

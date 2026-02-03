@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core/styles';
+
+import Box from '@material-ui/core/Box';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
-import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import { ReactNode, useContext, useEffect, useState } from 'react';
+
 import {
-  SidebarItemWithSubmenuContext,
   SidebarConfigContext,
+  SidebarItemWithSubmenuContext,
   SubmenuConfig,
 } from './config';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
-import { BackstageTheme } from '@backstage/theme';
+
+/** @public */
+export type SidebarSubmenuClassKey = 'root' | 'drawer' | 'drawerOpen' | 'title';
 
 const useStyles = makeStyles<
-  BackstageTheme,
+  Theme,
   { submenuConfig: SubmenuConfig; left: number }
 >(
   theme => ({
@@ -41,11 +46,12 @@ const useStyles = makeStyles<
       flexFlow: 'column nowrap',
       alignItems: 'flex-start',
       position: 'fixed',
+      opacity: 0,
       [theme.breakpoints.up('sm')]: {
         marginLeft: props.left,
-        transition: theme.transitions.create('margin-left', {
+        transition: theme.transitions.create(['margin-left', 'opacity'], {
           easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.shortest,
+          duration: props.submenuConfig.defaultOpenDelayMs,
         }),
       },
       top: 0,
@@ -66,6 +72,8 @@ const useStyles = makeStyles<
       },
     }),
     drawerOpen: props => ({
+      marginLeft: props.left,
+      opacity: 1,
       width: props.submenuConfig.drawerWidthOpen,
       [theme.breakpoints.down('xs')]: {
         width: '100%',
@@ -76,10 +84,10 @@ const useStyles = makeStyles<
       },
     }),
     title: {
-      fontSize: 24,
-      fontWeight: 500,
-      color: '#FFF',
-      padding: 20,
+      fontSize: theme.typography.h5.fontSize,
+      fontWeight: theme.typography.fontWeightMedium,
+      color: theme.palette.navigation.color,
+      padding: theme.spacing(2.5),
       [theme.breakpoints.down('xs')]: {
         display: 'none',
       },
@@ -120,15 +128,15 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   }, [isHoveredOn]);
 
   return (
-    <div
+    <Box
       className={classnames(classes.drawer, {
         [classes.drawerOpen]: isSubmenuOpen,
       })}
     >
-      <Typography variant="h5" className={classes.title}>
+      <Typography variant="h5" component="span" className={classes.title}>
         {props.title}
       </Typography>
       {props.children}
-    </div>
+    </Box>
   );
 };

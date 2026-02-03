@@ -15,43 +15,61 @@
  */
 
 import {
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_LOCATION,
   GroupEntity,
   RELATION_CHILD_OF,
   RELATION_PARENT_OF,
-  ANNOTATION_LOCATION,
   stringifyEntityRef,
-  ANNOTATION_EDIT_URL,
 } from '@backstage/catalog-model';
-import {
-  catalogApiRef,
-  EntityRefLinks,
-  getEntityRelations,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
-import {
-  Box,
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-  IconButton,
-} from '@material-ui/core';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import EmailIcon from '@material-ui/icons/Email';
-import GroupIcon from '@material-ui/icons/Group';
-import EditIcon from '@material-ui/icons/Edit';
-import CachedIcon from '@material-ui/icons/Cached';
-import Alert from '@material-ui/lab/Alert';
-import React, { useCallback } from 'react';
 import {
   Avatar,
   InfoCard,
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Tooltip from '@material-ui/core/Tooltip';
+import {
+  EntityRefLinks,
+  catalogApiRef,
+  getEntityRelations,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
+import { useCallback } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import Alert from '@material-ui/lab/Alert';
+import CachedIcon from '@material-ui/icons/Cached';
+import EditIcon from '@material-ui/icons/Edit';
+import EmailIcon from '@material-ui/icons/Email';
+import GroupIcon from '@material-ui/icons/Group';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
+import { LinksGroup } from '../../Meta';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
+import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { orgTranslationRef } from '../../../../translation';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: theme.spacing(1),
+    padding: theme.spacing(1),
+  },
+  list: {
+    padding: 0,
+    marginLeft: theme.spacing(0.5),
+  },
+}));
 
 const CardTitle = (props: { title: string }) => (
   <Box display="flex" alignItems="center">
@@ -61,22 +79,36 @@ const CardTitle = (props: { title: string }) => (
 );
 
 /** @public */
-export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
+export const GroupProfileCard = (props: {
+  variant?: InfoCardVariants;
+  showLinks?: boolean;
+}) => {
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const { entity: group } = useEntity<GroupEntity>();
+  const { allowed: canRefresh } = useEntityPermission(
+    catalogEntityRefreshPermission,
+  );
+  const { t } = useTranslationRef(orgTranslationRef);
+  const classes = useStyles();
 
   const refreshEntity = useCallback(async () => {
     await catalogApi.refreshEntity(stringifyEntityRef(group));
-    alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
+    alertApi.post({
+      message: 'Refresh scheduled',
+      severity: 'info',
+      display: 'transient',
+    });
   }, [catalogApi, alertApi, group]);
 
   if (!group) {
-    return <Alert severity="error">Group not found</Alert>;
+    return (
+      <Alert severity="error">{t('groupProfileCard.groupNotFound')}</Alert>
+    );
   }
 
   const {
-    metadata: { name, description, annotations },
+    metadata: { name, description, title, annotations, links },
     spec: { profile },
   } = group;
 
@@ -94,19 +126,23 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
   const entityMetadataEditUrl =
     group.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
-  const displayName = profile?.displayName ?? name;
+  const displayName = profile?.displayName ?? title ?? name;
   const emailHref = profile?.email ? `mailto:${profile.email}` : '#';
   const infoCardAction = entityMetadataEditUrl ? (
     <IconButton
-      aria-label="Edit"
-      title="Edit Metadata"
+      aria-label={t('groupProfileCard.editIconButtonTitle')}
+      title={t('groupProfileCard.editIconButtonTitle')}
       component={Link}
       to={entityMetadataEditUrl}
     >
       <EditIcon />
     </IconButton>
   ) : (
-    <IconButton aria-label="Edit" disabled title="Edit Metadata">
+    <IconButton
+      aria-label={t('groupProfileCard.editIconButtonTitle')}
+      disabled
+      title={t('groupProfileCard.editIconButtonTitle')}
+    >
       <EditIcon />
     </IconButton>
   );
@@ -118,10 +154,10 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
       variant={props.variant}
       action={
         <>
-          {allowRefresh && (
+          {allowRefresh && canRefresh && (
             <IconButton
-              aria-label="Refresh"
-              title="Schedule entity refresh"
+              aria-label={t('groupProfileCard.refreshIconButtonAriaLabel')}
+              title={t('groupProfileCard.refreshIconButtonTitle')}
               onClick={refreshEntity}
             >
               <CachedIcon />
@@ -131,59 +167,76 @@ export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
         </>
       }
     >
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={2} xl={1}>
-          <Avatar displayName={displayName} picture={profile?.picture} />
-        </Grid>
-        <Grid item md={10} xl={11}>
-          <List>
-            {profile?.email && (
-              <ListItem>
-                <ListItemIcon>
-                  <Tooltip title="Email">
-                    <EmailIcon />
-                  </Tooltip>
-                </ListItemIcon>
-                <ListItemText>
-                  <Link to={emailHref}>{profile.email}</Link>
-                </ListItemText>
-              </ListItem>
-            )}
-
-            {parentRelations.length ? (
-              <ListItem>
-                <ListItemIcon>
-                  <Tooltip title="Parent Group">
-                    <AccountTreeIcon />
-                  </Tooltip>
-                </ListItemIcon>
-                <ListItemText>
+      <Box className={classes.container}>
+        <Avatar displayName={displayName} picture={profile?.picture} />
+        <List className={classes.list}>
+          <ListItem>
+            <ListItemIcon>
+              <Tooltip title={t('groupProfileCard.listItemTitle.entityRef')}>
+                <PermIdentityIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <ListItemText
+              primary={stringifyEntityRef(group)}
+              secondary={t('groupProfileCard.listItemTitle.entityRef')}
+            />
+          </ListItem>
+          {profile?.email && (
+            <ListItem>
+              <ListItemIcon>
+                <Tooltip title={t('groupProfileCard.listItemTitle.email')}>
+                  <EmailIcon />
+                </Tooltip>
+              </ListItemIcon>
+              <ListItemText
+                primary={<Link to={emailHref}>{profile.email}</Link>}
+                secondary={t('groupProfileCard.listItemTitle.email')}
+              />
+            </ListItem>
+          )}
+          <ListItem>
+            <ListItemIcon>
+              <Tooltip title={t('groupProfileCard.listItemTitle.parentGroup')}>
+                <AccountTreeIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                parentRelations.length ? (
                   <EntityRefLinks
                     entityRefs={parentRelations}
                     defaultKind="Group"
                   />
-                </ListItemText>
-              </ListItem>
-            ) : null}
-
-            {childRelations.length ? (
-              <ListItem>
-                <ListItemIcon>
-                  <Tooltip title="Child Groups">
-                    <GroupIcon />
-                  </Tooltip>
-                </ListItemIcon>
-                <ListItemText>
+                ) : (
+                  'N/A'
+                )
+              }
+              secondary={t('groupProfileCard.listItemTitle.parentGroup')}
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <Tooltip title={t('groupProfileCard.listItemTitle.childGroups')}>
+                <GroupIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                childRelations.length ? (
                   <EntityRefLinks
                     entityRefs={childRelations}
                     defaultKind="Group"
                   />
-                </ListItemText>
-              </ListItem>
-            ) : null}
-          </List>
-        </Grid>
-      </Grid>
+                ) : (
+                  'N/A'
+                )
+              }
+              secondary={t('groupProfileCard.listItemTitle.childGroups')}
+            />
+          </ListItem>
+          {props?.showLinks && <LinksGroup links={links} />}
+        </List>
+      </Box>
     </InfoCard>
   );
 };

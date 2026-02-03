@@ -15,7 +15,6 @@
  */
 
 import { render } from '@testing-library/react';
-import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { useRouteRefParams } from './useRouteRefParams';
 import { createRouteRef } from './RouteRef';
@@ -41,9 +40,7 @@ describe('useRouteRefParams', () => {
     const { getByText } = render(
       <MemoryRouter initialEntries={['/foo/bar']}>
         <Routes>
-          <Route path="/:a/:b">
-            <Page />
-          </Route>
+          <Route path="/:a/:b" element={<Page />} />
         </Routes>
       </MemoryRouter>,
     );

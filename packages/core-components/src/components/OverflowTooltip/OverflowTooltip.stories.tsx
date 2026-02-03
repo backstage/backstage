@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 import Box from '@material-ui/core/Box';
-import React from 'react';
 import { OverflowTooltip } from './OverflowTooltip';
 
 export default {
   title: 'Data Display/OverflowTooltip',
   component: OverflowTooltip,
+  tags: ['!manifest'],
 };
 
 const text =
-  'Lorem Ipsum is simply dummy text of the printing and typesetting industry.';
+  'Lorem Ipsum is simply sample text of the printing and typesetting industry.';
 
 export const Default = () => (
   <Box maxWidth="200px">

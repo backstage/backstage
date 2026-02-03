@@ -13,35 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, waitFor } from '@testing-library/react';
+
+import { waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
-import { Direction } from '../EntityRelationsGraph';
+import { Direction } from '../../lib/types';
 import { DirectionFilter } from './DirectionFilter';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<DirectionFilter/>', () => {
-  test('should display current value', () => {
-    const { getByText } = render(
+  test('should display current value', async () => {
+    await renderInTestApp(
       <DirectionFilter value={Direction.LEFT_RIGHT} onChange={() => {}} />,
     );
 
-    expect(getByText('Left to right')).toBeInTheDocument();
+    expect(screen.getByText('Left to right')).toBeInTheDocument();
   });
 
   test('should select direction', async () => {
     const onChange = jest.fn();
-    const { getByText, getByTestId } = render(
+    await renderInTestApp(
       <DirectionFilter value={Direction.RIGHT_LEFT} onChange={onChange} />,
     );
 
-    expect(getByText('Right to left')).toBeInTheDocument();
+    expect(screen.getByText('Right to left')).toBeInTheDocument();
 
-    await userEvent.click(getByTestId('select'));
-    await userEvent.click(getByText('Top to bottom'));
+    await userEvent.click(
+      within(screen.getByTestId('select')).getByRole('button'),
+    );
+    await userEvent.click(screen.getByText('Top to bottom'));
 
     await waitFor(() => {
-      expect(getByText('Top to bottom')).toBeInTheDocument();
-      expect(onChange).toBeCalledWith(Direction.TOP_BOTTOM);
+      expect(screen.getByText('Top to bottom')).toBeInTheDocument();
+      expect(onChange).toHaveBeenCalledWith(Direction.TOP_BOTTOM);
     });
   });
 });

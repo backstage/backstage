@@ -15,6 +15,7 @@
  */
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { LocationSpec as NonDeprecatedLocationSpec } from '@backstage/plugin-catalog-common';
 
 /**
  * Holds the entity location information.
@@ -26,12 +27,9 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
  *  default value: 'required'.
  *
  * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
-export type LocationSpec = {
-  type: string;
-  target: string;
-  presence?: 'optional' | 'required';
-};
+export type LocationSpec = NonDeprecatedLocationSpec;
 
 /**
  * Holds the relation data for entities.
@@ -53,4 +51,37 @@ export type EntityRelationSpec = {
    * The target entity of this relation.
    */
   target: CompoundEntityRef;
+};
+
+/**
+ * A filter expression for entities.
+ *
+ * @public
+ */
+export type EntityFilter =
+  | { allOf: EntityFilter[] }
+  | { anyOf: EntityFilter[] }
+  | { not: EntityFilter }
+  | EntitiesSearchFilter;
+
+/**
+ * Matches rows in the search table.
+ *
+ * @public
+ */
+export type EntitiesSearchFilter = {
+  /**
+   * The key to match on.
+   *
+   * Matches are always case insensitive.
+   */
+  key: string;
+
+  /**
+   * Match on plain equality of values.
+   *
+   * Match on values that are equal to any of the given array items. Matches are
+   * always case insensitive.
+   */
+  values?: string[];
 };

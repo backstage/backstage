@@ -13,38 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  ListItemText,
-  Tooltip,
-} from '@material-ui/core';
+
+import { useEffect, useState } from 'react';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import {
   ApiRef,
   SessionApi,
-  useApi,
-  IconComponent,
   SessionState,
+  ProfileInfoApi,
+  ProfileInfo,
+  useApi,
+  errorApiRef,
+  IconComponent,
 } from '@backstage/core-plugin-api';
+import { ProviderSettingsAvatar } from './ProviderSettingsAvatar';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
-type Props = {
+const emptyProfile: ProfileInfo = {};
+
+/** @public */
+export const ProviderSettingsItem = (props: {
   title: string;
   description: string;
   icon: IconComponent;
-  apiRef: ApiRef<SessionApi>;
-};
+  apiRef: ApiRef<ProfileInfoApi & SessionApi>;
+}) => {
+  const { title, description, icon: Icon, apiRef } = props;
 
-export const ProviderSettingsItem = ({
-  title,
-  description,
-  icon: Icon,
-  apiRef,
-}: Props) => {
   const api = useApi(apiRef);
+  const errorApi = useApi(errorApiRef);
   const [signedIn, setSignedIn] = useState(false);
+  const [profile, setProfile] = useState<ProfileInfo>(emptyProfile);
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   useEffect(() => {
     let didCancel = false;
@@ -52,8 +60,23 @@ export const ProviderSettingsItem = ({
     const subscription = api
       .sessionState$()
       .subscribe((sessionState: SessionState) => {
+        if (sessionState !== SessionState.SignedIn) {
+          setProfile(emptyProfile);
+          setSignedIn(false);
+        }
         if (!didCancel) {
-          setSignedIn(sessionState === SessionState.SignedIn);
+          api
+            .getProfile({ optional: true })
+            .then((profileResponse: ProfileInfo | undefined) => {
+              if (!didCancel) {
+                if (sessionState === SessionState.SignedIn) {
+                  setSignedIn(true);
+                }
+                if (profileResponse) {
+                  setProfile(profileResponse);
+                }
+              }
+            });
         }
       });
 
@@ -72,7 +95,34 @@ export const ProviderSettingsItem = ({
         primary={title}
         secondary={
           <Tooltip placement="top" arrow title={description}>
-            <span>{description}</span>
+            <Grid container spacing={6}>
+              <Grid item>
+                <ProviderSettingsAvatar size={48} picture={profile.picture} />
+              </Grid>
+              <Grid item xs={12} sm container>
+                <Grid item xs container direction="column" spacing={2}>
+                  <Grid item xs>
+                    {profile.displayName && (
+                      <Typography
+                        variant="subtitle1"
+                        color="textPrimary"
+                        gutterBottom
+                      >
+                        {profile.displayName}
+                      </Typography>
+                    )}
+                    {profile.email && (
+                      <Typography variant="body2" color="textSecondary">
+                        {profile.email}
+                      </Typography>
+                    )}
+                    <Typography variant="body2" color="textSecondary">
+                      {description}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
           </Tooltip>
         }
         secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
@@ -81,14 +131,23 @@ export const ProviderSettingsItem = ({
         <Tooltip
           placement="top"
           arrow
-          title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
+          title={
+            signedIn
+              ? t('providerSettingsItem.title.signOut', { title })
+              : t('providerSettingsItem.title.signIn', { title })
+          }
         >
           <Button
             variant="outlined"
             color="primary"
-            onClick={() => (signedIn ? api.signOut() : api.signIn())}
+            onClick={() => {
+              const action = signedIn ? api.signOut() : api.signIn();
+              action.catch(error => errorApi.post(error));
+            }}
           >
-            {signedIn ? `Sign out` : `Sign in`}
+            {signedIn
+              ? t('providerSettingsItem.buttonTitle.signOut')
+              : t('providerSettingsItem.buttonTitle.signIn')}
           </Button>
         </Tooltip>
       </ListItemSecondaryAction>

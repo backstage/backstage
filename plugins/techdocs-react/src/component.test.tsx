@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 import {
   SHADOW_DOM_STYLE_LOAD_EVENT,
@@ -64,24 +64,6 @@ describe('TechDocsShadowDom', () => {
     expect(onAppend).toHaveBeenCalledTimes(2);
   });
 
-  it('Should show progress bar while styles are being loaded', async () => {
-    const dom = createDom(
-      '<head><link rel="stylesheet" src="styles.css"/></head><body><h1>Title</h1></body>',
-    );
-    const onAppend = jest.fn();
-    dom.querySelector('link[rel="stylesheet"]')!.addEventListener = () => {};
-
-    render(
-      <TechDocsShadowDom element={dom} onAppend={onAppend}>
-        Children
-      </TechDocsShadowDom>,
-    );
-
-    await await waitFor(() => {
-      expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    });
-  });
-
   it('Should dispatch an event after all styles are loaded', async () => {
     const dom = createDom(
       '<head><link rel="stylesheet" src="styles.css"/></head><body><h1>Title</h1></body>',
@@ -98,15 +80,7 @@ describe('TechDocsShadowDom', () => {
 
     render(<TechDocsShadowDom element={dom}>Children</TechDocsShadowDom>);
 
-    await await waitFor(() => {
-      expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    });
-
     listener({} as Event);
-
-    await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-    });
 
     expect(handleStylesLoad).toHaveBeenCalledTimes(1);
   });

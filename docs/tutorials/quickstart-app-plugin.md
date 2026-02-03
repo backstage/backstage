@@ -20,17 +20,17 @@ title: Adding Custom Plugin to Existing Monorepo App
 > functionality, extend the Sidebar to make our life easy. Finally, we add
 > custom code to display GitHub repository information.
 >
-> This document assumes you have Node.js 14 active along with Yarn and Python.
+> This document assumes you have Node.js 16 active along with Yarn and Python.
 > Please note, that at the time of this writing, the current version is
 > 0.1.1-alpha.21. This guide can still be used with future versions, just,
 > verify as you go. If you run into issues, you can compare your setup with mine
 > here >
 > [simple-backstage-app-plugin](https://github.com/johnson-jesse/simple-backstage-app-plugin).
 
-# The Skeleton Plugin
+## The Skeleton Plugin
 
-1. Start by using the built in creator. From the terminal and root of your
-   project run: `yarn create-plugin`
+1. Start by using the built-in creator. From the terminal and root of your
+   project run: `yarn new` and select `frontend-plugin`.
 1. Enter a plugin ID. I used `github-playground`
 1. When the process finishes, let's start the backend:
    `yarn --cwd packages/backend start`
@@ -45,7 +45,7 @@ title: Adding Custom Plugin to Existing Monorepo App
 1. You should see successful verbiage for this endpoint,
    `Welcome to github-playground!`
 
-# The Shortcut
+## The Shortcut
 
 Let's add a shortcut.
 
@@ -62,7 +62,7 @@ Simple! The App will reload with your changes automatically. You should now see
 a GitHub icon displayed in the sidebar. Clicking that will link to our new
 plugin. And now, the API fun begins.
 
-# The Identity
+## The Identity
 
 Our first modification will be to extract information from the Identity API.
 
@@ -124,7 +124,7 @@ https://github.com/backstage/backstage/tree/master/contrib
 6. Here is the entire file for reference
    [ExampleComponent.tsx](https://github.com/backstage/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md)
 
-# The Wipe
+## The Wipe
 
 The last file we will touch is ExampleFetchComponent. Because of the number of
 changes, let's start by wiping this component clean.
@@ -134,7 +134,6 @@ changes, let's start by wiping this component clean.
 1. Replace everything in the file with the following:
 
 ```tsx
-import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import Alert from '@material-ui/lab/Alert';
 import { Table, TableColumn, Progress } from '@backstage/core-components';
@@ -151,7 +150,7 @@ export const ExampleFetchComponent = () => {
 
 ###### We will add a lot to this file for the sake of ease. Please don't do this in productional code!
 
-# The Graph Model
+## The Graph Model
 
 GitHub has a GraphQL API available for interacting. Let's start by adding our
 basic repository query
@@ -203,7 +202,7 @@ type Viewer = {
 };
 ```
 
-# The Table Model
+## The Table Model
 
 Using Backstage's own component library, let's define a custom table. This
 component will get used if we have data to display.
@@ -235,7 +234,7 @@ export const DenseTable = ({ viewer }: DenseTableProps) => {
 };
 ```
 
-# The Fetch
+## The Fetch
 
 We're ready to flush out our fetch component
 
@@ -247,7 +246,7 @@ const auth = useApi(githubAuthApiRef);
 
 2. The access token we need to make our GitHub request and the request itself is
    obtained in an asynchronous manner.
-3. Add the useAsync block inside the ExampleFetchComponent
+3. Add the `useAsync` block inside the ExampleFetchComponent
 
 ```tsx
 const { value, loading, error } = useAsync(async (): Promise<any> => {
@@ -300,7 +299,7 @@ return (
     that backs this document,
     [simple-backstage-app-plugin](https://github.com/johnson-jesse/simple-backstage-app-plugin)
 
-# Where to go from here
+## Where to go from here
 
 > Break apart ExampleFetchComponent into smaller logical parts contained in
 > their own files. Rename your components to something other than ExampleXxx.

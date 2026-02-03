@@ -1,12 +1,15 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
-  googleAnalyticsTrackingId: # UA-000000-0
+  packages: all # ✨
+
   #datadogRum:
   #  clientToken: '123456789'
   #  applicationId: qwerty
   #   site: # datadoghq.eu default = datadoghq.com
   #   env: # optional
+  #   sessionSampleRate: 100
+  #   sessionReplaySampleRate: 0
 
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
@@ -19,27 +22,39 @@ app:
       - title: Discord Chatroom
         icon: chat
         links:
-          - url: https://discord.gg/MUpMjP2
+          - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
+
+  packageName: example-app
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
-  # See https://backstage.io/docs/tutorials/backend-to-backend-auth for
+  # See https://backstage.io/docs/auth/service-to-service-auth for
   # information on the format
   # auth:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
+
+  # Used for testing rate limiting locally
+  # rateLimit:
+  #   windowMs: 1m
+  #   incomingRequestLimit: 1
+  #   ipAllowList: []
+
+  auth:
+    # TODO: once plugins have been migrated we can remove this, but right now it
+    # is require for the backend-next to work in this repo
+    dangerouslyDisableDefaultAuthPolicy: true
+
   baseUrl: http://localhost:7007
   listen:
     port: 7007
   database:
     client: better-sqlite3
     connection: ':memory:'
-  cache:
-    store: memory
   cors:
     origin: http://localhost:3000
-    methods: [GET, POST, PUT, DELETE]
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
@@ -50,75 +65,16 @@ backend:
       - host: example.com
       - host: '*.mozilla.org'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
-
+  actions:
+    pluginSources:
+      - catalog
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  '/circleci/api':
-    target: https://circleci.com/api/v1.1
-    headers:
-      Circle-Token: ${CIRCLECI_AUTH_TOKEN}
-
-  '/jenkins/api':
-    target: http://localhost:8080
-    headers:
-      Authorization: ${JENKINS_BASIC_AUTH_HEADER}
-
-  '/travisci/api':
-    target: https://api.travis-ci.com
-    changeOrigin: true
-    headers:
-      Authorization: ${TRAVISCI_AUTH_TOKEN}
-      travis-api-version: '3'
-
-  '/newrelic/apm/api':
-    target: https://api.newrelic.com/v2
-    headers:
-      X-Api-Key: ${NEW_RELIC_REST_API_KEY}
-
-  '/newrelic/api':
-    target: https://api.newrelic.com
-    headers:
-      X-Api-Key: ${NEW_RELIC_USER_KEY}
-
-  '/pagerduty':
-    target: https://api.pagerduty.com
-    headers:
-      Authorization: Token token=${PAGERDUTY_TOKEN}
-
-  '/buildkite/api':
-    target: https://api.buildkite.com/v2/
-    headers:
-      Authorization: ${BUILDKITE_TOKEN}
-
-  '/sentry/api':
-    target: https://sentry.io/api/
-    allowedMethods: ['GET']
-    headers:
-      Authorization: ${SENTRY_TOKEN}
-
-  '/ilert':
-    target: https://api.ilert.com
-    allowedMethods: ['GET', 'POST', 'PUT']
-    allowedHeaders: ['Authorization']
-    headers:
-      Authorization: ${ILERT_AUTH_HEADER}
-
-  '/airflow':
-    target: https://your.airflow.instance.com/api/v1
-    headers:
-      Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
-
-  '/gocd':
-    target: https://your.gocd.instance.com/go/api
-    allowedMethods: ['GET']
-    allowedHeaders: ['Authorization']
-    headers:
-      Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
-
-  '/dynatrace':
-    target: https://your.dynatrace.instance.com/api/v2
-    headers:
-      Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
+  endpoints:
+    '/pagerduty':
+      target: https://api.pagerduty.com
+      headers:
+        Authorization: Token token=${PAGERDUTY_TOKEN}
 
 organization:
   name: My Company
@@ -135,38 +91,6 @@ techdocs:
     # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
-
-dynatrace:
-  baseUrl: https://your.dynatrace.instance.com
-
-sentry:
-  organization: my-company
-
-rollbar:
-  organization: my-company
-  # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)
-  accountToken: my-rollbar-account-token
-
-lighthouse:
-  baseUrl: http://localhost:3003
-
-kubernetes:
-  serviceLocatorMethod:
-    type: 'multiTenant'
-  clusterLocatorMethods:
-    - type: 'config'
-      clusters: []
-
-kafka:
-  clientId: backstage
-  clusters:
-    - name: cluster
-      dashboardUrl: https://akhq.io/
-      brokers:
-        - localhost:9092
-
-allure:
-  baseUrl: http://localhost:5050/allure-docker-service
 
 integrations:
   github:
@@ -185,13 +109,28 @@ integrations:
       token: ${GITLAB_TOKEN}
   ### Example for how to add a bitbucket cloud integration
   # bitbucketCloud:
+  #   # Using API token
   #   - username: ${BITBUCKET_USERNAME}
-  #     appPassword: ${BITBUCKET_APP_PASSWORD}
+  #     token: ${BITBUCKET_API_TOKEN}
+  #   # Using OAuth
+  #   - clientId: ${BITBUCKET_CLIENT_ID}
+  #     clientSecret: ${BITBUCKET_CLIENT_SECRET}
   ### Example for how to add your bitbucket server instance using the API:
   # - host: server.bitbucket.com
   #   apiBaseUrl: server.bitbucket.com
   #   username: ${BITBUCKET_SERVER_USERNAME}
   #   appPassword: ${BITBUCKET_SERVER_APP_PASSWORD}
+
+  # azureBlobStorage:
+  #   - accountName: ${ACCOUNT_NAME} # required
+  #     endpoint: ${CUSTOM_ENDPOINT} # custom endpoint will require either aadCredentials or sasToken
+  #     sasToken: ${SAS_TOKEN}
+  #     aadCredential:
+  #       clientId: ${CLIENT_ID}
+  #       tenantId: ${TENANT_ID}
+  #       clientSecret: ${CLIENT_SECRET}
+  #     accountKey: ${ACCOUNT_KEY}
+
   azure:
     - host: dev.azure.com
       token: ${AZURE_TOKEN}
@@ -199,7 +138,7 @@ integrations:
   #    clientEmail: 'example@example.com'
   #    privateKey: ${GCS_PRIVATE_KEY}
   awsS3:
-    - host: amazonaws.com
+    - endpoint: ${AWS_S3_ENDPOINT}
       accessKeyId: ${AWS_ACCESS_KEY_ID}
       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
@@ -212,30 +151,22 @@ catalog:
         - Component
         - API
         - Resource
-        - Template
         - System
         - Domain
         - Location
-
-  processors:
-    ldapOrg:
-      ### Example for how to add your enterprise LDAP server
-      # providers:
-      #   - target: ldaps://ds.example.net
-      #     bind:
-      #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-      #       secret: ${LDAP_SECRET}
-      #     users:
-      #       dn: ou=people,ou=example,dc=example,dc=net
-      #       options:
-      #         filter: (uid=*)
-      #       map:
-      #         description: l
-      #     groups:
-      #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
-      #       options:
-      #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
-
+  providers:
+    azureBlob:
+      accountName: ${ACCOUNT_NAME}
+      containerName: ${CONTAINER_NAME}
+      schedule: # same options as in TaskScheduleDefinition
+        # supports cron, ISO duration, "human duration" as used in code
+        frequency: { minutes: 30 }
+        # supports ISO duration, "human duration" as used in code
+        timeout: { minutes: 3 }
+    backstageOpenapi:
+      plugins:
+        - catalog
+        - search
   locations:
     # Add a location here to ingest it, for example from a URL:
     #
@@ -258,27 +189,36 @@ catalog:
       target: ../catalog-model/examples/acme-corp.yaml
       rules:
         - allow: [User, Group]
-    # Example component for github-actions and TechDocs
-    - type: file
-      target: ../../plugins/github-actions/examples/sample.yaml
     # Example component for TechDocs
     - type: file
       target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
     # Backstage example templates
     - type: file
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
-    # Backstage end-to-end tests of TechDocs
-    - type: file
-      target: ../../cypress/e2e-fixture.catalog.info.yaml
+      rules:
+        - allow: [Template]
+
 scaffolder:
+  auditor:
+    taskParameterMaxLength: 256
   # Use to customize default commit author info used when new components are created
-  # defaultAuthor:
-  #   name: Scaffolder
-  #   email: scaffolder@backstage.io
+  defaultAuthor:
+    name: Scaffolder
+    email: scaffolder@backstage.io
   # Use to customize the default commit message when new components are created
-  # defaultCommitMessage: 'Initial commit'
+  defaultCommitMessage: 'Initial commit'
+  defaultEnvironment:
+    parameters:
+      region: eu-west-1
+    secrets:
+      environment: ${NODE_ENV}
 
 auth:
+  experimentalDynamicClientRegistration:
+    enabled: true
+    allowedRedirectUriPatterns:
+      - cursor://*
+
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
   # the auth-backend.
   #
@@ -336,8 +276,7 @@ auth:
         metadataUrl: ${AUTH_OIDC_METADATA_URL}
         clientId: ${AUTH_OIDC_CLIENT_ID}
         clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
-        authorizationUrl: ${AUTH_OIDC_AUTH_URL}
-        tokenUrl: ${AUTH_OIDC_TOKEN_URL}
+        tokenEndpointAuthMethod: ${AUTH_OIDC_TOKEN_ENDPOINT_AUTH_METHOD} # default='client_secret_basic'
         tokenSignedResponseAlg: ${AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG} # default='RS256'
         scope: ${AUTH_OIDC_SCOPE} # default='openid profile email'
         prompt: ${AUTH_OIDC_PROMPT} # default=none (allowed values: auto, none, consent, login)
@@ -364,84 +303,14 @@ auth:
       development:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
-        scopes: ${AUTH_ATLASSIAN_SCOPES}
-    myproxy:
-      development: {}
-costInsights:
-  engineerCost: 200000
-  products:
-    computeEngine:
-      name: Compute Engine
-      icon: compute
-    cloudDataflow:
-      name: Cloud Dataflow
-      icon: data
-    cloudStorage:
-      name: Cloud Storage
-      icon: storage
-    bigQuery:
-      name: BigQuery
-      icon: search
-    events:
-      name: Events
-      icon: data
-  metrics:
-    DAU:
-      name: Daily Active Users
-      default: true
-    MSC:
-      name: Monthly Subscribers
-  currencies:
-    engineers:
-      label: 'Engineers 🛠'
-      unit: 'engineer'
-    usd:
-      label: 'US Dollars 💵'
-      kind: 'USD'
-      unit: 'dollar'
-      prefix: '$'
-      rate: 1
-    carbonOffsetTons:
-      label: 'Carbon Offset Tons ♻️⚖️s'
-      kind: 'CARBON_OFFSET_TONS'
-      unit: 'carbon offset ton'
-      rate: 3.5
-    beers:
-      label: 'Beers 🍺'
-      kind: 'BEERS'
-      unit: 'beer'
-      rate: 4.5
-    pintsIceCream:
-      label: 'Pints of Ice Cream 🍦'
-      kind: 'PINTS_OF_ICE_CREAM'
-      unit: 'ice cream pint'
-      rate: 5.5
-homepage:
-  clocks:
-    - label: UTC
-      timezone: UTC
-    - label: NYC
-      timezone: 'America/New_York'
-    - label: STO
-      timezone: 'Europe/Stockholm'
-    - label: TYO
-      timezone: 'Asia/Tokyo'
-pagerduty:
-  eventsBaseUrl: 'https://events.pagerduty.com/v2'
-jenkins:
-  instances:
-    - name: default
-      baseUrl: https://jenkins.example.com
-      username: backstage-bot
-      apiKey: 123456789abcdef0123456789abcedf012
+        scope: ${AUTH_ATLASSIAN_SCOPES}
+    myproxy: {}
+    guest: {}
 
-azureDevOps:
-  host: dev.azure.com
-  token: my-token
-  organization: my-company
+permission:
+  enabled: true
 
-apacheAirflow:
-  baseUrl: https://your.airflow.instance.com
-
-gocd:
-  baseUrl: https://your.gocd.instance.com
+devTools:
+  scheduledTasks:
+    plugins:
+      - catalog

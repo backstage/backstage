@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { TestDatabases } from '@backstage/backend-test-utils';
+import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { StaticAssetsStore } from './StaticAssetsStore';
 
-const logger = getVoidLogger();
+jest.setTimeout(60_000);
 
 describe('StaticAssetsStore', () => {
-  const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
-  });
+  const databases = TestDatabases.create();
 
   it.each(databases.eachSupportedId())(
     'should store and retrieve assets, %p',
     async databaseId => {
+      const knex = await databases.init(databaseId);
+
       const store = await StaticAssetsStore.create({
-        logger,
-        database: await databases.init(databaseId),
+        logger: mockServices.logger.mock(),
+        database: mockServices.database({ knex }),
       });
 
       await store.storeAssets([
@@ -56,22 +55,23 @@ describe('StaticAssetsStore', () => {
       expect(bar!.path).toBe('dir/bar.txt');
       expect(
         Math.abs(bar!.lastModifiedAt.getTime() - foo!.lastModifiedAt.getTime()),
-      ).toBeLessThan(1000);
+      ).toBeLessThan(1001); // 1s resolution on the timestamps
       expect(bar!.content).toEqual(Buffer.from('bar'));
 
       await expect(
         store.getAsset('does-not-exist.txt'),
       ).resolves.toBeUndefined();
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
     'should update assets timestamps, but not contents, %p',
     async databaseId => {
+      const knex = await databases.init(databaseId);
+
       const store = await StaticAssetsStore.create({
-        logger,
-        database: await databases.init(databaseId),
+        logger: mockServices.logger.mock(),
+        database: mockServices.database({ knex }),
       });
 
       await store.storeAssets([
@@ -113,16 +113,16 @@ describe('StaticAssetsStore', () => {
       const sameBar = await store.getAsset('bar');
       expect(oldBar!.lastModifiedAt).toEqual(sameBar!.lastModifiedAt);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
     'should trim old assets, %p',
     async databaseId => {
-      const database = await databases.init(databaseId);
+      const knex = await databases.init(databaseId);
+
       const store = await StaticAssetsStore.create({
-        logger,
-        database,
+        logger: mockServices.logger.mock(),
+        database: mockServices.database({ knex }),
       });
 
       await store.storeAssets([
@@ -135,14 +135,18 @@ describe('StaticAssetsStore', () => {
           content: async () => Buffer.alloc(0),
         },
       ]);
-
+      // interval check for postgresql
+      let hourPast = `now() + interval '-3600 seconds'`;
+      if (knex.client.config.client.includes('mysql')) {
+        hourPast = `date_sub(now(), interval 3600 second)`;
+      } else if (knex.client.config.client.includes('sqlite3')) {
+        hourPast = `datetime('now', '-3600 seconds')`;
+      }
       // Rewrite modified time of "old" to be 1h in the past
-      const updated = await database('static_assets_cache')
+      const updated = await knex('static_assets_cache')
         .where({ path: 'old' })
         .update({
-          last_modified_at: database.client.config.client.includes('sqlite3')
-            ? database.raw(`datetime('now', '-3600 seconds')`)
-            : database.raw(`now() + interval '-3600 seconds'`),
+          last_modified_at: knex.raw(hourPast),
         });
       expect(updated).toBe(1);
 
@@ -154,6 +158,45 @@ describe('StaticAssetsStore', () => {
       await expect(store.getAsset('new')).resolves.toBeDefined();
       await expect(store.getAsset('old')).resolves.toBeUndefined();
     },
-    60_000,
+  );
+
+  it.each(databases.eachSupportedId())(
+    'should isolate assets in namespace, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      const store = await StaticAssetsStore.create({
+        logger: mockServices.logger.mock(),
+        database: mockServices.database({ knex }),
+      });
+      const otherStore = store.withNamespace('other');
+
+      await store.storeAssets([
+        {
+          path: 'foo',
+          content: async () => Buffer.alloc(0),
+        },
+      ]);
+      await otherStore.storeAssets([
+        {
+          path: 'bar',
+          content: async () => Buffer.alloc(0),
+        },
+      ]);
+
+      await expect(store.getAsset('foo')).resolves.toBeDefined();
+      await expect(store.getAsset('bar')).resolves.not.toBeDefined();
+      await expect(otherStore.getAsset('foo')).resolves.not.toBeDefined();
+      await expect(otherStore.getAsset('bar')).resolves.toBeDefined();
+
+      await store.trimAssets({ maxAgeSeconds: 0 });
+
+      await expect(store.getAsset('foo')).resolves.not.toBeDefined();
+      await expect(otherStore.getAsset('bar')).resolves.toBeDefined();
+
+      await otherStore.trimAssets({ maxAgeSeconds: 0 });
+
+      await expect(otherStore.getAsset('bar')).resolves.not.toBeDefined();
+    },
   );
 });

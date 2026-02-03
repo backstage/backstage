@@ -1,0 +1,47 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: CI Void
+on:
+  pull_request:
+    paths:
+      - 'microsite/**'
+      - 'beps/**'
+
+permissions:
+  contents: read
+
+jobs:
+  # The verify jobs runs all the verification that doesn't require a
+  # diff towards master, since it takes some time to fetch that.
+  verify-noop:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x, 24.x]
+
+    name: Verify ${{ matrix.node-version }}
+    steps:
+      # - name: Harden Runner
+      #   uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.5.1
+      #   with:
+      #     egress-policy: audit
+
+      - run: echo NOOP
+
+  test-noop:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x, 24.x]
+
+    name: Test ${{ matrix.node-version }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - run: echo NOOP

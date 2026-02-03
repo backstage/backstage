@@ -10,4 +10,4 @@ Refer to our [configuration reference](../../docs/features/techdocs/configuratio
 
 ### TechDocs Storage API
 
-The default setup of TechDocs assumes that your documentation is accessed by reading a page with the format of `<storageUrl>/<entity kind>/<entity namespace>/<entity name>`. This can be configured by [implementing a new techdocs storage API](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-implement-your-own-techdocs-apis).
+The default setup of TechDocs assumes that your documentation is accessed by reading a page with the format of `<storageUrl>/<entity namespace>/<entity kind>/<entity name>`. This can be configured by [implementing a new techdocs storage API](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-implement-your-own-techdocs-apis).

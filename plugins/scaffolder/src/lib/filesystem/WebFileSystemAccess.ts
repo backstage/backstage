@@ -24,7 +24,7 @@ type WritableFileHandle = FileSystemFileHandle & {
 };
 
 // A nicer type than the one from the TS lib
-interface IterableDirectoryHandle extends FileSystemDirectoryHandle {
+export interface IterableDirectoryHandle extends FileSystemDirectoryHandle {
   values(): AsyncIterable<
     | ({ kind: 'file' } & WritableFileHandle)
     | ({ kind: 'directory' } & IterableDirectoryHandle)
@@ -36,10 +36,13 @@ const showDirectoryPicker = (window as any).showDirectoryPicker as
   | undefined;
 
 class WebFileAccess implements TemplateFileAccess {
-  constructor(
-    readonly path: string,
-    private readonly handle: WritableFileHandle,
-  ) {}
+  readonly path: string;
+  private readonly handle: WritableFileHandle;
+
+  constructor(path: string, handle: WritableFileHandle) {
+    this.path = path;
+    this.handle = handle;
+  }
 
   file(): Promise<File> {
     return this.handle.getFile();
@@ -52,8 +55,13 @@ class WebFileAccess implements TemplateFileAccess {
   }
 }
 
-class WebDirectoryAccess implements TemplateDirectoryAccess {
-  constructor(private readonly handle: IterableDirectoryHandle) {}
+/** @internal */
+export class WebDirectoryAccess implements TemplateDirectoryAccess {
+  private readonly handle: IterableDirectoryHandle;
+
+  constructor(handle: IterableDirectoryHandle) {
+    this.handle = handle;
+  }
 
   async listFiles(): Promise<TemplateFileAccess[]> {
     const content = [];
@@ -71,9 +79,34 @@ class WebDirectoryAccess implements TemplateDirectoryAccess {
       if (handle.kind === 'file') {
         yield new WebFileAccess([...basePath, handle.name].join('/'), handle);
       } else if (handle.kind === 'directory') {
+        // Skip git storage directory
+        if (handle.name === '.git') {
+          continue;
+        }
         yield* this.listDirectoryContents(handle, [...basePath, handle.name]);
       }
     }
+  }
+
+  async createFile(options: { name: string; data: string }): Promise<void> {
+    const { name, data } = options;
+    let file: FileSystemFileHandle;
+
+    // Current create template does not require support for nested directories
+    if (name.includes('/')) {
+      const [dir, path] = name.split('/');
+      const handle = await this.handle.getDirectoryHandle(dir, {
+        create: true,
+      });
+      file = await handle.getFileHandle(path, { create: true });
+    } else {
+      file = await this.handle.getFileHandle(name, {
+        create: true,
+      });
+    }
+    const writable = await file.createWritable();
+    await writable.write(data);
+    await writable.close();
   }
 }
 
@@ -81,6 +114,10 @@ class WebDirectoryAccess implements TemplateDirectoryAccess {
 export class WebFileSystemAccess {
   static isSupported(): boolean {
     return Boolean(showDirectoryPicker);
+  }
+
+  static fromHandle(handle: IterableDirectoryHandle) {
+    return new WebDirectoryAccess(handle);
   }
 
   static async requestDirectoryAccess(): Promise<TemplateDirectoryAccess> {

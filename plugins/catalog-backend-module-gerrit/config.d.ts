@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
+
 export interface Config {
   catalog?: {
     /**
@@ -25,28 +27,34 @@ export interface Config {
        *
        * Maps provider id with configuration.
        */
-      gerrit?: Record<
-        string,
-        {
+      gerrit?: {
+        [name: string]: {
           /**
            * (Required) The host of the Gerrit integration to use.
-           * @visibility backend
            */
           host: string;
           /**
            * (Required) The query to use for the "List Projects" API call. Used to limit the
            * scope of the projects that the provider tries to ingest.
-           * @visibility backend
            */
           query: string;
           /**
            * (Optional) Branch.
-           * The branch where the provider will try to find entities. Defaults to "master".
-           * @visibility backend
+           * The branch where the provider will try to find entities. Uses the default branch where HEAD points to.
            */
           branch?: string;
-        }
-      >;
+          /**
+           * (Optional) Path where the catalog YAML manifest file is expected in the repository.
+           * Can contain glob patterns supported by minimatch.
+           * Defaults to "catalog-info.yaml".
+           */
+          catalogPath?: string;
+          /**
+           * (Optional) TaskScheduleDefinition for the discovery.
+           */
+          schedule?: SchedulerServiceTaskScheduleDefinition;
+        };
+      };
     };
   };
 }

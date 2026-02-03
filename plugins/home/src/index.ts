@@ -32,9 +32,13 @@ export {
   ComponentTab,
   WelcomeTitle,
   HeaderWorldClock,
+  HomePageTopVisited,
+  HomePageRecentlyVisited,
+  FeaturedDocsCard,
+  QuickStartCard,
 } from './plugin';
-export { SettingsModal } from './components';
+export * from './components';
 export * from './assets';
-export type { ClockConfig } from './homePageComponents';
-export { createCardExtension } from './extensions';
-export type { ComponentRenderer } from './extensions';
+export * from './homePageComponents';
+export * from './deprecated';
+export * from './api';

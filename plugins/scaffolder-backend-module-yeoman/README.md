@@ -10,35 +10,17 @@ You need to configure the action in your backend:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-yeoman
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-yeoman
 ```
 
-Configure the action:
-(you can check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to see all options):
+Then ensure that both the scaffolder and this module are added to your backend:
 
 ```typescript
-// packages/backend/src/plugins/scaffolder.ts
-
-const actions = [
-  createRunYeomanAction(),
-  ...createBuiltInActions({
-    containerRunner,
-    catalogClient,
-    integrations,
-    config: env.config,
-    reader: env.reader,
-  }),
-];
-
-return await createRouter({
-  containerRunner,
-  catalogClient,
-  actions,
-  logger: env.logger,
-  config: env.config,
-  database: env.database,
-  reader: env.reader,
-});
+// In packages/backend/src/index.ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-scaffolder-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend-module-yeoman'));
 ```
 
 After that you can use the action in your template:
@@ -73,16 +55,16 @@ spec:
           description: Owner of the component
           ui:field: OwnerPicker
           ui:options:
-            allowedKinds:
-              - Group
+            catalogFilter:
+              kind: Group
         system:
           title: System
           type: string
           description: System of the component
           ui:field: EntityPicker
           ui:options:
-            allowedKinds:
-              - System
+            catalogFilter:
+              kind: System
             defaultKind: System
 
     - title: Choose a location
@@ -126,7 +108,7 @@ spec:
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
     - name: Results
@@ -138,10 +120,10 @@ spec:
   output:
     links:
       - title: Repository
-        url: ${{ steps.publish.output.remoteUrl }}
+        url: ${{ steps['publish'].output.remoteUrl }}
       - title: Open in catalog
         icon: catalog
-        entityRef: ${{ steps.register.output.entityRef }}
+        entityRef: ${{ steps['register'].output.entityRef }}
 ```
 
 You can also visit the `/create/actions` route in your Backstage application to find out more about the parameters this action accepts when it's installed to configure how you like.

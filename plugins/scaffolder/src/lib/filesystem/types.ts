@@ -22,4 +22,5 @@ export interface TemplateFileAccess {
 
 export interface TemplateDirectoryAccess {
   listFiles(): Promise<Array<TemplateFileAccess>>;
+  createFile(options: { name: string; data: string }): Promise<void>;
 }

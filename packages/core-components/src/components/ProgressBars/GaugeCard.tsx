@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+
 import { BottomLinkProps } from '../../layout/BottomLink';
 import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';
 import { Gauge, GaugePropsGetColor } from './Gauge';
@@ -26,6 +27,8 @@ type Props = {
   variant?: InfoCardVariants;
   /** Progress in % specified as decimal, e.g. "0.23" */
   progress: number;
+  alignGauge?: 'normal' | 'bottom';
+  size?: 'normal' | 'small';
   description?: ReactNode;
   icon?: ReactNode;
   inverse?: boolean;
@@ -41,6 +44,10 @@ const useStyles = makeStyles(
     root: {
       height: '100%',
       width: 250,
+    },
+    rootSmall: {
+      height: '100%',
+      width: 160,
     },
   },
   { name: 'BackstageGaugeCard' },
@@ -63,6 +70,8 @@ export function GaugeCard(props: Props) {
     description,
     icon,
     variant,
+    alignGauge = 'normal',
+    size = 'normal',
     getColor,
   } = props;
 
@@ -74,16 +83,23 @@ export function GaugeCard(props: Props) {
   };
 
   return (
-    <div className={classes.root}>
+    <Box className={size === 'small' ? classes.rootSmall : classes.root}>
       <InfoCard
         title={title}
         subheader={subheader}
         deepLink={deepLink}
         variant={variant}
+        alignContent={alignGauge}
         icon={icon}
+        titleTypographyProps={{
+          ...(size === 'small' ? { variant: 'subtitle2' } : undefined),
+        }}
+        subheaderTypographyProps={{
+          ...(size === 'small' ? { variant: 'body2' } : undefined),
+        }}
       >
-        <Gauge {...gaugeProps} />
+        <Gauge {...gaugeProps} size={size} />
       </InfoCard>
-    </div>
+    </Box>
   );
 }

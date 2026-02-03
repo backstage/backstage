@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Client as ElasticSearchClient } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import {
   ElasticSearchClientOptions,
   isOpenSearchCompatible,
@@ -69,15 +70,12 @@ export class ElasticSearchClientWrapper {
   private readonly elasticSearchClient: ElasticSearchClient | undefined;
   private readonly openSearchClient: OpenSearchClient | undefined;
 
-  private constructor({
-    openSearchClient,
-    elasticSearchClient,
-  }: {
+  private constructor(options: {
     openSearchClient?: OpenSearchClient;
     elasticSearchClient?: ElasticSearchClient;
   }) {
-    this.openSearchClient = openSearchClient;
-    this.elasticSearchClient = elasticSearchClient;
+    this.openSearchClient = options.openSearchClient;
+    this.elasticSearchClient = options.elasticSearchClient;
   }
 
   static fromClientOptions(options: ElasticSearchClientOptions) {
@@ -92,13 +90,24 @@ export class ElasticSearchClientWrapper {
     });
   }
 
-  search({ index, body }: { index: string | string[]; body: Object }) {
+  search(options: { index: string | string[]; body: Object }) {
+    const searchOptions = {
+      ignore_unavailable: true,
+      allow_no_indices: true,
+    };
+
     if (this.openSearchClient) {
-      return this.openSearchClient.search({ index, body });
+      return this.openSearchClient.search({
+        ...options,
+        ...searchOptions,
+      });
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.search({ index, body });
+      return this.elasticSearchClient.search({
+        ...options,
+        ...searchOptions,
+      });
     }
 
     throw new Error('No client defined');
@@ -106,7 +115,7 @@ export class ElasticSearchClientWrapper {
 
   bulk(bulkOptions: {
     datasource: Readable;
-    onDocument: () => ElasticSearchIndexAction;
+    onDocument: (doc: any) => ElasticSearchIndexAction;
     refreshOnCompletion?: string | boolean;
   }) {
     if (this.openSearchClient) {
@@ -132,43 +141,48 @@ export class ElasticSearchClientWrapper {
     throw new Error('No client defined');
   }
 
-  indexExists({ index }: { index: string | string[] }) {
+  listIndices(options: { index: string }) {
     if (this.openSearchClient) {
-      return this.openSearchClient.indices.exists({ index });
+      return this.openSearchClient.indices.get(options);
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.indices.exists({ index });
+      return this.elasticSearchClient.indices.get(options);
     }
 
     throw new Error('No client defined');
   }
 
-  deleteIndex({ index }: { index: string | string[] }) {
+  indexExists(options: { index: string | string[] }) {
     if (this.openSearchClient) {
-      return this.openSearchClient.indices.delete({ index });
+      return this.openSearchClient.indices.exists(options);
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.indices.delete({ index });
+      return this.elasticSearchClient.indices.exists(options);
     }
 
     throw new Error('No client defined');
   }
 
-  createIndex({ index }: { index: string }) {
+  deleteIndex(options: { index: string | string[] }) {
     if (this.openSearchClient) {
-      return this.openSearchClient.indices.create({ index });
+      return this.openSearchClient.indices.delete(options);
     }
 
     if (this.elasticSearchClient) {
-      return this.elasticSearchClient.indices.create({ index });
+      return this.elasticSearchClient.indices.delete(options);
     }
 
     throw new Error('No client defined');
   }
 
-  getAliases({ aliases }: { aliases: string[] }) {
+  /**
+   * @deprecated unused by the ElasticSearch Engine, will be removed in the future
+   */
+  getAliases(options: { aliases: string[] }) {
+    const { aliases } = options;
+
     if (this.openSearchClient) {
       return this.openSearchClient.cat.aliases({
         format: 'json',
@@ -186,8 +200,21 @@ export class ElasticSearchClientWrapper {
     throw new Error('No client defined');
   }
 
-  updateAliases({ actions }: { actions: ElasticSearchAliasAction[] }) {
-    const filteredActions = actions.filter(Boolean);
+  createIndex(options: { index: string }) {
+    if (this.openSearchClient) {
+      return this.openSearchClient.indices.create(options);
+    }
+
+    if (this.elasticSearchClient) {
+      return this.elasticSearchClient.indices.create(options);
+    }
+
+    throw new Error('No client defined');
+  }
+
+  updateAliases(options: { actions: ElasticSearchAliasAction[] }) {
+    const filteredActions = options.actions.filter(Boolean);
+
     if (this.openSearchClient) {
       return this.openSearchClient.indices.updateAliases({
         body: {

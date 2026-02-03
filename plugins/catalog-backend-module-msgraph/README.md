@@ -2,7 +2,7 @@
 
 This is an extension module to the `plugin-catalog-backend` plugin, providing a `MicrosoftGraphOrgEntityProvider`
 that can be used to ingest organization data from the Microsoft Graph API.
-This provider is useful if you want to import users and groups from Azure Active Directory or Office 365.
+This provider is useful if you want to import users and groups from Entra Id (formerly Azure Active Directory) or Office 365.
 
 ## Getting Started
 
@@ -54,6 +54,12 @@ catalog:
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
           # This and userGroupMemberFilter are mutually exclusive, only one can be specified
           filter: accountEnabled eq true and userType eq 'member'
+          # Set to false to not load user photos.
+          loadPhotos: true
+          # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
+          select: ['id', 'displayName', 'description']
+          # Optional /users by default but allow to query users from different msgraph endpoints
+          path: /users
         # Optional configuration block
         userGroupMember:
           # Optional filter for users, use group membership to get users.
@@ -65,6 +71,8 @@ catalog:
           # (Search for groups and fetch their members.)
           # This and userFilter are mutually exclusive, only one can be specified
           search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+          # Optional /groups by default but allow to query groups from different msgraph endpoints
+          path: /groups
         # Optional configuration block
         group:
           # Optional parameter to include the expanded resource or collection referenced
@@ -80,9 +88,18 @@ catalog:
           # See https://docs.microsoft.com/en-us/graph/search-query-parameter
           search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
           # Optional select for groups, this will allow you work with schemaExtensions
-          # in order to add extra information to your groups that can be used on you custom groupTransformers
+          # in order to add extra information to your groups that can be used on your custom groupTransformers
           # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
           select: ['id', 'displayName', 'description']
+          # Optional /groups by default but allow to query groups from different msgraph endpoints
+          path: /groups
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { hours: 1 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 50 }
+          # supports ISO duration, "human duration" as used in code
+          initialDelay: { seconds: 15},
 ```
 
 `user.filter` and `userGroupMember.filter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.
@@ -95,7 +112,7 @@ By default, all users are loaded. If you want to filter users based on their att
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-msgraph
 ```
 
 4. The `MicrosoftGraphOrgEntityProvider` is not registered by default, so you
@@ -114,13 +131,21 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
 +  builder.addEntityProvider(
 +    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
 +      logger: env.logger,
++      scheduler,
++    }),
++  );
+```
+
+Instead of configuring the refresh schedule inside the config (per provider instance),
+you can define it in code (for all of them):
+
+```diff
+-      scheduler,
 +      schedule: env.scheduler.createScheduledTaskRunner({
 +        frequency: { hours: 1 },
 +        timeout: { minutes: 50 },
-+        initialDelay: { seconds: 15}
++        initialDelay: { seconds: 15},
 +      }),
-+    }),
-+  );
 ```
 
 ## Customize the Processor or Entity Provider
@@ -159,10 +184,7 @@ export async function myGroupTransformer(
  builder.addEntityProvider(
    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
      logger: env.logger,
-     schedule: env.scheduler.createScheduledTaskRunner({
-       frequency: { minutes: 5 },
-       timeout: { minutes: 3 },
-     }),
+     scheduler,
 +    groupTransformer: myGroupTransformer,
    }),
  );

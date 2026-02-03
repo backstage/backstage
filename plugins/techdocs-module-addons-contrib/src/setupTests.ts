@@ -13,5 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import '@testing-library/jest-dom';
-import 'cross-fetch/polyfill';
+
+Element.prototype.scrollIntoView = jest.fn();
+
+type Listener = (event: { data: any }) => void;
+
+global.BroadcastChannel = jest
+  .fn()
+  .mockImplementation((_channelName: string) => {
+    let listeners: Listener[] = [];
+    return {
+      postMessage: jest.fn((message: any) => {
+        // Simulate message event for all listeners
+        listeners.forEach(listener => listener({ data: message }));
+      }),
+      addEventListener: jest.fn((event: string, listener: Listener) => {
+        if (event === 'message') {
+          listeners.push(listener);
+        }
+      }),
+      removeEventListener: jest.fn((event: string, listener: Listener) => {
+        if (event === 'message') {
+          listeners = listeners.filter(l => l !== listener);
+        }
+      }),
+      close: jest.fn(),
+    };
+  });
+
+window.scroll = jest.fn();

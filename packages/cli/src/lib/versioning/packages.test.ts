@@ -14,35 +14,79 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
-import path from 'path';
-import * as runObj from '../run';
+import * as runObj from '@backstage/cli-common';
+import * as yarn from './yarn';
 import { fetchPackageInfo, mapDependencies } from './packages';
-import { NotFoundError } from '../errors';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { NotFoundError } from '@backstage/errors';
+
+jest.mock('@backstage/cli-common', () => {
+  const actual = jest.requireActual('@backstage/cli-common');
+  return {
+    ...actual,
+    runOutput: jest.fn(),
+  };
+});
+
+jest.mock('./yarn', () => {
+  return {
+    detectYarnVersion: jest.fn(),
+  };
+});
 
 describe('fetchPackageInfo', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  it('should forward info', async () => {
+  it('should forward info for yarn classic', async () => {
     jest
-      .spyOn(runObj, 'runPlain')
+      .spyOn(runObj, 'runOutput')
       .mockResolvedValue(`{"type":"inspect","data":{"the":"data"}}`);
+    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('classic');
 
     await expect(fetchPackageInfo('my-package')).resolves.toEqual({
       the: 'data',
     });
-    expect(runObj.runPlain).toHaveBeenCalledWith(
+    expect(runObj.runOutput).toHaveBeenCalledWith([
       'yarn',
       'info',
       '--json',
       'my-package',
+    ]);
+  });
+
+  it('should forward info for yarn berry', async () => {
+    jest.spyOn(runObj, 'runOutput').mockResolvedValue(`{"the":"data"}`);
+    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('berry');
+
+    await expect(fetchPackageInfo('my-package')).resolves.toEqual({
+      the: 'data',
+    });
+    expect(runObj.runOutput).toHaveBeenCalledWith([
+      'yarn',
+      'npm',
+      'info',
+      '--json',
+      'my-package',
+    ]);
+  });
+
+  it('should throw if no info with yarn classic', async () => {
+    jest.spyOn(runObj, 'runOutput').mockResolvedValue('');
+    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('classic');
+
+    await expect(fetchPackageInfo('my-package')).rejects.toThrow(
+      new NotFoundError(`No package information found for package my-package`),
     );
   });
 
-  it('should throw if no info', async () => {
-    jest.spyOn(runObj, 'runPlain').mockResolvedValue('');
+  it('should throw if no info with yarn berry', async () => {
+    const error = new Error('Command failed');
+    (error as Error & { stdout?: string }).stdout =
+      'bla bla bla Response Code: 404 bla bla';
+    jest.spyOn(runObj, 'runOutput').mockRejectedValue(error);
+    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('berry');
 
     await expect(fetchPackageInfo('my-package')).rejects.toThrow(
       new NotFoundError(`No package information found for package my-package`),
@@ -51,34 +95,41 @@ describe('fetchPackageInfo', () => {
 });
 
 describe('mapDependencies', () => {
+  const mockDir = createMockDirectory();
+
   afterEach(() => {
-    mockFs.restore();
     jest.resetAllMocks();
   });
 
   it('should read dependencies', async () => {
-    mockFs({
-      '/root/package.json': JSON.stringify({
+    mockDir.setContent({
+      'package.json': JSON.stringify({
         workspaces: {
           packages: ['pkgs/*'],
         },
       }),
-      '/root/pkgs/a/package.json': JSON.stringify({
-        name: 'a',
-        dependencies: {
-          '@backstage/core': '1 || 2',
+      pkgs: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': '1 || 2',
+            },
+          }),
         },
-      }),
-      '/root/pkgs/b/package.json': JSON.stringify({
-        name: 'b',
-        dependencies: {
-          '@backstage/core': '3',
-          '@backstage/cli': '^0',
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            dependencies: {
+              '@backstage/core': '3',
+              '@backstage/cli': '^0',
+            },
+          }),
         },
-      }),
+      },
     });
 
-    const dependencyMap = await mapDependencies('/root', '@backstage/*');
+    const dependencyMap = await mapDependencies(mockDir.path, '@backstage/*');
     expect(Array.from(dependencyMap)).toEqual([
       [
         '@backstage/core',
@@ -86,12 +137,12 @@ describe('mapDependencies', () => {
           {
             name: 'a',
             range: '1 || 2',
-            location: path.resolve('/root/pkgs/a'),
+            location: mockDir.resolve('pkgs/a'),
           },
           {
             name: 'b',
             range: '3',
-            location: path.resolve('/root/pkgs/b'),
+            location: mockDir.resolve('pkgs/b'),
           },
         ],
       ],
@@ -101,7 +152,7 @@ describe('mapDependencies', () => {
           {
             name: 'b',
             range: '^0',
-            location: path.resolve('/root/pkgs/b'),
+            location: mockDir.resolve('pkgs/b'),
           },
         ],
       ],

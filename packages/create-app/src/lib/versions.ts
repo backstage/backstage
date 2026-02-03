@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable monorepo/no-relative-import */
+/* eslint-disable @backstage/no-relative-monorepo-imports */
 
 /*
 This is a list of all packages used by the template. If dependencies are added or removed,
@@ -32,47 +32,66 @@ leaving any imports in place.
 import { version as root } from '../../../../package.json';
 
 import { version as appDefaults } from '../../../app-defaults/package.json';
-import { version as backendCommon } from '../../../backend-common/package.json';
-import { version as backendTasks } from '../../../backend-tasks/package.json';
+import { version as frontendDefaults } from '../../../frontend-defaults/package.json';
+import { version as frontendPluginApi } from '../../../frontend-plugin-api/package.json';
+import { version as backendDefaults } from '../../../backend-defaults/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
 import { version as config } from '../../../config/package.json';
 import { version as coreAppApi } from '../../../core-app-api/package.json';
+import { version as coreCompatApi } from '../../../core-compat-api/package.json';
+import { version as frontendTestUtils } from '../../../frontend-test-utils/package.json';
 import { version as coreComponents } from '../../../core-components/package.json';
 import { version as corePluginApi } from '../../../core-plugin-api/package.json';
+import { version as e2eTestUtils } from '../../../e2e-test-utils/package.json';
 import { version as errors } from '../../../errors/package.json';
 import { version as integrationReact } from '../../../integration-react/package.json';
 import { version as testUtils } from '../../../test-utils/package.json';
 import { version as theme } from '../../../theme/package.json';
+import { version as repoTools } from '../../../repo-tools/package.json';
+import { version as ui } from '../../../ui/package.json';
 
 import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
+import { version as pluginAppVisualizer } from '../../../../plugins/app-visualizer/package.json';
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
+import { version as pluginAppReact } from '../../../../plugins/app-react/package.json';
 import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
+import { version as pluginAuthBackendModuleGithubProvider } from '../../../../plugins/auth-backend-module-github-provider/package.json';
+import { version as pluginAuthBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
+import { version as pluginAuthNode } from '../../../../plugins/auth-node/package.json';
 import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
 import { version as pluginCatalogCommon } from '../../../../plugins/catalog-common/package.json';
 import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
 import { version as pluginCatalogBackend } from '../../../../plugins/catalog-backend/package.json';
+import { version as pluginCatalogBackendModuleLogs } from '../../../../plugins/catalog-backend-module-logs/package.json';
+import { version as pluginCatalogBackendModuleScaffolderEntityModel } from '../../../../plugins/catalog-backend-module-scaffolder-entity-model/package.json';
 import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
-import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
-import { version as pluginExplore } from '../../../../plugins/explore/package.json';
-import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
-import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
+import { version as pluginKubernetes } from '../../../../plugins/kubernetes/package.json';
+import { version as pluginKubernetesBackend } from '../../../../plugins/kubernetes-backend/package.json';
+import { version as pluginNotifications } from '../../../../plugins/notifications/package.json';
+import { version as pluginNotificationsBackend } from '../../../../plugins/notifications-backend/package.json';
 import { version as pluginOrg } from '../../../../plugins/org/package.json';
+import { version as pluginPermissionBackend } from '../../../../plugins/permission-backend/package.json';
+import { version as pluginPermissionBackendModulePolicyAllowAll } from '../../../../plugins/permission-backend-module-policy-allow-all/package.json';
 import { version as pluginPermissionCommon } from '../../../../plugins/permission-common/package.json';
 import { version as pluginPermissionReact } from '../../../../plugins/permission-react/package.json';
 import { version as pluginPermissionNode } from '../../../../plugins/permission-node/package.json';
 import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
-import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
 import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
 import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
+import { version as pluginScaffolderBackendModuleGithub } from '../../../../plugins/scaffolder-backend-module-github/package.json';
+import { version as pluginScaffolderBackendModuleNotifications } from '../../../../plugins/scaffolder-backend-module-notifications/package.json';
 import { version as pluginSearch } from '../../../../plugins/search/package.json';
 import { version as pluginSearchReact } from '../../../../plugins/search-react/package.json';
 import { version as pluginSearchBackend } from '../../../../plugins/search-backend/package.json';
+import { version as pluginSearchBackendModuleCatalog } from '../../../../plugins/search-backend-module-catalog/package.json';
 import { version as pluginSearchBackendModulePg } from '../../../../plugins/search-backend-module-pg/package.json';
+import { version as pluginSearchBackendModuleTechdocs } from '../../../../plugins/search-backend-module-techdocs/package.json';
 import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
-import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
+import { version as pluginSignals } from '../../../../plugins/signals/package.json';
+import { version as pluginSignalsBackend } from '../../../../plugins/signals-backend/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
 import { version as pluginTechdocsReact } from '../../../../plugins/techdocs-react/package.json';
 import { version as pluginTechdocsModuleAddonsContrib } from '../../../../plugins/techdocs-module-addons-contrib/package.json';
@@ -82,44 +101,71 @@ import { version as pluginUserSettings } from '../../../../plugins/user-settings
 export const packageVersions = {
   root,
   '@backstage/app-defaults': appDefaults,
-  '@backstage/backend-common': backendCommon,
-  '@backstage/backend-tasks': backendTasks,
+  '@backstage/frontend-defaults': frontendDefaults,
+  '@backstage/frontend-plugin-api': frontendPluginApi,
+  '@backstage/backend-defaults': backendDefaults,
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
+  '@backstage/core-compat-api': coreCompatApi,
   '@backstage/core-components': coreComponents,
   '@backstage/core-plugin-api': corePluginApi,
+  '@backstage/frontend-test-utils': frontendTestUtils,
+  '@backstage/e2e-test-utils': e2eTestUtils,
   '@backstage/errors': errors,
   '@backstage/integration-react': integrationReact,
+  '@backstage/repo-tools': repoTools,
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,
+  '@backstage/plugin-app-react': pluginAppReact,
+  '@backstage/plugin-app-visualizer': pluginAppVisualizer,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
+  '@backstage/plugin-auth-backend-module-github-provider':
+    pluginAuthBackendModuleGithubProvider,
+  '@backstage/plugin-auth-backend-module-guest-provider':
+    pluginAuthBackendModuleGuestProvider,
+  '@backstage/plugin-auth-node': pluginAuthNode,
   '@backstage/plugin-catalog': pluginCatalog,
   '@backstage/plugin-catalog-common': pluginCatalogCommon,
   '@backstage/plugin-catalog-react': pluginCatalogReact,
   '@backstage/plugin-catalog-backend': pluginCatalogBackend,
+  '@backstage/plugin-catalog-backend-module-logs':
+    pluginCatalogBackendModuleLogs,
+  '@backstage/plugin-catalog-backend-module-scaffolder-entity-model':
+    pluginCatalogBackendModuleScaffolderEntityModel,
   '@backstage/plugin-catalog-graph': pluginCatalogGraph,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
-  '@backstage/plugin-circleci': pluginCircleci,
-  '@backstage/plugin-explore': pluginExplore,
-  '@backstage/plugin-github-actions': pluginGithubActions,
-  '@backstage/plugin-lighthouse': pluginLighthouse,
+  '@backstage/plugin-kubernetes': pluginKubernetes,
+  '@backstage/plugin-kubernetes-backend': pluginKubernetesBackend,
+  '@backstage/plugin-notifications': pluginNotifications,
+  '@backstage/plugin-notifications-backend': pluginNotificationsBackend,
   '@backstage/plugin-org': pluginOrg,
+  '@backstage/plugin-permission-backend': pluginPermissionBackend,
+  '@backstage/plugin-permission-backend-module-allow-all-policy':
+    pluginPermissionBackendModulePolicyAllowAll,
   '@backstage/plugin-permission-common': pluginPermissionCommon,
   '@backstage/plugin-permission-node': pluginPermissionNode,
   '@backstage/plugin-permission-react': pluginPermissionReact,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
-  '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
+  '@backstage/plugin-scaffolder-backend-module-github':
+    pluginScaffolderBackendModuleGithub,
+  '@backstage/plugin-scaffolder-backend-module-notifications':
+    pluginScaffolderBackendModuleNotifications,
   '@backstage/plugin-search': pluginSearch,
   '@backstage/plugin-search-react': pluginSearchReact,
   '@backstage/plugin-search-backend': pluginSearchBackend,
+  '@backstage/plugin-search-backend-module-catalog':
+    pluginSearchBackendModuleCatalog,
   '@backstage/plugin-search-backend-module-pg': pluginSearchBackendModulePg,
+  '@backstage/plugin-search-backend-module-techdocs':
+    pluginSearchBackendModuleTechdocs,
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
-  '@backstage/plugin-tech-radar': pluginTechRadar,
+  '@backstage/plugin-signals': pluginSignals,
+  '@backstage/plugin-signals-backend': pluginSignalsBackend,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-react': pluginTechdocsReact,
   '@backstage/plugin-techdocs-module-addons-contrib':
@@ -128,4 +174,5 @@ export const packageVersions = {
   '@backstage/plugin-user-settings': pluginUserSettings,
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
+  '@backstage/ui': ui,
 };

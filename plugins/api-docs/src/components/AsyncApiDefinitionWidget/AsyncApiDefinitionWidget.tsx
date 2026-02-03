@@ -15,20 +15,24 @@
  */
 
 import { Progress } from '@backstage/core-components';
-import React, { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
+import { AsyncApiResolver } from './AsyncApiDefinition';
 
 // The asyncapi component and related CSS has a significant size, only load it
 // if the element is actually used.
-const LazyAsyncApiDefinition = React.lazy(() =>
+const LazyAsyncApiDefinition = lazy(() =>
   import('./AsyncApiDefinition').then(m => ({
     default: m.AsyncApiDefinition,
   })),
 );
 
+/** @public */
 export type AsyncApiDefinitionWidgetProps = {
   definition: string;
+  resolvers?: AsyncApiResolver[];
 };
 
+/** @public */
 export const AsyncApiDefinitionWidget = (
   props: AsyncApiDefinitionWidgetProps,
 ) => {

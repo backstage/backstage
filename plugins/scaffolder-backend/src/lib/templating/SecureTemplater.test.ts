@@ -69,7 +69,12 @@ describe('SecureTemplater', () => {
       owner: 'my-owner',
       host: 'my-host.com',
     }));
-    const renderWith = await SecureTemplater.loadRenderer({ parseRepoUrl });
+
+    const projectSlug = jest.fn(() => 'my-owner/my-repo');
+
+    const renderWith = await SecureTemplater.loadRenderer({
+      templateFilters: { parseRepoUrl, projectSlug },
+    });
     const renderWithout = await SecureTemplater.loadRenderer();
 
     const ctx = {
@@ -95,7 +100,6 @@ describe('SecureTemplater', () => {
 
     expect(parseRepoUrl.mock.calls).toEqual([
       ['https://my-host.com/my-owner/my-repo'],
-      ['https://my-host.com/my-owner/my-repo'],
     ]);
   });
 
@@ -103,8 +107,9 @@ describe('SecureTemplater', () => {
     const mockFilter1 = jest.fn(() => 'filtered text');
     const mockFilter2 = jest.fn((var1, var2) => `${var1} ${var2}`);
     const mockFilter3 = jest.fn((var1, var2) => ({ var1, var2 }));
+    const mockFilter4 = jest.fn(() => undefined);
     const renderWith = await SecureTemplater.loadRenderer({
-      additionalTemplateFilters: { mockFilter1, mockFilter2, mockFilter3 },
+      templateFilters: { mockFilter1, mockFilter2, mockFilter3, mockFilter4 },
     });
     const renderWithout = await SecureTemplater.loadRenderer();
 
@@ -127,6 +132,7 @@ describe('SecureTemplater', () => {
         var2: 'another extra arg',
       }),
     );
+    expect(renderWith('${{ inputValue | mockFilter4 }}', ctx)).toBe('');
 
     expect(() => renderWithout('${{ inputValue | mockFilter1 }}', ctx)).toThrow(
       /Error: filter not found: mockFilter1/,
@@ -144,14 +150,39 @@ describe('SecureTemplater', () => {
       ['the input value', 'another extra arg'],
     ]);
   });
+  it('should make additional globals available when requested', async () => {
+    const mockGlobal1 = jest.fn(() => 'awesome global function');
+    const mockGlobal2 = 'foo';
+    const mockGlobal3 = 123456;
+    const mockGlobal4 = jest.fn(() => undefined);
+    const renderWith = await SecureTemplater.loadRenderer({
+      templateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3, mockGlobal4 },
+    });
+    const renderWithout = await SecureTemplater.loadRenderer();
+
+    const ctx = {};
+
+    expect(renderWith('${{ mockGlobal1() }}', ctx)).toBe(
+      'awesome global function',
+    );
+    expect(renderWith('${{ mockGlobal2 }}', ctx)).toBe('foo');
+    expect(renderWith('${{ mockGlobal3 }}', ctx)).toBe('123456');
+    expect(renderWith('${{ mockGlobal4() }}', ctx)).toBe('');
+
+    expect(() => renderWithout('${{ mockGlobal1() }}', ctx)).toThrow(
+      /Error: Unable to call `mockGlobal1`/,
+    );
+  });
 
   it('should not allow helpers to be rewritten', async () => {
     const render = await SecureTemplater.loadRenderer({
-      parseRepoUrl: () => ({
-        repo: 'my-repo',
-        owner: 'my-owner',
-        host: 'my-host.com',
-      }),
+      templateFilters: {
+        parseRepoUrl: () => ({
+          repo: 'my-repo',
+          owner: 'my-owner',
+          host: 'my-host.com',
+        }),
+      },
     });
 
     const ctx = {

@@ -21,16 +21,6 @@
  * @packageDocumentation
  */
 
-export {
-  RESOURCE_TYPE_CATALOG_ENTITY,
-  catalogEntityReadPermission,
-  catalogEntityCreatePermission,
-  catalogEntityDeletePermission,
-  catalogEntityRefreshPermission,
-  catalogLocationReadPermission,
-  catalogLocationCreatePermission,
-  catalogLocationDeletePermission,
-} from './permissions';
-export type { CatalogEntityPermission } from './permissions';
-
 export * from './search';
+export * from './ingestion';
+export type { LocationSpec } from './common';

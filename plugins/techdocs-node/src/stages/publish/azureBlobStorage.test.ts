@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import mockFs from 'mock-fs';
-import path from 'path';
+import path from 'node:path';
 import fs from 'fs-extra';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
-import { EventEmitter } from 'events';
 import {
   BlobUploadCommonResponse,
   ContainerGetPropertiesResponse,
 } from '@azure/storage-blob';
 import {
-  storageRootDir,
-  StorageFilesMock,
-} from '../../testUtils/StorageFilesMock';
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
+
+const mockDir = createMockDirectory();
 
 jest.mock('@azure/identity', () => ({
   __esModule: true,
@@ -40,13 +39,16 @@ jest.mock('@azure/identity', () => ({
 
 jest.mock('@azure/storage-blob', () => {
   class BlockBlobClient {
-    constructor(
-      private readonly blobName: string,
-      private readonly storage: StorageFilesMock,
-    ) {}
+    private readonly blobName: string;
+
+    constructor(blobName: string) {
+      this.blobName = blobName;
+    }
 
     uploadFile(source: string): Promise<BlobUploadCommonResponse> {
-      this.storage.writeFile(this.blobName, source);
+      mockDir.addContent({
+        [this.blobName]: fs.readFileSync(source, 'utf8'),
+      });
       return Promise.resolve({
         _response: {
           request: {
@@ -59,24 +61,17 @@ jest.mock('@azure/storage-blob', () => {
     }
 
     exists() {
-      return this.storage.fileExists(this.blobName);
+      return fs.pathExistsSync(mockDir.resolve(this.blobName));
     }
 
     download() {
-      const emitter = new EventEmitter();
-      setTimeout(() => {
-        if (this.storage.fileExists(this.blobName)) {
-          emitter.emit('data', this.storage.readFile(this.blobName));
-          emitter.emit('end');
-        } else {
-          emitter.emit(
-            'error',
-            new Error(`The file ${this.blobName} does not exist!`),
-          );
-        }
-      }, 0);
+      if (!fs.pathExistsSync(mockDir.resolve(this.blobName))) {
+        return Promise.reject(
+          new Error(`The file ${this.blobName} does not exist!`),
+        );
+      }
       return Promise.resolve({
-        readableStreamBody: emitter,
+        readableStreamBody: fs.createReadStream(mockDir.resolve(this.blobName)),
       });
     }
   }
@@ -126,10 +121,11 @@ jest.mock('@azure/storage-blob', () => {
   }
 
   class ContainerClient {
-    constructor(
-      private readonly containerName: string,
-      protected readonly storage: StorageFilesMock,
-    ) {}
+    private readonly containerName: string;
+
+    constructor(containerName: string) {
+      this.containerName = containerName;
+    }
 
     getProperties(): Promise<ContainerGetPropertiesResponse> {
       return Promise.resolve({
@@ -145,7 +141,7 @@ jest.mock('@azure/storage-blob', () => {
     }
 
     getBlockBlobClient(blobName: string) {
-      return new BlockBlobClient(blobName, this.storage);
+      return new BlockBlobClient(blobName);
     }
 
     listBlobsFlat() {
@@ -180,31 +176,27 @@ jest.mock('@azure/storage-blob', () => {
 
   class ContainerClientFailUpload extends ContainerClient {
     getBlockBlobClient(blobName: string) {
-      return new BlockBlobClientFailUpload(blobName, this.storage);
+      return new BlockBlobClientFailUpload(blobName);
     }
   }
 
   class BlobServiceClient {
-    storage = new StorageFilesMock();
+    public readonly url: string;
+    private readonly credential?: StorageSharedKeyCredential;
 
-    constructor(
-      public readonly url: string,
-      private readonly credential?: StorageSharedKeyCredential,
-    ) {
-      this.storage.emptyFiles();
+    constructor(url: string, credential?: StorageSharedKeyCredential) {
+      this.url = url;
+      this.credential = credential;
     }
 
     getContainerClient(containerName: string) {
       if (containerName === 'bad_container') {
-        return new ContainerClientFailGetProperties(
-          containerName,
-          this.storage,
-        );
+        return new ContainerClientFailGetProperties(containerName);
       }
       if (this.credential?.accountName === 'bad_account_credentials') {
-        return new ContainerClientFailUpload(containerName, this.storage);
+        return new ContainerClientFailUpload(containerName);
       }
-      return new ContainerClient(containerName, this.storage);
+      return new ContainerClient(containerName);
     }
   }
 
@@ -222,6 +214,7 @@ jest.mock('@azure/storage-blob', () => {
     __esModule: true,
     BlobServiceClient,
     StorageSharedKeyCredential,
+    BlockBlobClient,
   };
 });
 
@@ -231,11 +224,10 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(storageRootDir, namespace || DEFAULT_NAMESPACE, kind, name);
+  return mockDir.resolve(namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
-const logger = getVoidLogger();
-jest.spyOn(logger, 'error').mockReturnValue(logger);
+const logger = mockServices.logger.mock();
 
 const createPublisherFromConfig = ({
   accountName = 'accountName',
@@ -314,13 +306,9 @@ describe('AzureBlobStoragePublish', () => {
   };
 
   beforeEach(async () => {
-    mockFs({
+    mockDir.setContent({
       [directory]: files,
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   describe('getReadiness', () => {
@@ -374,8 +362,7 @@ describe('AzureBlobStoragePublish', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      const wrongPathToGeneratedDirectory = path.join(
-        storageRootDir,
+      const wrongPathToGeneratedDirectory = mockDir.resolve(
         'wrong',
         'path',
         'to',
@@ -391,11 +378,9 @@ describe('AzureBlobStoragePublish', () => {
         directory: wrongPathToGeneratedDirectory,
       });
 
-      await expect(fails).rejects.toMatchObject({
-        message: expect.stringContaining(
-          'Unable to upload file(s) to Azure. Error: Failed to read template directory: ENOENT, no such file or directory',
-        ),
-      });
+      await expect(fails).rejects.toThrow(
+        `Unable to upload file(s) to Azure. Error: Failed to read template directory: ENOENT: no such file or directory, scandir '${wrongPathToGeneratedDirectory}'`,
+      );
 
       await expect(fails).rejects.toMatchObject({
         message: expect.stringContaining(wrongPathToGeneratedDirectory),
@@ -418,7 +403,7 @@ describe('AzureBlobStoragePublish', () => {
 
       expect(logger.error).toHaveBeenCalledWith(
         expect.stringContaining(
-          `Unable to upload file(s) to Azure. Error: Upload failed for ${path.join(
+          `Upload failed for ${path.join(
             directory,
             '404.html',
           )} with status code 500`,
@@ -506,7 +491,7 @@ describe('AzureBlobStoragePublish', () => {
         name: 'path',
       };
 
-      const techDocsMetadaFilePath = path.posix.join(
+      const techDocsMetadataFilePath = path.posix.join(
         ...Object.values(invalidEntityName),
         'techdocs_metadata.json',
       );
@@ -514,7 +499,7 @@ describe('AzureBlobStoragePublish', () => {
       const fails = publisher.fetchTechDocsMetadata(invalidEntityName);
 
       await expect(fails).rejects.toMatchObject({
-        message: `TechDocs metadata fetch failed; caused by Error: The file ${techDocsMetadaFilePath} does not exist!`,
+        message: `TechDocs metadata fetch failed; caused by Error: The file ${techDocsMetadataFilePath} does not exist!`,
       });
     });
   });
@@ -528,10 +513,6 @@ describe('AzureBlobStoragePublish', () => {
       const publisher = createPublisherFromConfig();
       await publisher.publish({ entity, directory });
       app = express().use(publisher.docsRouter());
-    });
-
-    afterEach(() => {
-      mockFs.restore();
     });
 
     it('should pass expected object path to bucket', async () => {
@@ -591,6 +572,32 @@ describe('AzureBlobStoragePublish', () => {
       );
       expect(response.status).toBe(404);
 
+      expect(Buffer.from(response.text).toString('utf8')).toEqual(
+        'File Not Found',
+      );
+    });
+
+    it('should handle stream pipe errors', async () => {
+      // Get BlockBlobClient from the mock module and replace the download method with a failing one
+      const { BlockBlobClient } = jest.requireMock('@azure/storage-blob');
+      const originalDownload = BlockBlobClient.prototype.download;
+      BlockBlobClient.prototype.download = function () {
+        return Promise.resolve({
+          readableStreamBody: {
+            pipe: () => {
+              throw new Error('Pipe operation failed');
+            },
+          },
+        });
+      };
+
+      const response = await request(app).get(
+        `/${entityTripletPath}/index.html`,
+      );
+
+      BlockBlobClient.prototype.download = originalDownload;
+
+      expect(response.status).toBe(404);
       expect(Buffer.from(response.text).toString('utf8')).toEqual(
         'File Not Found',
       );

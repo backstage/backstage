@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import List from '@material-ui/core/List';
 import Button from '@material-ui/core/Button';
-import React, { useMemo, useState } from 'react';
-import useObservable from 'react-use/lib/useObservable';
+import { useMemo, useState } from 'react';
+import useObservable from 'react-use/esm/useObservable';
 import LoginRequestListItem from './LoginRequestListItem';
-import { useApi, oauthRequestApiRef } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  configApiRef,
+  oauthRequestApiRef,
+} from '@backstage/core-plugin-api';
 import Typography from '@material-ui/core/Typography';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export type OAuthRequestDialogClassKey =
   | 'dialog'
@@ -33,7 +39,7 @@ export type OAuthRequestDialogClassKey =
   | 'contentList'
   | 'actionButtons';
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     dialog: {
       paddingTop: theme.spacing(1),
@@ -58,6 +64,12 @@ export function OAuthRequestDialog(_props: {}) {
   const classes = useStyles();
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
+  const configApi = useApi(configApiRef);
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+
+  const authRedirect =
+    configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ?? false;
+
   const requests = useObservable(
     useMemo(() => oauthRequestApi.authRequest$(), [oauthRequestApi]),
     [],
@@ -80,9 +92,16 @@ export function OAuthRequestDialog(_props: {}) {
           classes={{ root: classes.title }}
           id="oauth-req-dialog-title"
         >
-          <Typography className={classes.titleHeading} variant="h1">
-            Login Required
+          <Typography
+            className={classes.titleHeading}
+            variant="h1"
+            variantMapping={{ h1: 'span' }}
+          >
+            {t('oauthRequestDialog.title')}
           </Typography>
+          {authRedirect ? (
+            <Typography>{t('oauthRequestDialog.authRedirectTitle')}</Typography>
+          ) : null}
         </DialogTitle>
 
         <DialogContent dividers classes={{ root: classes.contentList }}>
@@ -100,7 +119,9 @@ export function OAuthRequestDialog(_props: {}) {
       </main>
 
       <DialogActions classes={{ root: classes.actionButtons }}>
-        <Button onClick={handleRejectAll}>Reject All</Button>
+        <Button onClick={handleRejectAll}>
+          {t('oauthRequestDialog.rejectAll')}
+        </Button>
       </DialogActions>
     </Dialog>
   );

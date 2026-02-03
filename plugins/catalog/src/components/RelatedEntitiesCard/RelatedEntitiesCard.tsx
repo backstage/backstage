@@ -15,13 +15,12 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   EntityTable,
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import {
   InfoCard,
   InfoCardVariants,
@@ -29,7 +28,24 @@ import {
   Progress,
   ResponseErrorPanel,
   TableColumn,
+  TableOptions,
 } from '@backstage/core-components';
+import {
+  asComponentEntities,
+  asDomainEntities,
+  asResourceEntities,
+  asSystemEntities,
+  componentEntityColumns,
+  componentEntityHelpLink,
+  domainEntityColumns,
+  domainEntityHelpLink,
+  resourceEntityColumns,
+  resourceEntityHelpLink,
+  systemEntityColumns,
+  systemEntityHelpLink,
+} from './presets';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type RelatedEntitiesCardProps<T extends Entity> = {
@@ -41,6 +57,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   emptyMessage: string;
   emptyHelpLink: string;
   asRenderableEntities: (entities: Entity[]) => T[];
+  tableOptions?: TableOptions;
 };
 
 /**
@@ -55,9 +72,9 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
  *
  * @public
  */
-export function RelatedEntitiesCard<T extends Entity>(
+export const RelatedEntitiesCard = <T extends Entity>(
   props: RelatedEntitiesCardProps<T>,
-) {
+) => {
   const {
     variant = 'gridItem',
     title,
@@ -67,8 +84,9 @@ export function RelatedEntitiesCard<T extends Entity>(
     emptyMessage,
     emptyHelpLink,
     asRenderableEntities,
+    tableOptions = {},
   } = props;
-
+  const { t } = useTranslationRef(catalogTranslationRef);
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: relationType,
@@ -99,12 +117,28 @@ export function RelatedEntitiesCard<T extends Entity>(
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">{emptyMessage}</Typography>
           <Typography variant="body2">
-            <Link to={emptyHelpLink}>Learn how to change this.</Link>
+            <Link to={emptyHelpLink} externalLinkIcon>
+              {t('relatedEntitiesCard.emptyHelpLinkTitle')}
+            </Link>
           </Typography>
         </div>
       }
       columns={columns}
       entities={asRenderableEntities(entities || [])}
+      tableOptions={tableOptions}
     />
   );
-}
+};
+
+RelatedEntitiesCard.componentEntityColumns = componentEntityColumns;
+RelatedEntitiesCard.componentEntityHelpLink = componentEntityHelpLink;
+RelatedEntitiesCard.asComponentEntities = asComponentEntities;
+RelatedEntitiesCard.resourceEntityColumns = resourceEntityColumns;
+RelatedEntitiesCard.resourceEntityHelpLink = resourceEntityHelpLink;
+RelatedEntitiesCard.asResourceEntities = asResourceEntities;
+RelatedEntitiesCard.systemEntityColumns = systemEntityColumns;
+RelatedEntitiesCard.systemEntityHelpLink = systemEntityHelpLink;
+RelatedEntitiesCard.asSystemEntities = asSystemEntities;
+RelatedEntitiesCard.domainEntityColums = domainEntityColumns;
+RelatedEntitiesCard.domainEntityHelpLink = domainEntityHelpLink;
+RelatedEntitiesCard.asDomainEntities = asDomainEntities;

@@ -16,15 +16,20 @@
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError } from '@backstage/errors';
-import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
+import {
+  File,
+  FileExistsResponse,
+  Storage,
+  StorageOptions,
+} from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
-import path from 'path';
-import { Readable } from 'stream';
-import { Logger } from 'winston';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
+  isValidContentPath,
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
   bulkStorageOperation,
@@ -40,19 +45,20 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class GoogleGCSPublish implements PublisherBase {
   private readonly storageClient: Storage;
   private readonly bucketName: string;
   private readonly legacyPathCasing: boolean;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly bucketRootPath: string;
 
   constructor(options: {
     storageClient: Storage;
     bucketName: string;
     legacyPathCasing: boolean;
-    logger: Logger;
+    logger: LoggerService;
     bucketRootPath: string;
   }) {
     this.storageClient = options.storageClient;
@@ -62,7 +68,11 @@ export class GoogleGCSPublish implements PublisherBase {
     this.bucketRootPath = options.bucketRootPath;
   }
 
-  static fromConfig(config: Config, logger: Logger): PublisherBase {
+  static fromConfig(
+    config: Config,
+    logger: LoggerService,
+    options?: StorageOptions,
+  ): PublisherBase {
     let bucketName = '';
     try {
       bucketName = config.getString('techdocs.publisher.googleGcs.bucketName');
@@ -83,6 +93,9 @@ export class GoogleGCSPublish implements PublisherBase {
     const credentials = config.getOptionalString(
       'techdocs.publisher.googleGcs.credentials',
     );
+    const projectId = config.getOptionalString(
+      'techdocs.publisher.googleGcs.projectId',
+    );
     let credentialsJson: any = {};
     if (credentials) {
       try {
@@ -94,11 +107,17 @@ export class GoogleGCSPublish implements PublisherBase {
       }
     }
 
+    const clientOpts: StorageOptions = options ?? {};
+    if (projectId) {
+      clientOpts.projectId = projectId;
+    }
+
     const storageClient = new Storage({
       ...(credentials && {
         projectId: credentialsJson.project_id,
         credentials: credentialsJson,
       }),
+      ...clientOpts,
     });
 
     const legacyPathCasing =
@@ -248,6 +267,12 @@ export class GoogleGCSPublish implements PublisherBase {
         : lowerCaseEntityTriplet(entityTriplet);
 
       const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
+      if (!isValidContentPath(this.bucketRootPath, entityRootDir)) {
+        this.logger.error(
+          `Invalid content path found while fetching TechDocs metadata: ${entityRootDir}`,
+        );
+        reject(new Error(`Metadata Not Found`));
+      }
 
       const fileStreamChunks: Array<any> = [];
       this.storageClient
@@ -274,19 +299,22 @@ export class GoogleGCSPublish implements PublisherBase {
    */
   docsRouter(): express.Handler {
     return (req, res) => {
-      // Decode and trim the leading forward slash
       const decodedUri = decodeURI(req.path.replace(/^\//, ''));
 
-      // Root path is removed from the Uri so that legacy casing can be applied
-      // to the entity triplet without manipulating the root path
-      const decodedUriNoRoot = path.relative(this.bucketRootPath, decodedUri);
-
+      // filePath example - /default/component/documented-component/index.html
       const filePathNoRoot = this.legacyPathCasing
-        ? decodedUriNoRoot
-        : lowerCaseEntityTripletInStoragePath(decodedUriNoRoot);
+        ? decodedUri
+        : lowerCaseEntityTripletInStoragePath(decodedUri);
 
-      // Re-prepend the root path to the relative file path
+      // Prepend the root path to the relative file path
       const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
+      if (!isValidContentPath(this.bucketRootPath, filePath)) {
+        this.logger.error(
+          `Attempted to fetch TechDocs content for a file outside of the bucket root: ${filePathNoRoot}`,
+        );
+        res.status(404).send('File Not Found');
+        return;
+      }
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
@@ -327,6 +355,12 @@ export class GoogleGCSPublish implements PublisherBase {
         : lowerCaseEntityTriplet(entityTriplet);
 
       const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
+      if (!isValidContentPath(this.bucketRootPath, entityRootDir)) {
+        this.logger.error(
+          `Invalid content path found while checking if docs have been generated: ${entityRootDir}`,
+        );
+        resolve(false);
+      }
 
       this.storageClient
         .bucket(this.bucketName)

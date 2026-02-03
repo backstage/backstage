@@ -4,6 +4,7 @@ author: SDA SE
 authorUrl: https://sda.se/
 category: Quality
 description: Components to display code quality metrics from SonarCloud and SonarQube.
-documentation: https://github.com/backstage/backstage/blob/master/plugins/sonarqube/README.md
-iconUrl: img/sonarqube-icon.svg
-npmPackageName: '@backstage/plugin-sonarqube'
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/sonarqube/plugins/sonarqube/README.md
+iconUrl: /img/sonarqube-icon.svg
+npmPackageName: '@backstage-community/plugin-sonarqube'
+addedDate: '2020-11-03'

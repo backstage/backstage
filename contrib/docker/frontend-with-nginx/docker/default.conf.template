@@ -6,6 +6,7 @@ server {
     #access_log  /var/log/nginx/host.access.log  main;
 
     location / {
+        include /etc/nginx/mime.types;
         root   /usr/share/nginx/html;
         index  index.html index.htm;
         try_files $uri /index.html;

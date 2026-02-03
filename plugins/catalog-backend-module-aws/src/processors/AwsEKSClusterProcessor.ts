@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  LocationSpec,
-} from '@backstage/plugin-catalog-backend';
-import {
-  ANNOTATION_KUBERNETES_API_SERVER,
-  ANNOTATION_KUBERNETES_API_SERVER_CA,
-  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-} from '@backstage/catalog-model';
-import { Credentials, EKS } from 'aws-sdk';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
+import { EKS } from '@aws-sdk/client-eks';
 import { AWSCredentialFactory } from '../types';
+import { AwsCredentialIdentity, Provider } from '@aws-sdk/types';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
+import { Config } from '@backstage/config';
 
-const ACCOUNTID_ANNOTATION: string = 'amazonaws.com/account-id';
-const ARN_ANNOTATION: string = 'amazonaws.com/arn';
+import type { EksClusterEntityTransformer } from './types';
+import { defaultEksClusterEntityTransformer } from '../lib';
 
 /**
  * A processor for automatic discovery of resources from EKS clusters. Handles the
@@ -38,20 +40,38 @@ const ARN_ANNOTATION: string = 'amazonaws.com/arn';
  */
 export class AwsEKSClusterProcessor implements CatalogProcessor {
   private credentialsFactory?: AWSCredentialFactory;
+  private credentialsManager?: AwsCredentialsManager;
+  private readonly clusterEntityTransformer: EksClusterEntityTransformer;
 
-  constructor(options: { credentialsFactory?: AWSCredentialFactory }) {
+  static fromConfig(
+    configRoot: Config,
+    options?: {
+      clusterEntityTransformer?: EksClusterEntityTransformer;
+    },
+  ): AwsEKSClusterProcessor {
+    const awsCredentialsManager =
+      DefaultAwsCredentialsManager.fromConfig(configRoot);
+    return new AwsEKSClusterProcessor({
+      credentialsManager: awsCredentialsManager,
+      ...options,
+    });
+  }
+
+  constructor(options: {
+    credentialsFactory?: AWSCredentialFactory;
+    credentialsManager?: AwsCredentialsManager;
+    clusterEntityTransformer?: EksClusterEntityTransformer;
+  }) {
     this.credentialsFactory = options.credentialsFactory;
+    this.credentialsManager = options.credentialsManager;
+
+    // If the callback function is not passed in, then default to the one upstream is using
+    this.clusterEntityTransformer =
+      options.clusterEntityTransformer || defaultEksClusterEntityTransformer;
   }
 
   getProcessorName(): string {
     return 'aws-eks';
-  }
-
-  normalizeName(name: string): string {
-    return name
-      .trim()
-      .toLocaleLowerCase('en-US')
-      .replace(/[^a-zA-Z0-9\-]/g, '-');
   }
 
   async readLocation(
@@ -72,44 +92,40 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
       );
     }
 
-    let credentials: Credentials | undefined;
+    let credentials: AwsCredentialIdentity | undefined;
 
     if (this.credentialsFactory) {
       credentials = await this.credentialsFactory(accountId);
     }
 
-    const eksClient = new EKS({ credentials, region });
-    const clusters = await eksClient.listClusters({}).promise();
+    let providerFunction: (() => Provider<AwsCredentialIdentity>) | undefined;
+    if (this.credentialsManager) {
+      const credentialsProvider =
+        await this.credentialsManager.getCredentialProvider({ accountId });
+      providerFunction = () => credentialsProvider.sdkCredentialProvider;
+    }
+
+    const eksClient = new EKS({
+      customUserAgent: 'backstage-aws-catalog-eks-cluster-processor',
+      credentials,
+      credentialDefaultProvider: providerFunction,
+      region,
+    });
+    const clusters = await eksClient.listClusters({});
     if (clusters.clusters === undefined) {
       return true;
     }
 
     const results = clusters.clusters
-      .map(cluster => eksClient.describeCluster({ name: cluster }).promise())
+      .map(cluster => eksClient.describeCluster({ name: cluster }))
       .map(async describedClusterPromise => {
         const describedCluster = await describedClusterPromise;
         if (describedCluster.cluster) {
-          const entity = {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Resource',
-            metadata: {
-              annotations: {
-                [ACCOUNTID_ANNOTATION]: accountId,
-                [ARN_ANNOTATION]: describedCluster.cluster.arn || '',
-                [ANNOTATION_KUBERNETES_API_SERVER]:
-                  describedCluster.cluster.endpoint || '',
-                [ANNOTATION_KUBERNETES_API_SERVER_CA]:
-                  describedCluster.cluster.certificateAuthority?.data || '',
-                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
-              },
-              name: this.normalizeName(describedCluster.cluster.name as string),
-              namespace: 'default',
-            },
-            spec: {
-              type: 'kubernetes-cluster',
-              owner: 'unknown',
-            },
-          };
+          const entity = await this.clusterEntityTransformer(
+            describedCluster.cluster,
+            accountId,
+          );
+
           emit({
             type: 'entity',
             entity,

@@ -1,7 +1,6 @@
 ---
 id: composability
 title: Composability System
-# prettier-ignore
 description: Documentation for the Backstage plugin composability APIs.
 ---
 
@@ -196,14 +195,14 @@ const App = () => (
 There are a couple of naming patterns to adhere to as you build plugins, which
 helps clarify the intent and usage of the exports.
 
-| Description           | Pattern         | Examples                                       |
-| --------------------- | --------------- | ---------------------------------------------- |
-| Top-level Pages       | \*Page          | CatalogIndexPage, SettingsPage, LighthousePage |
-| Entity Tab Content    | Entity\*Content | EntityJenkinsContent, EntityKubernetesContent  |
-| Entity Overview Card  | Entity\*Card    | EntitySentryCard, EntityPagerDutyCard          |
-| Entity Conditional    | is\*Available   | isPagerDutyAvailable, isJenkinsAvailable       |
-| Plugin Instance       | \*Plugin        | jenkinsPlugin, catalogPlugin                   |
-| Utility API Reference | \*ApiRef        | configApiRef, catalogApiRef                    |
+| Description           | Pattern          | Examples                                             |
+| --------------------- | ---------------- | ---------------------------------------------------- |
+| Top-level Pages       | `*Page`          | `CatalogIndexPage`, `SettingsPage`, `LighthousePage` |
+| Entity Tab Content    | `Entity*Content` | `EntityJenkinsContent`, `EntityKubernetesContent`    |
+| Entity Overview Card  | `Entity*Card`    | `EntitySentryCard`, `EntityPagerDutyCard`            |
+| Entity Conditional    | `is*Available`   | `isPagerDutyAvailable`, `isJenkinsAvailable`         |
+| Plugin Instance       | `*Plugin`        | `jenkinsPlugin`, `catalogPlugin`                     |
+| Utility API Reference | `*ApiRef`        | `configApiRef`, `catalogApiRef`                      |
 
 ### Routing System
 
@@ -324,6 +323,33 @@ application, you can choose to go the route of direct imports or even use
 concrete routes directly. Although there can be some benefits to using the full
 routing system even in internal plugins. It can help you structure your routes,
 and as you will see further down it also helps you manage route parameters.
+
+You can also use static configuration to bind routes, removing the need to make
+changes to the app code. It does however mean that you won't get type safety
+when binding routes and compile-time validation of the bindings. Static
+configuration of route bindings is done under the `app.routes.bindings` key in
+`app-config.yaml`. It works the same way as [route bindings in the new frontend system](../frontend-system/architecture/36-routes.md#binding-external-route-references),
+for example:
+
+```yaml
+app:
+  routes:
+    bindings:
+      bar.headerLink: foo.root
+```
+
+### Default Targets for External Route References
+
+Following the `1.28` release of Backstage you can now define default targets for
+external route references. They work the same way as [default targets in the new frontend system](../frontend-system/architecture/36-routes.md#default-targets-for-external-route-references),
+for example:
+
+```ts
+export const createComponentExternalRouteRef = createExternalRouteRef({
+  // highlight-next-line
+  defaultTarget: 'scaffolder.createComponent',
+});
+```
 
 ### Optional External Routes
 
@@ -480,7 +506,7 @@ function isKind(kind: string) {
 ```
 
 The `@backstage/catalog` plugin provides a couple of built-in conditions,
-`isKind`, `isComponentType`, and `isNamespace`.
+`isKind`, `isComponentType`, `isResourceType`, `isEntityWith`, and `isNamespace`.
 
 In addition to the `EntitySwitch` component, the catalog plugin also exports a
 new `EntityLayout` component. It is a tweaked version and replacement for the
@@ -515,10 +541,10 @@ deprecated while making the new additions, to then be removed at a later point.
 Many export naming patterns have been changed to avoid import aliases and to
 clarify intent. Refer to the following table to formulate the new name:
 
-| Description          | Existing Pattern           | New Pattern     | Examples                                       |
-| -------------------- | -------------------------- | --------------- | ---------------------------------------------- |
-| Top-level Pages      | Router                     | \*Page          | CatalogIndexPage, SettingsPage, LighthousePage |
-| Entity Tab Content   | Router                     | Entity\*Content | EntityJenkinsContent, EntityKubernetesContent  |
-| Entity Overview Card | \*Card                     | Entity\*Card    | EntitySentryCard, EntityPagerDutyCard          |
-| Entity Conditional   | isPluginApplicableToEntity | is\*Available   | isPagerDutyAvailable, isJenkinsAvailable       |
-| Plugin Instance      | plugin                     | \*Plugin        | jenkinsPlugin, catalogPlugin                   |
+| Description          | Existing Pattern             | New Pattern       | Examples                                             |
+| -------------------- | ---------------------------- | ----------------- | ---------------------------------------------------- |
+| Top-level Pages      | `Router`                     | `\*Page`          | `CatalogIndexPage`, `SettingsPage`, `LighthousePage` |
+| Entity Tab Content   | `Router`                     | `Entity\*Content` | `EntityJenkinsContent`, `EntityKubernetesContent`    |
+| Entity Overview Card | `\*Card`                     | `Entity\*Card`    | `EntitySentryCard`, `EntityPagerDutyCard`            |
+| Entity Conditional   | `isPluginApplicableToEntity` | `is\*Available`   | `isPagerDutyAvailable`, `isJenkinsAvailable`         |
+| Plugin Instance      | `plugin`                     | `\*Plugin`        | `jenkinsPlugin`, `catalogPlugin`                     |

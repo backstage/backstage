@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useEntityStore } from './useEntityStore';
+import { pickBy } from 'lodash';
+import { useRelations } from '../../hooks/useRelations';
 
 /**
  * Discover the graph of entities connected by relations, starting from a set of
@@ -24,13 +26,19 @@ import { useEntityStore } from './useEntityStore';
  */
 export function useEntityRelationGraph({
   rootEntityRefs,
-  filter: { maxDepth = Number.POSITIVE_INFINITY, relations, kinds } = {},
+  filter: {
+    maxDepth = Number.POSITIVE_INFINITY,
+    relations,
+    kinds,
+    entityFilter,
+  } = {},
 }: {
   rootEntityRefs: string[];
   filter?: {
     maxDepth?: number;
     relations?: string[];
     kinds?: string[];
+    entityFilter?: (entity: Entity) => boolean;
   };
 }): {
   entities?: { [ref: string]: Entity };
@@ -38,6 +46,7 @@ export function useEntityRelationGraph({
   error?: Error;
 } {
   const { entities, loading, error, requestEntities } = useEntityStore();
+  const { includeRelation } = useRelations({ relations });
 
   useEffect(() => {
     const expectedEntities = new Set([...rootEntityRefs]);
@@ -60,9 +69,14 @@ export function useEntityRelationGraph({
         processedEntityRefs.add(entityRef);
 
         if (entity && entity.relations) {
+          // If the entity is filtered out then no need to check any
+          // of its outgoing relationships to other entities
+          if (entityFilter && !entityFilter(entity)) {
+            continue;
+          }
           for (const rel of entity.relations) {
             if (
-              (!relations || relations.includes(rel.type)) &&
+              includeRelation(rel.type) &&
               (!kinds ||
                 kinds.some(kind =>
                   rel.targetRef.startsWith(
@@ -81,12 +95,29 @@ export function useEntityRelationGraph({
 
       ++depth;
     }
-
     requestEntities([...expectedEntities]);
-  }, [entities, rootEntityRefs, maxDepth, relations, kinds, requestEntities]);
+  }, [
+    entities,
+    rootEntityRefs,
+    maxDepth,
+    includeRelation,
+    kinds,
+    entityFilter,
+    requestEntities,
+  ]);
+
+  const filteredEntities = useMemo(() => {
+    if (loading) {
+      return {};
+    }
+
+    return entityFilter
+      ? pickBy(entities, (value, _key) => entityFilter(value))
+      : entities;
+  }, [loading, entities, entityFilter]);
 
   return {
-    entities,
+    entities: filteredEntities,
     loading,
     error,
   };

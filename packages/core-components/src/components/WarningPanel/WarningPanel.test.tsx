@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import Typography from '@material-ui/core/Typography';
-
 import { WarningPanel, WarningProps } from './WarningPanel';
 
 const propsTitle: WarningProps = { title: 'Mock title' };
@@ -41,7 +39,7 @@ describe('<WarningPanel />', () => {
 
   it('renders title', async () => {
     await renderInTestApp(<WarningPanel {...propsTitleMessage} />);
-    const expandIcon = await screen.getByText('Warning: Mock title');
+    const expandIcon = screen.getByText('Warning: Mock title');
     fireEvent.click(expandIcon);
     expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
     expect(screen.getByText('Some more info')).toBeInTheDocument();
@@ -75,5 +73,20 @@ describe('<WarningPanel />', () => {
   it('renders message using severity', async () => {
     await renderInTestApp(<WarningPanel {...propsErrorMessage} />);
     expect(screen.getByText('Error: Mock title')).toBeInTheDocument();
+  });
+  it('renders a title formatted by markdown', async () => {
+    await renderInTestApp(
+      <WarningPanel
+        {...propsErrorMessage}
+        titleFormat="markdown"
+        title="Step has failed. [Help](https://commonmark.org/help)"
+      />,
+    );
+    expect(screen.getByText('Error: Step has failed.')).toBeInTheDocument();
+
+    expect(screen.getByText('Help')).toHaveAttribute(
+      'href',
+      'https://commonmark.org/help',
+    );
   });
 });

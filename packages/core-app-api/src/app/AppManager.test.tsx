@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { LocalStorageFeatureFlags, NoOpAnalyticsApi } from '../apis';
+import { LocalStorageFeatureFlags } from '../apis';
 import {
-  MockAnalyticsApi,
+  mockApis,
   renderWithEffects,
   withLogCollector,
+  registerMswTestHooks,
 } from '@backstage/test-utils';
-import { render, screen } from '@testing-library/react';
-import React, { PropsWithChildren } from 'react';
+import { screen, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
+import { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
   configApiRef,
@@ -34,15 +38,42 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
+  useApi,
+  errorApiRef,
+  fetchApiRef,
+  discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
+import { AppRouter } from './AppRouter';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
+import { FeatureFlagged } from '../routing/FeatureFlagged';
+import {
+  createTranslationRef,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
 
 describe('Integration Test', () => {
+  const server = setupServer();
+  registerMswTestHooks(server);
+
   const noOpAnalyticsApi = createApiFactory(
     analyticsApiRef,
-    new NoOpAnalyticsApi(),
+    mockApis.analytics(),
   );
+  const noopErrorApi = createApiFactory(errorApiRef, {
+    error$() {
+      return {
+        subscribe() {
+          return { unsubscribe() {}, closed: true };
+        },
+        [Symbol.observable]() {
+          return this;
+        },
+      };
+    },
+    post() {},
+  });
   const plugin1RouteRef = createRouteRef({ id: 'ref-1' });
   const plugin1RouteRef2 = createRouteRef({ id: 'ref-1-2' });
   const plugin2RouteRef = createRouteRef({ id: 'ref-2', params: ['x'] });
@@ -164,19 +195,24 @@ describe('Integration Test', () => {
   };
 
   const icons = {} as AppIcons;
+  const themes = [
+    {
+      id: 'light',
+      title: 'Light Theme',
+      variant: 'light' as const,
+      Provider: ({ children }: { children: ReactNode }) => <>{children}</>,
+    },
+  ];
+
+  afterEach(() => {
+    localStorage.clear();
+  });
 
   it('runs happy paths', async () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -224,14 +260,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -264,6 +293,60 @@ describe('Integration Test', () => {
     expect(screen.getByText('extLink4: <none>')).toBeInTheDocument();
   });
 
+  it('runs success with __experimentalTranslations', async () => {
+    const app = new AppManager({
+      apis: [noOpAnalyticsApi, noopErrorApi],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [],
+      components,
+      configLoader: async () => [],
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
+        });
+      },
+      __experimentalTranslations: {
+        availableLanguages: ['en', 'de'],
+        defaultLanguage: 'de',
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    const translationRef = createTranslationRef({
+      id: 'test',
+      messages: {
+        foo: 'Foo',
+      },
+      translations: {
+        de: () => Promise.resolve({ default: { foo: 'Bar' } as any }),
+      },
+    });
+
+    const TranslatedComponent = () => {
+      const { t } = useTranslationRef(translationRef);
+      return <div>translation: {t('foo')}</div>;
+    };
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<TranslatedComponent />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    await expect(
+      screen.findByText('translation: Bar'),
+    ).resolves.toBeInTheDocument();
+  });
+
   it('should wait for the config to load before calling feature flags', async () => {
     const storageFlags = new LocalStorageFeatureFlags();
     jest.spyOn(storageFlags, 'registerFlag');
@@ -282,14 +365,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [
         createPlugin({
@@ -345,14 +421,7 @@ describe('Integration Test', () => {
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [
         createPlugin({
@@ -415,20 +484,103 @@ describe('Integration Test', () => {
     });
   });
 
+  it('feature flags should be available immediately', async () => {
+    const app = new AppManager({
+      apis: [
+        createApiFactory({
+          api: featureFlagsApiRef,
+          deps: { configApi: configApiRef },
+          factory() {
+            return new LocalStorageFeatureFlags();
+          },
+        }),
+      ],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [createPlugin({ id: 'test', featureFlags: [{ name: 'foo' }] })],
+      components,
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    const FeatureFlags = () => {
+      const featureFlags = useApi(featureFlagsApiRef).getRegisteredFlags();
+      return <div>Flags: {featureFlags.map(f => f.name).join(',')}</div>;
+    };
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <FeatureFlags />
+        </Router>
+      </Provider>,
+    );
+
+    expect(screen.getByText('Flags: foo')).toBeInTheDocument();
+  });
+
+  it('should prevent duplicate feature flags from being rendered', async () => {
+    const p1 = createPlugin({
+      id: 'p1',
+      featureFlags: [{ name: 'show-p1-feature' }],
+    });
+    const p2 = createPlugin({
+      id: 'p2',
+      featureFlags: [{ name: 'show-p2-feature' }],
+    });
+
+    const app = new AppManager({
+      apis: [],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [p1, p2],
+      components,
+      configLoader: async () => [],
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    function FeatureFlags() {
+      const featureFlags = useApi(featureFlagsApiRef);
+      return (
+        <div>{`Flags: ${featureFlags
+          .getRegisteredFlags()
+          .map(f => f.name)
+          .join(',')}`}</div>
+      );
+    }
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <FeatureFlagged with="show-p1-feature">
+            <div>My feature behind a flag</div>
+          </FeatureFlagged>
+          <FeatureFlagged with="show-p2-feature">
+            <div>My feature behind a flag</div>
+          </FeatureFlagged>
+          <FeatureFlags />
+        </Router>
+      </Provider>,
+    );
+
+    expect(
+      screen.getByText('Flags: show-p1-feature,show-p2-feature'),
+    ).toBeInTheDocument();
+  });
+
   it('should track route changes via analytics api', async () => {
-    const mockAnalyticsApi = new MockAnalyticsApi();
+    const mockAnalyticsApi = mockApis.analytics();
     const apis = [createApiFactory(analyticsApiRef, mockAnalyticsApi)];
     const app = new AppManager({
       apis,
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -456,40 +608,34 @@ describe('Integration Test', () => {
     );
 
     // Capture initial and subsequent navigation events with expected context.
-    const capturedEvents = mockAnalyticsApi.getEvents();
-    expect(capturedEvents[0]).toMatchObject({
+    expect(mockAnalyticsApi.captureEvent).toHaveBeenCalledTimes(2);
+    expect(mockAnalyticsApi.captureEvent).toHaveBeenNthCalledWith(1, {
       action: 'navigate',
       subject: '/',
+      attributes: {},
       context: {
         extension: 'App',
         pluginId: 'blob',
         routeRef: 'ref-1-2',
       },
     });
-    expect(capturedEvents[1]).toMatchObject({
+    expect(mockAnalyticsApi.captureEvent).toHaveBeenNthCalledWith(2, {
       action: 'navigate',
       subject: '/foo',
+      attributes: {},
       context: {
         extension: 'App',
         pluginId: 'plugin2',
         routeRef: 'ref-2',
       },
     });
-    expect(capturedEvents).toHaveLength(2);
   });
 
-  it('should throw some error when the route has duplicate params', () => {
+  it('should throw some error when the route has duplicate params', async () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
@@ -502,11 +648,14 @@ describe('Integration Test', () => {
       },
     });
 
+    const expectedMessage =
+      'Parameter :thing is duplicated in path test/:thing/some/:thing';
+
     const Provider = app.getProvider();
     const Router = app.getRouter();
-    const { error: errorLogs } = withLogCollector(() => {
-      expect(() =>
-        render(
+    const { error: errorLogs } = await withLogCollector(async () => {
+      await expect(() =>
+        renderWithEffects(
           <Provider>
             <Router>
               <Routes>
@@ -517,40 +666,39 @@ describe('Integration Test', () => {
             </Router>
           </Provider>,
         ),
-      ).toThrow(
-        'Parameter :thing is duplicated in path /test/:thing/some/:thing',
-      );
+      ).rejects.toThrow(expectedMessage);
     });
+
     expect(errorLogs).toEqual([
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
       expect.stringContaining(
-        'The above error occurred in the <Provider> component',
+        'The above error occurred in the <Provider> component:',
       ),
     ]);
   });
 
-  it('should throw an error when required external plugin routes are not bound', () => {
+  it('should throw an error when required external plugin routes are not bound', async () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
-      themes: [
-        {
-          id: 'light',
-          title: 'Light Theme',
-          variant: 'light',
-          Provider: ({ children }) => <>{children}</>,
-        },
-      ],
+      themes,
       icons,
       plugins: [],
       components,
       configLoader: async () => [],
     });
 
+    const expectedMessage =
+      "External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route. See https://backstage.io/link?bind-routes for details.";
+
     const Provider = app.getProvider();
     const Router = app.getRouter();
-    const { error: errorLogs } = withLogCollector(() => {
-      expect(() =>
-        render(
+    const { error: errorLogs } = await withLogCollector(async () => {
+      await expect(() =>
+        renderWithEffects(
           <Provider>
             <Router>
               <Routes>
@@ -559,14 +707,212 @@ describe('Integration Test', () => {
             </Router>
           </Provider>,
         ),
-      ).toThrow(
-        /^External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route/,
-      );
+      ).rejects.toThrow(expectedMessage);
     });
     expect(errorLogs).toEqual([
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
       expect.stringContaining(
-        'The above error occurred in the <Provider> component',
+        'The above error occurred in the <Provider> component:',
       ),
     ]);
+  });
+
+  describe('relative url resolvers', () => {
+    it.each([
+      [
+        ['http://localhost', 'http://localhost'],
+        {
+          backend: {
+            baseUrl: 'http://localhost:8008',
+          },
+          app: {
+            baseUrl: 'http://localhost:8008',
+          },
+        },
+      ],
+      [
+        ['http://localhost', 'http://localhost'],
+        {
+          backend: {
+            baseUrl: 'http://localhost:80',
+          },
+          app: {
+            baseUrl: 'http://localhost:80',
+          },
+        },
+      ],
+      [
+        ['http://localhost', 'http://localhost'],
+        {
+          backend: {
+            baseUrl: 'http://localhost',
+          },
+          app: {
+            baseUrl: 'http://localhost',
+          },
+        },
+      ],
+      [
+        ['http://localhost/backstage', 'http://localhost/backstage'],
+        {
+          backend: {
+            baseUrl: 'http://test.com/backstage',
+          },
+          app: {
+            baseUrl: 'http://test.com/backstage',
+          },
+        },
+      ],
+      [
+        [
+          'http://localhost/backstage/instance',
+          'http://localhost/backstage/instance',
+        ],
+        {
+          backend: {
+            baseUrl: 'http://test.com/backstage/instance',
+          },
+          app: {
+            baseUrl: 'http://test.com/backstage/instance',
+          },
+        },
+      ],
+      [
+        [
+          'http://localhost/backstage/instance',
+          'http://test.com/backstage/instance',
+        ],
+        {
+          backend: {
+            baseUrl: 'http://test.com/backstage/instance',
+          },
+          app: {
+            baseUrl: 'http://test-front.com/backstage/instance',
+          },
+        },
+      ],
+    ])(
+      'should be %p when %p (%#)',
+      async ([expectedAppUrl, expectedBackendUrl], data) => {
+        const app = new AppManager({
+          apis: [],
+          defaultApis: [],
+          themes: [
+            {
+              id: 'light',
+              title: 'Light Theme',
+              variant: 'light',
+              Provider: ({ children }) => <>{children}</>,
+            },
+          ],
+          icons,
+          plugins: [],
+          components,
+          configLoader: async () => [
+            {
+              context: 'test',
+              data,
+            },
+          ],
+        });
+
+        const Provider = app.getProvider();
+        const ConfigDisplay = ({ configString }: { configString: string }) => {
+          const config = useApi(configApiRef);
+          return (
+            <span>
+              {configString}: {config?.getString(configString)}
+            </span>
+          );
+        };
+
+        const dom = await renderWithEffects(
+          <Provider>
+            <ConfigDisplay configString="app.baseUrl" />
+            <ConfigDisplay configString="backend.baseUrl" />
+          </Provider>,
+        );
+
+        expect(dom.getByText(`app.baseUrl: ${expectedAppUrl}`)).toBeTruthy();
+
+        expect(
+          dom.getByText(`backend.baseUrl: ${expectedBackendUrl}`),
+        ).toBeTruthy();
+      },
+    );
+  });
+
+  it('should clear app cookie when the user logs out', async () => {
+    const logoutSignal = jest.fn();
+    server.use(
+      rest.delete(
+        'http://localhost:7007/app/.backstage/auth/v1/cookie',
+        (_req, res, ctx) => {
+          logoutSignal();
+          return res(ctx.status(200));
+        },
+      ),
+    );
+
+    const meta = global.document.createElement('meta');
+    meta.name = 'backstage-app-mode';
+    meta.content = 'protected';
+    global.document.head.appendChild(meta);
+
+    const fetchApiMock = {
+      fetch: jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        }),
+      }),
+    };
+    const discoveryApiMock = mockApis.discovery.mock({
+      getBaseUrl: async () => 'http://localhost:7007/app',
+    });
+
+    const app = new AppManager({
+      icons,
+      themes,
+      components,
+      configLoader: async () => [],
+      defaultApis: [
+        noopErrorApi,
+        createApiFactory({
+          api: fetchApiRef,
+          deps: {},
+          factory: () => fetchApiMock,
+        }),
+        createApiFactory({
+          api: discoveryApiRef,
+          deps: {},
+          factory: () => discoveryApiMock,
+        }),
+      ],
+    });
+
+    const SignOutButton = () => {
+      const identityApi = useApi(identityApiRef);
+      return <button onClick={() => identityApi.signOut()}>Sign Out</button>;
+    };
+
+    const Root = app.createRoot(
+      <AppRouter>
+        <meta name="backstage-app-mode" content="protected" />
+        <SignOutButton />
+      </AppRouter>,
+    );
+    await renderWithEffects(<Root />);
+
+    await act(async () => {
+      await userEvent.click(screen.getByText('Sign Out'));
+    });
+
+    expect(logoutSignal).toHaveBeenCalled();
+
+    global.document.head.removeChild(meta);
   });
 });

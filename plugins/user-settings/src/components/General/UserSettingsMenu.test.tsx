@@ -14,20 +14,48 @@
  * limitations under the License.
  */
 
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
-import React from 'react';
+import {
+  MockErrorApi,
+  TestApiProvider,
+  renderInTestApp,
+  mockApis,
+} from '@backstage/test-utils';
+import { errorApiRef, identityApiRef } from '@backstage/core-plugin-api';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { UserSettingsMenu } from './UserSettingsMenu';
 
 describe('<UserSettingsMenu />', () => {
   it('displays a menu button with a sign-out option', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(<UserSettingsMenu />),
-    );
+    await renderInTestApp(<UserSettingsMenu />);
 
-    const menuButton = rendered.getByLabelText('more');
+    const menuButton = screen.getByLabelText('more');
     fireEvent.click(menuButton);
 
-    expect(rendered.getByText('Sign Out')).toBeInTheDocument();
+    expect(screen.getByText('Sign Out')).toBeInTheDocument();
+  });
+
+  it('handles errors that occur when signing out', async () => {
+    const failingIdentityApi = mockApis.identity.mock({
+      signOut: () => Promise.reject(new Error('Logout error')),
+    });
+    const mockErrorApi = new MockErrorApi({ collect: true });
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [errorApiRef, mockErrorApi],
+          [identityApiRef, failingIdentityApi],
+        ]}
+      >
+        <UserSettingsMenu />
+      </TestApiProvider>,
+    );
+
+    const menuButton = screen.getByLabelText('more');
+    fireEvent.click(menuButton);
+    fireEvent.click(screen.getByText('Sign Out'));
+
+    await waitFor(() => {
+      expect(mockErrorApi.getErrors()).toHaveLength(1);
+    });
   });
 });

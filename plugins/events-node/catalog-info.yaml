@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-events-node
+  title: '@backstage/plugin-events-node'
+  description: The plugin-events-node module for @backstage/plugin-events-backend
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

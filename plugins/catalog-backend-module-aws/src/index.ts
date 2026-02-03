@@ -20,6 +20,9 @@
  * @packageDocumentation
  */
 
+export { default } from './module';
 export * from './processors';
 export * from './providers';
 export * from './types';
+export * from './constants';
+export { defaultEksClusterEntityTransformer } from './lib';

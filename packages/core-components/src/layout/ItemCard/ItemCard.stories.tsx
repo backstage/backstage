@@ -20,14 +20,14 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
-import { MemoryRouter } from 'react-router';
-import { Button } from '../../components';
+import { MemoryRouter } from 'react-router-dom';
+import { LinkButton } from '../../components/LinkButton/LinkButton';
 import { ItemCardGrid } from './ItemCardGrid';
 import { ItemCardHeader } from './ItemCardHeader';
 
 export default {
   title: 'Layout/Item Cards',
+  tags: ['!manifest'],
 };
 
 const text =
@@ -63,9 +63,9 @@ export const Default = () => (
               .join(' ')}
           </CardContent>
           <CardActions>
-            <Button color="primary" to="/catalog">
+            <LinkButton color="primary" to="/catalog">
               Go There!
-            </Button>
+            </LinkButton>
           </CardActions>
         </Card>
       ))}
@@ -99,9 +99,9 @@ export const Styling = () => {
                 .join(' ')}
             </CardContent>
             <CardActions>
-              <Button color="primary" to="/catalog">
+              <LinkButton color="primary" to="/catalog">
                 Go There!
-              </Button>
+              </LinkButton>
             </CardActions>
           </Card>
         ))}

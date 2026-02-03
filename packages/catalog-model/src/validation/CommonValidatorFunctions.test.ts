@@ -125,7 +125,7 @@ describe('CommonValidatorFunctions', () => {
     ['a-b', true],
     ['-a-b', false],
     ['a-b-', false],
-    ['a--b', false],
+    ['a--b', true],
     ['a_b', false],
     ['adam.bertil.caesar', true],
     ['adam.ber-til.caesar', true],
@@ -154,7 +154,8 @@ describe('CommonValidatorFunctions', () => {
     ['a-b', true],
     ['-a-b', false],
     ['a-b-', false],
-    ['a--b', false],
+    ['a--b', true],
+    ['xn--c6h', true],
     ['a_b', false],
     [`${'a'.repeat(63)}`, true],
     [`${'a'.repeat(64)}`, false],
@@ -224,7 +225,7 @@ describe('CommonValidatorFunctions', () => {
     ['abc xyz', true],
     ['abc xyz abc.', true],
   ])(`isValidString %p ? %p`, (value, result) => {
-    expect(CommonValidatorFunctions.isValidString(value)).toBe(result);
+    expect(CommonValidatorFunctions.isNonEmptyString(value)).toBe(result);
   });
 
   it.each([

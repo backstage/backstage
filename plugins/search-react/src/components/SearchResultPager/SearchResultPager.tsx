@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
-import { Button, makeStyles } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 import { useSearch } from '../../context';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchReactTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -37,20 +38,21 @@ const useStyles = makeStyles(theme => ({
 export const SearchResultPager = () => {
   const { fetchNextPage, fetchPreviousPage } = useSearch();
   const classes = useStyles();
+  const { t } = useTranslationRef(searchReactTranslationRef);
 
   if (!fetchNextPage && !fetchPreviousPage) {
     return <></>;
   }
 
   return (
-    <nav arial-label="pagination navigation" className={classes.root}>
+    <nav aria-label="pagination navigation" className={classes.root}>
       <Button
         aria-label="previous page"
         disabled={!fetchPreviousPage}
         onClick={fetchPreviousPage}
         startIcon={<ArrowBackIosIcon />}
       >
-        Previous
+        {t('searchResultPager.previous')}
       </Button>
 
       <Button
@@ -59,7 +61,7 @@ export const SearchResultPager = () => {
         onClick={fetchNextPage}
         endIcon={<ArrowForwardIosIcon />}
       >
-        Next
+        {t('searchResultPager.next')}
       </Button>
     </nav>
   );

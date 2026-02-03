@@ -15,28 +15,69 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { EntityTable } from '@backstage/plugin-catalog-react';
-import React from 'react';
-import { ApiTypeTitle } from '../ApiDefinitionCard';
 import { TableColumn } from '@backstage/core-components';
+import { EntityTable } from '@backstage/plugin-catalog-react';
+import ExtensionIcon from '@material-ui/icons/Extension';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import { useState } from 'react';
+import { ApiTypeTitle } from '../ApiDefinitionCard';
+import { ApiDefinitionDialog } from '../ApiDefinitionDialog';
+import {
+  TranslationFunction,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
+import { apiDocsTranslationRef } from '../../translation';
 
-export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
+export function createSpecApiTypeColumn(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): TableColumn<ApiEntity> {
   return {
-    title: 'Type',
+    title: t('apiEntityColumns.typeTitle'),
     field: 'spec.type',
     render: entity => <ApiTypeTitle apiEntity={entity} />,
   };
 }
 
-// TODO: This could be moved to plugin-catalog-react if we wouldn't have a
-// special createSpecApiTypeColumn. But this is required to use ApiTypeTitle to
-// resolve the display name of an entity. Is the display name really worth it?
+const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  return (
+    <>
+      <ToggleButton
+        aria-label={t('apiDefinitionDialog.toggleButtonAriaLabel')}
+        onClick={() => setDialogOpen(!dialogOpen)}
+        value={dialogOpen}
+      >
+        <ExtensionIcon />
+      </ToggleButton>
+      <ApiDefinitionDialog
+        entity={apiEntity}
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+      />
+    </>
+  );
+};
 
-export const apiEntityColumns: TableColumn<ApiEntity>[] = [
-  EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
-  EntityTable.columns.createSystemColumn(),
-  EntityTable.columns.createOwnerColumn(),
-  createSpecApiTypeColumn(),
-  EntityTable.columns.createSpecLifecycleColumn(),
-  EntityTable.columns.createMetadataDescriptionColumn(),
-];
+function createApiDefinitionColumn(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): TableColumn<ApiEntity> {
+  return {
+    title: t('apiEntityColumns.apiDefinitionTitle'),
+    render: entity => <ApiDefinitionButton apiEntity={entity} />,
+  };
+}
+
+export const getApiEntityColumns = (
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): TableColumn<ApiEntity>[] => {
+  return [
+    EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
+    EntityTable.columns.createSystemColumn(),
+    EntityTable.columns.createOwnerColumn(),
+    createSpecApiTypeColumn(t),
+    EntityTable.columns.createSpecLifecycleColumn(),
+    EntityTable.columns.createMetadataDescriptionColumn(),
+    createApiDefinitionColumn(t),
+  ];
+};

@@ -7,3 +7,4 @@ description: View Jira summary for your projects in Backstage.
 documentation: https://roadie.io/backstage/plugins/jira/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=jira
 iconUrl: https://roadie.io/images/logos/jira.png
 npmPackageName: '@roadiehq/backstage-plugin-jira'
+addedDate: '2021-04-20'

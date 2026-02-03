@@ -15,9 +15,9 @@
  */
 
 import { renderInTestApp, wrapInTestApp } from '@backstage/test-utils';
-import { fireEvent, render } from '@testing-library/react';
-import React from 'react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { CardTab, TabbedCard } from './TabbedCard';
+import userEvent from '@testing-library/user-event';
 
 const minProps = {
   title: 'Some title',
@@ -29,36 +29,36 @@ const minProps = {
 
 describe('<TabbedCard />', () => {
   it('renders without exploding', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <TabbedCard title={minProps.title}>
         <CardTab label="Test 1">Test Content</CardTab>
         <CardTab label="Test 2">Test Content</CardTab>
       </TabbedCard>,
     );
-    expect(rendered.getByText('Some title')).toBeInTheDocument();
+    expect(screen.getByText('Some title')).toBeInTheDocument();
   });
 
   it('renders a deepLink when prop is set', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <TabbedCard deepLink={minProps.deepLink}>
         <CardTab label="Test 1">Test Content</CardTab>
         <CardTab label="Test 2">Test Content</CardTab>
       </TabbedCard>,
     );
-    expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
+    expect(screen.getByText('A deepLink title')).toBeInTheDocument();
   });
 
   it('switches tabs when clicking', async () => {
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <TabbedCard>
         <CardTab label="Test 1">Test Content 1</CardTab>
         <CardTab label="Test 2">Test Content 2</CardTab>
       </TabbedCard>,
     );
-    expect(rendered.getByText('Test Content 1')).toBeInTheDocument();
+    expect(screen.getByText('Test Content 1')).toBeInTheDocument();
 
-    fireEvent.click(rendered.getByText('Test 2'));
-    expect(rendered.getByText('Test Content 2')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Test 2'));
+    expect(screen.getByText('Test Content 2')).toBeInTheDocument();
   });
 
   it('switches tabs when clicking in controlled mode', () => {
@@ -80,9 +80,9 @@ describe('<TabbedCard />', () => {
         </TabbedCard>,
       ),
     );
-    expect(rendered.getByText('Test Content 1')).toBeInTheDocument();
+    expect(screen.getByText('Test Content 1')).toBeInTheDocument();
 
-    fireEvent.click(rendered.getByText('Test 2'));
+    fireEvent.click(screen.getByText('Test 2'));
     expect(handleTabChange.mock.calls.length).toBe(1);
     rendered.rerender(
       <TabbedCard value={selectedTab} onChange={handleTabChange}>
@@ -94,6 +94,27 @@ describe('<TabbedCard />', () => {
         </CardTab>
       </TabbedCard>,
     );
-    expect(rendered.getByText('Test Content 2')).toBeInTheDocument();
+    expect(screen.getByText('Test Content 2')).toBeInTheDocument();
+  });
+
+  it('should trigger onChange only once', async () => {
+    const mockOnChange = jest.fn();
+    const user = userEvent.setup();
+
+    const rendered = render(
+      wrapInTestApp(
+        <TabbedCard onChange={mockOnChange} value="one">
+          <CardTab value="one" label="Test 1">
+            Test Content 1
+          </CardTab>
+          <CardTab value="two" label="Test 2">
+            Test Content 2
+          </CardTab>
+        </TabbedCard>,
+      ),
+    );
+
+    await user.click(rendered.getByText('Test 2'));
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
   });
 });

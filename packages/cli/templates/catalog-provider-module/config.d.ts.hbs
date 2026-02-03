@@ -1,0 +1,34 @@
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
+
+export interface Config {
+  catalog?: {
+    providers?: {
+      /**
+       * {{providerClass}} configuration.
+       */
+      {{providerVar}}?:
+        | {
+            /**
+             * The target that this provider should consume.
+             */
+            target: string;
+            /**
+             * Overrides the schedule at which this provider runs.
+             */
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+          }
+        | {
+            [name: string]: {
+              /**
+               * The target that this provider should consume.
+               */
+              target: string;
+              /**
+               * Overrides the schedule at which this provider runs.
+               */
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            };
+          };
+    };
+  };
+}

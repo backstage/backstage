@@ -64,6 +64,11 @@ export type BitbucketServerIntegrationConfig = {
    * See https://developer.atlassian.com/server/bitbucket/how-tos/command-line-rest/#authentication
    */
   password?: string;
+
+  /**
+   * Signing key for commits
+   */
+  commitSigningKey?: string;
 };
 
 /**
@@ -77,7 +82,7 @@ export function readBitbucketServerIntegrationConfig(
 ): BitbucketServerIntegrationConfig {
   const host = config.getString('host');
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
-  const token = config.getOptionalString('token');
+  const token = config.getOptionalString('token')?.trim();
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password');
 
@@ -99,6 +104,7 @@ export function readBitbucketServerIntegrationConfig(
     token,
     username,
     password,
+    commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }
 

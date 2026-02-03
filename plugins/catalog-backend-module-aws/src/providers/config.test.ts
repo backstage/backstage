@@ -54,17 +54,26 @@ describe('readAwsS3Configs', () => {
     const provider3 = {
       bucketName: 'bucket-3',
     };
+    const provider4 = {
+      bucketName: 'bucket-4',
+      schedule: {
+        frequency: 'PT30M',
+        timeout: {
+          minutes: 3,
+        },
+      },
+    };
     const config = {
       catalog: {
         providers: {
-          awsS3: { provider1, provider2, provider3 },
+          awsS3: { provider1, provider2, provider3, provider4 },
         },
       },
     };
 
     const actual = readAwsS3Configs(new ConfigReader(config));
 
-    expect(actual).toHaveLength(3);
+    expect(actual).toHaveLength(4);
     expect(actual[0]).toEqual({
       ...provider1,
       id: 'provider1',
@@ -76,6 +85,14 @@ describe('readAwsS3Configs', () => {
     expect(actual[2]).toEqual({
       ...provider3,
       id: 'provider3',
+    });
+    expect(actual[3]).toEqual({
+      ...provider4,
+      id: 'provider4',
+      schedule: {
+        ...provider4.schedule,
+        frequency: { minutes: 30 },
+      },
     });
   });
 

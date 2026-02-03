@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { UserEntity } from '@backstage/catalog-model';
-import { JsonValue, JsonObject } from '@backstage/types';
+import type { EntityMeta, UserEntity } from '@backstage/catalog-model';
+import type { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 
 /**
  * Information about a template that is stored on a task specification.
@@ -32,7 +32,41 @@ export type TemplateInfo = {
    * Where the template is stored, so we can resolve relative paths for things like `fetch:template` paths.
    */
   baseUrl?: string;
+
+  /**
+   * the Template entity
+   */
+  entity?: {
+    /**
+     * The metadata of the Template
+     */
+    metadata: EntityMeta;
+  };
 };
+
+/**
+ *
+ * none - not recover, let the task be marked as failed
+ * startOver - do recover, start the execution of the task from the first step.
+ *
+ * @public
+ */
+export type TaskRecoverStrategy = 'none' | 'startOver';
+
+/**
+ * When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,
+ * by defining a strategy.
+ *
+ * By default, it is none, what means to not recover but updating the status from 'processing' to 'failed'.
+ *
+ * @public
+ */
+export interface TaskRecovery {
+  /**
+   * Depends on how you designed your task you might tailor the behaviour for each of them.
+   */
+  EXPERIMENTAL_strategy?: TaskRecoverStrategy;
+}
 
 /**
  * An individual step of a scaffolder task, as stored in the database.
@@ -41,7 +75,7 @@ export type TemplateInfo = {
  */
 export interface TaskStep {
   /**
-   * A unqiue identifier for this step.
+   * A unique identifier for this step.
    */
   id: string;
   /**
@@ -60,6 +94,10 @@ export interface TaskStep {
    * When this is false, or if the templated value string evaluates to something that is falsy the step will be skipped.
    */
   if?: string | boolean;
+  /**
+   * Run step repeatedly
+   */
+  each?: string | JsonArray;
 }
 
 /**
@@ -105,6 +143,10 @@ export interface TaskSpecV1beta3 {
      */
     ref?: string;
   };
+  /**
+   * How to recover the task after system restart or system crash.
+   */
+  EXPERIMENTAL_recovery?: TaskRecovery;
 }
 
 /**

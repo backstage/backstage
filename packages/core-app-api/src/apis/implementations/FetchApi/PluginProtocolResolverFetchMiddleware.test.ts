@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { mockApis } from '@backstage/test-utils';
 import { PluginProtocolResolverFetchMiddleware } from './PluginProtocolResolverFetchMiddleware';
 
 describe('PluginProtocolResolverFetchMiddleware', () => {
   it.each([['https://passthrough.com/a']])(
     'passes through regular URLs, %p',
     async url => {
-      const resolve = jest.fn();
-      const discoveryApi = { getBaseUrl: resolve } as unknown as DiscoveryApi;
+      const discoveryApi = mockApis.discovery.mock();
       const middleware = new PluginProtocolResolverFetchMiddleware(
         discoveryApi,
       );
@@ -31,7 +30,7 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
 
       await outer(url);
       expect(inner.mock.calls[0][0]).toBe(url);
-      expect(resolve).not.toBeCalled();
+      expect(discoveryApi.getBaseUrl).not.toHaveBeenCalled();
     },
   );
 
@@ -62,12 +61,6 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
       'https://real.com:8080/base?c=d&e=f#g',
     ],
     [
-      'plugin://username:password@x?c=d&e=f#g',
-      'x',
-      'https://real.com:8080/base',
-      'https://username:password@real.com:8080/base?c=d&e=f#g',
-    ],
-    [
       'plugin://x?c=d&e=f#g',
       'x',
       'https://username:password@real.com:8080/base',
@@ -76,29 +69,28 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
   ])(
     'resolves backstage URLs, %p',
     async (original, host, resolved, result) => {
-      const resolve = jest.fn();
-      const discoveryApi = { getBaseUrl: resolve } as unknown as DiscoveryApi;
+      const discoveryApi = mockApis.discovery.mock({
+        getBaseUrl: async () => resolved,
+      });
       const middleware = new PluginProtocolResolverFetchMiddleware(
         discoveryApi,
       );
       const inner = jest.fn();
       const outer = middleware.apply(inner);
 
-      resolve.mockResolvedValueOnce(resolved);
       await outer(original);
       expect(inner.mock.calls[0][0]).toBe(result);
-      expect(resolve).toHaveBeenLastCalledWith(host);
+      expect(discoveryApi.getBaseUrl).toHaveBeenLastCalledWith(host);
     },
   );
 
   it('properly supports transferring request bodies too', async () => {
-    const resolve = jest.fn();
-    const discoveryApi = { getBaseUrl: resolve } as unknown as DiscoveryApi;
+    const discoveryApi = mockApis.discovery.mock({
+      getBaseUrl: async () => 'https://elsewhere.com',
+    });
     const middleware = new PluginProtocolResolverFetchMiddleware(discoveryApi);
     const inner = jest.fn();
     const outer = middleware.apply(inner);
-
-    resolve.mockResolvedValue('https://elsewhere.com');
 
     await outer('plugin://a', {
       method: 'POST',
@@ -108,14 +100,14 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
     expect(inner.mock.calls[0][0]).toBe('https://elsewhere.com');
     expect(inner.mock.calls[0][1].body).toBe('123');
 
-    await outer(
-      new Request('plugin://a', {
-        method: 'POST',
-        body: '123',
-      }),
-    );
+    const inputRequest = new Request('plugin://a', {
+      method: 'POST',
+      body: '123',
+    });
+
+    await outer(inputRequest);
 
     expect(inner.mock.calls[1][0]).toBe('https://elsewhere.com');
-    expect(inner.mock.calls[1][1].body).toEqual(Buffer.from('123', 'utf8'));
+    expect(inner.mock.calls[1][1]).toBe(inputRequest);
   });
 });

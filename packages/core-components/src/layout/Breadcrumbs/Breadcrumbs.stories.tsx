@@ -21,7 +21,7 @@ import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { Fragment } from 'react';
+import { MouseEvent, useState, Fragment } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Link } from '../../components/Link';
 import { Header } from '../Header';
@@ -31,14 +31,15 @@ import { Breadcrumbs } from './Breadcrumbs';
 export default {
   title: 'Layout/Breadcrumbs',
   component: Breadcrumbs,
+  tags: ['!manifest'],
 };
 
 export const InHeader = () => (
   <MemoryRouter>
     <h2>Standard breadcrumbs</h2>
-    <p>
+    <Typography paragraph>
       Underlined pages are links. This should show a hierarchical relationship.
-    </p>
+    </Typography>
 
     <Page themeId="other">
       <Header title="Current Page" type="General Page" typeLink="/" />
@@ -47,10 +48,8 @@ export const InHeader = () => (
 );
 
 export const OutsideOfHeader = () => {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLAnchorElement | null>(
-    null,
-  );
-  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLAnchorElement | null>(null);
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -61,17 +60,17 @@ export const OutsideOfHeader = () => {
   const open = Boolean(anchorEl);
   return (
     <MemoryRouter>
-      <p>
+      <Typography paragraph>
         It might be the case that you want to keep your breadcrumbs outside of
         the header. In that case, they should be positioned above the title of
         the page.
-      </p>
+      </Typography>
 
       <h2>Standard breadcrumbs</h2>
-      <p>
+      <Typography paragraph>
         Underlined pages are links. This should show a hierarchical
         relationship.
-      </p>
+      </Typography>
 
       <Breadcrumbs color="primaryText" />
 
@@ -82,10 +81,10 @@ export const OutsideOfHeader = () => {
       </Breadcrumbs>
 
       <h2>Hidden breadcrumbs</h2>
-      <p>
+      <Typography paragraph>
         Use this when you have more than three breadcrumbs. When user clicks on
         ellipses, expand the breadcrumbs out.
-      </p>
+      </Typography>
 
       <Breadcrumbs color="primaryText">
         <Link to="/">General Page</Link>
@@ -96,17 +95,17 @@ export const OutsideOfHeader = () => {
       </Breadcrumbs>
 
       <h2>Layered breadcrumbs</h2>
-      <p>
+      <Typography paragraph>
         Use this when you want to show alternative breadcrumbs on the same
         hierarchical level.
-      </p>
+      </Typography>
 
       <Fragment>
         <Breadcrumbs color="primaryText">
           <Link to="/">General Page</Link>
           <Link to="/" onClick={handleClick}>
             <Box display="flex" alignItems="center">
-              <span>Second Page</span>
+              <Typography component="span">Second Page</Typography>
               {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </Box>
           </Link>

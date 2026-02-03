@@ -1,0 +1,52 @@
+{
+  "name": "yarn-plugin-backstage",
+  "version": "0.0.9-next.0",
+  "description": "Yarn plugin for working with Backstage monorepos",
+  "backstage": {
+    "role": "node-library"
+  },
+  "private": true,
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/yarn-plugin"
+  },
+  "license": "Apache-2.0",
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "builder build plugin",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "nodemon --",
+    "test": "backstage-cli package test"
+  },
+  "nodemonConfig": {
+    "exec": "builder build plugin",
+    "ext": "ts",
+    "watch": "./src"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/release-manifests": "workspace:^",
+    "@yarnpkg/core": "^4.4.1",
+    "@yarnpkg/fslib": "^3.1.2",
+    "@yarnpkg/plugin-essentials": "^4.4.0",
+    "@yarnpkg/plugin-npm": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch",
+    "@yarnpkg/plugin-pack": "^4.0.1",
+    "semver": "^7.6.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@yarnpkg/builder": "^4.2.1",
+    "fs-extra": "^11.2.0",
+    "nodemon": "^3.0.1",
+    "snyk-nodejs-lockfile-parser": "^1.58.14",
+    "yaml": "^2.0.0"
+  }
+}

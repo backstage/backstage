@@ -27,7 +27,7 @@ exports.up = async function up(knex) {
       //
       .createTable('locations', table => {
         table.comment(
-          'Registered locations that shall be contiuously scanned for catalog item updates',
+          'Registered locations that shall be continuously scanned for catalog item updates',
         );
         table
           .uuid('id')
@@ -59,7 +59,7 @@ exports.up = async function up(knex) {
             'An opaque string that changes for each update operation to any part of the entity, including metadata.',
           );
         table
-          .string('generation')
+          .integer('generation')
           .notNullable()
           .unsigned()
           .comment(
@@ -92,7 +92,9 @@ exports.up = async function up(knex) {
       })
       .alterTable('entities', table => {
         // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
-        table.unique(['kind', 'name', 'namespace'], 'entities_unique_name');
+        table.unique(['kind', 'name', 'namespace'], {
+          indexName: 'entities_unique_name',
+        });
       })
       //
       // entities_search

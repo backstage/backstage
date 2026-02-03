@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { FC, PropsWithChildren } from 'react';
+import { renderHook } from '@testing-library/react';
 
 import { ConfigReader } from '@backstage/core-app-api';
 import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
@@ -31,7 +31,7 @@ const configApiMock: ConfigApi = new ConfigReader({
   },
 });
 
-const wrapper: FC = ({ children }) => (
+const wrapper: FC<PropsWithChildren<{}>> = ({ children }) => (
   <TestApiProvider apis={[[configApiRef, configApiMock]]}>
     {children}
   </TestApiProvider>
@@ -80,5 +80,45 @@ describe('Transformers > Html', () => {
 
     expect(iframes).toHaveLength(1);
     expect(iframes[0].src).toMatch('docs.google.com');
+  });
+
+  it('should return a function that allows refresh meta tags', async () => {
+    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+
+    const dirtyDom = document.createElement('html');
+    dirtyDom.innerHTML = `
+        <body>
+         <meta http-equiv="refresh" content="0;url=https://test.com">
+        </body>
+      `;
+    const cleanDom = await result.current(dirtyDom); // calling html transformer
+
+    const metaTags = Array.from(
+      cleanDom.querySelectorAll<HTMLMetaElement>('meta'),
+    );
+
+    expect(metaTags).toHaveLength(1);
+    expect(metaTags[0].getAttribute('http-equiv')).toEqual('refresh');
+    expect(metaTags[0].getAttribute('content')).toEqual(
+      '0;url=https://test.com',
+    );
+  });
+
+  it('should return a function that does not allow non-refresh meta tags', async () => {
+    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
+
+    const dirtyDom = document.createElement('html');
+    dirtyDom.innerHTML = `
+        <body>
+         <meta name="keywords" content="TechDocs, Example">
+        </body>
+      `;
+    const cleanDom = await result.current(dirtyDom); // calling html transformer
+
+    const metaTags = Array.from(
+      cleanDom.querySelectorAll<HTMLMetaElement>('meta'),
+    );
+
+    expect(metaTags).toHaveLength(0);
   });
 });

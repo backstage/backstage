@@ -1,0 +1,10 @@
+---
+title: Entity Feedback
+author: Phil Kuang
+authorUrl: https://github.com/kuangp
+category: Quality
+description: Give and view feedback on entities available in the Backstage catalog.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/entity-feedback/plugins/entity-feedback
+iconUrl: /img/entity-feedback-logo.png
+npmPackageName: '@backstage-community/plugin-entity-feedback'
+addedDate: '2023-01-20'

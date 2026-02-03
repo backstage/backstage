@@ -28,6 +28,18 @@ describe('readGerritConfigs', () => {
       host: 'gerrit2.com',
       query: 'state=ACTIVE',
       branch: 'main',
+      catalogPath: 'catalog-*.yaml',
+    };
+    const provider3 = {
+      host: 'gerrit1.com',
+      query: 'state=ACTIVE',
+      branch: 'main',
+      schedule: {
+        frequency: 'PT30M',
+        timeout: {
+          minutes: 3,
+        },
+      },
     };
     const config = {
       catalog: {
@@ -35,6 +47,7 @@ describe('readGerritConfigs', () => {
           gerrit: {
             'active-g1': provider1,
             'active-g2': provider2,
+            'active-g3': provider3,
           },
         },
       },
@@ -42,10 +55,28 @@ describe('readGerritConfigs', () => {
 
     const actual = readGerritConfigs(new ConfigReader(config));
 
-    expect(actual).toHaveLength(2);
-    expect(actual[0]).toEqual({ ...provider1, id: 'active-g1' });
-    expect(actual[1]).toEqual({ ...provider2, id: 'active-g2' });
+    expect(actual).toHaveLength(3);
+    expect(actual[0]).toEqual({
+      ...provider1,
+      id: 'active-g1',
+      catalogPath: 'catalog-info.yaml',
+    });
+    expect(actual[1]).toEqual({
+      ...provider2,
+      id: 'active-g2',
+      catalogPath: 'catalog-*.yaml',
+    });
+    expect(actual[2]).toEqual({
+      ...provider3,
+      id: 'active-g3',
+      catalogPath: 'catalog-info.yaml',
+      schedule: {
+        ...provider3.schedule,
+        frequency: { minutes: 30 },
+      },
+    });
   });
+
   it('provides default values', () => {
     const provider = {
       host: 'gerrit1.com',
@@ -63,7 +94,7 @@ describe('readGerritConfigs', () => {
     const actual = readGerritConfigs(new ConfigReader(config));
     expect(actual).toHaveLength(1);
     expect(actual[0]).toEqual({
-      branch: 'master',
+      catalogPath: 'catalog-info.yaml',
       id: 'active-g1',
       ...provider,
     });

@@ -16,13 +16,12 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
-import { waitFor } from '@testing-library/react';
-import React from 'react';
+import { waitFor, screen } from '@testing-library/react';
 import { EntityTable } from './EntityTable';
 
 describe('<EntityTable />', () => {
   it('shows empty table', async () => {
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <EntityTable
         title="Entities"
         entities={[]}
@@ -31,8 +30,8 @@ describe('<EntityTable />', () => {
       />,
     );
 
-    expect(getByText('Entities')).toBeInTheDocument();
-    expect(getByText('EMPTY')).toBeInTheDocument();
+    expect(screen.getByText('Entities')).toBeInTheDocument();
+    expect(screen.getByText('EMPTY')).toBeInTheDocument();
   });
 
   it('shows entities', async () => {
@@ -47,7 +46,7 @@ describe('<EntityTable />', () => {
       },
     ];
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <EntityTable
         title="Entities"
         entities={entities}
@@ -62,7 +61,7 @@ describe('<EntityTable />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('my-entity')).toBeInTheDocument();
+      expect(screen.getByText('my-entity')).toBeInTheDocument();
     });
   });
 });

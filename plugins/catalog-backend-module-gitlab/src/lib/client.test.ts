@@ -14,165 +14,66 @@
  * limitations under the License.
  */
 
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { readGitLabIntegrationConfig } from '@backstage/integration';
-import { getVoidLogger } from '@backstage/backend-common';
-import { rest } from 'msw';
-import { setupServer, SetupServerApi } from 'msw/node';
+import { setupServer } from 'msw/node';
+import { handlers } from '../__testUtils__/handlers';
+import * as mock from '../__testUtils__/mocks';
 import { GitLabClient, paginated } from './client';
+import { GitLabGroup, GitLabUser } from './types';
 
-const server = setupServer();
-setupRequestMockHandlers(server);
-
-const MOCK_CONFIG = readGitLabIntegrationConfig(
-  new ConfigReader({
-    host: 'example.com',
-    token: 'test-token',
-    apiBaseUrl: 'https://example.com/api/v4',
-  }),
-);
-const FAKE_PAGED_ENDPOINT = `/some-endpoint`;
-const FAKE_PAGED_URL = `${MOCK_CONFIG.apiBaseUrl}${FAKE_PAGED_ENDPOINT}`;
-
-function setupFakeFourPageURL(srv: SetupServerApi, url: string) {
-  srv.use(
-    rest.get(url, (req, res, ctx) => {
-      const page = req.url.searchParams.get('page');
-      const currentPage = page ? Number(page) : 1;
-      const fakePageCount = 4;
-
-      return res(
-        // set next page number header if page requested is less than count
-        ctx.set(
-          'x-next-page',
-          currentPage < fakePageCount ? String(currentPage + 1) : '',
-        ),
-        ctx.json([{ someContentOfPage: currentPage }]),
-      );
-    }),
-  );
-}
-
-function setupFakeGroupProjectsEndpoint(
-  srv: SetupServerApi,
-  apiBaseUrl: string,
-  groupID: string,
-) {
-  srv.use(
-    rest.get(`${apiBaseUrl}/groups/${groupID}/projects`, (_, res, ctx) => {
-      return res(
-        ctx.set('x-next-page', ''),
-        ctx.json([
-          {
-            id: 1,
-            description: 'Project One Description',
-            name: 'Project One',
-            path: 'project-one',
-          },
-        ]),
-      );
-    }),
-  );
-}
-
-function setupFakeInstanceProjectsEndpoint(
-  srv: SetupServerApi,
-  apiBaseUrl: string,
-) {
-  srv.use(
-    rest.get(`${apiBaseUrl}/projects`, (_, res, ctx) => {
-      return res(
-        ctx.set('x-next-page', ''),
-        ctx.json([
-          {
-            id: 1,
-            description: 'Project One Description',
-            name: 'Project One',
-            path: 'project-one',
-          },
-          {
-            id: 2,
-            description: 'Project Two Description',
-            name: 'Project Two',
-            path: 'project-two',
-          },
-        ]),
-      );
-    }),
-  );
-}
-
-function setupFakeHasFileEndpoint(srv: SetupServerApi, apiBaseUrl: string) {
-  srv.use(
-    rest.head(
-      `${apiBaseUrl}/projects/group%2Frepo/repository/files/catalog-info.yaml`,
-      (req, res, ctx) => {
-        const branch = req.url.searchParams.get('ref');
-        if (branch === 'master') {
-          return res(ctx.status(200));
-        }
-        return res(ctx.status(404, 'Not Found'));
-      },
-    ),
-  );
-}
+const server = setupServer(...handlers);
+registerMswTestHooks(server);
 
 describe('GitLabClient', () => {
   describe('isSelfManaged', () => {
     it('returns true if self managed instance', () => {
       const client = new GitLabClient({
         config: readGitLabIntegrationConfig(
-          new ConfigReader({
-            host: 'example.com',
-            token: 'test-token',
-            apiBaseUrl: 'https://example.com/api/v4',
-          }),
+          new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       expect(client.isSelfManaged()).toBeTruthy();
     });
     it('returns false if gitlab.com', () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader({
-            host: 'gitlab.com',
-            token: 'test-token',
-          }),
-        ),
-        logger: getVoidLogger(),
+        config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        logger: mockServices.logger.mock(),
       });
       expect(client.isSelfManaged()).toBeFalsy();
     });
   });
 
   describe('pagedRequest', () => {
-    beforeEach(() => {
-      // setup fake paginated endpoint with 4 pages each returning one item
-      setupFakeFourPageURL(server, FAKE_PAGED_URL);
-    });
-
     it('should provide immediate items within the page', async () => {
       const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
       });
 
-      const { items } = await client.pagedRequest(FAKE_PAGED_ENDPOINT);
+      const { items } = await client.pagedRequest(mock.paged_endpoint);
       // fake page contains exactly one item
       expect(items).toHaveLength(1);
     });
 
     it('should request items for a given page number', async () => {
       const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
       });
 
       const requestedPage = 2;
       const { items, nextPage } = await client.pagedRequest(
-        FAKE_PAGED_ENDPOINT,
+        mock.paged_endpoint,
         {
           page: requestedPage,
         },
@@ -185,12 +86,14 @@ describe('GitLabClient', () => {
 
     it('should not have a next page if at the end', async () => {
       const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
       });
 
       const { items, nextPage } = await client.pagedRequest(
-        FAKE_PAGED_ENDPOINT,
+        mock.paged_endpoint,
         {
           page: 4,
         },
@@ -201,51 +104,76 @@ describe('GitLabClient', () => {
     });
 
     it('should throw if response is not okay', async () => {
-      const endpoint = '/unhealthy-endpoint';
-      const url = `${MOCK_CONFIG.apiBaseUrl}${endpoint}`;
-      server.use(
-        rest.get(url, (_, res, ctx) => {
-          return res(ctx.status(400), ctx.json({ error: 'some error' }));
-        }),
-      );
-
       const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
       });
       // non-200 status code should throw
-      await expect(() => client.pagedRequest(endpoint)).rejects.toThrowError();
+      await expect(() =>
+        client.pagedRequest(mock.unhealthy_endpoint),
+      ).rejects.toThrow();
     });
   });
 
+  // TODO: review this. Make it so that the number of projects don't match the results
   describe('listProjects', () => {
     it('should get projects for a given group', async () => {
-      setupFakeGroupProjectsEndpoint(
-        server,
-        MOCK_CONFIG.apiBaseUrl,
-        'test-group',
-      );
       const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
       });
 
       const groupProjectsGen = paginated(
         options => client.listProjects(options),
-        { group: 'test-group' },
+        { group: 1 },
       );
+
+      const expectedProjects = mock.all_projects_response.filter(project =>
+        project.path_with_namespace!.includes('group1/'),
+      );
+
       const allItems = [];
       for await (const item of groupProjectsGen) {
         allItems.push(item);
       }
-      expect(allItems).toHaveLength(1);
+      expect(allItems).toHaveLength(expectedProjects.length);
+    });
+
+    it('should get not archived projects', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const archivedProjectsGen = paginated(
+        options => client.listProjects(options),
+        { archived: false },
+      );
+
+      const expectedProjects = mock.all_projects_response.filter(
+        project => !project.archived,
+      );
+
+      const allItems = [];
+      for await (const item of archivedProjectsGen) {
+        allItems.push(item);
+      }
+
+      expect(allItems).toHaveLength(expectedProjects.length);
     });
 
     it('should get all projects for an instance', async () => {
-      setupFakeInstanceProjectsEndpoint(server, MOCK_CONFIG.apiBaseUrl);
       const client = new GitLabClient({
-        config: MOCK_CONFIG,
-        logger: getVoidLogger(),
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
       });
 
       const instanceProjects = paginated(
@@ -256,21 +184,379 @@ describe('GitLabClient', () => {
       for await (const project of instanceProjects) {
         allProjects.push(project);
       }
-      expect(allProjects).toHaveLength(2);
+
+      expect(allProjects).toHaveLength(mock.all_projects_response.length);
+    });
+
+    it('should pass simple parameter to API when provided', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      // Mock the pagedRequest method to verify parameters
+      const mockPagedRequest = jest.fn().mockResolvedValue({
+        items: [],
+        nextPage: undefined,
+      });
+      (client as any).pagedRequest = mockPagedRequest;
+
+      await client.listProjects({ simple: true });
+
+      expect(mockPagedRequest).toHaveBeenCalledWith('/projects', {
+        simple: true,
+      });
+    });
+
+    it('should pass simple parameter to group projects API when provided', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      // Mock the pagedRequest method to verify parameters
+      const mockPagedRequest = jest.fn().mockResolvedValue({
+        items: [],
+        nextPage: undefined,
+      });
+      (client as any).pagedRequest = mockPagedRequest;
+
+      await client.listProjects({ group: 'test-group', simple: true });
+
+      expect(mockPagedRequest).toHaveBeenCalledWith(
+        '/groups/test-group/projects',
+        {
+          group: 'test-group',
+          simple: true,
+          include_subgroups: true,
+        },
+      );
+    });
+  });
+
+  describe('listUsers', () => {
+    it('listUsers gets all users in the instance', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const allUsers: GitLabUser[] = [];
+      for await (const user of paginated(
+        options => client.listUsers(options),
+        {},
+      )) {
+        allUsers.push(user);
+      }
+
+      expect(allUsers).toMatchObject(mock.all_users_response);
+    });
+  });
+
+  describe('listGroups', () => {
+    it('listGroups gets all groups in the instance', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const allGroups: GitLabGroup[] = [];
+      for await (const group of paginated(
+        options => client.listGroups(options),
+        {},
+      )) {
+        allGroups.push(group);
+      }
+
+      expect(allGroups).toMatchObject(mock.all_groups_response);
+    });
+  });
+
+  describe('get gitlab.com users', () => {
+    it('gets all users under group', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        logger: mockServices.logger.mock(),
+      });
+      const saasMembers = (
+        await client.getGroupMembers('saas-multi-user-group', [
+          'DIRECT, DESCENDANTS',
+        ])
+      ).items;
+
+      expect(saasMembers.length).toEqual(2);
+      expect(saasMembers).toEqual(mock.expectedSaasMember);
+    });
+    it('gets all users with token without full permissions', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        logger: mockServices.logger.mock(),
+      });
+      const saasMembers = (
+        await client.getGroupMembers('', ['DIRECT, DESCENDANTS'])
+      ).items;
+      expect(saasMembers).toEqual([]);
+    });
+    it('rejects when GraphQL returns errors', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        logger: mockServices.logger.mock(),
+      });
+      await expect(() =>
+        client.getGroupMembers('error-group', ['DIRECT, DESCENDANTS']),
+      ).rejects.toThrow(
+        'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
+      );
+    });
+    it('traverses multi-page results', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+      const saasMembers = (
+        await client.getGroupMembers('multi-page-saas', ['DIRECT, DESCENDANTS'])
+      ).items;
+
+      expect(saasMembers.length).toEqual(2);
+      expect(saasMembers[0]).toEqual(mock.expectedSaasMember[1]);
+      expect(saasMembers[1]).toEqual(mock.expectedSaasMember[0]);
+    });
+  });
+
+  describe('listDescendantGroups', () => {
+    it('gets all groups under root', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const allGroups = (await client.listDescendantGroups('group-with-parent'))
+        .items;
+
+      expect(allGroups.length).toEqual(1);
+      expect(allGroups).toEqual(mock.group_with_parent);
+    });
+
+    it('gets all descendant groups with token without full permissions', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const allGroups = (
+        await client.listDescendantGroups('non-existing-group')
+      ).items;
+
+      expect(allGroups).toEqual([]);
+    });
+
+    it('rejects when GraphQL returns errors', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      await expect(() =>
+        client.listDescendantGroups('error-group'),
+      ).rejects.toThrow(
+        'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
+      );
+    });
+    it('traverses multi-page results', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const saasGroups = (await client.listDescendantGroups('root')).items;
+
+      expect(saasGroups.length).toEqual(2);
+      expect(saasGroups[0]).toEqual(mock.expectedSaasGroup[1]);
+      expect(saasGroups[1]).toEqual(mock.expectedSaasGroup[0]);
+    });
+  });
+
+  describe('getGroupMembers', () => {
+    it('gets member IDs', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const members = await client.getGroupMembers('group1', ['DIRECT']);
+
+      const user = {
+        id: 1,
+        username: 'user1',
+        email: 'user1@example.com',
+        name: 'user1',
+        state: 'active',
+        web_url: 'user1.com',
+        avatar_url: 'user1',
+      };
+
+      expect(members.items).toEqual([user]);
+    });
+
+    it('gets member IDs with token without full permissions', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const members = await client.getGroupMembers('non-existing-group', [
+        'DIRECT',
+      ]);
+
+      expect(members.items).toEqual([]);
+    });
+
+    // TODO: is this one really necessary?
+    it('rejects when GraphQL returns errors', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      await expect(() =>
+        client.getGroupMembers('error-group', ['DIRECT']),
+      ).rejects.toThrow(
+        'GraphQL errors: [{"message":"Unexpected end of document","locations":[]}]',
+      );
+    });
+
+    it('traverses multi-page results', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const members = await client.getGroupMembers('multi-page', ['DIRECT']);
+
+      expect(members.items[0].id).toEqual(1);
+      expect(members.items[1].id).toEqual(2);
+    });
+  });
+
+  describe('getGroupById', () => {
+    it('should return group details by ID', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const group = await client.getGroupById(1);
+      expect(group).toMatchObject(mock.all_groups_response[0]);
+    });
+
+    it('should handle errors when fetching group details by ID', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      await expect(() => client.getGroupById(42)).rejects.toThrow(
+        'Internal Server Error',
+      );
+    });
+  });
+
+  describe('getProjectById', () => {
+    it('should return project details by ID', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const project = await client.getProjectById(1);
+      expect(project).toMatchObject(mock.all_projects_response[0]);
+    });
+
+    it('should handle errors when fetching project details by ID', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      await expect(() => client.getProjectById(42)).rejects.toThrow(
+        'Internal Server Error',
+      );
+    });
+  });
+
+  describe('getUserById', () => {
+    it('should return user details by ID', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const user = await client.getUserById(1);
+      expect(user).toMatchObject(mock.all_users_response[0]);
+    });
+
+    it('should handle errors when fetching user details by ID', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      await expect(() => client.getUserById(42)).rejects.toThrow(
+        'Internal Server Error',
+      );
     });
   });
 });
 
 describe('paginated', () => {
   it('should iterate through the pages until exhausted', async () => {
-    setupFakeFourPageURL(server, FAKE_PAGED_URL);
     const client = new GitLabClient({
-      config: MOCK_CONFIG,
-      logger: getVoidLogger(),
+      config: readGitLabIntegrationConfig(
+        new ConfigReader(mock.config_self_managed),
+      ),
+      logger: mockServices.logger.mock(),
     });
 
     const paginatedItems = paginated(
-      options => client.pagedRequest(FAKE_PAGED_ENDPOINT, options),
+      options => client.pagedRequest(mock.paged_endpoint, options),
       {},
     );
     const allItems = [];
@@ -286,28 +572,105 @@ describe('hasFile', () => {
   let client: GitLabClient;
 
   beforeEach(() => {
-    setupFakeHasFileEndpoint(server, MOCK_CONFIG.apiBaseUrl);
     client = new GitLabClient({
-      config: MOCK_CONFIG,
-      logger: getVoidLogger(),
+      config: readGitLabIntegrationConfig(
+        new ConfigReader(mock.config_self_managed),
+      ),
+      logger: mockServices.logger.mock(),
     });
   });
 
-  it('should not find catalog file', async () => {
-    const hasFile = await client.hasFile(
-      'group/repo',
-      'master',
-      'catalog-info.yaml',
-    );
+  it('should find catalog file', async () => {
+    const hasFile = await client.hasFile(1, 'main', 'catalog-info.yaml');
     expect(hasFile).toBe(true);
   });
 
-  it('should find catalog file', async () => {
-    const hasFile = await client.hasFile(
-      'group/repo',
-      'unknown',
-      'catalog-info.yaml',
-    );
+  it('should not find catalog file', async () => {
+    const hasFile = await client.hasFile(1, 'unknown', 'catalog-info.yaml');
     expect(hasFile).toBe(false);
+  });
+});
+
+describe('pagedRequest search params', () => {
+  it('no search params provided', async () => {
+    const client = new GitLabClient({
+      config: readGitLabIntegrationConfig(
+        new ConfigReader(mock.config_self_managed),
+      ),
+      logger: mockServices.logger.mock(),
+    });
+
+    const { items } = await client.pagedRequest<{ endpoint: string }>(
+      mock.some_endpoint,
+    );
+    // fake page contains exactly one item
+    expect(items).toHaveLength(1);
+    expect(items).toEqual([
+      { endpoint: 'https://example.com/api/v4/some-endpoint' },
+    ]);
+  });
+
+  it('defined numeric search params', async () => {
+    const client = new GitLabClient({
+      config: readGitLabIntegrationConfig(
+        new ConfigReader(mock.config_self_managed),
+      ),
+      logger: mockServices.logger.mock(),
+    });
+
+    const { items } = await client.pagedRequest<{ endpoint: string }>(
+      mock.some_endpoint,
+      { page: 1, per_page: 50 },
+    );
+    // fake page contains exactly one item
+    expect(items).toHaveLength(1);
+    expect(items).toEqual([
+      {
+        endpoint: 'https://example.com/api/v4/some-endpoint?page=1&per_page=50',
+      },
+    ]);
+  });
+
+  it('defined string search params', async () => {
+    const client = new GitLabClient({
+      config: readGitLabIntegrationConfig(
+        new ConfigReader(mock.config_self_managed),
+      ),
+      logger: mockServices.logger.mock(),
+    });
+
+    const { items } = await client.pagedRequest<{ endpoint: string }>(
+      mock.some_endpoint,
+      { test: 'value', empty: '' },
+    );
+    // fake page contains exactly one item
+    expect(items).toHaveLength(1);
+    expect(items).toEqual([
+      {
+        endpoint: 'https://example.com/api/v4/some-endpoint?test=value',
+      },
+    ]);
+  });
+
+  it('defined boolean search params', async () => {
+    const client = new GitLabClient({
+      config: readGitLabIntegrationConfig(
+        new ConfigReader(mock.config_self_managed),
+      ),
+      logger: mockServices.logger.mock(),
+    });
+
+    const { items } = await client.pagedRequest<{ endpoint: string }>(
+      mock.some_endpoint,
+      { active: true, archived: false },
+    );
+    // fake page contains exactly one item
+    expect(items).toHaveLength(1);
+    expect(items).toEqual([
+      {
+        endpoint:
+          'https://example.com/api/v4/some-endpoint?active=true&archived=false',
+      },
+    ]);
   });
 });

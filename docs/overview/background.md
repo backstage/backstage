@@ -1,7 +1,6 @@
 ---
 id: background
 title: The Spotify Story
-# prettier-ignore
 description: Backstage was born out of necessity at Spotify. We found that as we grew, our infrastructure was becoming more fragmented, our engineers less productive.
 ---
 
@@ -35,4 +34,4 @@ Backstage was originally built by Spotify and then donated to the CNCF.
 Backstage is currently in the Incubation phase. Read the announcement
 [here](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
 
-<img src="https://backstage.io/img/cncf-white.svg" width="400" />
+<img src="https://backstage.io/img/cncf-white.svg" alt="CNCF logo" width="400" />

@@ -16,14 +16,14 @@
 
 import { Entity, RELATION_CONSUMES_API } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
 import { ConsumedApisCard } from './ConsumedApisCard';
 
@@ -31,18 +31,11 @@ describe('<ConsumedApisCard />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
     getApiDefinitionWidget: jest.fn(),
   } as any;
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
-  let Wrapper: React.ComponentType;
+  const catalogApi = catalogApiMock.mock();
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -67,7 +60,7 @@ describe('<ConsumedApisCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, getByRole, container } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <ConsumedApisCard />
@@ -82,6 +75,17 @@ describe('<ConsumedApisCard />', () => {
 
     expect(getByText(/Consumed APIs/i)).toBeInTheDocument();
     expect(getByText(/does not consume any APIs/i)).toBeInTheDocument();
+
+    // Also render external link icon
+    const externalLink = getByRole('link');
+    expect(externalLink).toHaveAttribute(
+      'href',
+      'https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional',
+    );
+    const externalLinkIcon: HTMLElement | null = container.querySelector(
+      'svg[class*="externalLink"]',
+    );
+    expect(externalLink).toContainElement(externalLinkIcon);
   });
 
   it('shows consumed APIs', async () => {
@@ -99,7 +103,7 @@ describe('<ConsumedApisCard />', () => {
         },
       ],
     };
-    catalogApi.getEntities.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [
         {
           apiVersion: 'v1',

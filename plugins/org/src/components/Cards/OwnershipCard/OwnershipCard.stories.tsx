@@ -22,20 +22,14 @@ import {
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import {
-  BackstageTheme,
-  createTheme,
-  genPageTheme,
-  shapes,
-} from '@backstage/theme';
-import { Grid, ThemeProvider } from '@material-ui/core';
-import React from 'react';
+import Grid from '@material-ui/core/Grid';
 import { catalogIndexRouteRef } from '../../../routes';
 import { OwnershipCard } from './OwnershipCard';
 
 export default {
   title: 'Plugins/Org/Ownership Card',
   component: OwnershipCard,
+  tags: ['!manifest'],
 };
 
 const defaultEntity: GroupEntity = {
@@ -50,7 +44,7 @@ const defaultEntity: GroupEntity = {
       displayName: 'Team A',
       email: 'team-a@example.com',
       picture:
-        'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
+        'https://api.dicebear.com/7.x/identicon/svg?seed=Fluffy&backgroundType=solid,gradientLinear&backgroundColor=ffd5dc,b6e3f4',
     },
     type: 'group',
     children: [],
@@ -79,12 +73,22 @@ const makeComponent = ({ type, name }: { type: string; name: string }) => ({
   ],
 });
 
-const serviceA = makeComponent({ type: 'service', name: 'service-a' });
-const serviceB = makeComponent({ type: 'service', name: 'service-a' });
-const websiteA = makeComponent({ type: 'website', name: 'website-a' });
+const types = [
+  'service',
+  'website',
+  'api',
+  'playlist',
+  'grpc',
+  'trpc',
+  'library',
+];
+
+const components = types.map((type, index) =>
+  makeComponent({ type, name: `${type}-${index}` }),
+);
 
 const catalogApi: Partial<CatalogApi> = {
-  getEntities: () => Promise.resolve({ items: [serviceA, serviceB, websiteA] }),
+  getEntities: () => Promise.resolve({ items: components }),
 };
 
 const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
@@ -94,7 +98,12 @@ export const Default = () =>
     <ApiProvider apis={apis}>
       <EntityProvider entity={defaultEntity}>
         <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            style={{ maxHeight: 320, overflow: 'hidden' }}
+          >
             <OwnershipCard />
           </Grid>
         </Grid>
@@ -105,36 +114,25 @@ export const Default = () =>
     },
   );
 
-const monochromeTheme = (outer: BackstageTheme) =>
-  createTheme({
-    ...outer,
-    defaultPageTheme: 'home',
-    pageTheme: {
-      home: genPageTheme({ colors: ['#444'], shape: shapes.wave2 }),
-      documentation: genPageTheme({ colors: ['#474747'], shape: shapes.wave2 }),
-      tool: genPageTheme({ colors: ['#222'], shape: shapes.wave2 }),
-      service: genPageTheme({ colors: ['#aaa'], shape: shapes.wave2 }),
-      website: genPageTheme({ colors: ['#0e0e0e'], shape: shapes.wave2 }),
-      library: genPageTheme({ colors: ['#9d9d9d'], shape: shapes.wave2 }),
-      other: genPageTheme({ colors: ['#aaa'], shape: shapes.wave2 }),
-      app: genPageTheme({ colors: ['#666'], shape: shapes.wave2 }),
+export const WithVariableEntityList = {
+  argTypes: {
+    entityLimit: {
+      control: { type: 'number' },
     },
-  });
-
-export const Themed = () =>
-  wrapInTestApp(
-    <ThemeProvider theme={monochromeTheme}>
+  },
+  render: ({ entityLimit }: { entityLimit: number }) =>
+    wrapInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={defaultEntity}>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
-              <OwnershipCard />
+              <OwnershipCard entityLimit={entityLimit} />
             </Grid>
           </Grid>
         </EntityProvider>
-      </ApiProvider>
-    </ThemeProvider>,
-    {
-      mountedRoutes: { '/catalog': catalogIndexRouteRef },
-    },
-  );
+      </ApiProvider>,
+      {
+        mountedRoutes: { '/catalog': catalogIndexRouteRef },
+      },
+    ),
+};

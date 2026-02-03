@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 /**
  * Types used to customize and provide data to {@link DependencyGraph}
@@ -20,138 +22,254 @@
  * @packageDocumentation
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 
 /**
- * Edge of {@link DependencyGraph}
+ * Types for the {@link DependencyGraph} component.
  *
  * @public
  */
-export type DependencyEdge<T = {}> = T & {
+export namespace DependencyGraphTypes {
   /**
-   * ID of {@link DependencyNode} from where the Edge start
-   */
-  from: string;
-  /**
-   * ID of {@link DependencyNode} to where the Edge goes to
-   */
-  to: string;
-  /**
-   * Label assigned and rendered with the Edge
-   */
-  label?: string;
-};
-
-/**
- * Properties of {@link DependencyGraphTypes.RenderLabelFunction} for {@link DependencyGraphTypes.DependencyEdge}
- */
-export type RenderLabelProps<T = unknown> = { edge: DependencyEdge<T> };
-
-/**
- * Custom React component for edge labels
- */
-export type RenderLabelFunction<T = {}> = (
-  props: RenderLabelProps<T>,
-) => React.ReactNode;
-
-/**
- * Node of {@link DependencyGraph}
- *
- * @public
- */
-export type DependencyNode<T = {}> = T & {
-  id: string;
-};
-
-/**
- * Properties of {@link DependencyGraphTypes.RenderNodeFunction} for {@link DependencyGraphTypes.DependencyNode}
- */
-export type RenderNodeProps<T = unknown> = { node: DependencyNode<T> };
-
-/**
- * Custom React component for graph {@link DependencyGraphTypes.DependencyNode}
- */
-export type RenderNodeFunction<T = {}> = (
-  props: RenderNodeProps<T>,
-) => React.ReactNode;
-
-/**
- * Graph direction
- *
- * @public
- */
-export enum Direction {
-  /**
-   * Top to Bottom
-   */
-  TOP_BOTTOM = 'TB',
-  /**
-   * Bottom to Top
-   */
-  BOTTOM_TOP = 'BT',
-  /**
-   * Left to Right
-   */
-  LEFT_RIGHT = 'LR',
-  /**
-   * Right to Left
-   */
-  RIGHT_LEFT = 'RL',
-}
-
-/**
- * Node alignment
- *
- * @public
- */
-export enum Alignment {
-  /**
-   * Up Left
-   */
-  UP_LEFT = 'UL',
-  /**
-   * Up Right
-   */
-  UP_RIGHT = 'UR',
-  /**
-   * Down Left
-   */
-  DOWN_LEFT = 'DL',
-  /**
-   * Down Right
-   */
-  DOWN_RIGHT = 'DR',
-}
-
-/**
- * Algorithm used to rand nodes in graph
- */
-export enum Ranker {
-  /**
-   * {@link https://en.wikipedia.org/wiki/Network_simplex_algorithm | Network Simplex} algorithm
-   */
-  NETWORK_SIMPLEX = 'network-simplex',
-  /**
-   * Tight Tree algorithm
-   */
-  TIGHT_TREE = 'tight-tree',
-  /**
-   * Longest path algorithm
+   * Edge of {@link DependencyGraph}
    *
-   * @remarks
-   *
-   * Simplest and fastest
+   * @public
    */
-  LONGEST_PATH = 'longest-path',
-}
+  export type DependencyEdge<T = {}> = T & {
+    /**
+     * ID of {@link DependencyNode} from where the Edge start
+     */
+    from: string;
+    /**
+     * ID of {@link DependencyNode} to where the Edge goes to
+     */
+    to: string;
+    /**
+     * Label assigned and rendered with the Edge
+     */
+    label?: string;
+    /**
+     * Distance to a root entity
+     */
+    distance?: number;
+  };
 
-/**
- * Position of label in relation to the edge
- *
- * @public
- */
-export enum LabelPosition {
-  LEFT = 'l',
-  RIGHT = 'r',
-  CENTER = 'c',
+  /**
+   * Properties of {@link DependencyGraphTypes.RenderLabelFunction} for {@link DependencyGraphTypes.DependencyEdge}
+   *
+   * @public
+   */
+  export type RenderLabelProps<T = unknown> = { edge: DependencyEdge<T> };
+
+  /**
+   * Custom React component for edge labels
+   *
+   * @public
+   */
+  export type RenderLabelFunction<T = {}> = (
+    props: RenderLabelProps<T>,
+  ) => ReactNode;
+
+  /**
+   * Node of {@link DependencyGraph}
+   *
+   * @public
+   */
+  export type DependencyNode<T = {}> = T & {
+    id: string;
+  };
+
+  /**
+   * Properties of {@link DependencyGraphTypes.RenderNodeFunction} for {@link DependencyGraphTypes.DependencyNode}
+   *
+   * @public
+   */
+  export type RenderNodeProps<T = unknown> = { node: DependencyNode<T> };
+
+  /**
+   * Custom React component for graph {@link DependencyGraphTypes.DependencyNode}
+   *
+   * @public
+   */
+  export type RenderNodeFunction<T = {}> = (
+    props: RenderNodeProps<T>,
+  ) => ReactNode;
+
+  /**
+   * Properties of {@link DependencyGraphTypes.RenderEdgeFunction} for {@link DependencyGraphTypes.DependencyEdge}
+   *
+   * @public
+   */
+  export type RenderEdgeProps<T = {}> = {
+    edge: T & {
+      points: { x: number; y: number }[];
+      label?: string;
+      labeloffset?: number;
+      labelpos?: string;
+      width?: number;
+      height?: number;
+      weight?: number;
+      minlen?: number;
+      showArrowHeads?: boolean;
+      from?: string;
+      to?: string;
+      relations?: string[];
+    };
+    id: {
+      v: string;
+      w: string;
+      name?: string | undefined;
+    };
+  };
+
+  /**
+   * Custom React component for graph {@link DependencyGraphTypes.DependencyEdge}
+   *
+   * @public
+   */
+  export type RenderEdgeFunction<T = {}> = (
+    props: RenderEdgeProps<T>,
+  ) => ReactNode;
+
+  /**
+   * Graph direction
+   *
+   * @public
+   */
+  export const Direction = {
+    /**
+     * Top to Bottom
+     */
+    TOP_BOTTOM: 'TB',
+    /**
+     * Bottom to Top
+     */
+    BOTTOM_TOP: 'BT',
+    /**
+     * Left to Right
+     */
+    LEFT_RIGHT: 'LR',
+    /**
+     * Right to Left
+     */
+    RIGHT_LEFT: 'RL',
+  } as const;
+
+  /**
+   * @public
+   */
+  export type Direction = (typeof Direction)[keyof typeof Direction];
+
+  /**
+   * @public
+   */
+  export namespace Direction {
+    export type TOP_BOTTOM = typeof Direction.TOP_BOTTOM;
+    export type BOTTOM_TOP = typeof Direction.BOTTOM_TOP;
+    export type LEFT_RIGHT = typeof Direction.LEFT_RIGHT;
+    export type RIGHT_LEFT = typeof Direction.RIGHT_LEFT;
+  }
+
+  /**
+   * Node alignment
+   *
+   * @public
+   */
+  export const Alignment = {
+    /**
+     * Up Left
+     */
+    UP_LEFT: 'UL',
+    /**
+     * Up Right
+     */
+    UP_RIGHT: 'UR',
+    /**
+     * Down Left
+     */
+    DOWN_LEFT: 'DL',
+    /**
+     * Down Right
+     */
+    DOWN_RIGHT: 'DR',
+  } as const;
+
+  /**
+   * @public
+   */
+  export type Alignment = (typeof Alignment)[keyof typeof Alignment];
+
+  /**
+   * @public
+   */
+  export namespace Alignment {
+    export type UP_LEFT = typeof Alignment.UP_LEFT;
+    export type UP_RIGHT = typeof Alignment.UP_RIGHT;
+    export type DOWN_LEFT = typeof Alignment.DOWN_LEFT;
+    export type DOWN_RIGHT = typeof Alignment.DOWN_RIGHT;
+  }
+
+  /**
+   * Algorithm used to rand nodes in graph
+   *
+   * @public
+   */
+  export const Ranker = {
+    /**
+     * {@link https://en.wikipedia.org/wiki/Network_simplex_algorithm | Network Simplex} algorithm
+     */
+    NETWORK_SIMPLEX: 'network-simplex',
+    /**
+     * Tight Tree algorithm
+     */
+    TIGHT_TREE: 'tight-tree',
+    /**
+     * Longest path algorithm
+     *
+     * @remarks
+     *
+     * Simplest and fastest
+     */
+    LONGEST_PATH: 'longest-path',
+  } as const;
+
+  /**
+   * @public
+   */
+  export type Ranker = (typeof Ranker)[keyof typeof Ranker];
+
+  /**
+   * @public
+   */
+  export namespace Ranker {
+    export type NETWORK_SIMPLEX = typeof Ranker.NETWORK_SIMPLEX;
+    export type TIGHT_TREE = typeof Ranker.TIGHT_TREE;
+    export type LONGEST_PATH = typeof Ranker.LONGEST_PATH;
+  }
+
+  /**
+   * Position of label in relation to the edge
+   *
+   * @public
+   */
+  export const LabelPosition = {
+    LEFT: 'l',
+    RIGHT: 'r',
+    CENTER: 'c',
+  } as const;
+
+  /**
+   * @public
+   */
+  export type LabelPosition =
+    (typeof LabelPosition)[keyof typeof LabelPosition];
+
+  /**
+   * @public
+   */
+  export namespace LabelPosition {
+    export type LEFT = typeof LabelPosition.LEFT;
+    export type RIGHT = typeof LabelPosition.RIGHT;
+    export type CENTER = typeof LabelPosition.CENTER;
+  }
 }

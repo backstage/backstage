@@ -14,38 +14,39 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import parseGitUrl from 'git-url-parse';
 import { Entity } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
+} from '@backstage/plugin-catalog-common';
+import {
   LocationAnalyzer,
-} from './types';
+  ScmLocationAnalyzer,
+} from '@backstage/plugin-catalog-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class RepoLocationAnalyzer implements LocationAnalyzer {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scmIntegrations: ScmIntegrationRegistry;
+  private readonly analyzers: ScmLocationAnalyzer[];
 
-  constructor(logger: Logger, scmIntegrations: ScmIntegrationRegistry) {
+  constructor(
+    logger: LoggerService,
+    scmIntegrations: ScmIntegrationRegistry,
+    analyzers: ScmLocationAnalyzer[],
+  ) {
     this.logger = logger;
     this.scmIntegrations = scmIntegrations;
+    this.analyzers = analyzers;
   }
   async analyzeLocation(
     request: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse> {
-    const { owner, name } = parseGitUrl(request.location.target);
-    const entity: Entity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
-      metadata: {
-        name: name,
-      },
-      spec: { type: 'other', lifecycle: 'unknown' },
-    };
-
     const integration = this.scmIntegrations.byUrl(request.location.target);
+    const { owner, name } = parseGitUrl(request.location.target);
+
     let annotationPrefix;
     switch (integration?.type) {
       case 'azure':
@@ -63,6 +64,33 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
       default:
         break;
     }
+
+    const analyzer = this.analyzers.find(a =>
+      a.supports(request.location.target),
+    );
+    if (analyzer) {
+      const analyzerResult = await analyzer.analyze({
+        url: request.location.target,
+      });
+      if (analyzerResult.existing.length > 0) {
+        this.logger.debug(
+          `entity for ${request.location.target} already exists.`,
+        );
+        return {
+          existingEntityFiles: analyzerResult.existing,
+          generateEntities: [],
+        };
+      }
+    }
+
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: name,
+      },
+      spec: { type: 'other', lifecycle: 'unknown' },
+    };
 
     if (annotationPrefix) {
       entity.metadata.annotations = {

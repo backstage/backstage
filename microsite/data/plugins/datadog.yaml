@@ -7,3 +7,4 @@ description: Embed Datadog graphs and dashboards in Backstage.
 documentation: https://roadie.io/backstage/plugins/datadog/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=datadog
 iconUrl: https://roadie.io/images/logos/datadog-white-background.png
 npmPackageName: '@roadiehq/backstage-plugin-datadog'
+addedDate: '2021-04-20'

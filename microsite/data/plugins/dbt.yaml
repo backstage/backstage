@@ -1,0 +1,10 @@
+---
+title: dbt Docs
+author: IIBenII
+authorUrl: https://github.com/IIBenII
+category: Discovery
+description: View dbt models and tests documentation.
+documentation: https://github.com/IIBenII/backstage-plugin-dbt
+iconUrl: '/img/logo-gradient-on-dark.svg'
+npmPackageName: '@iiben_orgii/backstage-plugin-dbt'
+addedDate: '2023-04-27'

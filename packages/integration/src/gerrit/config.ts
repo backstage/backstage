@@ -45,12 +45,16 @@ export type GerritIntegrationConfig = {
   cloneUrl?: string;
 
   /**
-   * Optional base url for Gitiles. This is needed for creating a valid
-   * user-friendly url that can be used for browsing the content of the
-   * provider. If not set a default value will be created in the same way
-   * as the "baseUrl" option.
+   * Disable the edit url feature for Gerrit version less than 3.9.
    */
-  gitilesBaseUrl?: string;
+  disableEditUrl?: boolean;
+
+  /**
+   * Base url for Gitiles. This is needed for creating a valid
+   * user-friendly url that can be used for browsing the content of the
+   * provider.
+   */
+  gitilesBaseUrl: string;
 
   /**
    * The username to use for requests to gerrit.
@@ -61,6 +65,11 @@ export type GerritIntegrationConfig = {
    * The password or http token to use for authentication.
    */
   password?: string;
+
+  /**
+   * The signing key to use for signing commits.
+   */
+  commitSigningKey?: string;
 };
 
 /**
@@ -76,9 +85,10 @@ export function readGerritIntegrationConfig(
   const host = config.getString('host');
   let baseUrl = config.getOptionalString('baseUrl');
   let cloneUrl = config.getOptionalString('cloneUrl');
-  let gitilesBaseUrl = config.getOptionalString('gitilesBaseUrl');
+  const disableEditUrl = config.getOptionalBoolean('disableEditUrl');
+  let gitilesBaseUrl = config.getString('gitilesBaseUrl');
   const username = config.getOptionalString('username');
-  const password = config.getOptionalString('password');
+  const password = config.getOptionalString('password')?.trim();
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -92,7 +102,7 @@ export function readGerritIntegrationConfig(
     throw new Error(
       `Invalid Gerrit integration config, '${cloneUrl}' is not a valid cloneUrl`,
     );
-  } else if (gitilesBaseUrl && !isValidUrl(gitilesBaseUrl)) {
+  } else if (!isValidUrl(gitilesBaseUrl)) {
     throw new Error(
       `Invalid Gerrit integration config, '${gitilesBaseUrl}' is not a valid gitilesBaseUrl`,
     );
@@ -102,24 +112,23 @@ export function readGerritIntegrationConfig(
   } else {
     baseUrl = `https://${host}`;
   }
-  if (gitilesBaseUrl) {
-    gitilesBaseUrl = trimEnd(gitilesBaseUrl, '/');
-  } else {
-    gitilesBaseUrl = `https://${host}`;
-  }
   if (cloneUrl) {
     cloneUrl = trimEnd(cloneUrl, '/');
   } else {
     cloneUrl = baseUrl;
   }
 
+  gitilesBaseUrl = trimEnd(gitilesBaseUrl, '/');
+
   return {
     host,
     baseUrl,
     cloneUrl,
+    disableEditUrl,
     gitilesBaseUrl,
     username,
     password,
+    commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }
 

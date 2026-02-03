@@ -21,9 +21,11 @@ import {
   TestApiProvider,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import React from 'react';
+import { screen } from '@testing-library/react';
 import { CatalogImportApi, catalogImportApiRef } from '../../api';
 import { ImportInfoCard } from './ImportInfoCard';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { catalogImportTranslationRef } from '../../translation';
 
 describe('<ImportInfoCard />', () => {
   let apis: TestApiRegistry;
@@ -49,43 +51,50 @@ describe('<ImportInfoCard />', () => {
   });
 
   it('renders without exploding', async () => {
-    const { getByText } = await renderInTestApp(
+    let translatedText = '';
+
+    const TestComponent = () => {
+      const { t } = useTranslationRef(catalogImportTranslationRef);
+      translatedText = t('importInfoCard.title');
+      return <ImportInfoCard />;
+    };
+
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, new ConfigReader({ integrations: {} })],
           [catalogImportApiRef, catalogImportApi],
         ]}
       >
-        <ImportInfoCard />
+        <TestComponent />
       </TestApiProvider>,
     );
-
-    expect(getByText('Register an existing component')).toBeInTheDocument();
+    expect(screen.getByText(translatedText)).toBeInTheDocument();
   });
 
   it('renders section on GitHub discovery if supported', async () => {
     catalogImportApi.preparePullRequest = async () => ({ title: '', body: '' });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ImportInfoCard />
       </ApiProvider>,
     );
 
-    expect(getByText(/The wizard discovers all/)).toBeInTheDocument();
+    expect(screen.getByText(/The wizard discovers all/)).toBeInTheDocument();
   });
 
   it('renders section on pull requests if supported', async () => {
     catalogImportApi.preparePullRequest = async () => ({ title: '', body: '' });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <ImportInfoCard />
       </ApiProvider>,
     );
 
     expect(
-      getByText(/the wizard will prepare a Pull Request/),
+      screen.getByText(/the wizard will prepare a Pull Request/),
     ).toBeInTheDocument();
   });
 });

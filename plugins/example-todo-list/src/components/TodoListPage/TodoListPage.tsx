@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useReducer, useRef, useState } from 'react';
-import {
-  Typography,
-  Grid,
-  TextField,
-  Button,
-  Dialog,
-  Box,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from '@material-ui/core';
+import { useReducer, useRef, useState } from 'react';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import Box from '@material-ui/core/Box';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
 import {
   Header,
   Page,
@@ -45,17 +43,16 @@ export const TodoListPage = () => {
   const discoveryApi = useApi(discoveryApiRef);
   const { fetch } = useApi(fetchApiRef);
   const alertApi = useApi(alertApiRef);
-  const title = useRef('');
   const [key, refetchTodos] = useReducer(i => i + 1, 0);
   const [editElement, setEdit] = useState<Todo | undefined>();
 
-  const handleAdd = async () => {
+  const handleAdd = async (title: string) => {
     try {
       const response = await fetch(
         `${await discoveryApi.getBaseUrl('todolist')}/todos`,
         {
           method: 'POST',
-          body: JSON.stringify({ title: title.current }),
+          body: JSON.stringify({ title }),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -117,21 +114,7 @@ export const TodoListPage = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <Typography variant="body1">Add todo</Typography>
-            <Box
-              component="span"
-              alignItems="flex-end"
-              display="flex"
-              flexDirection="row"
-            >
-              <TextField
-                placeholder="Write something here..."
-                onChange={e => (title.current = e.target.value)}
-              />
-              <Button variant="contained" onClick={handleAdd}>
-                Add
-              </Button>
-            </Box>
+            <AddTodo onAdd={handleAdd} />
           </Grid>
           <Grid item>
             <TodoList key={key} onEdit={setEdit} />
@@ -149,13 +132,37 @@ export const TodoListPage = () => {
   );
 };
 
+function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
+  const title = useRef('');
+
+  return (
+    <>
+      <Typography variant="body1">Add todo</Typography>
+      <Box
+        component="span"
+        alignItems="flex-end"
+        display="flex"
+        flexDirection="row"
+      >
+        <TextField
+          placeholder="Write something here..."
+          onChange={e => (title.current = e.target.value)}
+        />
+        <Button variant="contained" onClick={() => onAdd(title.current)}>
+          Add
+        </Button>
+      </Box>
+    </>
+  );
+}
+
 function EditModal({
   todo,
   onCancel,
   onSubmit,
 }: {
   todo?: Todo;
-  onSubmit(todo: Todo): any;
+  onSubmit(t: Todo): any;
   onCancel(): any;
 }) {
   const title = useRef('');

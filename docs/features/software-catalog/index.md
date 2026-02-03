@@ -2,7 +2,6 @@
 id: software-catalog-overview
 title: Backstage Software Catalog
 sidebar_label: Overview
-# prettier-ignore
 description: The Backstage Software Catalog
 ---
 
@@ -14,7 +13,7 @@ websites, libraries, data pipelines, etc). The catalog is built around the
 concept of [metadata YAML files](descriptor-format.md) stored together with the
 code, which are then harvested and visualized in Backstage.
 
-![software-catalog](https://backstage.io/blog/assets/6/header.png)
+![software-catalog](../../assets/header.png)
 
 ## How it works
 
@@ -36,13 +35,14 @@ The Software Catalog is available to browse at `/catalog`. If you've followed
 [Getting Started with Backstage](../../getting-started), you should be able to
 browse the catalog at `http://localhost:3000`.
 
-![](../../assets/software-catalog/software-catalog-home.png)
+![screenshot of software catalog](../../assets/software-catalog/software-catalog-home.png)
 
 ## Adding components to the catalog
 
-The source of truth for the components in your software catalog are
-[metadata YAML files](descriptor-format.md) stored in source control (GitHub,
-GitHub Enterprise, GitLab, ...).
+The source of truth for the components in your software catalog are [metadata YAML files](descriptor-format.md) stored in source control (GitHub, GitHub
+Enterprise, GitLab, ...). Repositories can include one or multiple metadata
+files. Usually the metadata file is located in the repository root. This is not
+a formal requirement & metadata files can be placed anywhere in the repository.
 
 There are 3 ways to add components to the catalog:
 
@@ -55,7 +55,7 @@ There are 3 ways to add components to the catalog:
 Users can register new components by going to `/create` and clicking the
 **REGISTER EXISTING COMPONENT** button:
 
-![](../../assets/software-catalog/bsc-register-1.png)
+![screenshot of manually register existing component](../../assets/software-catalog/bsc-register-1.png)
 
 Backstage expects the full URL to the YAML in your source control. Example:
 
@@ -66,7 +66,7 @@ https://github.com/backstage/backstage/blob/master/packages/catalog-model/exampl
 _More examples can be found
 [here](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples)._
 
-![](../../assets/software-catalog/bsc-register-2.png)
+![screenshot of creating new components](../../assets/software-catalog/bsc-register-2.png)
 
 It is important to note that any kind of software can be registered in
 Backstage. Even if the software is not maintained by your company (SaaS
@@ -100,39 +100,39 @@ More information about catalog configuration can be found
 Teams owning the components are responsible for maintaining the metadata about
 them, and do so using their normal Git workflow.
 
-![](../../assets/software-catalog/bsc-edit.png)
+![screenshot of updating component metadata](../../assets/software-catalog/bsc-edit.png)
 
 Once the change has been merged, Backstage will automatically show the updated
 metadata in the software catalog after a short while.
 
 ## Finding software in the catalog
 
-By default the software catalog shows components owned by the team of the logged
+By default, the software catalog shows components owned by the team of the logged
 in user. But you can also switch to _All_ to see all the components across your
 company's software ecosystem. Basic inline _search_ and _column filtering_ makes
 it easy to browse a big set of components.
 
-![](../../assets/software-catalog/bsc-search.png)
+![screenshot of finding software in the catalog](../../assets/software-catalog/bsc-search.png)
 
 ## Starring components
 
 For easy and quick access to components you visit frequently, Backstage supports
 _starring_ of components:
 
-![](../../assets/software-catalog/bsc-starred.png)
+![screenshot of starred components](../../assets/software-catalog/bsc-starred.png)
 
 ## Integrated tooling through plugins
 
 The software catalog is a great way to organize the infrastructure tools you use
 to manage the software. This is how Backstage creates one developer portal for
 all your tools. Rather than asking teams to jump between different
-infrastructure UIs (and incurring additional cognitive overhead each time they
+infrastructure user interfaces (and incurring additional cognitive overhead each time they
 make a context switch), most of these tools can be organized around the entities
 in the catalog.
 
-![tools](https://backstage.io/blog/assets/20-05-20/tabs.png)
+![screenshot of tools](https://backstage.io/assets/images/tabs-abfdf72185d3ceb1d92c4237f7f78809.png)
 
-The Backstage platform can be customized by incorporating
+Your Backstage developer portal can be customized by incorporating
 [existing open source plugins](https://github.com/backstage/backstage/tree/master/plugins),
 or by [building your own](../../plugins/index.md).
 

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import fs from 'fs-extra';
-import path from 'path';
-import { executeShellCommand } from '@backstage/plugin-scaffolder-backend';
+import path from 'node:path';
+import { executeShellCommand } from '@backstage/plugin-scaffolder-node';
 import commandExists from 'command-exists';
 import {
   railsArgumentResolver,
   RailsRunOptions,
 } from './railsArgumentResolver';
 import { JsonObject } from '@backstage/types';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
+import { ContainerRunner } from './ContainerRunner';
 
 export class RailsNewRunner {
-  private readonly containerRunner: ContainerRunner;
+  private readonly containerRunner?: ContainerRunner;
 
-  constructor({ containerRunner }: { containerRunner: ContainerRunner }) {
+  constructor({ containerRunner }: { containerRunner?: ContainerRunner }) {
     this.containerRunner = containerRunner;
   }
 
@@ -76,6 +76,11 @@ export class RailsNewRunner {
     } else {
       if (!imageName) {
         throw new Error('No imageName provided');
+      }
+      if (!this.containerRunner) {
+        throw new Error(
+          'Command is not available and no container runner provided',
+        );
       }
       const arrayExtraArguments = railsArgumentResolver(
         '/input',

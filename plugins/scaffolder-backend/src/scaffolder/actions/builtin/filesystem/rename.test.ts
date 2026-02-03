@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import * as os from 'os';
-import mockFs from 'mock-fs';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { createFilesystemRenameAction } from './rename';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import fs from 'fs-extra';
-
-const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
-const workspacePath = resolvePath(root, 'my-workspace');
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('fs:rename', () => {
   const action = createFilesystemRenameAction();
+
+  const mockDir = createMockDirectory();
+  const workspacePath = resolvePath(mockDir.path, 'workspace');
 
   const mockInputFiles = [
     {
@@ -42,21 +40,17 @@ describe('fs:rename', () => {
       to: 'brand-new-folder',
     },
   ];
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       files: mockInputFiles,
     },
     workspacePath,
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.restoreAllMocks();
 
-    mockFs({
+    mockDir.setContent({
       [workspacePath]: {
         'unit-test-a.js': 'hello',
         'unit-test-b.js': 'world',
@@ -66,10 +60,6 @@ describe('fs:rename', () => {
         },
       },
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should throw an error when files is not an array', async () => {
@@ -148,7 +138,7 @@ describe('fs:rename', () => {
   it('should throw is trying to override by mistake', async () => {
     const destFile = 'unit-test-c.js';
     const filePath = resolvePath(workspacePath, destFile);
-    const beforeContent = fs.readFileSync(filePath, 'utf-8');
+    const beforeContent = await fs.readFile(filePath, 'utf-8');
 
     await expect(
       action.handler({
@@ -164,7 +154,7 @@ describe('fs:rename', () => {
       }),
     ).rejects.toThrow(/dest already exists/);
 
-    const afterContent = fs.readFileSync(filePath, 'utf-8');
+    const afterContent = await fs.readFile(filePath, 'utf-8');
 
     expect(beforeContent).toEqual(afterContent);
   });
@@ -191,8 +181,8 @@ describe('fs:rename', () => {
     const sourceFilePath = resolvePath(workspacePath, sourceFile);
     const destFilePath = resolvePath(workspacePath, destFile);
 
-    const sourceBeforeContent = fs.readFileSync(sourceFilePath, 'utf-8');
-    const destBeforeContent = fs.readFileSync(destFilePath, 'utf-8');
+    const sourceBeforeContent = await fs.readFile(sourceFilePath, 'utf-8');
+    const destBeforeContent = await fs.readFile(destFilePath, 'utf-8');
 
     expect(sourceBeforeContent).not.toEqual(destBeforeContent);
 
@@ -209,7 +199,7 @@ describe('fs:rename', () => {
       },
     });
 
-    const destAfterContent = fs.readFileSync(destFilePath, 'utf-8');
+    const destAfterContent = await fs.readFile(destFilePath, 'utf-8');
 
     expect(sourceBeforeContent).toEqual(destAfterContent);
   });

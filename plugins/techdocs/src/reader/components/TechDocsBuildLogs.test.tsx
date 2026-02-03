@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import {
   TechDocsBuildLogs,
   TechDocsBuildLogsDrawerContent,
 } from './TechDocsBuildLogs';
+import { userEvent } from '@testing-library/user-event';
 
 // The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom
 jest.mock('react-virtualized-auto-sizer', () => ({
@@ -38,7 +39,7 @@ describe('<TechDocsBuildLogs />', () => {
 
   it('should open drawer', async () => {
     const rendered = await renderInTestApp(<TechDocsBuildLogs buildLog={[]} />);
-    rendered.getByText(/Show Build Logs/i).click();
+    await userEvent.click(rendered.getByText(/Show Build Logs/i));
     expect(rendered.getByText(/Build Details/i)).toBeInTheDocument();
   });
 });
@@ -54,7 +55,7 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
       await rendered.findByText(/Waiting for logs.../i),
     ).toBeInTheDocument();
 
-    expect(onClose).toBeCalledTimes(0);
+    expect(onClose).toHaveBeenCalledTimes(0);
   });
 
   it('should render logs', async () => {
@@ -69,7 +70,7 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
     expect(await rendered.findByText(/Line 1/i)).toBeInTheDocument();
     expect(await rendered.findByText(/Line 2/i)).toBeInTheDocument();
 
-    expect(onClose).toBeCalledTimes(0);
+    expect(onClose).toHaveBeenCalledTimes(0);
   });
 
   it('should call onClose', async () => {
@@ -79,6 +80,6 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
     );
     rendered.getByTitle('Close the drawer').click();
 
-    expect(onClose).toBeCalledTimes(1);
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

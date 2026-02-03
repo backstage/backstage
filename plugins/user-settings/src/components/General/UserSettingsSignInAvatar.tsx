@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Avatar } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import { useUserProfile } from '../useUserProfileInfo';
 import { sidebarConfig } from '@backstage/core-components';
 
-const useStyles = makeStyles<BackstageTheme, { size: number }>(theme => ({
+const useStyles = makeStyles<Theme, { size: number }>(theme => ({
   avatar: {
     width: ({ size }) => size,
     height: ({ size }) => size,
@@ -29,9 +28,10 @@ const useStyles = makeStyles<BackstageTheme, { size: number }>(theme => ({
   },
 }));
 
-type Props = { size?: number };
+/** @public */
+export const UserSettingsSignInAvatar = (props: { size?: number }) => {
+  const { size } = props;
 
-export const UserSettingsSignInAvatar = ({ size }: Props) => {
   const { iconSize } = sidebarConfig;
   const classes = useStyles(size ? { size } : { size: iconSize });
   const { profile } = useUserProfile();

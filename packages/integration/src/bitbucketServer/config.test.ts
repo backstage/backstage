@@ -60,7 +60,7 @@ describe('readBitbucketServerIntegrationConfig', () => {
       buildConfig({
         host: 'a.com',
         apiBaseUrl: 'https://a.com/api',
-        token: 't',
+        token: '\tt\t',
       }),
     );
     expect(output).toEqual({

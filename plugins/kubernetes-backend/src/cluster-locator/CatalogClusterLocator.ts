@@ -14,26 +14,51 @@
  * limitations under the License.
  */
 
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
-import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
+import {
+  AuthService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
+import {
+  ClusterDetails,
+  KubernetesClustersSupplier,
+} from '@backstage/plugin-kubernetes-node';
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-} from '@backstage/catalog-model';
+  ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP,
+  ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY,
+  ANNOTATION_KUBERNETES_DASHBOARD_URL,
+  ANNOTATION_KUBERNETES_DASHBOARD_APP,
+  ANNOTATION_KUBERNETES_DASHBOARD_PARAMETERS,
+} from '@backstage/plugin-kubernetes-common';
+import { JsonObject } from '@backstage/types';
+import { CatalogService } from '@backstage/plugin-catalog-node';
+
+function isObject(obj: unknown): obj is JsonObject {
+  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
+}
 
 export class CatalogClusterLocator implements KubernetesClustersSupplier {
-  private catalogClient: CatalogApi;
+  private catalogService: CatalogService;
+  private auth: AuthService;
 
-  constructor(catalogClient: CatalogApi) {
-    this.catalogClient = catalogClient;
+  constructor(catalogService: CatalogService, auth: AuthService) {
+    this.catalogService = catalogService;
+    this.auth = auth;
   }
 
-  static fromConfig(catalogApi: CatalogApi): CatalogClusterLocator {
-    return new CatalogClusterLocator(catalogApi);
+  static fromConfig(
+    catalogApi: CatalogService,
+    auth: AuthService,
+  ): CatalogClusterLocator {
+    return new CatalogClusterLocator(catalogApi, auth);
   }
 
-  async getClusters(): Promise<ClusterDetails[]> {
+  async getClusters(options?: {
+    credentials: BackstageCredentials;
+  }): Promise<ClusterDetails[]> {
     const apiServerKey = `metadata.annotations.${ANNOTATION_KUBERNETES_API_SERVER}`;
     const apiServerCaKey = `metadata.annotations.${ANNOTATION_KUBERNETES_API_SERVER_CA}`;
     const authProviderKey = `metadata.annotations.${ANNOTATION_KUBERNETES_AUTH_PROVIDER}`;
@@ -46,20 +71,49 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       [authProviderKey]: CATALOG_FILTER_EXISTS,
     };
 
-    const clusters = await this.catalogClient.getEntities({
-      filter: [filter],
-    });
+    const clusters = await this.catalogService.getEntities(
+      {
+        filter: [filter],
+      },
+      {
+        credentials:
+          options?.credentials ?? (await this.auth.getNoneCredentials()),
+      },
+    );
     return clusters.items.map(entity => {
+      const annotations = entity.metadata.annotations!;
       const clusterDetails: ClusterDetails = {
         name: entity.metadata.name,
-        url: entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER]!,
-        caData:
-          entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER_CA]!,
-        authProvider:
-          entity.metadata.annotations![ANNOTATION_KUBERNETES_AUTH_PROVIDER]!,
+        title: entity.metadata.title,
+        url: annotations[ANNOTATION_KUBERNETES_API_SERVER],
+        authMetadata: annotations,
+        caData: annotations[ANNOTATION_KUBERNETES_API_SERVER_CA],
+        skipMetricsLookup:
+          annotations[ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP] === 'true',
+        skipTLSVerify:
+          annotations[ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY] === 'true',
+        dashboardUrl: annotations[ANNOTATION_KUBERNETES_DASHBOARD_URL],
+        dashboardApp: annotations[ANNOTATION_KUBERNETES_DASHBOARD_APP],
+        dashboardParameters: this.getDashboardParameters(annotations),
       };
 
       return clusterDetails;
     });
+  }
+
+  private getDashboardParameters(
+    annotations: Record<string, string>,
+  ): JsonObject | undefined {
+    const dashboardParamsString =
+      annotations[ANNOTATION_KUBERNETES_DASHBOARD_PARAMETERS];
+    if (dashboardParamsString) {
+      try {
+        const dashboardParams = JSON.parse(dashboardParamsString);
+        return isObject(dashboardParams) ? dashboardParams : undefined;
+      } catch {
+        return undefined;
+      }
+    }
+    return undefined;
   }
 }

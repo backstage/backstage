@@ -22,9 +22,12 @@ import { KindValidator } from './types';
 // exported kind validators have the `KindValidator` signature which is
 // different. So let's postpone that change until a later time.
 export function ajvCompiledJsonSchemaValidator(schema: unknown): KindValidator {
-  const validator = entityKindSchemaValidator(schema);
+  let validator: undefined | ((data: unknown) => any);
   return {
     async check(data) {
+      if (!validator) {
+        validator = entityKindSchemaValidator(schema);
+      }
       return validator(data) === data;
     },
   };

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { render } from '@testing-library/react';
 import { Edge } from './Edge';
-import { RenderLabelProps } from './types';
+import { DependencyGraphTypes as Types } from './types';
 
 const fromNode = 'node';
 const toNode = 'other-node';
+const curve: 'curveStepBefore' | 'curveMonotoneX' = 'curveMonotoneX';
 
 const edge = {
   points: [
@@ -37,8 +37,8 @@ const id = {
 };
 
 const setEdge = jest.fn();
-const renderElement = jest.fn((props: RenderLabelProps) => (
-  <text>{props.edge.label}</text>
+const renderElement = jest.fn((props: Types.RenderLabelProps) => (
+  <div>{props.edge.label}</div>
 ));
 
 const minProps = {
@@ -46,6 +46,7 @@ const minProps = {
   setEdge,
   renderElement,
   edge,
+  curve,
 };
 
 const label = 'label';
@@ -53,8 +54,7 @@ const edgeWithLabel = { ...edge, label };
 
 describe('<Edge />', () => {
   beforeEach(() => {
-    // jsdom does not support SVG elements so we have to fall back to HTMLUnknownElement
-    Object.defineProperty(window.HTMLUnknownElement.prototype, 'getBBox', {
+    Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
       value: () => ({ width: 100, height: 100 }),
       configurable: true,
     });
@@ -63,26 +63,40 @@ describe('<Edge />', () => {
   afterEach(jest.clearAllMocks);
 
   it('does not render the supplied label element if label is missing', () => {
-    const { container } = render(<Edge {...minProps} />);
+    const { container } = render(
+      <svg>
+        <Edge {...minProps} />
+      </svg>,
+    );
     expect(container.getElementsByTagName('g')).toHaveLength(0);
   });
 
   it('renders the supplied label element if label is present', () => {
-    const { getByText } = render(<Edge {...minProps} edge={edgeWithLabel} />);
+    const { getByText } = render(
+      <svg>
+        <Edge {...minProps} edge={edgeWithLabel} />
+      </svg>,
+    );
     expect(getByText(label)).toBeInTheDocument();
   });
 
   it('passes down edge properties to the render method if label is present', () => {
     const edgeWithRandomProp = { ...edge, label, randomProp: true };
     render(
-      <Edge {...minProps} render={renderElement} edge={edgeWithRandomProp} />,
+      <svg>
+        <Edge {...minProps} render={renderElement} edge={edgeWithRandomProp} />
+      </svg>,
     );
 
     expect(renderElement).toHaveBeenCalledWith({ edge: edgeWithRandomProp });
   });
 
   it('calls setEdge with edge ID and actual label size after rendering', () => {
-    const { getByText } = render(<Edge {...minProps} edge={edgeWithLabel} />);
+    const { getByText } = render(
+      <svg>
+        <Edge {...minProps} edge={edgeWithLabel} />
+      </svg>,
+    );
     expect(getByText(label)).toBeInTheDocument();
 
     // Updates the edge in the graph

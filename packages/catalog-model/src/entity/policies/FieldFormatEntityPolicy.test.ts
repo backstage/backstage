@@ -65,11 +65,6 @@ describe('FieldFormatEntityPolicy', () => {
     await expect(policy.enforce(data)).rejects.toThrow(/kind/);
   });
 
-  it('handles missing metadata gracefully', async () => {
-    delete data.medatata;
-    await expect(policy.enforce(data)).resolves.toBe(data);
-  });
-
   it('handles missing spec gracefully', async () => {
     delete data.spec;
     await expect(policy.enforce(data)).resolves.toBe(data);
@@ -202,7 +197,7 @@ describe('FieldFormatEntityPolicy', () => {
     },
   );
 
-  it.each([[123], [{}], [[]], ['abc xyz']])(
+  it.each([[123], [{}], [[]]])(
     'rejects bad link icon value %s',
     async (icon: unknown) => {
       data.metadata.links = [{ url: 'http://foo', icon }];
@@ -213,10 +208,8 @@ describe('FieldFormatEntityPolicy', () => {
   it('rejects a single bad link icon value', async () => {
     data.metadata.links = [
       { url: 'http://foo', icon: 'good' },
-      { url: 'http://foo', icon: 'not good' },
+      { url: 'http://foo', icon: 123 },
     ];
-    await expect(policy.enforce(data)).rejects.toThrow(
-      /links.1.icon.*"not good"/i,
-    );
+    await expect(policy.enforce(data)).rejects.toThrow(/links.1.icon.*"123"/i);
   });
 });

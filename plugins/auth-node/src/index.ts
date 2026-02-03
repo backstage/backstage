@@ -20,11 +20,29 @@
  * @packageDocumentation
  */
 
-export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
-export { IdentityClient } from './IdentityClient';
-export type { IdentityClientOptions } from './IdentityClient';
+export * from './extensions';
+export * from './flow';
+export * from './identity';
+export * from './oauth';
+export * from './passport';
+export * from './proxy';
+export * from './sign-in';
 export type {
+  AuthProviderConfig,
+  AuthProviderFactory,
+  AuthProviderRouteHandlers,
+  AuthResolverCatalogUserQuery,
+  AuthResolverContext,
   BackstageIdentityResponse,
   BackstageSignInResult,
   BackstageUserIdentity,
+  ClientAuthResponse,
+  CookieConfigurer,
+  ProfileInfo,
+  ProfileTransform,
+  SignInInfo,
+  SignInResolver,
+  TokenParams,
+  AuthOwnershipResolver,
 } from './types';
+export { tokenTypes } from './types';

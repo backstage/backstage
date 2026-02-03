@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useRef, useLayoutEffect, useMemo } from 'react';
 import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { BackstageTheme } from '@backstage/theme';
-import {
-  RenderLabelProps,
-  RenderLabelFunction,
-  DependencyEdge,
-  LabelPosition,
-} from './types';
+import { DependencyGraphTypes as Types } from './types';
 import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
-import dagre from 'dagre';
+import dagre from '@dagrejs/dagre';
 
 /* Based on: https://github.com/dagrejs/dagre/wiki#configuring-the-layout  */
 export type EdgeProperties = {
@@ -35,19 +29,21 @@ export type EdgeProperties = {
   width?: number;
   height?: number;
   labeloffset?: number;
-  labelpos?: LabelPosition;
+  labelpos?: Types.LabelPosition;
   minlen?: number;
   weight?: number;
 };
-export type GraphEdge<T> = DependencyEdge<T> & dagre.GraphEdge & EdgeProperties;
+export type GraphEdge<T> = Types.DependencyEdge<T> &
+  dagre.GraphEdge &
+  EdgeProperties;
 
 /** @public */
 export type DependencyGraphEdgeClassKey = 'path' | 'label';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     path: {
-      strokeWidth: 2,
+      strokeWidth: 1.3,
       stroke: theme.palette.textSubtle,
       fill: 'none',
       transition: `${theme.transitions.duration.shortest}ms`,
@@ -65,36 +61,34 @@ type EdgePoint = dagre.GraphEdge['points'][0];
 export type EdgeComponentProps<T = unknown> = {
   id: dagre.Edge;
   edge: GraphEdge<T>;
-  render?: RenderLabelFunction<T>;
+  render?: Types.RenderLabelFunction<T>;
   setEdge: (
     id: dagre.Edge,
-    edge: DependencyEdge<T>,
+    edge: Types.DependencyEdge<T>,
   ) => dagre.graphlib.Graph<{}>;
+  curve: 'curveStepBefore' | 'curveMonotoneX';
+  showArrowHeads?: boolean;
 };
 
-const renderDefault = (props: RenderLabelProps<unknown>) => (
+const renderDefault = (props: Types.RenderLabelProps<unknown>) => (
   <DefaultLabel {...props} />
 );
-
-const createPath = d3Shape
-  .line<EdgePoint>()
-  .x(d => d.x)
-  .y(d => d.y)
-  .curve(d3Shape.curveMonotoneX);
 
 export function Edge<EdgeData>({
   render = renderDefault,
   setEdge,
   id,
   edge,
+  curve,
+  showArrowHeads,
 }: EdgeComponentProps<EdgeData>) {
   const { x = 0, y = 0, width, height, points } = edge;
-  const labelProps: DependencyEdge<EdgeData> = edge;
+  const labelProps: Types.DependencyEdge<EdgeData> = edge;
   const classes = useStyles();
 
-  const labelRef = React.useRef<SVGGElement>(null);
+  const labelRef = useRef<SVGGElement>(null);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     // set the label width to the actual rendered width to properly layout graph
     if (labelRef.current) {
       let { height: renderedHeight, width: renderedWidth } =
@@ -114,6 +108,16 @@ export function Edge<EdgeData>({
 
   let path: string = '';
 
+  const createPath = useMemo(
+    () =>
+      d3Shape
+        .line<EdgePoint>()
+        .x(d => d.x)
+        .y(d => d.y)
+        .curve(d3Shape[curve]),
+    [curve],
+  );
+
   if (points) {
     const finitePoints = points.filter(
       (point: EdgePoint) => isFinite(point.x) && isFinite(point.y),
@@ -127,7 +131,7 @@ export function Edge<EdgeData>({
         <path
           data-testid={EDGE_TEST_ID}
           className={classes.path}
-          markerEnd={`url(#${ARROW_MARKER_ID})`}
+          markerEnd={showArrowHeads ? `url(#${ARROW_MARKER_ID})` : undefined}
           d={path}
         />
       )}

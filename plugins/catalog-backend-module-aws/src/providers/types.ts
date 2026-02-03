@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
+
 export type AwsS3Config = {
   id: string;
   bucketName: string;
   prefix?: string;
   region?: string;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
+  accountId?: string;
 };

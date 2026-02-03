@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  Entity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -24,9 +27,8 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
-import fetch from 'node-fetch';
 import pLimit, { Limit } from 'p-limit';
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
 import {
@@ -34,6 +36,7 @@ import {
   DocsBuilder,
   shouldCheckForUpdate,
 } from '../DocsBuilder';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 
 export type DocsSynchronizerSyncOpts = {
   log: (message: string) => void;
@@ -43,8 +46,8 @@ export type DocsSynchronizerSyncOpts = {
 
 export class DocsSynchronizer {
   private readonly publisher: PublisherBase;
-  private readonly logger: winston.Logger;
-  private readonly buildLogTransport: winston.transport;
+  private readonly logger: LoggerService;
+  private readonly buildLogTransport?: winston.transport;
   private readonly config: Config;
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly cache: TechDocsCache | undefined;
@@ -59,8 +62,8 @@ export class DocsSynchronizer {
     cache,
   }: {
     publisher: PublisherBase;
-    logger: winston.Logger;
-    buildLogTransport: winston.transport;
+    logger: LoggerService;
+    buildLogTransport?: winston.transport;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
     cache: TechDocsCache | undefined;
@@ -105,7 +108,9 @@ export class DocsSynchronizer {
     });
 
     taskLogger.add(new winston.transports.Stream({ stream: logStream }));
-    taskLogger.add(this.buildLogTransport);
+    if (this.buildLogTransport) {
+      taskLogger.add(this.buildLogTransport);
+    }
 
     // check if the last update check was too recent
     if (!shouldCheckForUpdate(entity.metadata.uid!)) {
@@ -128,7 +133,13 @@ export class DocsSynchronizer {
         cache: this.cache,
       });
 
+      const interval = setInterval(() => {
+        taskLogger.info(
+          'The docs building process is taking a little bit longer to process this entity. Please bear with us.',
+        );
+      }, 10000);
       const updated = await this.buildLimiter(() => docsBuilder.build());
+      clearInterval(interval);
 
       if (!updated) {
         finish({ updated: false });
@@ -136,7 +147,9 @@ export class DocsSynchronizer {
       }
     } catch (e) {
       assertError(e);
-      const msg = `Failed to build the docs page: ${e.message}`;
+      const msg = `Failed to build the docs page for entity ${stringifyEntityRef(
+        entity,
+      )}: ${e.message}`;
       taskLogger.error(msg);
       this.logger.error(msg, e);
       error(e);
@@ -159,7 +172,7 @@ export class DocsSynchronizer {
       );
       error(
         new NotFoundError(
-          'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
+          'Sorry! It took too long for the generated docs to show up in storage. Are you sure the docs project is generating an `index.html` file? Otherwise, check back later.',
         ),
       );
       return;
@@ -175,7 +188,7 @@ export class DocsSynchronizer {
     entity,
   }: {
     responseHandler: DocsSynchronizerSyncOpts;
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     token: string | undefined;
     entity: Entity;
   }) {

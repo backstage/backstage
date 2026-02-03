@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
-import { InputError } from '@backstage/errors';
+import { InputError, ResponseError } from '@backstage/errors';
 import {
   EntityProvider,
   EntityProviderConnection,
-  LocationSpec,
   locationSpecToLocationEntity,
-} from '@backstage/plugin-catalog-backend';
-import fetch, { Response } from 'node-fetch';
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   GerritIntegration,
   getGerritProjectsApiUrl,
@@ -32,26 +30,36 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
+import pLimit from 'p-limit';
 
 import { readGerritConfigs } from './config';
 import { GerritProjectQueryResult, GerritProviderConfig } from './types';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 /** @public */
 export class GerritEntityProvider implements EntityProvider {
   private readonly config: GerritProviderConfig;
   private readonly integration: GerritIntegration;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
 
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
-      schedule: TaskRunner;
+      logger: LoggerService;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): GerritEntityProvider[] {
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
+
     const providerConfigs = readGerritConfigs(configRoot);
     const integrations = ScmIntegrations.fromConfig(configRoot).gerrit;
     const providers: GerritEntityProvider[] = [];
@@ -63,12 +71,23 @@ export class GerritEntityProvider implements EntityProvider {
           `No gerrit integration found that matches host ${providerConfig.host}`,
         );
       }
+
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for gerrit-provider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
       providers.push(
         new GerritEntityProvider(
           providerConfig,
           integration,
           options.logger,
-          options.schedule,
+          taskRunner,
         ),
       );
     });
@@ -78,15 +97,15 @@ export class GerritEntityProvider implements EntityProvider {
   private constructor(
     config: GerritProviderConfig,
     integration: GerritIntegration,
-    logger: Logger,
-    schedule: TaskRunner,
+    logger: LoggerService,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.config = config;
     this.integration = integration;
     this.logger = logger.child({
       target: this.getProviderName(),
     });
-    this.scheduleFn = this.createScheduleFn(schedule);
+    this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
   getProviderName(): string {
@@ -98,10 +117,12 @@ export class GerritEntityProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
-      return schedule.run({
+      return taskRunner.run({
         id: taskId,
         fn: async () => {
           const logger = this.logger.child({
@@ -113,14 +134,17 @@ export class GerritEntityProvider implements EntityProvider {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(error);
+            logger.error(
+              `${this.getProviderName()} refresh failed, ${error}`,
+              error,
+            );
           }
         },
       });
     };
   }
 
-  async refresh(logger: Logger): Promise<void> {
+  async refresh(logger: LoggerService): Promise<void> {
     if (!this.connection) {
       throw new Error('Gerrit discovery connection not initialized');
     }
@@ -140,11 +164,15 @@ export class GerritEntityProvider implements EntityProvider {
       );
     }
     const gerritProjectsResponse = (await parseGerritJsonResponse(
-      response as any,
+      response,
     )) as GerritProjectQueryResult;
     const projects = Object.keys(gerritProjectsResponse);
 
-    const locations = projects.map(project => this.createLocationSpec(project));
+    const limit = pLimit(5);
+    const locations = await Promise.all(
+      projects.map(project => limit(() => this.createLocationSpec(project))),
+    );
+
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => ({
@@ -155,10 +183,44 @@ export class GerritEntityProvider implements EntityProvider {
     logger.info(`Found ${locations.length} locations.`);
   }
 
-  private createLocationSpec(project: string): LocationSpec {
+  private async createLocationSpec(project: string): Promise<LocationSpec> {
+    // If a branch has been configured, we can use it directly
+    if (this.config.branch) {
+      return {
+        type: 'url',
+        target: `${this.integration.config.gitilesBaseUrl}/${project}/+/refs/heads/${this.config.branch}/${this.config.catalogPath}`,
+        presence: 'optional',
+      };
+    }
+
+    // Else we call Gerrit API to know on which branch HEAD is pointing to
+    let response: Response;
+    const baseProjectApiUrl = getGerritProjectsApiUrl(this.integration.config);
+    const projectGetHeadUrl = `${baseProjectApiUrl}${encodeURIComponent(
+      project,
+    )}/HEAD`;
+
+    try {
+      response = await fetch(projectGetHeadUrl, {
+        method: 'GET',
+        ...getGerritRequestOptions(this.integration.config),
+      });
+    } catch (e) {
+      throw new Error(`Failed to get project's HEAD for ${project}, ${e}`);
+    }
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    // Gerrit responds with something like `refs/heads/master`
+    const projectHeadResponse = (await parseGerritJsonResponse(
+      response,
+    )) as string;
+
     return {
       type: 'url',
-      target: `${this.integration.config.gitilesBaseUrl}/${project}/+/refs/heads/${this.config.branch}/catalog-info.yaml`,
+      target: `${this.integration.config.gitilesBaseUrl}/${project}/+/${projectHeadResponse}/${this.config.catalogPath}`,
       presence: 'optional',
     };
   }

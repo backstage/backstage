@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlReader } from '@backstage/backend-common';
-import { ScmIntegration } from '@backstage/integration';
-import SwaggerParser from '@apidevtools/swagger-parser';
+import {
+  $RefParser,
+  ParserOptions,
+  ResolverOptions,
+} from '@apidevtools/json-schema-ref-parser';
 import { parse, stringify } from 'yaml';
-import * as path from 'path';
+import * as path from 'node:path';
 
 const protocolPattern = /^(\w{2,}):\/\//i;
 const getProtocol = (refPath: string) => {
@@ -28,42 +30,74 @@ const getProtocol = (refPath: string) => {
   return undefined;
 };
 
-export async function bundleOpenApiSpecification(
-  specification: string | undefined,
-  targetUrl: string,
-  reader: UrlReader,
-  scmIntegration: ScmIntegration,
-): Promise<string | undefined> {
-  const fileUrlReaderResolver: SwaggerParser.ResolverOptions = {
+export type BundlerRead = (url: string) => Promise<Buffer>;
+
+export type BundlerResolveUrl = (url: string, base: string) => string;
+
+// Preserved references paths for AsyncAPI v3 documents
+const asyncApiV3PreservedPaths = [
+  /#\/channels\/.*\/servers/,
+  /#\/operations\/.*\/channel/,
+  /#\/operations\/.*\/messages/,
+  /#\/operations\/.*\/reply\/channel/,
+  /#\/operations\/.*\/reply\/messages/,
+  /#\/components\/channels\/.*\/servers/,
+  /#\/components\/operations\/.*\/channel/,
+  /#\/components\/operations\/.*\/messages/,
+  /#\/components\/operations\/.*\/reply\/channel/,
+  /#\/components\/operations\/.*\/reply\/messages/,
+];
+
+export async function bundleFileWithRefs(
+  fileWithRefs: string,
+  baseUrl: string,
+  read: BundlerRead,
+  resolveUrl: BundlerResolveUrl,
+): Promise<string> {
+  const fileUrlReaderResolver: ResolverOptions = {
     canRead: file => {
       const protocol = getProtocol(file.url);
       return protocol === undefined || protocol === 'file';
     },
     read: async file => {
-      const relativePath = path.relative('.', file.url);
-      const url = scmIntegration.resolveUrl({
-        base: targetUrl,
-        url: relativePath,
-      });
-      if (reader.readUrl) {
-        const data = await reader.readUrl(url);
-        return data.buffer();
-      }
-      throw new Error('UrlReader has no readUrl method defined');
+      const relativePath = path.relative('.', file.url).replace(/\\/g, '/');
+      const url = resolveUrl(relativePath, baseUrl);
+      return await read(url);
     },
   };
-
-  if (!specification) {
-    return undefined;
-  }
-
-  const options: SwaggerParser.Options = {
+  const httpUrlReaderResolver: ResolverOptions = {
+    canRead: ref => {
+      const protocol = getProtocol(ref.url);
+      return protocol === 'http' || protocol === 'https';
+    },
+    read: async ref => {
+      const url = resolveUrl(ref.url, baseUrl);
+      return await read(url);
+    },
+  };
+  const options: ParserOptions = {
     resolve: {
       file: fileUrlReaderResolver,
-      http: true,
+      http: httpUrlReaderResolver,
     },
   };
-  const specObject = parse(specification);
-  const bundledSpec = await SwaggerParser.bundle(specObject, options);
-  return stringify(bundledSpec);
+
+  const fileObject = parse(fileWithRefs);
+
+  if (fileObject.asyncapi) {
+    const version = parseInt(fileObject.asyncapi, 10);
+
+    if (version === 3) {
+      options.bundle = {
+        excludedPathMatcher: (refPath: string): any => {
+          return asyncApiV3PreservedPaths.some(pattern =>
+            pattern.test(refPath),
+          );
+        },
+      };
+    }
+  }
+
+  const bundledObject = await $RefParser.bundle(fileObject, options);
+  return stringify(bundledObject);
 }
