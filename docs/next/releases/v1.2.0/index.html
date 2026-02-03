@@ -27,8 +27,8 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.4d1696bf.css">
-<script src="/assets/js/runtime~main.69a8d267.js" defer="defer"></script>
-<script src="/assets/js/main.445baba3.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.d6ba35f3.js" defer="defer"></script>
+<script src="/assets/js/main.ba44d0f9.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -52,7 +52,7 @@ Contributed by <a href="https://github.com/anicke" target="_blank" rel="noopener
 <p>Server-to-server authentication tokens issued from a TokenManager (specifically, ServerTokenManager) now has an expiry time set, for one hour in the future from when issued. This improves security. The ability to pass in and validate tokens that either have a missing exp claim, or an exp claim that expired in the past, is now deprecated. Trying to do so will lead to logged warnings, and in a future release will instead lead to errors.
 <a href="https://github.com/backstage/backstage/pull/11262" target="_blank" rel="noopener noreferrer" class="">#11262</a></p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="kubernetes">Kubernetes<a href="#kubernetes" class="hash-link" aria-label="Direct link to Kubernetes" title="Direct link to Kubernetes" translate="no">​</a></h3>
-<p>Added support for <code>oidc</code> as an auth provider for kubernetes authentication and added an optional <code>oidcTokenProvider</code> config value. This will allow users to authenticate to kubernetes clusters using ID tokens obtained from the configured auth provider in their Backstage instance. Contributed by @dbravovmw(<a href="https://github.com/dbravovmw" target="_blank" rel="noopener noreferrer" class="">https://github.com/dbravovmw</a>). #11328(<a href="https://github.com/backstage/backstage/pull/11328" target="_blank" rel="noopener noreferrer" class="">https://github.com/backstage/backstage/pull/11328</a>)</p>
+<p>Added support for <code>oidc</code> as an auth provider for kubernetes authentication and added an optional <code>oidcTokenProvider</code> config value. This will allow users to authenticate to kubernetes clusters using ID tokens obtained from the configured auth provider in their Backstage instance. Contributed by <a href="https://github.com/dbravovmw" target="_blank" rel="noopener noreferrer" class="">@dbravovmw</a> in <a href="https://github.com/backstage/backstage/pull/11328" target="_blank" rel="noopener noreferrer" class="">#11328</a></p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="misc">Misc<a href="#misc" class="hash-link" aria-label="Direct link to Misc" title="Direct link to Misc" translate="no">​</a></h3>
 <p>The <code>TaskScheduleDefinition</code> of the backend task scheduler has been updated to also accept an options object containing duration information in the form of days, hours, seconds and so on. This allows for scheduling without importing luxon. <a href="https://github.com/backstage/backstage/pull/11245" target="_blank" rel="noopener noreferrer" class="">#11245</a>
 Added the ability to render a custom component when an entity is not found <a href="https://github.com/backstage/backstage/pull/11047" target="_blank" rel="noopener noreferrer" class="">#11047</a></p>
