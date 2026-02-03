@@ -175,6 +175,10 @@ export type GitlabProviderConfig = {
    */
   catalogFile: string;
   /**
+   * Used in preference to `catalogFile`.
+   */
+  catalogFilePattern?: RegExp;
+  /**
    * Filters found projects based on provided patter.
    * Defaults to `[\s\S]*`, which means to not filter anything
    */

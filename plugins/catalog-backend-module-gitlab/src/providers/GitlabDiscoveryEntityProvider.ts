@@ -132,6 +132,20 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     this.logger = options.logger.child({
       target: this.getProviderName(),
     });
+
+    // Log information about entityFilePattern usage
+    if (this.config.catalogFilePattern) {
+      this.logger.info(
+        `Using entityFilePattern '${
+          this.config.catalogFilePattern.source
+        }' to match catalog files. This overrides the entityFilename setting${
+          this.config.catalogFilePattern.test('catalog-info.yaml')
+            ? ''
+            : ' (note: this pattern will not match the default catalog-info.yaml file)'
+        }.`,
+      );
+    }
+
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
     this.events = options.events;
     this.gitLabClient = new GitLabClient({
@@ -389,29 +403,23 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     }
 
     // Get array of added, removed or modified files from the push event
-    const added = this.getFilesMatchingConfig(
-      event,
-      'added',
-      this.config.catalogFile,
-    );
-    const removed = this.getFilesMatchingConfig(
-      event,
-      'removed',
-      this.config.catalogFile,
-    );
+    const catalogFile =
+      this.config.catalogFilePattern ?? this.config.catalogFile;
+    const added = this.getFilesMatchingConfig(event, 'added', catalogFile);
+    const removed = this.getFilesMatchingConfig(event, 'removed', catalogFile);
     const modified = this.getFilesMatchingConfig(
       event,
       'modified',
-      this.config.catalogFile,
+      catalogFile,
     );
 
     // Modified files will be scheduled to a refresh
-    const addedEntities = this.createLocationSpecCommitedFiles(
+    const addedEntities = this.createLocationSpecCommittedFiles(
       event.project,
       added,
     );
 
-    const removedEntities = this.createLocationSpecCommitedFiles(
+    const removedEntities = this.createLocationSpecCommittedFiles(
       event.project,
       removed,
     );
@@ -465,16 +473,19 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private getFilesMatchingConfig(
     event: WebhookPushEventSchema,
     action: 'added' | 'removed' | 'modified',
-    catalogFile: string,
+    catalogFile: string | RegExp,
   ): string[] {
     if (!event.commits) {
       return [];
     }
 
+    const test =
+      typeof catalogFile === 'string'
+        ? (file: string) => path.basename(file) === catalogFile
+        : (file: string) =>
+            catalogFile.test(file) || catalogFile.test(path.basename(file));
     const matchingFiles = event.commits.flatMap((element: any) =>
-      element[action].filter(
-        (file: string) => path.basename(file) === catalogFile,
-      ),
+      element[action].filter(test),
     );
 
     if (matchingFiles.length === 0) {
@@ -490,25 +501,20 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    * Creates Backstage location specs for committed files.
    *
    * @param project - The GitLab project information.
-   * @param addedFiles - The array of added file paths.
+   * @param files - The array of added file paths.
    * @returns An array of location specs.
    */
-  private createLocationSpecCommitedFiles(
+  private createLocationSpecCommittedFiles(
     project: WebhookProjectSchema,
-    addedFiles: string[],
+    files: string[],
   ): LocationSpec[] {
     const projectBranch =
       this.config.branch ??
       project.default_branch ??
       this.config.fallbackBranch;
 
-    // Filter added files that match the catalog file pattern
-    const matchingFiles = addedFiles.filter(
-      file => path.basename(file) === this.config.catalogFile,
-    );
-
-    // Create a location spec for each matching file
-    const locationSpecs: LocationSpec[] = matchingFiles.map(file => ({
+    // Create a location spec for each file
+    const locationSpecs: LocationSpec[] = files.map(file => ({
       type: 'url',
       target: `${project.web_url}/-/blob/${projectBranch}/${file}`,
       presence: 'optional',
