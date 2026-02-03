@@ -134,7 +134,6 @@
     "@backstage/eslint-plugin": "workspace:*",
     "@backstage/repo-tools": "workspace:*",
     "@changesets/cli": "^2.14.0",
-    "@devcontainers/cli": "^0.81.1",
     "@jest/environment-jsdom-abstract": "^30",
     "@octokit/rest": "^19.0.3",
     "@playwright/test": "^1.32.3",
