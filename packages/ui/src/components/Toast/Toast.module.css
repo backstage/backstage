@@ -25,7 +25,6 @@
     transform: translateX(-50%);
     z-index: 100050;
     width: 300px;
-    pointer-events: none;
     outline: none;
   }
 
@@ -61,7 +60,8 @@
     outline: none;
     cursor: default;
     user-select: none;
-    pointer-events: none;
+    /* All toasts need pointer-events to trigger hover expansion */
+    pointer-events: auto;
 
     /* Stacking */
     z-index: calc(1000 - var(--toast-index));
@@ -77,27 +77,16 @@
     }
   }
 
-  /* Expanded state on hover - show all toasts stacked with gap */
-  .bui-ToastRegion:hover .bui-Toast,
-  .bui-ToastRegion:focus-within .bui-Toast,
-  .bui-ToastRegion[data-hover-locked] .bui-Toast {
-    pointer-events: auto;
-  }
-
-  /* Add padding above each toast when expanded to fill the gap */
-  .bui-ToastRegion:hover .bui-Toast::before,
-  .bui-ToastRegion:focus-within .bui-Toast::before,
-  .bui-ToastRegion[data-hover-locked] .bui-Toast::before {
+  /* Extend hover area above each toast to fill gaps when expanded */
+  /* This prevents the stack from collapsing when hovering between toasts */
+  .bui-Toast::before {
     content: '';
     position: absolute;
     bottom: 100%;
     left: 0;
     right: 0;
-    height: var(--bui-space-2);
-  }
-
-  /* Only first toast (index 0) is interactive by default */
-  .bui-Toast[style*='--toast-index: 0'] {
+    /* Height matches the expanded gap (80px) to ensure continuous hover */
+    height: 12px;
     pointer-events: auto;
   }
 

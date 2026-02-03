@@ -27,20 +27,95 @@ const meta = preview.meta({
   },
 });
 
+const randomToasts = [
+  // Title only - short
+  { title: 'Saved', status: 'success' as const },
+  { title: 'Error', status: 'danger' as const },
+  { title: 'New notification', status: 'info' as const },
+  { title: 'Warning', status: 'warning' as const },
+  // Title only - medium
+  { title: 'Changes saved successfully', status: 'success' as const },
+  { title: 'Connection restored', status: 'info' as const },
+  { title: 'Action could not be completed', status: 'danger' as const },
+  // Title + short description
+  {
+    title: 'Files uploaded',
+    description: '3 files uploaded.',
+    status: 'success' as const,
+  },
+  {
+    title: 'Update available',
+    description: 'Version 2.0 is ready.',
+    status: 'info' as const,
+  },
+  {
+    title: 'Request failed',
+    description: 'Please try again.',
+    status: 'danger' as const,
+  },
+  {
+    title: 'Storage warning',
+    description: '90% used.',
+    status: 'warning' as const,
+  },
+  // Title + medium description
+  {
+    title: 'Deployment complete',
+    description:
+      'Your application has been deployed to production successfully.',
+    status: 'success' as const,
+  },
+  {
+    title: 'Session expiring',
+    description:
+      'Your session will expire in 5 minutes. Please save your work.',
+    status: 'warning' as const,
+  },
+  {
+    title: 'Permission denied',
+    description: 'You do not have access to perform this action.',
+    status: 'danger' as const,
+  },
+  // Title + long description
+  {
+    title: 'Sync completed',
+    description:
+      'All your files have been synchronized across devices. This includes 47 documents, 23 images, and 12 configuration files that were updated in the last hour.',
+    status: 'success' as const,
+  },
+  {
+    title: 'Rate limit exceeded',
+    description:
+      'You have exceeded the maximum number of API requests allowed. Please wait a few minutes before trying again or upgrade your plan for higher limits.',
+    status: 'warning' as const,
+  },
+  {
+    title: 'Critical error',
+    description:
+      'The server encountered an unexpected error while processing your request. Our team has been notified and is investigating the issue. Please try again later.',
+    status: 'danger' as const,
+  },
+  // Long title only
+  {
+    title: 'Your subscription has been renewed successfully for another year',
+    status: 'success' as const,
+  },
+  {
+    title: 'Multiple users are currently editing this document',
+    status: 'info' as const,
+  },
+];
+
 export const Default = meta.story({
   render: () => (
     <>
       <ToastRegion queue={toastQueue} />
       <Button
-        onPress={() =>
-          toastQueue.add(
-            {
-              title: 'Files uploaded',
-              description: '3 files uploaded successfully.',
-            },
-            { timeout: 3000 },
-          )
-        }
+        onPress={() => {
+          const toast =
+            randomToasts[Math.floor(Math.random() * randomToasts.length)];
+          toastQueue.add(toast);
+        }}
       >
         Show Toast
       </Button>

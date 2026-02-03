@@ -75,6 +75,7 @@ export const Toast = forwardRef(
       toast,
       state,
       index = 0,
+      isExpanded = false,
       onClose,
       status,
       icon,
@@ -157,9 +158,17 @@ export const Toast = forwardRef(
     const statusIcon = getStatusIcon();
 
     // Calculate stacking values based on index
-    // Each toast behind scales down 5% and moves up 12px
-    const stackScale = Math.max(0, 1 - index * 0.05);
-    const stackY = -index * 12;
+    // Collapsed: each toast behind scales down 5% and peeks up 12px
+    const collapsedScale = Math.max(0, 1 - index * 0.05);
+    const collapsedY = -index * 12;
+
+    // Expanded: full scale, stacked vertically with gaps
+    // Each toast moves up by (toast height ~72px + gap 8px) * index
+    const expandedY = -index * 72;
+
+    // Use expanded or collapsed values based on hover state
+    const animateY = isExpanded ? expandedY : collapsedY;
+    const animateScale = isExpanded ? 1 : collapsedScale;
     const stackZIndex = 1000 - index;
 
     // Check if this toast is being manually closed
@@ -170,7 +179,12 @@ export const Toast = forwardRef(
     // Auto-timeout: fade out in place, stay in stack position
     const exitAnimation = isManualClose
       ? { opacity: 0, y: 100, scale: 1, zIndex: 2000 }
-      : { opacity: 0, y: stackY + 50, scale: stackScale, zIndex: stackZIndex };
+      : {
+          opacity: 0,
+          y: animateY + 50,
+          scale: animateScale,
+          zIndex: stackZIndex,
+        };
 
     return (
       <motion.div
@@ -186,8 +200,8 @@ export const Toast = forwardRef(
         initial={{ opacity: 0, y: 100, scale: 1 }}
         animate={{
           opacity: 1,
-          y: stackY,
-          scale: stackScale,
+          y: animateY,
+          scale: animateScale,
           zIndex: stackZIndex,
         }}
         exit={exitAnimation}
@@ -197,7 +211,7 @@ export const Toast = forwardRef(
             manuallyClosingToasts.delete(toast.key);
           }
         }}
-        transition={{ type: 'tween', duration: 2, ease: 'easeOut' }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         {...dataAttributes}
         data-status={finalStatus}
         {...restProps}
