@@ -1,16 +1,22 @@
 import { changelog } from '@/utils/changelog';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import { formattedMDXComponents } from '@/mdx-components';
-import type { Component } from '@/utils/changelog';
+import type { Component, Hook } from '@/utils/changelog';
 import {
   Badge,
   BreakingBadge,
   generateChangelogMarkdown,
 } from '../Changelog/utils';
 
-export const ChangelogComponent = ({ component }: { component: Component }) => {
-  const componentChangelog = changelog.filter(c =>
-    c.components.includes(component),
+export const ChangelogComponent = ({
+  component,
+  hook,
+}: {
+  component: Component;
+  hook: Hook;
+}) => {
+  const componentChangelog = changelog.filter(
+    c => c.components?.includes(component) || c.hooks?.includes(hook),
   );
 
   const content = `## Changelog
