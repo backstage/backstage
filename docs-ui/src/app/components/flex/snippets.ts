@@ -7,25 +7,25 @@ export const flexUsageSnippet = `import { Flex } from '@backstage/ui';
 </Flex>`;
 
 export const defaultSnippet = `<Flex gap="4">
-  <Box style={{ width: '64px', height: '64px' }} />
-  <Box style={{ width: '64px', height: '64px' }} />
-  <Box style={{ width: '64px', height: '64px' }} />
+  <DecorativeBox />
+  <DecorativeBox />
+  <DecorativeBox />
 </Flex>`;
 
 export const flexDirectionSnippet = `<Flex direction="column" gap="2">
-  <Box>First</Box>
-  <Box>Second</Box>
-  <Box>Third</Box>
+  <DecorativeBox>First</DecorativeBox>
+  <DecorativeBox>Second</DecorativeBox>
+  <DecorativeBox>Third</DecorativeBox>
 </Flex>`;
 
 export const flexResponsiveSnippet = `<Flex gap={{ initial: '2', md: '4' }}>
-  <Box>Item 1</Box>
-  <Box>Item 2</Box>
-  <Box>Item 3</Box>
+  <DecorativeBox>1</DecorativeBox>
+  <DecorativeBox>2</DecorativeBox>
+  <DecorativeBox>3</DecorativeBox>
 </Flex>`;
 
 export const flexAlignSnippet = `<Flex align="center" justify="between" gap="4">
-  <Box>Start</Box>
-  <Box>Middle</Box>
-  <Box>End</Box>
+  <DecorativeBox>Start</DecorativeBox>
+  <DecorativeBox>Middle</DecorativeBox>
+  <DecorativeBox>End</DecorativeBox>
 </Flex>`;

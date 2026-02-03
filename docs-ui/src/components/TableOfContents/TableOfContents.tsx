@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useLayoutEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import styles from './TableOfContents.module.css';
 
@@ -17,6 +17,29 @@ export function TableOfContents() {
   const [indicatorHeight, setIndicatorHeight] = useState<number>(0);
   const pathname = usePathname();
 
+  // Update indicator position when activeId changes
+  useLayoutEffect(() => {
+    if (!activeId) return;
+
+    // Use requestAnimationFrame to defer setState call
+    const rafId = requestAnimationFrame(() => {
+      const activeElement = document.querySelector(
+        `[data-toc-id="${activeId}"]`,
+      ) as HTMLElement;
+      if (activeElement) {
+        const list = activeElement.closest('ul');
+        if (list) {
+          const listRect = list.getBoundingClientRect();
+          const elementRect = activeElement.getBoundingClientRect();
+          setIndicatorTop(elementRect.top - listRect.top);
+          setIndicatorHeight(elementRect.height);
+        }
+      }
+    });
+
+    return () => cancelAnimationFrame(rafId);
+  }, [activeId, headings]);
+
   useEffect(() => {
     // Extract all H2 and H3 headings from the document
     const elements = Array.from(
@@ -28,18 +51,6 @@ export function TableOfContents() {
       text: (element.textContent || '').replace('#', '').trim(),
       level: parseInt(element.tagName.substring(1)),
     }));
-
-    setHeadings(headingData);
-
-    // Set initial active heading (first visible heading or first heading)
-    if (headingData.length > 0) {
-      const viewportTop = window.scrollY + 100; // offset for header
-      const visibleHeading = elements.find(element => {
-        const rect = element.getBoundingClientRect();
-        return rect.top + window.scrollY >= viewportTop - 200;
-      });
-      setActiveId(visibleHeading?.id || headingData[0].id);
-    }
 
     // Set up IntersectionObserver to track visible headings
     const observerOptions = {
@@ -62,28 +73,25 @@ export function TableOfContents() {
 
     elements.forEach(element => observer.observe(element));
 
+    // Initialize headings and active ID after observer is set up
+    requestAnimationFrame(() => {
+      setHeadings(headingData);
+
+      // Set initial active heading (first visible heading or first heading)
+      if (headingData.length > 0) {
+        const viewportTop = window.scrollY + 100; // offset for header
+        const visibleHeading = elements.find(element => {
+          const rect = element.getBoundingClientRect();
+          return rect.top + window.scrollY >= viewportTop - 200;
+        });
+        setActiveId(visibleHeading?.id || headingData[0].id);
+      }
+    });
+
     return () => {
       elements.forEach(element => observer.unobserve(element));
     };
   }, [pathname]);
-
-  // Update indicator position when activeId changes
-  useEffect(() => {
-    if (activeId) {
-      const activeElement = document.querySelector(
-        `[data-toc-id="${activeId}"]`,
-      ) as HTMLElement;
-      if (activeElement) {
-        const list = activeElement.closest('ul');
-        if (list) {
-          const listRect = list.getBoundingClientRect();
-          const elementRect = activeElement.getBoundingClientRect();
-          setIndicatorTop(elementRect.top - listRect.top);
-          setIndicatorHeight(elementRect.height);
-        }
-      }
-    }
-  }, [activeId, headings]);
 
   const handleClick = (id: string) => {
     const element = document.getElementById(id);

@@ -21,6 +21,7 @@ export const colorsSnippet = `<Flex direction="column" gap="2">
   <Text color="danger">Danger</Text>
   <Text color="warning">Warning</Text>
   <Text color="success">Success</Text>
+  <Text color="info">Info</Text>
 </Flex>`;
 
 export const weightsSnippet = `<Flex direction="column" gap="2">

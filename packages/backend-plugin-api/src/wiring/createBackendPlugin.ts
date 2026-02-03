@@ -22,6 +22,7 @@ import {
   InternalBackendPluginRegistrationV1_1,
   InternalBackendRegistrations,
 } from './types';
+import { ID_PATTERN, ID_PATTERN_OLD } from './constants';
 
 /**
  * The configuration options passed to {@link createBackendPlugin}.
@@ -50,6 +51,17 @@ export interface CreateBackendPluginOptions {
 export function createBackendPlugin(
   options: CreateBackendPluginOptions,
 ): BackendFeature {
+  if (!ID_PATTERN.test(options.pluginId)) {
+    console.warn(
+      `WARNING: The pluginId '${options.pluginId}' will be invalid soon, please change it to match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
+  if (!ID_PATTERN_OLD.test(options.pluginId)) {
+    throw new Error(
+      `Invalid pluginId '${options.pluginId}', must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
+
   function getRegistrations() {
     const extensionPoints: InternalBackendPluginRegistrationV1_1['extensionPoints'] =
       [];

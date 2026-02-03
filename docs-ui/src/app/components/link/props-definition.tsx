@@ -66,6 +66,12 @@ export const linkPropDefs: Record<string, PropDef> = {
     type: 'boolean',
     description:
       'Truncates text with ellipsis when it overflows its container.',
+    default: 'false',
+  },
+  standalone: {
+    type: 'boolean',
+    description: 'Removes underline by default. Underline appears on hover.',
+    default: 'false',
   },
   ...childrenPropDefs,
   ...classNamePropDefs,

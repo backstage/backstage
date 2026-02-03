@@ -18,6 +18,11 @@ export interface Config {
   /** Configuration options for the search plugin */
   search?: {
     /**
+     * The default search type to be used when no specific type is selected.
+     * @visibility frontend
+     */
+    defaultType?: string;
+    /**
      * An object representing the default search query configuration.
      * By configuring and modifying the values of this object,
      * you can customize the default values of the search queries

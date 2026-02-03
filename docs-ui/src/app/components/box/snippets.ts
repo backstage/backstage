@@ -4,8 +4,8 @@ export const snippetUsage = `import { Box } from '@backstage/ui';
   Content with padding and background
 </Box>`;
 
-export const defaultSnippet = `<Box p="4" surface="1">
-  Hello World
+export const defaultSnippet = `<Box width="64px" height="64px">
+  <DecorativeBox />
 </Box>`;
 
 export const boxSurfaceSnippet = `<Flex direction="column" gap="4">
@@ -19,5 +19,5 @@ export const boxResponsiveSnippet = `<Box
   p={{ initial: '2', md: '4' }}
   display={{ initial: 'block', md: 'flex' }}
 >
-  Hello World
+  Content
 </Box>`;

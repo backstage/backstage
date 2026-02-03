@@ -1113,8 +1113,10 @@ export const LinkDefinition: {
       'danger',
       'warning',
       'success',
+      'info',
     ];
     readonly truncate: readonly [true, false];
+    readonly standalone: readonly [true, false];
   };
 };
 
@@ -1127,6 +1129,8 @@ export interface LinkProps extends LinkProps_2 {
     | TextColors
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
+  // (undocumented)
+  standalone?: boolean;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -1906,7 +1910,7 @@ export { Text_2 as Text };
 export type TextColors = 'primary' | 'secondary';
 
 // @public (undocumented)
-export type TextColorStatus = 'danger' | 'warning' | 'success';
+export type TextColorStatus = 'danger' | 'warning' | 'success' | 'info';
 
 // @public
 export const TextDefinition: {
@@ -1922,6 +1926,7 @@ export const TextDefinition: {
       'danger',
       'warning',
       'success',
+      'info',
     ];
     readonly truncate: readonly [true, false];
   };

@@ -2,6 +2,38 @@
 
 This file provides pointers for reviewing pull requests. While the main audience are reviewers, this can also be useful if you are contributing to this repository.
 
+## Quick links
+
+- [Incoming Reviews](https://github.com/orgs/backstage/projects/14/views/1)
+- [Personal Reviews](https://github.com/orgs/backstage/projects/14/views/2)
+- Project area boards in [OWNERS.md](./OWNERS.md)
+
+## Review Workflow
+
+Pull request reviews are coordinated manually by maintainers and reviewers based on project area ownership. Reviews are prioritized and tracked using labels and GitHub Project boards. This review process applies to all pull requests in the [main Backstage repository](https://github.com/backstage/backstage), other repositories may have their own review processes.
+
+All incoming pull request reviews are tracked on the [Incoming Reviews board](https://github.com/orgs/backstage/projects/14/views/1). This board can be used by members of the `@backstage/reviewers` group to find pull requests to review, as well as maintainers that want an overview of all incoming pull requests.
+
+Project area maintainers can use the same board but with additional filters applied to only show incoming pull requests for their project area. These filtered boards are linked to for each project area in [OWNERS.md](./OWNERS.md). There is also a [personal review board](https://github.com/orgs/backstage/projects/14/views/2) that can be used to track reviews that you have been assigned to.
+
+There are several labels that help track the status and prioritize pull requests. You can find more information about these labels in [LABELS.md](./LABELS.md#pull-request-labels).
+
+Reviewers should use the "request changes" option when they believe changes are necessary before the pull request can be merged. This is both to clarify to the author that the pull request is not ready to be merged, but also to update the status of the pull request in the review queue. If you simply want to contribute to the discussion in a pull request, or have minor or optional suggestions, you can just leave a regular comment.
+
+### Review process for @backstage/reviewers
+
+Members of the `@backstage/reviewers` do not have any specific areas that they should focus on, they can choose to filter and focus on reviews from any part of the project. They do not assign themselves specific pull requests, but instead leave reviews directly on pull requests without any further process.
+
+Reviews from this group still have meaningful impact on the review process, as they are picked up by project automation. Approving reviews will add the `reviewer-approved` label to the pull request, which greatly increases its priority and visibility for owners in the area. Likewise, requesting changes will add the `waiting-for:author` label to the pull request, which will remove it from the review queue until the author has commented or made changes.
+
+### Review process for Project Area Maintainers
+
+Project area maintainers are responsible for reviewing and ultimately merging or closing pull requests towards their project area. They should use the global or filtered board for their project area to find pull requests to review. When they find a pull request that they want to review, they should assign themselves to the pull request, removing it from the review queue and placing it on their personal review board.
+
+Once a pull request has been assigned a single owner, it is their responsibility to review and eventually merge or close the pull request. They manage all ongoing requests on their personal review board, typically prioritizing the ones at the top of the board marked with `waiting-for:review`. If a pull request is left unreviewed for too long, it will automatically be unassigned and returned to the review queue. Once a pull request has been approved by the assigned owner, the owner should merge the pull request themselves if it is an outside contribution, but otherwise generally leave that to the author of the PR.
+
+Some pull requests may require review from multiple project areas. In these cases the most relevant owner should assign themselves and coordinate with the other owners for additional reviews. If the most relevant owner is not clear, this is preferably solved in a discussion among the owners. Frequent conflicts should lead to a discussion whether `CODEOWNERS` should be updated to simplify the review process. If some owners are currently unavailable, other owners can assign themselves to the pull request and bring it to the point where they approve the changes for their area, and then send the pull request back to the review queue.
+
 ## Code Style
 
 See our code style documented at [STYLE.md](./STYLE.md).

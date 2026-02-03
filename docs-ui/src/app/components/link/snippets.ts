@@ -4,7 +4,7 @@ export const linkUsageSnippet = `import { Link } from '@backstage/ui';
 
 export const defaultSnippet = `<Link href="/">Sign up for Backstage</Link>`;
 
-export const externalLinkSnippet = `<Link href="https://backstage.io" target="_blank">
+export const externalLinkSnippet = `<Link href="#" target="_blank">
   Sign up for Backstage
 </Link>`;
 
@@ -25,9 +25,15 @@ export const allColorsSnippet = `<Flex gap="4" direction="column">
   <Link href="#" color="danger">Danger</Link>
   <Link href="#" color="warning">Warning</Link>
   <Link href="#" color="success">Success</Link>
+  <Link href="#" color="info">Info</Link>
 </Flex>`;
 
 export const weightSnippet = `<Flex gap="4">
   <Link href="#" weight="regular">Regular</Link>
   <Link href="#" weight="bold">Bold</Link>
+</Flex>`;
+
+export const standaloneSnippet = `<Flex gap="4">
+  <Link href="#">Default link</Link>
+  <Link href="#" standalone>Standalone link</Link>
 </Flex>`;

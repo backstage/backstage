@@ -33,10 +33,11 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 export const catalogTranslationRef: TranslationRef<
   'catalog',
   {
-    readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.';
+    readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates.';
     readonly 'deleteEntity.cancelButtonTitle': 'Cancel';
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
     readonly 'deleteEntity.dialogTitle': 'Are you sure you want to delete this entity?';
+    readonly 'deleteEntity.actionButtonTitle': 'Delete entity';
     readonly 'indexPage.title': '{{orgName}} Catalog';
     readonly 'indexPage.createButtonTitle': 'Create';
     readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
