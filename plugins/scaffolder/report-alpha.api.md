@@ -633,6 +633,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateWizardPage.title': 'Create a new component';
     readonly 'templateWizardPage.subtitle': 'Create new software components using standard templates in your organization';
     readonly 'templateWizardPage.pageTitle': 'Create a new component';
+    readonly 'templateWizardPage.templateWithTitle': 'Create new {{templateTitle}}';
     readonly 'templateWizardPage.pageContextMenu.editConfigurationTitle': 'Edit Configuration';
     readonly 'templateEditorToolbar.customFieldExplorerTooltip': 'Custom Fields Explorer';
     readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';
