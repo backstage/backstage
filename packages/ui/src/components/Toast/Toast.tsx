@@ -20,7 +20,7 @@ import {
   isValidElement,
   ReactElement,
   useRef,
-  useEffect,
+  useLayoutEffect,
   useState,
 } from 'react';
 import { useToast } from '@react-aria/toast';
@@ -45,7 +45,7 @@ const manuallyClosingToasts = new Set<string>();
  * A Toast displays a brief, temporary notification of actions, errors, or other events in an application.
  *
  * @remarks
- * The Toast component is typically used within a ToastRegion and managed by a ToastQueue.
+ * The Toast component is used internally by ToastContainer and managed by a ToastQueue.
  * It supports multiple status variants (info, success, warning, danger) and can display
  * a title, description, and optional icon. Toasts can be dismissed manually or automatically.
  *
@@ -70,7 +70,7 @@ const manuallyClosingToasts = new Set<string>();
  * );
  * ```
  *
- * @public
+ * @internal
  */
 export const Toast = forwardRef(
   (props: ToastProps, ref: Ref<HTMLDivElement>) => {
@@ -89,6 +89,7 @@ export const Toast = forwardRef(
       icon,
       expandedY: expandedYProp = 0,
       collapsedHeight,
+      naturalHeight,
       onHeightChange,
     } = ownProps;
 
@@ -117,24 +118,26 @@ export const Toast = forwardRef(
 
     // Track whether we've measured this toast's natural height
     const [hasMeasured, setHasMeasured] = useState(false);
+    // Store the measured natural height locally to avoid re-measurement issues
+    const naturalHeightRef = useRef<number | null>(null);
 
-    // Measure this toast's natural height on mount (before constraints are applied)
-    useEffect(() => {
+    // Measure this toast's natural height on mount (before paint)
+    // Using useLayoutEffect ensures we measure before the browser paints
+    useLayoutEffect(() => {
       if (!onHeightChange) return;
-      if (hasMeasured) return; // Only measure once
+      if (naturalHeightRef.current) return; // Already measured
 
       const element = toastRef.current;
       if (!element) return;
 
-      // Measure on next frame (after initial render but before constraint is visible)
-      requestAnimationFrame(() => {
-        const height = element.offsetHeight;
-        if (height > 0) {
-          onHeightChange(toast.key, height);
-          setHasMeasured(true);
-        }
-      });
-    }, [toast.key, onHeightChange, hasMeasured]);
+      // Measure immediately - useLayoutEffect runs before paint
+      const height = element.getBoundingClientRect().height;
+      if (height > 0) {
+        naturalHeightRef.current = height;
+        onHeightChange(toast.key, height);
+        setHasMeasured(true);
+      }
+    }, [toast.key, onHeightChange]);
 
     // Close button ref and props
     const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -215,11 +218,35 @@ export const Toast = forwardRef(
           zIndex: stackZIndex,
         };
 
-    // Back toasts (index > 0) use front toast's height when collapsed
-    // Height is set via style (not animated) to avoid measurement issues
-    // Only apply constraint after we've measured the natural height
-    const shouldConstrainHeight =
-      hasMeasured && !isExpanded && index > 0 && collapsedHeight;
+    // Height animation for back toasts:
+    // - Front toast (index 0): never set height, uses natural CSS height
+    // - Back toasts: animate between collapsedHeight and their own naturalHeight
+    const measuredHeight = naturalHeight || naturalHeightRef.current;
+    const isBackToast = index > 0;
+    const hasValidMeasurements =
+      hasMeasured && collapsedHeight && measuredHeight;
+
+    // For back toasts with valid measurements, calculate target height
+    // Otherwise, let CSS handle it naturally
+    let animateProps: {
+      opacity: number;
+      y: number;
+      scale: number;
+      zIndex: number;
+      height?: number;
+    } = {
+      opacity: 1,
+      y: animateY,
+      scale: animateScale,
+      zIndex: stackZIndex,
+    };
+
+    if (isBackToast && hasValidMeasurements) {
+      animateProps.height = isExpanded ? measuredHeight : collapsedHeight;
+    }
+
+    const shouldClipContent =
+      isBackToast && hasValidMeasurements && !isExpanded;
 
     return (
       <motion.div
@@ -229,17 +256,11 @@ export const Toast = forwardRef(
         style={
           {
             '--toast-index': index,
-            height: shouldConstrainHeight ? collapsedHeight : undefined,
-            overflow: shouldConstrainHeight ? 'hidden' : undefined,
+            overflow: shouldClipContent ? 'hidden' : undefined,
           } as React.CSSProperties
         }
         initial={{ opacity: 0, y: 100, scale: 1 }}
-        animate={{
-          opacity: 1,
-          y: animateY,
-          scale: animateScale,
-          zIndex: stackZIndex,
-        }}
+        animate={animateProps}
         exit={exitAnimation}
         onAnimationComplete={definition => {
           // Clean up the manual close tracking after exit animation
@@ -247,14 +268,14 @@ export const Toast = forwardRef(
             manuallyClosingToasts.delete(toast.key);
           }
         }}
-        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 35 }}
         {...dataAttributes}
         data-status={finalStatus}
         {...restProps}
       >
-        <div className={classes.content}>
+        <div className={classes.wrapper}>
           {statusIcon && <div className={classes.icon}>{statusIcon}</div>}
-          <div>
+          <div className={classes.content}>
             <div {...titleProps} className={classes.title}>
               {content.title}
             </div>

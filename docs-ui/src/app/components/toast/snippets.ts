@@ -1,10 +1,10 @@
-export const toastUsageSnippet = `import { ToastRegion, toastQueue } from '@backstage/ui';
+export const toastUsageSnippet = `import { ToastContainer, toastQueue } from '@backstage/ui';
 
-// Place ToastRegion once in your app root
+// Place ToastContainer once in your app root
 function App() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <YourAppContent />
     </>
   );
@@ -13,12 +13,12 @@ function App() {
 // Trigger toasts from anywhere
 toastQueue.add({ title: 'Success!', status: 'success' });`;
 
-export const defaultSnippet = `import { ToastRegion, toastQueue, Button } from '@backstage/ui';
+export const defaultSnippet = `import { ToastContainer, toastQueue, Button } from '@backstage/ui';
 
 export function Example() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Button
         onPress={() =>
           toastQueue.add({
@@ -33,12 +33,12 @@ export function Example() {
   );
 }`;
 
-export const statusVariantsSnippet = `import { ToastRegion, toastQueue, Button, Flex } from '@backstage/ui';
+export const statusVariantsSnippet = `import { ToastContainer, toastQueue, Button, Flex } from '@backstage/ui';
 
 export function Example() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -89,12 +89,12 @@ export function Example() {
   );
 }`;
 
-export const withDescriptionSnippet = `import { ToastRegion, toastQueue, Button } from '@backstage/ui';
+export const withDescriptionSnippet = `import { ToastContainer, toastQueue, Button } from '@backstage/ui';
 
 export function Example() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Button
         onPress={() =>
           toastQueue.add({
@@ -110,12 +110,12 @@ export function Example() {
   );
 }`;
 
-export const withoutDescriptionSnippet = `import { ToastRegion, toastQueue, Button, Flex } from '@backstage/ui';
+export const withoutDescriptionSnippet = `import { ToastContainer, toastQueue, Button, Flex } from '@backstage/ui';
 
 export function Example() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -142,12 +142,12 @@ export function Example() {
   );
 }`;
 
-export const autoDismissSnippet = `import { ToastRegion, toastQueue, Button, Flex } from '@backstage/ui';
+export const autoDismissSnippet = `import { ToastContainer, toastQueue, Button, Flex } from '@backstage/ui';
 
 export function Example() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -183,14 +183,14 @@ export function Example() {
 }`;
 
 export const programmaticControlSnippet = `import { useState } from 'react';
-import { ToastRegion, toastQueue, Button } from '@backstage/ui';
+import { ToastContainer, toastQueue, Button } from '@backstage/ui';
 
 export function Example() {
   const [toastKey, setToastKey] = useState<string | null>(null);
 
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Button
         onPress={() => {
           if (!toastKey) {
@@ -216,12 +216,12 @@ export function Example() {
   );
 }`;
 
-export const queueManagementSnippet = `import { ToastRegion, toastQueue, Button, Flex } from '@backstage/ui';
+export const queueManagementSnippet = `import { ToastContainer, toastQueue, Button, Flex } from '@backstage/ui';
 
 export function Example() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() => {

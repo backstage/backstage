@@ -50,7 +50,7 @@ export { SkeletonDefinition } from './components/Skeleton/definition';
 export { SwitchDefinition } from './components/Switch/definition';
 export {
   ToastDefinition,
-  ToastRegionDefinition,
+  ToastContainerDefinition,
 } from './components/Toast/definition';
 export { ToggleButtonDefinition } from './components/ToggleButton/definition';
 export { ToggleButtonGroupDefinition } from './components/ToggleButtonGroup/definition';

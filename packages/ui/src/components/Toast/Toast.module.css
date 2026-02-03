@@ -17,8 +17,8 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  /* Toast Region - Container for all toasts (bottom center) */
-  .bui-ToastRegion {
+  /* Toast Container - Container for all toasts (bottom center) */
+  .bui-ToastContainer {
     position: fixed;
     bottom: 1rem;
     left: 50%;
@@ -29,7 +29,7 @@
   }
 
   @media (min-width: 500px) {
-    .bui-ToastRegion {
+    .bui-ToastContainer {
       width: 350px;
       bottom: 2rem;
     }
@@ -51,6 +51,7 @@
     display: flex;
     align-items: flex-start;
     padding: var(--bui-space-4);
+    gap: var(--bui-space-3);
 
     /* Appearance */
     border-radius: var(--bui-radius-3);
@@ -111,13 +112,18 @@
     color: var(--bui-fg-danger);
   }
 
-  /* Toast Content */
-  .bui-ToastContent {
+  .bui-ToastWrapper {
     display: flex;
     align-items: flex-start;
     gap: var(--bui-space-3);
     flex: 1;
     min-width: 0;
+  }
+
+  .bui-ToastContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-1);
   }
 
   /* Icon */
@@ -139,6 +145,7 @@
     font-weight: var(--bui-font-weight-bold);
     font-size: var(--bui-font-size-3);
     word-wrap: break-word;
+    margin-top: var(--bui-space-0_5);
   }
 
   /* Description */
@@ -146,7 +153,6 @@
     color: var(--bui-fg-secondary);
     font-size: var(--bui-font-size-3);
     opacity: 0.9;
-    margin-top: var(--bui-space-1);
     word-wrap: break-word;
   }
 
