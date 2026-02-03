@@ -15,8 +15,9 @@
  */
 
 @layer tokens {
-  /* Light theme tokens */
-  :root {
+  /* Light theme tokens (also used for nested light theme switching) */
+  :root,
+  [data-theme-mode='light'] {
     /* Font families */
     --bui-font-regular: system-ui;
     --bui-font-monospace: ui-monospace, 'Menlo', 'Monaco', 'Consolas',
@@ -120,7 +121,7 @@
     --bui-fg-info-on-bg: #173da6;
     --bui-fg-danger: #ec3b18;
     --bui-fg-warning: #ef7a32;
-    --bui-fg-success: #1ed760;
+    --bui-fg-success: #1aaf4f;
     --bui-fg-info: #0d74ce;
 
     /* Border colors */

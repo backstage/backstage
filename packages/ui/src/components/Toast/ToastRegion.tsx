@@ -18,6 +18,7 @@ import { forwardRef, Ref, useState, useRef } from 'react';
 import { UNSTABLE_ToastRegion as RAToastRegion } from 'react-aria-components';
 import type { ToastRegionProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
+import { useInvertedThemeMode } from '../../hooks/useInvertedThemeMode';
 import { ToastRegionDefinition } from './definition';
 import { Toast } from './Toast';
 
@@ -58,36 +59,26 @@ export const ToastRegion = forwardRef(
     );
     const { classes, queue, className } = ownProps;
 
-    // Lock hover state after swipe/close to prevent collapse
+    // Lock hover state after close to prevent stack collapse during DOM updates
     const [isHoverLocked, setIsHoverLocked] = useState(false);
-    const unlockTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const unlockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const lockHover = () => {
+    // Get inverted theme mode for toasts (light when app is dark, dark when app is light)
+    const invertedThemeMode = useInvertedThemeMode();
+
+    const handleClose = () => {
+      // Lock the expanded state while toast is being removed
       setIsHoverLocked(true);
+
       // Clear any pending unlock
       if (unlockTimerRef.current) {
         clearTimeout(unlockTimerRef.current);
       }
-    };
 
-    const unlockHover = (e: React.MouseEvent) => {
-      // Check if mouse is actually leaving the region bounds
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-      const isOutside =
-        e.clientX < rect.left ||
-        e.clientX > rect.right ||
-        e.clientY < rect.top ||
-        e.clientY > rect.bottom;
-
-      if (!isOutside) {
-        // Mouse is still inside, don't unlock yet
-        return;
-      }
-
-      // Delay unlock to prevent collapse during DOM updates
+      // Unlock after a short delay to allow DOM to settle
       unlockTimerRef.current = setTimeout(() => {
         setIsHoverLocked(false);
-      }, 100);
+      }, 300);
     };
 
     return (
@@ -96,12 +87,12 @@ export const ToastRegion = forwardRef(
         queue={queue}
         className={className || classes.region}
         aria-label="Notifications"
+        data-theme-mode={invertedThemeMode}
         data-hover-locked={isHoverLocked ? '' : undefined}
         {...dataAttributes}
         {...restProps}
-        onMouseLeave={unlockHover}
       >
-        {({ toast }) => <Toast toast={toast} onSwipeEnd={lockHover} />}
+        {({ toast }) => <Toast toast={toast} onClose={handleClose} />}
       </RAToastRegion>
     );
   },

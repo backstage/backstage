@@ -15,6 +15,7 @@
  */
 
 import { UNSTABLE_ToastQueue as RAToastQueue } from 'react-aria-components';
+import { flushSync } from 'react-dom';
 import type { ToastContent } from './types';
 
 /**
@@ -23,6 +24,8 @@ import type { ToastContent } from './types';
  * @remarks
  * This uses React Aria's unstable Toast API which is currently in alpha.
  * The API may change in future versions.
+ *
+ * Uses the View Transitions API for smooth enter/exit animations when supported.
  *
  * @example
  * ```tsx
@@ -42,6 +45,31 @@ import type { ToastContent } from './types';
  *
  * @public
  */
+// Track if we should use view transition (only for removals)
+let useViewTransition = false;
+
 export const toastQueue = new RAToastQueue<ToastContent>({
   maxVisibleToasts: 5,
+  // Wrap state updates in a CSS view transition for smooth animations
+  wrapUpdate(fn) {
+    if (useViewTransition && 'startViewTransition' in document) {
+      useViewTransition = false; // Reset flag
+      (
+        document as Document & {
+          startViewTransition: (cb: () => void) => void;
+        }
+      ).startViewTransition(() => {
+        flushSync(fn);
+      });
+    } else {
+      fn();
+    }
+  },
 });
+
+// Override close to enable view transition
+const originalClose = toastQueue.close.bind(toastQueue);
+toastQueue.close = (key: string) => {
+  useViewTransition = true;
+  originalClose(key);
+};
