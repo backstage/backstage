@@ -5477,7 +5477,7 @@ __metadata:
     sass: "npm:^1.57.1"
     swc-loader: "npm:^0.2.3"
     typescript: "npm:~5.7.0"
-    yaml-loader: "npm:^0.8.0"
+    yaml-loader: "npm:^0.9.0"
   languageName: unknown
   linkType: soft
 
@@ -16859,14 +16859,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml-loader@npm:^0.8.0":
-  version: 0.8.1
-  resolution: "yaml-loader@npm:0.8.1"
+"yaml-loader@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "yaml-loader@npm:0.9.0"
   dependencies:
     javascript-stringify: "npm:^2.0.1"
-    loader-utils: "npm:^2.0.0"
     yaml: "npm:^2.0.0"
-  checksum: 10/2969eb7d6083a95a8d95369906bbc73d124125be5f61556506d230a57b7acc872abe836bf631f89aa97d9e8198bee8d100fa68d5a6524be84cd8eb5062cf76d3
+  checksum: 10/e9b4dd3363d86f5ed753ef70cacecdc9d5aae2078975b91e71b4c7b88c469140b0d7f6cfc22ba2390bf440a74a16df9ce74223393c089eba994a4750ed8a7b49
   languageName: node
   linkType: hard
 
