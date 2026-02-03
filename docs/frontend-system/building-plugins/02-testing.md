@@ -202,6 +202,47 @@ describe('Index page', () => {
 
 That's all for testing features!
 
+## Mounting routes
+
+If your component or extension uses `useRouteRef` to generate links to other routes, you need to mount those routes in the test environment. Both `renderInTestApp` and `renderTestApp` support the `mountedRoutes` option for this purpose.
+
+For example, given a component that uses `useRouteRef` to create a link:
+
+```tsx
+import { useRouteRef } from '@backstage/frontend-plugin-api';
+import { detailsRouteRef } from './routes';
+
+export const MyComponent = () => {
+  const detailsLink = useRouteRef(detailsRouteRef);
+
+  return <a href={detailsLink()}>View details</a>;
+};
+```
+
+You can test it by mounting the route ref to a path using the `mountedRoutes` option:
+
+```tsx
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { detailsRouteRef } from './routes';
+import { MyComponent } from './MyComponent';
+
+describe('MyComponent', () => {
+  it('should render a link to the plugin page', async () => {
+    await renderInTestApp(<MyComponent />, {
+      mountedRoutes: {
+        '/my-plugin/details': detailsRouteRef,
+      },
+    });
+
+    expect(await screen.findByText('View details')).toHaveAttribute(
+      'href',
+      '/my-plugin/details',
+    );
+  });
+});
+```
+
 ## Missing something?
 
 If there's anything else you think needs to be covered in the docs or that you think isn't covered by the test utilities, please create an issue in the Backstage repository. You are always welcome to contribute as well!

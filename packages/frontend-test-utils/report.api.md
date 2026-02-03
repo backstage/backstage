@@ -136,6 +136,9 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   extensions?: ExtensionDefinition<any>[];
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
+  mountedRoutes?: {
+    [path: string]: RouteRef;
+  };
   apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
