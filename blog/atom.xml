@@ -337,7 +337,7 @@ pre-defined templates. This capability effectively eliminates the need for devel
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="whats-next">What's Next<a href="https://backstage.io/blog/2025/08/08/migrating-legacy-services-to-a-modern-developer-portal#whats-next" class="hash-link" aria-label="Direct link to What's Next" title="Direct link to What's Next" translate="no">​</a></h2>
 <p>My involvement as a software engineer with open source tools and developer portal projects like Backstage, including implementation and service migration, has provided me valuable opportunities to contribute to their open-source documentation and repositories. This can be seen in contributions such as <a href="https://github.com/backstage/backstage/pull/12863" target="_blank" rel="noopener noreferrer" class="">Update app-custom-theme.md</a> and <a href="https://github.com/backstage/backstage/pull/12714" target="_blank" rel="noopener noreferrer" class="">Update getting-started.md</a>, which deepen understanding of custom themes and style components. I’m now looking at future efforts focusing on contributing more to the open-source project (e.g., Model context protocol with A.I (MCP) at <a href="https://github.com/backstage/backstage/issues/30218" target="_blank" rel="noopener noreferrer" class="">RFC: Distributed Actions with MCP in Backstage</a>) and continuing to improve and scale this critical developer portal for engineers across the world.</p>]]></content>
         <author>
-            <name>Damola Obaleke</name>
+            <name>Damola Obaleke, The New York Times</name>
             <uri>https://github.com/damolaobaleke</uri>
         </author>
     </entry>
