@@ -177,7 +177,6 @@ describe('EntityCardBlueprint', () => {
               },
               "type": {
                 "enum": [
-                  "summary",
                   "info",
                   "content",
                 ],

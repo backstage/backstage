@@ -56,13 +56,12 @@ export const entityContentGroupDataRef = createExtensionDataRef<string>().with({
  * Available entity card types
  */
 export const entityCardTypes = [
-  'summary',
   'info',
   'content',
 ] as const satisfies readonly EntityCardType[];
 
 /** @alpha */
-export type EntityCardType = 'summary' | 'info' | 'content';
+export type EntityCardType = 'info' | 'content';
 
 /** @internal */
 export const entityCardTypeDataRef =
