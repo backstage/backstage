@@ -27,9 +27,14 @@ export const toastContentPropDefs: Record<string, PropDef> = {
     responsive: false,
     default: 'true',
   },
+  links: {
+    type: 'enum',
+    values: ['ToastLink[]'],
+    responsive: false,
+  },
 };
 
-export const toastRegionPropDefs: Record<string, PropDef> = {
+export const toastContainerPropDefs: Record<string, PropDef> = {
   queue: {
     type: 'enum',
     values: ['ToastQueue<ToastContent>'],

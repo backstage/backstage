@@ -89,27 +89,6 @@ export function Example() {
   );
 }`;
 
-export const withDescriptionSnippet = `import { ToastContainer, toastQueue, Button } from '@backstage/ui';
-
-export function Example() {
-  return (
-    <>
-      <ToastContainer queue={toastQueue} />
-      <Button
-        onPress={() =>
-          toastQueue.add({
-            title: 'Update available',
-            description: 'A new version is ready to install.',
-            status: 'info',
-          })
-        }
-      >
-        Show Toast
-      </Button>
-    </>
-  );
-}`;
-
 export const withoutDescriptionSnippet = `import { ToastContainer, toastQueue, Button, Flex } from '@backstage/ui';
 
 export function Example() {
@@ -125,7 +104,7 @@ export function Example() {
             })
           }
         >
-          Simple Success
+          Success
         </Button>
         <Button
           onPress={() =>
@@ -135,7 +114,45 @@ export function Example() {
             })
           }
         >
-          Simple Info
+          Info
+        </Button>
+      </Flex>
+    </>
+  );
+}`;
+
+export const withLinksSnippet = `import { ToastContainer, toastQueue, Button, Flex } from '@backstage/ui';
+
+export function Example() {
+  return (
+    <>
+      <ToastContainer queue={toastQueue} />
+      <Flex gap="3">
+        <Button
+          onPress={() =>
+            toastQueue.add({
+              title: 'Deployment complete',
+              description: 'Your application has been deployed.',
+              status: 'success',
+              links: [
+                { label: 'View logs', href: '/logs' },
+                { label: 'Open dashboard', href: '/dashboard' },
+              ],
+            })
+          }
+        >
+          Multiple Links
+        </Button>
+        <Button
+          onPress={() =>
+            toastQueue.add({
+              title: 'New update available',
+              status: 'info',
+              links: [{ label: 'View release notes', href: '/releases' }],
+            })
+          }
+        >
+          Single Link
         </Button>
       </Flex>
     </>

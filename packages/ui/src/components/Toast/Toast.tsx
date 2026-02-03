@@ -36,6 +36,7 @@ import {
 import type { ToastProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ToastDefinition } from './definition';
+import { Link } from '../Link';
 
 // Track which toasts are being manually closed (vs auto-timeout)
 // This allows different exit animations for each case
@@ -281,6 +282,15 @@ export const Toast = forwardRef(
             </div>
             {content.description && (
               <div className={classes.description}>{content.description}</div>
+            )}
+            {content.links && content.links.length > 0 && (
+              <div className={classes.links}>
+                {content.links.map((link, idx) => (
+                  <Link key={idx} href={link.href} variant="body-small">
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
             )}
           </div>
         </div>

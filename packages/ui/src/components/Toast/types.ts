@@ -19,6 +19,17 @@ import type { ToastQueue, ToastState, QueuedToast } from 'react-stately';
 import type { Responsive, ContainerSurfaceProps } from '../../types';
 
 /**
+ * Link item for toast notifications
+ * @public
+ */
+export interface ToastLink {
+  /** Display text for the link */
+  label: string;
+  /** URL the link points to */
+  href: string;
+}
+
+/**
  * Content for a toast notification
  * @public
  */
@@ -31,6 +42,8 @@ export interface ToastContent {
   status?: 'info' | 'success' | 'warning' | 'danger';
   /** Whether to show an icon */
   icon?: boolean | ReactElement;
+  /** Optional array of links to display */
+  links?: ToastLink[];
 }
 
 /**

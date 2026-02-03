@@ -18,6 +18,7 @@ export { ToastContainer } from './ToastContainer';
 export { ToastContainerDefinition } from './definition';
 export { toastQueue } from './ToastQueue';
 export type {
+  ToastLink,
   ToastContent,
   ToastContainerOwnProps,
   ToastContainerProps,
