@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend",
-  "version": "0.6.2-next.0",
+  "version": "0.6.2-next.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "notifications",
@@ -9,6 +9,9 @@
       "@backstage/plugin-notifications-backend",
       "@backstage/plugin-notifications-common",
       "@backstage/plugin-notifications-node"
+    ],
+    "peerModules": [
+      "@backstage/plugin-scaffolder-backend-module-notifications"
     ]
   },
   "publishConfig": {

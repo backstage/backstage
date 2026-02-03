@@ -23,4 +23,5 @@ export * from './gitlabProjectAccessTokenCreate';
 export * from './gitlabProjectDeployTokenCreate';
 export * from './gitlabProjectVariableCreate';
 export * from './gitlabRepoPush';
+export * from './gitlabUserInfo';
 export { IssueType, IssueStateEvent } from '../commonGitlabConfig';

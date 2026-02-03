@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.10-next.1
+
+### Patch Changes
+
+- ce3639c: Add PersistentVolume and PersistentVolumeClaims Rendering
+
 ## 0.9.10-next.0
 
 ### Patch Changes

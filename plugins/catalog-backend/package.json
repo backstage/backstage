@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "3.4.0-next.0",
+  "version": "3.4.0-next.1",
   "description": "The Backstage backend plugin that provides the Backstage catalog",
   "backstage": {
     "role": "backend-plugin",
@@ -11,6 +11,9 @@
       "@backstage/plugin-catalog-common",
       "@backstage/plugin-catalog-node",
       "@backstage/plugin-catalog-react"
+    ],
+    "peerModules": [
+      "@backstage/plugin-search-backend-module-catalog"
     ]
   },
   "publishConfig": {

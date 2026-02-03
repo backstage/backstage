@@ -430,6 +430,47 @@ export function fixPluginPackages(
   }
 }
 
+export function fixPeerModules(pkg: FixablePackage) {
+  const pkgBackstage = pkg.packageJson.backstage;
+  const role = pkgBackstage?.role;
+  if (!role) {
+    return;
+  }
+
+  const peerModules = pkgBackstage.peerModules;
+  if (peerModules === undefined) {
+    return;
+  }
+
+  const packagePath = relativePath(
+    paths.targetRoot,
+    resolvePath(pkg.dir, 'package.json'),
+  );
+
+  // Validate that peerModules is only used on plugin packages
+  if (role !== 'backend-plugin' && role !== 'frontend-plugin') {
+    throw new Error(
+      `The 'backstage.peerModules' field in "${pkg.packageJson.name}" can only be used on plugin packages (backend-plugin or frontend-plugin), but package has role '${role}' in "${packagePath}"`,
+    );
+  }
+
+  // Validate that peerModules is an array
+  if (!Array.isArray(peerModules)) {
+    throw new Error(
+      `Invalid 'backstage.peerModules' field in "${pkg.packageJson.name}", must be an array of package names in "${packagePath}"`,
+    );
+  }
+
+  // Validate that all entries are non-empty strings
+  for (const entry of peerModules) {
+    if (typeof entry !== 'string' || entry.length === 0) {
+      throw new Error(
+        `Invalid entry in 'backstage.peerModules' field in "${pkg.packageJson.name}", all entries must be non-empty package name strings in "${packagePath}"`,
+      );
+    }
+  }
+}
+
 type PackageFixer = (pkg: FixablePackage, packages: FixablePackage[]) => void;
 
 export async function command(opts: OptionValues): Promise<void> {
@@ -444,6 +485,7 @@ export async function command(opts: OptionValues): Promise<void> {
       fixRepositoryField,
       fixPluginId,
       fixPluginPackages,
+      fixPeerModules,
       // Run the publish preflight check too, to make sure we don't uncover errors during publishing
       publishPreflightCheck,
     );

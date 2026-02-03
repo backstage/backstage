@@ -192,11 +192,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: EntityPredicate | undefined;
-    type: 'content' | 'summary' | 'info' | undefined;
+    type: 'content' | 'info' | undefined;
   };
   configInput: {
     filter?: EntityPredicate | undefined;
-    type?: 'content' | 'summary' | 'info' | undefined;
+    type?: 'content' | 'info' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -218,7 +218,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
-export type EntityCardType = 'summary' | 'info' | 'content';
+export type EntityCardType = 'info' | 'content';
 
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{

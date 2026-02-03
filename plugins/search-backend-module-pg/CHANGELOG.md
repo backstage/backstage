@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.52-next.1
+
+### Patch Changes
+
+- 2ee354a: Return `numberOfResults` count with search query responses
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 0.5.52-next.0
 
 ### Patch Changes

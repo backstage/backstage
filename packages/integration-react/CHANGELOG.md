@@ -1,5 +1,12 @@
 # @backstage/integration-react
 
+## 1.2.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+
 ## 1.2.15-next.0
 
 ### Patch Changes

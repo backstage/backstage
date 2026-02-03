@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-backend",
-  "version": "2.1.5-next.0",
+  "version": "2.1.5-next.1",
   "description": "The Backstage backend plugin that renders technical documentation for your components",
   "backstage": {
     "role": "backend-plugin",
@@ -11,6 +11,9 @@
       "@backstage/plugin-techdocs-common",
       "@backstage/plugin-techdocs-node",
       "@backstage/plugin-techdocs-react"
+    ],
+    "peerModules": [
+      "@backstage/plugin-search-backend-module-techdocs"
     ]
   },
   "publishConfig": {

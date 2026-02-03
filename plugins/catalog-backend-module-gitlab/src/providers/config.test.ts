@@ -67,6 +67,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        useSearch: false,
       }),
     );
   });
@@ -113,6 +114,7 @@ describe('config', () => {
         includeUsersWithoutSeat: true,
         membership: undefined,
         topics: undefined,
+        useSearch: false,
       }),
     );
   });
@@ -159,6 +161,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        useSearch: false,
       }),
     );
   });
@@ -205,6 +208,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        useSearch: false,
       }),
     );
   });
@@ -252,6 +256,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        useSearch: false,
       }),
     );
   });
@@ -299,6 +304,7 @@ describe('config', () => {
         includeUsersWithoutSeat: false,
         membership: undefined,
         topics: undefined,
+        useSearch: false,
         schedule: {
           frequency: { minutes: 30 },
           timeout: {
@@ -391,6 +397,7 @@ describe('config', () => {
         includeArchivedRepos: false,
         membership: true,
         topics: undefined,
+        useSearch: false,
       }),
     );
   });
@@ -437,6 +444,7 @@ describe('config', () => {
         includeArchivedRepos: false,
         membership: undefined,
         topics: undefined,
+        useSearch: false,
       }),
     );
   });
@@ -483,6 +491,7 @@ describe('config', () => {
         includeArchivedRepos: false,
         membership: undefined,
         topics: 'topic1',
+        useSearch: false,
       }),
     );
   });
@@ -529,6 +538,7 @@ describe('config', () => {
         includeArchivedRepos: false,
         membership: undefined,
         topics: 'topic1,topic2,topic3',
+        useSearch: false,
       }),
     );
   });

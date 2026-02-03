@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-plugin-api",
-  "version": "1.12.2-next.0",
+  "version": "1.12.3-next.0",
   "description": "Core API used by Backstage plugins",
   "backstage": {
     "role": "web-library"
@@ -68,13 +68,13 @@
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {

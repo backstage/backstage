@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.16.4-next.1
+
+### Patch Changes
+
+- 6523040: Support Prettier v3 for api-reports
+- Updated dependencies
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 0.16.3-next.0
 
 ### Patch Changes

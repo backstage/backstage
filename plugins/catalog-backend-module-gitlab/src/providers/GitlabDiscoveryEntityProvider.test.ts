@@ -336,6 +336,31 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     });
   });
 
+  // should use search to find entities to process
+  it('should find catalog from finding projects', async () => {
+    const config = new ConfigReader(mock.config_single_integration_with_search);
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    expect((provider as any).config.useSearch).toBe(true);
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_from_search_on_group_1,
+    });
+  });
+
   // branch was set in the config
   it('should ingest catalog from specific branch only', async () => {
     const config = new ConfigReader(

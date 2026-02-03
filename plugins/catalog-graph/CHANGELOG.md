@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-graph
 
+## 0.5.7-next.1
+
+### Patch Changes
+
+- 8dd27c4: Fix large icon rendering in catalog graph nodes
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-components@0.18.7-next.1
+
 ## 0.5.7-next.0
 
 ### Patch Changes

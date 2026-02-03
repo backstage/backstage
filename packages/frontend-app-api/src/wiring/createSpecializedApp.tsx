@@ -284,6 +284,14 @@ export type CreateSpecializedAppOptions = {
   };
 };
 
+// Internal options type, not exported in the public API
+export interface CreateSpecializedAppInternalOptions
+  extends CreateSpecializedAppOptions {
+  __internal?: {
+    apiFactoryOverrides?: AnyApiFactory[];
+  };
+}
+
 /**
  * Creates an empty app without any default features. This is a low-level API is
  * intended for use in tests or specialized setups. Typically you want to use
@@ -296,6 +304,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   tree: AppTree;
   errors?: AppError[];
 } {
+  const internalOptions = options as CreateSpecializedAppInternalOptions;
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
     createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
@@ -337,6 +346,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
         createApiFactory(configApiRef, config),
         createApiFactory(routeResolutionApiRef, routeResolutionApi),
         createApiFactory(identityApiRef, appIdentityProxy),
+        ...(internalOptions?.__internal?.apiFactoryOverrides ?? []),
       ],
     });
 

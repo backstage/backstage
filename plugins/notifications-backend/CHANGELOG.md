@@ -1,5 +1,13 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 0.6.2-next.0
 
 ### Patch Changes

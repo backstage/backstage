@@ -1,6 +1,6 @@
 {
   "name": "@backstage/dev-utils",
-  "version": "1.1.20-next.0",
+  "version": "1.1.20-next.1",
   "description": "Utilities for developing Backstage plugins.",
   "backstage": {
     "role": "web-library"
@@ -59,14 +59,14 @@
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0",
+    "react-router-dom": "^6.30.2",
     "zen-observable": "^0.10.0"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {

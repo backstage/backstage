@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-mui-to-bui",
-  "version": "0.2.4-next.0",
+  "version": "0.2.4-next.1",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "mui-to-bui",
@@ -51,13 +51,13 @@
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {

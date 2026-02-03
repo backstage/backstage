@@ -1,5 +1,18 @@
 # @backstage/frontend-app-api
 
+## 0.15.0-next.1
+
+### Minor Changes
+
+- 55b2ef6: **BREAKING**: Updated the behavior of the new API override logic to reject the override and block app startup instead of just logging a deprecation warning.
+
+### Patch Changes
+
+- 09032d7: Internal update to simplify testing utility implementations.
+- Updated dependencies
+  - @backstage/frontend-defaults@0.4.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+
 ## 0.14.1-next.0
 
 ### Patch Changes

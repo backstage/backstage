@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
-  "version": "3.1.2-next.0",
+  "version": "3.1.3-next.1",
   "description": "The Backstage backend plugin that helps you create new things",
   "backstage": {
     "role": "backend-plugin",
@@ -12,6 +12,9 @@
       "@backstage/plugin-scaffolder-node",
       "@backstage/plugin-scaffolder-node-test-utils",
       "@backstage/plugin-scaffolder-react"
+    ],
+    "peerModules": [
+      "@backstage/plugin-catalog-backend-module-scaffolder-entity-model"
     ]
   },
   "publishConfig": {

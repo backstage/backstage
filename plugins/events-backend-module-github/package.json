@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-github",
-  "version": "0.4.9-next.0",
+  "version": "0.4.9-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "events",

@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.7.2-next.0
+
+### Patch Changes
+
+- 1c52dcc: add square shape
+
 ## 0.7.1
 
 ### Patch Changes

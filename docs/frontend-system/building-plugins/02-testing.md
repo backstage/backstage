@@ -31,50 +31,50 @@ describe('Entity details component', () => {
 });
 ```
 
-To mock [Utility APIs](../architecture/33-utility-apis.md) that are used by your component you can use the `TestApiProvider` to override individual API implementations. In the snippet below, we wrap the component within a `TestApiProvider` in order to mock the catalog client API:
+To mock [Utility APIs](../architecture/33-utility-apis.md) that are used by your component, pass API overrides to `renderInTestApp` using the `apis` option. Mock helpers are available from `@backstage/frontend-test-utils` and plugin-specific test utilities:
 
 ```tsx
 import { screen } from '@testing-library/react';
-import {
-  renderInTestApp,
-  TestApiProvider,
-} from '@backstage/frontend-test-utils';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { EntityDetails } from './plugin';
+import { renderInTestApp, mockApis } from '@backstage/frontend-test-utils';
+import { identityApiRef } from '@backstage/frontend-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { MyEntitiesList } from './plugin';
 
-describe('Entity details component', () => {
-  it('should render the entity name and owner', async () => {
-    const catalogApiMock = {
-      async getEntityFacets() {
-        return {
-          facets: {
-            'relations.ownedBy': [{ count: 1, value: 'group:default/tools' }],
-          },
-        },
-      }
-    } satisfies Partial<typeof catalogApiRef.T>;
-
-    const entityRef = stringifyEntityRef({
-      kind: 'Component',
-      namespace: 'default',
-      name: 'test',
+describe('MyEntitiesList', () => {
+  it('should render entities owned by the current user', async () => {
+    await renderInTestApp(<MyEntitiesList />, {
+      apis: [
+        [
+          identityApiRef,
+          mockApis.identity({ userEntityRef: 'user:default/guest' }),
+        ],
+        [
+          catalogApiRef,
+          catalogApiMock({
+            entities: [
+              {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Component',
+                metadata: { name: 'my-component' },
+                spec: { type: 'service', owner: 'user:default/guest' },
+              },
+            ],
+          }),
+        ],
+      ],
     });
 
-    await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
-        <EntityDetails entityRef={entityRef} />
-      </TestApiProvider>,
-    );
-
     await expect(
-      screen.findByText('The entity "test" is owned by "tools"'),
+      screen.findByText('my-component'),
     ).resolves.toBeInTheDocument();
   });
 });
 ```
 
-This pattern also works for many other context providers. An important example is the `EntityProvider` from the `@backstage/plugin-catalog-react` package, which you can use to provide a mocked entity context to the component.
+This approach provides the API overrides at the app level, which is useful when testing components that depend on APIs deep in the component tree.
+
+The `TestApiProvider` component is also available for standalone rendering scenarios where you're not using `renderInTestApp` or other test utilities. Context providers like `EntityProvider` from `@backstage/plugin-catalog-react` can also be used to provide a mocked entity context to the component.
 
 ## Testing extensions
 
@@ -102,7 +102,35 @@ describe('Index page', () => {
 });
 ```
 
-This pattern also allows you to wrap the extension with context providers, such as the `TestApiProvider` that was introduced [above](#testing-react-components).
+You can also provide API overrides directly to `createExtensionTester` using the `apis` option:
+
+```tsx
+import { screen } from '@testing-library/react';
+import {
+  createExtensionTester,
+  mockApis,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
+import { identityApiRef } from '@backstage/frontend-plugin-api';
+import { indexPageExtension } from './plugin';
+
+describe('Index page', () => {
+  it('should render with a custom identity', async () => {
+    await renderInTestApp(
+      createExtensionTester(indexPageExtension, {
+        apis: [
+          [
+            identityApiRef,
+            mockApis.identity({ userEntityRef: 'user:default/guest' }),
+          ],
+        ],
+      }).reactElement(),
+    );
+
+    expect(screen.getByText('Index Page')).toBeInTheDocument();
+  });
+});
+```
 
 Note that the `.reactElement()` method will look for the `coreExtensionData.reactElement` data in the extension outputs. If that doesn't exist and the extension outputs something else that you want to test, you can access the output data using the `.get(dataRef)` method instead.
 

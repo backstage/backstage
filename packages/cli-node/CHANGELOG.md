@@ -1,5 +1,11 @@
 # @backstage/cli-node
 
+## 0.2.18-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added support for the new `peerModules` metadata field in `package.json`. This field allows plugin packages to declare modules that should be installed alongside them for cross-plugin integrations. The field is validated by `backstage-cli repo fix --publish`.
+
 ## 0.2.17-next.0
 
 ### Patch Changes

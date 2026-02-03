@@ -31,9 +31,13 @@ import {
   createFrontendPlugin,
   FrontendFeature,
   createFrontendModule,
+  createApiFactory,
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
+import { type TestApiPairs } from '../utils';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -44,7 +48,7 @@ const DEFAULT_MOCK_CONFIG = {
  * Options to customize the behavior of the test app.
  * @public
  */
-export type TestAppOptions = {
+export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   /**
    * An object of paths to mount route ref on, with the key being the path and the value
    * being the RouteRef that the path will be bound to. This allows the route refs to be
@@ -77,6 +81,22 @@ export type TestAppOptions = {
    * Initial route entries to use for the router.
    */
   initialRouteEntries?: string[];
+
+  /**
+   * API overrides to provide to the test app. Use `mockApis` helpers
+   * from `@backstage/frontend-test-utils` to create mock implementations.
+   *
+   * @example
+   * ```ts
+   * import { identityApiRef } from '@backstage/frontend-plugin-api';
+   * import { mockApis } from '@backstage/frontend-test-utils';
+   *
+   * renderInTestApp(<MyComponent />, {
+   *   apis: [[identityApiRef, mockApis.identity({ userEntityRef: 'user:default/guest' })]],
+   * })
+   * ```
+   */
+  apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
 const NavItem = (props: {
@@ -143,9 +163,9 @@ const appPluginOverride = appPlugin.withOverrides({
  * @public
  * Renders the given element in a test app, for use in unit tests.
  */
-export function renderInTestApp(
+export function renderInTestApp<TApiPairs extends any[] = any[]>(
   element: JSX.Element,
-  options?: TestAppOptions,
+  options?: TestAppOptions<TApiPairs>,
 ): RenderResult {
   const extensions: Array<ExtensionDefinition> = [
     createExtension({
@@ -187,7 +207,13 @@ export function renderInTestApp(
         RouterBlueprint.make({
           params: {
             component: ({ children }) => (
-              <MemoryRouter initialEntries={options?.initialRouteEntries}>
+              <MemoryRouter
+                initialEntries={options?.initialRouteEntries}
+                future={{
+                  v7_relativeSplatPath: true,
+                  v7_startTransition: true,
+                }}
+              >
                 {children}
               </MemoryRouter>
             ),
@@ -214,7 +240,12 @@ export function renderInTestApp(
         data: options?.config ?? DEFAULT_MOCK_CONFIG,
       },
     ]),
-  });
+    __internal: options?.apis && {
+      apiFactoryOverrides: options.apis.map(([apiRef, implementation]) =>
+        createApiFactory(apiRef, implementation),
+      ),
+    },
+  } as CreateSpecializedAppInternalOptions);
 
   return render(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs",
-  "version": "1.16.3-next.0",
+  "version": "1.16.3-next.1",
   "description": "The Backstage plugin that renders technical documentation for your components",
   "backstage": {
     "role": "frontend-plugin",
@@ -101,13 +101,13 @@
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {

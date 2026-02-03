@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.5-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/plugin-techdocs-node@1.14.2-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+
 ## 2.1.5-next.0
 
 ### Patch Changes

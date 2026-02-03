@@ -84,6 +84,17 @@ export type GitLabGroup = {
   parent_id?: number;
 };
 
+/**
+ * Representation of a GitLab file inside a project
+ *
+ * @public
+ */
+export type GitLabFile = {
+  path: string;
+  ref: string;
+  project_id: number;
+};
+
 export type GitLabGroupMembersResponse = {
   errors: { message: string }[];
   data: {
@@ -199,6 +210,11 @@ export type GitlabProviderConfig = {
    * @deprecated Use the `relations` array to configure group membership relations instead.
    **/
   allowInherited?: boolean;
+
+  /**
+   * If true, use the GitLab search API to find projects locations.
+   */
+  useSearch?: boolean;
 
   /**
    * Specifies the types of group membership relations that should be included when ingesting data.

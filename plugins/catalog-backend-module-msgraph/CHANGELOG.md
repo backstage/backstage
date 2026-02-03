@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.9.0-next.1
+
+### Minor Changes
+
+- 8694561: Log group/user count, tenant ID, execution time as separate fields
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 0.8.5-next.0
 
 ### Patch Changes
