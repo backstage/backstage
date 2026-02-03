@@ -43,5 +43,5 @@ import type { ToastContent } from './types';
  * @public
  */
 export const toastQueue = new ToastQueue<ToastContent>({
-  maxVisibleToasts: 5,
+  maxVisibleToasts: 4,
 });

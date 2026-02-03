@@ -52,6 +52,12 @@ export type ToastOwnProps = ContainerSurfaceProps & {
   status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
   /** Override icon from content */
   icon?: boolean | ReactElement;
+  /** Pre-calculated Y position when expanded (based on heights of toasts below) */
+  expandedY?: number;
+  /** Height to use when collapsed (front toast's height, for uniform stacking) */
+  collapsedHeight?: number;
+  /** Callback to report this toast's natural height */
+  onHeightChange?: (key: string, height: number) => void;
 };
 
 /**

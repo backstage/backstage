@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, Ref, useState, useRef } from 'react';
+import { forwardRef, Ref, useState, useRef, useCallback, useMemo } from 'react';
 import { useToastRegion } from '@react-aria/toast';
 import { useToastQueue } from 'react-stately';
 import { AnimatePresence } from 'motion/react';
@@ -79,6 +79,44 @@ export const ToastRegion = forwardRef(
     // Toasts are expanded when hovered, focused, or locked
     const isExpanded = isHovered || isHoverLocked;
 
+    // Track heights of all toasts by their key
+    const [toastHeights, setToastHeights] = useState<Record<string, number>>(
+      {},
+    );
+
+    // Callback for toasts to report their height
+    const handleHeightChange = useCallback((key: string, height: number) => {
+      setToastHeights(prev => {
+        if (prev[key] === height) return prev;
+        return { ...prev, [key]: height };
+      });
+    }, []);
+
+    // Calculate expanded Y positions and get front toast height
+    const { expandedYPositions, frontToastHeight } = useMemo(() => {
+      const gap = 8;
+      const positions: Record<string, number> = {};
+      let frontHeight = 60; // Default fallback
+
+      // visibleToasts[0] is the front toast (newest)
+      const toasts = state.visibleToasts;
+
+      if (toasts.length > 0 && toastHeights[toasts[0].key]) {
+        frontHeight = toastHeights[toasts[0].key];
+      }
+
+      // Calculate cumulative Y position for each toast when expanded
+      // Position is negative Y (moving up from bottom)
+      let cumulativeY = 0;
+      for (let i = 0; i < toasts.length; i++) {
+        positions[toasts[i].key] = -cumulativeY;
+        const height = toastHeights[toasts[i].key] || 60;
+        cumulativeY += height + gap;
+      }
+
+      return { expandedYPositions: positions, frontToastHeight: frontHeight };
+    }, [state.visibleToasts, toastHeights]);
+
     // Get inverted theme mode for toasts (light when app is dark, dark when app is light)
     const invertedThemeMode = useInvertedThemeMode();
 
@@ -120,6 +158,9 @@ export const ToastRegion = forwardRef(
               index={index}
               isExpanded={isExpanded}
               onClose={handleClose}
+              expandedY={expandedYPositions[toast.key] ?? 0}
+              collapsedHeight={index > 0 ? frontToastHeight : undefined}
+              onHeightChange={handleHeightChange}
             />
           ))}
         </AnimatePresence>

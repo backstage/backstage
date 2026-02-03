@@ -55,11 +55,12 @@ import type { TagGroupProps as TagGroupProps_2 } from 'react-aria-components';
 import type { TagListProps } from 'react-aria-components';
 import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
+import { ToastQueue } from 'react-stately';
+import type { ToastState } from 'react-stately';
 import type { ToggleButtonGroupProps as ToggleButtonGroupProps_2 } from 'react-aria-components';
 import type { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
-import { UNSTABLE_ToastQueue } from 'react-aria-components';
 
 // @public (undocumented)
 export const Accordion: ForwardRefExoticComponent<
@@ -2210,7 +2211,10 @@ export const ToastDefinition: {
   readonly surface: 'container';
   readonly propDefs: {
     readonly toast: {};
-    readonly onSwipeEnd: {};
+    readonly state: {};
+    readonly index: {};
+    readonly isExpanded: {};
+    readonly onClose: {};
     readonly status: {
       readonly dataAttribute: true;
     };
@@ -2218,22 +2222,31 @@ export const ToastDefinition: {
     readonly surface: {};
     readonly className: {};
     readonly style: {};
+    readonly expandedY: {};
+    readonly collapsedHeight: {};
+    readonly onHeightChange: {};
   };
 };
 
 // @public
 export type ToastOwnProps = ContainerSurfaceProps & {
   toast: QueuedToast<ToastContent>;
-  onSwipeEnd?: () => void;
+  state: ToastState<ToastContent>;
+  index?: number;
+  isExpanded?: boolean;
+  onClose?: () => void;
   status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
   icon?: boolean | ReactElement;
+  expandedY?: number;
+  collapsedHeight?: number;
+  onHeightChange?: (key: string, height: number) => void;
 };
 
 // @public
 export interface ToastProps extends ToastOwnProps {}
 
 // @public
-export const toastQueue: UNSTABLE_ToastQueue<ToastContent>;
+export const toastQueue: ToastQueue<ToastContent>;
 
 // @public
 export const ToastRegion: ForwardRefExoticComponent<
@@ -2256,7 +2269,7 @@ export const ToastRegionDefinition: {
 
 // @public
 export type ToastRegionOwnProps = {
-  queue: UNSTABLE_ToastQueue<ToastContent>;
+  queue: ToastQueue<ToastContent>;
   className?: string;
 };
 
