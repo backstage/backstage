@@ -18,31 +18,31 @@ import { forwardRef, Ref, useState, useRef, useCallback, useMemo } from 'react';
 import { useToastRegion } from '@react-aria/toast';
 import { useToastQueue } from 'react-stately';
 import { AnimatePresence } from 'motion/react';
-import type { ToastRegionProps } from './types';
+import type { ToastContainerProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { useInvertedThemeMode } from '../../hooks/useInvertedThemeMode';
-import { ToastRegionDefinition } from './definition';
+import { ToastContainerDefinition } from './definition';
 import { Toast } from './Toast';
 
 /**
- * A ToastRegion displays one or more toast notifications in the bottom-right corner.
+ * A ToastContainer displays one or more toast notifications in the bottom-right corner.
  *
  * @remarks
- * The ToastRegion component should typically be placed once at the root of your application.
+ * The ToastContainer component should typically be placed once at the root of your application.
  * It manages the display and stacking of all toast notifications added to its queue.
  * Toasts appear in the bottom-right corner with deep stacking when multiple are visible.
- * Toast regions are ARIA landmark regions that can be navigated using F6 (forward) and
+ * Toast containers are ARIA landmark regions that can be navigated using F6 (forward) and
  * Shift+F6 (backward) for keyboard accessibility.
  *
  * @example
  * Basic setup in app root:
  * ```tsx
- * import { ToastRegion, toastQueue } from '@backstage/ui';
+ * import { ToastContainer, toastQueue } from '@backstage/ui';
  *
  * function App() {
  *   return (
  *     <>
- *       <ToastRegion queue={toastQueue} />
+ *       <ToastContainer queue={toastQueue} />
  *       <YourAppContent />
  *     </>
  *   );
@@ -51,10 +51,10 @@ import { Toast } from './Toast';
  *
  * @public
  */
-export const ToastRegion = forwardRef(
-  (props: ToastRegionProps, ref: Ref<HTMLDivElement>) => {
+export const ToastContainer = forwardRef(
+  (props: ToastContainerProps, ref: Ref<HTMLDivElement>) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(
-      ToastRegionDefinition,
+      ToastContainerDefinition,
       props,
     );
     const { classes, queue, className } = ownProps;
@@ -64,10 +64,11 @@ export const ToastRegion = forwardRef(
 
     // Use internal ref if none provided
     const internalRef = useRef<HTMLDivElement>(null);
-    const regionRef = (ref as React.RefObject<HTMLDivElement>) || internalRef;
+    const containerRef =
+      (ref as React.RefObject<HTMLDivElement>) || internalRef;
 
     // Get ARIA props for the toast region
-    const { regionProps } = useToastRegion({}, state, regionRef);
+    const { regionProps } = useToastRegion({}, state, containerRef);
 
     // Track hover state for expanding/collapsing the stack
     const [isHovered, setIsHovered] = useState(false);
@@ -138,8 +139,8 @@ export const ToastRegion = forwardRef(
     return (
       <div
         {...regionProps}
-        ref={regionRef}
-        className={className || classes.region}
+        ref={containerRef}
+        className={className || classes.container}
         data-theme-mode={invertedThemeMode}
         data-hover-locked={isHoverLocked ? '' : undefined}
         onMouseEnter={() => setIsHovered(true)}
@@ -160,6 +161,7 @@ export const ToastRegion = forwardRef(
               onClose={handleClose}
               expandedY={expandedYPositions[toast.key] ?? 0}
               collapsedHeight={index > 0 ? frontToastHeight : undefined}
+              naturalHeight={toastHeights[toast.key]}
               onHeightChange={handleHeightChange}
             />
           ))}
@@ -169,4 +171,4 @@ export const ToastRegion = forwardRef(
   },
 );
 
-ToastRegion.displayName = 'ToastRegion';
+ToastContainer.displayName = 'ToastContainer';

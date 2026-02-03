@@ -15,17 +15,18 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
-import type { ToastOwnProps, ToastRegionOwnProps } from './types';
+import type { ToastOwnProps, ToastContainerOwnProps } from './types';
 import styles from './Toast.module.css';
 
 /**
  * Component definition for Toast
- * @public
+ * @internal
  */
 export const ToastDefinition = defineComponent<ToastOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Toast',
+    wrapper: 'bui-ToastWrapper',
     content: 'bui-ToastContent',
     title: 'bui-ToastTitle',
     description: 'bui-ToastDescription',
@@ -52,16 +53,17 @@ export const ToastDefinition = defineComponent<ToastOwnProps>()({
 });
 
 /**
- * Component definition for ToastRegion
+ * Component definition for ToastContainer
  * @public
  */
-export const ToastRegionDefinition = defineComponent<ToastRegionOwnProps>()({
-  styles,
-  classNames: {
-    region: 'bui-ToastRegion',
-  },
-  propDefs: {
-    queue: {},
-    className: {},
-  },
-});
+export const ToastContainerDefinition =
+  defineComponent<ToastContainerOwnProps>()({
+    styles,
+    classNames: {
+      container: 'bui-ToastContainer',
+    },
+    propDefs: {
+      queue: {},
+      className: {},
+    },
+  });

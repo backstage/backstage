@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { ToastRegion, toastQueue, Button, Flex } from '@backstage/ui';
+import { ToastContainer, toastQueue, Button, Flex } from '@backstage/ui';
 import type { ToastContent } from '@backstage/ui';
 
 export function Default() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Button
         onPress={() =>
           toastQueue.add({
@@ -25,7 +25,7 @@ export function Default() {
 export function StatusVariants() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -79,7 +79,7 @@ export function StatusVariants() {
 export function WithDescription() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Button
         onPress={() =>
           toastQueue.add({
@@ -98,7 +98,7 @@ export function WithDescription() {
 export function WithoutDescription() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -128,7 +128,7 @@ export function WithoutDescription() {
 export function AutoDismiss() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -168,7 +168,7 @@ export function ProgrammaticControl() {
 
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Button
         onPress={() => {
           if (!toastKey) {
@@ -197,7 +197,7 @@ export function ProgrammaticControl() {
 export function QueueManagement() {
   return (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() => {

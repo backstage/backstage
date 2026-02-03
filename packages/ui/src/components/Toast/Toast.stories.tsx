@@ -15,13 +15,13 @@
  */
 import { useState } from 'react';
 import preview from '../../../../../.storybook/preview';
-import { ToastRegion, toastQueue } from './index';
+import { ToastContainer, toastQueue } from './index';
 import { Flex } from '../Flex';
 import { Button } from '../Button';
 
 const meta = preview.meta({
   title: 'Backstage UI/Toast',
-  component: ToastRegion,
+  component: ToastContainer,
   parameters: {
     layout: 'centered',
   },
@@ -109,16 +109,25 @@ const randomToasts = [
 export const Default = meta.story({
   render: () => (
     <>
-      <ToastRegion queue={toastQueue} />
-      <Button
-        onPress={() => {
-          const toast =
-            randomToasts[Math.floor(Math.random() * randomToasts.length)];
-          toastQueue.add(toast);
-        }}
-      >
-        Show Toast
-      </Button>
+      <ToastContainer queue={toastQueue} />
+      <Flex gap="3">
+        <Button
+          onPress={() => {
+            const toast =
+              randomToasts[Math.floor(Math.random() * randomToasts.length)];
+            toastQueue.add(toast);
+          }}
+        >
+          Add Random Toast
+        </Button>
+        <Button
+          onPress={() => {
+            toastQueue.clear();
+          }}
+        >
+          Clear All Toasts
+        </Button>
+      </Flex>
     </>
   ),
 });
@@ -126,7 +135,7 @@ export const Default = meta.story({
 export const StatusVariants = meta.story({
   render: () => (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -180,7 +189,7 @@ export const StatusVariants = meta.story({
 export const WithoutDescription = meta.story({
   render: () => (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -210,7 +219,7 @@ export const WithoutDescription = meta.story({
 export const WithoutIcons = meta.story({
   render: () => (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -242,7 +251,7 @@ export const WithoutIcons = meta.story({
 export const AutoDismiss = meta.story({
   render: () => (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() =>
@@ -297,7 +306,7 @@ export const ProgrammaticDismiss = meta.story({
 
     return (
       <>
-        <ToastRegion queue={toastQueue} />
+        <ToastContainer queue={toastQueue} />
         <Button
           onPress={() => {
             if (!toastKey) {
@@ -327,7 +336,7 @@ export const ProgrammaticDismiss = meta.story({
 export const QueueManagement = meta.story({
   render: () => (
     <>
-      <ToastRegion queue={toastQueue} />
+      <ToastContainer queue={toastQueue} />
       <Flex gap="3">
         <Button
           onPress={() => {

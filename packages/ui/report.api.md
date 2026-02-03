@@ -31,7 +31,6 @@ import type { MenuSectionProps as MenuSectionProps_2 } from 'react-aria-componen
 import type { MenuTriggerProps as MenuTriggerProps_2 } from 'react-aria-components';
 import type { ModalOverlayProps } from 'react-aria-components';
 import { PopoverProps as PopoverProps_2 } from 'react-aria-components';
-import type { QueuedToast } from 'react-stately';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import type { ReactElement } from 'react';
@@ -56,7 +55,6 @@ import type { TagListProps } from 'react-aria-components';
 import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ToastQueue } from 'react-stately';
-import type { ToastState } from 'react-stately';
 import type { ToggleButtonGroupProps as ToggleButtonGroupProps_2 } from 'react-aria-components';
 import type { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
@@ -2183,9 +2181,32 @@ export type TextVariants =
 export type TextWeights = 'regular' | 'bold';
 
 // @public
-export const Toast: ForwardRefExoticComponent<
-  ToastProps & RefAttributes<HTMLDivElement>
+export const ToastContainer: ForwardRefExoticComponent<
+  ToastContainerProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export const ToastContainerDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly container: 'bui-ToastContainer';
+  };
+  readonly propDefs: {
+    readonly queue: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export type ToastContainerOwnProps = {
+  queue: ToastQueue<ToastContent>;
+  className?: string;
+};
+
+// @public
+export interface ToastContainerProps extends ToastContainerOwnProps {}
 
 // @public
 export interface ToastContent {
@@ -2196,85 +2217,7 @@ export interface ToastContent {
 }
 
 // @public
-export const ToastDefinition: {
-  readonly styles: {
-    readonly [key: string]: string;
-  };
-  readonly classNames: {
-    readonly root: 'bui-Toast';
-    readonly content: 'bui-ToastContent';
-    readonly title: 'bui-ToastTitle';
-    readonly description: 'bui-ToastDescription';
-    readonly icon: 'bui-ToastIcon';
-    readonly closeButton: 'bui-ToastCloseButton';
-  };
-  readonly surface: 'container';
-  readonly propDefs: {
-    readonly toast: {};
-    readonly state: {};
-    readonly index: {};
-    readonly isExpanded: {};
-    readonly onClose: {};
-    readonly status: {
-      readonly dataAttribute: true;
-    };
-    readonly icon: {};
-    readonly surface: {};
-    readonly className: {};
-    readonly style: {};
-    readonly expandedY: {};
-    readonly collapsedHeight: {};
-    readonly onHeightChange: {};
-  };
-};
-
-// @public
-export type ToastOwnProps = ContainerSurfaceProps & {
-  toast: QueuedToast<ToastContent>;
-  state: ToastState<ToastContent>;
-  index?: number;
-  isExpanded?: boolean;
-  onClose?: () => void;
-  status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
-  icon?: boolean | ReactElement;
-  expandedY?: number;
-  collapsedHeight?: number;
-  onHeightChange?: (key: string, height: number) => void;
-};
-
-// @public
-export interface ToastProps extends ToastOwnProps {}
-
-// @public
 export const toastQueue: ToastQueue<ToastContent>;
-
-// @public
-export const ToastRegion: ForwardRefExoticComponent<
-  ToastRegionProps & RefAttributes<HTMLDivElement>
->;
-
-// @public
-export const ToastRegionDefinition: {
-  readonly styles: {
-    readonly [key: string]: string;
-  };
-  readonly classNames: {
-    readonly region: 'bui-ToastRegion';
-  };
-  readonly propDefs: {
-    readonly queue: {};
-    readonly className: {};
-  };
-};
-
-// @public
-export type ToastRegionOwnProps = {
-  queue: ToastQueue<ToastContent>;
-  className?: string;
-};
-
-// @public
-export interface ToastRegionProps extends ToastRegionOwnProps {}
 
 // @public (undocumented)
 export const ToggleButton: ForwardRefExoticComponent<

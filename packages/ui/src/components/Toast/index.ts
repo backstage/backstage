@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-export { Toast } from './Toast';
-export { ToastRegion } from './ToastRegion';
-export { ToastDefinition, ToastRegionDefinition } from './definition';
+export { ToastContainer } from './ToastContainer';
+export { ToastContainerDefinition } from './definition';
 export { toastQueue } from './ToastQueue';
 export type {
   ToastContent,
-  ToastOwnProps,
-  ToastProps,
-  ToastRegionOwnProps,
-  ToastRegionProps,
+  ToastContainerOwnProps,
+  ToastContainerProps,
 } from './types';
