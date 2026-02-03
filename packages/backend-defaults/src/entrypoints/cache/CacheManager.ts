@@ -142,6 +142,8 @@ export class CacheManager {
       );
     }
 
+    logger?.info('[REDIS PATCH] Store', { store });
+
     switch (store) {
       case 'redis':
         return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
@@ -194,6 +196,13 @@ export class CacheManager {
     const pingInterval = socketConfig?.getOptionalNumber('pingInterval');
     const socketTimeout = socketConfig?.getOptionalNumber('socketTimeout');
 
+    logger?.info('[REDIS PATCH] Read socket config', {
+      keepAliveConfig,
+      keepAliveInitialDelay,
+      pingInterval,
+      socketTimeout,
+    });
+
     if (typeof keepAliveConfig === 'number') {
       logger?.warn(
         "Invalid 'client.socket.keepAlive' value. Expected boolean, got number. Ignoring keepAlive.",
@@ -225,6 +234,11 @@ export class CacheManager {
       }
     }
 
+    logger?.info('[REDIS PATCH] Derived socket options', {
+      keepAliveForSocket,
+      keepAliveInitialDelayForSocket,
+    });
+
     const reconnectConfig =
       socketConfig?.getOptionalConfig('reconnectStrategy');
     const baseDelayMs = reconnectConfig?.getOptionalNumber('baseDelayMs');
@@ -240,6 +254,14 @@ export class CacheManager {
       jitterMs !== undefined ||
       maxRetries !== undefined ||
       stopOnSocketTimeout !== undefined;
+
+    logger?.info('[REDIS PATCH] Read reconnect config', {
+      baseDelayMs,
+      maxDelayMs,
+      jitterMs,
+      maxRetries,
+      stopOnSocketTimeout,
+    });
 
     const reconnectStrategy = hasReconnectConfig
       ? (retries: number, cause: Error) => {
@@ -326,6 +348,12 @@ export class CacheManager {
         };
       }
     }
+
+    logger?.info('[REDIS PATCH] Passing Redis options to Redis client', {
+      client: redisOptions.client,
+      socket: redisOptions.socket,
+      cluster: redisOptions.cluster,
+    });
 
     return redisOptions;
   }
