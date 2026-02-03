@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.8.0-next.1
+
+### Minor Changes
+
+- 2f51676: allow entity discoverability via gitlab search API
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+
 ## 0.8.0-next.0
 
 ### Minor Changes

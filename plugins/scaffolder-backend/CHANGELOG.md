@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.3-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.3-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.6-next.1
+  - @backstage/plugin-scaffolder-common@1.7.6-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
 ## 3.1.2-next.0
 
 ### Patch Changes

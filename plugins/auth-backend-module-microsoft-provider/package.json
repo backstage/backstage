@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-microsoft-provider",
-  "version": "0.3.11-next.0",
+  "version": "0.3.12-next.0",
   "description": "The microsoft-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",

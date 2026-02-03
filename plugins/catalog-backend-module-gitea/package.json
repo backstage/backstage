@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-gitea",
-  "version": "0.1.9-next.0",
+  "version": "0.1.9-next.1",
   "license": "Apache-2.0",
   "description": "The gitea backend module for the catalog plugin.",
   "main": "src/index.ts",

@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend
 
+## 3.4.0-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 3.4.0-next.0
 
 ### Minor Changes
