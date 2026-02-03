@@ -27,9 +27,11 @@ import {
   entityContentGroupDataRef,
   defaultEntityContentGroups,
 } from './extensionData';
-import { EntityPredicate } from '../predicates/types';
+import {
+  FilterPredicate,
+  createZodV3FilterPredicateSchema,
+} from '@backstage/filter-predicates';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
-import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import { Entity } from '@backstage/catalog-model';
 
 /**
@@ -59,7 +61,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       path: z => z.string().optional(),
       title: z => z.string().optional(),
       filter: z =>
-        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
+        z.union([z.string(), createZodV3FilterPredicateSchema(z)]).optional(),
       group: z => z.literal(false).or(z.string()).optional(),
     },
   },
@@ -82,7 +84,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       group?: keyof typeof defaultEntityContentGroups | (string & {});
       loader: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
-      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      filter?: string | FilterPredicate | ((entity: Entity) => boolean);
     },
     { node, config },
   ) {

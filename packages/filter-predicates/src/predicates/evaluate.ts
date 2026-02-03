@@ -15,51 +15,48 @@
  */
 
 import { JsonValue } from '@backstage/types';
-import { EntityPredicate, EntityPredicateValue } from './types';
-import { valueAtPath } from './valueAtPath';
+import { FilterPredicate, FilterPredicateValue } from './types';
+import { getJsonValueAtPath } from './getJsonValueAtPath';
 
 /**
- * Convert an entity predicate to a filter function that can be used to filter entities.
- * @alpha
- */
-export function entityPredicateToFilterFunction<T extends JsonValue>(
-  entityPredicate: EntityPredicate,
-): (value: T) => boolean {
-  return value => evaluateEntityPredicate(entityPredicate, value);
-}
-
-/**
- * Evaluate a entity predicate against a value, typically an entity.
+ * Evaluate a filter predicate against a value.
  *
- * @internal
+ * @public
  */
-function evaluateEntityPredicate(
-  filter: EntityPredicate,
-  value: JsonValue,
+export function evaluateFilterPredicate(
+  predicate: FilterPredicate,
+  value: unknown,
 ): boolean {
-  if (typeof filter !== 'object' || filter === null || Array.isArray(filter)) {
-    return valuesAreEqual(value, filter);
+  if (
+    typeof predicate !== 'object' ||
+    predicate === null ||
+    Array.isArray(predicate)
+  ) {
+    return valuesAreEqual(value, predicate);
   }
 
-  if ('$all' in filter) {
-    return filter.$all.every(f => evaluateEntityPredicate(f, value));
+  if ('$all' in predicate) {
+    return predicate.$all.every(f => evaluateFilterPredicate(f, value));
   }
-  if ('$any' in filter) {
-    return filter.$any.some(f => evaluateEntityPredicate(f, value));
+  if ('$any' in predicate) {
+    return predicate.$any.some(f => evaluateFilterPredicate(f, value));
   }
-  if ('$not' in filter) {
-    return !evaluateEntityPredicate(filter.$not, value);
+  if ('$not' in predicate) {
+    return !evaluateFilterPredicate(predicate.$not, value);
   }
 
-  for (const filterKey in filter) {
-    if (!Object.hasOwn(filter, filterKey)) {
+  for (const filterKey in predicate) {
+    if (!Object.hasOwn(predicate, filterKey)) {
       continue;
     }
     if (filterKey.startsWith('$')) {
       return false;
     }
     if (
-      !evaluatePredicateValue(filter[filterKey], valueAtPath(value, filterKey))
+      !evaluateFilterPredicateValue(
+        predicate[filterKey],
+        getJsonValueAtPath(value as JsonValue, filterKey),
+      )
     ) {
       return false;
     }
@@ -69,13 +66,24 @@ function evaluateEntityPredicate(
 }
 
 /**
- * Evaluate a single value against a predicate value.
+ * Convert a filter predicate to a filter function.
+ *
+ * @public
+ */
+export function filterPredicateToFilterFunction<T = unknown>(
+  predicate: FilterPredicate,
+): (value: T) => boolean {
+  return value => evaluateFilterPredicate(predicate, value);
+}
+
+/**
+ * Evaluate a single value against a filter predicate value.
  *
  * @internal
  */
-function evaluatePredicateValue(
-  filter: EntityPredicateValue,
-  value: JsonValue | undefined,
+function evaluateFilterPredicateValue(
+  filter: FilterPredicateValue,
+  value: unknown,
 ): boolean {
   if (typeof filter !== 'object' || filter === null || Array.isArray(filter)) {
     return valuesAreEqual(value, filter);
@@ -85,7 +93,7 @@ function evaluatePredicateValue(
     if (!Array.isArray(value)) {
       return false;
     }
-    return value.some(v => evaluateEntityPredicate(filter.$contains, v));
+    return value.some(v => evaluateFilterPredicate(filter.$contains, v));
   }
   if ('$in' in filter) {
     return filter.$in.some(search => valuesAreEqual(value, search));
@@ -96,14 +104,19 @@ function evaluatePredicateValue(
     }
     return value === undefined;
   }
+  if ('$startsWith' in filter) {
+    if (typeof value !== 'string') {
+      return false;
+    }
+    return value
+      .toLocaleUpperCase('en-US')
+      .startsWith(filter.$startsWith.toLocaleUpperCase('en-US'));
+  }
 
   return false;
 }
 
-function valuesAreEqual(
-  a: JsonValue | undefined,
-  b: JsonValue | undefined,
-): boolean {
+function valuesAreEqual(a: unknown, b: unknown): boolean {
   if (a === null || b === null) {
     return false;
   }

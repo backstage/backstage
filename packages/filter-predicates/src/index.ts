@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export type {
-  EntityPredicate,
-  EntityPredicateExpression,
-  EntityPredicatePrimitive,
-  EntityPredicateValue,
-} from './types';
-export { entityPredicateToFilterFunction } from './entityPredicateToFilterFunction';
+/**
+ * Contains types and implementations related to the concept of filter predicate expressions.
+ *
+ * @packageDocumentation
+ */
+
+export * from './predicates';
