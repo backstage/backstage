@@ -36,6 +36,7 @@ import {
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { generateExampleOutput, isTruthy } from './helper';
 import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
+
 import type {
   AuditorService,
   LoggerService,
@@ -361,50 +362,47 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         );
       }
 
+      const iterationContext = {
+        ...context,
+        environment: {
+          parameters: this.environment?.parameters ?? {},
+          secrets: this.environment?.secrets ?? {},
+        },
+        secrets: task.secrets ?? {},
+      };
+
       const iterations = (
         resolvedEach
           ? Object.entries(resolvedEach).map(([key, value]) => ({
               each: { key, value },
             }))
           : [{}]
-      ).map(i => ({
-        ...i,
-        // Secrets are only passed when templating the input to actions for security reasons
-        input: step.input
-          ? this.render(
-              step.input,
-              {
-                ...context,
-                environment: {
-                  parameters: this.environment?.parameters ?? {},
-                  secrets: this.environment?.secrets ?? {},
-                },
-                secrets: task.secrets ?? {},
-                ...i,
-              },
-              renderTemplate,
-            )
-          : {},
-      }));
+      ).map(i => {
+        const fullContext = { ...iterationContext, ...i };
+        // Evaluate if condition once per iteration, only when using 'each'
+        const shouldRun =
+          !('each' in i) ||
+          !step.if ||
+          isTruthy(this.render(step.if, fullContext, renderTemplate));
+
+        return {
+          ...i,
+          shouldRun,
+          // Secrets are only passed when templating the input to actions for security reasons
+          input: step.input
+            ? this.render(step.input, fullContext, renderTemplate)
+            : {},
+        };
+      });
       for (const iteration of iterations) {
+        if (!iteration.shouldRun) {
+          // No need to check schema or authorization for iterations that will not run
+          continue;
+        }
+
         const actionId = `${action.id}${
           iteration.each ? `[${iteration.each.key}]` : ''
         }`;
-
-        if (iteration.each && step.if) {
-          if (
-            !isTruthy(
-              this.render(
-                step.if,
-                { ...context, ...iteration },
-                renderTemplate,
-              ),
-            )
-          ) {
-            // No need to check schema or authorization for iterations that will not run
-            continue;
-          }
-        }
 
         if (action.schema?.input) {
           const validateResult = validateJsonSchema(
@@ -439,25 +437,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       for (const iteration of iterations) {
         if (iteration.each) {
-          if (step.if) {
-            if (
-              !isTruthy(
-                this.render(
-                  step.if,
-                  { ...context, ...iteration },
-                  renderTemplate,
-                ),
-              )
-            ) {
-              taskLogger.info(
-                `Skipping step each: ${JSON.stringify(
-                  iteration.each,
-                  (k, v) => (k ? String(v) : v),
-                  0,
-                )}`,
-              );
-              continue;
-            }
+          if (!iteration.shouldRun) {
+            taskLogger.info(
+              `Skipping step each: ${JSON.stringify(
+                iteration.each,
+                (k, v) => (k ? String(v) : v),
+                0,
+              )}`,
+            );
+            continue;
           }
           taskLogger.info(
             `Running step each: ${JSON.stringify(
