@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import { UNSTABLE_ToastQueue as RAToastQueue } from 'react-aria-components';
-import { flushSync } from 'react-dom';
+import { ToastQueue } from 'react-stately';
 import type { ToastContent } from './types';
 
 /**
  * Global toast queue for displaying toast notifications throughout the application.
  *
  * @remarks
- * This uses React Aria's unstable Toast API which is currently in alpha.
- * The API may change in future versions.
- *
- * Uses the View Transitions API for smooth enter/exit animations when supported.
+ * This uses React Stately's ToastQueue for state management with motion/react
+ * for smooth enter/exit animations.
  *
  * @example
  * ```tsx
@@ -45,41 +42,6 @@ import type { ToastContent } from './types';
  *
  * @public
  */
-// Track which toast element is being closed for view transition
-let closingToastElement: HTMLElement | null = null;
-
-export const toastQueue = new RAToastQueue<ToastContent>({
+export const toastQueue = new ToastQueue<ToastContent>({
   maxVisibleToasts: 5,
-  // Wrap state updates in a CSS view transition for smooth animations
-  wrapUpdate(fn) {
-    if (closingToastElement && 'startViewTransition' in document) {
-      // Set view-transition-name on the element BEFORE capturing old state
-      closingToastElement.style.viewTransitionName = 'toast-exit';
-      const element = closingToastElement;
-      closingToastElement = null;
-
-      (
-        document as Document & {
-          startViewTransition: (cb: () => void) => void;
-        }
-      ).startViewTransition(() => {
-        flushSync(fn);
-        // Clean up (element may be removed, but just in case)
-        element.style.viewTransitionName = '';
-      });
-    } else {
-      fn();
-    }
-  },
 });
-
-// Override close to capture the toast element before transition
-const originalClose = toastQueue.close.bind(toastQueue);
-toastQueue.close = (key: string) => {
-  // Find the toast element by our custom data attribute
-  const toastElement = document.querySelector(
-    `[data-toast-key="${key}"]`,
-  ) as HTMLElement | null;
-  closingToastElement = toastElement;
-  originalClose(key);
-};

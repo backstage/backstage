@@ -15,8 +15,7 @@
  */
 
 import type { ReactElement, ReactNode } from 'react';
-import type { UNSTABLE_ToastQueue as RAToastQueue } from 'react-aria-components';
-import type { QueuedToast } from 'react-stately';
+import type { ToastQueue, ToastState, QueuedToast } from 'react-stately';
 import type { Responsive, ContainerSurfaceProps } from '../../types';
 
 /**
@@ -41,6 +40,10 @@ export interface ToastContent {
 export type ToastOwnProps = ContainerSurfaceProps & {
   /** Toast object from the queue */
   toast: QueuedToast<ToastContent>;
+  /** Toast state from useToastQueue */
+  state: ToastState<ToastContent>;
+  /** Index of the toast in the visible toasts array */
+  index?: number;
   /** Callback when toast is closed */
   onClose?: () => void;
   /** Override status from content */
@@ -61,7 +64,7 @@ export interface ToastProps extends ToastOwnProps {}
  */
 export type ToastRegionOwnProps = {
   /** Toast queue instance */
-  queue: RAToastQueue<ToastContent>;
+  queue: ToastQueue<ToastContent>;
   /** Custom class name */
   className?: string;
 };

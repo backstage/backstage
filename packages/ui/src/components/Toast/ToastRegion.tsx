@@ -15,7 +15,9 @@
  */
 
 import { forwardRef, Ref, useState, useRef } from 'react';
-import { UNSTABLE_ToastRegion as RAToastRegion } from 'react-aria-components';
+import { useToastRegion } from '@react-aria/toast';
+import { useToastQueue } from 'react-stately';
+import { AnimatePresence } from 'motion/react';
 import type { ToastRegionProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { useInvertedThemeMode } from '../../hooks/useInvertedThemeMode';
@@ -31,8 +33,6 @@ import { Toast } from './Toast';
  * Toasts appear in the bottom-right corner with deep stacking when multiple are visible.
  * Toast regions are ARIA landmark regions that can be navigated using F6 (forward) and
  * Shift+F6 (backward) for keyboard accessibility.
- *
- * This component uses React Aria's unstable Toast API which is currently in alpha.
  *
  * @example
  * Basic setup in app root:
@@ -59,6 +59,16 @@ export const ToastRegion = forwardRef(
     );
     const { classes, queue, className } = ownProps;
 
+    // Subscribe to the toast queue state
+    const state = useToastQueue(queue);
+
+    // Use internal ref if none provided
+    const internalRef = useRef<HTMLDivElement>(null);
+    const regionRef = (ref as React.RefObject<HTMLDivElement>) || internalRef;
+
+    // Get ARIA props for the toast region
+    const { regionProps } = useToastRegion({}, state, regionRef);
+
     // Lock hover state after close to prevent stack collapse during DOM updates
     const [isHoverLocked, setIsHoverLocked] = useState(false);
     const unlockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -82,18 +92,27 @@ export const ToastRegion = forwardRef(
     };
 
     return (
-      <RAToastRegion
-        ref={ref}
-        queue={queue}
+      <div
+        {...regionProps}
+        ref={regionRef}
         className={className || classes.region}
-        aria-label="Notifications"
         data-theme-mode={invertedThemeMode}
         data-hover-locked={isHoverLocked ? '' : undefined}
         {...dataAttributes}
         {...restProps}
       >
-        {({ toast }) => <Toast toast={toast} onClose={handleClose} />}
-      </RAToastRegion>
+        <AnimatePresence>
+          {state.visibleToasts.map((toast, index) => (
+            <Toast
+              key={toast.key}
+              toast={toast}
+              state={state}
+              index={index}
+              onClose={handleClose}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
     );
   },
 );

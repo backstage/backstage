@@ -66,18 +66,9 @@
     /* Stacking */
     z-index: calc(1000 - var(--toast-index));
     transform-origin: bottom center;
-    transform: translateY(calc(var(--toast-index) * var(--toast-peek) * -1))
-      scale(var(--toast-scale));
-    will-change: transform;
 
-    /* Shadow + thin line separator */
+    /* Shadow */
     box-shadow: 0 4px 12px -2px rgba(0 0 0 / 0.4);
-
-    /* Animation */
-    transition: transform 3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 3s ease;
-
-    /* View Transitions - name is set dynamically via inline style, class groups them */
-    view-transition-class: toast;
 
     /* Focus ring */
     &:focus-visible {
@@ -90,13 +81,6 @@
   .bui-ToastRegion:hover .bui-Toast,
   .bui-ToastRegion:focus-within .bui-Toast,
   .bui-ToastRegion[data-hover-locked] .bui-Toast {
-    transform: translateY(
-        calc(
-          (var(--toast-index) * -100%) -
-            (var(--toast-index) * var(--bui-space-2))
-        )
-      )
-      scale(1);
     pointer-events: auto;
   }
 
@@ -212,54 +196,5 @@
     &:active {
       background-color: var(--bui-bg-neutral-on-surface-1-pressed);
     }
-  }
-
-  /* Starting state - toast entering (fallback for non-view-transition browsers) */
-  .bui-Toast[data-starting-style] {
-    transform: translateY(calc(100% + 2rem)) scale(1) !important;
-    opacity: 0 !important;
-  }
-}
-
-/* View Transition animations - must be outside @layer for browser support */
-@keyframes bui-toast-enter {
-  from {
-    opacity: 0;
-    transform: translateY(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bui-toast-exit {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(100px);
-  }
-}
-
-/* Apply exit animation only to the closing toast */
-::view-transition-old(toast-exit) {
-  animation: bui-toast-exit 3s ease-out forwards;
-}
-
-::view-transition-new(toast-exit) {
-  animation: none;
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .bui-Toast {
-    transition: none;
-  }
-
-  ::view-transition-old(toast-exit) {
-    animation: none !important;
   }
 }
