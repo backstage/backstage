@@ -22,8 +22,12 @@ export const SpacingGroupRow = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Separate padding and margin props
-  const paddingProps = spacingGroup.props.filter(prop => prop.name.startsWith('p'));
-  const marginProps = spacingGroup.props.filter(prop => prop.name.startsWith('m'));
+  const paddingProps = spacingGroup.props.filter(prop =>
+    prop.name.startsWith('p'),
+  );
+  const marginProps = spacingGroup.props.filter(prop =>
+    prop.name.startsWith('m'),
+  );
 
   const renderCell = (columnKey: string) => {
     switch (columnKey) {
@@ -35,7 +39,10 @@ export const SpacingGroupRow = ({
             aria-expanded={isExpanded}
           >
             <span className={styles.propName}>
-              Spacing props <span className={styles.count}>({spacingGroup.props.length})</span>
+              Spacing props{' '}
+              <span className={styles.count}>
+                ({spacingGroup.props.length})
+              </span>
             </span>
             {isExpanded ? (
               <RiArrowDownSLine className={styles.icon} size={16} />
