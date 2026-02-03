@@ -39,9 +39,7 @@ export const PropsTable = <T extends Record<string, PropData>>({
   data: T;
   columns?: ColumnConfig[];
 }) => {
-
   if (!data) return null;
-
 
   const renderCell = (
     propName: string,
@@ -63,10 +61,9 @@ export const PropsTable = <T extends Record<string, PropData>>({
             {propData.type === 'number' && <Chip>number</Chip>}
             {propData.type === 'boolean' && <Chip>boolean</Chip>}
             {propData.type === 'enum' && enumValues}
-            {propData.type === 'spacing' &&
-              Array.isArray(propData.values) && (
-                <SpacingPopup values={propData.values} />
-              )}
+            {propData.type === 'spacing' && Array.isArray(propData.values) && (
+              <SpacingPopup values={propData.values} />
+            )}
             {propData.type === 'complex' && propData.complexType && (
               <TypePopup
                 complexType={propData.complexType}
