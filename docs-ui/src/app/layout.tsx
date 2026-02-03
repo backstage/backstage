@@ -49,6 +49,10 @@ export default async function RootLayout({
       data-theme-name="backstage"
       suppressHydrationWarning
     >
+      <head>
+        <link rel="stylesheet" href="/theme-backstage.css" />
+        <link rel="stylesheet" href="/theme-spotify.css" />
+      </head>
       <body>
         <Providers>
           <Sidebar />

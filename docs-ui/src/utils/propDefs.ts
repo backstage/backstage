@@ -15,6 +15,18 @@ export type ComplexTypeDef = {
   >;
 };
 
+export type SpacingProp = {
+  name: string;
+  description: ReactNode;
+  default?: string;
+};
+
+export type SpacingGroupDef = {
+  props: SpacingProp[];
+  values: string[];
+  responsive: boolean;
+};
+
 export type PropDef = {
   type:
     | 'string'
@@ -23,9 +35,11 @@ export type PropDef = {
     | 'number'
     | 'boolean'
     | 'spacing'
+    | 'spacing-group'
     | 'complex';
   values?: string | string[];
   complexType?: ComplexTypeDef;
+  spacingGroup?: SpacingGroupDef;
   default?: string;
   required?: boolean;
   responsive?: boolean;
@@ -58,43 +72,43 @@ export const paddingPropDefs = (
   spacingValues: string[],
 ): Record<string, PropDef> => ({
   p: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Padding on all sides.',
   },
   px: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Horizontal padding (left and right).',
   },
   py: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Vertical padding (top and bottom).',
   },
   pt: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Padding on the top.',
   },
   pr: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Padding on the right.',
   },
   pb: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Padding on the bottom.',
   },
   pl: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Padding on the left.',
@@ -105,43 +119,43 @@ export const marginPropDefs = (
   spacingValues: string[],
 ): Record<string, PropDef> => ({
   m: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Margin on all sides.',
   },
   mx: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Horizontal margin (left and right).',
   },
   my: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Vertical margin (top and bottom).',
   },
   mt: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Margin on the top.',
   },
   mr: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Margin on the right.',
   },
   mb: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Margin on the bottom.',
   },
   ml: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     description: 'Margin on the left.',
@@ -152,6 +166,76 @@ export const spacingPropDefs = {
   ...paddingPropDefs(spacingValues),
   ...marginPropDefs(spacingValues),
 };
+
+// Spacing prop metadata for creating groups
+const spacingPropMetadata: Record<string, SpacingProp> = {
+  p: { name: 'p', description: 'Padding on all sides.' },
+  px: { name: 'px', description: 'Horizontal padding (left and right).' },
+  py: { name: 'py', description: 'Vertical padding (top and bottom).' },
+  pt: { name: 'pt', description: 'Padding on the top.' },
+  pr: { name: 'pr', description: 'Padding on the right.' },
+  pb: { name: 'pb', description: 'Padding on the bottom.' },
+  pl: { name: 'pl', description: 'Padding on the left.' },
+  m: { name: 'm', description: 'Margin on all sides.' },
+  mx: { name: 'mx', description: 'Horizontal margin (left and right).' },
+  my: { name: 'my', description: 'Vertical margin (top and bottom).' },
+  mt: { name: 'mt', description: 'Margin on the top.' },
+  mr: { name: 'mr', description: 'Margin on the right.' },
+  mb: { name: 'mb', description: 'Margin on the bottom.' },
+  ml: { name: 'ml', description: 'Margin on the left.' },
+};
+
+export const createSpacingGroup = (
+  propNames: string[],
+  description?: ReactNode,
+): PropDef => {
+  const props = propNames
+    .map(name => spacingPropMetadata[name])
+    .filter(Boolean);
+
+  return {
+    type: 'spacing-group',
+    spacingGroup: {
+      props,
+      values: spacingValues,
+      responsive: true,
+    },
+    description:
+      description || 'Spacing properties for controlling padding and margin.',
+    responsive: true,
+  };
+};
+
+// Pre-built spacing groups
+export const spacingGroupAll = createSpacingGroup(
+  [
+    'p',
+    'px',
+    'py',
+    'pt',
+    'pr',
+    'pb',
+    'pl',
+    'm',
+    'mx',
+    'my',
+    'mt',
+    'mr',
+    'mb',
+    'ml',
+  ],
+  'Padding and margin properties for controlling spacing around the element.',
+);
+
+export const spacingGroupPadding = createSpacingGroup(
+  ['p', 'px', 'py', 'pt', 'pr', 'pb', 'pl'],
+  'Padding properties for controlling internal spacing.',
+);
+
+export const spacingGroupMargin = createSpacingGroup(
+  ['m', 'mx', 'my', 'mt', 'mr', 'mb', 'ml'],
+  'Margin properties for controlling external spacing.',
+);
 
 export const displayPropDefs: Record<string, PropDef> = {
   display: {
@@ -164,7 +248,7 @@ export const displayPropDefs: Record<string, PropDef> = {
 
 export const gapPropDefs: Record<string, PropDef> = {
   gap: {
-    type: 'enum | string',
+    type: 'spacing',
     values: spacingValues,
     responsive: true,
     default: '4',

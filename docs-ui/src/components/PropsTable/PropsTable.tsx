@@ -3,6 +3,8 @@
 import * as Table from '../Table';
 import { Chip } from '../Chip';
 import { TypePopup } from './TypePopup';
+import { SpacingPopup } from './SpacingPopup';
+import { SpacingGroupRow } from './SpacingGroupRow';
 
 import { PropDef } from '@/utils/propDefs';
 
@@ -59,11 +61,8 @@ export const PropsTable = <T extends Record<string, PropData>>({
             {propData.type === 'number' && <Chip>number</Chip>}
             {propData.type === 'boolean' && <Chip>boolean</Chip>}
             {propData.type === 'enum' && enumValues}
-            {propData.type === 'spacing' && (
-              <>
-                <Chip>0.5, 1, 1.5, 2, 3, ..., 14</Chip>
-                <Chip>string</Chip>
-              </>
+            {propData.type === 'spacing' && Array.isArray(propData.values) && (
+              <SpacingPopup values={propData.values} />
             )}
             {propData.type === 'complex' && propData.complexType && (
               <TypePopup
@@ -81,10 +80,12 @@ export const PropsTable = <T extends Record<string, PropData>>({
         );
 
       case 'default':
-        return propData.default ? <Chip>{propData.default}</Chip> : null;
+        return propData.default ? <Chip>{propData.default}</Chip> : '-';
 
       case 'description':
-        return propData.description || null;
+        return propData.description ? (
+          <span style={{ fontSize: '14px' }}>{propData.description}</span>
+        ) : null;
 
       case 'responsive':
         return <Chip>{propData.responsive ? 'Yes' : 'No'}</Chip>;
@@ -106,15 +107,32 @@ export const PropsTable = <T extends Record<string, PropData>>({
         </Table.HeaderRow>
       </Table.Header>
       <Table.Body>
-        {Object.keys(data).map(n => (
-          <Table.Row key={n}>
-            {columns.map(col => (
-              <Table.Cell key={col.key} style={{ width: col.width }}>
-                {renderCell(n, data[n], col.key)}
-              </Table.Cell>
-            ))}
-          </Table.Row>
-        ))}
+        {Object.keys(data).map(n => {
+          const propData = data[n];
+
+          // Handle spacing-group type
+          if (propData.type === 'spacing-group' && propData.spacingGroup) {
+            return (
+              <SpacingGroupRow
+                key={n}
+                spacingGroup={propData.spacingGroup}
+                description={propData.description}
+                columns={columns}
+              />
+            );
+          }
+
+          // Handle regular props
+          return (
+            <Table.Row key={n}>
+              {columns.map(col => (
+                <Table.Cell key={col.key} style={{ width: col.width }}>
+                  {renderCell(n, propData, col.key)}
+                </Table.Cell>
+              ))}
+            </Table.Row>
+          );
+        })}
       </Table.Body>
     </Table.Root>
   );
