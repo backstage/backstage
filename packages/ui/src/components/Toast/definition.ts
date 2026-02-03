@@ -37,6 +37,7 @@ export const ToastDefinition = defineComponent<ToastOwnProps>()({
     toast: {},
     state: {},
     index: {},
+    isExpanded: {},
     onClose: {},
     status: { dataAttribute: true },
     icon: {},

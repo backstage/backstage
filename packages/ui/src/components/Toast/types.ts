@@ -44,6 +44,8 @@ export type ToastOwnProps = ContainerSurfaceProps & {
   state: ToastState<ToastContent>;
   /** Index of the toast in the visible toasts array */
   index?: number;
+  /** Whether the toast stack is expanded (hovered/focused) */
+  isExpanded?: boolean;
   /** Callback when toast is closed */
   onClose?: () => void;
   /** Override status from content */

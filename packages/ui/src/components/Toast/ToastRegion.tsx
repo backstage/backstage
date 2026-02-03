@@ -69,9 +69,15 @@ export const ToastRegion = forwardRef(
     // Get ARIA props for the toast region
     const { regionProps } = useToastRegion({}, state, regionRef);
 
-    // Lock hover state after close to prevent stack collapse during DOM updates
+    // Track hover state for expanding/collapsing the stack
+    const [isHovered, setIsHovered] = useState(false);
+
+    // Lock expanded state after close to prevent stack collapse during exit animation
     const [isHoverLocked, setIsHoverLocked] = useState(false);
     const unlockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Toasts are expanded when hovered, focused, or locked
+    const isExpanded = isHovered || isHoverLocked;
 
     // Get inverted theme mode for toasts (light when app is dark, dark when app is light)
     const invertedThemeMode = useInvertedThemeMode();
@@ -85,10 +91,10 @@ export const ToastRegion = forwardRef(
         clearTimeout(unlockTimerRef.current);
       }
 
-      // Unlock after a short delay to allow DOM to settle
+      // Unlock after a short delay to allow exit animation to complete
       unlockTimerRef.current = setTimeout(() => {
         setIsHoverLocked(false);
-      }, 300);
+      }, 500);
     };
 
     return (
@@ -98,6 +104,10 @@ export const ToastRegion = forwardRef(
         className={className || classes.region}
         data-theme-mode={invertedThemeMode}
         data-hover-locked={isHoverLocked ? '' : undefined}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onFocus={() => setIsHovered(true)}
+        onBlur={() => setIsHovered(false)}
         {...dataAttributes}
         {...restProps}
       >
@@ -108,6 +118,7 @@ export const ToastRegion = forwardRef(
               toast={toast}
               state={state}
               index={index}
+              isExpanded={isExpanded}
               onClose={handleClose}
             />
           ))}
