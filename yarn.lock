@@ -7784,10 +7784,13 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/express": "npm:^4.17.6"
     "@types/supertest": "npm:^2.0.8"
+    already: "npm:^2.2.1"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     knex: "npm:^3.0.0"
+    p-limit: "npm:^3.1.0"
     supertest: "npm:^7.0.0"
+    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 
@@ -7796,6 +7799,7 @@ __metadata:
   resolution: "@backstage/plugin-user-settings-common@workspace:plugins/user-settings-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/types": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -7826,6 +7830,7 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
+    dataloader: "npm:^2.0.0"
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
@@ -24491,6 +24496,13 @@ __metadata:
   version: 1.0.2
   resolution: "alphanum-sort@npm:1.0.2"
   checksum: 10/e23264059c4cd35c7250fa5beee652e6935901845f58a73ecbf8d1a344b341952e9c268c81c05d4132216bf24d7e52640d66dca231a6a757cf7a0e756028e3f2
+  languageName: node
+  linkType: hard
+
+"already@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "already@npm:2.2.1"
+  checksum: 10/1c55b50667c3dbe9d40716454d4a870f5758143061a0e39c0a7077eab2c6dbec116edf081796afb6f441462096bf68ef72a4daad074843a0d970527f29037ffe
   languageName: node
   linkType: hard
 

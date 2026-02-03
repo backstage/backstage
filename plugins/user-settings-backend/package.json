@@ -55,9 +55,12 @@
     "@backstage/plugin-signals-node": "workspace:^",
     "@backstage/plugin-user-settings-common": "workspace:^",
     "@backstage/types": "workspace:^",
+    "already": "^2.2.1",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
-    "knex": "^3.0.0"
+    "knex": "^3.0.0",
+    "p-limit": "^3.1.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
