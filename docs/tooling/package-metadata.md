@@ -168,6 +168,45 @@ The presence of this field is checked by the `backstage-cli package prepack` com
 }
 ```
 
+### `backstage.peerModules`
+
+For plugin packages, this optional field declares modules that should be installed alongside this plugin for cross-plugin integrations. If the peer module's target plugin is present in the Backstage installation, you should typically have the peer module installed as well.
+
+For example, if you use `@backstage/plugin-scaffolder-backend`, you should also install `@backstage/plugin-catalog-backend-module-scaffolder-entity-model` to enable catalog support for scaffolder entity templates. The scaffolder plugin declares this relationship through `peerModules`.
+
+The field uses full package names to allow precise targeting of specific modules. This field can only be used on plugin packages (`backend-plugin` or `frontend-plugin` roles).
+
+```js title="Example usage of the backstage.peerModules field"
+{
+  "name": "@backstage/plugin-scaffolder-backend",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "scaffolder",
+    "peerModules": [
+      "@backstage/plugin-catalog-backend-module-scaffolder-entity-model"
+    ]
+  }
+  ...
+}
+```
+
+A plugin can declare multiple peer modules:
+
+```js title="Example of multiple peer modules"
+{
+  "name": "@example/plugin-catalog-backend",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "catalog",
+    "peerModules": [
+      "@example/plugin-search-backend-module-catalog",
+      "@example/plugin-explore-backend-module-catalog"
+    ]
+  }
+  ...
+}
+```
+
 ### `backstage.moved`
 
 This field indicates that a package has been renamed and moved to a new location. This field is recognized by the Backstage CLI, where the version bump command will automatically switch to using the new package instead. The value of this field should be the new package name.

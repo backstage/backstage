@@ -9,6 +9,9 @@
       "@backstage/plugin-notifications-backend",
       "@backstage/plugin-notifications-common",
       "@backstage/plugin-notifications-node"
+    ],
+    "peerModules": [
+      "@backstage/plugin-scaffolder-backend-module-notifications"
     ]
   },
   "publishConfig": {

@@ -12,6 +12,9 @@
       "@backstage/plugin-scaffolder-node",
       "@backstage/plugin-scaffolder-node-test-utils",
       "@backstage/plugin-scaffolder-react"
+    ],
+    "peerModules": [
+      "@backstage/plugin-catalog-backend-module-scaffolder-entity-model"
     ]
   },
   "publishConfig": {

@@ -92,6 +92,12 @@ export interface BackstagePackageJson {
     pluginPackages?: string[];
 
     /**
+     * Module packages that should be installed alongside this plugin for cross-plugin integrations.
+     * If the peer module's target plugin is present, you should have the peer module installed.
+     */
+    peerModules?: string[];
+
+    /**
      * The feature types exported from the package, indexed by path.
      */
     features?: Record<string, BackstagePackageFeatureType>;
