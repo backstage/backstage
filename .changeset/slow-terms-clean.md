@@ -1,5 +1,5 @@
 ---
-'@techdocs/cli': minor
+'@backstage/techdocs-cli': minor
 '@backstage/plugin-techdocs-node': minor
 ---
 
