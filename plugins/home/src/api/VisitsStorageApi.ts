@@ -199,6 +199,21 @@ export class VisitsStorageApi implements VisitsApi {
     return visitToSave;
   }
 
+  /**
+   * Updates the name of an existing visit through the visitsApi
+   */
+  async updateName(pathname: string, name: string): Promise<void> {
+    const visits: Visit[] = [...(await this.retrieveAll())];
+    const visitIndex = visits.findIndex(visit => visit.pathname === pathname);
+    if (visitIndex >= 0) {
+      visits[visitIndex] = {
+        ...visits[visitIndex],
+        name,
+      };
+      await this.persistAll(visits);
+    }
+  }
+
   private async persistAll(visits: Array<Visit>) {
     const storageKey = await this.getStorageKey();
     return this.storageApi.set<Array<Visit>>(storageKey, visits);

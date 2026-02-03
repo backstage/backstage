@@ -34,12 +34,26 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { ScaffolderFormDecoratorsApi } from '../../api/types';
 import { formDecoratorsApiRef } from '../../api/ref';
+import { createApiRef } from '@backstage/core-plugin-api';
+
+const visitsApiRef = createApiRef<{
+  updateName?: (pathname: string, name: string) => Promise<void>;
+}>({
+  id: 'homepage.visits',
+});
 
 jest.mock('react-router-dom', () => {
   return {
     ...(jest.requireActual('react-router-dom') as any),
     useParams: () => ({
       templateName: 'test',
+    }),
+    useLocation: () => ({
+      pathname: '/create/templates/default/test-template',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default',
     }),
   };
 });
@@ -60,6 +74,10 @@ const scaffolderDecoratorsMock: jest.Mocked<ScaffolderFormDecoratorsApi> = {
   getFormDecorators: jest.fn().mockResolvedValue([]),
 };
 
+const visitsApiMock = {
+  updateName: jest.fn().mockResolvedValue(undefined),
+};
+
 const catalogApi = catalogApiMock.mock();
 const analyticsApi = mockApis.analytics();
 
@@ -68,7 +86,14 @@ const apis = TestApiRegistry.from(
   [formDecoratorsApiRef, scaffolderDecoratorsMock],
   [catalogApiRef, catalogApi],
   [analyticsApiRef, analyticsApi],
+  [visitsApiRef, visitsApiMock],
+);
+
+const apisWithoutVisits = TestApiRegistry.from(
+  [scaffolderApiRef, scaffolderApiMock],
+  [formDecoratorsApiRef, scaffolderDecoratorsMock],
   [catalogApiRef, catalogApi],
+  [analyticsApiRef, analyticsApi],
 );
 
 const entityRefResponse = {
@@ -220,6 +245,116 @@ describe('TemplateWizardPage', () => {
         },
       );
       expect(queryByTestId('menu-button')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('useUpdateVisitName hook', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call visitsApi.updateName when template title is available and visits API is registered', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [],
+        title: 'Test Template Title',
+      });
+      catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
+
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      expect(visitsApiMock.updateName).toHaveBeenCalledWith(
+        '/create/templates/default/test-template',
+        'Test Template Title',
+      );
+    });
+
+    it('should not call visitsApi.updateName when template title is undefined', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [],
+      } as any);
+      catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
+
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      expect(visitsApiMock.updateName).not.toHaveBeenCalled();
+    });
+
+    it('should work gracefully when visits API is not available (home plugin not installed)', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [],
+        title: 'Test Template Title',
+      });
+      catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
+
+      await renderInTestApp(
+        <ApiProvider apis={apisWithoutVisits}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      expect(visitsApiMock.updateName).not.toHaveBeenCalled();
+    });
+
+    it('should work gracefully when visits API does not have updateName method (backwards compatibility)', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [],
+        title: 'Test Template Title',
+      });
+      catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
+
+      const visitsApiWithoutUpdateName = {};
+      const apisWithOldVisitsApi = TestApiRegistry.from(
+        [scaffolderApiRef, scaffolderApiMock],
+        [formDecoratorsApiRef, scaffolderDecoratorsMock],
+        [catalogApiRef, catalogApi],
+        [analyticsApiRef, analyticsApi],
+        [visitsApiRef, visitsApiWithoutUpdateName],
+      );
+
+      await renderInTestApp(
+        <ApiProvider apis={apisWithOldVisitsApi}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // Should not throw an error even though updateName doesn't exist
+      expect(visitsApiMock.updateName).not.toHaveBeenCalled();
     });
   });
 });
