@@ -476,7 +476,7 @@ export const createOrUpdateMetadata = async (
 export const createOrUpdateEntityMetadata = async (
   catalogFilePath: string,
   entityMetadataPath: string,
-  logger: Logger,
+  logger: LoggerService,
 ): Promise<void> => {
   // check if file exists, create if it does not.
   try {
@@ -506,10 +506,7 @@ export const createOrUpdateEntityMetadata = async (
     throw new Error(message);
   }
 
-  // catalogYaml is represented in JSON form
-  json = catalogYaml;
-  await fs.writeJson(entityMetadataPath, json);
-  return;
+  await fs.writeJson(entityMetadataPath, catalogYaml);
 };
 
 /**
