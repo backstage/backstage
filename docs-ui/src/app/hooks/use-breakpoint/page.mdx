@@ -3,6 +3,7 @@ import { CodeBlock } from '@/components/CodeBlock';
 import { PageTitle } from '@/components/PageTitle';
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
+import { Banner } from '@/components/Banner';
 import { UseBreakpointExample } from './components';
 import { useBreakpointReturnDefs } from './props-definition';
 import { useBreakpointExampleSnippet } from './snippets';
@@ -13,6 +14,11 @@ import { useBreakpointExampleSnippet } from './snippets';
 />
 
 ## Usage
+
+<Banner
+  variant="warning"
+  text="This hook has performance issues and should be used with caution."
+/>
 
 The `useBreakpoint` hook returns the active breakpoint and two functions, `up` and `down`, to check if the viewport is above, or below a given breakpoint, letting you adjust your UI responsively.
 
@@ -39,4 +45,4 @@ The default breakpoints are:
 
 <PropsTable data={useBreakpointReturnDefs} isHook />
 
-<ChangelogComponent component="use-breakpoint" />
+<ChangelogComponent hook="use-breakpoint" />
