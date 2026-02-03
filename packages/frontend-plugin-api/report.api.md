@@ -21,7 +21,7 @@ import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
-import type { z } from 'zod';
+import type { z } from 'zod/v3';
 
 // @public
 export type AlertApi = {

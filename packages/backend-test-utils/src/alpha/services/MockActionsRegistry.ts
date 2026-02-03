@@ -19,7 +19,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { z, AnyZodObject } from 'zod';
+import { z, AnyZodObject } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { mockCredentials } from '../../services';
 import {

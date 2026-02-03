@@ -64,7 +64,7 @@
     "@types/express": "^4.17.6",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
-    "zod": "^3.25.76",
+    "zod": "^3.25.76 || ^4.0.0",
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {

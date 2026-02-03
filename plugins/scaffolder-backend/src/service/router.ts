@@ -84,7 +84,7 @@ import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
 import { v4 as uuid } from 'uuid';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import {
   DatabaseTaskStore,
   DefaultTemplateActionRegistry,

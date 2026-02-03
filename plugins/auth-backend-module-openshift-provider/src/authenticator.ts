@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { createHash } from 'node:crypto';
 import OAuth2Strategy from 'passport-oauth2';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 /** @public */
 export interface OpenShiftAuthenticatorContext {
