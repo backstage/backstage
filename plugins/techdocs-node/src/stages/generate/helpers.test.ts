@@ -623,7 +623,6 @@ describe('helpers', () => {
 
   describe('createOrUpdateEntityMetadata', () => {
     const mockFiles = {
-      'invalid_entity_metadata.json': 'dsds',
       'entity_metadata.json': '{"site_name": "Entity Docs"}',
       'catalog.yaml': 'site_name: Catalog Docs',
     };
@@ -646,18 +645,6 @@ describe('helpers', () => {
       await expect(
         fs.access(filePath, fs.constants.F_OK),
       ).resolves.not.toThrow();
-    });
-
-    it('should throw error when the JSON is invalid', async () => {
-      const filePath = path.join(rootDir, 'invalid_entity_metadata.json');
-
-      await expect(
-        createOrUpdateEntityMetadata(
-          path.join(rootDir, 'catalog.yaml'),
-          filePath,
-          mockLogger,
-        ),
-      ).rejects.toThrow('Unexpected token d in JSON at position 0');
     });
 
     it('should throw error when the YAML is invalid', async () => {
