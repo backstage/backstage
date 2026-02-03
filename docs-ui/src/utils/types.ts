@@ -39,7 +39,7 @@ export type Hook = 'use-breakpoint';
 
 export type Version = `${number}.${number}.${number}`;
 
-type AtLeastOne<T, K extends keyof T = keyof T> = K extends string
+export type AtLeastOne<T, K extends keyof T = keyof T> = K extends string
   ? Pick<T, K> & Partial<Omit<T, K>>
   : never;
 
