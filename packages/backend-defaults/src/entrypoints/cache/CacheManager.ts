@@ -31,6 +31,7 @@ import {
   InfinispanServerConfig,
   ValkeyCacheStoreOptions,
 } from './types';
+import { RedisClientOptions } from '@keyv/redis';
 import { InfinispanOptionsMapper } from './providers/infinispan/InfinispanOptionsMapper';
 import { durationToMilliseconds } from '@backstage/types';
 import { ConfigReader, readDurationFromConfig } from '@backstage/config';
@@ -288,7 +289,8 @@ export class CacheManager {
         : undefined;
 
     if (socketOptions) {
-      redisOptions.socket = socketOptions;
+      // node-redis docs indicate keepAlive is boolean even if types differ.
+      redisOptions.socket = socketOptions as RedisClientOptions['socket'];
     }
 
     if (redisConfig.has('cluster')) {
@@ -477,6 +479,26 @@ export class CacheManager {
         stores[pluginId].on('error', (err: Error) => {
           this.logger?.error('Failed to create redis cache client', err);
           this.errorHandler?.(err);
+
+          // Disconnects the client to force a new connection on the next request after errors.
+          const store = stores[pluginId];
+          if (store) {
+            try {
+              (store as { disconnect?: () => void }).disconnect?.();
+              (store as { quit?: () => void }).quit?.();
+            } catch (closeError) {
+              this.logger?.warn(
+                'Failed to close redis cache client after error',
+                closeError,
+              );
+            }
+            // Clear the store from the cache manager to force a new connection on the next request.
+            // Drops the client connection object, but does not lose the underlying cached data.
+            this.logger?.info(
+              `Clearing redis cache client for plugin ${pluginId} after error`,
+            );
+            delete stores[pluginId];
+          }
         });
       }
       return new Keyv({
