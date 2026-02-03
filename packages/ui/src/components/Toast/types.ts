@@ -56,6 +56,8 @@ export type ToastOwnProps = ContainerSurfaceProps & {
   expandedY?: number;
   /** Height to use when collapsed (front toast's height, for uniform stacking) */
   collapsedHeight?: number;
+  /** This toast's natural height (for smooth animation) */
+  naturalHeight?: number;
   /** Callback to report this toast's natural height */
   onHeightChange?: (key: string, height: number) => void;
 };

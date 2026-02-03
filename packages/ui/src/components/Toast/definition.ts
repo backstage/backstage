@@ -46,6 +46,7 @@ export const ToastDefinition = defineComponent<ToastOwnProps>()({
     style: {},
     expandedY: {},
     collapsedHeight: {},
+    naturalHeight: {},
     onHeightChange: {},
   },
 });
