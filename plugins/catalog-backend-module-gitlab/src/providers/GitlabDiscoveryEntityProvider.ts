@@ -208,7 +208,15 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
-    const locations = await this.getEntities();
+    this.logger.info(
+      `Refreshing Gitlab entity discovery using ${
+        this.config.useSearch ? 'search' : 'discovery'
+      } mode`,
+    );
+
+    const locations = this.config.useSearch
+      ? await this.searchEntities()
+      : await this.getEntities();
 
     await this.connection.applyMutation({
       type: 'full',
@@ -219,6 +227,56 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     });
 
     logger.info(`Processed ${locations.length} locations`);
+  }
+
+  /**
+   * Determine the location on GitLab to be ingested.
+   * Uses GitLab's search API to find projects matching provided configuration.
+   *
+   * @returns A list of location to be ingested
+   */
+  private async searchEntities() {
+    const locations: LocationSpec[] = [];
+    let foundProjects = 0;
+
+    this.logger.info(`Using gitlab search API to lookup projects`);
+
+    const foundFiles = paginated(
+      options => this.gitLabClient.listFiles(options),
+      {
+        group: this.config.group,
+        search: `filename:${this.config.catalogFile}`,
+        page: 1,
+        per_page: 50,
+      },
+    );
+
+    for await (const foundFile of foundFiles) {
+      const project = await this.gitLabClient.getProjectById(
+        foundFile.project_id,
+      );
+      foundProjects++;
+
+      if (
+        project &&
+        this.isProjectCompliant(project) &&
+        this.isGroupCompliant(project.path_with_namespace)
+      ) {
+        locations.push(
+          this.createLocationSpecFromParams(
+            project.web_url,
+            foundFile.ref,
+            foundFile.path,
+          ),
+        );
+      }
+    }
+
+    this.logger.info(
+      `Processed ${locations.length} from ${foundProjects} found projects on API.`,
+    );
+
+    return locations;
   }
 
   /**
@@ -345,17 +403,29 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     return res;
   }
 
+  private createLocationSpecFromParams(
+    projectURL: string,
+    branch: string,
+    catalogFile: string,
+  ): LocationSpec {
+    return {
+      type: 'url',
+      target: `${projectURL}/-/blob/${branch}/${catalogFile}`,
+      presence: 'optional',
+    };
+  }
+
   private createLocationSpec(project: GitLabProject): LocationSpec {
     const project_branch =
       this.config.branch ??
       project.default_branch ??
       this.config.fallbackBranch;
 
-    return {
-      type: 'url',
-      target: `${project.web_url}/-/blob/${project_branch}/${this.config.catalogFile}`,
-      presence: 'optional',
-    };
+    return this.createLocationSpecFromParams(
+      project.web_url,
+      project_branch,
+      this.config.catalogFile,
+    );
   }
 
   /**
@@ -546,10 +616,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       });
   }
 
-  private async shouldProcessProject(
-    project: GitLabProject,
-    client: GitLabClient,
-  ): Promise<boolean> {
+  private isProjectCompliant(project: GitLabProject): boolean {
     if (!this.config.projectPattern.test(project.path_with_namespace ?? '')) {
       this.logger.debug(
         `Skipping project ${project.path_with_namespace} as it does not match the project pattern ${this.config.projectPattern}.`,
@@ -584,6 +651,17 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       return false;
     }
 
+    return true;
+  }
+
+  private async shouldProcessProject(
+    project: GitLabProject,
+    client: GitLabClient,
+  ): Promise<boolean> {
+    if (!this.isProjectCompliant(project)) {
+      return false;
+    }
+
     const project_branch =
       this.config.branch ??
       project.default_branch ??
@@ -596,5 +674,17 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     );
 
     return hasFile;
+  }
+
+  private isGroupCompliant(name: string | undefined) {
+    const groupRegexes = Array.isArray(this.config.groupPattern)
+      ? this.config.groupPattern
+      : [this.config.groupPattern];
+
+    if (name) {
+      return groupRegexes.some(reg => reg.test(name));
+    }
+
+    return false;
   }
 }
