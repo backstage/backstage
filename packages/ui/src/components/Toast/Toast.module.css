@@ -65,9 +65,7 @@
     cursor: default;
     user-select: none;
     z-index: calc(1000 - var(--toast-index));
-    transition:
-      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 0.5s;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s;
 
     /* Focus ring */
     &:focus-visible {
@@ -79,7 +77,7 @@
   /* Stacking from bottom */
   .bui-Toast {
     --swipe-x: 0;
-    
+
     bottom: 0;
     left: 0;
     width: 100%;
@@ -89,22 +87,30 @@
     opacity: calc(1 - (var(--toast-index) * 0.15));
     will-change: transform;
   }
-  
+
   /* Disable transitions during swipe for immediate feedback */
   .bui-Toast[data-swiping] {
     transition: none !important;
-    opacity: calc((1 - (var(--toast-index) * 0.15)) * (1 - (var(--swipe-x) / 400)));
+    opacity: calc(
+      (1 - (var(--toast-index) * 0.15)) * (1 - (var(--swipe-x) / 400))
+    );
   }
 
   /* Expanded state on hover - show all toasts stacked with gap */
   .bui-ToastRegion:hover .bui-Toast,
   .bui-ToastRegion:focus-within .bui-Toast,
   .bui-ToastRegion[data-hover-locked] .bui-Toast {
-    transform: translateY(calc((var(--toast-index) * -100%) - (var(--toast-index) * var(--bui-space-2)))) scale(1);
+    transform: translateY(
+        calc(
+          (var(--toast-index) * -100%) -
+            (var(--toast-index) * var(--bui-space-2))
+        )
+      )
+      scale(1);
     opacity: 1;
     pointer-events: auto;
   }
-  
+
   /* Add padding above each toast when expanded to fill the gap */
   .bui-ToastRegion:hover .bui-Toast::before,
   .bui-ToastRegion:focus-within .bui-Toast::before,
@@ -121,7 +127,7 @@
   .bui-Toast {
     pointer-events: none;
   }
-  
+
   .bui-Toast[style*='--toast-index: 0'] {
     pointer-events: auto;
   }
