@@ -202,13 +202,15 @@ export const EntityPicker = (props: EntityPickerProps) => {
         loading={loading}
         onChange={onSelect}
         options={entities?.catalogEntities || []}
-        getOptionLabel={option =>
+        getOptionLabel={option => {
+          if (option === undefined || option === null || Array.isArray(option))
+            return '';
           // option can be a string due to freeSolo.
-          typeof option === 'string'
+          return typeof option === 'string'
             ? option
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.entityRef!
-        }
+                ?.entityRef!;
+        }}
         autoSelect
         freeSolo={allowArbitraryValues}
         renderInput={params => (

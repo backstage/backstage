@@ -217,6 +217,7 @@ export const catalogPlugin = createBackendPlugin({
         events: eventsServiceRef,
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
+        userInfo: coreServices.userInfo,
       },
       async init({
         logger,
@@ -234,6 +235,7 @@ export const catalogPlugin = createBackendPlugin({
         actionsRegistry,
         auditor,
         events,
+        userInfo,
       }) {
         const builder = await CatalogBuilder.create({
           config,
@@ -247,6 +249,7 @@ export const catalogPlugin = createBackendPlugin({
           httpAuth,
           auditor,
           events,
+          userInfo,
         });
 
         if (onProcessingError) {
