@@ -143,10 +143,10 @@ export const Toast = forwardRef(
         style={
           {
             '--toast-index': index,
-            viewTransitionName: `toast-${toast.key}`,
           } as React.CSSProperties
         }
         {...dataAttributes}
+        data-toast-key={toast.key}
         data-status={finalStatus}
         data-starting-style={isStarting ? '' : undefined}
         {...restProps}
