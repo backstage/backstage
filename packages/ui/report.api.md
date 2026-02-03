@@ -1396,6 +1396,34 @@ export interface PaginationOptions
   initialOffset?: number;
 }
 
+// @public (undocumented)
+export const PasswordField: ForwardRefExoticComponent<
+  PasswordFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const PasswordFieldDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-PasswordField';
+    readonly inputWrapper: 'bui-PasswordFieldInputWrapper';
+    readonly input: 'bui-PasswordFieldInput';
+    readonly inputIcon: 'bui-PasswordFieldIcon';
+    readonly inputVisibility: 'bui-PasswordFieldVisibility';
+  };
+  readonly dataAttributes: {
+    readonly size: readonly ['small', 'medium'];
+  };
+};
+
+// @public (undocumented)
+export interface PasswordFieldProps
+  extends TextFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+  icon?: ReactNode;
+  placeholder?: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
+
 // @public
 export const Popover: ForwardRefExoticComponent<
   PopoverProps & RefAttributes<HTMLDivElement>
