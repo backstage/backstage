@@ -26,11 +26,13 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
           LABEL_ADDED: ${{ github.event.action == 'labeled' && github.event.label.name || '' }}
           REVIEW_STATE: ${{ github.event.review.state }}
+          ACTOR: ${{ github.actor }}
         run: |
           mkdir -p ./context
           echo "$PR_NUMBER" > ./context/pr-number
           echo "$LABEL_ADDED" > ./context/label-added
           echo "$REVIEW_STATE" > ./context/review-state
+          echo "$ACTOR" > ./context/actor
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
