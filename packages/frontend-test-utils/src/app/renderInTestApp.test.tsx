@@ -80,4 +80,35 @@ describe('renderInTestApp', () => {
 
     expect(screen.getByText('Second Page')).toBeInTheDocument();
   });
+
+  it('should support API overrides via options', async () => {
+    const IndexPage = () => {
+      const analyticsApi = useAnalytics();
+      const handleClick = useCallback(() => {
+        analyticsApi.captureEvent('click', 'Test action');
+      }, [analyticsApi]);
+      return (
+        <div>
+          <button onClick={handleClick}>Click me</button>
+        </div>
+      );
+    };
+
+    const analyticsApiMock = new MockAnalyticsApi();
+
+    renderInTestApp(<IndexPage />, {
+      apis: [[analyticsApiRef, analyticsApiMock]],
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Click me' }));
+
+    expect(analyticsApiMock.getEvents()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          action: 'click',
+          subject: 'Test action',
+        }),
+      ]),
+    );
+  });
 });

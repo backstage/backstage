@@ -37,8 +37,8 @@ import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/insta
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createErrorCollector } from '../../../frontend-app-api/src/wiring/createErrorCollector';
-import { TestApiRegistry } from '@backstage/test-utils';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
+import { TestApiRegistry, type TestApiPairs } from '../utils';
 
 /** @public */
 export class ExtensionQuery<UOutput extends ExtensionDataRef> {
@@ -78,16 +78,23 @@ export class ExtensionQuery<UOutput extends ExtensionDataRef> {
 /** @public */
 export class ExtensionTester<UOutput extends ExtensionDataRef> {
   /** @internal */
-  static forSubject<T extends ExtensionDefinitionParameters>(
+  static forSubject<
+    T extends ExtensionDefinitionParameters,
+    TApiPairs extends any[],
+  >(
     subject: ExtensionDefinition<T>,
-    options?: { config?: T['configInput'] },
+    options?: {
+      config?: T['configInput'];
+      apis?: readonly [...TestApiPairs<TApiPairs>];
+    },
   ): ExtensionTester<NonNullable<T['output']>> {
-    const tester = new ExtensionTester();
+    const tester = new ExtensionTester(options?.apis);
     tester.add(subject, options as T['configInput'] & {});
     return tester;
   }
 
   #tree?: AppTree;
+  #apis?: readonly any[];
 
   readonly #extensions = new Array<{
     id: string;
@@ -95,6 +102,10 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
     definition: ExtensionDefinition;
     config?: JsonValue;
   }>();
+
+  private constructor(apis?: readonly any[]) {
+    this.#apis = apis;
+  }
 
   add<T extends ExtensionDefinitionParameters>(
     extension: ExtensionDefinition<T>,
@@ -206,7 +217,11 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
       collector,
     );
 
-    instantiateAppNodeTree(tree.root, TestApiRegistry.from(), collector);
+    const apiHolder = this.#apis
+      ? TestApiRegistry.from(...this.#apis)
+      : TestApiRegistry.from();
+
+    instantiateAppNodeTree(tree.root, apiHolder, collector);
 
     const errors = collector.collectErrors();
     if (errors) {
@@ -260,9 +275,15 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
 }
 
 /** @public */
-export function createExtensionTester<T extends ExtensionDefinitionParameters>(
+export function createExtensionTester<
+  T extends ExtensionDefinitionParameters,
+  TApiPairs extends any[] = any[],
+>(
   subject: ExtensionDefinition<T>,
-  options?: { config?: T['configInput'] },
+  options?: {
+    config?: T['configInput'];
+    apis?: readonly [...TestApiPairs<TApiPairs>];
+  },
 ): ExtensionTester<NonNullable<T['output']>> {
   return ExtensionTester.forSubject(subject, options);
 }
