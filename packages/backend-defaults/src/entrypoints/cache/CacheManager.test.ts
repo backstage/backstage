@@ -578,6 +578,67 @@ describe('CacheManager store options', () => {
     expect(strategy(1, socketTimeoutError)).toBe(false);
   });
 
+  it('recreates redis store after socket timeout error', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    const store = (KeyvRedis as jest.Mock).mock.results[0]?.value as {
+      emit?: (event: string, error: Error) => void;
+    };
+    const socketTimeoutError = new Error('timeout');
+    socketTimeoutError.name = 'SocketTimeoutError';
+    store.emit?.('error', socketTimeoutError);
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledTimes(2);
+  });
+
+  it('reconnects on socket timeout when stopOnSocketTimeout is false', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    reconnectStrategy: {
+                      stopOnSocketTimeout: false,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    const connection = (KeyvRedis as jest.Mock).mock.calls[0][0];
+    const strategy = connection.socket.reconnectStrategy;
+    const socketTimeoutError = new Error('timeout');
+    socketTimeoutError.name = 'SocketTimeoutError';
+
+    expect(strategy(1, socketTimeoutError)).toBe(200);
+  });
+
   it('merges socket options into redis cluster defaults', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
