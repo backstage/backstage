@@ -64,7 +64,9 @@
     "matcher": "^4.0.0",
     "minimatch": "^9.0.0",
     "passport": "^0.7.0",
-    "uuid": "^11.0.0"
+    "uuid": "^11.0.0",
+    "zod": "^4.3.5",
+    "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
@@ -76,6 +78,7 @@
     "@types/express": "^4.17.6",
     "@types/express-session": "^1.17.2",
     "@types/passport": "^1.0.3",
+    "msw": "^1.0.0",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

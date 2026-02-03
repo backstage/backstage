@@ -26,6 +26,10 @@ import {
 } from '@backstage/plugin-auth-node';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { createRouter } from './service/router';
+import { OfflineSessionDatabase } from './database/OfflineSessionDatabase';
+import { OfflineAccessService } from './service/OfflineAccessService';
+import { readDurationFromConfig } from '@backstage/config';
+import { durationToMilliseconds } from '@backstage/types';
 
 /**
  * Auth plugin
@@ -79,6 +83,56 @@ export const authPlugin = createBackendPlugin({
         httpAuth,
         catalog,
       }) {
+        // Create offline session database and access service if refresh tokens are enabled
+        let offlineAccess: OfflineAccessService | undefined;
+        const refreshTokensEnabled = config.getOptionalBoolean(
+          'auth.experimentalRefreshToken.enabled',
+        );
+
+        if (refreshTokensEnabled) {
+          const tokenLifetime = config.has(
+            'auth.experimentalRefreshToken.tokenLifetime',
+          )
+            ? readDurationFromConfig(config, {
+                key: 'auth.experimentalRefreshToken.tokenLifetime',
+              })
+            : { days: 30 };
+
+          const maxRotationLifetime = config.has(
+            'auth.experimentalRefreshToken.maxRotationLifetime',
+          )
+            ? readDurationFromConfig(config, {
+                key: 'auth.experimentalRefreshToken.maxRotationLifetime',
+              })
+            : { years: 1 };
+
+          const tokenLifetimeSeconds = Math.floor(
+            durationToMilliseconds(tokenLifetime) / 1000,
+          );
+          const maxRotationLifetimeSeconds = Math.floor(
+            durationToMilliseconds(maxRotationLifetime) / 1000,
+          );
+
+          const maxTokensPerUser =
+            config.getOptionalNumber(
+              'auth.experimentalRefreshToken.maxTokensPerUser',
+            ) ?? 20;
+
+          const knex = await database.getClient();
+
+          const offlineSessionDb = OfflineSessionDatabase.create({
+            knex,
+            tokenLifetimeSeconds,
+            maxRotationLifetimeSeconds,
+            maxTokensPerUser,
+          });
+
+          offlineAccess = OfflineAccessService.create({
+            offlineSessionDb,
+            logger,
+          });
+        }
+
         const router = await createRouter({
           logger,
           config,
@@ -89,6 +143,7 @@ export const authPlugin = createBackendPlugin({
           providerFactories: Object.fromEntries(providers),
           ownershipResolver,
           httpAuth,
+          offlineAccess,
         });
         httpRouter.addAuthPolicy({
           path: '/',
