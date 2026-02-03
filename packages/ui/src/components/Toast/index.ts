@@ -18,4 +18,10 @@ export { Toast } from './Toast';
 export { ToastRegion } from './ToastRegion';
 export { ToastDefinition, ToastRegionDefinition } from './definition';
 export { toastQueue } from './ToastQueue';
-export * from './types';
+export type {
+  ToastContent,
+  ToastOwnProps,
+  ToastProps,
+  ToastRegionOwnProps,
+  ToastRegionProps,
+} from './types';

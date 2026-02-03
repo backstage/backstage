@@ -31,6 +31,7 @@ import type { MenuSectionProps as MenuSectionProps_2 } from 'react-aria-componen
 import type { MenuTriggerProps as MenuTriggerProps_2 } from 'react-aria-components';
 import type { ModalOverlayProps } from 'react-aria-components';
 import { PopoverProps as PopoverProps_2 } from 'react-aria-components';
+import type { QueuedToast } from 'react-stately';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import type { ReactElement } from 'react';
@@ -58,6 +59,7 @@ import type { ToggleButtonGroupProps as ToggleButtonGroupProps_2 } from 'react-a
 import type { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
+import { UNSTABLE_ToastQueue } from 'react-aria-components';
 
 // @public (undocumented)
 export const Accordion: ForwardRefExoticComponent<
@@ -2178,6 +2180,88 @@ export type TextVariants =
 
 // @public (undocumented)
 export type TextWeights = 'regular' | 'bold';
+
+// @public
+export const Toast: ForwardRefExoticComponent<
+  ToastProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface ToastContent {
+  description?: ReactNode;
+  icon?: boolean | ReactElement;
+  status?: 'info' | 'success' | 'warning' | 'danger';
+  title: ReactNode;
+}
+
+// @public
+export const ToastDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Toast';
+    readonly content: 'bui-ToastContent';
+    readonly title: 'bui-ToastTitle';
+    readonly description: 'bui-ToastDescription';
+    readonly icon: 'bui-ToastIcon';
+    readonly closeButton: 'bui-ToastCloseButton';
+  };
+  readonly surface: 'container';
+  readonly propDefs: {
+    readonly toast: {};
+    readonly onSwipeEnd: {};
+    readonly status: {
+      readonly dataAttribute: true;
+    };
+    readonly icon: {};
+    readonly surface: {};
+    readonly className: {};
+    readonly style: {};
+  };
+};
+
+// @public
+export type ToastOwnProps = ContainerSurfaceProps & {
+  toast: QueuedToast<ToastContent>;
+  onSwipeEnd?: () => void;
+  status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
+  icon?: boolean | ReactElement;
+};
+
+// @public
+export interface ToastProps extends ToastOwnProps {}
+
+// @public
+export const toastQueue: UNSTABLE_ToastQueue<ToastContent>;
+
+// @public
+export const ToastRegion: ForwardRefExoticComponent<
+  ToastRegionProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const ToastRegionDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly region: 'bui-ToastRegion';
+  };
+  readonly propDefs: {
+    readonly queue: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export type ToastRegionOwnProps = {
+  queue: UNSTABLE_ToastQueue<ToastContent>;
+  className?: string;
+};
+
+// @public
+export interface ToastRegionProps extends ToastRegionOwnProps {}
 
 // @public (undocumented)
 export const ToggleButton: ForwardRefExoticComponent<

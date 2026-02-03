@@ -36,7 +36,7 @@ export interface ToastContent {
 
 /**
  * Own props for the Toast component
- * @internal
+ * @public
  */
 export type ToastOwnProps = ContainerSurfaceProps & {
   /** Toast object from the queue */
@@ -51,7 +51,7 @@ export type ToastOwnProps = ContainerSurfaceProps & {
 
 /**
  * Properties for {@link Toast}
- * @internal
+ * @public
  */
 export interface ToastProps extends ToastOwnProps {}
 
