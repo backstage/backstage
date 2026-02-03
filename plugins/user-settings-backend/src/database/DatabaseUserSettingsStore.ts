@@ -29,6 +29,8 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+const dbLimit = pLimit(10);
+
 /**
  * @public
  */
@@ -110,8 +112,6 @@ export class DatabaseUserSettingsStore implements UserSettingsStore {
       }
       keys.add(item.key);
     }
-
-    const dbLimit = pLimit(10);
 
     // Chunks the keys per bucket to avoid hitting SQL parameter limits
     const chunkKeys = (keys: Array<string>, size: number): string[][] => {
