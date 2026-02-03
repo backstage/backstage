@@ -708,7 +708,9 @@ describe('<UserListPicker />', () => {
 
         const updateFilters = (update: any) =>
           _setFiltersState((prev: any) =>
-            typeof update === 'function' ? update(prev) : { ...prev, ...update },
+            typeof update === 'function'
+              ? update(prev)
+              : { ...prev, ...update },
           );
 
         const value = {
