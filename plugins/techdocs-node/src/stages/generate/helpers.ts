@@ -483,7 +483,7 @@ export const createOrUpdateEntityMetadata = async (
     await fs.access(entityMetadataPath, fs.constants.F_OK);
   } catch (err) {
     // Bootstrap file with empty JSON
-    await fs.writeJson(entityMetadataPath, JSON.parse('{}'));
+    await fs.writeJson(entityMetadataPath, {});
   }
   // check if valid Json
   let json;
