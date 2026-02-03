@@ -21,6 +21,7 @@ import {
   ReactElement,
   useRef,
   useEffect,
+  useState,
 } from 'react';
 import { useToast } from '@react-aria/toast';
 import { useButton } from 'react-aria';
@@ -114,29 +115,26 @@ export const Toast = forwardRef(
       'aria-setsize': toastProps['aria-setsize'],
     };
 
-    // Measure and report this toast's natural height
+    // Track whether we've measured this toast's natural height
+    const [hasMeasured, setHasMeasured] = useState(false);
+
+    // Measure this toast's natural height on mount (before constraints are applied)
     useEffect(() => {
       if (!onHeightChange) return;
+      if (hasMeasured) return; // Only measure once
 
       const element = toastRef.current;
       if (!element) return;
 
-      // Report initial height
-      onHeightChange(toast.key, element.offsetHeight);
-
-      // Watch for size changes (content could change)
-      const resizeObserver = new ResizeObserver(entries => {
-        for (const entry of entries) {
-          const height =
-            entry.borderBoxSize?.[0]?.blockSize ??
-            entry.target.getBoundingClientRect().height;
+      // Measure on next frame (after initial render but before constraint is visible)
+      requestAnimationFrame(() => {
+        const height = element.offsetHeight;
+        if (height > 0) {
           onHeightChange(toast.key, height);
+          setHasMeasured(true);
         }
       });
-
-      resizeObserver.observe(element);
-      return () => resizeObserver.disconnect();
-    }, [toast.key, onHeightChange]);
+    }, [toast.key, onHeightChange, hasMeasured]);
 
     // Close button ref and props
     const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -218,9 +216,10 @@ export const Toast = forwardRef(
         };
 
     // Back toasts (index > 0) use front toast's height when collapsed
-    // When expanded, all toasts use their natural height (auto)
-    const shouldConstrainHeight = !isExpanded && index > 0 && collapsedHeight;
-    const animatedHeight = shouldConstrainHeight ? collapsedHeight : 'auto';
+    // Height is set via style (not animated) to avoid measurement issues
+    // Only apply constraint after we've measured the natural height
+    const shouldConstrainHeight =
+      hasMeasured && !isExpanded && index > 0 && collapsedHeight;
 
     return (
       <motion.div
@@ -230,17 +229,16 @@ export const Toast = forwardRef(
         style={
           {
             '--toast-index': index,
+            height: shouldConstrainHeight ? collapsedHeight : undefined,
             overflow: shouldConstrainHeight ? 'hidden' : undefined,
           } as React.CSSProperties
         }
-        layout
-        initial={{ opacity: 0, y: 100, scale: 1, height: 'auto' }}
+        initial={{ opacity: 0, y: 100, scale: 1 }}
         animate={{
           opacity: 1,
           y: animateY,
           scale: animateScale,
           zIndex: stackZIndex,
-          height: animatedHeight,
         }}
         exit={exitAnimation}
         onAnimationComplete={definition => {
