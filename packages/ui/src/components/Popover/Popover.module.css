@@ -122,20 +122,16 @@
     }
   }
 
-  [data-theme='dark'] {
-    .bui-Popover {
-      background: var(--bui-bg-surface-2);
-      border: 1px solid var(--bui-gray-4);
-    }
+  [data-theme='dark'] .bui-Popover {
+    background: var(--bui-bg-surface-2);
+    border: 1px solid var(--bui-gray-4);
+  }
 
-    .bui-PopoverArrow {
-      svg path:nth-child(1) {
-        fill: var(--bui-bg-surface-2);
-      }
+  [data-theme='dark'] .bui-PopoverArrow svg path:nth-child(1) {
+    fill: var(--bui-bg-surface-2);
+  }
 
-      svg path:nth-child(2) {
-        fill: var(--bui-gray-4);
-      }
-    }
+  [data-theme='dark'] .bui-PopoverArrow svg path:nth-child(2) {
+    fill: var(--bui-gray-4);
   }
 }

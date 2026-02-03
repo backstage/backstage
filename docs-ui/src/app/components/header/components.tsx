@@ -20,20 +20,16 @@ const tabs = [
 ];
 
 const tabs2 = [
-  { id: 'Banana', label: 'Banana', href: '/banana' },
-  { id: 'Apple', label: 'Apple', href: '/apple' },
-  { id: 'Orange', label: 'Orange', href: '/orange' },
-];
-
-const breadcrumbs = [
-  { label: 'Home', href: '/' },
-  { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Settings', href: '/settings' },
+  { id: 'banana', label: 'Banana', href: '/banana' },
+  { id: 'apple', label: 'Apple', href: '/apple' },
+  { id: 'orange', label: 'Orange', href: '/orange' },
 ];
 
 export const WithAllOptionsAndTabs = () => (
   <MemoryRouter>
     <Header
+      title="My plugin"
+      titleLink="/"
       tabs={tabs}
       customActions={
         <>
@@ -49,6 +45,8 @@ export const WithAllOptionsAndTabs = () => (
 export const WithAllOptions = () => (
   <MemoryRouter>
     <Header
+      title="My plugin"
+      titleLink="/"
       customActions={
         <>
           <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
@@ -60,30 +58,14 @@ export const WithAllOptions = () => (
   </MemoryRouter>
 );
 
-export const WithBreadcrumbs = () => (
-  <MemoryRouter>
-    <Header tabs={tabs} />
-  </MemoryRouter>
-);
-
 export const WithHeaderPage = () => (
   <MemoryRouter>
     <>
-      <Header
-        tabs={tabs}
-        customActions={
-          <>
-            <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-            <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-            <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
-          </>
-        }
-      />
+      <Header title="My plugin" titleLink="/" tabs={tabs.slice(0, 2)} />
       <HeaderPage
         title="Page title"
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
-        breadcrumbs={breadcrumbs}
       />
     </>
   </MemoryRouter>

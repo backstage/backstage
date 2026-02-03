@@ -164,7 +164,7 @@ Note that requests towards `/api/*` will never be handled by the `routes` handle
 
 The root HTTP Router service also allows for configuration of the underlying Node.js HTTP server object. This is useful for modifying settings on the HTTP server itself, such as server [`timeout`](https://nodejs.org/api/http.html#servertimeout), [`keepAliveTimeout`](https://nodejs.org/api/http.html#serverkeepalivetimeout), and [`headersTimeout`](https://nodejs.org/api/http.html#serverheaderstimeout).
 
-A `applyDefaults` helper is also made available to use the default app/router configuration while still enabling custom server configuration
+An `applyDefaults` helper is also made available to use the default app/router configuration while still enabling custom server configuration
 
 ```ts
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';

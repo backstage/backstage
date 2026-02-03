@@ -89,6 +89,7 @@ export interface DocumentResultRow {
   document: IndexableDocument;
   // (undocumented)
   highlight: IndexableDocument;
+  total_count: string;
   // (undocumented)
   type: string;
 }

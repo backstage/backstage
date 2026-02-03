@@ -14,10 +14,15 @@ import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ButtonIconDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  button: 'https://react-aria.adobe.com/Button',
+};
 
 <PageTitle
   title="ButtonIcon"
-  description="A button component with a single icon that can be used to trigger actions."
+  description="An icon-only button with primary, secondary, and tertiary variants."
 />
 
 <Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
@@ -30,11 +35,11 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PropsTable data={buttonIconPropDefs} />
 
+<ReactAriaLink component="Button" href={reactAriaUrls.button} />
+
 ## Examples
 
 ### Variants
-
-Here's a view when buttons have different variants.
 
 <Snippet
   align="center"
@@ -46,13 +51,9 @@ Here's a view when buttons have different variants.
 
 ### Sizes
 
-Here's a view when buttons have different sizes.
-
 <Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
 
 ### Disabled
-
-Here's a view when buttons are disabled.
 
 <Snippet
   align="center"
@@ -64,7 +65,7 @@ Here's a view when buttons are disabled.
 
 ### Loading
 
-Here's a view when buttons are in a loading state.
+Shows a spinner during async operations.
 
 <Snippet
   align="center"

@@ -36,22 +36,22 @@
 
   .bui-Alert[data-status='info'] {
     --alert-bg: var(--bui-bg-info);
-    --alert-fg: var(--bui-fg-info);
+    --alert-fg: var(--bui-fg-info-on-bg);
   }
 
   .bui-Alert[data-status='success'] {
     --alert-bg: var(--bui-bg-success);
-    --alert-fg: var(--bui-fg-success);
+    --alert-fg: var(--bui-fg-success-on-bg);
   }
 
   .bui-Alert[data-status='warning'] {
     --alert-bg: var(--bui-bg-warning);
-    --alert-fg: var(--bui-fg-warning);
+    --alert-fg: var(--bui-fg-warning-on-bg);
   }
 
   .bui-Alert[data-status='danger'] {
     --alert-bg: var(--bui-bg-danger);
-    --alert-fg: var(--bui-fg-danger);
+    --alert-fg: var(--bui-fg-danger-on-bg);
   }
 
   .bui-AlertIcon {

@@ -35,4 +35,6 @@ export const GroupedResponsesContext = createContext<GroupedResponses>({
   cronJobs: [],
   customResources: [],
   statefulsets: [],
+  persistentVolumes: [],
+  persistentVolumeClaims: [],
 });

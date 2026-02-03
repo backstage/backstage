@@ -134,11 +134,10 @@ export type VerifyExtensionAttachTo<
  *
  * A standard attachment point declaration will specify the ID of the parent extension, as well as the name of the input to attach to.
  *
- * There are three more advanced forms that are available for more complex use-cases:
+ * There are two more advanced forms that are available for more complex use-cases:
  *
  * 1. Relative attachment points: using the `relative` property instead of `id`, the attachment point is resolved relative to the current plugin.
  * 2. Extension input references: using a reference in code to another extension's input in the same plugin. These references are always relative.
- * 3. Array of attachment points: an array of attachment points can be used to clone and attach to multiple extensions at once.
  *
  * @example
  * ```ts
@@ -151,12 +150,6 @@ export type VerifyExtensionAttachTo<
  * // Attach to a specific input of another extension
  * const page = ParentBlueprint.make({ ... });
  * const child = ChildBlueprint.make({ attachTo: page.inputs.children });
- *
- * // Attach to multiple parents at once (deprecated - use Utility APIs instead)
- * [
- *   { id: 'page/home', input: 'widgets' },
- *   { relative: { kind: 'page' }, input: 'widgets' },
- * ]
  * ```
  *
  * @public
@@ -166,19 +159,7 @@ export type ExtensionDefinitionAttachTo<
 > =
   | { id: string; input: string; relative?: never }
   | { relative: { kind?: string; name?: string }; input: string; id?: never }
-  | ExtensionInput<UParentInputs>
-  /**
-   * @deprecated Multiple attachment points are deprecated and will be removed in a future release. Use a Utility API instead to share functionality across multiple locations. See https://backstage.io/docs/frontend-system/architecture/27-sharing-extensions for migration guidance.
-   */
-  | Array<
-      | { id: string; input: string; relative?: never }
-      | {
-          relative: { kind?: string; name?: string };
-          input: string;
-          id?: never;
-        }
-      | ExtensionInput<UParentInputs>
-    >;
+  | ExtensionInput<UParentInputs>;
 
 /** @public */
 export type CreateExtensionOptions<

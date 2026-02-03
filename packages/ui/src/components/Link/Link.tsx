@@ -44,6 +44,7 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     weight,
     color,
     truncate,
+    standalone,
     slot,
     ...restProps
   } = cleanedProps;

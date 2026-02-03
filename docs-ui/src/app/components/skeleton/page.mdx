@@ -2,8 +2,13 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
 import { skeletonPropDefs } from './props-definition';
-import { skeletonUsageSnippet, demo1Snippet, demo2Snippet } from './snippets';
-import { Demo1, Demo2 } from './components';
+import {
+  skeletonUsageSnippet,
+  cardPlaceholderSnippet,
+  avatarWithTextSnippet,
+  roundedSnippet,
+} from './snippets';
+import { CardPlaceholder, AvatarWithText, Rounded } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -14,7 +19,12 @@ import { SkeletonDefinition } from '../../../utils/definitions';
   description="Use to show a placeholder while content is loading."
 />
 
-<Snippet align="center" py={4} preview={<Demo2 />} code={demo2Snippet} />
+<Snippet
+  align="center"
+  py={4}
+  preview={<CardPlaceholder />}
+  code={cardPlaceholderSnippet}
+/>
 
 ## Usage
 
@@ -22,21 +32,29 @@ import { SkeletonDefinition } from '../../../utils/definitions';
 
 ## API reference
 
+Skeleton extends standard HTML div attributes.
+
 <PropsTable data={skeletonPropDefs} />
 
 ## Examples
 
-### Demo 1
+### Rounded
 
-You can use a mix of different sizes to create a more complex skeleton.
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Rounded />}
+  code={roundedSnippet}
+/>
 
-<Snippet align="center" py={4} preview={<Demo1 />} code={demo1Snippet} open />
+### Avatar with text
 
-### Demo 2
-
-You can use a mix of different sizes to create a more complex skeleton.
-
-<Snippet align="center" py={4} preview={<Demo2 />} code={demo2Snippet} open />
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<AvatarWithText />}
+  code={avatarWithTextSnippet}
+/>
 
 <Theming definition={SkeletonDefinition} />
 

@@ -22,7 +22,7 @@ import {
   Page,
   useSidebarPinState,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
   CATALOG_FILTER_EXISTS,
@@ -60,6 +60,7 @@ const SearchPage = () => {
   const { isMobile } = useSidebarPinState();
   const { types } = useSearch();
   const catalogApi = useApi(catalogApiRef);
+  const configApi = useApi(configApiRef);
 
   return (
     <Page themeId="home">
@@ -73,7 +74,7 @@ const SearchPage = () => {
             <Grid item xs={3}>
               <SearchType.Accordion
                 name="Result type"
-                defaultValue="software-catalog"
+                defaultValue={configApi.getOptionalString('search.defaultType')}
                 showCounts
                 types={[
                   {

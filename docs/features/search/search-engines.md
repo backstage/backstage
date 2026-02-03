@@ -291,3 +291,65 @@ search:
       fuzziness: AUTO
       prefixLength: 3;
 ```
+
+### Custom Authentication Extension Point
+
+For enterprise environments that require dynamic authentication mechanisms such as bearer tokens with automatic rotation, the Elasticsearch module provides an authentication extension point. This is useful when:
+
+- Using OAuth2/OIDC identity providers for service authentication
+- Tokens need to be refreshed automatically (e.g., tokens that expire hourly)
+- Integrating with internal identity services
+- Running Elasticsearch/OpenSearch clusters secured by token-based authentication
+
+To use custom authentication, create a backend module that provides an auth provider:
+
+```ts title="packages/backend/src/modules/elasticsearchAuth.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { elasticsearchAuthExtensionPoint } from '@backstage/plugin-search-backend-module-elasticsearch';
+
+export default createBackendModule({
+  pluginId: 'search',
+  moduleId: 'elasticsearch-custom-auth',
+  register(env) {
+    env.registerInit({
+      deps: {
+        elasticsearchAuth: elasticsearchAuthExtensionPoint,
+      },
+      async init({ elasticsearchAuth }) {
+        elasticsearchAuth.setAuthProvider({
+          async getAuthHeaders() {
+            // Fetch token from your identity service
+            const token = await myTokenService.getToken();
+            return { Authorization: `Bearer ${token}` };
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+Then register this module in your backend:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+backend.add(import('@backstage/plugin-search-backend'));
+backend.add(import('@backstage/plugin-search-backend-module-elasticsearch'));
+
+/* highlight-add-start */
+backend.add(import('./modules/elasticsearchAuth'));
+/* highlight-add-end */
+
+backend.start();
+```
+
+The `getAuthHeaders` method is called before each request, allowing for just-in-time token retrieval and automatic rotation. When an auth provider is configured, it takes precedence over any static authentication in `app-config.yaml`.
+
+:::note Note
+
+Custom authentication is supported for the `elastic`, `opensearch`, and default providers. The `aws` provider uses AWS SigV4 request signing and does not support custom auth providers.
+
+:::

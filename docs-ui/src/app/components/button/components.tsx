@@ -59,6 +59,22 @@ export const Disabled = () => {
   );
 };
 
+export const Destructive = () => {
+  return (
+    <Flex gap="4">
+      <Button variant="primary" destructive>
+        Primary
+      </Button>
+      <Button variant="secondary" destructive>
+        Secondary
+      </Button>
+      <Button variant="tertiary" destructive>
+        Tertiary
+      </Button>
+    </Flex>
+  );
+};
+
 export const Loading = () => {
   return (
     <Button variant="primary" loading={true}>

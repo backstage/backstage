@@ -211,6 +211,8 @@ to get the existing session, which is exactly what the `ProxiedSignInPage` does.
 thing you need to do to configure the `ProxiedSignInPage` is to pass the ID of the provider like this:
 
 ```tsx title="packages/app/src/App.tsx"
+import { ProxiedSignInPage } from '@backstage/core-components';
+
 const app = createApp({
   components: {
     SignInPage: props => <ProxiedSignInPage {...props} provider="awsalb" />,

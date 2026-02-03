@@ -61,8 +61,11 @@ describe('<EntityOrphanWarning />', () => {
     );
     expect(
       screen.getByText(
-        'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.',
+        'This entity is not referenced by any location and is therefore not receiving updates.',
       ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Delete entity' }),
     ).toBeInTheDocument();
   });
 });

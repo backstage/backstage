@@ -428,14 +428,13 @@ function createApiFactories(options: {
             existingPluginId: acceptedPluginId,
           },
         });
-        if (!shouldReplace) {
-          // eslint-disable-next-line no-console
-          console.warn(
-            `DEPRECATION WARNING: Plugin '${rejectedPluginId}' is overriding API '${apiRefId}' ` +
-              `from plugin '${acceptedPluginId}'. This will be blocked in a future release. ` +
-              `Please use a module for plugin '${acceptedPluginId}' instead.`,
-          );
+        if (shouldReplace) {
+          factoriesById.set(apiRefId, {
+            pluginId,
+            factory: apiFactory,
+          });
         }
+        continue;
       }
 
       factoriesById.set(apiRefId, { pluginId, factory: apiFactory });

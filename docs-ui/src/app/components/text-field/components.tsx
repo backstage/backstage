@@ -17,7 +17,11 @@ export const WithLabel = () => {
 
 export const Sizes = () => {
   return (
-    <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
+    <Flex
+      direction="column"
+      gap="4"
+      style={{ width: '100%', maxWidth: '300px' }}
+    >
       <TextField
         name="url"
         placeholder="Enter a URL"

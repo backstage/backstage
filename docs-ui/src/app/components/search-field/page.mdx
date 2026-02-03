@@ -1,5 +1,6 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
 import { searchFieldPropDefs } from './props-definition';
 import {
   searchFieldUsageSnippet,
@@ -20,9 +21,13 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { CodeBlock } from '@/components/CodeBlock';
 import { SearchFieldDefinition } from '../../../utils/definitions';
 
+export const reactAriaUrls = {
+  searchField: 'https://react-aria.adobe.com/SearchField',
+};
+
 <PageTitle
   title="SearchField"
-  description="A SearchField is a text field designed for searches."
+  description="A text input for search queries with collapsible and icon support."
 />
 
 <Snippet
@@ -40,17 +45,24 @@ import { SearchFieldDefinition } from '../../../utils/definitions';
 
 <PropsTable data={searchFieldPropDefs} />
 
+<ReactAriaLink component="SearchField" href={reactAriaUrls.searchField} />
+
 ## Examples
 
 ### Sizes
 
-We support two different sizes: `small`, `medium`.
-
-<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Sizes />}
+  code={sizesSnippet}
+  layout="side-by-side"
+/>
 
 ### With description
 
-Here's a simple SearchField with a description.
+Add context below the input with the `description` prop.
 
 <Snippet
   align="center"
@@ -58,11 +70,12 @@ Here's a simple SearchField with a description.
   open
   preview={<WithDescription />}
   code={withDescriptionSnippet}
+  layout="side-by-side"
 />
 
 ### Collapsible
 
-You can make the SearchField collapsible by setting the `startCollapsed` prop to `true`.
+Use `startCollapsed` for space-constrained layouts where the field expands on focus.
 
 <Snippet
   align="center"
@@ -70,6 +83,7 @@ You can make the SearchField collapsible by setting the `startCollapsed` prop to
   open
   preview={<StartCollapsed />}
   code={startCollapsedSnippet}
+  layout="side-by-side"
 />
 
 <Theming definition={SearchFieldDefinition} />

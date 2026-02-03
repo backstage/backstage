@@ -7,9 +7,4 @@ description: Google's Lighthouse tool is a great resource for benchmarking and i
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/lighthouse/plugins/lighthouse
 iconUrl: https://seeklogo.com/images/G/google-lighthouse-logo-1C7FA08580-seeklogo.com.png
 npmPackageName: '@backstage-community/plugin-lighthouse'
-tags:
-  - web
-  - seo
-  - accessibility
-  - performance
 addedDate: '2021-01-20'

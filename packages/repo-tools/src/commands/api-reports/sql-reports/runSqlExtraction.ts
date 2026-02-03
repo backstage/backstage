@@ -22,7 +22,7 @@ import { SchemaInfo } from './types';
 import { getPgSchemaInfo } from './getPgSchemaInfo';
 import { generateSqlReport } from './generateSqlReport';
 import type { Knex } from 'knex';
-import { logApiReportInstructions, tryRunPrettier } from '../common';
+import { logApiReportInstructions, tryRunPrettierAsync } from '../common';
 
 interface SqlExtractionOptions {
   packageDirs: string[];
@@ -152,19 +152,19 @@ async function runSingleSqlExtraction(
       break;
     }
   }
-
-  const report = tryRunPrettier(
+  const reportPath = cliPaths.resolveTargetRoot(
+    targetDir,
+    `report${migrationTarget === '.' ? '' : `-${migrationTarget}`}.sql.md`,
+  );
+  const report = await tryRunPrettierAsync(
     generateSqlReport({
       reportName,
       failedDownMigration,
       schemaInfo,
     }),
+    { filepath: reportPath },
   );
 
-  const reportPath = cliPaths.resolveTargetRoot(
-    targetDir,
-    `report${migrationTarget === '.' ? '' : `-${migrationTarget}`}.sql.md`,
-  );
   const existingReport = await fs.readFile(reportPath, 'utf8').catch(error => {
     if (error.code === 'ENOENT') {
       return undefined;

@@ -126,7 +126,8 @@ export const catalogTranslationRef = createTranslationRef({
       deleteButtonTitle: 'Delete',
       cancelButtonTitle: 'Cancel',
       description:
-        'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.',
+        'This entity is not referenced by any location and is therefore not receiving updates.',
+      actionButtonTitle: 'Delete entity',
     },
     entityProcessingErrorsDescription: 'The error below originates from',
     entityRelationWarningDescription:

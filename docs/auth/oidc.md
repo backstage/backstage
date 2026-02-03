@@ -136,7 +136,15 @@ auth:
             - resolver: emailMatchingUserEntityProfileEmail
 ```
 
-If none of the built-in resolvers are suitable, you can alternatively write a custom resolver. See an example below:
+If none of the built-in resolvers are suitable, you can alternatively write a custom resolver.
+
+First, install the OIDC provider module:
+
+```bash
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-oidc-provider
+```
+
+Then create a custom resolver as shown below:
 
 ```ts title="in packages/backend/src/index.ts"
 /* highlight-add-start */
@@ -146,6 +154,10 @@ import {
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
 import { oidcAuthenticator } from '@backstage/plugin-auth-backend-module-oidc-provider';
+import {
+  stringifyEntityRef,
+  DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 
 const myAuthProviderModule = createBackendModule({
   // This ID must be exactly "auth" because that's the plugin it targets
@@ -168,7 +180,7 @@ const myAuthProviderModule = createBackendModule({
             async signInResolver(info, ctx) {
               const userRef = stringifyEntityRef({
                 kind: 'User',
-                name: info.result.userinfo.sub,
+                name: info.result.fullProfile.userinfo.sub,
                 namespace: DEFAULT_NAMESPACE,
               });
               return ctx.issueToken({

@@ -379,16 +379,6 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/backstage/backstage',
-          label: 'GitHub',
-          position: 'left',
-        },
-        {
-          href: 'https://discord.gg/backstage-687207715902193673',
-          label: 'Discord',
-          position: 'left',
-        },
-        {
           to: 'docs/overview/what-is-backstage',
           label: 'Docs',
           position: 'left',
@@ -399,13 +389,30 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: '/blog',
-          label: 'Blog',
+          type: 'dropdown',
+          label: 'Reference',
           position: 'left',
+          items: [
+            {
+              label: `Stable (${releases[0]})`,
+              href: 'https://backstage.io/api/stable',
+              target: '_self',
+            },
+            {
+              label: 'Next',
+              href: 'https://backstage.io/api/next',
+              target: '_self',
+            },
+          ],
         },
         {
           to: `docs/releases/${releases[0]}`,
           label: 'Releases',
+          position: 'left',
+        },
+        {
+          to: '/blog',
+          label: 'Blog',
           position: 'left',
         },
         {
@@ -417,6 +424,18 @@ const config: Config = {
           to: '/community',
           label: 'Community',
           position: 'left',
+        },
+        {
+          href: 'https://github.com/backstage/backstage',
+          position: 'right',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
+        },
+        {
+          href: 'https://discord.gg/backstage-687207715902193673',
+          position: 'right',
+          className: 'header-discord-link',
+          'aria-label': 'Discord community',
         },
         ...(useVersionedDocs
           ? [

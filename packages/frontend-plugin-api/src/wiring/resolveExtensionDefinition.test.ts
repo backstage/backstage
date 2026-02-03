@@ -140,6 +140,7 @@ describe('resolveExtensionDefinition', () => {
       input: 'children',
     });
 
+    // Test for backward compatibility - runtime still supports multiple attachment points
     expect(
       resolveExtensionDefinition(
         OpaqueExtensionDefinition.toInternal({
@@ -157,7 +158,7 @@ describe('resolveExtensionDefinition', () => {
               kind: 'k3',
               input: 'children',
             }),
-          ],
+          ] as any,
         }),
         { namespace: 'test' },
       ).attachTo,

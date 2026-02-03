@@ -151,6 +151,10 @@ describe('convertMuiToBuiTheme', () => {
     expect(result.css).toContain('--bui-bg-danger: #ffcdd2;');
     expect(result.css).toContain('--bui-bg-warning: #ffe0b2;');
     expect(result.css).toContain('--bui-bg-success: #c8e6c9;');
+    // Info background may be hex or rgba depending on theme
+    expect(result.css).toMatch(
+      /--bui-bg-info:\s*(#[0-9a-f]{6}|rgba?\([^)]*\));/i,
+    );
   });
 
   it('should generate foreground colors correctly', () => {
@@ -178,10 +182,8 @@ describe('convertMuiToBuiTheme', () => {
 
     const result = convertMuiToBuiTheme(theme);
 
-    expect(result.css).toContain('--bui-fg-link: #1976d2;');
-    expect(result.css).toContain('--bui-fg-link-hover: #115293;');
     expect(result.css).toContain('--bui-fg-disabled: #cccccc;');
-    // Foreground danger/warning/success may be hex or rgb depending on theme
+    // Foreground status colors (standalone)
     expect(result.css).toMatch(
       /--bui-fg-danger:\s*(#[0-9a-f]{6}|rgb\([^)]*\));/i,
     );
@@ -190,6 +192,22 @@ describe('convertMuiToBuiTheme', () => {
     );
     expect(result.css).toMatch(
       /--bui-fg-success:\s*(#[0-9a-f]{6}|rgb\([^)]*\));/i,
+    );
+    expect(result.css).toMatch(
+      /--bui-fg-info:\s*(#[0-9a-f]{6}|rgb\([^)]*\));/i,
+    );
+    // Foreground status colors (on background)
+    expect(result.css).toMatch(
+      /--bui-fg-danger-on-bg:\s*(#[0-9a-f]{6}|rgb\([^)]*\));/i,
+    );
+    expect(result.css).toMatch(
+      /--bui-fg-warning-on-bg:\s*(#[0-9a-f]{6}|rgb\([^)]*\));/i,
+    );
+    expect(result.css).toMatch(
+      /--bui-fg-success-on-bg:\s*(#[0-9a-f]{6}|rgb\([^)]*\));/i,
+    );
+    expect(result.css).toMatch(
+      /--bui-fg-info-on-bg:\s*(#[0-9a-f]{6}|rgb\([^)]*\));/i,
     );
   });
 
@@ -215,6 +233,10 @@ describe('convertMuiToBuiTheme', () => {
     expect(result.css).toContain('--bui-border-danger: #f44336;');
     expect(result.css).toContain('--bui-border-warning: #ff9800;');
     expect(result.css).toContain('--bui-border-success: #4caf50;');
+    // Info border may be hex or rgb depending on theme
+    expect(result.css).toMatch(
+      /--bui-border-info:\s*(#[0-9a-f]{6}|rgb\([^)]*\));/i,
+    );
   });
 
   it('should handle function-based spacing', () => {

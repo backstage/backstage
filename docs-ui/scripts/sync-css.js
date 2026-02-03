@@ -6,7 +6,7 @@ const chokidar = require('chokidar');
 // Configuration
 const config = {
   UIPath: '../../packages/ui',
-  publicPath: '../public',
+  outputPath: '../src/css',
   files: [
     {
       source: 'css/styles.css',
@@ -24,13 +24,13 @@ const config = {
 class CSSSync {
   constructor() {
     this.UIPath = path.resolve(__dirname, config.UIPath);
-    this.publicPath = path.resolve(__dirname, config.publicPath);
+    this.outputPath = path.resolve(__dirname, config.outputPath);
     this.isWatching = process.argv.includes('--watch');
   }
 
   async syncFile(fileConfig) {
     const sourcePath = path.join(this.UIPath, fileConfig.source);
-    const destPath = path.join(this.publicPath, fileConfig.destination);
+    const destPath = path.join(this.outputPath, fileConfig.destination);
 
     try {
       // Check if source file exists
@@ -76,9 +76,9 @@ class CSSSync {
     );
 
     if (successCount > 0) {
-      console.log('\n📁 Available CSS files in public/:');
+      console.log('\n📁 Available CSS files in src/css/:');
       config.files.forEach(file => {
-        const destPath = path.join(this.publicPath, file.destination);
+        const destPath = path.join(this.outputPath, file.destination);
         if (fs.existsSync(destPath)) {
           const stats = fs.statSync(destPath);
           const size = (stats.size / 1024).toFixed(2);
@@ -129,7 +129,7 @@ class CSSSync {
   async run() {
     console.log('🎨 BUI CSS Sync Tool\n');
     console.log(`📂 BUI path: ${this.UIPath}`);
-    console.log(`📂 Public path: ${this.publicPath}\n`);
+    console.log(`📂 Output path: ${this.outputPath}\n`);
 
     // Initial sync
     await this.syncAll();

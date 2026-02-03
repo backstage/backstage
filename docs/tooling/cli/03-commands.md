@@ -286,7 +286,7 @@ it is possible to pre-select what you want to create using the `--select` flag,
 and provide options using `--option`, for example:
 
 ```bash
-backstage-cli new --select plugin --option pluginId=foo
+backstage-cli new --select frontend-plugin --option pluginId=foo
 ```
 
 This command is typically added as script in the root `package.json` to be

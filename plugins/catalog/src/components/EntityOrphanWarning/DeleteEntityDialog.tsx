@@ -16,15 +16,12 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import { useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { Button, Dialog, DialogFooter, DialogHeader } from '@backstage/ui';
 
 interface DeleteEntityDialogProps {
   open: boolean;
@@ -55,23 +52,16 @@ export function DeleteEntityDialog(props: DeleteEntityDialogProps) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle id="responsive-dialog-title">
-        {t('deleteEntity.dialogTitle')}
-      </DialogTitle>
-      <DialogActions>
-        <Button
-          variant="contained"
-          color="secondary"
-          disabled={busy}
-          onClick={onDelete}
-        >
-          {t('deleteEntity.deleteButtonTitle')}
-        </Button>
-        <Button onClick={onClose} color="primary">
+    <Dialog isOpen={open} onOpenChange={isOpen => !isOpen && onClose()}>
+      <DialogHeader>{t('deleteEntity.dialogTitle')}</DialogHeader>
+      <DialogFooter>
+        <Button variant="secondary" onPress={onClose}>
           {t('deleteEntity.cancelButtonTitle')}
         </Button>
-      </DialogActions>
+        <Button variant="primary" destructive loading={busy} onPress={onDelete}>
+          {t('deleteEntity.deleteButtonTitle')}
+        </Button>
+      </DialogFooter>
     </Dialog>
   );
 }

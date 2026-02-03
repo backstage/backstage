@@ -330,6 +330,9 @@ export const ButtonDefinition: {
       readonly dataAttribute: true;
       readonly default: 'primary';
     };
+    readonly destructive: {
+      readonly dataAttribute: true;
+    };
     readonly loading: {
       readonly dataAttribute: true;
     };
@@ -443,8 +446,9 @@ export interface ButtonLinkProps
 
 // @public (undocumented)
 export type ButtonOwnProps = LeafSurfaceProps & {
-  size?: Responsive<'small' | 'medium' | 'large'>;
+  size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
+  destructive?: boolean;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   loading?: boolean;
@@ -1109,8 +1113,10 @@ export const LinkDefinition: {
       'danger',
       'warning',
       'success',
+      'info',
     ];
     readonly truncate: readonly [true, false];
+    readonly standalone: readonly [true, false];
   };
 };
 
@@ -1123,6 +1129,8 @@ export interface LinkProps extends LinkProps_2 {
     | TextColors
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
+  // (undocumented)
+  standalone?: boolean;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -1902,7 +1910,7 @@ export { Text_2 as Text };
 export type TextColors = 'primary' | 'secondary';
 
 // @public (undocumented)
-export type TextColorStatus = 'danger' | 'warning' | 'success';
+export type TextColorStatus = 'danger' | 'warning' | 'success' | 'info';
 
 // @public
 export const TextDefinition: {
@@ -1918,6 +1926,7 @@ export const TextDefinition: {
       'danger',
       'warning',
       'success',
+      'info',
     ];
     readonly truncate: readonly [true, false];
   };

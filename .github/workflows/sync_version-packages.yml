@@ -13,6 +13,10 @@ jobs:
     name: Create Changeset PR
     runs-on: ubuntu-latest
 
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=8192
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3

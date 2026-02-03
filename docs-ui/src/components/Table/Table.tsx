@@ -45,12 +45,14 @@ export const Row = ({ children }: { children: ReactNode }) => {
 export const Cell = ({
   children,
   style,
+  colSpan,
 }: {
   children: ReactNode;
   style?: CSSProperties;
+  colSpan?: number;
 }) => {
   return (
-    <td className={styles.tableCell} style={style}>
+    <td className={styles.tableCell} style={style} colSpan={colSpan}>
       {children}
     </td>
   );

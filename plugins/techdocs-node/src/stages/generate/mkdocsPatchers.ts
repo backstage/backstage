@@ -16,7 +16,11 @@
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { getRepoUrlFromLocationAnnotation, MKDOCS_SCHEMA } from './helpers';
+import {
+  ALLOWED_MKDOCS_KEYS,
+  getRepoUrlFromLocationAnnotation,
+  MKDOCS_SCHEMA,
+} from './helpers';
 import { assertError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -178,5 +182,57 @@ export const patchMkdocsYmlWithPlugins = async (
     });
 
     return changesMade;
+  });
+};
+
+/**
+ * Sanitize mkdocs.yml by keeping only allowed configuration keys.
+ *
+ * TechDocs only supports a subset of MkDocs configuration options.
+ * This function reconstructs the config with only allowed keys,
+ * discarding everything else. This approach ensures that any unknown
+ * or potentially dangerous configuration options are not passed to MkDocs.
+ *
+ * The file is always rewritten to ensure YAML features like merge keys
+ * and anchors are resolved into plain configuration.
+ *
+ * @param mkdocsYmlPath - Absolute path to mkdocs.yml or equivalent of a docs site
+ * @param logger - A logger instance
+ */
+export const sanitizeMkdocsYml = async (
+  mkdocsYmlPath: string,
+  logger: LoggerService,
+) => {
+  await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {
+    // Identify keys that will be removed for logging
+    const removedKeys = Object.keys(mkdocsYml).filter(
+      key => !ALLOWED_MKDOCS_KEYS.has(key),
+    );
+
+    if (removedKeys.length > 0) {
+      logger.warn(
+        `Removed the following unsupported configuration keys from mkdocs.yml: ${removedKeys.join(
+          ', ',
+        )}. ` +
+          `TechDocs only supports a subset of MkDocs configuration options.`,
+      );
+    }
+
+    // Build a new object with only allowed keys
+    const sanitized: Record<string, unknown> = {};
+    for (const key of ALLOWED_MKDOCS_KEYS) {
+      if (key in mkdocsYml) {
+        sanitized[key] = (mkdocsYml as Record<string, unknown>)[key];
+      }
+    }
+
+    // Clear the original object and copy sanitized values back
+    for (const key of Object.keys(mkdocsYml)) {
+      delete (mkdocsYml as Record<string, unknown>)[key];
+    }
+    Object.assign(mkdocsYml, sanitized);
+
+    // Always rewrite to ensure clean YAML output (resolves merge keys, anchors, etc.)
+    return true;
   });
 };
