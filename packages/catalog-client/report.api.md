@@ -27,6 +27,9 @@ export type AddLocationResponse = {
 export const CATALOG_FILTER_EXISTS: unique symbol;
 
 // @public
+export const CATALOG_FILTER_OWNED_BY_CURRENT_USER = '__current_user__';
+
+// @public
 export interface CatalogApi {
   addLocation(
     location: AddLocationRequest,
