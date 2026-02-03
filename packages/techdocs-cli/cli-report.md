@@ -26,18 +26,7 @@ Commands:
 Usage: techdocs-cli generate|build [options]
 
 Options:
-  --source-dir <PATH>
-  --output-dir <PATH>
-  --docker-image <DOCKER_IMAGE>
-  --no-pull
-  --no-docker
-  --techdocs-ref <HOST_TYPE:URL>
-  --etag <ETAG>
-  --site-name
   --catalog-file <PATH>
-  -v --verbose
-  --omitTechdocsCoreMkdocsPlugin
-  --legacyCopyReadmeMdToIndexMd
   --defaultPlugin [defaultPlugins...]
   --docker-image <DOCKER_IMAGE>
   --etag <ETAG>
@@ -113,14 +102,6 @@ Usage: techdocs-cli serve [options]
 Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
-  --no-docker
-  --site-name
-  --site-dir <PATH>
-  --mkdocs-port <PORT>
-  -v --verbose
-  --preview-app-bundle-path <PATH_TO_BUNDLE>
-  --preview-app-port <PORT>
-  -c, --mkdocs-config-file-name <FILENAME>
   --mkdocs-parameter-clean
   --mkdocs-parameter-dirtyreload
   --mkdocs-parameter-strict
@@ -128,6 +109,7 @@ Options:
   --no-docker
   --preview-app-bundle-path <PATH_TO_BUNDLE>
   --preview-app-port <PORT>
+  --site-dir <PATH>
   --site-name
   -c, --mkdocs-config-file-name <FILENAME>
   -h, --help
