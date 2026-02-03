@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { forwardRef, Ref, isValidElement, ReactElement, useRef } from 'react';
+import {
+  forwardRef,
+  Ref,
+  isValidElement,
+  ReactElement,
+  useRef,
+  useEffect,
+} from 'react';
 import { useToast } from '@react-aria/toast';
 import { useButton } from 'react-aria';
 import { motion } from 'motion/react';
@@ -79,6 +86,9 @@ export const Toast = forwardRef(
       onClose,
       status,
       icon,
+      expandedY: expandedYProp = 0,
+      collapsedHeight,
+      onHeightChange,
     } = ownProps;
 
     // Use internal ref if none provided
@@ -103,6 +113,30 @@ export const Toast = forwardRef(
       'aria-posinset': toastProps['aria-posinset'],
       'aria-setsize': toastProps['aria-setsize'],
     };
+
+    // Measure and report this toast's natural height
+    useEffect(() => {
+      if (!onHeightChange) return;
+
+      const element = toastRef.current;
+      if (!element) return;
+
+      // Report initial height
+      onHeightChange(toast.key, element.offsetHeight);
+
+      // Watch for size changes (content could change)
+      const resizeObserver = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          const height =
+            entry.borderBoxSize?.[0]?.blockSize ??
+            entry.target.getBoundingClientRect().height;
+          onHeightChange(toast.key, height);
+        }
+      });
+
+      resizeObserver.observe(element);
+      return () => resizeObserver.disconnect();
+    }, [toast.key, onHeightChange]);
 
     // Close button ref and props
     const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -159,15 +193,12 @@ export const Toast = forwardRef(
 
     // Calculate stacking values based on index
     // Collapsed: each toast behind scales down 5% and peeks up 12px
-    const collapsedScale = Math.max(0, 1 - index * 0.05);
+    const collapsedScale = Math.max(0.85, 1 - index * 0.05);
     const collapsedY = -index * 12;
 
-    // Expanded: full scale, stacked vertically with gaps
-    // Each toast moves up by (toast height ~72px + gap 8px) * index
-    const expandedY = -index * 72;
-
     // Use expanded or collapsed values based on hover state
-    const animateY = isExpanded ? expandedY : collapsedY;
+    // expandedYProp is pre-calculated based on actual toast heights
+    const animateY = isExpanded ? expandedYProp : collapsedY;
     const animateScale = isExpanded ? 1 : collapsedScale;
     const stackZIndex = 1000 - index;
 
@@ -186,6 +217,11 @@ export const Toast = forwardRef(
           zIndex: stackZIndex,
         };
 
+    // Back toasts (index > 0) use front toast's height when collapsed
+    // When expanded, all toasts use their natural height (auto)
+    const shouldConstrainHeight = !isExpanded && index > 0 && collapsedHeight;
+    const animatedHeight = shouldConstrainHeight ? collapsedHeight : 'auto';
+
     return (
       <motion.div
         {...ariaProps}
@@ -194,15 +230,17 @@ export const Toast = forwardRef(
         style={
           {
             '--toast-index': index,
+            overflow: shouldConstrainHeight ? 'hidden' : undefined,
           } as React.CSSProperties
         }
         layout
-        initial={{ opacity: 0, y: 100, scale: 1 }}
+        initial={{ opacity: 0, y: 100, scale: 1, height: 'auto' }}
         animate={{
           opacity: 1,
           y: animateY,
           scale: animateScale,
           zIndex: stackZIndex,
+          height: animatedHeight,
         }}
         exit={exitAnimation}
         onAnimationComplete={definition => {
