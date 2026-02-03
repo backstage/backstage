@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  forwardRef,
-  Ref,
-  isValidElement,
-  ReactElement,
-  useContext,
-  useState,
-  useEffect,
-} from 'react';
-import {
-  UNSTABLE_Toast as RAToast,
-  UNSTABLE_ToastStateContext,
-  Button as RAButton,
-} from 'react-aria-components';
+import { forwardRef, Ref, isValidElement, ReactElement, useRef } from 'react';
+import { useToast } from '@react-aria/toast';
+import { useButton } from 'react-aria';
+import { motion } from 'motion/react';
 import {
   RiInformationLine,
   RiCheckLine,
@@ -39,6 +29,10 @@ import type { ToastProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ToastDefinition } from './definition';
 
+// Track which toasts are being manually closed (vs auto-timeout)
+// This allows different exit animations for each case
+const manuallyClosingToasts = new Set<string>();
+
 /**
  * A Toast displays a brief, temporary notification of actions, errors, or other events in an application.
  *
@@ -46,8 +40,6 @@ import { ToastDefinition } from './definition';
  * The Toast component is typically used within a ToastRegion and managed by a ToastQueue.
  * It supports multiple status variants (info, success, warning, danger) and can display
  * a title, description, and optional icon. Toasts can be dismissed manually or automatically.
- *
- * This component uses React Aria's unstable Toast API which is currently in alpha.
  *
  * @example
  * Basic usage with queue:
@@ -78,24 +70,53 @@ export const Toast = forwardRef(
       ToastDefinition,
       props,
     );
-    const { classes, toast, onClose, status, icon } = ownProps;
+    const {
+      classes,
+      toast,
+      state,
+      index = 0,
+      onClose,
+      status,
+      icon,
+    } = ownProps;
 
-    // Get state from context
-    const state = useContext(UNSTABLE_ToastStateContext);
+    // Use internal ref if none provided
+    const internalRef = useRef<HTMLDivElement>(null);
+    const toastRef = (ref as React.RefObject<HTMLDivElement>) || internalRef;
 
-    // Calculate index from state
-    const visibleToasts = state?.visibleToasts || [];
-    const arrayIndex = visibleToasts.findIndex(t => t.key === toast.key);
-    const index = arrayIndex >= 0 ? arrayIndex : 0;
+    // Get ARIA props from useToast hook
+    const { toastProps, titleProps, closeButtonProps } = useToast(
+      { toast },
+      state,
+      toastRef,
+    );
 
-    // Track starting state for enter animation
-    const [isStarting, setIsStarting] = useState(true);
+    // Extract only ARIA and accessibility props from toastProps to avoid
+    // conflicts with motion.div's event handler types (motion has its own drag API)
+    const ariaProps = {
+      role: toastProps.role,
+      tabIndex: toastProps.tabIndex,
+      'aria-label': toastProps['aria-label'],
+      'aria-labelledby': toastProps['aria-labelledby'],
+      'aria-describedby': toastProps['aria-describedby'],
+      'aria-posinset': toastProps['aria-posinset'],
+      'aria-setsize': toastProps['aria-setsize'],
+    };
 
-    useEffect(() => {
-      // Remove starting state after brief delay to trigger animation
-      const timer = setTimeout(() => setIsStarting(false), 50);
-      return () => clearTimeout(timer);
-    }, []);
+    // Close button ref and props
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
+    const { buttonProps } = useButton(
+      {
+        ...closeButtonProps,
+        onPress: () => {
+          // Mark this toast as manually closed for exit animation
+          manuallyClosingToasts.add(toast.key);
+          onClose?.();
+          state.close(toast.key);
+        },
+      },
+      closeButtonRef,
+    );
 
     // Get content from toast
     const content = toast.content;
@@ -135,42 +156,71 @@ export const Toast = forwardRef(
 
     const statusIcon = getStatusIcon();
 
+    // Calculate stacking values based on index
+    // Each toast behind scales down 5% and moves up 12px
+    const stackScale = Math.max(0, 1 - index * 0.05);
+    const stackY = -index * 12;
+    const stackZIndex = 1000 - index;
+
+    // Check if this toast is being manually closed
+    const isManualClose = manuallyClosingToasts.has(toast.key);
+
+    // Different exit animations for manual close vs auto-timeout
+    // Manual close: slide down from front, stay on top
+    // Auto-timeout: fade out in place, stay in stack position
+    const exitAnimation = isManualClose
+      ? { opacity: 0, y: 100, scale: 1, zIndex: 2000 }
+      : { opacity: 0, y: stackY + 50, scale: stackScale, zIndex: stackZIndex };
+
     return (
-      <RAToast
-        toast={toast}
-        ref={ref}
+      <motion.div
+        {...ariaProps}
+        ref={toastRef}
         className={classes.root}
         style={
           {
             '--toast-index': index,
           } as React.CSSProperties
         }
+        layout
+        initial={{ opacity: 0, y: 100, scale: 1 }}
+        animate={{
+          opacity: 1,
+          y: stackY,
+          scale: stackScale,
+          zIndex: stackZIndex,
+        }}
+        exit={exitAnimation}
+        onAnimationComplete={definition => {
+          // Clean up the manual close tracking after exit animation
+          if (definition === 'exit') {
+            manuallyClosingToasts.delete(toast.key);
+          }
+        }}
+        transition={{ type: 'tween', duration: 2, ease: 'easeOut' }}
         {...dataAttributes}
-        data-toast-key={toast.key}
         data-status={finalStatus}
-        data-starting-style={isStarting ? '' : undefined}
         {...restProps}
       >
         <div className={classes.content}>
           {statusIcon && <div className={classes.icon}>{statusIcon}</div>}
           <div>
-            <div className={classes.title}>{content.title}</div>
+            <div {...titleProps} className={classes.title}>
+              {content.title}
+            </div>
             {content.description && (
               <div className={classes.description}>{content.description}</div>
             )}
           </div>
         </div>
-        <RAButton
-          slot="close"
+        <button
+          {...buttonProps}
+          ref={closeButtonRef}
           className={classes.closeButton}
-          onPress={() => {
-            onClose?.();
-            state?.close(toast.key);
-          }}
         >
           <RiCloseLine aria-hidden="true" />
-        </RAButton>
-      </RAToast>
+        </button>
+      </motion.div>
     );
   },
 );
