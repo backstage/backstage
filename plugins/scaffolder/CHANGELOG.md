@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder
 
+## 1.35.3-next.1
+
+### Patch Changes
+
+- 4e581a6: Updated the browser tab title on the template wizard page to display the specific template title instead of the generic "Create a new component" text.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/plugin-scaffolder-react@1.19.7-next.1
+  - @backstage/core-components@0.18.7-next.1
+  - @backstage/plugin-techdocs-react@1.3.8-next.0
+  - @backstage/integration-react@1.2.15-next.1
+  - @backstage/plugin-scaffolder-common@1.7.6-next.1
+
 ## 1.35.2-next.0
 
 ### Patch Changes

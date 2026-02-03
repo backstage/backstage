@@ -1,5 +1,17 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.9-next.1
+
+### Patch Changes
+
+- 9b4c414: Updated README for backend-dynamic-feature-service
+- Updated dependencies
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/plugin-catalog-backend@3.4.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
 ## 0.7.9-next.0
 
 ### Patch Changes

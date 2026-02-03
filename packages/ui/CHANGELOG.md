@@ -1,5 +1,91 @@
 # @backstage/ui
 
+## 0.12.0-next.1
+
+### Minor Changes
+
+- 058ffd9: **BREAKING**: Removed `large` size variant from Button component as it was never implemented.
+
+  **Migration:**
+
+  ```diff
+  - <Button size="large">Click me</Button>
+  + <Button size="medium">Click me</Button>
+  ```
+
+  **Affected components:** Button
+
+- 110fec0: **BREAKING**: Removed link and tint color tokens, added new status foreground tokens, and improved Link component styling
+
+  The following color tokens have been removed:
+
+  - `--bui-fg-link` (and all related tokens: `-hover`, `-pressed`, `-disabled`)
+  - `--bui-fg-tint` (and all related tokens: `-hover`, `-pressed`, `-disabled`)
+  - `--bui-bg-tint` (and all related tokens: `-hover`, `-pressed`, `-disabled`)
+  - `--bui-border-tint` (and all related tokens)
+
+  **New Status Tokens:**
+
+  Added dedicated tokens for status colors that distinguish between usage on status backgrounds vs. standalone usage:
+
+  - `--bui-fg-danger-on-bg` / `--bui-fg-danger`
+  - `--bui-fg-warning-on-bg` / `--bui-fg-warning`
+  - `--bui-fg-success-on-bg` / `--bui-fg-success`
+  - `--bui-fg-info-on-bg` / `--bui-fg-info`
+
+  The `-on-bg` variants are designed for text on colored backgrounds, while the base variants are for standalone status indicators with improved visibility and contrast.
+
+  **Migration:**
+
+  For link colors, migrate to one of the following alternatives:
+
+  ```diff
+  .custom-link {
+  - color: var(--bui-fg-link);
+  + color: var(--bui-fg-info);  /* For informational links */
+  + /* or */
+  + color: var(--bui-fg-primary);  /* For standard text links */
+  }
+  ```
+
+  For tint colors (backgrounds, foregrounds, borders), migrate to appropriate status or neutral colors:
+
+  ```diff
+  .info-section {
+  - background: var(--bui-bg-tint);
+  + background: var(--bui-bg-info);  /* For informational sections */
+  + /* or */
+  + background: var(--bui-bg-neutral-on-surface-0);  /* For neutral emphasis */
+  }
+  ```
+
+  If you're using status foreground colors on colored backgrounds, update to the new `-on-bg` tokens:
+
+  ```diff
+  .error-badge {
+  - color: var(--bui-fg-danger);
+  + color: var(--bui-fg-danger-on-bg);
+    background: var(--bui-bg-danger);
+  }
+  ```
+
+  **Affected components:** Link
+
+### Patch Changes
+
+- 4d1b7f4: Fixed CSS Module syntax to comply with Next.js 16 Turbopack validation by flattening nested dark theme selectors.
+
+  **Affected components:** Popover, Tooltip
+
+- 2c219b9: Added `destructive` prop to Button for dangerous actions like delete or remove. Works with all variants (primary, secondary, tertiary).
+
+  **Affected components:** Button
+
+- 5af9e14: Fixed `useDefinition` hook adding literal "undefined" class name when no className prop was passed.
+- 74c5a76: Fixed Switch component disabled state styling to show `not-allowed` cursor and disabled text color.
+
+  **Affected components:** Switch
+
 ## 0.12.0-next.0
 
 ### Minor Changes

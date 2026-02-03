@@ -1,5 +1,15 @@
 # @backstage/backend-defaults
 
+## 0.15.2-next.1
+
+### Patch Changes
+
+- 8dd518a: Support `connection.type: azure` in database client to use Microsoft Entra authentication with Azure database for PostgreSQL
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 0.15.1-next.0
 
 ### Patch Changes

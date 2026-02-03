@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.7.9-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
 ## 0.7.9-next.0
 
 ### Patch Changes

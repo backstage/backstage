@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- ce3639c: Add PersistentVolume and PersistentVolumeClaims Rendering
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.10-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 0.4.1-next.0
 
 ### Patch Changes

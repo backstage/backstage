@@ -1,5 +1,12 @@
 # @backstage/core-components
 
+## 0.18.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.7.2-next.0
+
 ## 0.18.6-next.0
 
 ### Patch Changes

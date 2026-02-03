@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.8.0-next.1
+
+### Minor Changes
+
+- 583bd3a: Added `elasticsearchAuthExtensionPoint` to enable dynamic authentication mechanisms such as bearer tokens with automatic rotation.
+
+### Patch Changes
+
+- 7021165: Fixed bulk indexing to refresh only the target index instead of all indexes, improving performance in multi-index deployments.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 1.7.10-next.0
 
 ### Patch Changes
