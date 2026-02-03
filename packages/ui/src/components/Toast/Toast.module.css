@@ -74,7 +74,7 @@
     box-shadow: 0 4px 12px -2px rgba(0 0 0 / 0.4);
 
     /* Animation */
-    transition: transform 6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 6s ease;
+    transition: transform 3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 3s ease;
 
     /* View Transitions - name is set dynamically via inline style, class groups them */
     view-transition-class: toast;
@@ -244,19 +244,12 @@
   }
 }
 
-/* Apply animations to view transition pseudo-elements */
-/* Debug: using wildcard to test if view transitions work at all */
-::view-transition-old(*) {
-  animation: bui-toast-exit 6s ease-out forwards;
+/* Apply exit animation only to the closing toast */
+::view-transition-old(toast-exit) {
+  animation: bui-toast-exit 3s ease-out forwards;
 }
 
-::view-transition-new(*) {
-  animation: none;
-}
-
-/* Don't animate the root snapshot */
-::view-transition-old(root),
-::view-transition-new(root) {
+::view-transition-new(toast-exit) {
   animation: none;
 }
 
@@ -266,8 +259,7 @@
     transition: none;
   }
 
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
+  ::view-transition-old(toast-exit) {
     animation: none !important;
   }
 }

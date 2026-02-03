@@ -45,21 +45,27 @@ import type { ToastContent } from './types';
  *
  * @public
  */
-// Track if we should use view transition (only for removals)
-let useViewTransition = false;
+// Track which toast element is being closed for view transition
+let closingToastElement: HTMLElement | null = null;
 
 export const toastQueue = new RAToastQueue<ToastContent>({
   maxVisibleToasts: 5,
   // Wrap state updates in a CSS view transition for smooth animations
   wrapUpdate(fn) {
-    if (useViewTransition && 'startViewTransition' in document) {
-      useViewTransition = false; // Reset flag
+    if (closingToastElement && 'startViewTransition' in document) {
+      // Set view-transition-name on the element BEFORE capturing old state
+      closingToastElement.style.viewTransitionName = 'toast-exit';
+      const element = closingToastElement;
+      closingToastElement = null;
+
       (
         document as Document & {
           startViewTransition: (cb: () => void) => void;
         }
       ).startViewTransition(() => {
         flushSync(fn);
+        // Clean up (element may be removed, but just in case)
+        element.style.viewTransitionName = '';
       });
     } else {
       fn();
@@ -67,9 +73,13 @@ export const toastQueue = new RAToastQueue<ToastContent>({
   },
 });
 
-// Override close to enable view transition
+// Override close to capture the toast element before transition
 const originalClose = toastQueue.close.bind(toastQueue);
 toastQueue.close = (key: string) => {
-  useViewTransition = true;
+  // Find the toast element by our custom data attribute
+  const toastElement = document.querySelector(
+    `[data-toast-key="${key}"]`,
+  ) as HTMLElement | null;
+  closingToastElement = toastElement;
   originalClose(key);
 };
