@@ -61,7 +61,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--catalog-file <PATH>',
-      'Path to the backstage catalog file. This optional and will only be used if serving using the --preview-app-bundle-path flag',
+      'Path to the backstage catalog file. This is optional and will only be used if serving using the --preview-app-bundle-path flag',
     )
     .option('-v --verbose', 'Enable verbose output.', false)
     .option(
