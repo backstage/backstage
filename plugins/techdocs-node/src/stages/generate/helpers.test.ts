@@ -628,15 +628,13 @@ describe('helpers', () => {
     };
 
     beforeEach(() => {
-      mockFs({
-        [rootDir]: mockFiles,
-      });
+      mockDir.setContent(mockFiles);
     });
 
     it('should create the file if it does not exist', async () => {
-      const filePath = path.join(rootDir, 'wrong_entity_metadata.json');
+      const filePath = mockDir.resolve('wrong_entity_metadata.json');
       await createOrUpdateEntityMetadata(
-        path.join(rootDir, 'catalog.yaml'),
+        mockDir.resolve('catalog.yaml'),
         filePath,
         mockLogger,
       );
@@ -648,8 +646,8 @@ describe('helpers', () => {
     });
 
     it('should throw error when the YAML is invalid', async () => {
-      const filePath = path.join(rootDir, 'entity_metadata.json');
-      const catalogPath = path.join(rootDir, 'invalid_catalog.yaml');
+      const filePath = mockDir.resolve('entity_metadata.json');
+      const catalogPath = mockDir.resolve('invalid_catalog.yaml');
 
       await expect(
         createOrUpdateEntityMetadata(catalogPath, filePath, mockLogger),
@@ -657,10 +655,10 @@ describe('helpers', () => {
     });
 
     it('should add catalog yaml contents to the metadata json', async () => {
-      const filePath = path.join(rootDir, 'entity_metadata.json');
+      const filePath = mockDir.resolve('entity_metadata.json');
 
       await createOrUpdateEntityMetadata(
-        path.join(rootDir, 'catalog.yaml'),
+        mockDir.resolve('catalog.yaml'),
         filePath,
         mockLogger,
       );
