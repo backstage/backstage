@@ -30,6 +30,7 @@ export const ToastDefinition = defineComponent<ToastOwnProps>()({
     content: 'bui-ToastContent',
     title: 'bui-ToastTitle',
     description: 'bui-ToastDescription',
+    links: 'bui-ToastLinks',
     icon: 'bui-ToastIcon',
     closeButton: 'bui-ToastCloseButton',
   },

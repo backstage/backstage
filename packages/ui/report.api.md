@@ -2212,8 +2212,15 @@ export interface ToastContainerProps extends ToastContainerOwnProps {}
 export interface ToastContent {
   description?: ReactNode;
   icon?: boolean | ReactElement;
+  links?: ToastLink[];
   status?: 'info' | 'success' | 'warning' | 'danger';
   title: ReactNode;
+}
+
+// @public
+export interface ToastLink {
+  href: string;
+  label: string;
 }
 
 // @public

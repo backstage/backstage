@@ -1,22 +1,26 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { toastContentPropDefs, toastRegionPropDefs } from './props-definition';
+import {
+  toastContentPropDefs,
+  toastContainerPropDefs,
+} from './props-definition';
 import {
   toastUsageSnippet,
   defaultSnippet,
   statusVariantsSnippet,
-  withDescriptionSnippet,
   withoutDescriptionSnippet,
+  withLinksSnippet,
   autoDismissSnippet,
   programmaticControlSnippet,
   queueManagementSnippet,
 } from './snippets';
 import {
+  SharedToastContainer,
   Default,
   StatusVariants,
-  WithDescription,
   WithoutDescription,
+  WithLinks,
   AutoDismiss,
   ProgrammaticControl,
   QueueManagement,
@@ -24,25 +28,20 @@ import {
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
-import {
-  ToastDefinition,
-  ToastRegionDefinition,
-} from '../../../utils/definitions';
+import { ToastDefinition } from '../../../utils/definitions';
 
 <PageTitle
   title="Toast"
-  description="A Toast displays a brief, temporary notification of actions, errors, or other events in the bottom-right corner of the application."
+  description="A Toast displays a brief, temporary notification of actions, errors, or other events."
 />
+
+<SharedToastContainer />
 
 <Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
 
-## Status
-
-The Toast component uses React Aria's unstable Toast API, which is currently in **alpha status**. The API may change in future versions of react-aria-components.
-
 ## Usage
 
-The Toast component uses a global queue system. Place the `ToastRegion` once in your app root, then trigger toasts from anywhere using the `queue` API.
+The Toast component uses a global queue system. Place the `ToastContainer` once in your app root, then trigger toasts from anywhere using the `queue` API.
 
 <CodeBlock code={toastUsageSnippet} />
 
@@ -54,9 +53,9 @@ The content object passed to `queue.add()`:
 
 <PropsTable data={toastContentPropDefs} />
 
-### ToastRegion
+### ToastContainer
 
-<PropsTable data={toastRegionPropDefs} />
+<PropsTable data={toastContainerPropDefs} />
 
 ## Examples
 
@@ -72,18 +71,6 @@ The Toast component supports four status variants, each with its own color theme
   code={statusVariantsSnippet}
 />
 
-### With Description
-
-Add a description to provide additional context or details.
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<WithDescription />}
-  code={withDescriptionSnippet}
-/>
-
 ### Without Description
 
 Toasts can display a title only for simpler notifications.
@@ -94,6 +81,18 @@ Toasts can display a title only for simpler notifications.
   open
   preview={<WithoutDescription />}
   code={withoutDescriptionSnippet}
+/>
+
+### With Links
+
+Toasts can include links to provide quick actions or navigation.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithLinks />}
+  code={withLinksSnippet}
 />
 
 ### Auto Dismiss
@@ -132,20 +131,6 @@ The toast queue supports multiple toasts with deep stacking. When multiple toast
   code={queueManagementSnippet}
 />
 
-## Accessibility
-
-- **Landmark Region**: Toast regions are ARIA landmark regions that can be navigated using F6 (forward) and Shift+F6 (backward).
-- **Focus Management**: When a toast is closed, focus moves to the next toast if any. When the last toast is closed, focus is restored.
-- **Timer Pausing**: Timers automatically pause when users focus or hover over a toast.
-- **Minimum Timeout**: For accessibility, toasts should have a minimum timeout of 5 seconds.
-- **Manual Dismissal**: Always include a close button for users who need more time to read the content.
-
-## Theming
-
 <Theming definition={ToastDefinition} />
-
-<Theming definition={ToastRegionDefinition} />
-
-## Changelog
 
 <ChangelogComponent component="toast" />

@@ -156,6 +156,14 @@
     word-wrap: break-word;
   }
 
+  /* Links */
+  .bui-ToastLinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--bui-space-3);
+    margin-top: var(--bui-space-1);
+  }
+
   /* Close Button */
   .bui-ToastCloseButton {
     flex-shrink: 0;

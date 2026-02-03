@@ -18,6 +18,7 @@ import preview from '../../../../../.storybook/preview';
 import { ToastContainer, toastQueue } from './index';
 import { Flex } from '../Flex';
 import { Button } from '../Button';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = preview.meta({
   title: 'Backstage UI/Toast',
@@ -245,6 +246,57 @@ export const WithoutIcons = meta.story({
         </Button>
       </Flex>
     </>
+  ),
+});
+
+export const WithLinks = meta.story({
+  render: () => (
+    <MemoryRouter>
+      <ToastContainer queue={toastQueue} />
+      <Flex gap="3">
+        <Button
+          onPress={() =>
+            toastQueue.add({
+              title: 'Deployment complete',
+              description: 'Your application has been deployed.',
+              status: 'success',
+              links: [
+                { label: 'View logs', href: '/logs' },
+                { label: 'Open dashboard', href: '/dashboard' },
+              ],
+            })
+          }
+        >
+          Toast with Links
+        </Button>
+        <Button
+          onPress={() =>
+            toastQueue.add({
+              title: 'Error occurred',
+              description: 'Something went wrong during the build.',
+              status: 'danger',
+              links: [{ label: 'View error details', href: '/errors' }],
+            })
+          }
+        >
+          Single Link
+        </Button>
+        <Button
+          onPress={() =>
+            toastQueue.add({
+              title: 'New update available',
+              status: 'info',
+              links: [
+                { label: 'Release notes', href: '/releases' },
+                { label: 'Update now', href: '/update' },
+              ],
+            })
+          }
+        >
+          Links without Description
+        </Button>
+      </Flex>
+    </MemoryRouter>
   ),
 });
 

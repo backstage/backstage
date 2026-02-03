@@ -56,6 +56,7 @@ export { SwitchDefinition } from './components/Switch/definition';
 export {
   ToastDefinition,
   ToastContainerDefinition,
+  ToastContainerDefinition as ToastRegionDefinition,
 } from './components/Toast/definition';
 export { ToggleButtonDefinition } from './components/ToggleButton/definition';
 export { ToggleButtonGroupDefinition } from './components/ToggleButtonGroup/definition';
