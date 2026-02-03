@@ -41,8 +41,8 @@ export interface ToastContent {
 export type ToastOwnProps = ContainerSurfaceProps & {
   /** Toast object from the queue */
   toast: QueuedToast<ToastContent>;
-  /** Callback when swipe ends */
-  onSwipeEnd?: () => void;
+  /** Callback when toast is closed */
+  onClose?: () => void;
   /** Override status from content */
   status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
   /** Override icon from content */

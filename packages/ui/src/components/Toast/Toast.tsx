@@ -22,7 +22,6 @@ import {
   useContext,
   useState,
   useEffect,
-  useRef,
 } from 'react';
 import {
   UNSTABLE_Toast as RAToast,
@@ -79,7 +78,7 @@ export const Toast = forwardRef(
       ToastDefinition,
       props,
     );
-    const { classes, toast, onSwipeEnd, status, icon } = ownProps;
+    const { classes, toast, onClose, status, icon } = ownProps;
 
     // Get state from context
     const state = useContext(UNSTABLE_ToastStateContext);
@@ -92,62 +91,11 @@ export const Toast = forwardRef(
     // Track starting state for enter animation
     const [isStarting, setIsStarting] = useState(true);
 
-    // Track swipe position
-    const [swipeX, setSwipeX] = useState(0);
-    const [isSwiping, setIsSwiping] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const startXRef = useRef(0);
-    const toastRef = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
       // Remove starting state after brief delay to trigger animation
       const timer = setTimeout(() => setIsStarting(false), 50);
       return () => clearTimeout(timer);
     }, []);
-
-    const handlePointerDown = (e: React.PointerEvent) => {
-      // Check if region is hovered (expanded state)
-      const region = toastRef.current?.closest(
-        '[role="region"]',
-      ) as HTMLElement;
-      setIsExpanded(region?.matches(':hover') || false);
-
-      setIsSwiping(true);
-      startXRef.current = e.clientX;
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    };
-
-    const handlePointerMove = (e: React.PointerEvent) => {
-      if (!isSwiping) return;
-
-      const deltaX = e.clientX - startXRef.current;
-      // Only allow swipe right
-      if (deltaX > 0) {
-        setSwipeX(deltaX);
-      }
-    };
-
-    const handlePointerUp = (e: React.PointerEvent) => {
-      if (!isSwiping) return;
-
-      setIsSwiping(false);
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-
-      // Notify parent that swipe ended to lock hover
-      onSwipeEnd?.();
-
-      // If swiped more than 150px, close the toast
-      if (swipeX > 150) {
-        // Animate off screen before closing
-        setSwipeX(400);
-        setTimeout(() => {
-          state?.close(toast.key);
-        }, 200);
-      } else {
-        // Spring back
-        setSwipeX(0);
-      }
-    };
 
     // Get content from toast
     const content = toast.content;
@@ -190,40 +138,14 @@ export const Toast = forwardRef(
     return (
       <RAToast
         toast={toast}
-        ref={node => {
-          if (toastRef) {
-            (
-              toastRef as React.MutableRefObject<HTMLDivElement | null>
-            ).current = node;
-          }
-          if (typeof ref === 'function') {
-            ref(node);
-          } else if (ref) {
-            (ref as React.MutableRefObject<HTMLDivElement | null>).current =
-              node;
-          }
-        }}
+        ref={ref}
         className={classes.root}
         style={
           {
             '--toast-index': index,
-            '--swipe-x': swipeX,
-            transform:
-              swipeX > 0
-                ? isExpanded
-                  ? `translateX(${swipeX}px) translateY(calc((var(--toast-index) * -100%) - (var(--toast-index) * var(--bui-space-2)))) scale(1)`
-                  : `translateX(${swipeX}px) translateY(calc(var(--toast-index) * var(--toast-peek) * -1)) scale(var(--toast-scale))`
-                : undefined,
+            viewTransitionName: `toast-${toast.key}`,
           } as React.CSSProperties
         }
-        data-swiping={isSwiping ? '' : undefined}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={() => {
-          setIsSwiping(false);
-          setSwipeX(0);
-        }}
         {...dataAttributes}
         data-status={finalStatus}
         data-starting-style={isStarting ? '' : undefined}
@@ -242,12 +164,8 @@ export const Toast = forwardRef(
           slot="close"
           className={classes.closeButton}
           onPress={() => {
-            // Lock hover first to prevent collapse
-            onSwipeEnd?.();
-            // Small delay before actually closing to let lock take effect
-            setTimeout(() => {
-              state?.close(toast.key);
-            }, 0);
+            onClose?.();
+            state?.close(toast.key);
           }}
         >
           <RiCloseLine aria-hidden="true" />

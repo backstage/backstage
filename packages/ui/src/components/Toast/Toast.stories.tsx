@@ -22,6 +22,9 @@ import { Button } from '../Button';
 const meta = preview.meta({
   title: 'Backstage UI/Toast',
   component: ToastRegion,
+  parameters: {
+    layout: 'centered',
+  },
 });
 
 export const Default = meta.story({
@@ -30,10 +33,13 @@ export const Default = meta.story({
       <ToastRegion queue={toastQueue} />
       <Button
         onPress={() =>
-          toastQueue.add({
-            title: 'Files uploaded',
-            description: '3 files uploaded successfully.',
-          })
+          toastQueue.add(
+            {
+              title: 'Files uploaded',
+              description: '3 files uploaded successfully.',
+            },
+            { timeout: 3000 },
+          )
         }
       >
         Show Toast

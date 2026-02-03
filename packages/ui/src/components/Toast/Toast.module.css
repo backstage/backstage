@@ -17,11 +17,12 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  /* Toast Region - Container for all toasts (bottom-right only) */
+  /* Toast Region - Container for all toasts (bottom center) */
   .bui-ToastRegion {
     position: fixed;
     bottom: 1rem;
-    right: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 100050;
     width: 300px;
     pointer-events: none;
@@ -32,68 +33,57 @@
     .bui-ToastRegion {
       width: 350px;
       bottom: 2rem;
-      right: 2rem;
     }
   }
 
   /* Individual Toast */
   .bui-Toast {
-    --toast-bg: var(--bui-bg-surface-1);
-    --toast-fg: var(--bui-fg-primary);
-    --toast-gap: 0.75rem;
+    /* CSS Variables */
     --toast-peek: 0.75rem;
     --toast-scale: calc(max(0, 1 - (var(--toast-index) * 0.05)));
-    --toast-shrink: calc(1 - var(--toast-scale));
 
+    /* Layout */
     position: absolute;
-    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
     display: flex;
     align-items: flex-start;
-    gap: var(--bui-space-3);
-    width: 100%;
-    padding: var(--bui-space-3);
+    padding: var(--bui-space-4);
+
+    /* Appearance */
     border-radius: var(--bui-radius-3);
-    background-color: var(--toast-bg);
-    color: var(--toast-fg);
+    background-color: var(--bui-bg-surface-1);
     font-family: var(--bui-font-regular);
     font-size: var(--bui-font-size-3);
-    line-height: 1.5;
-    box-shadow: var(--bui-shadow);
     outline: none;
     cursor: default;
     user-select: none;
+    pointer-events: none;
+
+    /* Stacking */
     z-index: calc(1000 - var(--toast-index));
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s;
+    transform-origin: bottom center;
+    transform: translateY(calc(var(--toast-index) * var(--toast-peek) * -1))
+      scale(var(--toast-scale));
+    will-change: transform;
+
+    /* Shadow + thin line separator */
+    box-shadow: 0 4px 12px -2px rgba(0 0 0 / 0.4);
+
+    /* Animation */
+    transition: transform 6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 6s ease;
+
+    /* View Transitions - name is set dynamically via inline style, class groups them */
+    view-transition-class: toast;
 
     /* Focus ring */
     &:focus-visible {
       outline: 2px solid var(--bui-border-focus);
       outline-offset: 2px;
     }
-  }
-
-  /* Stacking from bottom */
-  .bui-Toast {
-    --swipe-x: 0;
-
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    transform-origin: bottom center;
-    transform: translateY(calc(var(--toast-index) * var(--toast-peek) * -1))
-      scale(var(--toast-scale));
-    opacity: calc(1 - (var(--toast-index) * 0.15));
-    will-change: transform;
-  }
-
-  /* Disable transitions during swipe for immediate feedback */
-  .bui-Toast[data-swiping] {
-    transition: none !important;
-    opacity: calc(
-      (1 - (var(--toast-index) * 0.15)) * (1 - (var(--swipe-x) / 400))
-    );
   }
 
   /* Expanded state on hover - show all toasts stacked with gap */
@@ -107,7 +97,6 @@
         )
       )
       scale(1);
-    opacity: 1;
     pointer-events: auto;
   }
 
@@ -124,37 +113,29 @@
   }
 
   /* Only first toast (index 0) is interactive by default */
-  .bui-Toast {
-    pointer-events: none;
-  }
-
   .bui-Toast[style*='--toast-index: 0'] {
     pointer-events: auto;
   }
 
-  /* Status variants */
-  .bui-Toast[data-status='info'] {
-    --toast-bg: var(--bui-bg-info);
-    --toast-fg: var(--bui-fg-info);
-    --toast-border: var(--bui-border-info);
+  /* Status variants - color icon and title only */
+  .bui-Toast[data-status='info'] .bui-ToastIcon,
+  .bui-Toast[data-status='info'] .bui-ToastTitle {
+    color: var(--bui-fg-info);
   }
 
-  .bui-Toast[data-status='success'] {
-    --toast-bg: var(--bui-bg-success);
-    --toast-fg: var(--bui-fg-success);
-    --toast-border: var(--bui-border-success);
+  .bui-Toast[data-status='success'] .bui-ToastIcon,
+  .bui-Toast[data-status='success'] .bui-ToastTitle {
+    color: var(--bui-fg-success);
   }
 
-  .bui-Toast[data-status='warning'] {
-    --toast-bg: var(--bui-bg-warning);
-    --toast-fg: var(--bui-fg-warning);
-    --toast-border: var(--bui-border-warning);
+  .bui-Toast[data-status='warning'] .bui-ToastIcon,
+  .bui-Toast[data-status='warning'] .bui-ToastTitle {
+    color: var(--bui-fg-warning);
   }
 
-  .bui-Toast[data-status='danger'] {
-    --toast-bg: var(--bui-bg-danger);
-    --toast-fg: var(--bui-fg-danger);
-    --toast-border: var(--bui-border-danger);
+  .bui-Toast[data-status='danger'] .bui-ToastIcon,
+  .bui-Toast[data-status='danger'] .bui-ToastTitle {
+    color: var(--bui-fg-danger);
   }
 
   /* Toast Content */
@@ -189,7 +170,8 @@
 
   /* Description */
   .bui-ToastDescription {
-    font-size: var(--bui-font-size-2);
+    color: var(--bui-fg-secondary);
+    font-size: var(--bui-font-size-3);
     opacity: 0.9;
     margin-top: var(--bui-space-1);
     word-wrap: break-word;
@@ -208,9 +190,10 @@
     border: none;
     border-radius: var(--bui-radius-2);
     background: transparent;
-    color: var(--toast-fg);
+    color: inherit;
     cursor: pointer;
     transition: background-color 0.15s ease;
+    color: var(--bui-fg-primary);
 
     svg {
       width: 1rem;
@@ -218,7 +201,7 @@
     }
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.1);
+      background-color: var(--bui-bg-neutral-on-surface-1-hover);
     }
 
     &:focus-visible {
@@ -227,25 +210,64 @@
     }
 
     &:active {
-      background-color: rgba(0, 0, 0, 0.15);
+      background-color: var(--bui-bg-neutral-on-surface-1-pressed);
     }
   }
 
-  /* Starting state - toast entering */
+  /* Starting state - toast entering (fallback for non-view-transition browsers) */
   .bui-Toast[data-starting-style] {
     transform: translateY(calc(100% + 2rem)) scale(1) !important;
     opacity: 0 !important;
   }
+}
 
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .bui-Toast {
-      transition: none;
-    }
+/* View Transition animations - must be outside @layer for browser support */
+@keyframes bui-toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    html.bui-toast-add::view-transition-new(*),
-    html.bui-toast-remove::view-transition-old(*) {
-      animation: none;
-    }
+@keyframes bui-toast-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+}
+
+/* Apply animations to view transition pseudo-elements */
+/* Debug: using wildcard to test if view transitions work at all */
+::view-transition-old(*) {
+  animation: bui-toast-exit 6s ease-out forwards;
+}
+
+::view-transition-new(*) {
+  animation: none;
+}
+
+/* Don't animate the root snapshot */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .bui-Toast {
+    transition: none;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

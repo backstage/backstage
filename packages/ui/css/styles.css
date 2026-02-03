@@ -2,7 +2,7 @@
 
 /*! modern-normalize v3.0.1 | MIT License | https://github.com/sindresorhus/modern-normalize */
 @layer tokens {
-  :root {
+  :root, [data-theme-mode="light"] {
     --bui-font-regular: system-ui;
     --bui-font-monospace: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
     --bui-font-weight-regular: 400;
