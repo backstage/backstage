@@ -189,11 +189,12 @@ export class CacheManager {
     const clientConfig = redisConfig.getOptionalConfig('client');
     const socketConfig = clientConfig?.getOptionalConfig('socket');
     const keepAliveConfig = socketConfig?.getOptional('keepAlive');
-    const keepAlive = redisConfig.getOptionalBoolean('client.socket.keepAlive');
+    const keepAlive =
+      typeof keepAliveConfig === 'boolean' ? keepAliveConfig : undefined;
     const keepAliveInitialDelay = socketConfig?.getOptionalNumber(
       'keepAliveInitialDelay',
     );
-    const pingInterval = socketConfig?.getOptionalNumber('pingInterval');
+    const pingInterval = redisConfig.getOptionalNumber('client.pingInterval');
     const socketTimeout = socketConfig?.getOptionalNumber('socketTimeout');
 
     logger?.info('[REDIS PATCH] Read socket config', {
@@ -294,7 +295,6 @@ export class CacheManager {
     const socketOptions =
       keepAliveForSocket !== undefined ||
       keepAliveInitialDelayForSocket !== undefined ||
-      pingInterval !== undefined ||
       socketTimeout !== undefined ||
       reconnectStrategy !== undefined
         ? {
@@ -304,7 +304,6 @@ export class CacheManager {
             ...(keepAliveInitialDelayForSocket !== undefined
               ? { keepAliveInitialDelay: keepAliveInitialDelayForSocket }
               : {}),
-            ...(pingInterval !== undefined ? { pingInterval } : {}),
             ...(socketTimeout !== undefined ? { socketTimeout } : {}),
             ...(reconnectStrategy !== undefined ? { reconnectStrategy } : {}),
           }
@@ -313,6 +312,9 @@ export class CacheManager {
     if (socketOptions) {
       // node-redis docs indicate keepAlive is boolean even if types differ.
       redisOptions.socket = socketOptions as RedisClientOptions['socket'];
+    }
+    if (pingInterval !== undefined) {
+      redisOptions.pingInterval = pingInterval;
     }
 
     if (redisConfig.has('cluster')) {
@@ -337,22 +339,30 @@ export class CacheManager {
         ),
       };
 
-      if (redisOptions.socket) {
+      if (redisOptions.socket || pingInterval !== undefined) {
+        const existingDefaults = redisOptions.cluster.defaults ?? {};
+        const existingSocket = (existingDefaults as { socket?: object })
+          ?.socket;
         redisOptions.cluster.defaults = {
-          ...(redisOptions.cluster.defaults ?? {}),
-          socket: {
-            ...((redisOptions.cluster.defaults as { socket?: object })
-              ?.socket ?? {}),
-            ...redisOptions.socket,
-          },
+          ...existingDefaults,
+          ...(pingInterval !== undefined ? { pingInterval } : {}),
+          ...(redisOptions.socket
+            ? {
+                socket: {
+                  ...(existingSocket ?? {}),
+                  ...redisOptions.socket,
+                },
+              }
+            : {}),
         };
       }
     }
 
     logger?.info('[REDIS PATCH] Passing Redis options to Redis client', {
-      client: redisOptions.client,
-      socket: redisOptions.socket,
-      cluster: redisOptions.cluster,
+      hasClientOptions: Boolean(redisOptions.client),
+      hasSocketOptions: Boolean(redisOptions.socket),
+      hasPingInterval: pingInterval !== undefined,
+      hasClusterOptions: Boolean(redisOptions.cluster),
     });
 
     return redisOptions;
@@ -497,9 +507,18 @@ export class CacheManager {
           stores[pluginId] = new KeyvRedis(cluster, redisOptions);
         } else {
           // Create a regular Redis connection
-          const connection = storeOptions.socket
-            ? { url: this.connection, socket: storeOptions.socket }
-            : this.connection;
+          const connection =
+            storeOptions.socket || storeOptions.pingInterval !== undefined
+              ? {
+                  url: this.connection,
+                  ...(storeOptions.socket
+                    ? { socket: storeOptions.socket }
+                    : {}),
+                  ...(storeOptions.pingInterval !== undefined
+                    ? { pingInterval: storeOptions.pingInterval }
+                    : {}),
+                }
+              : this.connection;
           stores[pluginId] = new KeyvRedis(connection, redisOptions);
         }
 

@@ -33,6 +33,7 @@ export type RedisCacheStoreOptions = {
   client?: KeyvRedisOptions;
   cluster?: RedisClusterOptions;
   socket?: RedisClientOptions['socket'];
+  pingInterval?: number;
 };
 
 type RedisClusterOptions = Omit<KeyvRedisClusterOptions, 'defaults'> & {

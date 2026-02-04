@@ -780,62 +780,62 @@ export interface Config {
                  */
                 keepAliveInitialDelay?: number;
                 /**
-                 * Send `PING` command at interval (in milliseconds). Useful for
-                 * environments with idle connection timeouts.
-                 */
-                pingInterval?: number;
-                /**
                  * The maximum duration (in milliseconds) that the socket can remain
                  * idle before being automatically closed.
                  */
                 socketTimeout?: number;
+              };
+              /**
+               * Send `PING` command at interval (in milliseconds). Useful for
+               * environments with idle connection timeouts.
+               */
+              pingInterval?: number;
+              /**
+               * Optional reconnect strategy configuration. When set, Backstage
+               * creates a reconnect strategy function and passes it to the Redis
+               * client. The strategy is used when node-redis detects a socket
+               * close or error (e.g. the connection was dropped by a load
+               * balancer or NAT).
+               *
+               * Note: half-open connections are not always detected by TCP. If
+               * the socket stays idle and the network silently drops it, the
+               * reconnect strategy will not run until the client observes an
+               * error. Use periodic traffic (pinger) or infrastructure/OS
+               * keepalive settings to avoid long idle periods.
+               *
+               * The strategy implements exponential backoff with jitter:
+               * delay = min(2^retries * baseDelayMs, maxDelayMs) ± jitterMs.
+               *
+               * See
+               * https://keyv.org/docs/storage-adapters/redis/#gracefully-handling-errors-and-timeouts.
+               */
+              reconnectStrategy?: {
                 /**
-                 * Optional reconnect strategy configuration. When set, Backstage
-                 * creates a reconnect strategy function and passes it to the Redis
-                 * client. The strategy is used when node-redis detects a socket
-                 * close or error (e.g. the connection was dropped by a load
-                 * balancer or NAT).
-                 *
-                 * Note: half-open connections are not always detected by TCP. If
-                 * the socket stays idle and the network silently drops it, the
-                 * reconnect strategy will not run until the client observes an
-                 * error. Use periodic traffic (pinger) or infrastructure/OS
-                 * keepalive settings to avoid long idle periods.
-                 *
-                 * The strategy implements exponential backoff with jitter:
-                 * delay = min(2^retries * baseDelayMs, maxDelayMs) ± jitterMs.
-                 *
-                 * See
-                 * https://keyv.org/docs/storage-adapters/redis/#gracefully-handling-errors-and-timeouts.
+                 * Base delay in milliseconds for exponential backoff. Defaults to
+                 * 100ms when reconnectStrategy is configured.
                  */
-                reconnectStrategy?: {
-                  /**
-                   * Base delay in milliseconds for exponential backoff. Defaults to
-                   * 100ms when reconnectStrategy is configured.
-                   */
-                  baseDelayMs?: number;
-                  /**
-                   * Max delay in milliseconds for exponential backoff. Defaults to
-                   * 2000ms when reconnectStrategy is configured.
-                   */
-                  maxDelayMs?: number;
-                  /**
-                   * Random jitter in milliseconds added to each delay (± jitter).
-                   * Defaults to 50ms when reconnectStrategy is configured.
-                   */
-                  jitterMs?: number;
-                  /**
-                   * Maximum number of retries before giving up. When unset, retries
-                   * are unbounded.
-                   */
-                  maxRetries?: number;
-                  /**
-                   * When true, stop reconnecting on socket timeout errors. This is
-                   * useful when you want timeouts to be treated as fatal and rely
-                   * on higher-level retry logic.
-                   */
-                  stopOnSocketTimeout?: boolean;
-                };
+                baseDelayMs?: number;
+                /**
+                 * Max delay in milliseconds for exponential backoff. Defaults to
+                 * 2000ms when reconnectStrategy is configured.
+                 */
+                maxDelayMs?: number;
+                /**
+                 * Random jitter in milliseconds added to each delay (± jitter).
+                 * Defaults to 50ms when reconnectStrategy is configured.
+                 */
+                jitterMs?: number;
+                /**
+                 * Maximum number of retries before giving up. When unset, retries
+                 * are unbounded.
+                 */
+                maxRetries?: number;
+                /**
+                 * When true, stop reconnecting on socket timeout errors. This is
+                 * useful when you want timeouts to be treated as fatal and rely
+                 * on higher-level retry logic.
+                 */
+                stopOnSocketTimeout?: boolean;
               };
             };
             /**

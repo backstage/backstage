@@ -495,8 +495,8 @@ describe('CacheManager store options', () => {
               connection: 'redis://localhost:6379',
               redis: {
                 client: {
+                  pingInterval: 15000,
                   socket: {
-                    pingInterval: 15000,
                     socketTimeout: 20000,
                   },
                 },
@@ -512,8 +512,8 @@ describe('CacheManager store options', () => {
     expect(KeyvRedis).toHaveBeenCalledWith(
       {
         url: 'redis://localhost:6379',
+        pingInterval: 15000,
         socket: expect.objectContaining({
-          pingInterval: 15000,
           socketTimeout: 20000,
         }),
       },
@@ -534,8 +534,8 @@ describe('CacheManager store options', () => {
               connection: 'redis://localhost:6379',
               redis: {
                 client: {
+                  pingInterval: 15000,
                   socket: {
-                    pingInterval: 15000,
                     socketTimeout: 20000,
                     reconnectStrategy: {
                       baseDelayMs: 100,
@@ -558,8 +558,8 @@ describe('CacheManager store options', () => {
     expect(KeyvRedis).toHaveBeenCalledWith(
       {
         url: 'redis://localhost:6379',
+        pingInterval: 15000,
         socket: expect.objectContaining({
-          pingInterval: 15000,
           socketTimeout: 20000,
           reconnectStrategy: expect.any(Function),
         }),
@@ -607,6 +607,7 @@ describe('CacheManager store options', () => {
   });
 
   it('reconnects on socket timeout when stopOnSocketTimeout is false', () => {
+    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.5);
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
@@ -637,6 +638,7 @@ describe('CacheManager store options', () => {
     socketTimeoutError.name = 'SocketTimeoutError';
 
     expect(strategy(1, socketTimeoutError)).toBe(200);
+    randomSpy.mockRestore();
   });
 
   it('merges socket options into redis cluster defaults', () => {
@@ -681,8 +683,8 @@ describe('CacheManager store options', () => {
               connection: 'redis://localhost:6379',
               redis: {
                 client: {
+                  pingInterval: 10000,
                   socket: {
-                    pingInterval: 10000,
                     socketTimeout: 12000,
                   },
                 },
@@ -701,8 +703,8 @@ describe('CacheManager store options', () => {
     expect(createCluster).toHaveBeenCalledWith({
       rootNodes: [{ url: 'redis://localhost:6379' }],
       defaults: {
+        pingInterval: 10000,
         socket: {
-          pingInterval: 10000,
           socketTimeout: 12000,
         },
       },
@@ -719,8 +721,8 @@ describe('CacheManager store options', () => {
               connection: 'redis://localhost:6379',
               redis: {
                 client: {
+                  pingInterval: 10000,
                   socket: {
-                    pingInterval: 10000,
                     socketTimeout: 12000,
                     reconnectStrategy: {
                       baseDelayMs: 100,
@@ -742,8 +744,8 @@ describe('CacheManager store options', () => {
     expect(createCluster).toHaveBeenCalledWith({
       rootNodes: [{ url: 'redis://localhost:6379' }],
       defaults: {
+        pingInterval: 10000,
         socket: {
-          pingInterval: 10000,
           socketTimeout: 12000,
           reconnectStrategy: expect.any(Function),
         },
