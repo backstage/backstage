@@ -134,5 +134,7 @@ export interface TableProps<T extends TableItem> {
   selection?: TableSelection;
   emptyState?: ReactNode;
   className?: string;
+  tableLayout?: 'auto' | 'fixed';
   style?: React.CSSProperties;
+  styles?: Partial<Record<'tableRoot', React.CSSProperties>>;
 }
