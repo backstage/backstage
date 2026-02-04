@@ -37,6 +37,7 @@
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./rootLogger": "./src/entrypoints/rootLogger/index.ts",
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
+    "./schema": "./src/entrypoints/schema/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
     "./alpha": "./src/alpha/index.ts",
@@ -97,6 +98,9 @@
       "scheduler": [
         "src/entrypoints/scheduler/index.ts"
       ],
+      "schema": [
+        "src/entrypoints/schema/index.ts"
+      ],
       "urlReader": [
         "src/entrypoints/urlReader/index.ts"
       ],
@@ -135,6 +139,7 @@
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-dev-utils": "workspace:^",
+    "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -180,6 +185,7 @@
     "mysql2": "^3.0.0",
     "node-fetch": "^2.7.0",
     "node-forge": "^1.3.2",
+    "openapi3-ts": "^3.1.2",
     "p-limit": "^3.1.0",
     "path-to-regexp": "^8.0.0",
     "pg": "^8.11.3",
