@@ -18,7 +18,7 @@ import { ReactNode } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { ConfigReader } from '@backstage/core-app-api';
-import { configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import {
   translationApiRef,
   TranslationApi,
@@ -37,6 +37,7 @@ function makeWrapper(translationApi: TranslationApi, config: object = {}) {
       apis={[
         [translationApiRef, translationApi],
         [configApiRef, new ConfigReader(config as any)],
+        [errorApiRef, { post: jest.fn(), error$: jest.fn() }],
       ]}
       children={children}
     />
