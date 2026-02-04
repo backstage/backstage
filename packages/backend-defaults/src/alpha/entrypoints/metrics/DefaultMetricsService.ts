@@ -31,25 +31,30 @@ import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 /**
  * Default implementation of the {@link MetricsService} interface.
  *
- * This implementation provides a thin wrapper around the OpenTelemetry Meter API.
- *
  * @alpha
  */
 export class DefaultMetricsService implements MetricsService {
   private readonly meter: Meter;
 
-  private constructor() {
-    this.meter = metrics.getMeter('default');
+  private constructor(opts: {
+    name: string;
+    version?: string;
+    schemaUrl?: string;
+  }) {
+    this.meter = metrics.getMeter(opts.name, opts.version, {
+      schemaUrl: opts.schemaUrl,
+    });
   }
 
   /**
    * Creates a new {@link MetricsService} instance.
-   *
-   * @param opts - Configuration options including the namespace
-   * @returns A new MetricsService instance
    */
-  static create(): MetricsService {
-    return new DefaultMetricsService();
+  static create(opts: {
+    name: string;
+    version?: string;
+    schemaUrl?: string;
+  }): MetricsService {
+    return new DefaultMetricsService(opts);
   }
 
   createCounter<TAttributes extends Attributes = Attributes>(

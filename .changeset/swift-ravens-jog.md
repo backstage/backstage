@@ -2,8 +2,7 @@
 '@backstage/plugin-mcp-actions-backend': patch
 ---
 
-Adds three new metrics to track MCP actions:
+Adds two new metrics to track MCP server operations:
 
-- backstage.mcp-actions.actions.execution.duration
-- backstage.mcp-actions.messages.size
-- backstage.mcp-actions.actions.lookup.total
+- mcp.server.operation.duration
+- mcp.server.session.duration

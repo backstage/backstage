@@ -73,6 +73,7 @@ export const mcpPlugin = createBackendPlugin({
           mcpService,
           httpAuth,
           logger,
+          metrics,
         });
 
         const router = Router();

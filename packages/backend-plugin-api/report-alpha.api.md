@@ -112,6 +112,16 @@ export const actionsServiceRef: ServiceRef<
   'singleton'
 >;
 
+export { Attributes };
+
+export { Counter };
+
+export { Gauge };
+
+export { Histogram };
+
+export { MetricOptions };
+
 // @alpha
 export interface MetricsService {
   createCounter<TAttributes extends Attributes>(
@@ -151,6 +161,12 @@ export const metricsServiceRef: ServiceRef<
   'singleton'
 >;
 
+export { ObservableCounter };
+
+export { ObservableGauge };
+
+export { ObservableUpDownCounter };
+
 // @public (undocumented)
 export interface RootSystemMetadataService {
   // (undocumented)
@@ -171,6 +187,8 @@ export const rootSystemMetadataServiceRef: ServiceRef<
   'root',
   'singleton'
 >;
+
+export { UpDownCounter };
 
 // (No @packageDocumentation comment for this package)
 ```

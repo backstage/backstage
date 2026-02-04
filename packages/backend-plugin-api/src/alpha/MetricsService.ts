@@ -115,3 +115,17 @@ export interface MetricsService {
     opts?: MetricOptions,
   ): ObservableGauge<TAttributes>;
 }
+
+// todo(kurtaking): re-export types for convenience, at least for now
+// we should evaluate providing our own versions as we expand the API
+export type {
+  Attributes,
+  Counter,
+  Gauge,
+  Histogram,
+  MetricOptions,
+  ObservableCounter,
+  ObservableGauge,
+  ObservableUpDownCounter,
+  UpDownCounter,
+};

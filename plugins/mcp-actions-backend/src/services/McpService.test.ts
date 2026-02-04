@@ -69,7 +69,6 @@ describe('McpService', () => {
 
     const server = mcpService.getServer({
       credentials: mockCredentials.user(),
-      client: 'streamable',
     });
 
     const client = new Client({
@@ -140,7 +139,6 @@ describe('McpService', () => {
 
     const server = mcpService.getServer({
       credentials: mockCredentials.user(),
-      client: 'streamable',
     });
 
     const client = new Client({
@@ -192,7 +190,6 @@ describe('McpService', () => {
 
     const server = mcpService.getServer({
       credentials: mockCredentials.user(),
-      client: 'streamable',
     });
 
     const client = new Client({

@@ -14,55 +14,60 @@
  * limitations under the License.
  */
 
-import { MetricsService } from '@backstage/backend-plugin-api/alpha';
+import { Attributes } from '@backstage/backend-plugin-api/alpha';
 
-type McpActionsBaseAttributes = {
-  action_name: string;
-};
+/**
+ * Attributes for mcp.server.operation.duration
+ * Following OTel requirement levels from the spec
+ *
+ * @see https://opentelemetry.io/docs/specs/semconv/gen-ai/mcp/#metric-mcpserveroperationduration
+ */
+export interface McpServerOperationAttributes extends Attributes {
+  // Required
+  'mcp.method.name': string;
 
-type McpActionsExecutionAttributes = McpActionsBaseAttributes & {
-  status: 'success' | 'error';
-};
+  // Conditionally Required
+  'error.type'?: string;
+  'gen_ai.tool.name'?: string;
+  'gen_ai.prompt.name'?: string;
+  'mcp.resource.uri'?: string;
+  'rpc.response.status_code'?: string;
 
-type McpActionsMessagesAttributes = McpActionsBaseAttributes & {
-  direction: 'request' | 'response';
-};
-
-type McpActionsLookupAttributes = McpActionsBaseAttributes & {
-  result: 'found' | 'not_found';
-};
-
-export function createMcpMetrics(metrics: MetricsService) {
-  const actionsExecutionDuration =
-    metrics.createHistogram<McpActionsExecutionAttributes>(
-      'backstage.mcp-actions.actions.execution.duration',
-      {
-        description: 'Duration of MCP action execution',
-        unit: 's',
-      },
-    );
-
-  const messagesSize = metrics.createHistogram<McpActionsMessagesAttributes>(
-    'backstage.mcp-actions.messages.size',
-    {
-      description: 'Size of MCP request and response messages',
-      unit: 'By',
-    },
-  );
-
-  const actionsLookup = metrics.createCounter<McpActionsLookupAttributes>(
-    'backstage.mcp-actions.actions.lookup.total',
-    {
-      description: 'Total number of action lookup attempts',
-      unit: '{lookup}',
-    },
-  );
-
-  return {
-    actionsExecutionDuration,
-    messagesSize,
-    actionsLookup,
-  };
+  // Recommended
+  'gen_ai.operation.name'?: 'execute_tool';
+  'mcp.protocol.version'?: string;
+  'mcp.session.id'?: string;
+  'network.transport'?: 'tcp' | 'quic' | 'pipe' | 'unix';
+  'network.protocol.name'?: string;
+  'network.protocol.version'?: string;
 }
 
-export type McpMetrics = ReturnType<typeof createMcpMetrics>;
+/**
+ * Attributes for mcp.server.session.duration
+ * Following OTel requirement levels from the spec
+ *
+ * @see https://opentelemetry.io/docs/specs/semconv/gen-ai/mcp/#metric-mcpserversessionduration
+ */
+export interface McpServerSessionAttributes extends Attributes {
+  // Conditionally Required
+  'error.type'?: string;
+
+  // Recommended
+  'mcp.protocol.version'?: string;
+  'network.transport'?: 'tcp' | 'quic' | 'pipe' | 'unix';
+  'network.protocol.name'?: string;
+  'network.protocol.version'?: string;
+}
+
+/**
+ * OTel recommended bucket boundaries for MCP metrics
+ *
+ * @remarks
+ *
+ * Based on the MCP metrics defined in the OTel semantic conventions v1.39.0
+ * @see https://opentelemetry.io/docs/specs/semconv/gen-ai/mcp/
+ *
+ */
+export const bucketBoundaries = [
+  0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 30, 60, 120, 300,
+];
