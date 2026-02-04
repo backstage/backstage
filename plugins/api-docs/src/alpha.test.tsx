@@ -80,9 +80,9 @@ describe('api-docs plugin entity extensions', () => {
         ],
       });
 
-      // Wait for page to render, then check definition card is not shown
-      expect(await screen.findByText('my-component')).toBeInTheDocument();
-      expect(screen.queryByText('openapi')).not.toBeInTheDocument();
+      expect(
+        await screen.findByTestId('empty-entity-page'),
+      ).toBeInTheDocument();
     });
 
     it('should display the API definition content', async () => {
@@ -166,8 +166,9 @@ describe('api-docs plugin entity extensions', () => {
       });
 
       // Content should not render for Components
-      expect(await screen.findByText('my-service')).toBeInTheDocument();
-      expect(screen.queryByText('Definition')).not.toBeInTheDocument();
+      expect(
+        await screen.findByTestId('empty-entity-page'),
+      ).toBeInTheDocument();
     });
   });
 });

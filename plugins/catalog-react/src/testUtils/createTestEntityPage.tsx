@@ -155,6 +155,10 @@ export function createTestEntityPage(
               title: content.get(EntityContentBlueprint.dataRefs.title),
             }));
 
+          if (contents.length === 0 && cards.length === 0) {
+            return <div data-testid="empty-entity-page" />;
+          }
+
           return (
             <MockEntityApiProvider entity={entity}>
               <EntityProvider entity={entity}>
