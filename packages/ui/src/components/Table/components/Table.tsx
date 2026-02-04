@@ -98,7 +98,9 @@ export function Table<T extends TableItem>({
   selection,
   emptyState,
   className,
+  tableLayout = 'fixed',
   style,
+  styles = {},
 }: TableProps<T>) {
   const liveRegionId = useId();
 
@@ -137,13 +139,19 @@ export function Table<T extends TableItem>({
     data !== undefined,
   );
 
+  const wrapResizable =
+    tableLayout !== 'auto'
+      ? (elem: React.ReactNode) => (
+          <ResizableTableContainer>{elem}</ResizableTableContainer>
+        )
+      : (elem: React.ReactNode) => <>{elem}</>;
+
   return (
     <div className={className} style={style}>
       <VisuallyHidden aria-live="polite" id={liveRegionId}>
         {liveRegionLabel}
       </VisuallyHidden>
-
-      <ResizableTableContainer>
+      {wrapResizable(
         <TableRoot
           selectionMode={selectionMode}
           selectionBehavior={selectionBehavior}
@@ -154,6 +162,7 @@ export function Table<T extends TableItem>({
           disabledKeys={disabledRows}
           stale={isStale}
           aria-describedby={liveRegionId}
+          style={{ tableLayout, ...styles.tableRoot }}
         >
           <TableHeader columns={visibleColumns}>
             {column =>
@@ -207,8 +216,8 @@ export function Table<T extends TableItem>({
               );
             }}
           </TableBody>
-        </TableRoot>
-      </ResizableTableContainer>
+        </TableRoot>,
+      )}
       {pagination.type === 'page' && (
         <TablePagination
           pageSize={pagination.pageSize}

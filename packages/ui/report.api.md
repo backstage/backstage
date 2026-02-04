@@ -1700,7 +1700,9 @@ export function Table<T extends TableItem>({
   selection,
   emptyState,
   className,
+  tableLayout,
   style,
+  styles,
 }: TableProps<T>): JSX_2.Element;
 
 // @public (undocumented)
@@ -1831,6 +1833,10 @@ export interface TableProps<T extends TableItem> {
   sort?: SortState;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  styles?: Partial<Record<'tableRoot', React.CSSProperties>>;
+  // (undocumented)
+  tableLayout?: 'auto' | 'fixed';
 }
 
 // @public (undocumented)
