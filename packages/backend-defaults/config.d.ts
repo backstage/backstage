@@ -776,20 +776,23 @@ export interface Config {
                  */
                 keepAlive?: boolean;
                 /**
-                 * Initial delay in milliseconds for TCP keepalive probes.
+                 * Initial delay before TCP keepalive probes. Supports a number in
+                 * milliseconds or a human duration string like '10s'.
                  */
-                keepAliveInitialDelay?: number;
+                keepAliveInitialDelay?: number | HumanDuration | string;
                 /**
-                 * The maximum duration (in milliseconds) that the socket can remain
-                 * idle before being automatically closed.
+                 * The maximum duration the socket can remain idle before being
+                 * automatically closed. Supports a number in milliseconds or a
+                 * human duration string like '10s'.
                  */
-                socketTimeout?: number;
+                socketTimeout?: number | HumanDuration | string;
               };
               /**
-               * Send `PING` command at interval (in milliseconds). Useful for
-               * environments with idle connection timeouts.
+               * Send `PING` command at interval. Supports a number in milliseconds
+               * or a human duration string like '10s'. Useful for environments
+               * with idle connection timeouts.
                */
-              pingInterval?: number;
+              pingInterval?: number | HumanDuration | string;
               /**
                * Optional reconnect strategy configuration. When set, Backstage
                * creates a reconnect strategy function and passes it to the Redis

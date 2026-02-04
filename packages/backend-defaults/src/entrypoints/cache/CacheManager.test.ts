@@ -417,38 +417,29 @@ describe('CacheManager store options', () => {
     );
   });
 
-  it('warns and ignores numeric keepAlive values', () => {
-    const logger = mockServices.logger.mock();
-    const manager = CacheManager.fromConfig(
-      mockServices.rootConfig({
-        data: {
-          backend: {
-            cache: {
-              store: 'redis',
-              connection: 'redis://localhost:6379',
-              redis: {
-                client: {
-                  socket: {
-                    keepAlive: 7000,
+  it('throws on numeric keepAlive values', () => {
+    expect(() =>
+      CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store: 'redis',
+                connection: 'redis://localhost:6379',
+                redis: {
+                  client: {
+                    socket: {
+                      keepAlive: 7000,
+                    },
                   },
                 },
               },
             },
           },
-        },
-      }),
-      { logger },
-    );
-
-    manager.forPlugin('p1');
-
-    const childLogger = (logger.child as jest.Mock).mock.results[0]?.value;
-    expect(childLogger?.warn).toHaveBeenCalledWith(
-      "Invalid 'client.socket.keepAlive' value. Expected boolean, got number. Ignoring keepAlive.",
-    );
-    expect(KeyvRedis).toHaveBeenCalledWith(
-      'redis://localhost:6379',
-      expect.objectContaining({ keyPrefixSeparator: ':' }),
+        }),
+      ),
+    ).toThrow(
+      "Unable to convert config value for key 'backend.cache.redis.client.socket.keepAlive' in 'mock-config' to a boolean",
     );
   });
 

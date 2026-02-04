@@ -34,7 +34,11 @@ import {
 import { RedisClientOptions } from '@keyv/redis';
 import { InfinispanOptionsMapper } from './providers/infinispan/InfinispanOptionsMapper';
 import { durationToMilliseconds } from '@backstage/types';
-import { ConfigReader, readDurationFromConfig } from '@backstage/config';
+import {
+  Config,
+  ConfigReader,
+  readDurationFromConfig,
+} from '@backstage/config';
 import {
   InfinispanClientCacheInterface,
   InfinispanKeyvStore,
@@ -50,6 +54,20 @@ type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
  * @public
  */
 export class CacheManager {
+  private static readOptionalDuration(
+    config: Config,
+    key: string,
+  ): number | undefined {
+    const value = config.getOptional(key);
+    if (value === undefined) {
+      return undefined;
+    }
+    if (typeof value === 'number') {
+      return value;
+    }
+    return durationToMilliseconds(readDurationFromConfig(config, { key }));
+  }
+
   /**
    * Keys represent supported `backend.cache.store` values, mapped to factories
    * that return Keyv instances appropriate to the store.
@@ -189,13 +207,19 @@ export class CacheManager {
     const clientConfig = redisConfig.getOptionalConfig('client');
     const socketConfig = clientConfig?.getOptionalConfig('socket');
     const keepAliveConfig = socketConfig?.getOptional('keepAlive');
-    const keepAlive =
-      typeof keepAliveConfig === 'boolean' ? keepAliveConfig : undefined;
-    const keepAliveInitialDelay = socketConfig?.getOptionalNumber(
-      'keepAliveInitialDelay',
+    const keepAlive = redisConfig.getOptionalBoolean('client.socket.keepAlive');
+    const keepAliveInitialDelay = CacheManager.readOptionalDuration(
+      redisConfig,
+      'client.socket.keepAliveInitialDelay',
     );
-    const pingInterval = redisConfig.getOptionalNumber('client.pingInterval');
-    const socketTimeout = socketConfig?.getOptionalNumber('socketTimeout');
+    const pingInterval = CacheManager.readOptionalDuration(
+      redisConfig,
+      'client.pingInterval',
+    );
+    const socketTimeout = CacheManager.readOptionalDuration(
+      redisConfig,
+      'client.socket.socketTimeout',
+    );
 
     logger?.info('[REDIS PATCH] Read socket config', {
       keepAliveConfig,
@@ -203,12 +227,6 @@ export class CacheManager {
       pingInterval,
       socketTimeout,
     });
-
-    if (typeof keepAliveConfig === 'number') {
-      logger?.warn(
-        "Invalid 'client.socket.keepAlive' value. Expected boolean, got number. Ignoring keepAlive.",
-      );
-    }
 
     if (keepAlive === false && keepAliveInitialDelay !== undefined) {
       logger?.warn(
