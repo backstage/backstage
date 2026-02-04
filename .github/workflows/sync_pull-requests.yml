@@ -36,10 +36,11 @@ jobs:
             core.setOutput('pr-number', fs.readFileSync('./context/pr-number', 'utf8').trim());
             core.setOutput('label-added', fs.readFileSync('./context/label-added', 'utf8').trim());
             core.setOutput('review-state', fs.readFileSync('./context/review-state', 'utf8').trim());
+            core.setOutput('actor', fs.readFileSync('./context/actor', 'utf8').trim());
 
       - name: Backstage PR automation
         if: steps.download.outcome == 'success'
-        uses: backstage/actions/pr-automation@c0110c14def021f64b4774335b0d55ac705b9318 # v0.7.1
+        uses: backstage/actions/pr-automation@9f84cea3f08046bbc53dcf8d348a892f05687ce8 # v0.7.2
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
@@ -49,3 +50,4 @@ jobs:
           pr-number: ${{ steps.context.outputs.pr-number }}
           label-added: ${{ steps.context.outputs.label-added }}
           review-state: ${{ steps.context.outputs.review-state }}
+          actor: ${{ steps.context.outputs.actor }}
