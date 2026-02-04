@@ -69,5 +69,11 @@ app:
   extensions:
     - entity-content:kubernetes/kubernetes:
         config:
-          filter: kind:component,api,resource,system
+          filter:
+            kind:
+              $in:
+                - component
+                - api
+                - resource
+                - system
 ```
