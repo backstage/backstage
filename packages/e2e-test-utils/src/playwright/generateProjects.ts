@@ -19,6 +19,9 @@ import { resolve as resolvePath } from 'path';
 import { PlaywrightTestConfig } from '@playwright/test';
 import { getPackagesSync } from '@manypkg/get-packages';
 import type { BackstagePackage } from '@backstage/cli-node';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
+
+const DEFAULT_STORAGE_STATE_PATH = '.auth/user.json';
 
 /**
  * Generates a list of playwright projects by scanning the monorepo for packages with an `e2e-tests/` folder.
@@ -42,29 +45,71 @@ export function generateProjects(): PlaywrightTestConfig['projects'] {
 }
 
 /**
- * Generates a list of playwright projects by scanning the monorepo for packages with an `e2e-tests/` folder.
- * Creates a setup project that runs first, followed by test projects that depend on it and use shared authentication state.
+ * @public
+ */
+export interface AuthSetupOptions {
+  /**
+   * Path to store the authentication state file.
+   * This file will be automatically created and shared across test projects.
+   *
+   * @defaultValue '.auth/user.json'
+   */
+  storageStatePath?: string;
+  /**
+   * Pattern to match setup test files. If not provided, uses the default
+   * authentication setup file provided by this package.
+   *
+   * @example /.*\.setup\.ts/
+   */
+  setupTestMatch?: string | RegExp;
+}
+
+/**
+ * Generates a list of playwright projects with automatic authentication setup.
  *
- * @param authStateStoragePath - Path to the file where Playwright will store/read authentication state
- * @returns Array of Playwright project configurations with setup dependencies
+ * This function scans the monorepo for packages with `e2e-tests/` folders and configures
+ * them to use shared authentication state. Authentication is handled automatically using
+ * a default guest authentication setup.
+ *
+ * @param options - Configuration options including storage state path
+ * @returns Array of Playwright project configurations with auth dependencies
+ *
+ * @example
+ * Basic usage with default auth:
+ * ```ts
+ * // playwright.config.ts
+ * export default defineConfig({
+ *   projects: generateProjectsWithAuthSetup(),
+ * });
+ * ```
+ *
  * @public
  */
 export function generateProjectsWithAuthSetup(
-  authStateStoragePath: string,
+  options: AuthSetupOptions = {},
 ): PlaywrightTestConfig['projects'] {
-  const { root, packages } = getPackagesSync(process.cwd());
-  const e2eTestPackages = [...(root ? [root] : []), ...packages].filter(pkg => {
-    return fs.pathExistsSync(resolvePath(pkg.dir, 'e2e-tests'));
-  }) as BackstagePackage[];
+  const { storageStatePath = DEFAULT_STORAGE_STATE_PATH, setupTestMatch } =
+    options;
+  const baseProjects = generateProjects();
+
+  // Use the default auth setup file provided by this package if no custom pattern is provided
+  const defaultAuthSetupPath = resolvePackagePath(
+    '@backstage/e2e-test-utils',
+    'playwright/auth.setup.ts',
+  );
+  const testMatch = setupTestMatch ?? defaultAuthSetupPath;
 
   return [
-    { name: 'setup', testMatch: /.*\.setup\.ts/ },
-    ...e2eTestPackages.map(pkg => ({
-      name: pkg.packageJson.name,
-      testDir: resolvePath(pkg.dir, 'e2e-tests'),
+    {
+      name: 'setup',
+      testMatch,
+    },
+    ...(baseProjects ?? []).map(project => ({
+      ...project,
       use: {
+        ...project.use,
         channel: process.env.CI ? undefined : 'chrome', // Avoid specifying channel in CI to use default one
-        storageState: authStateStoragePath,
+        storageState: storageStatePath,
       },
       dependencies: ['setup'],
     })),

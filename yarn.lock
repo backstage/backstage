@@ -3742,6 +3742,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/e2e-test-utils@workspace:packages/e2e-test-utils"
   dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@manypkg/get-packages": "npm:^1.1.3"
