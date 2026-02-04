@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+import { Fragment } from 'react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
   coreExtensionData,
   createApiFactory,
+  createExtension,
   createFrontendModule,
   createFrontendPlugin,
   ExtensionDefinition,
   FrontendFeature,
+  RouteRef,
 } from '@backstage/frontend-plugin-api';
 import { render } from '@testing-library/react';
 import appPlugin from '@backstage/plugin-app';
@@ -64,6 +67,23 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   initialRouteEntries?: string[];
 
   /**
+   * An object of paths to mount route refs on, with the key being the path and
+   * the value being the RouteRef that the path will be bound to. This allows
+   * the route refs to be used by `useRouteRef` in the rendered elements.
+   *
+   * @example
+   * ```ts
+   * renderTestApp({
+   *   mountedRoutes: {
+   *     '/my-path': myRouteRef,
+   *   },
+   *   extensions: [...],
+   * })
+   * ```
+   */
+  mountedRoutes?: { [path: string]: RouteRef };
+
+  /**
    * API overrides to provide to the test app. Use `mockApis` helpers
    * from `@backstage/frontend-test-utils` to create mock implementations.
    *
@@ -99,6 +119,28 @@ export function renderTestApp<TApiPairs extends any[] = any[]>(
   options: RenderTestAppOptions<TApiPairs>,
 ) {
   const extensions = [...(options.extensions ?? [])];
+
+  if (options.mountedRoutes) {
+    for (const [path, routeRef] of Object.entries(options.mountedRoutes)) {
+      extensions.push(
+        createExtension({
+          kind: 'test-route',
+          name: path,
+          attachTo: { id: 'app/routes', input: 'routes' },
+          output: [
+            coreExtensionData.reactElement,
+            coreExtensionData.routePath,
+            coreExtensionData.routeRef,
+          ],
+          factory: () => [
+            coreExtensionData.reactElement(<Fragment />),
+            coreExtensionData.routePath(path),
+            coreExtensionData.routeRef(routeRef),
+          ],
+        }),
+      );
+    }
+  }
 
   const features: FrontendFeature[] = [
     createFrontendModule({
