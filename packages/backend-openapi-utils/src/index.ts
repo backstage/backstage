@@ -37,3 +37,7 @@ export {
   getOpenApiSpecRoute,
   createValidatedOpenApiRouterFromGeneratedEndpointMap,
 } from './stub';
+export {
+  permissionsMiddlewareFactory,
+  type WithOpenapi,
+} from './middlewares/permissions';

@@ -6,13 +6,21 @@
 import type { ContentObject } from 'openapi3-ts';
 import type core from 'express-serve-static-core';
 import { FromSchema } from 'json-schema-to-ts';
+import type { HttpAuthService } from '@backstage/backend-plugin-api';
 import { JSONSchema } from 'json-schema-to-ts';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { middleware } from 'express-openapi-validator';
+import { NextFunction } from 'express';
 import type { OpenAPIObject } from 'openapi3-ts';
+import { OperationObject } from 'openapi3-ts';
 import type { ParameterObject } from 'openapi3-ts';
+import type { PermissionsRegistryService } from '@backstage/backend-plugin-api';
+import type { PermissionsService } from '@backstage/backend-plugin-api';
 import type { ReferenceObject } from 'openapi3-ts';
+import { Request as Request_3 } from 'express';
 import type { RequestBodyObject } from 'openapi3-ts';
 import { RequestHandler } from 'express';
+import { Response as Response_4 } from 'express';
 import type { ResponseObject } from 'openapi3-ts';
 import { Router } from 'express';
 import type { SchemaObject } from 'openapi3-ts';
@@ -656,6 +664,18 @@ export type PathTemplate<Path extends string> =
     ? `${Prefix}:${PathName}${PathTemplate<Suffix>}`
     : Path;
 
+// @public
+export function permissionsMiddlewareFactory(dependencies: {
+  permissions: PermissionsService;
+  permissionsRegistry: PermissionsRegistryService;
+  httpAuth: HttpAuthService;
+  logger: LoggerService;
+}): (
+  req: Request_3 & WithOpenapi,
+  res: Response_4,
+  next: NextFunction,
+) => Promise<void>;
+
 // @public (undocumented)
 type PickOptionalKeys<
   T extends {
@@ -921,4 +941,16 @@ type UnknownIfNever<P> = [P] extends [never] ? unknown : P;
 
 // @public
 type ValueOf<T> = T[keyof T];
+
+// @public (undocumented)
+export interface WithOpenapi {
+  // (undocumented)
+  openapi?: {
+    expressRoute: string;
+    openApiRoute: string;
+    pathParams: Record<string, string>;
+    schema: OperationObject;
+    serial: number;
+  };
+}
 ```
