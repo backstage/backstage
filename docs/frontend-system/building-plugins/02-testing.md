@@ -200,8 +200,6 @@ describe('Index page', () => {
 });
 ```
 
-That's all for testing features!
-
 ## Mounting routes
 
 If your component or extension uses `useRouteRef` to generate links to other routes, you need to mount those routes in the test environment. Both `renderInTestApp` and `renderTestApp` support the `mountedRoutes` option for this purpose.
@@ -242,6 +240,10 @@ describe('MyComponent', () => {
   });
 });
 ```
+
+## Extension tree snapshots
+
+The `snapshot()` method on `ExtensionTester` returns a tree-shaped representation of the resolved extension hierarchy, which is convenient to use with Jest's `toMatchInlineSnapshot()` for verifying extension structure in tests.
 
 ## Missing something?
 
