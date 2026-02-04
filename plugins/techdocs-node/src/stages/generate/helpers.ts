@@ -478,24 +478,6 @@ export const createOrUpdateEntityMetadata = async (
   entityMetadataPath: string,
   logger: LoggerService,
 ): Promise<void> => {
-  // check if file exists, create if it does not.
-  try {
-    await fs.access(entityMetadataPath, fs.constants.F_OK);
-  } catch (err) {
-    // Bootstrap file with empty JSON
-    await fs.writeJson(entityMetadataPath, JSON.parse('{}'));
-  }
-  // check if valid Json
-  let json;
-  try {
-    json = await fs.readJson(entityMetadataPath);
-  } catch (err) {
-    assertError(err);
-    const message = `Invalid JSON at ${entityMetadataPath} with error ${err.message}`;
-    logger.error(message);
-    throw new Error(message);
-  }
-  // check if valid YAML
   let catalogYaml;
   try {
     catalogYaml = yaml.load(await fs.readFile(catalogFilePath, 'utf8'));
