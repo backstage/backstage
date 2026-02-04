@@ -12,6 +12,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
@@ -41,6 +42,14 @@ export namespace actionsServiceMock {
     mock: (
       partialImpl?: Partial<ActionsService> | undefined,
     ) => ServiceMock<ActionsService>;
+}
+
+// @alpha (undocumented)
+export namespace metricsServiceMock {
+  const // (undocumented)
+    mock: (
+      partialImpl?: Partial<MetricsService> | undefined,
+    ) => ServiceMock<MetricsService>;
 }
 
 // @alpha
