@@ -38,6 +38,7 @@ import { eventsServiceFactory } from '@backstage/plugin-events-node';
 import {
   actionsRegistryServiceFactory,
   actionsServiceFactory,
+  metricsServiceFactory,
 } from '@backstage/backend-defaults/alpha';
 import { instanceMetadataServiceFactory } from './alpha/entrypoints/instanceMetadata/instanceMetadataServiceFactory';
 
@@ -66,6 +67,7 @@ export const defaultServiceFactories = [
   // alpha services
   actionsRegistryServiceFactory,
   actionsServiceFactory,
+  metricsServiceFactory,
 
   // Unexported alpha services kept around for compatibility reasons
   instanceMetadataServiceFactory,

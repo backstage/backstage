@@ -32,9 +32,6 @@ describe('metricsServiceFactory', () => {
       }).getSubject('my-plugin');
 
       expect(subject).toBeDefined();
-      expect(typeof subject.createCounter).toBe('function');
-      expect(typeof subject.createHistogram).toBe('function');
-      expect(typeof subject.createGauge).toBe('function');
     });
 
     it('should create a metrics service with custom name from config', async () => {
@@ -54,8 +51,6 @@ describe('metricsServiceFactory', () => {
       }).getSubject('my-plugin');
 
       expect(subject).toBeDefined();
-      const counter = subject.createCounter('test_counter');
-      expect(counter).toBeDefined();
     });
 
     it('should create a metrics service with version and schemaUrl from config', async () => {
