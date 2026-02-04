@@ -19,11 +19,14 @@ import {
   MetricsService,
   metricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
+import { metricsServiceFactory } from '@backstage/backend-defaults/alpha';
 
 /**
  * @alpha
  */
 export namespace metricsServiceMock {
+  export const factory = () => metricsServiceFactory;
+
   export const mock = simpleMock<MetricsService>(metricsServiceRef, () => {
     const createMockCounter = () => ({ add: jest.fn() });
     const createMockHistogram = () => ({ record: jest.fn() });
