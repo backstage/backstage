@@ -20,10 +20,10 @@ The create-app CLI requires Node.js Active LTS Release, see the [prerequisites d
 ```sh
 # The command bellow creates a Backstage App inside the current folder.
 # The name of the app-folder is the name that was provided when prompted.
-npx @backstage/create-app@latest --next
+npx @backstage/create-app@latest
 ```
 
-Using the `--next` flag will result in a Backstage app using the New Frontend System which will be further explained in the sections below.
+This will create a Backstage app using the new frontend system which will be further explained in the sections below.
 
 ## The app instance
 

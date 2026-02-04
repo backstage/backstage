@@ -901,7 +901,7 @@ It's encouraged that once you switch over to using the new frontend system, that
 
 This practice is also pretty important early on, as it's going to help you get familiar with the practices of the new frontend system.
 
-When creating a new Backstage app with `create-app` and using the `--next` flag you'll automatically get these choices in the `yarn new` command, but if you want to bring these templates to an older app, you can add the following to your root `package.json`:
+When creating a new Backstage app with `create-app` you'll automatically get these choices in the `yarn new` command, but if you want to bring these templates to an older app, you can add the following to your root `package.json`:
 
 ```json
 {

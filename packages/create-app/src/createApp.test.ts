@@ -64,12 +64,7 @@ describe('command entrypoint', () => {
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findPaths(__dirname).resolveTarget(
-        'packages',
-        'create-app',
-        'templates',
-        'default-app',
-      ),
+      findPaths(__dirname).resolveOwn('templates', 'next-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),
@@ -85,30 +80,20 @@ describe('command entrypoint', () => {
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findPaths(__dirname).resolveTarget(
-        'packages',
-        'create-app',
-        'templates',
-        'default-app',
-      ),
+      findPaths(__dirname).resolveOwn('templates', 'next-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
     expect(buildAppMock).toHaveBeenCalled();
   });
 
-  it('should call expected tasks when `--next` is supplied', async () => {
-    const cmd = { next: true } as unknown as Command;
+  it('should call expected tasks when `--legacy` is supplied', async () => {
+    const cmd = { legacy: true } as unknown as Command;
     await createApp(cmd);
     expect(checkAppExistsMock).toHaveBeenCalled();
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findPaths(__dirname).resolveTarget(
-        'packages',
-        'create-app',
-        'templates',
-        'next-app',
-      ),
+      findPaths(__dirname).resolveOwn('templates', 'default-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),
