@@ -16,37 +16,16 @@
 
 import { mockCredentials } from '@backstage/backend-test-utils';
 import { McpService } from './McpService';
-import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import {
+  actionsRegistryServiceMock,
+  metricsServiceMock,
+} from '@backstage/backend-test-utils/alpha';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import {
   CallToolResultSchema,
   ListToolsResultSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { MetricsService } from '@backstage/backend-plugin-api/alpha';
-
-// Simple mock MetricsService for testing
-function createMockMetricsService(): MetricsService {
-  const createMockCounter = () =>
-    ({
-      add: jest.fn(),
-    } as unknown as MetricsService['createCounter']);
-
-  const createMockHistogram = () =>
-    ({
-      record: jest.fn(),
-    } as unknown as MetricsService['createHistogram']);
-
-  return {
-    createCounter: jest.fn().mockReturnValue(createMockCounter()),
-    createUpDownCounter: jest.fn().mockReturnValue(createMockCounter()),
-    createHistogram: jest.fn().mockReturnValue(createMockHistogram()),
-    createGauge: jest.fn().mockReturnValue(createMockCounter()),
-    createObservableCounter: jest.fn(),
-    createObservableUpDownCounter: jest.fn(),
-    createObservableGauge: jest.fn(),
-  };
-}
 
 describe('McpService', () => {
   it('should list the available actions as tools in the mcp backend', async () => {
@@ -64,7 +43,7 @@ describe('McpService', () => {
 
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
-      metrics: createMockMetricsService(),
+      metrics: metricsServiceMock.mock(),
     });
 
     const server = mcpService.getServer({
@@ -134,7 +113,7 @@ describe('McpService', () => {
 
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
-      metrics: createMockMetricsService(),
+      metrics: metricsServiceMock.mock(),
     });
 
     const server = mcpService.getServer({
@@ -185,7 +164,7 @@ describe('McpService', () => {
   it('should return an error when the action is not found', async () => {
     const mcpService = await McpService.create({
       actions: actionsRegistryServiceMock(),
-      metrics: createMockMetricsService(),
+      metrics: metricsServiceMock.mock(),
     });
 
     const server = mcpService.getServer({
