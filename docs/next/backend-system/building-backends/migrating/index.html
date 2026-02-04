@@ -27,7 +27,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.a6a6a0a6.css">
-<script src="/assets/js/runtime~main.dd0aaf1e.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.5e434b1a.js" defer="defer"></script>
 <script src="/assets/js/main.f4582de4.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -128,7 +128,7 @@ argument of <code>createBackend</code>.</p></div></div>
 <li class=""><code>getRootLogger</code> - This function will be removed in the future. If you need to get the root logger in the new system, please check out this documentation: <a href="https://backstage.io/docs/backend-system/core-services/logger" target="_blank" rel="noopener noreferrer" class="">https://backstage.io/docs/backend-system/core-services/logger</a></li>
 <li class=""><code>getVoidLogger</code> - This function will be removed in the future. If you need to mock the root logger in the new system, please use <code>mockServices.logger.mock()</code> from <code>@backstage/backend-test-utils</code> instead.</li>
 <li class=""><code>legacyPlugin</code> - Fully use the new backend system instead.</li>
-<li class=""><code>loadBackendConfig</code> - Please migrate to the new backend system and use <code>coreServices.rootConfig</code> instead, or the <a href="https://backstage.io/docs/reference/config-loader.configsources" target="_blank" rel="noopener noreferrer" class="">@backstage/config-loader#ConfigSources</a> facilities if required.</li>
+<li class=""><code>loadBackendConfig</code> - Please migrate to the new backend system and use <code>coreServices.rootConfig</code> instead, or the <a href="https://backstage.io/api/stable/classes/_backstage_config-loader.ConfigSources.html" target="_blank" rel="noopener noreferrer" class="">@backstage/config-loader#ConfigSources</a> facilities if required.</li>
 <li class=""><code>loggerToWinstonLogger</code> - Migrate to use the new <code>LoggerService</code> instead.</li>
 <li class=""><code>resolveSafeChildPath</code> - This function is deprecated and will be removed in a future release, see <a href="https://github.com/backstage/backstage/issues/24493" target="_blank" rel="noopener noreferrer" class="">#24493</a>. Please use the <code>resolveSafeChildPath</code> function from the <code>@backstage/backend-plugin-api</code> package instead.</li>
 <li class=""><code>ServerTokenManager</code> - Please <a href="https://backstage.io/docs/tutorials/auth-service-migration" target="_blank" rel="noopener noreferrer" class="">migrate</a> to the new <code>coreServices.auth</code>, <code>coreServices.httpAuth</code>, and <code>coreServices.userInfo</code> services as needed instead.</li>
