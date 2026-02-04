@@ -1,8 +1,8 @@
 ---
 '@backstage/plugin-catalog-react': minor
-'@backstage/plugin-kubernetes': minor
-'@backstage/plugin-api-docs': minor
-'@backstage/plugin-techdocs': minor
+'@backstage/plugin-kubernetes': patch
+'@backstage/plugin-api-docs': patch
+'@backstage/plugin-techdocs': patch
 '@backstage/plugin-catalog': minor
 ---
 
