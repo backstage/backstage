@@ -67,6 +67,14 @@ export const createStreamableRouter = ({
       res.on('close', () => {
         transport.close();
         server.close();
+
+        const durationSeconds = (performance.now() - sessionStart) / 1000;
+
+        sessionDuration.record(durationSeconds, {
+          'mcp.protocol.version': '2025-06-18',
+          'network.transport': 'tcp',
+          'network.protocol.name': 'http',
+        });
       });
     } catch (error) {
       sessionErrorType = isError(error) ? error.name : 'Error';
@@ -85,14 +93,14 @@ export const createStreamableRouter = ({
           id: null,
         });
       }
-    } finally {
+
       const durationSeconds = (performance.now() - sessionStart) / 1000;
 
       sessionDuration.record(durationSeconds, {
         'mcp.protocol.version': '2025-06-18',
         'network.transport': 'tcp',
         'network.protocol.name': 'http',
-        ...(sessionErrorType && { 'error.type': sessionErrorType }),
+        'error.type': sessionErrorType,
       });
     }
   });
