@@ -39,12 +39,14 @@
     "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
+    "zen-observable": "^0.10.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@types/react": "^18.0.0",
+    "@types/zen-observable": "^0.8.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.30.2"
