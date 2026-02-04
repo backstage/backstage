@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: events
   version: '1'
@@ -17,7 +17,6 @@ components:
       name: subscriptionId
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
   requestBodies: {}

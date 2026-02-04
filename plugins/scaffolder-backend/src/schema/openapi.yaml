@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: scaffolder
   version: '1'
@@ -35,7 +35,6 @@ components:
       name: kind
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     limit:
@@ -51,14 +50,12 @@ components:
       name: namespace
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     name:
       name: name
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     offset:
@@ -94,7 +91,6 @@ components:
       name: taskId
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
   requestBodies: {}
@@ -224,8 +220,7 @@ components:
         - type: boolean
         - type: number
         - type: string
-        - type: object
-          nullable: true
+        - type: 'null'
       description: A type representing all allowed JSON primitive values.
     JsonValue:
       oneOf:
@@ -428,8 +423,9 @@ components:
         description:
           type: string
         value:
-          type: object
-          nullable: true
+          anyOf:
+            - type: object
+            - type: 'null'
       required:
         - value
       description: The response shape for a single global value in the `listTemplatingExtensions` call to the `scaffolder-backend`
@@ -860,13 +856,11 @@ paths:
         - in: path
           name: provider
           required: true
-          allowReserved: true
           schema:
             type: string
         - in: path
           name: resource
           required: true
-          allowReserved: true
           schema:
             type: string
 
