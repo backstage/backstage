@@ -79,7 +79,7 @@
   }
 
   .bui-AccordionPanel {
-    [data-expanded='true'] & {
+    .bui-Accordion[data-expanded='true'] > & {
       padding-top: var(--bui-space-1);
     }
   }
