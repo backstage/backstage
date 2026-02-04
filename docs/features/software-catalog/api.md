@@ -27,7 +27,7 @@ one organization to the other, especially in production, but is commonly your
 
 Some or all of the endpoints may accept or require an `Authorization` header
 with a `Bearer` token, which should then be the Backstage token returned by the
-[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).
+[`identity API`](https://backstage.io/api/stable/variables/_backstage_core-plugin-api.index.identityApiRef.html).
 
 ## Entities
 

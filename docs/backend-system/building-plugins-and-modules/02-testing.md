@@ -57,7 +57,7 @@ interactions with the running test service.
 
 ### mock services
 
-The [`mockServices`](https://backstage.io/docs/reference/backend-test-utils.mockservices) object from `@backstage/backend-test-utils` provides service factory functions, and mocks for all core services that you can use to verify interactions between plugin and services.
+The [`mockServices`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html) object from `@backstage/backend-test-utils` provides service factory functions, and mocks for all core services that you can use to verify interactions between plugin and services.
 
 All mock services provide a factory function that is sufficient for most tests. Here's an example:
 
@@ -106,24 +106,24 @@ describe('myPlugin', () => {
 
 Available services:
 
-- [`auth`](https://backstage.io/docs/reference/backend-test-utils.mockservices.auth/)
-- [`cache`](https://backstage.io/docs/reference/backend-test-utils.mockservices.cache/)
-- [`database`](https://backstage.io/docs/reference/backend-test-utils.mockservices.database/)
-- [`discovery`](https://backstage.io/docs/reference/backend-test-utils.mockservices.discovery/)
-- [`events`](https://backstage.io/docs/reference/backend-test-utils.mockservices.events/)
-- [`httpAuth`](https://backstage.io/docs/reference/backend-test-utils.mockservices.httpAuth/)
-- [`httpRouter`](https://backstage.io/docs/reference/backend-test-utils.mockservices.httpRouter/)
-- [`lifecycle`](https://backstage.io/docs/reference/backend-test-utils.mockservices.lifecycle/)
-- [`logger`](https://backstage.io/docs/reference/backend-test-utils.mockservices.logger/)
-- [`permissions`](https://backstage.io/docs/reference/backend-test-utils.mockservices.permissions/)
-- [`rootConfig`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootConfig/)
-- [`rootHealth`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootHealth/)
-- [`rootHttpRouter`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootHttpRouter/)
-- [`rootLifecycle`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootLifecycle/)
-- [`rootLogger`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootLogger/)
-- [`scheduler`](https://backstage.io/docs/reference/backend-test-utils.mockservices.scheduler/)
-- [`urlReader`](https://backstage.io/docs/reference/backend-test-utils.mockservices.urlReader/)
-- [`userInfo`](https://backstage.io/docs/reference/backend-test-utils.mockservices.userInfo/)
+- [`auth`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#auth)
+- [`cache`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#cache)
+- [`database`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#database)
+- [`discovery`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#discovery)
+- [`events`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#events)
+- [`httpAuth`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#httpAuth)
+- [`httpRouter`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#httpRouter)
+- [`lifecycle`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#lifecycle)
+- [`logger`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#logger)
+- [`permissions`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#permissions)
+- [`rootConfig`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#rootConfig)
+- [`rootHealth`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#rootHealth)
+- [`rootHttpRouter`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#rootHttpRouter)
+- [`rootLifecycle`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#rootLifecycle/)
+- [`rootLogger`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#rootLogger/)
+- [`scheduler`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#scheduler/)
+- [`urlReader`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#urlReader/)
+- [`userInfo`](https://backstage.io/api/stable/modules/_backstage_backend-test-utils.index.mockServices.html#userInfo/)
 
 ## Testing Remote Service Interactions
 
