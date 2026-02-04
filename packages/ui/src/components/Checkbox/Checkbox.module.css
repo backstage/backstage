@@ -62,7 +62,14 @@
       color: var(--bui-fg-solid);
     }
 
-    .bui-Checkbox[data-hovered]:not([data-selected]) & {
+    .bui-Checkbox[data-indeterminate] & {
+      background-color: var(--bui-bg-surface-1);
+      box-shadow: inset 0 0 0 1px var(--bui-border);
+      color: var(--bui-fg-primary);
+    }
+
+    .bui-Checkbox[data-hovered]:not([data-selected]):not([data-indeterminate])
+      & {
       box-shadow: inset 0 0 0 1px var(--bui-border-hover);
     }
 

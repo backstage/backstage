@@ -25,11 +25,11 @@ const _default: OverridableFrontendPlugin<
       name: 'group-profile';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -66,13 +66,13 @@ const _default: OverridableFrontendPlugin<
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -110,14 +110,16 @@ const _default: OverridableFrontendPlugin<
       config: {
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
+        ownedKinds: string[] | undefined;
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+        ownedKinds?: string[] | undefined;
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -156,13 +158,13 @@ const _default: OverridableFrontendPlugin<
         maxRelations: number | undefined;
         hideIcons: boolean;
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         hideIcons?: boolean | undefined;
         maxRelations?: number | undefined;
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>

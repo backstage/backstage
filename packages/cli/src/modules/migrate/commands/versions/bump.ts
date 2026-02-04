@@ -17,14 +17,14 @@ import { BACKSTAGE_JSON, bootstrapEnvProxyAgents } from '@backstage/cli-common';
 
 bootstrapEnvProxyAgents();
 
-import { env } from 'process';
+import { env } from 'node:process';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import semver from 'semver';
 import { OptionValues } from 'commander';
 import { isError, NotFoundError } from '@backstage/errors';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 import {

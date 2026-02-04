@@ -17,9 +17,10 @@
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Logger } from 'winston';
 import { createDebugLogAction } from './log';
-import { join } from 'path';
+import { join } from 'node:path';
 import yaml from 'yaml';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import fs from 'fs-extra';
 
 describe('debug:log', () => {
   const logger = {
@@ -137,6 +138,32 @@ describe('debug:log', () => {
 
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('Hello Backstage!'),
+    );
+  });
+
+  it('should handle symlinks to external paths', async () => {
+    const externalContent = 'external-file-content';
+    const externalPath = mockDir.resolve('external.txt');
+    await fs.writeFile(externalPath, externalContent);
+
+    const linkPath = join(mockContext.workspacePath, 'link');
+    await fs.symlink(externalPath, linkPath);
+
+    const context = {
+      ...mockContext,
+      input: {
+        listWorkspace: 'with-contents' as const,
+      },
+    };
+
+    await action.handler(context);
+
+    expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('link'));
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining(externalContent),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('[skipped]'),
     );
   });
 });

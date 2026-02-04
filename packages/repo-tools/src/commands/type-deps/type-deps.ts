@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-import { resolve as resolvePath } from 'path';
+import fs from 'node:fs';
+import { resolve as resolvePath } from 'node:path';
 // Cba polluting root package.json, we'll have this
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import chalk from 'chalk';

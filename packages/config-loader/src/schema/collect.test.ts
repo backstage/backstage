@@ -16,8 +16,8 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { collectConfigSchemas, internal } from './collect';
-import path from 'path';
-import { execSync } from 'child_process';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 const mockSchema = {
   type: 'object',

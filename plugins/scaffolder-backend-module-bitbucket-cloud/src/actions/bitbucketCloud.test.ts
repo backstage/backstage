@@ -481,4 +481,104 @@ describe('publish:bitbucketCloud', () => {
       'https://bitbucket.org/workspace/repo/src/main',
     );
   });
+
+  it('should call initAndPush with username and token credentials', async () => {
+    const tokenConfig = new ConfigReader({
+      integrations: {
+        bitbucketCloud: [
+          {
+            username: 'test-user',
+            token: 'api-token-123',
+          },
+        ],
+      },
+    });
+
+    const tokenIntegrations = ScmIntegrations.fromConfig(tokenConfig);
+    const tokenAction = createPublishBitbucketCloudAction({
+      integrations: tokenIntegrations,
+      config: tokenConfig,
+    });
+
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/workspace/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await tokenAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
+      defaultBranch: 'master',
+      auth: {
+        username: 'x-bitbucket-api-token-auth',
+        password: 'api-token-123',
+      },
+      logger: mockContext.logger,
+      gitAuthorInfo: {},
+    });
+  });
+
+  it('should call initAndPush with token passed through ctx.input', async () => {
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/workspace/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        token: 'input-token-override',
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
+      defaultBranch: 'master',
+      auth: { username: 'x-token-auth', password: 'input-token-override' },
+      logger: mockContext.logger,
+      gitAuthorInfo: {},
+    });
+  });
 });

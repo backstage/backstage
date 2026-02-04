@@ -16,7 +16,7 @@
 
 import { PackageGraph } from '@backstage/cli-node';
 import { findTargetPackages } from './start';
-import { posix } from 'path';
+import { posix } from 'node:path';
 import { paths } from '../../../../lib/paths';
 
 const mocks = {

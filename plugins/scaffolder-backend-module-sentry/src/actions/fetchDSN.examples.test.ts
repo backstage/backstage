@@ -42,6 +42,7 @@ describe('sentry:fetch:dsn action', () => {
     organizationSlug: string;
     projectSlug: string;
     authToken?: string;
+    apiBaseUrl?: string;
   }> =>
     createMockActionContext({
       workspacePath: './dev/proj',
@@ -147,4 +148,50 @@ describe('sentry:fetch:dsn action', () => {
       );
     },
   );
+
+  it(`should ${examples[2].description}`, async () => {
+    expect.assertions(3);
+
+    let input;
+    try {
+      input = yaml.parse(examples[2].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+
+    const action = createSentryFetchDSNAction(createScaffolderConfig());
+    const actionContext = getActionContext(null);
+
+    worker.use(
+      http.get(
+        `${input.apiBaseUrl || 'https://sentry.io/api/0'}/projects/${
+          input.organizationSlug
+        }/${input.projectSlug}/keys/`,
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            `Bearer b14711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d5df97`,
+          );
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          return HttpResponse.json(
+            [{ dsn: { public: 'https://abcdef1234567890@sentry.io/67890' } }],
+            {
+              status: 200,
+            },
+          );
+        },
+      ),
+    );
+
+    await action.handler({
+      ...actionContext,
+      input: {
+        ...actionContext.input,
+        ...input,
+      },
+    });
+    expect(actionContext.output).toHaveBeenCalledWith(
+      'dsn',
+      'https://abcdef1234567890@sentry.io/67890',
+    );
+  });
 });

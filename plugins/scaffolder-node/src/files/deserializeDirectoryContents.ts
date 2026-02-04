@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { dirname } from 'path';
+import { dirname } from 'node:path';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { SerializedFile } from './types';
 

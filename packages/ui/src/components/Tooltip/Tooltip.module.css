@@ -18,8 +18,7 @@
 
 @layer components {
   .bui-Tooltip {
-    box-shadow: 0 10px 15px -3px rgba(0 0 0 / 0.1),
-      0 4px 6px -4px rgba(0 0 0 / 0.1);
+    box-shadow: var(--bui-shadow);
     border-radius: 4px;
     background: var(--bui-bg-surface-1);
     border: 1px solid var(--bui-gray-3);
@@ -107,21 +106,17 @@
     }
   }
 
-  [data-theme='dark'] {
-    .bui-Tooltip {
-      background: var(--bui-bg-surface-2);
-      box-shadow: none;
-      border: 1px solid var(--bui-gray-4);
-    }
+  [data-theme='dark'] .bui-Tooltip {
+    background: var(--bui-bg-surface-2);
+    box-shadow: none;
+    border: 1px solid var(--bui-gray-4);
+  }
 
-    .bui-TooltipArrow {
-      svg path:nth-child(1) {
-        fill: var(--bui-bg-surface-2);
-      }
+  [data-theme='dark'] .bui-TooltipArrow svg path:nth-child(1) {
+    fill: var(--bui-bg-surface-2);
+  }
 
-      svg path:nth-child(2) {
-        fill: var(--bui-gray-4);
-      }
-    }
+  [data-theme='dark'] .bui-TooltipArrow svg path:nth-child(2) {
+    fill: var(--bui-gray-4);
   }
 }

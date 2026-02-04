@@ -138,7 +138,13 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
       <Page themeId="website">
         <Header
-          pageTitleOverride={t('templateWizardPage.pageTitle')}
+          pageTitleOverride={
+            manifest?.title
+              ? t('templateWizardPage.templateWithTitle', {
+                  templateTitle: manifest.title,
+                })
+              : t('templateWizardPage.pageTitle')
+          }
           title={t('templateWizardPage.title')}
           subtitle={t('templateWizardPage.subtitle')}
           {...props.headerOptions}

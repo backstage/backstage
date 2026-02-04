@@ -17,9 +17,9 @@
 
 /* eslint-disable @backstage/no-undeclared-imports */
 
-const { execFile: execFileCb } = require('child_process');
-const { resolve: resolvePath, dirname: dirnamePath } = require('path');
-const { promisify } = require('util');
+const { execFile: execFileCb } = require('node:child_process');
+const { resolve: resolvePath, dirname: dirnamePath } = require('node:path');
+const { promisify } = require('node:util');
 
 const execFile = promisify(execFileCb);
 

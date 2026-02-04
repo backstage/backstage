@@ -1,13 +1,14 @@
 {
   "name": "@backstage/plugin-app",
-  "version": "0.3.4-next.1",
+  "version": "0.4.0-next.1",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "app",
     "pluginPackages": [
       "@backstage/plugin-app",
       "@backstage/plugin-app-backend",
-      "@backstage/plugin-app-node"
+      "@backstage/plugin-app-node",
+      "@backstage/plugin-app-react"
     ]
   },
   "publishConfig": {
@@ -54,6 +55,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
@@ -63,7 +65,7 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
     "react-use": "^17.2.4",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -78,13 +80,13 @@
     "msw": "^1.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {

@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import path from 'path';
+import path from 'node:path';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 

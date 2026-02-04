@@ -16,7 +16,7 @@
 
 /* eslint-disable no-restricted-imports */
 import { transform, bundle } from 'lightningcss';
-import fs from 'fs';
+import fs from 'node:fs';
 import chalk from 'chalk';
 /* eslint-enable no-restricted-imports */
 

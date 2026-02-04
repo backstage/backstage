@@ -15,12 +15,16 @@
  */
 
 import {
+  analyticsApiRef,
   coreExtensionData,
   createExtension,
   createExtensionDataRef,
   createExtensionInput,
+  useAnalytics,
 } from '@backstage/frontend-plugin-api';
 import { createExtensionTester } from './createExtensionTester';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from './renderInTestApp';
 
 const stringDataRef = createExtensionDataRef<string>().with({
   id: 'test.string',
@@ -151,5 +155,37 @@ describe('createExtensionTester', () => {
     const test3: number = tester.get(internalRef2);
 
     expect([test, test2, test3]).toBeDefined();
+  });
+
+  it('should support API overrides via options', async () => {
+    const analyticsApiMock = { captureEvent: jest.fn() };
+
+    const TestComponent = () => {
+      const analytics = useAnalytics();
+      analytics.captureEvent('test', 'value');
+      return <div>Test</div>;
+    };
+
+    const extension = createExtension({
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [coreExtensionData.reactElement],
+      factory: () => [coreExtensionData.reactElement(<TestComponent />)],
+    });
+
+    const tester = createExtensionTester(extension, {
+      apis: [[analyticsApiRef, analyticsApiMock]],
+    });
+
+    renderInTestApp(tester.reactElement(), {
+      apis: [[analyticsApiRef, analyticsApiMock]],
+    });
+
+    expect(screen.getByText('Test')).toBeInTheDocument();
+    expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'test',
+        subject: 'value',
+      }),
+    );
   });
 });

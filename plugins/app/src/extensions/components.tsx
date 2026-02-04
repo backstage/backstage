@@ -17,9 +17,8 @@ import {
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
   ErrorDisplay as SwappableErrorDisplay,
-  SwappableComponentBlueprint,
 } from '@backstage/frontend-plugin-api';
-
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
   ErrorPage,
   ErrorPanel,

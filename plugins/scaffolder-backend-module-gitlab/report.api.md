@@ -141,6 +141,28 @@ export const createGitlabRepoPushAction: (options: {
 >;
 
 // @public
+export const createGitlabUserInfoAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    token?: string | undefined;
+    userId?: number | undefined;
+  },
+  {
+    id: number;
+    username: string;
+    name: string;
+    state: string;
+    webUrl: string;
+    email?: string | undefined;
+    createdAt?: string | undefined;
+    publicEmail?: string | undefined;
+  },
+  'v2'
+>;
+
+// @public
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;

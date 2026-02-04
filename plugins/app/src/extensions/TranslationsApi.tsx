@@ -15,9 +15,9 @@
  */
 import {
   ApiBlueprint,
-  TranslationBlueprint,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
+import { TranslationBlueprint } from '@backstage/plugin-app-react';
 import {
   appLanguageApiRef,
   translationApiRef,
@@ -34,7 +34,7 @@ export const TranslationsApi = ApiBlueprint.makeWithOverrides({
   inputs: {
     translations: createExtensionInput(
       [TranslationBlueprint.dataRefs.translation],
-      { replaces: [{ id: 'app', input: 'translations' }] },
+      { replaces: [{ id: 'app', input: 'translations' }], internal: true },
     ),
   },
   factory: (originalFactory, { inputs }) => {
@@ -42,13 +42,14 @@ export const TranslationsApi = ApiBlueprint.makeWithOverrides({
       defineParams({
         api: translationApiRef,
         deps: { languageApi: appLanguageApiRef },
-        factory: ({ languageApi }) =>
-          I18nextTranslationApi.create({
+        factory: ({ languageApi }) => {
+          return I18nextTranslationApi.create({
             languageApi,
             resources: inputs.translations.map(i =>
               i.get(TranslationBlueprint.dataRefs.translation),
             ),
-          }),
+          });
+        },
       }),
     );
   },

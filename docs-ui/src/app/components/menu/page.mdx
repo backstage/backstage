@@ -1,0 +1,229 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  Preview,
+  PreviewSubmenu,
+  PreviewIcons,
+  PreviewLinks,
+  PreviewSections,
+  PreviewSeparators,
+  PreviewAutocompleteMenu,
+  PreviewAutocompleteListbox,
+  PreviewAutocompleteListboxMultiple,
+} from './components';
+import {
+  menuTriggerPropDefs,
+  submenuTriggerPropDefs,
+  menuPropDefs,
+  menuListBoxPropDefs,
+  menuAutocompletePropDefs,
+  menuAutocompleteListboxPropDefs,
+  menuItemPropDefs,
+  menuListBoxItemPropDefs,
+  menuSectionPropDefs,
+  menuSeparatorPropDefs,
+} from './props-definition';
+import {
+  usage,
+  preview,
+  submenu,
+  icons,
+  sections,
+  separators,
+  links,
+  autocomplete,
+  autocompleteListbox,
+  autocompleteListboxMultiple,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { MenuDefinition } from '../../../utils/definitions';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  menuTrigger: 'https://react-aria.adobe.com/Menu#menutrigger',
+  submenuTrigger: 'https://react-aria.adobe.com/Menu#submenutrigger',
+  menu: 'https://react-aria.adobe.com/Menu',
+  menuItem: 'https://react-aria.adobe.com/Menu#menuitem',
+  menuSection: 'https://react-aria.adobe.com/Menu#menusection',
+  listBox: 'https://react-aria.adobe.com/ListBox',
+  listBoxItem: 'https://react-aria.adobe.com/ListBox#listboxitem',
+};
+
+<PageTitle
+  title="Menu"
+  description="A dropdown menu with actions, submenus, sections, and keyboard navigation."
+/>
+
+<Snippet align="center" py={4} preview={<Preview />} code={preview} />
+
+## Usage
+
+<CodeBlock code={usage} />
+
+### Triggers
+
+- `MenuTrigger` combines a trigger element with a menu popover.
+- `SubmenuTrigger` combines a `MenuItem` with a nested submenu.
+
+### Containers
+
+- `Menu` contains menu items or sections.
+- `MenuListBox` supports selection with checkmarks.
+- `MenuAutocomplete` adds a search input to filter items.
+- `MenuAutocompleteListbox` combines search with selection.
+
+### Items
+
+- `MenuItem` is an interactive action in the menu.
+- `MenuListBoxItem` is a selectable item in a list box.
+
+### Grouping
+
+- `MenuSection` groups items with a title.
+- `MenuSeparator` adds a horizontal divider.
+
+## API reference
+
+### MenuTrigger
+
+Accepts two children: the trigger element and a menu container.
+
+<PropsTable data={menuTriggerPropDefs} />
+
+<ReactAriaLink component="MenuTrigger" href={reactAriaUrls.menuTrigger} />
+
+### SubmenuTrigger
+
+Accepts two children: a `MenuItem` and a menu container.
+
+<PropsTable data={submenuTriggerPropDefs} />
+
+<ReactAriaLink component="SubmenuTrigger" href={reactAriaUrls.submenuTrigger} />
+
+### Menu
+
+<PropsTable data={menuPropDefs} />
+
+<ReactAriaLink component="Menu" href={reactAriaUrls.menu} />
+
+### MenuListBox
+
+<PropsTable data={menuListBoxPropDefs} />
+
+<ReactAriaLink component="ListBox" href={reactAriaUrls.listBox} />
+
+### MenuAutocomplete
+
+<PropsTable data={menuAutocompletePropDefs} />
+
+<ReactAriaLink component="Menu" href={reactAriaUrls.menu} />
+
+### MenuAutocompleteListbox
+
+<PropsTable data={menuAutocompleteListboxPropDefs} />
+
+<ReactAriaLink component="ListBox" href={reactAriaUrls.listBox} />
+
+### MenuItem
+
+<PropsTable data={menuItemPropDefs} />
+
+<ReactAriaLink component="MenuItem" href={reactAriaUrls.menuItem} />
+
+### MenuListBoxItem
+
+<PropsTable data={menuListBoxItemPropDefs} />
+
+<ReactAriaLink component="ListBoxItem" href={reactAriaUrls.listBoxItem} />
+
+### MenuSection
+
+<PropsTable data={menuSectionPropDefs} />
+
+<ReactAriaLink component="MenuSection" href={reactAriaUrls.menuSection} />
+
+### MenuSeparator
+
+<PropsTable data={menuSeparatorPropDefs} />
+
+<ReactAriaLink
+  component="Separator"
+  href="https://react-aria.adobe.com/Menu#separator"
+/>
+
+## Examples
+
+### Nested navigation
+
+Submenus open to the right of their parent item.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<PreviewSubmenu />}
+  code={submenu}
+/>
+
+### With icons
+
+<Snippet layout="side-by-side" open preview={<PreviewIcons />} code={icons} />
+
+### With links
+
+The `href` prop works with both internal and external links.
+
+<Snippet layout="side-by-side" open preview={<PreviewLinks />} code={links} />
+
+### With sections
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<PreviewSections />}
+  code={sections}
+/>
+
+### With separators
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<PreviewSeparators />}
+  code={separators}
+/>
+
+### With autocomplete
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<PreviewAutocompleteMenu />}
+  code={autocomplete}
+/>
+
+### With list box
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<PreviewAutocompleteListbox />}
+  code={autocompleteListbox}
+/>
+
+### Multiple selection
+
+Set `selectionMode="multiple"` to allow multiple selections.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<PreviewAutocompleteListboxMultiple />}
+  code={autocompleteListboxMultiple}
+/>
+
+<Theming definition={MenuDefinition} />
+
+<ChangelogComponent component="menu" />

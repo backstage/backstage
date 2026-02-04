@@ -1,0 +1,46 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { containerPropDefs } from './props-definition';
+import {
+  containerUsageSnippet,
+  defaultSnippet,
+  containerResponsiveSnippet,
+} from './snippets';
+import { Default, ResponsiveSpacing } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ContainerDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  type="Layout"
+  title="Container"
+  description="A page wrapper that centers content and constrains its maximum width."
+/>
+
+<Snippet preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={containerUsageSnippet} />
+
+## Core Concepts
+
+Container provides the standard page layout for plugin content. It constrains content to a maximum width, centers it horizontally, and adds consistent horizontal gutters. Use it once per page to wrap your main content area.
+
+## API Reference
+
+<PropsTable data={containerPropDefs} />
+
+## Examples
+
+### Responsive spacing
+
+Vertical spacing props accept breakpoint objects.
+
+<Snippet preview={<ResponsiveSpacing />} code={containerResponsiveSnippet} />
+
+<Theming definition={ContainerDefinition} />
+
+<ChangelogComponent component="container" />

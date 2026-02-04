@@ -15,7 +15,7 @@
  */
 
 import { readJson } from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import {
   getModuleFederationOptions,
   serveBundle,

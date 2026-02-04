@@ -124,7 +124,7 @@ export interface ExampleApi {
 }
 
 export const exampleApiRef = createApiRef<ExampleApi>({
-  id: 'plugin.example',
+  id: 'plugin.example.api',
 });
 
 export class DefaultExampleApi implements ExampleApi {

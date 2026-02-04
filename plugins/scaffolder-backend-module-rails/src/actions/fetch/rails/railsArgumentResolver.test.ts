@@ -15,8 +15,8 @@
  */
 
 import { railsArgumentResolver } from './railsArgumentResolver';
-import { sep as separatorPath } from 'path';
-import os from 'os';
+import { sep as separatorPath } from 'node:path';
+import os from 'node:os';
 
 describe('railsArgumentResolver', () => {
   describe('when provide the parameter', () => {

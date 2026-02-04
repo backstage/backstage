@@ -20,7 +20,7 @@ import {
   createExtensionInput,
   NotFoundErrorPage,
 } from '@backstage/frontend-plugin-api';
-import { useRoutes } from 'react-router-dom';
+import { useRoutes, Outlet } from 'react-router-dom';
 
 export const AppRoutes = createExtension({
   name: 'routes',
@@ -38,14 +38,42 @@ export const AppRoutes = createExtension({
       const element = useRoutes([
         ...inputs.routes.map(route => {
           const routePath = route.get(coreExtensionData.routePath);
+          const routeElement = route.get(coreExtensionData.reactElement);
 
+          // For v7_relativeSplatPath: convert splat paths to parent/child structure
+          if (routePath === '/') {
+            // Root route: parent with index and splat children
+            return {
+              path: '/',
+              element: <Outlet />,
+              children: [
+                {
+                  index: true,
+                  element: routeElement,
+                },
+                {
+                  path: '*',
+                  element: routeElement,
+                },
+              ],
+            };
+          }
+
+          // Non-root routes: parent route with splat child
+          const normalizedPath = routePath.replace(/\/$/, '');
           return {
-            path:
-              routePath === '/'
-                ? routePath
-                : `${routePath.replace(/\/$/, '')}/*`,
-
-            element: route.get(coreExtensionData.reactElement),
+            path: normalizedPath,
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                element: routeElement,
+              },
+              {
+                path: '*',
+                element: routeElement,
+              },
+            ],
           };
         }),
         {

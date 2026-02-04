@@ -18,13 +18,120 @@
 
 @layer components {
   .bui-Popover {
-    margin-right: 12px;
+    box-shadow: var(--bui-shadow);
+    border-radius: var(--bui-radius-3);
+    background: var(--bui-bg-surface-1);
+    border: 1px solid var(--bui-gray-3);
+    forced-color-adjust: none;
+    outline: none;
+    max-height: inherit;
+    display: flex;
+    flex-direction: column;
+    /* fixes FF gap */
+    transform: translate3d(0, 0, 0);
+    transition: transform 200ms, opacity 200ms;
+
+    &[data-entering],
+    &[data-exiting] {
+      transform: var(--origin);
+      opacity: 0;
+    }
+
+    &[data-placement='top'] {
+      --origin: translateY(4px);
+
+      &:has(.bui-PopoverArrow) {
+        margin-bottom: var(--bui-space-3);
+      }
+    }
+
+    &[data-placement='right'] {
+      --origin: translateX(-4px);
+
+      &:has(.bui-PopoverArrow) {
+        margin-left: var(--bui-space-3);
+      }
+    }
+
+    &[data-placement='bottom'] {
+      --origin: translateY(-4px);
+
+      &:has(.bui-PopoverArrow) {
+        margin-top: var(--bui-space-3);
+      }
+    }
+
+    &[data-placement='left'] {
+      --origin: translateX(4px);
+
+      &:has(.bui-PopoverArrow) {
+        margin-right: var(--bui-space-3);
+      }
+    }
+  }
+
+  .bui-PopoverContent {
     overflow-x: hidden;
     overflow-y: auto;
-    background-color: var(--bui-bg-surface-1);
-    border: 1px solid var(--bui-border);
-    border-radius: var(--bui-radius-3);
-    padding-block: var(--bui-space-1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: var(--bui-space-4);
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .bui-PopoverArrow {
+    & svg {
+      display: block;
+
+      /* The popover is rendered overlaying the main
+      popover element by 1px. This causes the borders
+      to overlap, which causes minor visual artifacts
+      with transparent border colors. To mitigate this,
+      we split the stroke and fill across separate
+      elements in order to guarantee that the stroke is
+      always overlaying a consistent color. */
+      path:nth-child(1) {
+        fill: var(--bui-bg-surface-1);
+      }
+
+      path:nth-child(2) {
+        fill: var(--bui-gray-3);
+      }
+
+      /* The arrow svg overlaps the popover by 2px, so we
+      need to adjust the margins accordingly. */
+      --popover-arrow-overlap: -2px;
+    }
+
+    &[data-placement='top'] svg {
+      margin-top: var(--popover-arrow-overlap);
+    }
+
+    &[data-placement='bottom'] svg {
+      margin-bottom: var(--popover-arrow-overlap);
+      transform: rotate(180deg);
+    }
+
+    &[data-placement='right'] svg {
+      margin-right: var(--popover-arrow-overlap);
+      transform: rotate(90deg);
+    }
+
+    &[data-placement='left'] svg {
+      margin-left: var(--popover-arrow-overlap);
+      transform: rotate(-90deg);
+    }
+  }
+
+  [data-theme='dark'] .bui-Popover {
+    background: var(--bui-bg-surface-2);
+    border: 1px solid var(--bui-gray-4);
+  }
+
+  [data-theme='dark'] .bui-PopoverArrow svg path:nth-child(1) {
+    fill: var(--bui-bg-surface-2);
+  }
+
+  [data-theme='dark'] .bui-PopoverArrow svg path:nth-child(2) {
+    fill: var(--bui-gray-4);
   }
 }

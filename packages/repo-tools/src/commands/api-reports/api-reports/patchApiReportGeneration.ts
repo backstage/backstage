@@ -18,6 +18,7 @@ import { ExtractorMessage } from '@microsoft/api-extractor';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { Program } from 'typescript';
 import { tryRunPrettier } from '../common';
+import { paths as cliPaths } from '../../../lib/paths';
 
 let applied = false;
 
@@ -157,7 +158,11 @@ export function patchApiReportGeneration() {
         collector,
         ...moreArgs,
       );
-
-      return tryRunPrettier(content);
+      return tryRunPrettier(content, {
+        parser: 'markdown',
+        // We need a real-looking filepath for proper config resolution, not just a directory
+        // Ideally, the real filepath would be better, but it would require too much patching, for very little gain.
+        filepath: `${cliPaths.targetRoot}/report.api.md`,
+      });
     };
 }

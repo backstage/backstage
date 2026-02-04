@@ -31,13 +31,6 @@ export const attachTechDocsAddonComponentData: <P>(
   data: TechDocsAddonOptions,
 ) => void;
 
-// @alpha (undocumented)
-export const techDocsAddonDataRef: ConfigurableExtensionDataRef<
-  TechDocsAddonOptions,
-  'techdocs.addon',
-  {}
->;
-
 // @public
 export const TechDocsAddonLocations: Readonly<{
   readonly Header: 'Header';

@@ -219,11 +219,12 @@
   --bui-bg-solid: #1ed760;
   --bui-bg-solid-hover: #3be477;
   --bui-bg-solid-pressed: #1abc54;
-  --bui-bg-solid-disabled: var(--bui-gray-2);
+  --bui-bg-solid-disabled: #0f6c30;
 
   --bui-fg-primary: var(--bui-black);
   --bui-fg-secondary: var(--bui-gray-7);
   --bui-fg-solid: var(--bui-black);
+  --bui-fg-solid-disabled: #62ab7c;
 
   --bui-border: var(--bui-gray-3);
   --bui-border-hover: rgba(0, 0, 0, 0.3);
@@ -246,27 +247,21 @@
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {
   --bui-bg-surface-0: var(--bui-black);
+
   --bui-bg-solid: #1ed760;
   --bui-bg-solid-hover: #3be477;
   --bui-bg-solid-pressed: #1abc54;
   --bui-bg-solid-disabled: #0f6c30;
-  --bui-bg-tint: #242424;
-  --bui-bg-tint-hover: #202020;
-  --bui-bg-tint-pressed: #292929;
-  --bui-bg-tint-disabled: rgba(255, 255, 255, 0.8);
+
   --bui-bg-danger: #3b1219;
   --bui-bg-warning: #302008;
   --bui-bg-success: #132d21;
 
   --bui-fg-primary: var(--bui-white);
   --bui-fg-secondary: var(--bui-gray-7);
-  --bui-fg-link: var(--bui-white);
-  --bui-fg-link-hover: var(--bui-white);
   --bui-fg-disabled: var(--bui-gray-5);
   --bui-fg-solid: var(--bui-black);
-  --bui-fg-solid-disabled: #083618;
-  --bui-fg-tint: var(--bui-white);
-  --bui-fg-tint-disabled: var(--bui-gray-5);
+  --bui-fg-solid-disabled: #072f15;
   --bui-fg-danger: #e22b2b;
   --bui-fg-warning: #e36d05;
   --bui-fg-success: #1db954;

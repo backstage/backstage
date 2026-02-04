@@ -22,7 +22,7 @@ import {
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 /**

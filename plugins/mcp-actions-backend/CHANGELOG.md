@@ -1,5 +1,35 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.1.7
+
+### Patch Changes
+
+- 4d82a35: build(deps): bump `@modelcontextprotocol/sdk` from 1.24.3 to 1.25.2
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- 4d82a35: build(deps): bump `@modelcontextprotocol/sdk` from 1.24.3 to 1.25.2
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+
 ## 0.1.7-next.0
 
 ### Patch Changes

@@ -180,11 +180,11 @@ const getNodeText = (node: ReactNode): string => {
 };
 
 /**
- * Thin wrapper on top of material-ui's Link component, which...
- * - Makes the Link use react-router
- * - Captures Link clicks as analytics events.
+ * Unstyled link primitive which...
+ * - Uses react-router for internal links.
+ * - Captures link clicks as analytics events.
  */
-export const Link = forwardRef<any, LinkProps>(
+export const UnstyledLink = forwardRef<any, LinkProps>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
@@ -213,7 +213,7 @@ export const Link = forwardRef<any, LinkProps>(
 
     return external ? (
       // External links
-      <MaterialLink
+      <a
         {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
         {...props}
         {...(props['aria-label']
@@ -229,16 +229,17 @@ export const Link = forwardRef<any, LinkProps>(
         <Typography component="span" className={classes.visuallyHidden}>
           , Opens in a new window
         </Typography>
-      </MaterialLink>
+      </a>
     ) : (
       // Interact with React Router for internal links
-      <MaterialLink
-        {...props}
-        ref={ref}
-        component={RouterLink}
-        to={to}
-        onClick={handleClick}
-      />
+      <RouterLink {...props} ref={ref} to={to} onClick={handleClick} />
     );
   },
-) as (props: LinkProps) => JSX.Element;
+);
+
+/**
+ * Thin wrapper combining UnstyledLink with material-ui's Link component.
+ */
+export const Link = forwardRef<any, LinkProps>((props, ref) => {
+  return <MaterialLink {...props} ref={ref} component={UnstyledLink} />;
+}) as (props: LinkProps) => JSX.Element;

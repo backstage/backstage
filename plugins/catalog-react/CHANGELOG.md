@@ -1,5 +1,58 @@
 # @backstage/plugin-catalog-react
 
+## 1.22.0-next.1
+
+### Minor Changes
+
+- 0e9578d: Migrated `UnregisterEntityDialog` from Material UI to Backstage UI components.
+- e8258d0: **BREAKING**: Removed the 'summary' entity card type from `EntityCardType`. Users should migrate to using 'content' or 'info' card types instead.
+
+  TypeScript will now show errors if you try to use `type: 'summary'` when creating entity cards.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-test-utils@0.4.6-next.1
+  - @backstage/ui@0.12.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-compat-api@0.5.8-next.1
+  - @backstage/core-components@0.18.7-next.1
+  - @backstage/integration-react@1.2.15-next.1
+
+## 1.21.6-next.0
+
+### Patch Changes
+
+- f523983: Fixes a bug where the `EntityListProvider` would not correctly hydrate query parameters if more than 20 were provided for the same key.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/core-compat-api@0.5.7-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/frontend-test-utils@0.4.5-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.15-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+  - @backstage/plugin-permission-react@0.4.40-next.0
+
+## 1.21.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/core-compat-api@0.5.6
+  - @backstage/frontend-test-utils@0.4.3
+  - @backstage/integration-react@1.2.14
+
 ## 1.21.5-next.1
 
 ### Patch Changes

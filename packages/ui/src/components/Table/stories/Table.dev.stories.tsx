@@ -54,6 +54,7 @@ export const BasicLocalData: Story = {
         id: 'name',
         label: 'Name',
         isRowHeader: true,
+        defaultWidth: '4fr',
         cell: item => (
           <CellText title={item.name} description={item.description} />
         ),
@@ -61,16 +62,19 @@ export const BasicLocalData: Story = {
       {
         id: 'owner',
         label: 'Owner',
+        defaultWidth: '1fr',
         cell: item => <CellText title={item.owner.name} />,
       },
       {
         id: 'type',
         label: 'Type',
+        defaultWidth: '1fr',
         cell: item => <CellText title={item.type} />,
       },
       {
         id: 'lifecycle',
         label: 'Lifecycle',
+        defaultWidth: '1fr',
         cell: item => <CellText title={item.lifecycle} />,
       },
     ];

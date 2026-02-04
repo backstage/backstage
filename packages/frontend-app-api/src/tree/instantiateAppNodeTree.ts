@@ -38,21 +38,22 @@ const INSTANTIATION_FAILED = new Error('Instantiation failed');
 function mapWithFailures<T, U>(
   iterable: Iterable<T>,
   callback: (item: T) => U,
+  options?: { ignoreFailures?: boolean },
 ): U[] {
   let failed = false;
-  const results = Array.from(iterable).map(item => {
+  const results = [];
+  for (const item of iterable) {
     try {
-      return callback(item);
+      results.push(callback(item));
     } catch (error) {
       if (error === INSTANTIATION_FAILED) {
         failed = true;
       } else {
         throw error;
       }
-      return null as any;
     }
-  });
-  if (failed) {
+  }
+  if (failed && !options?.ignoreFailures) {
     throw INSTANTIATION_FAILED;
   }
   return results;
@@ -119,7 +120,7 @@ function resolveInputDataContainer(
         .map(r => `'${r.id}'`)
         .join(', ');
 
-      collector.report({
+      collector.child({ node: attachment }).report({
         code: 'EXTENSION_INPUT_DATA_MISSING',
         message: `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
       });
@@ -246,10 +247,32 @@ function resolveV2Inputs(
   inputMap: { [inputName in string]: ExtensionInput },
   attachments: ReadonlyMap<string, AppNode[]>,
   parentCollector: ErrorCollector<{ node: AppNode }>,
+  node: AppNode,
 ): ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }> {
   return mapValues(inputMap, (input, inputName) => {
-    const attachedNodes = attachments.get(inputName) ?? [];
+    const allAttachedNodes = attachments.get(inputName) ?? [];
     const collector = parentCollector.child({ inputName });
+    const inputPluginId = node.spec.plugin.pluginId;
+
+    const attachedNodes = input.config.internal
+      ? allAttachedNodes.filter(attachment => {
+          const attachmentPluginId = attachment.spec.plugin.pluginId;
+          if (attachmentPluginId !== inputPluginId) {
+            collector.report({
+              code: 'EXTENSION_INPUT_INTERNAL_IGNORED',
+              message:
+                `extension '${attachment.spec.id}' from plugin '${attachmentPluginId}' attached to input '${inputName}' on '${node.spec.id}' was ignored, ` +
+                `the input is marked as internal and attached extensions must therefore be provided via an override or a module for the '${inputPluginId}' plugin, not the '${attachmentPluginId}' plugin`,
+              context: {
+                extensionId: attachment.spec.id,
+                plugin: attachment.spec.plugin,
+              },
+            });
+            return false;
+          }
+          return true;
+        })
+      : allAttachedNodes;
 
     if (input.config.singleton) {
       if (attachedNodes.length > 1) {
@@ -271,21 +294,37 @@ function resolveV2Inputs(
         }
         return undefined;
       }
-      return resolveInputDataContainer(
-        input.extensionData,
-        attachedNodes[0],
-        inputName,
-        collector,
-      );
+      try {
+        return resolveInputDataContainer(
+          input.extensionData,
+          attachedNodes[0],
+          inputName,
+          collector,
+        );
+      } catch (error) {
+        if (error === INSTANTIATION_FAILED) {
+          if (input.config.optional) {
+            return undefined;
+          }
+          collector.report({
+            code: 'EXTENSION_ATTACHMENT_MISSING',
+            message: `input '${inputName}' is required but it failed to be instantiated`,
+          });
+        }
+        throw error;
+      }
     }
 
-    return mapWithFailures(attachedNodes, attachment =>
-      resolveInputDataContainer(
-        input.extensionData,
-        attachment,
-        inputName,
-        collector,
-      ),
+    return mapWithFailures(
+      attachedNodes,
+      attachment =>
+        resolveInputDataContainer(
+          input.extensionData,
+          attachment,
+          inputName,
+          collector,
+        ),
+      { ignoreFailures: true },
     );
   }) as ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }>;
 }
@@ -354,6 +393,7 @@ export function createAppNodeInstance(options: {
           internalExtension.inputs,
           attachments,
           collector,
+          node,
         ),
       };
       const outputDataValues = options.extensionFactoryMiddleware

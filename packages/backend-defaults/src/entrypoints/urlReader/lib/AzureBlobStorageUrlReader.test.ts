@@ -28,7 +28,7 @@ import {
 } from '@backstage/integration';
 import { UrlReaderPredicateTuple } from './types';
 import { mockServices } from '@backstage/backend-test-utils';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 // Mock Azure Blob Storage SDK
 const mockBlobDownload = jest.fn();

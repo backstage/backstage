@@ -24,12 +24,12 @@ import {
   LoggerService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
-import * as https from 'https';
-import http, { IncomingMessage } from 'http';
+import * as https from 'node:https';
+import http, { IncomingMessage } from 'node:http';
 import { SignalManager } from './SignalManager';
 import { EventsService } from '@backstage/plugin-events-node';
 import { WebSocket, WebSocketServer } from 'ws';
-import { Duplex } from 'stream';
+import { Duplex } from 'node:stream';
 import { Config } from '@backstage/config';
 
 export interface RouterOptions {
