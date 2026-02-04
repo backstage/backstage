@@ -3660,22 +3660,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-dom-parser@npm:5.1.4":
-  version: 5.1.4
-  resolution: "html-dom-parser@npm:5.1.4"
+"html-dom-parser@npm:5.1.7":
+  version: 5.1.7
+  resolution: "html-dom-parser@npm:5.1.7"
   dependencies:
     domhandler: "npm:5.0.3"
     htmlparser2: "npm:10.1.0"
-  checksum: 10/e2193fd081b229537cd7c735f27dac2de6b5789c822be1947ac54e104ecd852464313813c039e7bed0e2e574f5f6ce9d560b307fc0ba8d2d372c6a1c68a59117
+  checksum: 10/1bcd5bf935433a5a501c5ecdd1653e1bf1fe6daaede2e053ca75c1eea092603123d06ee76aca3e9d72c16fe11dbe49adc805c15e65b0efbbb43b434b2633fbf8
   languageName: node
   linkType: hard
 
 "html-react-parser@npm:^5.2.5":
-  version: 5.2.14
-  resolution: "html-react-parser@npm:5.2.14"
+  version: 5.2.16
+  resolution: "html-react-parser@npm:5.2.16"
   dependencies:
     domhandler: "npm:5.0.3"
-    html-dom-parser: "npm:5.1.4"
+    html-dom-parser: "npm:5.1.7"
     react-property: "npm:2.0.2"
     style-to-js: "npm:1.1.21"
   peerDependencies:
@@ -3684,7 +3684,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/992d7362f0cc8a8987c844a2f317e779215cf49b01f54400ccb750f519bb867fa9ce157be4d0c3daf21e0e217cee6b752fdca473c7a7decd70f53c995952afaf
+  checksum: 10/539f2434407a25142b4f4c1e16860459bdaed29ed2ef520eb2597dc1315d18247d051dc7e95533e644116a09a0cc10ba5d96ec0ef23bfae5d10bc21ef7c7ed08
   languageName: node
   linkType: hard
 
