@@ -3121,7 +3121,9 @@ __metadata:
   resolution: "@backstage/backend-openapi-utils@workspace:packages/backend-openapi-utils"
   dependencies:
     "@apidevtools/swagger-parser": "npm:^10.1.0"
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ export const spec = {
     title: 'catalog',
     version: '1',
     description:
-      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n:::note Note \n  This page only describes some of the most commonly used parts of the API, and is a work in progress.\n:::\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your catalog installation. For example, if the path given in a\nsection below is `/entities`, and the catalog is located at\n`http://localhost:7007/api/catalog` during local development, the full URL would\nbe `http://localhost:7007/api/catalog/entities`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/catalog` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
+      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n:::note Note\n  This page only describes some of the most commonly used parts of the API, and is a work in progress.\n:::\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your catalog installation. For example, if the path given in a\nsection below is `/entities`, and the catalog is located at\n`http://localhost:7007/api/catalog` during local development, the full URL would\nbe `http://localhost:7007/api/catalog/entities`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/catalog` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
     license: {
       name: 'Apache-2.0',
       url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
@@ -794,6 +794,14 @@ export const spec = {
         operationId: 'RefreshEntity',
         tags: ['Entity'],
         description: 'Refresh the entity related to entityRef.',
+        'x-backstage-auditor': {
+          eventId: 'entity-mutate',
+          severityLevel: 'medium',
+          meta: {
+            variant: 'update',
+            entityRef: '{{ request.body.entityRef }}',
+          },
+        },
         responses: {
           '200': {
             description: 'Refreshed',
@@ -843,6 +851,9 @@ export const spec = {
         operationId: 'GetEntities',
         tags: ['Entity'],
         description: 'Get all entities matching a given filter.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+        },
         responses: {
           '200': {
             description: '',
@@ -906,6 +917,12 @@ export const spec = {
         operationId: 'GetEntityByUid',
         tags: ['Entity'],
         description: 'Get a single entity by the UID.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            uid: '{{ request.params.uid }}',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -940,6 +957,13 @@ export const spec = {
         operationId: 'DeleteEntityByUid',
         tags: ['Entity'],
         description: 'Delete a single entity by UID.',
+        'x-backstage-auditor': {
+          eventId: 'entity-mutate',
+          severityLevel: 'medium',
+          meta: {
+            uid: '{{ request.params.uid }}',
+          },
+        },
         responses: {
           '204': {
             description: 'Deleted successfully.',
@@ -969,6 +993,13 @@ export const spec = {
         operationId: 'GetEntityByName',
         tags: ['Entity'],
         description: 'Get an entity by an entity ref.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            entityRef:
+              '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1011,6 +1042,13 @@ export const spec = {
         operationId: 'GetEntityAncestryByName',
         tags: ['Entity'],
         description: "Get an entity's ancestry by entity ref.",
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            entityRef:
+              '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1054,6 +1092,12 @@ export const spec = {
         tags: ['Entity'],
         description:
           'Get a batch set of entities given an array of entityRefs.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            variant: 'fetch',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1131,6 +1175,9 @@ export const spec = {
         operationId: 'GetEntitiesByQuery',
         tags: ['Entity'],
         description: 'Search for entities by a given query.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1208,6 +1255,9 @@ export const spec = {
         operationId: 'GetEntityFacets',
         tags: ['Entity'],
         description: 'Get all entity facets that match the given filters.',
+        'x-backstage-auditor': {
+          eventId: 'entity-facets',
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1264,6 +1314,15 @@ export const spec = {
         operationId: 'CreateLocation',
         tags: ['Locations'],
         description: 'Create a location for a given target.',
+        'x-backstage-auditor': {
+          eventId: 'location-mutate',
+          severityLevel: 'medium',
+          meta: {
+            type: '{{ request.body.type }}',
+            target: '{{ request.body.target }}',
+            dryRun: '{{ request.query.dryRun }}',
+          },
+        },
         responses: {
           '201': {
             description: 'Created',
@@ -1338,6 +1397,12 @@ export const spec = {
         operationId: 'GetLocations',
         tags: ['Locations'],
         description: 'Get all locations',
+        'x-backstage-auditor': {
+          eventId: 'location-fetch',
+          meta: {
+            variant: 'fetch',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1376,6 +1441,12 @@ export const spec = {
         operationId: 'GetLocation',
         tags: ['Locations'],
         description: 'Get a location by id.',
+        'x-backstage-auditor': {
+          eventId: 'location-fetch',
+          meta: {
+            locationId: '{{ request.params.id }}',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1413,6 +1484,13 @@ export const spec = {
         operationId: 'DeleteLocation',
         tags: ['Locations'],
         description: 'Delete a location by id.',
+        'x-backstage-auditor': {
+          eventId: 'location-mutate',
+          severityLevel: 'medium',
+          meta: {
+            locationId: '{{ request.params.id }}',
+          },
+        },
         responses: {
           '204': {
             description: 'No content',
@@ -1448,6 +1526,13 @@ export const spec = {
         operationId: 'getLocationByEntity',
         tags: ['Locations'],
         description: 'Get a location for entity.',
+        'x-backstage-auditor': {
+          eventId: 'location-fetch',
+          meta: {
+            entityRef:
+              '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1505,6 +1590,9 @@ export const spec = {
         operationId: 'AnalyzeLocation',
         tags: ['Locations'],
         description: 'Validate a given location.',
+        'x-backstage-auditor': {
+          eventId: 'location-analyze',
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1557,6 +1645,9 @@ export const spec = {
         tags: ['Entity'],
         description:
           'Validate that a passed in entity has no errors in schema.',
+        'x-backstage-auditor': {
+          eventId: 'entity-validate',
+        },
         responses: {
           '200': {
             description: 'Ok',
