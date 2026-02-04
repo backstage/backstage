@@ -150,12 +150,19 @@ export class McpService {
       } finally {
         const durationSeconds = (performance.now() - startTime) / 1000;
 
+        // Determine error.type per OTel MCP spec:
+        // - Thrown exceptions use the error name
+        // - CallToolResult with isError=true uses 'tool_error'
+        let errorAttribute: string | undefined = errorType;
+        if (!errorAttribute && isError) {
+          errorAttribute = 'tool_error';
+        }
+
         this.operationDuration.record(durationSeconds, {
           'mcp.method.name': 'tools/call',
           'gen_ai.tool.name': params.name,
           'gen_ai.operation.name': 'execute_tool',
-          ...(errorType && { 'error.type': errorType }),
-          ...(isError && !errorType && { 'error.type': 'tool_error' }),
+          ...(errorAttribute && { 'error.type': errorAttribute }),
         });
       }
     });
