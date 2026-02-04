@@ -29,6 +29,13 @@ import { coreComponentsTranslationRef } from '../translation';
  * 2. Fallback to app.title from config
  * 3. Default translation ('Backstage')
  *
+ * @remarks
+ * Note: If you explicitly translate 'app.title' to "Backstage" (the same as the
+ * default value), the hook cannot distinguish between a deliberate translation
+ * and the default, so it will fall back to the config value. If you want to use
+ * "Backstage" as your translated title while having a different `app.title` in
+ * config, set the config value to "Backstage" as well.
+ *
  * @public
  * @example
  * ```tsx
