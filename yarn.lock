@@ -19038,8 +19038,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.19.2, @stoplight/spectral-core@npm:^1.19.4, @stoplight/spectral-core@npm:^1.8.1":
-  version: 1.20.0
-  resolution: "@stoplight/spectral-core@npm:1.20.0"
+  version: 1.21.0
+  resolution: "@stoplight/spectral-core@npm:1.21.0"
   dependencies:
     "@stoplight/better-ajv-errors": "npm:1.0.3"
     "@stoplight/json": "npm:~3.21.0"
@@ -19055,14 +19055,14 @@ __metadata:
     ajv-formats: "npm:~2.1.1"
     es-aggregate-error: "npm:^1.0.7"
     jsonpath-plus: "npm:^10.3.0"
-    lodash: "npm:~4.17.21"
+    lodash: "npm:~4.17.23"
     lodash.topath: "npm:^4.5.2"
     minimatch: "npm:3.1.2"
     nimma: "npm:0.2.3"
     pony-cause: "npm:^1.1.1"
     simple-eval: "npm:1.0.1"
     tslib: "npm:^2.8.1"
-  checksum: 10/63628dcf4b1556db166a020dd78d17033908fa7d1c67c62739e35848e5d0e095714524b4c142aa7d6524fe556152f4dbb8cb388b36bc6e37026bf07c31a0e69b
+  checksum: 10/1ee71d19c810e716ada542c4e838bbc8b20e7bdc46518739c16c2edbc446a34fcf4e977d79b89d68d1a41e295ef9abee6449e2260cbf5ed1c2ae486229e3bdfb
   languageName: node
   linkType: hard
 
@@ -37632,7 +37632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.15.0, lodash@npm:^4.16.4, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:~4.17.15, lodash@npm:~4.17.21":
+"lodash@npm:^4.15.0, lodash@npm:^4.16.4, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:~4.17.15, lodash@npm:~4.17.21, lodash@npm:~4.17.23":
   version: 4.17.23
   resolution: "lodash@npm:4.17.23"
   checksum: 10/82504c88250f58da7a5a4289f57a4f759c44946c005dd232821c7688b5fcfbf4a6268f6a6cdde4b792c91edd2f3b5398c1d2a0998274432cff76def48735e233
