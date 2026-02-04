@@ -132,7 +132,7 @@ An [entity card](https://backstage.io/docs/frontend-system/building-plugins/exte
 
 ##### Output
 
-A React component defined by the [coreExtensionData.reactElement](https://backstage.io/docs/reference/frontend-plugin-api.coreextensiondata/) type.
+A React component defined by the [coreExtensionData.reactElement](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.coreExtensionData.html) type.
 
 ##### Inputs
 
@@ -232,7 +232,7 @@ A [page](https://backstage.io/docs/reference/frontend-plugin-api.createapiextens
 
 ##### Output
 
-A React component defined by the [coreExtensionData.reactElement](https://backstage.io/docs/reference/frontend-plugin-api.coreextensiondata/) type.
+A React component defined by the [coreExtensionData.reactElement](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.coreExtensionData.html) type.
 
 ##### Inputs
 
