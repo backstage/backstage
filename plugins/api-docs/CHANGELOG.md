@@ -1,5 +1,42 @@
 # @backstage/plugin-api-docs
 
+## 0.13.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/plugin-catalog@1.33.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.13.4-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-catalog@1.32.3-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+  - @backstage/plugin-permission-react@0.4.40-next.0
+
+## 0.13.3
+
+### Patch Changes
+
+- 0216090: Updated dependency `@types/swagger-ui-react` to `^5.0.0`.
+- abeba2b: Fix types with new bumped dependency
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/plugin-catalog@1.32.2
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+
 ## 0.13.3-next.2
 
 ### Patch Changes

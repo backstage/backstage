@@ -22,7 +22,7 @@ jobs:
 
       # We need to checkout the `.github/ISSUE_TEMPLATE` for the advanced labeler action to be able to read the templates
       # While at it we might as well checkout all of `.github` so that the labeling actions don't need to fetch their configs
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           sparse-checkout: .github
 
@@ -38,7 +38,7 @@ jobs:
 
       # These two steps add labels based on user input in the issue form
       - name: Parse issue form
-        uses: stefanbuck/github-issue-parser@25f1485edffc1fee3ea68eb9f59a72e58720ffc4 # v3
+        uses: stefanbuck/github-issue-parser@10dcc54158ba4c137713d9d69d70a2da63b6bda3 # v3
         id: issue-parser
         with:
           template-path: .github/ISSUE_TEMPLATE/.common.yaml

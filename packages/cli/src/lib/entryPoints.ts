@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { extname } from 'path';
+import { extname } from 'node:path';
 import { BackstagePackageJson } from '@backstage/cli-node';
 
 export interface EntryPoint {

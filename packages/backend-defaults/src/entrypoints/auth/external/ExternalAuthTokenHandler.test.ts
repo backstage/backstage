@@ -22,7 +22,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';

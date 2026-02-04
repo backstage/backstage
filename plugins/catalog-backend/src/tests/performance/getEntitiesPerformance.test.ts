@@ -25,7 +25,7 @@ import {
   CatalogClient,
   GetEntitiesResponse,
 } from '@backstage/catalog-client';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import { default as catalogPlugin } from '../..';
 import {

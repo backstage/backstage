@@ -28,15 +28,26 @@ export const Default = meta.story({
   },
 });
 
+export const Indeterminate = meta.story({
+  args: {
+    children: 'Select all',
+    isIndeterminate: true,
+  },
+});
+
 export const AllVariants = meta.story({
   ...Default.input,
   render: () => (
     <Flex direction="column" gap="2">
       <Checkbox>Unchecked</Checkbox>
       <Checkbox isSelected>Checked</Checkbox>
+      <Checkbox isIndeterminate>Indeterminate</Checkbox>
       <Checkbox isDisabled>Disabled</Checkbox>
       <Checkbox isSelected isDisabled>
         Checked & Disabled
+      </Checkbox>
+      <Checkbox isIndeterminate isDisabled>
+        Indeterminate & Disabled
       </Checkbox>
     </Flex>
   ),

@@ -25,7 +25,11 @@ import { TSDocConfigFile } from '@microsoft/tsdoc-config';
 import fs from 'fs-extra';
 import { groupBy } from 'lodash';
 import { minimatch } from 'minimatch';
-import { join, relative as relativePath, resolve as resolvePath } from 'path';
+import {
+  join,
+  relative as relativePath,
+  resolve as resolvePath,
+} from 'node:path';
 import { getPackageExportDetails } from '../../../lib/getPackageExportDetails';
 import { paths as cliPaths } from '../../../lib/paths';
 import { logApiReportInstructions } from '../common';

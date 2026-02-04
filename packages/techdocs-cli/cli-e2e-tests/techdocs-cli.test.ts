@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { execSync, spawn, SpawnOptionsWithoutStdio } from 'child_process';
-import path from 'path';
+import { execSync, spawn, SpawnOptionsWithoutStdio } from 'node:child_process';
+import path from 'node:path';
 
 import findProcess from 'find-process';
 

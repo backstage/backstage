@@ -16,7 +16,7 @@
 
 import { Knex } from 'knex';
 import { TestDatabases } from '@backstage/backend-test-utils';
-import fs from 'fs';
+import fs from 'node:fs';
 import { migrationsDir } from './migrateBackendTasks';
 
 const migrationsFiles = fs.readdirSync(migrationsDir).sort();

@@ -1,13 +1,14 @@
 {
   "name": "@backstage/plugin-devtools-backend",
-  "version": "0.5.13-next.1",
+  "version": "0.5.14-next.0",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "devtools",
     "pluginPackages": [
       "@backstage/plugin-devtools",
       "@backstage/plugin-devtools-backend",
-      "@backstage/plugin-devtools-common"
+      "@backstage/plugin-devtools-common",
+      "@backstage/plugin-devtools-react"
     ]
   },
   "publishConfig": {

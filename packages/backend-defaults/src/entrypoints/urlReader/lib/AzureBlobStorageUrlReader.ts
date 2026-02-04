@@ -26,8 +26,8 @@ import {
   ForwardedError,
   NotModifiedError,
 } from '@backstage/errors';
-import { Readable } from 'stream';
-import { relative } from 'path/posix';
+import { Readable } from 'node:stream';
+import { relative } from 'node:path/posix';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
   AzureBlobStorageIntergation,

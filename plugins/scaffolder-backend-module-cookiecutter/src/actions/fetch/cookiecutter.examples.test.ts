@@ -19,7 +19,7 @@ import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createFetchCookiecutterAction } from './cookiecutter';
-import { join } from 'path';
+import { join } from 'node:path';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { examples } from './cookiecutter.examples';

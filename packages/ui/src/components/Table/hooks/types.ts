@@ -45,11 +45,20 @@ export interface QueryOptions<TFilter> {
 }
 
 /** @public */
-export interface PaginationOptions {
-  pageSize?: number;
+export interface PaginationOptions
+  extends Partial<
+    Pick<
+      TablePaginationProps,
+      | 'pageSize'
+      | 'pageSizeOptions'
+      | 'onPageSizeChange'
+      | 'onNextPage'
+      | 'onPreviousPage'
+      | 'showPageSizeOptions'
+      | 'getLabel'
+    >
+  > {
   initialOffset?: number;
-  showPageSizeOptions?: boolean;
-  getLabel?: TablePaginationProps['getLabel'];
 }
 
 /** @public */

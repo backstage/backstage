@@ -1,0 +1,64 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { gridPropDefs, gridItemPropDefs } from './props-definition';
+import {
+  gridUsageSnippet,
+  defaultSnippet,
+  gridResponsiveSnippet,
+  gridItemSnippet,
+} from './snippets';
+import { Default, ResponsiveExample, GridItemExample } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { GridDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  type="Layout"
+  title="Grid"
+  description="A CSS grid container with columns, gap, and item spanning."
+/>
+
+<Snippet py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={gridUsageSnippet} />
+
+## API reference
+
+### Grid.Root
+
+The grid container. Defines column count and gap between items.
+
+<PropsTable data={gridPropDefs} />
+
+### Grid.Item
+
+A grid child with column and row spanning control.
+
+<PropsTable data={gridItemPropDefs} />
+
+## Examples
+
+### Responsive columns
+
+Column count can change at different breakpoints.
+
+<Snippet
+  py={4}
+  preview={<ResponsiveExample />}
+  code={gridResponsiveSnippet}
+  open
+/>
+
+### Column spanning
+
+Use Grid.Item to span multiple columns.
+
+<Snippet py={4} preview={<GridItemExample />} code={gridItemSnippet} open />
+
+<Theming definition={GridDefinition} />
+
+<ChangelogComponent component="grid" />

@@ -1,0 +1,53 @@
+name: Sync Pull Requests
+
+on:
+  workflow_run:
+    workflows: ['Sync Pull Requests Trigger']
+    types:
+      - completed
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Download PR context
+        id: download
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        continue-on-error: true
+        with:
+          name: pr-context
+          path: ./context
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Read context
+        if: steps.download.outcome == 'success'
+        id: context
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            core.setOutput('pr-number', fs.readFileSync('./context/pr-number', 'utf8').trim());
+            core.setOutput('label-added', fs.readFileSync('./context/label-added', 'utf8').trim());
+            core.setOutput('review-state', fs.readFileSync('./context/review-state', 'utf8').trim());
+            core.setOutput('actor', fs.readFileSync('./context/actor', 'utf8').trim());
+
+      - name: Backstage PR automation
+        if: steps.download.outcome == 'success'
+        uses: backstage/actions/pr-automation@d98113056c83b1b0a1293c8310d77d99db4ea22e # v0.7.3
+        with:
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-owner: backstage
+          project-number: '14'
+          pr-number: ${{ steps.context.outputs.pr-number }}
+          label-added: ${{ steps.context.outputs.label-added }}
+          review-state: ${{ steps.context.outputs.review-state }}
+          actor: ${{ steps.context.outputs.actor }}

@@ -38,6 +38,14 @@ export type AppErrorTypes = {
   EXTENSION_INPUT_DATA_MISSING: {
     context: { node: AppNode; inputName: string };
   };
+  EXTENSION_INPUT_INTERNAL_IGNORED: {
+    context: {
+      node: AppNode;
+      inputName: string;
+      extensionId: string;
+      plugin: FrontendPlugin;
+    };
+  };
   EXTENSION_ATTACHMENT_CONFLICT: {
     context: { node: AppNode; inputName: string };
   };
@@ -65,6 +73,14 @@ export type AppErrorTypes = {
   // createSpecializedApp
   API_EXTENSION_INVALID: {
     context: { node: AppNode };
+  };
+  API_FACTORY_CONFLICT: {
+    context: {
+      node: AppNode;
+      apiRefId: string;
+      pluginId: string;
+      existingPluginId: string;
+    };
   };
   // routing
   ROUTE_DUPLICATE: {

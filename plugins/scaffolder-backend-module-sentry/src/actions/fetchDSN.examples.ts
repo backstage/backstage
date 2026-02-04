@@ -54,4 +54,23 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Fetch the DSN for a Sentry project with custom API base URL.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'fetch-sentry-dsn',
+          action: 'sentry:fetch:dsn',
+          name: 'Fetch DSN with custom API base URL',
+          input: {
+            organizationSlug: 'my-org',
+            projectSlug: 'my-project',
+            apiBaseUrl: 'https://sentry.io/api/0/custom',
+            authToken:
+              'b14711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d5df97',
+          },
+        },
+      ],
+    }),
+  },
 ];

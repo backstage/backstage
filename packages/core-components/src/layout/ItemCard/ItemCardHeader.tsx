@@ -30,7 +30,7 @@ export type ItemCardHeaderClassKey = 'root';
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-      color: theme.palette.text.primary,
+      color: theme.getPageTheme({ themeId: 'card' }).fontColor,
       padding: theme.spacing(2, 2, 3),
       backgroundImage: theme.getPageTheme({ themeId: 'card' }).backgroundImage,
       backgroundPosition: 0,

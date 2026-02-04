@@ -131,7 +131,10 @@ And if you’d like to go even further, you can target specific component class 
 | `--bui-fg-solid`     | This is for texts or icons on top of a solid backgrounds.                                     |
 | `--bui-fg-primary`   | Your primary text or icon colours.                                                            |
 | `--bui-fg-secondary` | Your secondary text or icon colours.                                                          |
-| `--bui-fg-link`      | Used for links.                                                                               |
+| `--bui-fg-danger`    | Used for error states and destructive actions.                                                |
+| `--bui-fg-warning`   | Used for warning states and cautionary information.                                           |
+| `--bui-fg-success`   | Used for success states and positive feedback.                                                |
+| `--bui-fg-info`      | Used for informational content and neutral status.                                            |
 | `--bui-border`       | Main borders around surfaces like `Card`, `Dialog`, ...                                       |
 | `--bui-font-regular` | The main font of your app.                                                                    |
 
@@ -169,31 +172,29 @@ These colors are used for the background of your application. We are mostly usin
 | `--bui-bg-solid-hover`    | Used for solid background colors when hovered.   |
 | `--bui-bg-solid-pressed`  | Used for solid background colors when pressed.   |
 | `--bui-bg-solid-disabled` | Used for solid background colors when disabled.  |
-| `--bui-bg-tint`           | Used for tint background colors.                 |
-| `--bui-bg-tint-hover`     | Used for tint background colors when hovered.    |
-| `--bui-bg-tint-focus`     | Used for tint background colors when active.     |
-| `--bui-bg-tint-disabled`  | Used for tint background colors when disabled.   |
 | `--bui-bg-danger`         | Used to show errors information.                 |
 | `--bui-bg-warning`        | Used to show warnings information.               |
 | `--bui-bg-success`        | Used to show success information.                |
+| `--bui-bg-info`           | Used to show informational content.              |
 
 #### Foreground colors
 
 Foreground colours are meant to work in pair with a background colours. Typically this would work for icons, texts, shapes, ... Use a matching name to know what foreground color to use. These colors are prefixed with `fg` to make it easier to identify.
 
-| Token Name               | Description                                                       |
-| ------------------------ | ----------------------------------------------------------------- |
-| `--bui-fg-primary`       | It should be used on top of main background surfaces.             |
-| `--bui-fg-secondary`     | It should be used on top of main background surfaces.             |
-| `--bui-fg-link`          | It should be used on top of main background surfaces.             |
-| `--bui-fg-link-hover`    | It should be used on top of main background surfaces.             |
-| `--bui-fg-disabled`      | It should be used on top of main background surfaces.             |
-| `--bui-fg-solid`         | It should be used on top of solid background colors.              |
-| `--bui-fg-tint`          | It should be used on top of tint background colors.               |
-| `--bui-fg-tint-disabled` | It should be used on top of tint background colors when disabled. |
-| `--bui-fg-danger`        | It should be used on top of danger background colors.             |
-| `--bui-fg-warning`       | It should be used on top of warning background colors.            |
-| `--bui-fg-success`       | It should be used on top of success background colors.            |
+| Token Name               | Description                                            |
+| ------------------------ | ------------------------------------------------------ |
+| `--bui-fg-primary`       | It should be used on top of main background surfaces.  |
+| `--bui-fg-secondary`     | It should be used on top of main background surfaces.  |
+| `--bui-fg-disabled`      | It should be used on top of main background surfaces.  |
+| `--bui-fg-solid`         | It should be used on top of solid background colors.   |
+| `--bui-fg-danger`        | Used for error states and destructive actions.         |
+| `--bui-fg-warning`       | Used for warning states and cautionary information.    |
+| `--bui-fg-success`       | Used for success states and positive feedback.         |
+| `--bui-fg-info`          | Used for informational content and neutral status.     |
+| `--bui-fg-danger-on-bg`  | It should be used on top of danger background colors.  |
+| `--bui-fg-warning-on-bg` | It should be used on top of warning background colors. |
+| `--bui-fg-success-on-bg` | It should be used on top of success background colors. |
+| `--bui-fg-info-on-bg`    | It should be used on top of info background colors.    |
 
 #### Border colors
 

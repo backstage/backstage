@@ -29,6 +29,10 @@ export const components: Page[] = [
     slug: 'accordion',
   },
   {
+    title: 'Alert',
+    slug: 'alert',
+  },
+  {
     title: 'Avatar',
     slug: 'avatar',
   },
@@ -75,6 +79,11 @@ export const components: Page[] = [
   {
     title: 'PasswordField',
     slug: 'password-field',
+  },
+  {
+    title: 'Popover',
+    slug: 'popover',
+    status: 'new',
   },
   {
     title: 'RadioGroup',

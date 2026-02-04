@@ -19,10 +19,10 @@ import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
-import path from 'path';
+import path from 'node:path';
 import { SwiftClient } from '@trendyol-js/openstack-swift-sdk';
 import { NotFound } from '@trendyol-js/openstack-swift-sdk/lib/types';
-import { Stream, Readable } from 'stream';
+import { Stream, Readable } from 'node:stream';
 
 import {
   getFileTreeRecursively,

@@ -15,12 +15,16 @@
  */
 
 import {
+  analyticsApiRef,
   coreExtensionData,
   createExtension,
   createExtensionDataRef,
   createExtensionInput,
+  useAnalytics,
 } from '@backstage/frontend-plugin-api';
 import { createExtensionTester } from './createExtensionTester';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from './renderInTestApp';
 
 const stringDataRef = createExtensionDataRef<string>().with({
   id: 'test.string',
@@ -151,5 +155,194 @@ describe('createExtensionTester', () => {
     const test3: number = tester.get(internalRef2);
 
     expect([test, test2, test3]).toBeDefined();
+  });
+
+  it('should support API overrides via options', async () => {
+    const analyticsApiMock = { captureEvent: jest.fn() };
+
+    const TestComponent = () => {
+      const analytics = useAnalytics();
+      analytics.captureEvent('test', 'value');
+      return <div>Test</div>;
+    };
+
+    const extension = createExtension({
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [coreExtensionData.reactElement],
+      factory: () => [coreExtensionData.reactElement(<TestComponent />)],
+    });
+
+    const tester = createExtensionTester(extension, {
+      apis: [[analyticsApiRef, analyticsApiMock]],
+    });
+
+    renderInTestApp(tester.reactElement(), {
+      apis: [[analyticsApiRef, analyticsApiMock]],
+    });
+
+    expect(screen.getByText('Test')).toBeInTheDocument();
+    expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'test',
+        subject: 'value',
+      }),
+    );
+  });
+
+  describe('snapshot', () => {
+    it('should return a snapshot of the extension tree', () => {
+      const extension = createExtension({
+        name: 'root',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        output: [stringDataRef],
+        factory: () => [stringDataRef('test-text')],
+      });
+
+      const tester = createExtensionTester(extension);
+
+      expect(tester.snapshot()).toMatchInlineSnapshot(`
+        {
+          "id": "root",
+          "outputs": [
+            "test.string",
+          ],
+        }
+      `);
+    });
+
+    it('should include child extensions in the tree', () => {
+      const childInput = createExtensionInput([stringDataRef]);
+
+      const rootExtension = createExtension({
+        name: 'root',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        inputs: {
+          children: childInput,
+        },
+        output: [coreExtensionData.reactElement],
+        factory: () => [coreExtensionData.reactElement(<div>root</div>)],
+      });
+
+      const childExtension = createExtension({
+        name: 'child',
+        attachTo: { id: 'root', input: 'children' },
+        output: [stringDataRef],
+        factory: () => [stringDataRef('child-data')],
+      });
+
+      const tester = createExtensionTester(rootExtension).add(childExtension);
+
+      expect(tester.snapshot()).toMatchInlineSnapshot(`
+        {
+          "children": {
+            "children": [
+              {
+                "id": "child",
+                "outputs": [
+                  "test.string",
+                ],
+              },
+            ],
+          },
+          "id": "root",
+          "outputs": [
+            "core.reactElement",
+          ],
+        }
+      `);
+    });
+
+    it('should include multiple children in sorted order', () => {
+      const childInput = createExtensionInput([stringDataRef]);
+
+      const rootExtension = createExtension({
+        name: 'root',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        inputs: {
+          children: childInput,
+        },
+        output: [coreExtensionData.reactElement],
+        factory: () => [coreExtensionData.reactElement(<div>root</div>)],
+      });
+
+      const child1 = createExtension({
+        name: 'child1',
+        attachTo: { id: 'root', input: 'children' },
+        output: [stringDataRef],
+        factory: () => [stringDataRef('child1-data')],
+      });
+
+      const child2 = createExtension({
+        name: 'child2',
+        attachTo: { id: 'root', input: 'children' },
+        output: [stringDataRef],
+        factory: () => [stringDataRef('child2-data')],
+      });
+
+      const tester = createExtensionTester(rootExtension)
+        .add(child1)
+        .add(child2);
+
+      expect(tester.snapshot()).toMatchInlineSnapshot(`
+        {
+          "children": {
+            "children": [
+              {
+                "id": "child1",
+                "outputs": [
+                  "test.string",
+                ],
+              },
+              {
+                "id": "child2",
+                "outputs": [
+                  "test.string",
+                ],
+              },
+            ],
+          },
+          "id": "root",
+          "outputs": [
+            "core.reactElement",
+          ],
+        }
+      `);
+    });
+
+    it('should omit empty children and outputs', () => {
+      const extension = createExtension({
+        name: 'root',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        output: [],
+        factory: () => [],
+      });
+
+      const tester = createExtensionTester(extension);
+
+      expect(tester.snapshot()).toMatchInlineSnapshot(`
+        {
+          "id": "root",
+        }
+      `);
+    });
+
+    it('should produce serializable snapshot data', () => {
+      const extension = createExtension({
+        name: 'root',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        output: [stringDataRef],
+        factory: () => [stringDataRef('test-text')],
+      });
+
+      const tester = createExtensionTester(extension);
+      const snapshot = tester.snapshot();
+
+      expect(snapshot).toEqual({
+        id: 'root',
+        outputs: ['test.string'],
+      });
+
+      expect(JSON.parse(JSON.stringify(snapshot))).toEqual(snapshot);
+    });
   });
 });

@@ -16,7 +16,7 @@
 
 // @ts-check
 
-const { builtinModules } = require('module');
+const { builtinModules } = require('node:module');
 const getPackages = require('./getPackages');
 
 /**
