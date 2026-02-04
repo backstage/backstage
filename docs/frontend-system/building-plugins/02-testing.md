@@ -200,6 +200,38 @@ describe('Index page', () => {
 });
 ```
 
+## Testing entity extensions
+
+The `createTestEntityPage` utility from `@backstage/plugin-catalog-react/testUtils` simplifies testing entity cards and content extensions. It creates a test page that mounts at `/`, provides an `EntityProvider` context, and picks up entity extensions through input redirects.
+
+```tsx
+import { screen } from '@testing-library/react';
+import { renderTestApp } from '@backstage/frontend-test-utils';
+import { createTestEntityPage } from '@backstage/plugin-catalog-react/testUtils';
+import { myEntityCard } from './plugin';
+
+describe('MyEntityCard', () => {
+  it('should render for Component entities', async () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name: 'my-service' },
+      spec: { type: 'service', owner: 'team-a' },
+    };
+
+    renderTestApp({
+      extensions: [createTestEntityPage({ entity }), myEntityCard],
+    });
+
+    expect(await screen.findByText('My Card Title')).toBeInTheDocument();
+  });
+});
+```
+
+Entity content extensions can be tested the exact same way, just pass your content extension instead of a card. The test page also supports entity filters defined on the extensions, so you can test filter behavior by providing different entity kinds. If your extension depends on APIs you can pass mock implementation using the `apis` option `renderTestApp`, or you can pass the API extension directly alongside your content extension.
+
+Extensions that use `EntityRefLinks` or `useRelatedEntities` may require additional API mocking using the `apis` option on `renderTestApp`.
+
 ## Mounting routes
 
 If your component or extension uses `useRouteRef` to generate links to other routes, you need to mount those routes in the test environment. Both `renderInTestApp` and `renderTestApp` support the `mountedRoutes` option for this purpose.
