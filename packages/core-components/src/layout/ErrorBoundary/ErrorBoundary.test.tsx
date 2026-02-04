@@ -18,7 +18,7 @@
 import { ReactNode } from 'react';
 import { ErrorBoundary } from './ErrorBoundary';
 import {
-  MockErrorApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
   withLogCollector,
@@ -41,7 +41,7 @@ const Bomb = ({ shouldThrow }: BombProps) => {
 describe('<ErrorBoundary/>', () => {
   it('should render error boundary with and without error', async () => {
     const { error } = await withLogCollector(['error'], async () => {
-      const errorApi = new MockErrorApi();
+      const errorApi = mockApis.error();
       const { rerender, queryByRole, getByRole, getByText } =
         await renderInTestApp(
           <TestApiProvider apis={[[errorApiRef, errorApi]]}>

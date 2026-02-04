@@ -17,7 +17,7 @@ import { DefaultScaffolderFormDecoratorsApi } from '../api/FormDecoratorsApi';
 import { createScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 import { createApiRef, errorApiRef } from '@backstage/core-plugin-api';
 
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFormDecorators } from './useFormDecorators';
 import { formDecoratorsApiRef } from '../api/ref';
@@ -61,7 +61,7 @@ describe('useFormDecorators', () => {
                 decorators: [mockDecorator],
               }),
             ],
-            [errorApiRef, { post: () => {} }],
+            [errorApiRef, mockApis.error()],
           ]}
         >
           {children}
@@ -94,7 +94,7 @@ describe('useFormDecorators', () => {
                 decorators: [mockDecorator],
               }),
             ],
-            [errorApiRef, { post: () => {} }],
+            [errorApiRef, mockApis.error()],
           ]}
         >
           {children}
@@ -134,7 +134,7 @@ describe('useFormDecorators', () => {
                 decorators: [mockDecorator, secretAndFormDataModifier],
               }),
             ],
-            [errorApiRef, { post: () => {} }],
+            [errorApiRef, mockApis.error()],
           ]}
         >
           {children}

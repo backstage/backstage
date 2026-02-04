@@ -16,7 +16,7 @@
 
 import { ReactNode } from 'react';
 import {
-  MockErrorApi,
+  mockApis,
   TestApiProvider,
   withLogCollector,
 } from '@backstage/test-utils';
@@ -32,7 +32,7 @@ import {
   TranslationApi,
   translationApiRef,
 } from '../apis/definitions/TranslationApi';
-import { ErrorApi, errorApiRef } from '../apis';
+import { errorApiRef } from '../apis';
 
 const plainRef = createTranslationRef({
   id: 'plain',
@@ -44,7 +44,7 @@ const plainRef = createTranslationRef({
 
 function makeWrapper(
   translationApi: TranslationApi,
-  errorApi: ErrorApi = { error$: jest.fn(), post: jest.fn() },
+  errorApi = mockApis.error(),
 ) {
   return ({ children }: { children: ReactNode }) => (
     <TestApiProvider
@@ -306,7 +306,7 @@ describe('useTranslationRef', () => {
           <TestApiProvider
             apis={[
               [translationApiRef, translationApi],
-              [errorApiRef, { post: jest.fn() }],
+              [errorApiRef, mockApis.error()],
             ]}
             children={children}
           />

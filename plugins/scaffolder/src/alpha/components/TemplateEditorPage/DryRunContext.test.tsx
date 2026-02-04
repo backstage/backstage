@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 // eslint-disable-next-line no-restricted-imports
 import { TextEncoder } from 'node:util';
 import {
@@ -76,7 +76,7 @@ describe('DryRunProvider', () => {
               apis={[
                 [scaffolderApiRef, scaffolderApiMock],
                 [formDecoratorsApiRef, formDecoratorsApiMock],
-                [errorApiRef, { post: jest.fn() }],
+                [errorApiRef, mockApis.error()],
               ]}
             >
               <SecretsContextProvider initialSecrets={{ foo: 'bar' }}>

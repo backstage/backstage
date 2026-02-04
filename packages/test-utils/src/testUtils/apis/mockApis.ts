@@ -16,17 +16,31 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
+  AlertApi,
+  AlertMessage,
   AnalyticsApi,
   ApiFactory,
   ApiRef,
   ConfigApi,
   DiscoveryApi,
+  ErrorApi,
+  ErrorApiError,
+  ErrorApiErrorContext,
+  FeatureFlagsApi,
+  FeatureFlag,
+  FeatureFlagsSaveOptions,
+  FeatureFlagState,
+  FetchApi,
   IdentityApi,
   StorageApi,
+  alertApiRef,
   analyticsApiRef,
   configApiRef,
   createApiFactory,
   discoveryApiRef,
+  errorApiRef,
+  featureFlagsApiRef,
+  fetchApiRef,
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
@@ -44,6 +58,10 @@ import {
 } from '@backstage/plugin-permission-react';
 import { JsonObject } from '@backstage/types';
 import { ApiMock } from './ApiMock';
+import { MockAlertApi } from './AlertApi';
+import { MockErrorApi, MockErrorApiOptions } from './ErrorApi';
+import { MockFetchApi, MockFetchApiOptions } from './FetchApi';
+import { MockFeatureFlagsApi, MockFeatureFlagsApiOptions } from './FeatureFlagsApi';
 import { MockPermissionApi } from './PermissionApi';
 import { MockStorageApi } from './StorageApi';
 import { MockTranslationApi } from './TranslationApi';
@@ -377,5 +395,157 @@ export namespace mockApis {
       getTranslation: jest.fn(),
       translation$: jest.fn(),
     }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#AlertApi}.
+   * Stores alerts temporarily in memory and supports observable subscriptions.
+   *
+   * @public
+   * @example
+   *
+   * ```tsx
+   * const alert = mockApis.alert();
+   *
+   * await renderInTestApp(
+   *   <TestApiProvider apis={[[alertApiRef, alert]]}>
+   *     <MyTestedComponent />
+   *   </TestApiProvider>,
+   * );
+   *
+   * expect(alert.getAlerts()).toHaveLength(1);
+   * ```
+   */
+  export function alert(): MockAlertApi {
+    return new MockAlertApi();
+  }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#AlertApi}.
+   *
+   * @public
+   */
+  export namespace alert {
+    export const factory = simpleFactory(alertApiRef, alert);
+    export const mock = simpleMock(
+      alertApiRef,
+      (): jest.Mocked<AlertApi> => ({
+        post: jest.fn(),
+        alert$: jest.fn(),
+      }),
+    );
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#ErrorApi}.
+   * By default collects errors for inspection. Can be configured to throw on unexpected errors.
+   *
+   * @public
+   * @example
+   *
+   * ```tsx
+   * const error = mockApis.error({ collect: true });
+   *
+   * await renderInTestApp(
+   *   <TestApiProvider apis={[[errorApiRef, error]]}>
+   *     <MyTestedComponent />
+   *   </TestApiProvider>,
+   * );
+   *
+   * expect(error.getErrors()).toHaveLength(1);
+   * ```
+   */
+  export function error(options?: MockErrorApiOptions): MockErrorApi {
+    return new MockErrorApi(options);
+  }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#ErrorApi}.
+   *
+   * @public
+   */
+  export namespace error {
+    export const factory = simpleFactory(errorApiRef, error);
+    export const mock = simpleMock(
+      errorApiRef,
+      (): jest.Mocked<ErrorApi> => ({
+        post: jest.fn(),
+        error$: jest.fn(),
+      }),
+    );
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#FetchApi}.
+   * Wraps the native fetch API with optional auth injection and plugin protocol resolution.
+   *
+   * @public
+   * @example
+   *
+   * ```tsx
+   * const fetch = mockApis.fetch({ baseImplementation: 'none' });
+   *
+   * await renderInTestApp(
+   *   <TestApiProvider apis={[[fetchApiRef, fetch]]}>
+   *     <MyTestedComponent />
+   *   </TestApiProvider>,
+   * );
+   * ```
+   */
+  export function fetch(options?: MockFetchApiOptions): FetchApi {
+    return new MockFetchApi(options);
+  }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#FetchApi}.
+   *
+   * @public
+   */
+  export namespace fetch {
+    export const factory = simpleFactory(fetchApiRef, fetch);
+    export const mock = simpleMock(fetchApiRef, (): jest.Mocked<FetchApi> => ({
+      fetch: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#FeatureFlagsApi}.
+   * Stores feature flag state in memory and supports flag registration and querying.
+   *
+   * @public
+   * @example
+   *
+   * ```tsx
+   * const featureFlags = mockApis.featureFlags({
+   *   initialStates: { 'my-flag': FeatureFlagState.Active },
+   * });
+   *
+   * await renderInTestApp(
+   *   <TestApiProvider apis={[[featureFlagsApiRef, featureFlags]]}>
+   *     <MyTestedComponent />
+   *   </TestApiProvider>,
+   * );
+   *
+   * expect(featureFlags.isActive('my-flag')).toBe(true);
+   * ```
+   */
+  export function featureFlags(
+    options?: MockFeatureFlagsApiOptions,
+  ): MockFeatureFlagsApi {
+    return new MockFeatureFlagsApi(options);
+  }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#FeatureFlagsApi}.
+   *
+   * @public
+   */
+  export namespace featureFlags {
+    export const factory = simpleFactory(featureFlagsApiRef, featureFlags);
+    export const mock = simpleMock(
+      featureFlagsApiRef,
+      (): jest.Mocked<FeatureFlagsApi> => ({
+        registerFlag: jest.fn(),
+        getRegisteredFlags: jest.fn(),
+        isActive: jest.fn(),
+        save: jest.fn(),
+      }),
+    );
   }
 }

@@ -15,7 +15,6 @@
  */
 
 import {
-  MockErrorApi,
   TestApiProvider,
   renderInTestApp,
   mockApis,
@@ -38,7 +37,7 @@ describe('<UserSettingsMenu />', () => {
     const failingIdentityApi = mockApis.identity.mock({
       signOut: () => Promise.reject(new Error('Logout error')),
     });
-    const mockErrorApi = new MockErrorApi({ collect: true });
+    const mockErrorApi = mockApis.error({ collect: true });
     await renderInTestApp(
       <TestApiProvider
         apis={[

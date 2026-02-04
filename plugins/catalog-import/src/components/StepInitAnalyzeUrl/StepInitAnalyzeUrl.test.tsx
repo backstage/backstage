@@ -15,7 +15,7 @@
  */
 
 import { errorApiRef } from '@backstage/core-plugin-api';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider, mockApis } from '@backstage/test-utils';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ReactNode } from 'react';
@@ -28,10 +28,7 @@ describe('<StepInitAnalyzeUrl />', () => {
     submitPullRequest: jest.fn(),
   };
 
-  const errorApi: jest.Mocked<typeof errorApiRef.T> = {
-    post: jest.fn(),
-    error$: jest.fn(),
-  };
+  const errorApi = mockApis.error.mock();
 
   const Wrapper = ({ children }: { children?: ReactNode }) => (
     <TestApiProvider

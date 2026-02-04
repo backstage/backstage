@@ -20,7 +20,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { mockApis } from './mockApis';
 import { JsonValue } from '@backstage/types';
-import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { FeatureFlagState, StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 describe('mockApis', () => {
@@ -567,6 +567,101 @@ describe('mockApis', () => {
         value: 'v',
       });
       expect(notEmpty.snapshot).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('alert', () => {
+    it('can create an instance', () => {
+      const alert = mockApis.alert();
+      
+      alert.post({ message: 'Test alert' });
+      alert.post({ message: 'Error alert', severity: 'error' });
+      
+      const alerts = alert.getAlerts();
+      expect(alerts).toHaveLength(2);
+      expect(alerts[0]).toMatchObject({ message: 'Test alert' });
+      expect(alerts[1]).toMatchObject({ message: 'Error alert', severity: 'error' });
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const mock = mockApis.alert.mock({
+        post: alert => {
+          expect(alert.message).toBe('Test');
+        },
+      });
+      
+      mock.post({ message: 'Test' });
+      expect(mock.post).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('error', () => {
+    it('can create an instance', () => {
+      const error = mockApis.error({ collect: true });
+      
+      error.post(new Error('Test error'));
+      error.post(new Error('Hidden error'), { hidden: true });
+      
+      const errors = error.getErrors();
+      expect(errors).toHaveLength(2);
+      expect(errors[0].error.message).toBe('Test error');
+      expect(errors[1].context?.hidden).toBe(true);
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const mock = mockApis.error.mock();
+      
+      mock.post(new Error('Test'));
+      expect(mock.post).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('fetch', () => {
+    it('can create an instance', () => {
+      const fetch = mockApis.fetch({ baseImplementation: 'none' });
+      
+      expect(fetch.fetch).toBeDefined();
+      expect(typeof fetch.fetch).toBe('function');
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const mock = mockApis.fetch.mock({
+        fetch: jest.fn().mockResolvedValue(new Response()),
+      });
+      
+      mock.fetch('http://example.com');
+      expect(mock.fetch).toHaveBeenCalledTimes(1);
+      expect(mock.fetch).toHaveBeenCalledWith('http://example.com');
+    });
+  });
+
+  describe('featureFlags', () => {
+    it('can create an instance', () => {
+      const featureFlags = mockApis.featureFlags({
+        initialStates: {
+          'test-flag': FeatureFlagState.Active,
+        },
+      });
+      
+      expect(featureFlags.isActive('test-flag')).toBe(true);
+      expect(featureFlags.isActive('other-flag')).toBe(false);
+      
+      featureFlags.registerFlag({
+        name: 'new-flag',
+        pluginId: 'test',
+      });
+      
+      expect(featureFlags.getRegisteredFlags()).toHaveLength(1);
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const mock = mockApis.featureFlags.mock({
+        isActive: name => name === 'active-flag',
+      });
+      
+      expect(mock.isActive('active-flag')).toBe(true);
+      expect(mock.isActive('inactive-flag')).toBe(false);
+      expect(mock.isActive).toHaveBeenCalledTimes(2);
     });
   });
 

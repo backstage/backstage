@@ -111,9 +111,9 @@ const createWrapper =
             [identityApiRef, mockIdentityApi],
             [storageApiRef, mockApis.storage()],
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-            [alertApiRef, { post: jest.fn() }],
+            [alertApiRef, mockApis.alert()],
             [translationApiRef, mockApis.translation()],
-            [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+            [errorApiRef, mockApis.error()],
           ]}
         >
           <EntityListProvider pagination={options.pagination}>
@@ -1112,9 +1112,9 @@ describe('versioned context', () => {
                 [identityApiRef, mockIdentityApi],
                 [storageApiRef, mockApis.storage()],
                 [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-                [alertApiRef, { post: jest.fn() }],
+                [alertApiRef, mockApis.alert()],
                 [translationApiRef, mockApis.translation()],
-                [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+                [errorApiRef, mockApis.error()],
               ]}
             >
               <NewEntityListContext.Provider

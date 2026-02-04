@@ -15,7 +15,7 @@
  */
 
 import { ApiProvider } from '@backstage/core-app-api';
-import { AlertApi, alertApiRef, errorApiRef } from '@backstage/core-plugin-api';
+import { alertApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   mockApis,
@@ -42,9 +42,9 @@ const catalogApi = catalogApiMock.mock({
 });
 const apis = TestApiRegistry.from(
   [catalogApiRef, catalogApi],
-  [alertApiRef, {} as AlertApi],
+  [alertApiRef, mockApis.alert()],
   [translationApiRef, mockApis.translation()],
-  [errorApiRef, { post: jest.fn() }],
+  [errorApiRef, mockApis.error()],
 );
 
 describe('<SelectedKindsFilter/>', () => {

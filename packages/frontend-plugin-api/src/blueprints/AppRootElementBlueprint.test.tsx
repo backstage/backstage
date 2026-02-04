@@ -15,7 +15,7 @@
  */
 
 import { screen, waitFor } from '@testing-library/react';
-import { MockErrorApi, withLogCollector } from '@backstage/test-utils';
+import { mockApis, withLogCollector } from '@backstage/test-utils';
 import { errorApiRef } from '../apis';
 import {
   createExtensionTester,
@@ -56,7 +56,7 @@ describe('AppRootElementBlueprint', () => {
   });
 
   it('should post error to errorApi and not render children when error occurs', async () => {
-    const errorApi = new MockErrorApi({ collect: true });
+    const errorApi = mockApis.error({ collect: true });
     const errorMessage = 'Test error message';
     const ErrorComponent = () => {
       throw new Error(errorMessage);

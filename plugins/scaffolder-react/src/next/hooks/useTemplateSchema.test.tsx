@@ -15,9 +15,9 @@
  */
 import { useTemplateSchema } from './useTemplateSchema';
 import { renderHook } from '@testing-library/react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { PropsWithChildren } from 'react';
-import { featureFlagsApiRef } from '@backstage/core-plugin-api';
+import { featureFlagsApiRef, FeatureFlagState } from '@backstage/core-plugin-api';
 import { TemplateParameterSchema } from '../../types';
 
 describe('useTemplateSchema', () => {
@@ -52,7 +52,7 @@ describe('useTemplateSchema', () => {
     const { result } = renderHook(() => useTemplateSchema(manifest), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider
-          apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+          apis={[[featureFlagsApiRef, mockApis.featureFlags()]]}
         >
           {children}
         </TestApiProvider>
@@ -86,6 +86,7 @@ describe('useTemplateSchema', () => {
 
   describe('FeatureFlags', () => {
     it('should use featureFlags property to skip a step if the whole step is disabled', () => {
+      const featureFlags = mockApis.featureFlags();
       const manifest: TemplateParameterSchema = {
         title: 'Test Template',
         description: 'Test Template Description',
@@ -119,7 +120,7 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+            apis={[[featureFlagsApiRef, featureFlags]]}
           >
             {children}
           </TestApiProvider>
@@ -130,6 +131,9 @@ describe('useTemplateSchema', () => {
     });
 
     it('should use featureFlags property to enable a step if the whole step is enabled', () => {
+      const featureFlags = mockApis.featureFlags({
+        initialStates: { 'my-feature-flag': FeatureFlagState.Active },
+      });
       const manifest: TemplateParameterSchema = {
         title: 'Test Template',
         description: 'Test Template Description',
@@ -163,7 +167,7 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => true }]]}
+            apis={[[featureFlagsApiRef, featureFlags]]}
           >
             {children}
           </TestApiProvider>
@@ -214,7 +218,7 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+            apis={[[featureFlagsApiRef, mockApis.featureFlags()]]}
           >
             {children}
           </TestApiProvider>
@@ -252,7 +256,7 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+            apis={[[featureFlagsApiRef, mockApis.featureFlags()]]}
           >
             {children}
           </TestApiProvider>
@@ -356,7 +360,7 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+            apis={[[featureFlagsApiRef, mockApis.featureFlags()]]}
           >
             {children}
           </TestApiProvider>

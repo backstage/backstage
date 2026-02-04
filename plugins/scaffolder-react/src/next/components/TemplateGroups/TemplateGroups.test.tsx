@@ -24,7 +24,7 @@ jest.mock('../TemplateGroup/TemplateGroup', () => ({
 
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateGroups } from './TemplateGroups';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider, mockApis } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 
@@ -35,7 +35,7 @@ describe('TemplateGroups', () => {
     (useEntityList as jest.Mock).mockReturnValue({ loading: true });
 
     const { findByTestId } = await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
     );
@@ -48,16 +48,16 @@ describe('TemplateGroups', () => {
     (useEntityList as jest.Mock).mockReturnValue({
       error: mockError,
     });
-    const errorApi = {
-      post: jest.fn(),
-    };
+    const errorApi = mockApis.error({ collect: true });
     await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, errorApi]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
     );
 
-    expect(errorApi.post).toHaveBeenCalledWith(mockError);
+    const errors = errorApi.getErrors();
+    expect(errors).toHaveLength(1);
+    expect(errors[0].error).toBe(mockError);
   });
 
   it('should return a no templates message if entities is unset', async () => {
@@ -68,7 +68,7 @@ describe('TemplateGroups', () => {
     });
 
     const { findByText } = await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
     );
@@ -84,7 +84,7 @@ describe('TemplateGroups', () => {
     });
 
     const { findByText } = await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
         <TemplateGroups groups={[]} />
       </TestApiProvider>,
     );
@@ -119,7 +119,7 @@ describe('TemplateGroups', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
         <TemplateGroups groups={[{ title: 'all', filter: () => true }]} />
       </TestApiProvider>,
     );
@@ -161,7 +161,7 @@ describe('TemplateGroups', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
         <TemplateGroups
           groups={[{ title: 'all', filter: e => e.metadata.name === 't1' }]}
         />
@@ -203,7 +203,7 @@ describe('TemplateGroups', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[errorApiRef, {}]]}>
+      <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
         <TemplateGroups
           groups={[{ title: 'all', filter: _ => true }]}
           templateFilter={e => e.metadata.name === 't1'}

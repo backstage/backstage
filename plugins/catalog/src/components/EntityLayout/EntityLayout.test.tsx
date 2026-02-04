@@ -20,7 +20,7 @@ import {
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
-import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
 import {
   AsyncEntityProvider,
   catalogApiRef,
@@ -52,7 +52,7 @@ describe('EntityLayout', () => {
 
   const apis = TestApiRegistry.from(
     [catalogApiRef, catalogApiMock()],
-    [alertApiRef, {} as AlertApi],
+    [alertApiRef, mockApis.alert()],
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
     [permissionApiRef, mockApis.permission()],
   );
@@ -342,14 +342,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     }),
   });
 
-  const alertApi: AlertApi = {
-    post() {
-      return undefined;
-    },
-    alert$() {
-      throw new Error('not implemented');
-    },
-  };
+  const alertApi = mockApis.alert();
 
   it('redirects to externalRouteRef when unregisterRedirectRouteRef is bound', async () => {
     await renderInTestApp(

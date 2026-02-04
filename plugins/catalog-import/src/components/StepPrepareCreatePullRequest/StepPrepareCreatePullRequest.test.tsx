@@ -41,12 +41,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
   };
 
   const catalogApi = catalogApiMock.mock();
-
-  const errorApi: jest.Mocked<typeof errorApiRef.T> = {
-    error$: jest.fn(),
-    post: jest.fn(),
-  };
-
+  const errorApi = mockApis.error.mock();
   const configApi = mockApis.config();
 
   const Wrapper = ({ children }: { children?: ReactNode }) => (

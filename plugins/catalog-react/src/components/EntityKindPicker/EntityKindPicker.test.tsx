@@ -18,7 +18,7 @@ import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import { alertApiRef } from '@backstage/core-plugin-api';
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry, mockApis } from '@backstage/test-utils';
 import { fireEvent, waitFor, screen, within } from '@testing-library/react';
 import { capitalize } from 'lodash';
 import { catalogApiRef } from '../../api';
@@ -65,12 +65,7 @@ describe('<EntityKindPicker/>', () => {
         } as GetEntityFacetsResponse),
       },
     ],
-    [
-      alertApiRef,
-      {
-        post: jest.fn(),
-      },
-    ],
+    [alertApiRef, mockApis.alert()],
   );
 
   it('renders available entity kinds', async () => {

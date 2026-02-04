@@ -15,7 +15,7 @@
  */
 import { render, screen } from '@testing-library/react';
 import { columnFactories } from './columns';
-import { mockApis, MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 
@@ -26,7 +26,7 @@ describe('columns', () => {
     render(
       <TestApiProvider
         apis={[
-          [errorApiRef, new MockErrorApi()],
+          [errorApiRef, mockApis.error()],
           [translationApiRef, mockApis.translation()],
         ]}
       >

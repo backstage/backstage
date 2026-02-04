@@ -23,7 +23,7 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('ErrorList', () => {
   const translationApi = mockApis.translation();
-  const errorApi = { post: jest.fn(), error$: jest.fn() };
+  const errorApi = mockApis.error();
 
   it('error highlight should render', () => {
     const { getByText } = render(

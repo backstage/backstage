@@ -28,7 +28,6 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import {
-  ErrorApi,
   errorApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
@@ -53,10 +52,7 @@ describe('<MyGroupsPicker />', () => {
     getEntities: jest.fn(async () => ({ items: entities })),
   });
 
-  const mockErrorApi: jest.Mocked<ErrorApi> = {
-    post: jest.fn(),
-    error$: jest.fn(),
-  };
+  const mockErrorApi = mockApis.error.mock();
 
   beforeEach(() => {
     entities = [

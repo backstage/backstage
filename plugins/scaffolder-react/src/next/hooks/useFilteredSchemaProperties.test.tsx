@@ -17,16 +17,14 @@
 import { renderHook } from '@testing-library/react';
 import { useFilteredSchemaProperties } from './useFilteredSchemaProperties';
 import { TemplateParameterSchema } from '../../types';
-import { TestApiProvider } from '@backstage/test-utils';
-import { featureFlagsApiRef } from '@backstage/core-plugin-api';
-
-const mockFeatureFlagApi = {
-  isActive: jest.fn(),
-};
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
+import { featureFlagsApiRef, FeatureFlagState } from '@backstage/core-plugin-api';
 
 describe('useFilteredSchemaProperties', () => {
   it('should return the same manifest if no feature flag is set', () => {
-    mockFeatureFlagApi.isActive.mockReturnValue(true);
+    const featureFlags = mockApis.featureFlags({
+      initialStates: { 'experimental-feature': FeatureFlagState.Active },
+    });
 
     const manifest: TemplateParameterSchema = {
       title: 'Test Action template',
@@ -67,7 +65,7 @@ describe('useFilteredSchemaProperties', () => {
       () => useFilteredSchemaProperties(manifest),
       {
         wrapper: ({ children }) => (
-          <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagApi]]}>
+          <TestApiProvider apis={[[featureFlagsApiRef, featureFlags]]}>
             {children}
           </TestApiProvider>
         ),
@@ -78,7 +76,7 @@ describe('useFilteredSchemaProperties', () => {
   });
 
   it('should hide individual fields from steps of template', () => {
-    mockFeatureFlagApi.isActive.mockReturnValue(false);
+    const featureFlags = mockApis.featureFlags();
 
     const manifest: TemplateParameterSchema = {
       title: 'Test Action template',
@@ -119,7 +117,7 @@ describe('useFilteredSchemaProperties', () => {
       () => useFilteredSchemaProperties(manifest),
       {
         wrapper: ({ children }) => (
-          <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagApi]]}>
+          <TestApiProvider apis={[[featureFlagsApiRef, featureFlags]]}>
             {children}
           </TestApiProvider>
         ),
@@ -158,7 +156,7 @@ describe('useFilteredSchemaProperties', () => {
   });
 
   it('should hide "Fill in some steps" from steps of template', () => {
-    mockFeatureFlagApi.isActive.mockReturnValue(false);
+    const featureFlags = mockApis.featureFlags();
 
     const manifest: TemplateParameterSchema = {
       title: 'Test Action template',
@@ -199,7 +197,7 @@ describe('useFilteredSchemaProperties', () => {
       () => useFilteredSchemaProperties(manifest),
       {
         wrapper: ({ children }) => (
-          <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagApi]]}>
+          <TestApiProvider apis={[[featureFlagsApiRef, featureFlags]]}>
             {children}
           </TestApiProvider>
         ),

@@ -24,7 +24,7 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 describe('EventsContent', () => {
   const oneHourAgo = DateTime.now().minus({ hours: 1 }).toISO();
   const translationApi = mockApis.translation();
-  const errorApi = { post: jest.fn(), error$: jest.fn() };
+  const errorApi = mockApis.error();
 
   it('should show info events', () => {
     const { getByText } = render(

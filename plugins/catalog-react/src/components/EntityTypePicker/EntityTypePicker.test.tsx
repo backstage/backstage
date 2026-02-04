@@ -22,7 +22,7 @@ import { catalogApiRef } from '../../api';
 import { EntityKindFilter, EntityTypeFilter } from '../../filters';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry, mockApis } from '@backstage/test-utils';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 
 const entities: Entity[] = [
@@ -72,12 +72,7 @@ const apis = TestApiRegistry.from(
       } as GetEntityFacetsResponse),
     },
   ],
-  [
-    alertApiRef,
-    {
-      post: jest.fn(),
-    },
-  ],
+  [alertApiRef, mockApis.alert()],
 );
 
 describe('<EntityTypePicker/>', () => {

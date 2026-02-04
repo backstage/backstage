@@ -24,23 +24,12 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { catalogApiRef } from '../../api';
 import { entityRouteRef } from '../../routes';
 import { screen, waitFor } from '@testing-library/react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider, mockApis } from '@backstage/test-utils';
 import * as state from './useUnregisterEntityDialogState';
-import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
 
 describe('UnregisterEntityDialog', () => {
-  const alertApi: AlertApi = {
-    post() {
-      return undefined;
-    },
-    alert$() {
-      throw new Error('not implemented');
-    },
-  };
-
-  beforeEach(() => {
-    jest.spyOn(alertApi, 'post').mockImplementation(() => {});
-  });
+  const alertApi = mockApis.alert();
 
   const entity = {
     apiVersion: 'backstage.io/v1alpha1',

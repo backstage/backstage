@@ -24,7 +24,7 @@ import {
 import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
-  MockErrorApi,
+  mockApis,
   renderWithEffects,
   TestApiRegistry,
 } from '@backstage/test-utils';
@@ -62,7 +62,6 @@ const entities: Entity[] = [
     },
   },
 ];
-const errorApi = new MockErrorApi();
 const apis = TestApiRegistry.from(
   [
     catalogApiRef,
@@ -78,7 +77,7 @@ const apis = TestApiRegistry.from(
       } as GetEntityFacetsResponse),
     },
   ],
-  [errorApiRef, errorApi],
+  [errorApiRef, mockApis.error()],
 );
 
 describe('<CatalogKindHeader />', () => {

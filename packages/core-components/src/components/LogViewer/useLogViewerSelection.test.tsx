@@ -16,7 +16,7 @@
 
 import { PropsWithChildren } from 'react';
 import { act, renderHook } from '@testing-library/react';
-import { MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { AnsiLine } from './AnsiProcessor';
 import { useLogViewerSelection } from './useLogViewerSelection';
@@ -57,7 +57,7 @@ describe('useLogViewerSelection', () => {
   it('should select a new line when clicked', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -75,7 +75,7 @@ describe('useLogViewerSelection', () => {
   it('should deselect a selected line when clicked', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -91,7 +91,7 @@ describe('useLogViewerSelection', () => {
   it('should select a new line on shift+click if nothing is selected', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -105,7 +105,7 @@ describe('useLogViewerSelection', () => {
   it('should deselect a single line on shift+click', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -121,7 +121,7 @@ describe('useLogViewerSelection', () => {
   it('should select a range below on shift+click', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -137,7 +137,7 @@ describe('useLogViewerSelection', () => {
   it('should select a range above on shift+click', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -153,7 +153,7 @@ describe('useLogViewerSelection', () => {
   it('should reduce a selection on shift+click', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -173,7 +173,7 @@ describe('useLogViewerSelection', () => {
   it('should add a new selection on cmd/ctrl+click', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -189,7 +189,7 @@ describe('useLogViewerSelection', () => {
   it('should merge selections on cmd/ctrl+click', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -211,7 +211,7 @@ describe('useLogViewerSelection', () => {
   it('should split a selection on cmd/ctrl+click', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -229,7 +229,7 @@ describe('useLogViewerSelection', () => {
   it('should copy a selected line', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -247,7 +247,7 @@ describe('useLogViewerSelection', () => {
   it('should copy a selected range', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -268,7 +268,7 @@ describe('useLogViewerSelection', () => {
   it('should copy the correct selection', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -294,7 +294,7 @@ describe('useLogViewerSelection', () => {
   it('should add a single line selection to the hash', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -311,7 +311,7 @@ describe('useLogViewerSelection', () => {
   it('should add a range selection to the hash', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),
@@ -330,7 +330,7 @@ describe('useLogViewerSelection', () => {
   it('should add multiple selections to the hash', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
+        <TestApiProvider apis={[[errorApiRef, mockApis.error()]]}>
           {children}
         </TestApiProvider>
       ),

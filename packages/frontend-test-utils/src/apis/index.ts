@@ -15,12 +15,15 @@
  */
 
 export {
+  MockAlertApi,
   MockConfigApi,
   type ErrorWithContext,
   MockErrorApi,
   type MockErrorApiOptions,
   MockFetchApi,
   type MockFetchApiOptions,
+  MockFeatureFlagsApi,
+  type MockFeatureFlagsApiOptions,
   MockPermissionApi,
   MockStorageApi,
   type MockStorageBucket,
