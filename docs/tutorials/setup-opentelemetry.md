@@ -184,6 +184,8 @@ The following metrics are available:
 - `scaffolder.step.duration`: Duration of a step runs
 - `backend_tasks.task.runs.count`: Total number of times a task has been run
 - `backend_tasks.task.runs.duration`: Histogram of task run durations
+- (alpha) `mcp.server.operation.duration`: The duration taken to process an individual MCP operation
+- (alpha) `mcp.server.session.duration`: The duration of the MCP session from the perspective of the server
 
 ## References
 
