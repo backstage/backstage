@@ -111,6 +111,12 @@ export type ToastApi = {
    * Observe toasts posted by other parts of the application.
    */
   toast$(): Observable<ToastMessageWithKey>;
+
+  /**
+   * Observe close events for programmatic toast dismissal.
+   * Emits the key of the toast that should be closed.
+   */
+  close$(): Observable<string>;
 };
 
 /**

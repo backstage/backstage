@@ -17,7 +17,6 @@
 import { useEffect, useRef } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
-import { ToastApiForwarder } from '../../apis';
 import { ToastContainer } from './ToastContainer';
 import { toastQueue } from './ToastQueue';
 import type { ToastDisplayProps, ToastContent } from './types';
@@ -103,15 +102,9 @@ export function ToastDisplay(props: ToastDisplayProps) {
     return () => subscription.unsubscribe();
   }, [toastApi]);
 
-  // Subscribe to ToastApi close events
+  // Subscribe to ToastApi close events for programmatic dismissal
   useEffect(() => {
-    // The ToastApiForwarder exposes a close$() method for programmatic close
-    const forwarder = toastApi as ToastApiForwarder;
-    if (!forwarder.close$) {
-      return undefined;
-    }
-
-    const subscription = forwarder.close$().subscribe(apiKey => {
+    const subscription = toastApi.close$().subscribe(apiKey => {
       const queueKey = toastKeyMap.current.get(apiKey);
       if (queueKey) {
         toastQueue.close(queueKey);
