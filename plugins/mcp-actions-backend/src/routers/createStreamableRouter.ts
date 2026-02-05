@@ -18,6 +18,7 @@ import { Router } from 'express';
 import { performance } from 'node:perf_hooks';
 import { McpService } from '../services/McpService';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { LATEST_PROTOCOL_VERSION } from '@modelcontextprotocol/sdk/types.js';
 import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { isError } from '@backstage/errors';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
@@ -71,7 +72,7 @@ export const createStreamableRouter = ({
         const durationSeconds = (performance.now() - sessionStart) / 1000;
 
         sessionDuration.record(durationSeconds, {
-          'mcp.protocol.version': '2025-06-18',
+          'mcp.protocol.version': LATEST_PROTOCOL_VERSION,
           'network.transport': 'tcp',
           'network.protocol.name': 'http',
         });
