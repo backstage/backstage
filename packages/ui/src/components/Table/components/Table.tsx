@@ -176,6 +176,7 @@ export function Table<T extends TableItem>({
           </TableHeader>
           <TableBody
             items={data}
+            dependencies={[visibleColumns]}
             renderEmptyState={
               emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
             }

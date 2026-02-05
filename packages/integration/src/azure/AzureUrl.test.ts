@@ -270,4 +270,53 @@ describe('AzureUrl', () => {
       ),
     ).toThrow('Azure URL must point to a git repository');
   });
+
+  it('should work with the old visualstudio long URL', () => {
+    const url = AzureUrl.fromRepoUrl(
+      'https://my-org.visualstudio.com/my-project/_git/my-repo',
+    );
+
+    expect(url.getOwner()).toBe('my-org');
+    expect(url.getProject()).toBe('my-project');
+    expect(url.getRepo()).toBe('my-repo');
+    expect(url.getRef()).toBeUndefined();
+    expect(url.getPath()).toBeUndefined();
+  });
+
+  it('should work with the old visualstudio long URL form with a path', () => {
+    const url = AzureUrl.fromRepoUrl(
+      'https://my-org.visualstudio.com/my-project/_git/my-repo?path=%2Ftest.yaml',
+    );
+
+    expect(url.getOwner()).toBe('my-org');
+    expect(url.getProject()).toBe('my-project');
+    expect(url.getRepo()).toBe('my-repo');
+    expect(url.getRef()).toBeUndefined();
+    expect(url.getPath()).toBe('/test.yaml');
+
+    expect(url.toRepoUrl()).toBe(
+      'https://my-org.visualstudio.com/my-project/_git/my-repo?path=%2Ftest.yaml',
+    );
+    expect(url.toFileUrl()).toBe(
+      'https://my-org.visualstudio.com/my-project/_apis/git/repositories/my-repo/items?api-version=6.0&path=%2Ftest.yaml',
+    );
+    expect(url.toArchiveUrl()).toBe(
+      'https://my-org.visualstudio.com/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ftest.yaml',
+    );
+    expect(url.toCommitsUrl()).toBe(
+      'https://my-org.visualstudio.com/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0',
+    );
+  });
+
+  it('should work with the old visualstudio long URL form with a path and ref', () => {
+    const url = AzureUrl.fromRepoUrl(
+      'https://my-org.visualstudio.com/my-project/_git/my-repo?path=%2Ffolder&version=GBtest-branch',
+    );
+
+    expect(url.getOwner()).toBe('my-org');
+    expect(url.getProject()).toBe('my-project');
+    expect(url.getRepo()).toBe('my-repo');
+    expect(url.getRef()).toBe('test-branch');
+    expect(url.getPath()).toBe('/folder');
+  });
 });

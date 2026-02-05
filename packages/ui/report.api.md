@@ -1396,6 +1396,34 @@ export interface PaginationOptions
   initialOffset?: number;
 }
 
+// @public (undocumented)
+export const PasswordField: ForwardRefExoticComponent<
+  PasswordFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const PasswordFieldDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-PasswordField';
+    readonly inputWrapper: 'bui-PasswordFieldInputWrapper';
+    readonly input: 'bui-PasswordFieldInput';
+    readonly inputIcon: 'bui-PasswordFieldIcon';
+    readonly inputVisibility: 'bui-PasswordFieldVisibility';
+  };
+  readonly dataAttributes: {
+    readonly size: readonly ['small', 'medium'];
+  };
+};
+
+// @public (undocumented)
+export interface PasswordFieldProps
+  extends TextFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+  icon?: ReactNode;
+  placeholder?: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
+
 // @public
 export const Popover: ForwardRefExoticComponent<
   PopoverProps & RefAttributes<HTMLDivElement>
@@ -2093,21 +2121,25 @@ export function useTable<T extends TableItem, TFilter = unknown>(
 ): UseTableResult<T, TFilter>;
 
 // @public (undocumented)
-export interface UseTableCompleteOptions<T extends TableItem, TFilter = unknown>
-  extends QueryOptions<TFilter> {
-  // (undocumented)
-  filterFn?: (data: T[], filter: TFilter) => T[];
-  // (undocumented)
-  getData: () => T[] | Promise<T[]>;
-  // (undocumented)
+export type UseTableCompleteOptions<
+  T extends TableItem,
+  TFilter = unknown,
+> = QueryOptions<TFilter> & {
   mode: 'complete';
-  // (undocumented)
   paginationOptions?: PaginationOptions;
-  // (undocumented)
-  searchFn?: (data: T[], search: string) => T[];
-  // (undocumented)
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
-}
+  filterFn?: (data: T[], filter: TFilter) => T[];
+  searchFn?: (data: T[], search: string) => T[];
+} & (
+    | {
+        data: T[] | undefined;
+        getData?: never;
+      }
+    | {
+        data?: never;
+        getData: () => T[] | Promise<T[]>;
+      }
+  );
 
 // @public (undocumented)
 export interface UseTableCursorOptions<T extends TableItem, TFilter = unknown>

@@ -502,7 +502,7 @@ const config: Config = {
             },
             {
               label: 'Subscribe to our newsletter',
-              to: 'https://info.backstage.spotify.com/newsletter_subscribe',
+              to: 'https://spoti.fi/backstagenewsletter',
             },
             {
               label: 'CNCF Incubation',

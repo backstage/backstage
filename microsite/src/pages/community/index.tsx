@@ -36,7 +36,7 @@ const Community = () => {
     {
       content: 'Subscribe to the',
       label: 'Community Newsletter',
-      link: 'https://info.backstage.spotify.com/newsletter_subscribe',
+      link: 'https://spoti.fi/backstagenewsletter',
     },
   ];
 
@@ -52,7 +52,7 @@ const Community = () => {
       title: 'Newsletter',
       content:
         "The official monthly Backstage newsletter. Don't miss the latest news from your favorite project!",
-      link: 'https://info.backstage.spotify.com/newsletter_subscribe',
+      link: 'https://spoti.fi/backstagenewsletter',
       label: 'Subscribe',
     },
   ];
