@@ -528,6 +528,7 @@ transpilers
 trixie
 truthy
 tsconfig
+TTLs
 Turbopack
 TSDoc
 typeahead
