@@ -47,6 +47,8 @@ export namespace actionsServiceMock {
 // @alpha (undocumented)
 export namespace metricsServiceMock {
   const // (undocumented)
+    factory: () => ServiceFactory<MetricsService, 'plugin', 'singleton'>;
+  const // (undocumented)
     mock: (
       partialImpl?: Partial<MetricsService> | undefined,
     ) => ServiceMock<MetricsService>;
