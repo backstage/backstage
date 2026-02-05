@@ -17,7 +17,7 @@ Plugins should export a rule factory that provides type-safety that ensures comp
 We use `zod` and `@backstage/catalog-model` in our example below. To install them run:
 
 ```bash title="from your Backstage root directory"
-yarn --cwd packages/backend add zod @backstage/catalog-model
+yarn --cwd packages/backend add zod@3 @backstage/catalog-model
 ```
 
 ```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
