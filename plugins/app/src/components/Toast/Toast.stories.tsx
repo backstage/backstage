@@ -35,10 +35,12 @@ const randomToasts = [
   { title: 'Error', status: 'danger' as const },
   { title: 'New notification', status: 'info' as const },
   { title: 'Warning', status: 'warning' as const },
+  { title: 'Task completed', status: 'neutral' as const },
   // Title only - medium
   { title: 'Changes saved successfully', status: 'success' as const },
   { title: 'Connection restored', status: 'info' as const },
   { title: 'Action could not be completed', status: 'danger' as const },
+  { title: 'Background sync in progress', status: 'neutral' as const },
   // Title + short description
   {
     title: 'Files uploaded',
@@ -60,6 +62,11 @@ const randomToasts = [
     description: '90% used.',
     status: 'warning' as const,
   },
+  {
+    title: 'Clipboard updated',
+    description: 'Text copied.',
+    status: 'neutral' as const,
+  },
   // Title + medium description
   {
     title: 'Deployment complete',
@@ -77,6 +84,11 @@ const randomToasts = [
     title: 'Permission denied',
     description: 'You do not have access to perform this action.',
     status: 'danger' as const,
+  },
+  {
+    title: 'Preferences updated',
+    description: 'Your display settings have been saved to your profile.',
+    status: 'neutral' as const,
   },
   // Title + long description
   {
@@ -105,6 +117,10 @@ const randomToasts = [
   {
     title: 'Multiple users are currently editing this document',
     status: 'info' as const,
+  },
+  {
+    title: 'Your workspace has been switched to the new project',
+    status: 'neutral' as const,
   },
 ];
 
@@ -140,6 +156,17 @@ export const StatusVariants = meta.story({
     <>
       <ToastContainer queue={toastQueue} />
       <Flex gap="3">
+        <Button
+          onPress={() =>
+            toastQueue.add({
+              title: 'Neutral message',
+              description: 'A simple notification without emphasis.',
+              status: 'neutral',
+            })
+          }
+        >
+          Neutral Toast
+        </Button>
         <Button
           onPress={() =>
             toastQueue.add({
@@ -219,7 +246,7 @@ export const WithoutDescription = meta.story({
   ),
 });
 
-export const WithoutIcons = meta.story({
+export const NeutralStatus = meta.story({
   render: () => (
     <>
       <ToastContainer queue={toastQueue} />
@@ -227,24 +254,23 @@ export const WithoutIcons = meta.story({
         <Button
           onPress={() =>
             toastQueue.add({
-              title: 'Toast without icon',
-              description: 'This toast has no icon displayed.',
-              icon: false,
+              title: 'Neutral toast',
+              description: 'This toast has no icon and uses the primary color.',
+              status: 'neutral',
             })
           }
         >
-          No Icon
+          Neutral
         </Button>
         <Button
           onPress={() =>
             toastQueue.add({
-              title: 'Success without icon',
-              status: 'success',
-              icon: false,
+              title: 'Simple neutral message',
+              status: 'neutral',
             })
           }
         >
-          Success No Icon
+          Neutral Simple
         </Button>
       </Flex>
     </>
@@ -426,9 +452,9 @@ export const QueueManagement = meta.story({
                 toastQueue.add({
                   title: `Toast #${i}`,
                   description: `This is toast number ${i}.`,
-                  status: ['info', 'success', 'warning', 'danger'][
-                    (i - 1) % 4
-                  ] as 'info' | 'success' | 'warning' | 'danger',
+                  status: ['neutral', 'info', 'success', 'warning', 'danger'][
+                    (i - 1) % 5
+                  ] as 'neutral' | 'info' | 'success' | 'warning' | 'danger',
                 });
               }, i * 200);
             }
@@ -463,8 +489,21 @@ export const AlertApiIntegration = meta.story({
             <Text variant="body-small">info → info (blue)</Text>
             <Text variant="body-small">warning → warning (orange)</Text>
             <Text variant="body-small">error → danger (red)</Text>
+            <Text variant="body-small">
+              (ToastApi also supports neutral - no icon, primary color)
+            </Text>
           </Flex>
           <Flex gap="3">
+            <Button
+              onPress={() =>
+                toastQueue.add({
+                  title: 'Workspace switched',
+                  status: 'neutral',
+                })
+              }
+            >
+              Neutral Toast
+            </Button>
             <Button
               onPress={() =>
                 toastQueue.add({

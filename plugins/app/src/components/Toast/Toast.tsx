@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  forwardRef,
-  Ref,
-  isValidElement,
-  ReactElement,
-  useRef,
-  useLayoutEffect,
-  useState,
-} from 'react';
+import { forwardRef, Ref, useRef, useLayoutEffect, useState } from 'react';
 import { useToast } from '@react-aria/toast';
 import { useButton } from '@react-aria/button';
 import { motion } from 'motion/react';
@@ -44,8 +36,8 @@ const manuallyClosingToasts = new Set<string>();
  *
  * @remarks
  * The Toast component is used internally by ToastContainer and managed by a ToastQueue.
- * It supports multiple status variants (info, success, warning, danger) and can display
- * a title, description, and optional icon. Toasts can be dismissed manually or automatically.
+ * It supports multiple status variants (neutral, info, success, warning, danger) and can display
+ * a title and description. Toasts can be dismissed manually or automatically.
  *
  * @internal
  */
@@ -58,7 +50,6 @@ export const Toast = forwardRef(
       isExpanded = false,
       onClose,
       status,
-      icon,
       expandedY: expandedYProp = 0,
       collapsedHeight,
       naturalHeight,
@@ -134,37 +125,23 @@ export const Toast = forwardRef(
     // Get content from toast
     const content = toast.content;
     const finalStatus = status || content.status || 'info';
-    const finalIcon = icon !== undefined ? icon : content.icon;
 
-    // Determine which icon to render
-    const getStatusIcon = (): ReactElement | null => {
-      // If icon is explicitly false, don't render any icon
-      if (finalIcon === false) {
-        return null;
+    // Determine which icon to render based on status
+    const getStatusIcon = () => {
+      switch (finalStatus) {
+        case 'neutral':
+          // Neutral status has no icon
+          return null;
+        case 'success':
+          return <RiCheckLine aria-hidden="true" />;
+        case 'warning':
+          return <RiErrorWarningLine aria-hidden="true" />;
+        case 'danger':
+          return <RiAlertLine aria-hidden="true" />;
+        case 'info':
+        default:
+          return <RiInformationLine aria-hidden="true" />;
       }
-
-      // If icon is a custom React element, use it
-      if (isValidElement(finalIcon)) {
-        return finalIcon;
-      }
-
-      // If icon is true or undefined (default to true for toasts), auto-select based on status
-      if (finalIcon === true || finalIcon === undefined) {
-        switch (finalStatus) {
-          case 'success':
-            return <RiCheckLine aria-hidden="true" />;
-          case 'warning':
-            return <RiErrorWarningLine aria-hidden="true" />;
-          case 'danger':
-            return <RiAlertLine aria-hidden="true" />;
-          case 'info':
-          default:
-            return <RiInformationLine aria-hidden="true" />;
-        }
-      }
-
-      // Default: no icon
-      return null;
     };
 
     const statusIcon = getStatusIcon();

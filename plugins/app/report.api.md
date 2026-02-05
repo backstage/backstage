@@ -19,7 +19,6 @@ import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { NavContentComponent } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import type { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SignInPageProps } from '@backstage/plugin-app-react';
@@ -1024,9 +1023,8 @@ export default appPlugin;
 // @public
 export interface ToastContent {
   description?: ReactNode;
-  icon?: boolean | ReactElement;
   links?: ToastLink[];
-  status?: 'info' | 'success' | 'warning' | 'danger';
+  status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
   title: ReactNode;
 }
 

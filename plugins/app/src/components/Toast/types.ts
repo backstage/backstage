@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { ToastQueue, ToastState, QueuedToast } from 'react-stately';
 
 /**
@@ -38,9 +38,7 @@ export interface ToastContent {
   /** Optional description text */
   description?: ReactNode;
   /** Status variant of the toast */
-  status?: 'info' | 'success' | 'warning' | 'danger';
-  /** Whether to show an icon */
-  icon?: boolean | ReactElement;
+  status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
   /** Optional array of links to display */
   links?: ToastLink[];
 }
@@ -61,9 +59,7 @@ export interface ToastProps {
   /** Callback when toast is closed */
   onClose?: () => void;
   /** Override status from content */
-  status?: 'info' | 'success' | 'warning' | 'danger';
-  /** Override icon from content */
-  icon?: boolean | ReactElement;
+  status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
   /** Pre-calculated Y position when expanded (based on heights of toasts below) */
   expandedY?: number;
   /** Height to use when collapsed (front toast's height, for uniform stacking) */

@@ -16,7 +16,7 @@
 
 import { createApiRef, ApiRef } from '../system';
 import { Observable } from '@backstage/types';
-import { ReactNode, ReactElement } from 'react';
+import { ReactNode } from 'react';
 
 /**
  * Link item for toast notifications.
@@ -41,9 +41,7 @@ export type ToastMessage = {
   /** Optional description text */
   description?: ReactNode;
   /** Status variant of the toast - defaults to 'success' */
-  status?: 'info' | 'success' | 'warning' | 'danger';
-  /** Whether to show an icon, or a custom icon element */
-  icon?: boolean | ReactElement;
+  status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
   /** Optional array of links to display */
   links?: ToastLink[];
   /** Timeout in milliseconds before auto-dismiss. If not set, toast is permanent. */
@@ -65,7 +63,7 @@ export type ToastMessageWithKey = ToastMessage & {
  *
  * @remarks
  * This API provides richer notification capabilities than the AlertApi,
- * including title/description, custom icons, links, and per-toast timeout control.
+ * including title/description, links, and per-toast timeout control.
  *
  * @example
  * ```tsx
