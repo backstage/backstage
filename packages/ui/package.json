@@ -47,13 +47,10 @@
   },
   "dependencies": {
     "@backstage/version-bridge": "workspace:^",
-    "@react-aria/toast": "^3.0.9",
     "@remixicon/react": "^4.6.0",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
-    "motion": "^12.0.0",
-    "react-aria-components": "^1.14.0",
-    "react-stately": "^3.35.0"
+    "react-aria-components": "^1.14.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

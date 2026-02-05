@@ -15,4 +15,3 @@
  */
 
 export * from './useDefinition';
-export * from './useInvertedThemeMode';
