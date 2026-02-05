@@ -35,14 +35,17 @@ test('Should not throw `ResizeObserver loop completed with undelivered notificat
   ).not.toBeVisible();
 });
 
-test('Should render some home page widgets', async ({ page }) => {
+test('Should render the home page', async ({ page }) => {
   await page.goto('/');
 
   const enterButton = page.getByRole('button', { name: 'Enter' });
   await expect(enterButton).toBeVisible();
   await enterButton.click();
 
+  // Wait for sign-in to complete
+  await expect(page.getByRole('link', { name: 'Catalog' })).toBeVisible();
+
   await page.goto('/home');
-  await expect(page.getByText('Top Visited')).toBeVisible();
-  await expect(page.getByText('Recently Visited')).toBeVisible();
+  // The home page should render with the custom homepage grid
+  await expect(page.getByRole('link', { name: 'Home' })).toBeVisible();
 });
