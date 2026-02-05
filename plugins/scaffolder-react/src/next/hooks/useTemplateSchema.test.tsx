@@ -16,6 +16,7 @@
 import { useTemplateSchema } from './useTemplateSchema';
 import { renderHook } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { PropsWithChildren } from 'react';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { TemplateParameterSchema } from '../../types';
@@ -49,11 +50,13 @@ describe('useTemplateSchema', () => {
       ],
     };
 
+    const mockFeatureFlagsApi = mockApis.featureFlags.mock({
+      isActive: jest.fn(() => false),
+    });
+
     const { result } = renderHook(() => useTemplateSchema(manifest), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[[featureFlagsApiRef, { isActive: () => false }]]}
-        >
+        <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
           {children}
         </TestApiProvider>
       ),
@@ -119,7 +122,12 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+            apis={[
+              [
+                featureFlagsApiRef,
+                mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+              ],
+            ]}
           >
             {children}
           </TestApiProvider>
@@ -163,7 +171,12 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => true }]]}
+            apis={[
+              [
+                featureFlagsApiRef,
+                mockApis.featureFlags.mock({ isActive: jest.fn(() => true) }),
+              ],
+            ]}
           >
             {children}
           </TestApiProvider>
@@ -214,7 +227,12 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+            apis={[
+              [
+                featureFlagsApiRef,
+                mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+              ],
+            ]}
           >
             {children}
           </TestApiProvider>
@@ -252,7 +270,12 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+            apis={[
+              [
+                featureFlagsApiRef,
+                mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+              ],
+            ]}
           >
             {children}
           </TestApiProvider>
@@ -356,7 +379,12 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+            apis={[
+              [
+                featureFlagsApiRef,
+                mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+              ],
+            ]}
           >
             {children}
           </TestApiProvider>

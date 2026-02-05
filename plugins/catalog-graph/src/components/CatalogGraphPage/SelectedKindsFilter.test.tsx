@@ -15,13 +15,10 @@
  */
 
 import { ApiProvider } from '@backstage/core-app-api';
-import { AlertApi, alertApiRef, errorApiRef } from '@backstage/core-plugin-api';
+import { alertApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import {
-  mockApis,
-  renderWithEffects,
-  TestApiRegistry,
-} from '@backstage/test-utils';
+import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SelectedKindsFilter } from './SelectedKindsFilter';
@@ -42,7 +39,7 @@ const catalogApi = catalogApiMock.mock({
 });
 const apis = TestApiRegistry.from(
   [catalogApiRef, catalogApi],
-  [alertApiRef, {} as AlertApi],
+  [alertApiRef, mockApis.alert()],
   [translationApiRef, mockApis.translation()],
   [errorApiRef, { post: jest.fn() }],
 );

@@ -32,11 +32,11 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  mockApis,
   renderInTestApp,
   TestApiProvider,
   TestApiRegistry,
 } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { EntityLayout } from './EntityLayout';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
@@ -52,7 +52,7 @@ describe('EntityLayout', () => {
 
   const apis = TestApiRegistry.from(
     [catalogApiRef, catalogApiMock()],
-    [alertApiRef, {} as AlertApi],
+    [alertApiRef, mockApis.alert()],
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
     [permissionApiRef, mockApis.permission()],
   );
