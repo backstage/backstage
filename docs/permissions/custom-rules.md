@@ -99,7 +99,11 @@ export const isInSystemRule = createPermissionRule({
     values: [systemRef],
   }),
 });
+```
 
+You can now use the rules above in your policy:
+
+```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
 const isInSystem = createConditionFactory(isInSystemRule);
 
 class CustomPermissionPolicy implements PermissionPolicy {
@@ -131,8 +135,6 @@ class CustomPermissionPolicy implements PermissionPolicy {
     return { result: AuthorizeResult.ALLOW };
   }
 }
-
-...
 ```
 
 ## Provide the rule during plugin setup
