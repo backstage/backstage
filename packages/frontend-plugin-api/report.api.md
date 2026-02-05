@@ -19,6 +19,7 @@ import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { JSX as JSX_3 } from 'react';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 import type { z } from 'zod';
@@ -1934,6 +1935,37 @@ export interface SwappableComponentsApi {
 
 // @public
 export const swappableComponentsApiRef: ApiRef_2<SwappableComponentsApi>;
+
+// @public
+export type ToastApi = {
+  post(toast: ToastMessage): string;
+  close(key: string): void;
+  toast$(): Observable<ToastMessageWithKey>;
+};
+
+// @public
+export const toastApiRef: ApiRef<ToastApi>;
+
+// @public
+export type ToastLink = {
+  label: string;
+  href: string;
+};
+
+// @public
+export type ToastMessage = {
+  title: ReactNode;
+  description?: ReactNode;
+  status?: 'info' | 'success' | 'warning' | 'danger';
+  icon?: boolean | ReactElement;
+  links?: ToastLink[];
+  timeout?: number;
+};
+
+// @public
+export type ToastMessageWithKey = ToastMessage & {
+  key: string;
+};
 
 // @public (undocumented)
 export type TranslationApi = {

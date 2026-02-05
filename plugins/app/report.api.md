@@ -15,9 +15,11 @@ import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { NavContentComponent } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import type { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SignInPageProps } from '@backstage/plugin-app-react';
@@ -698,6 +700,21 @@ const appPlugin: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
+    'api:app/toast': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'toast';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
     'api:app/translations': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
@@ -1003,6 +1020,34 @@ const appPlugin: OverridableFrontendPlugin<
   }
 >;
 export default appPlugin;
+
+// @public
+export interface ToastContent {
+  description?: ReactNode;
+  icon?: boolean | ReactElement;
+  links?: ToastLink[];
+  status?: 'info' | 'success' | 'warning' | 'danger';
+  title: ReactNode;
+}
+
+// @public
+export function ToastDisplay(props: ToastDisplayProps): JSX_3.Element;
+
+// @public
+export interface ToastDisplayProps {
+  // @deprecated
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
+  transientTimeoutMs?: number;
+}
+
+// @public
+export interface ToastLink {
+  href: string;
+  label: string;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -54,7 +54,6 @@ import type { TagGroupProps as TagGroupProps_2 } from 'react-aria-components';
 import type { TagListProps } from 'react-aria-components';
 import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
-import { ToastQueue } from 'react-stately';
 import type { ToggleButtonGroupProps as ToggleButtonGroupProps_2 } from 'react-aria-components';
 import type { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
@@ -2179,52 +2178,6 @@ export type TextVariants =
 
 // @public (undocumented)
 export type TextWeights = 'regular' | 'bold';
-
-// @public
-export const ToastContainer: ForwardRefExoticComponent<
-  ToastContainerProps & RefAttributes<HTMLDivElement>
->;
-
-// @public
-export const ToastContainerDefinition: {
-  readonly styles: {
-    readonly [key: string]: string;
-  };
-  readonly classNames: {
-    readonly container: 'bui-ToastContainer';
-  };
-  readonly propDefs: {
-    readonly queue: {};
-    readonly className: {};
-  };
-};
-
-// @public
-export type ToastContainerOwnProps = {
-  queue: ToastQueue<ToastContent>;
-  className?: string;
-};
-
-// @public
-export interface ToastContainerProps extends ToastContainerOwnProps {}
-
-// @public
-export interface ToastContent {
-  description?: ReactNode;
-  icon?: boolean | ReactElement;
-  links?: ToastLink[];
-  status?: 'info' | 'success' | 'warning' | 'danger';
-  title: ReactNode;
-}
-
-// @public
-export interface ToastLink {
-  href: string;
-  label: string;
-}
-
-// @public
-export const toastQueue: ToastQueue<ToastContent>;
 
 // @public (undocumented)
 export const ToggleButton: ForwardRefExoticComponent<
