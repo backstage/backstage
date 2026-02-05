@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
+// Public exports
 export { ToastDisplay } from './ToastDisplay';
+export type { ToastContent, ToastLink, ToastDisplayProps } from './types';
+
+// Internal exports (used within the plugin only)
 export { ToastContainer } from './ToastContainer';
 export { toastQueue } from './ToastQueue';
-export type {
-  ToastContent,
-  ToastLink,
-  ToastDisplayProps,
-  ToastContainerProps,
-} from './types';
+export type { ToastContainerProps } from './types';

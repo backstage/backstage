@@ -92,10 +92,11 @@ export interface ToastContainerProps {
 export interface ToastDisplayProps {
   /**
    * Number of milliseconds a transient alert will stay open for.
-   * @default 5000
+   * Defaults to 5000ms.
    */
   transientTimeoutMs?: number;
   /**
+   * Position of the toast on screen.
    * @deprecated Toast uses fixed bottom-center positioning. This prop is ignored.
    */
   anchorOrigin?: {

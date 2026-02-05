@@ -51,9 +51,9 @@ export type ToastMessage = {
 };
 
 /**
- * Internal toast message with key for tracking.
+ * Toast message with key, as returned by the toast$() observable.
  *
- * @internal
+ * @public
  */
 export type ToastMessageWithKey = ToastMessage & {
   /** Unique key for the toast, used for programmatic dismiss */
