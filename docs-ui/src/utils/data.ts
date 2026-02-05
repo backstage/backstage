@@ -122,11 +122,6 @@ export const components: Page[] = [
     slug: 'text-field',
   },
   {
-    title: 'Toast',
-    slug: 'toast',
-    status: 'new',
-  },
-  {
     title: 'ToggleButton',
     slug: 'toggle-button',
   },
