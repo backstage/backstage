@@ -1,0 +1,11 @@
+import{r as s,j as r,m as c}from"./iframe-M9O-K8SB.js";import{L as p}from"./List-DFXlWgcm.js";import{L as u}from"./ListItemIcon-C0tJWs3p.js";import{L as d}from"./ListItemText-OpvVVx-v.js";import{L as m}from"./Link-Btc0GL0z.js";import"./preload-helper-PPVm8Dsz.js";import"./ListContext-CQy2fJuy.js";import"./lodash-Czox7iJy.js";import"./index-CuiKZooy.js";import"./useAnalytics-8ya555GT.js";import"./useApp-Citse85p.js";const i=s.createContext(void 0),g=e=>{const{children:t,tools:a}=e,[n,o]=s.useState(a),l={tools:n};return r.jsx(i.Provider,{value:l,children:t})},y=()=>s.useContext(i);g.__docgenInfo={description:"",methods:[],displayName:"ContextProvider",props:{children:{required:!0,tsType:{name:"JSX.Element"},description:""},tools:{required:!0,tsType:{name:"Array",elements:[{name:"signature",type:"object",raw:`{
+  label: string;
+  url: string;
+  icon: ReactNode;
+}`,signature:{properties:[{key:"label",value:{name:"string",required:!0}},{key:"url",value:{name:"string",required:!0}},{key:"icon",value:{name:"ReactNode",required:!0}}]}}],raw:"Tool[]"},description:""}}};const x=c(e=>({toolkit:{display:"flex",flexWrap:"wrap",textAlign:"center"},tool:{margin:e.spacing(.5,1)},label:{marginTop:e.spacing(1),width:"72px",fontSize:"0.9em",lineHeight:"1.25",overflowWrap:"break-word",color:e.palette.text.secondary},icon:{width:"64px",height:"64px",borderRadius:"50px",justifyContent:"center",alignItems:"center",boxShadow:e.shadows[1],backgroundColor:e.palette.background.default}})),k=e=>{const t=x(),n=y()?.tools??e.tools;return r.jsx(p,{className:t.toolkit,children:n.map(o=>r.jsxs(m,{to:o.url,className:t.tool,children:[r.jsx(u,{className:t.icon,children:o.icon}),r.jsx(d,{secondaryTypographyProps:{className:t.label},secondary:o.label})]},o.url))})};k.__docgenInfo={description:`A component to display a list of tools for the user.
+
+@public`,methods:[],displayName:"Content",props:{tools:{required:!0,tsType:{name:"Array",elements:[{name:"signature",type:"object",raw:`{
+  label: string;
+  url: string;
+  icon: ReactNode;
+}`,signature:{properties:[{key:"label",value:{name:"string",required:!0}},{key:"url",value:{name:"string",required:!0}},{key:"icon",value:{name:"ReactNode",required:!0}}]}}],raw:"Tool[]"},description:""}}};export{k as Content,g as ContextProvider};

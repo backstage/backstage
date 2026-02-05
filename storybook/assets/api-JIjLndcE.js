@@ -1,0 +1,1 @@
+import{X as s}from"./iframe-M9O-K8SB.js";const c=s({id:"plugin.search.queryservice"});class i{mockedResults;constructor(e){this.mockedResults=e}query(e,o){return Promise.resolve(this.mockedResults||{results:[]})}}export{i as M,c as s};

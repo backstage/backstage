@@ -1,0 +1,1 @@
+import{b as i}from"./useFocusable-BwFERnd_.js";import{r as n}from"./iframe-M9O-K8SB.js";function f(r,a,o){let d=i(()=>{o&&o(a)});n.useEffect(()=>{var t;let e=r==null||(t=r.current)===null||t===void 0?void 0:t.form;return e?.addEventListener("reset",d),()=>{e?.removeEventListener("reset",d)}},[r])}export{f as $};
