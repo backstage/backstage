@@ -26,13 +26,25 @@ import ObservableImpl from 'zen-observable';
  * missing alerts that were posted before subscription.
  *
  * @public
+ * @deprecated Use ToastApi instead. AlertApi will be removed in a future release.
  */
 export class AlertApiForwarder implements AlertApi {
   private readonly subject = new PublishSubject<AlertMessage>();
   private readonly recentAlerts: AlertMessage[] = [];
   private readonly maxBufferSize = 10;
+  private hasWarnedDeprecation = false;
 
   post(alert: AlertMessage) {
+    if (!this.hasWarnedDeprecation) {
+      this.hasWarnedDeprecation = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        'AlertApi is deprecated and will be removed in a future release. ' +
+          'Please migrate to ToastApi from @backstage/frontend-plugin-api. ' +
+          'ToastApi provides richer features including title/description, links, icons, and per-toast timeouts. ' +
+          'Example: toastApi.post({ title: "Saved!", status: "success", timeout: 5000 })',
+      );
+    }
     this.recentAlerts.push(alert);
     if (this.recentAlerts.length > this.maxBufferSize) {
       this.recentAlerts.shift();

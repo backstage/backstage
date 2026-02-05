@@ -24,16 +24,16 @@ import { ReactNode } from 'react';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 import type { z } from 'zod';
 
-// @public
+// @public @deprecated
 export type AlertApi = {
   post(alert: AlertMessage): void;
   alert$(): Observable<AlertMessage>;
 };
 
-// @public
+// @public @deprecated
 export const alertApiRef: ApiRef<AlertApi>;
 
-// @public
+// @public @deprecated
 export type AlertMessage = {
   message: string;
   severity?: 'success' | 'info' | 'warning' | 'error';

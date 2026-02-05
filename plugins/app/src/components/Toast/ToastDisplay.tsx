@@ -39,15 +39,20 @@ function mapSeverity(
  * ToastDisplay bridges both the ToastApi and AlertApi with the Toast notification system.
  *
  * @remarks
- * This component subscribes to:
- * - `toastApi.toast$()` - New toast notifications with full features (title, description, links, icons)
- * - `alertApi.alert$()` - Legacy alerts for backward compatibility (message maps to title only)
+ * This component provides a migration bridge between the deprecated AlertApi and the new ToastApi.
+ * During the migration period, it subscribes to both APIs simultaneously, allowing plugins to
+ * migrate incrementally without breaking existing functionality.
  *
- * For ToastApi:
+ * **Subscriptions:**
+ * - `toastApi.toast$()` - New toast notifications with full features (title, description, links, icons)
+ * - `alertApi.alert$()` - Deprecated alerts for backward compatibility (message maps to title only)
+ *
+ * **ToastApi (recommended):**
  * - Uses toast content directly (title, description, status, icon, links)
  * - Uses the provided timeout from the toast message
+ * - Supports programmatic dismiss via returned key
  *
- * For AlertApi (legacy):
+ * **AlertApi (deprecated - please migrate to ToastApi):**
  * - `alert.message` → `toast.title`
  * - `alert.severity` → `toast.status` ('error' maps to 'danger')
  * - `alert.display` → `timeout` (transient gets default timeout, permanent stays until dismissed)
@@ -57,7 +62,9 @@ function mapSeverity(
  * // In your app root element extension
  * <ToastDisplay transientTimeoutMs={5000} />
  *
- * // Using the new ToastApi:
+ * // Using the new ToastApi (recommended):
+ * import { toastApiRef, useApi } from '@backstage/frontend-plugin-api';
+ * const toastApi = useApi(toastApiRef);
  * toastApi.post({
  *   title: 'Entity saved',
  *   description: 'Your changes have been saved successfully.',
@@ -65,7 +72,9 @@ function mapSeverity(
  *   timeout: 5000,
  * });
  *
- * // Using the legacy AlertApi:
+ * // Using the deprecated AlertApi (migrate to ToastApi):
+ * import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+ * const alertApi = useApi(alertApiRef);
  * alertApi.post({ message: 'Saved!', severity: 'success', display: 'transient' });
  * ```
  *
@@ -115,7 +124,8 @@ export function ToastDisplay(props: ToastDisplayProps) {
     return () => subscription.unsubscribe();
   }, [toastApi]);
 
-  // Subscribe to AlertApi (legacy support)
+  // Subscribe to AlertApi (deprecated - provides backward compatibility during migration)
+  // This subscription will be removed when AlertApi is fully deprecated
   useEffect(() => {
     const subscription = alertApi.alert$().subscribe(alert => {
       const content: ToastContent = {

@@ -21,6 +21,14 @@ import { Observable } from '@backstage/types';
  * Message handled by the {@link AlertApi}.
  *
  * @public
+ * @deprecated Use {@link ToastMessage} from {@link ToastApi} instead. AlertApi will be removed in a future release.
+ *
+ * Migration guide:
+ * - `message` becomes `title`
+ * - `severity: 'error'` becomes `status: 'danger'`
+ * - `severity: 'success' | 'info' | 'warning'` becomes `status: 'success' | 'info' | 'warning'`
+ * - `display: 'transient'` becomes `timeout: 5000` (or custom milliseconds)
+ * - `display: 'permanent'` means omitting `timeout`
  */
 export type AlertMessage = {
   message: string;
@@ -33,6 +41,23 @@ export type AlertMessage = {
  * The alert API is used to report alerts to the app, and display them to the user.
  *
  * @public
+ * @deprecated Use {@link ToastApi} instead. AlertApi will be removed in a future release.
+ *
+ * ToastApi provides richer notification features including:
+ * - Title and optional description
+ * - Action links
+ * - Custom icons
+ * - Per-toast timeout control
+ * - Programmatic dismiss via returned key
+ *
+ * @example
+ * ```typescript
+ * // Before (AlertApi)
+ * alertApi.post({ message: 'Saved!', severity: 'success', display: 'transient' });
+ *
+ * // After (ToastApi)
+ * toastApi.post({ title: 'Saved!', status: 'success', timeout: 5000 });
+ * ```
  */
 export type AlertApi = {
   /**
@@ -50,6 +75,7 @@ export type AlertApi = {
  * The {@link ApiRef} of {@link AlertApi}.
  *
  * @public
+ * @deprecated Use {@link toastApiRef} instead. AlertApi will be removed in a future release.
  */
 export const alertApiRef: ApiRef<AlertApi> = createApiRef({
   id: 'core.alert',
