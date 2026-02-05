@@ -12,7 +12,7 @@ For some use cases, you may want to define custom [rules](../references/glossary
 
 ## Define a custom rule
 
-Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule and create a condition in `packages/backend/src/extensions/permissionsPolicyExtension.ts`.
+Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule and create a condition in `packages/backend/src/permissionRules.ts`.
 
 We use `zod` and `@backstage/catalog-model` in our example below. To install them run:
 
@@ -20,12 +20,13 @@ We use `zod` and `@backstage/catalog-model` in our example below. To install the
 yarn --cwd packages/backend add zod@3 @backstage/catalog-model
 ```
 
-```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
-...
-
+```ts title="packages/backend/src/permissionRules.ts"
 import type { Entity } from '@backstage/catalog-model';
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
-import { createConditionFactory, createPermissionRule } from '@backstage/plugin-permission-node';
+import {
+  createConditionFactory,
+  createPermissionRule,
+} from '@backstage/plugin-permission-node';
 import { z } from 'zod';
 
 export const isInSystemRule = createPermissionRule({
@@ -59,52 +60,13 @@ const isInSystem = createConditionFactory(isInSystemRule);
 
 For a more detailed explanation on defining rules, refer to the [documentation for plugin authors](./plugin-authors/03-adding-a-resource-permission-check.md#adding-support-for-conditional-decisions).
 
-Still in the `packages/backend/src/extensions/permissionsPolicyExtension.ts` file, let's use the condition we just created in our `CustomPermissionPolicy`.
+In the `packages/backend/src/extensions/permissionsPolicyExtension.ts` file created in the [Writing a Policy](./writing-a-policy.md) section, let's use the condition we just created:
 
 ```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
 ...
-/* highlight-remove-next-line */
-import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-backend/alpha';
+import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 /* highlight-add-next-line */
-import { catalogEntityPermissionResourceRef, createCatalogConditionalDecision, catalogConditions } from '@backstage/plugin-catalog-backend/alpha';
-/* highlight-remove-next-line */
-import { createConditionFactory, createPermissionRule } from '@backstage/plugin-permission-node';
-/* highlight-add-next-line */
-import { createConditionFactory, createPermissionRule, PermissionPolicy, PolicyQuery, PolicyQueryUser } from '@backstage/plugin-permission-node';
-/* highlight-add-start */
-import { AuthorizeResult, PolicyDecision, isResourcePermission } from '@backstage/plugin-permission-common';
-/* highlight-add-end */
-...
-
-export const isInSystemRule = createPermissionRule({
-  name: 'IS_IN_SYSTEM',
-  description: 'Checks if an entity is part of the system provided',
-  resourceRef: catalogEntityPermissionResourceRef,
-  paramsSchema: z.object({
-    systemRef: z
-      .string()
-      .describe('SystemRef to check the resource is part of'),
-  }),
-  apply: (resource: Entity, { systemRef }) => {
-    if (!resource.relations) {
-      return false;
-    }
-
-    return resource.relations
-      .filter(relation => relation.type === 'partOf')
-      .some(relation => relation.targetRef === systemRef);
-  },
-  toQuery: ({ systemRef }) => ({
-    key: 'relations.partOf',
-    values: [systemRef],
-  }),
-});
-```
-
-You can now use the rules above in your policy:
-
-```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
-const isInSystem = createConditionFactory(isInSystemRule);
+import { isInSystem } from '../permissionRules';
 
 class CustomPermissionPolicy implements PermissionPolicy {
   async handle(
@@ -149,19 +111,14 @@ The `PermissionsRegistryService` is a fairly new addition and not yet supported 
 
 To install custom rules in a plugin, we need to use the [`PermissionsRegistryService`](../backend-system/core-services/permissionsRegistry.md). Here's the steps you'll need to take to add the `isInSystemRule` we created above to the catalog:
 
-1. We will be using the `@backstage/plugin-catalog-node` package as it contains the extension point we need. Run this to add it:
+1. Create a `catalogPermissionRules.ts` file in the `packages/backend/src/extensions` folder with the following content:
 
-   ```bash title="from your Backstage root directory"
-   yarn --cwd packages/backend add @backstage/plugin-catalog-node
-   ```
-
-2. Next create a `catalogPermissionRules.ts` file in the `packages/backend/src/modules` folder.
-3. Then add this as the contents of the new `catalogPermissionRules.ts` file:
-
-   ```typescript title="packages/backend/src/modules/catalogPermissionRules.ts"
-   import { createBackendModule } from '@backstage/backend-plugin-api';
-   import { catalogPermissionExtensionPoint } from '@backstage/plugin-catalog-node';
-   import { isInSystemRule } from './permissionsPolicyExtension';
+   ```typescript title="packages/backend/src/extensions/catalogPermissionRules.ts"
+   import {
+     coreServices,
+     createBackendModule,
+   } from '@backstage/backend-plugin-api';
+   import { isInSystemRule } from '../permissionRules';
 
    export default createBackendModule({
      pluginId: 'catalog',
@@ -177,7 +134,7 @@ To install custom rules in a plugin, we need to use the [`PermissionsRegistrySer
    });
    ```
 
-4. Next we need to add this to the backend by adding the following line:
+2. Next we need to add this to the backend by adding the following line:
 
    ```ts title="packages/backend/src/index.ts"
    // catalog plugin
@@ -186,10 +143,10 @@ To install custom rules in a plugin, we need to use the [`PermissionsRegistrySer
      import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
    );
    /* highlight-add-next-line */
-   backend.add(import('./modules/catalogPermissionRules'));
+   backend.add(import('./extensions/catalogPermissionRules'));
    ```
 
-5. Now when you run you Backstage instance - `yarn start` - the rule will be added to the catalog plugin.
+3. Now when you run you Backstage instance - `yarn start` - the rule will be added to the catalog plugin.
 
 The updated policy will allow catalog entity resource permissions if any of the following are true:
 

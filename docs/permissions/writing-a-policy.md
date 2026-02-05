@@ -115,7 +115,7 @@ class CustomPermissionPolicy implements PermissionPolicy {
     if (isPermission(request.permission, catalogEntityDeletePermission)) {
       /* highlight-remove-start */
       return {
-      result: AuthorizeResult.DENY,
+        result: AuthorizeResult.DENY,
       };
       /* highlight-remove-end */
       /* highlight-add-start */
