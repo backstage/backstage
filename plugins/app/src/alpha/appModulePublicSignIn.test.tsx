@@ -100,6 +100,14 @@ describe('appModulePublicSignIn', () => {
         data-unified-theme-stack="[{"mode":"light","name":"backstage"}]"
       >
         <div>
+          <div
+            aria-label="0 notifications."
+            class="toast-container"
+            data-react-aria-top-layer="true"
+            data-theme-mode="dark"
+            role="region"
+            tabindex="-1"
+          />
           <form
             action="http://localhost/"
             method="POST"

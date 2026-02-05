@@ -1,0 +1,239 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Toast Container - Container for all toasts (bottom center) */
+.toast-container {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100050;
+  width: 300px;
+  outline: none;
+}
+
+@media (min-width: 500px) {
+  .toast-container {
+    width: 350px;
+    bottom: 2rem;
+  }
+}
+
+/* Individual Toast */
+.toast {
+  /* CSS Variables */
+  --toast-peek: 0.75rem;
+  --toast-scale: calc(max(0, 1 - (var(--toast-index) * 0.05)));
+
+  /* Layout */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  gap: 0.75rem;
+
+  /* Appearance */
+  border-radius: 0.5rem;
+  background-color: #1f1f1f;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  font-size: 0.875rem;
+  outline: none;
+  cursor: default;
+  user-select: none;
+  /* All toasts need pointer-events to trigger hover expansion */
+  pointer-events: auto;
+
+  /* Stacking */
+  z-index: calc(1000 - var(--toast-index));
+  transform-origin: bottom center;
+
+  /* Shadow */
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+}
+
+/* Light mode toast (inverted from dark app theme) */
+[data-theme-mode='light'] .toast {
+  background-color: #ffffff;
+  color: #1f1f1f;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.toast:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* Extend hover area above each toast to fill gaps when expanded */
+/* This prevents the stack from collapsing when hovering between toasts */
+.toast::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  /* Height matches the expanded gap to ensure continuous hover */
+  height: 12px;
+  pointer-events: auto;
+}
+
+/* Status variants - color icon and title */
+.toast[data-status='info'] .toast-icon,
+.toast[data-status='info'] .toast-title {
+  color: #3b82f6;
+}
+
+.toast[data-status='success'] .toast-icon,
+.toast[data-status='success'] .toast-title {
+  color: #22c55e;
+}
+
+.toast[data-status='warning'] .toast-icon,
+.toast[data-status='warning'] .toast-title {
+  color: #f59e0b;
+}
+
+.toast[data-status='danger'] .toast-icon,
+.toast[data-status='danger'] .toast-title {
+  color: #ef4444;
+}
+
+.toast-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Icon */
+.toast-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.125rem;
+}
+
+.toast-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Title */
+.toast-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  word-wrap: break-word;
+  margin-top: 0.125rem;
+}
+
+/* Description */
+.toast-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  word-wrap: break-word;
+}
+
+[data-theme-mode='light'] .toast-description {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Links */
+.toast-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.toast-links a {
+  font-family: var(--bui-font-regular);
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: inline-block;
+
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: min(2px, max(1px, 0.05em));
+  text-underline-offset: calc(0.025em + 2px);
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+}
+
+.toast-links a:hover {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: min(2px, max(1px, 0.05em));
+  text-underline-offset: calc(0.025em + 2px);
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+}
+
+/* Close Button */
+.toast-close-button {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.25rem -0.25rem 0 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.toast-close-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.toast-close-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme-mode='light'] .toast-close-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.toast-close-button:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 1px;
+}
+
+.toast-close-button:active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme-mode='light'] .toast-close-button:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
