@@ -54,7 +54,9 @@ describe('authModuleAuth0Provider', () => {
 
     const agent = request.agent(server);
 
-    const res = await agent.get('/api/auth/auth0/start?env=development');
+    const res = await agent.get(
+      '/api/auth/auth0/start?env=development&organization=foo-organization&invitation=foo-invitation',
+    );
 
     expect(res.status).toEqual(302);
 
@@ -78,6 +80,8 @@ describe('authModuleAuth0Provider', () => {
       accessType: 'offline',
       connection: 'connection',
       connection_scope: 'connectionScope',
+      organization: 'foo-organization',
+      invitation: 'foo-invitation',
       nonce: expect.any(String),
       state: expect.any(String),
     });
