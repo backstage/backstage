@@ -54,9 +54,7 @@ describe('authModuleAuth0Provider', () => {
 
     const agent = request.agent(server);
 
-    const res = await agent.get(
-      '/api/auth/auth0/start?env=development&organization=foo-organization&invitation=foo-invitation',
-    );
+    const res = await agent.get('/api/auth/auth0/start?env=development');
 
     expect(res.status).toEqual(302);
 
@@ -80,8 +78,6 @@ describe('authModuleAuth0Provider', () => {
       accessType: 'offline',
       connection: 'connection',
       connection_scope: 'connectionScope',
-      organization: 'foo-organization',
-      invitation: 'foo-invitation',
       nonce: expect.any(String),
       state: expect.any(String),
     });
@@ -90,5 +86,98 @@ describe('authModuleAuth0Provider', () => {
       env: 'development',
       nonce: decodeURIComponent(nonceCookie.value),
     });
+  });
+
+  it('should pass through organization and invitation parameters to the authorization URL', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    connection: 'connection',
+                    connectionScope: 'connectionScope',
+                    organization: 'foo-organization',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const res = await agent.get(
+      '/api/auth/auth0/start?env=development&organization=foo-organization&invitation=foo-invitation',
+    );
+
+    const startUrl = new URL(res.get('location'));
+    expect(startUrl.origin).toBe('https://domain');
+    expect(startUrl.pathname).toBe('/authorize');
+    expect(Object.fromEntries(startUrl.searchParams)).toEqual(
+      expect.objectContaining({
+        organization: 'foo-organization',
+        invitation: 'foo-invitation',
+      }),
+    );
+  });
+
+  it('should throw an error if the organization in the request does not match the organization configured in the strategy', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    connection: 'connection',
+                    connectionScope: 'connectionScope',
+                    organization: 'bar-organization',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const res = await agent.get(
+      '/api/auth/auth0/start?env=development&organization=foo-organization&invitation=foo-invitation',
+    );
+
+    expect(res.status).toEqual(409);
+    expect(res.text).toContain(
+      'Organization mismatch. The organization provided in the request does not match the organization configured in the strategy.',
+    );
   });
 });
