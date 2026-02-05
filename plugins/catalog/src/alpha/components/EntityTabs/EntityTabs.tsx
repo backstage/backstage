@@ -102,7 +102,7 @@ export function EntityTabs(props: EntityTabsProps) {
           id: path,
           path: to,
           label: title,
-          icon: icon,
+          icon,
         };
       }),
     [routes],

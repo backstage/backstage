@@ -725,7 +725,7 @@ app:
 
 Notes:
 
-- Icons for groups and tabs are resolved via the app's IconsApi. When using a string icon id (for example `"dashboard"`), ensure that the corresponding icon bundles are enabled/installed in your app (see the [IconBundleBlueprint documentation](../../reference/frontend-plugin-api.iconbundleblueprint.md)).
+- Icons for groups and tabs are resolved via the app's IconsApi. When using a string icon id (for example `"dashboard"`), ensure that the corresponding icon bundles are enabled/installed in your app (see the [IconBundleBlueprint documentation](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.IconBundleBlueprint.html)).
 - Group icons are only rendered if `showNavItemIcons` is set to `true`.
 
 ### Overriding or disabling a tab's group (per extension)
