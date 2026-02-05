@@ -20,13 +20,12 @@ import {
   catalogApiRef,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/esm/useAsync';
-import Box from '@material-ui/core/Box';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import { useApi, ApiHolder } from '@backstage/core-plugin-api';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { Alert, Box } from '@backstage/ui';
 
 async function getRelationWarnings(entity: Entity, catalogApi: CatalogApi) {
   const entityRefRelations = entity.relations?.map(
@@ -85,7 +84,7 @@ export function EntityRelationWarning() {
 
   if (error) {
     return (
-      <Box mb={1}>
+      <Box mb="2">
         <ResponseErrorPanel error={error} />
       </Box>
     );
@@ -96,10 +95,15 @@ export function EntityRelationWarning() {
   }
 
   return (
-    <>
-      <Alert severity="warning" style={{ whiteSpace: 'pre-line' }}>
-        {t('entityRelationWarningDescription')} {value.join(', ')}
-      </Alert>
-    </>
+    <Alert
+      status="warning"
+      icon
+      style={{ whiteSpace: 'pre-line' }}
+      description={
+        <>
+          {t('entityRelationWarningDescription')} {value.join(', ')}
+        </>
+      }
+    />
   );
 }
