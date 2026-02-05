@@ -10,7 +10,7 @@ import { JsonObject } from '@backstage/types';
 import { SignalApi } from '@backstage/plugin-signals-react';
 import { SignalSubscriber } from '@backstage/plugin-signals-react';
 
-// @public (undocumented)
+// @public
 export class SignalClient implements SignalApi {
   // (undocumented)
   static create(options: {
