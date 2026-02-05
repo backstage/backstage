@@ -75,7 +75,7 @@ export const myPlugin = createBackendPlugin({
 
 When errors are thrown from MCP actions, the backend will handle and surface error message for any error from `@backstage/errors`. Unknown errors will be handled by `@modelcontextprotocol/sdk`'s default error handling, which may result in a generic `500 Server Error` being returned. As a result, we recommend using errors from `@backstage/errors` when applicable.
 
-See https://backstage.io/docs/reference/errors/ for a full list of supported errors.
+See <https://backstage.io/docs/reference/errors/> for a full list of supported errors.
 
 When writing MCP tools, use the appropriate error from `@backstage/errors` when applicable:
 
@@ -177,6 +177,13 @@ There's a few different ways to configure MCP tools, but here's a snippet of the
   }
 }
 ```
+
+## Metrics
+
+The MCP Actions Backend emits metrics for the following operations:
+
+- `mcp.server.operation.duration`: The duration taken to process an individual MCP operation
+- `mcp.server.session.duration`: The duration of the MCP session from the perspective of the server
 
 ## Development
 

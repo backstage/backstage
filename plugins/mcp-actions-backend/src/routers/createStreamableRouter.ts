@@ -49,7 +49,6 @@ export const createStreamableRouter = ({
 
   router.post('/', async (req, res) => {
     const sessionStart = performance.now();
-    let sessionErrorType: string | undefined;
 
     const baseAttributes: McpServerSessionAttributes = {
       'mcp.protocol.version': LATEST_PROTOCOL_VERSION,
@@ -80,7 +79,7 @@ export const createStreamableRouter = ({
         sessionDuration.record(durationSeconds, baseAttributes);
       });
     } catch (error) {
-      sessionErrorType = isError(error) ? error.name : 'Error';
+      const errorType = isError(error) ? error.name : 'Error';
 
       if (isError(error)) {
         logger.error(error.message);
@@ -101,7 +100,7 @@ export const createStreamableRouter = ({
 
       sessionDuration.record(durationSeconds, {
         ...baseAttributes,
-        'error.type': sessionErrorType,
+        'error.type': errorType,
       });
     }
   });
