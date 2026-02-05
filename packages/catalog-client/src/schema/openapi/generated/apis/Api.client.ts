@@ -73,6 +73,7 @@ export type GetEntities = {
     filter?: Array<string>;
     offset?: number;
     after?: string;
+    ownedByCurrentUser?: boolean;
     order?: Array<string>;
   };
 };
@@ -87,6 +88,7 @@ export type GetEntitiesByQuery = {
     orderField?: Array<string>;
     cursor?: string;
     filter?: Array<string>;
+    ownedByCurrentUser?: boolean;
     fullTextFilterTerm?: string;
     fullTextFilterFields?: Array<string>;
   };
@@ -243,6 +245,7 @@ export class DefaultApiClient {
    * @param filter - You can pass in one or more filter sets that get matched against each entity. Each filter set is a number of conditions that all have to match for the condition to be true (conditions effectively have an AND between them). At least one filter set has to be true for the entity to be part of the result set (filter sets effectively have an OR between them).  Example:  &#x60;&#x60;&#x60;text /entities/by-query?filter&#x3D;kind&#x3D;user,metadata.namespace&#x3D;default&amp;filter&#x3D;kind&#x3D;group,spec.type    Return entities that match      Filter set 1:       Condition 1: kind &#x3D; user                   AND       Condition 2: metadata.namespace &#x3D; default      OR      Filter set 2:       Condition 1: kind &#x3D; group                   AND       Condition 2: spec.type exists &#x60;&#x60;&#x60;  Each condition is either on the form &#x60;&lt;key&gt;&#x60;, or on the form &#x60;&lt;key&gt;&#x3D;&lt;value&gt;&#x60;. The first form asserts on the existence of a certain key (with any value), and the second asserts that the key exists and has a certain value. All checks are always case _insensitive_.  In all cases, the key is a simplified JSON path in a given piece of entity data. Each part of the path is a key of an object, and the traversal also descends through arrays. There are two special forms:  - Array items that are simple value types (such as strings) match on a key-value   pair where the key is the item as a string, and the value is the string &#x60;true&#x60; - Relations can be matched on a &#x60;relations.&lt;type&gt;&#x3D;&lt;targetRef&gt;&#x60; form  Let&#39;s look at a simplified example to illustrate the concept:  &#x60;&#x60;&#x60;json {   \&quot;a\&quot;: {     \&quot;b\&quot;: [\&quot;c\&quot;, { \&quot;d\&quot;: 1 }],     \&quot;e\&quot;: 7   } } &#x60;&#x60;&#x60;  This would match any one of the following conditions:  - &#x60;a&#x60; - &#x60;a.b&#x60; - &#x60;a.b.c&#x60; - &#x60;a.b.c&#x3D;true&#x60; - &#x60;a.b.d&#x60; - &#x60;a.b.d&#x3D;1&#x60; - &#x60;a.e&#x60; - &#x60;a.e&#x3D;7&#x60;  Some more real world usable examples:  - Return all orphaned entities:    &#x60;/entities/by-query?filter&#x3D;metadata.annotations.backstage.io/orphan&#x3D;true&#x60;  - Return all users and groups:    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user&amp;filter&#x3D;kind&#x3D;group&#x60;  - Return all service components:    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;component,spec.type&#x3D;service&#x60;  - Return all entities with the &#x60;java&#x60; tag:    &#x60;/entities/by-query?filter&#x3D;metadata.tags.java&#x60;  - Return all users who are members of the &#x60;ops&#x60; group (note that the full   [reference](references.md) of the group is used):    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user,relations.memberof&#x3D;group:default/ops&#x60;
    * @param offset - Number of records to skip in the query page.
    * @param after - Pointer to the previous page of results.
+   * @param ownedByCurrentUser - When true, restricts results to entities owned by the current user.
    * @param order -
    */
   public async getEntities(
@@ -252,7 +255,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<Array<Entity>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/entities{?fields,limit,filter*,offset,after,order*}`;
+    const uriTemplate = `/entities{?fields,limit,filter*,offset,after,ownedByCurrentUser,order*}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
@@ -275,6 +278,7 @@ export class DefaultApiClient {
    * @param orderField - By default the entities are returned ordered by their internal uid. You can customize the &#x60;orderField&#x60; query parameters to affect that ordering.  For example, to return entities by their name:  &#x60;/entities/by-query?orderField&#x3D;metadata.name,asc&#x60;  Each parameter can be followed by &#x60;asc&#x60; for ascending lexicographical order or &#x60;desc&#x60; for descending (reverse) lexicographical order.
    * @param cursor - You may pass the &#x60;cursor&#x60; query parameters to perform cursor based pagination through the set of entities. The value of &#x60;cursor&#x60; will be returned in the response, under the &#x60;pageInfo&#x60; property:  &#x60;&#x60;&#x60;json   \&quot;pageInfo\&quot;: {     \&quot;nextCursor\&quot;: \&quot;a-cursor\&quot;,     \&quot;prevCursor\&quot;: \&quot;another-cursor\&quot;   } &#x60;&#x60;&#x60;  If &#x60;nextCursor&#x60; exists, it can be used to retrieve the next batch of entities. Following the same approach, if &#x60;prevCursor&#x60; exists, it can be used to retrieve the previous batch of entities.  - [&#x60;filter&#x60;](#filtering), for selecting only a subset of all entities - [&#x60;fields&#x60;](#field-selection), for selecting only parts of the full data   structure of each entity - &#x60;limit&#x60; for limiting the number of entities returned (20 is the default) - [&#x60;orderField&#x60;](#ordering), for deciding the order of the entities - &#x60;fullTextFilter&#x60;   **NOTE**: [&#x60;filter&#x60;, &#x60;orderField&#x60;, &#x60;fullTextFilter&#x60;] and &#x60;cursor&#x60; are mutually exclusive. This means that,   it isn&#39;t possible to change any of [&#x60;filter&#x60;, &#x60;orderField&#x60;, &#x60;fullTextFilter&#x60;] when passing &#x60;cursor&#x60; as query parameters,   as changing any of these properties will affect pagination. If any of &#x60;filter&#x60;, &#x60;orderField&#x60;, &#x60;fullTextFilter&#x60; is specified together with &#x60;cursor&#x60;, only the latter is taken into consideration.
    * @param filter - You can pass in one or more filter sets that get matched against each entity. Each filter set is a number of conditions that all have to match for the condition to be true (conditions effectively have an AND between them). At least one filter set has to be true for the entity to be part of the result set (filter sets effectively have an OR between them).  Example:  &#x60;&#x60;&#x60;text /entities/by-query?filter&#x3D;kind&#x3D;user,metadata.namespace&#x3D;default&amp;filter&#x3D;kind&#x3D;group,spec.type    Return entities that match      Filter set 1:       Condition 1: kind &#x3D; user                   AND       Condition 2: metadata.namespace &#x3D; default      OR      Filter set 2:       Condition 1: kind &#x3D; group                   AND       Condition 2: spec.type exists &#x60;&#x60;&#x60;  Each condition is either on the form &#x60;&lt;key&gt;&#x60;, or on the form &#x60;&lt;key&gt;&#x3D;&lt;value&gt;&#x60;. The first form asserts on the existence of a certain key (with any value), and the second asserts that the key exists and has a certain value. All checks are always case _insensitive_.  In all cases, the key is a simplified JSON path in a given piece of entity data. Each part of the path is a key of an object, and the traversal also descends through arrays. There are two special forms:  - Array items that are simple value types (such as strings) match on a key-value   pair where the key is the item as a string, and the value is the string &#x60;true&#x60; - Relations can be matched on a &#x60;relations.&lt;type&gt;&#x3D;&lt;targetRef&gt;&#x60; form  Let&#39;s look at a simplified example to illustrate the concept:  &#x60;&#x60;&#x60;json {   \&quot;a\&quot;: {     \&quot;b\&quot;: [\&quot;c\&quot;, { \&quot;d\&quot;: 1 }],     \&quot;e\&quot;: 7   } } &#x60;&#x60;&#x60;  This would match any one of the following conditions:  - &#x60;a&#x60; - &#x60;a.b&#x60; - &#x60;a.b.c&#x60; - &#x60;a.b.c&#x3D;true&#x60; - &#x60;a.b.d&#x60; - &#x60;a.b.d&#x3D;1&#x60; - &#x60;a.e&#x60; - &#x60;a.e&#x3D;7&#x60;  Some more real world usable examples:  - Return all orphaned entities:    &#x60;/entities/by-query?filter&#x3D;metadata.annotations.backstage.io/orphan&#x3D;true&#x60;  - Return all users and groups:    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user&amp;filter&#x3D;kind&#x3D;group&#x60;  - Return all service components:    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;component,spec.type&#x3D;service&#x60;  - Return all entities with the &#x60;java&#x60; tag:    &#x60;/entities/by-query?filter&#x3D;metadata.tags.java&#x60;  - Return all users who are members of the &#x60;ops&#x60; group (note that the full   [reference](references.md) of the group is used):    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user,relations.memberof&#x3D;group:default/ops&#x60;
+   * @param ownedByCurrentUser - When true, restricts results to entities owned by the current user.
    * @param fullTextFilterTerm - Text search term.
    * @param fullTextFilterFields - A comma separated list of fields to sort returned results by.
    */
@@ -285,7 +289,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/entities/by-query{?fields,limit,offset,orderField*,cursor,filter*,fullTextFilterTerm,fullTextFilterFields}`;
+    const uriTemplate = `/entities/by-query{?fields,limit,offset,orderField*,cursor,filter*,ownedByCurrentUser,fullTextFilterTerm,fullTextFilterFields}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CATALOG_FILTER_OWNED_BY_CURRENT_USER } from '@backstage/catalog-client';
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
 
 import { OwnedEntityPickerProps } from './schema';
@@ -54,9 +52,8 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
 /**
  * Builds a `uiSchema` for an `EntityPicker` from a parent `OwnedEntityPicker`.
  * Migrates deprecated parameters such as `allowedKinds` to `catalogFilter` structure.
- *
- * Uses `CATALOG_FILTER_OWNED_BY_CURRENT_USER` so the backend resolves ownership
- * refs from the request credentials, avoiding 431 when users belong to many groups.
+ * Uses `ownedByCurrentUser` query parameter so the backend restricts to the current
+ * user's entities, avoiding 431 when users belong to many groups.
  *
  * @param uiSchema The `uiSchema` of an `OwnedEntityPicker` component.
  * @returns The `uiSchema` for an `EntityPicker` component.
@@ -72,13 +69,13 @@ function buildEntityPickerUISchema(
   const catalogFilter = asArray(uiOptions.catalogFilter).map(e => ({
     ...e,
     ...(allowedKinds ? { kind: allowedKinds } : {}),
-    [`relations.${RELATION_OWNED_BY}`]: [CATALOG_FILTER_OWNED_BY_CURRENT_USER],
   }));
 
   return {
     'ui:options': {
       ...extraOptions,
       catalogFilter,
+      ownedByCurrentUser: true,
     },
     'ui:disabled': uiSchema['ui:disabled'],
   };

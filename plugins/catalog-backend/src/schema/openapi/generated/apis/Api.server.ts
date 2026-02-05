@@ -49,6 +49,7 @@ export type GetEntities = {
     filter?: Array<string>;
     offset?: number;
     after?: string;
+    ownedByCurrentUser?: boolean;
     order?: Array<string>;
   };
   response: Array<Entity> | Error | Error;
@@ -64,6 +65,7 @@ export type GetEntitiesByQuery = {
     orderField?: Array<string>;
     cursor?: string;
     filter?: Array<string>;
+    ownedByCurrentUser?: boolean;
     fullTextFilterTerm?: string;
     fullTextFilterFields?: Array<string>;
   };

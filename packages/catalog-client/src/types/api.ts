@@ -34,17 +34,6 @@ export const CATALOG_FILTER_EXISTS = Symbol.for(
 );
 
 /**
- * Special filter value for `relations.ownedBy` that is resolved on the backend
- * to the current user's ownership entity refs (user + groups). Use this instead
- * of passing ownership refs from the frontend to avoid 431 Request Header Fields
- * Too Large when the user belongs to many groups.
- *
- * @see https://github.com/backstage/backstage/issues/32367
- * @public
- */
-export const CATALOG_FILTER_OWNED_BY_CURRENT_USER = '__current_user__';
-
-/**
  * A key-value based filter expression for entities.
  *
  * @remarks
@@ -187,6 +176,12 @@ export interface GetEntitiesRequest {
    * request.
    */
   after?: string;
+  /**
+   * When true, restrict results to entities owned by the current user (user +
+   * groups from the request identity). Avoids sending large ownership ref
+   * lists in the filter.
+   */
+  ownedByCurrentUser?: boolean;
 }
 
 /**
@@ -443,6 +438,7 @@ export type QueryEntitiesInitialRequest = {
     term: string;
     fields?: string[];
   };
+  ownedByCurrentUser?: boolean;
 };
 
 /**

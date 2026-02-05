@@ -4,8 +4,8 @@
 '@backstage/plugin-scaffolder': minor
 ---
 
-Resolve `relations.ownedBy` "current user" filter on the backend to fix 431 when users have many groups.
+Fix 431 for OwnedEntityPicker by handling ownership filtering on the backend via a query parameter instead of the frontend sending refs in the request filter.
 
-- **catalog-client**: Add `CATALOG_FILTER_OWNED_BY_CURRENT_USER` for use in catalog filters.
-- **catalog-backend**: Expand `__current_user__` in entity filters via optional `UserInfoService` in GET `/entities` and GET `/entities/by-query`.
-- **scaffolder**: OwnedEntityPicker uses the new constant so the backend resolves ownership refs instead of sending them from the frontend.
+- **catalog-client**: Add `ownedByCurrentUser` option to `getEntities` and `queryEntities` request types; when true, the backend restricts results to the current user's entities.
+- **catalog-backend**: Add `ownedByCurrentUser` query parameter to GET `/entities` and GET `/entities/by-query`; when set, resolve ownership via `UserInfoService` and with the request filter.
+- **scaffolder**: EntityPicker and MultiEntityPicker support an optional `ownedByCurrentUser` to restrict options to the current user's entities. OwnedEntityPicker enables this so the backend applies the restriction without extending the catalog filter model.

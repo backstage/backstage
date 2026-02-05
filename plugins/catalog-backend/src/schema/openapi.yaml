@@ -286,6 +286,13 @@ components:
         Order descending by owner:
           value:
             - spec.owner,desc
+    ownedByCurrentUser:
+      name: ownedByCurrentUser
+      in: query
+      description: When true, restricts results to entities owned by the current user.
+      required: false
+      schema:
+        type: boolean
   requestBodies: {}
   responses:
     ErrorResponse:
@@ -883,6 +890,7 @@ paths:
         - $ref: '#/components/parameters/filter'
         - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/after'
+        - $ref: '#/components/parameters/ownedByCurrentUser'
         - name: order
           in: query
           allowReserved: true
@@ -1056,6 +1064,7 @@ paths:
         - $ref: '#/components/parameters/orderField'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/ownedByCurrentUser'
         - name: fullTextFilterTerm
           in: query
           description: Text search term.

@@ -41,9 +41,9 @@ import { validateEntityEnvelope } from '../processing/util';
 import { createOpenApiRouter } from '../schema/openapi';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
 import {
+  applyOwnershipFilter,
   basicEntityFilter,
   entitiesBatchRequest,
-  expandCurrentUserFilter,
   parseEntityFilterParams,
   parseEntityTransformParams,
   parseQueryEntitiesParams,
@@ -173,14 +173,13 @@ export async function createRouter(
         try {
           const credentials = await httpAuth.credentials(req);
           const parsedFilter = parseEntityFilterParams(req.query);
-          const filter =
-            userInfo && parsedFilter
-              ? await expandCurrentUserFilter(
-                  parsedFilter,
-                  credentials,
-                  userInfo,
-                )
-              : parsedFilter;
+          const ownedByCurrentUser = Boolean(yn(req.query.ownedByCurrentUser));
+          const filter = await applyOwnershipFilter(
+            parsedFilter,
+            credentials,
+            ownedByCurrentUser,
+            userInfo,
+          );
           const fields = parseEntityTransformParams(req.query);
           const order = parseEntityOrderParams(req.query);
           const pagination = parseEntityPaginationParams(req.query);
@@ -282,14 +281,13 @@ export async function createRouter(
             'filter' in parsedParams
               ? (parsedParams.filter as EntityFilter)
               : undefined;
-          const filter =
-            parsedFilter && userInfo
-              ? await expandCurrentUserFilter(
-                  parsedFilter,
-                  credentials,
-                  userInfo,
-                )
-              : parsedFilter;
+          const ownedByCurrentUser = Boolean(yn(req.query.ownedByCurrentUser));
+          const filter = await applyOwnershipFilter(
+            parsedFilter,
+            credentials,
+            ownedByCurrentUser,
+            userInfo,
+          );
 
           const { items, pageInfo, totalItems } =
             await entitiesCatalog.queryEntities({
