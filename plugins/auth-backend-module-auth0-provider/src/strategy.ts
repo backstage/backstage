@@ -16,6 +16,7 @@
 
 import Auth0InternalStrategy from 'passport-auth0';
 import type { StateStore } from 'passport-oauth2';
+import type express from 'express';
 
 /** @public */
 export interface Auth0StrategyOptionsWithRequest {
@@ -47,15 +48,24 @@ export class Auth0Strategy extends Auth0InternalStrategy {
     this.organization = options.organization;
   }
 
+  authenticate(req: express.Request, options: Record<string, any>): void {
+    super.authenticate(req, {
+      ...options,
+      invitation: req.query.invitation?.toString(),
+    });
+  }
+
   authorizationParams(options: Record<string, any>): Record<string, any> {
     const params = super.authorizationParams(options);
 
     if (this.organization) {
-      return {
-        ...params,
-        organization: this.organization,
-      };
+      params.organization = this.organization;
     }
+
+    if (options.invitation) {
+      params.invitation = options.invitation;
+    }
+
     return params;
   }
 }
