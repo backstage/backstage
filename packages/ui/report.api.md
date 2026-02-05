@@ -2121,21 +2121,25 @@ export function useTable<T extends TableItem, TFilter = unknown>(
 ): UseTableResult<T, TFilter>;
 
 // @public (undocumented)
-export interface UseTableCompleteOptions<T extends TableItem, TFilter = unknown>
-  extends QueryOptions<TFilter> {
-  // (undocumented)
-  filterFn?: (data: T[], filter: TFilter) => T[];
-  // (undocumented)
-  getData: () => T[] | Promise<T[]>;
-  // (undocumented)
+export type UseTableCompleteOptions<
+  T extends TableItem,
+  TFilter = unknown,
+> = QueryOptions<TFilter> & {
   mode: 'complete';
-  // (undocumented)
   paginationOptions?: PaginationOptions;
-  // (undocumented)
-  searchFn?: (data: T[], search: string) => T[];
-  // (undocumented)
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
-}
+  filterFn?: (data: T[], filter: TFilter) => T[];
+  searchFn?: (data: T[], search: string) => T[];
+} & (
+    | {
+        data: T[] | undefined;
+        getData?: never;
+      }
+    | {
+        data?: never;
+        getData: () => T[] | Promise<T[]>;
+      }
+  );
 
 // @public (undocumented)
 export interface UseTableCursorOptions<T extends TableItem, TFilter = unknown>
