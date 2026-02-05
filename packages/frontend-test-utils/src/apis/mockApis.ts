@@ -19,15 +19,18 @@ import {
   createApiFactory,
   featureFlagsApiRef,
 } from '@backstage/frontend-plugin-api';
-import {
-  mockApis as testUtilsMockApis,
-  type ApiMock,
-} from '@backstage/test-utils';
+import { mockApis as testUtilsMockApis } from '@backstage/test-utils';
 import { MockAlertApi } from './AlertApi';
 import {
   MockFeatureFlagsApi,
   MockFeatureFlagsApiOptions,
 } from './FeatureFlagsApi';
+import {
+  ApiMock,
+  mockWithApiFactory,
+  mockApiFactorySymbol,
+  type MockWithApiFactory,
+} from './utils';
 
 /** @internal */
 function simpleMock<TApi>(
@@ -45,13 +48,15 @@ function simpleMock<TApi>(
         }
       }
     }
-    return Object.assign(mock, {
-      factory: createApiFactory({
-        api: ref,
-        deps: {},
-        factory: () => mock,
-      }),
-    }) as ApiMock<TApi>;
+    const factory = createApiFactory({
+      api: ref,
+      deps: {},
+      factory: () => mock,
+    });
+    const apiMock = Object.assign(mock, { factory }) as ApiMock<TApi>;
+    // Set the mock API symbol to the same factory
+    (apiMock as any)[mockApiFactorySymbol] = factory;
+    return apiMock;
   };
 }
 
@@ -119,8 +124,12 @@ export namespace mockApis {
    * expect(alertApi.getAlerts()).toHaveLength(1);
    * ```
    */
-  export function alert(): MockAlertApi {
-    return new MockAlertApi();
+  export function alert(): MockWithApiFactory<MockAlertApi> {
+    const instance = new MockAlertApi();
+    return mockWithApiFactory(
+      alertApiRef,
+      instance,
+    ) as MockWithApiFactory<MockAlertApi>;
   }
   /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#AlertApi}.
@@ -165,8 +174,12 @@ export namespace mockApis {
    */
   export function featureFlags(
     options?: MockFeatureFlagsApiOptions,
-  ): MockFeatureFlagsApi {
-    return new MockFeatureFlagsApi(options);
+  ): MockWithApiFactory<MockFeatureFlagsApi> {
+    const instance = new MockFeatureFlagsApi(options);
+    return mockWithApiFactory(
+      featureFlagsApiRef,
+      instance,
+    ) as MockWithApiFactory<MockFeatureFlagsApi>;
   }
   /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#FeatureFlagsApi}.

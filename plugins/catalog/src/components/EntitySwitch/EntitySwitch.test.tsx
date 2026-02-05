@@ -23,15 +23,12 @@ import { render, screen } from '@testing-library/react';
 import { ReactNode, useEffect } from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
-import { featureFlagsApiRef } from '@backstage/core-plugin-api';
-import { TestApiProvider } from '@backstage/test-utils';
-import { mockApis } from '@backstage/frontend-test-utils';
+import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
 
 const mockFeatureFlagsApi = mockApis.featureFlags.mock();
+
 const Wrapper = ({ children }: { children?: ReactNode }) => (
-  <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
-    {children}
-  </TestApiProvider>
+  <TestApiProvider apis={[mockFeatureFlagsApi]}>{children}</TestApiProvider>
 );
 
 describe('EntitySwitch', () => {

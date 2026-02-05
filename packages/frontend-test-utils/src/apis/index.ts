@@ -24,11 +24,16 @@ export {
   MockPermissionApi,
   MockStorageApi,
   type MockStorageBucket,
-  type ApiMock,
 } from '@backstage/test-utils';
 
 export { MockAnalyticsApi } from './AnalyticsApi/MockAnalyticsApi';
 export { mockApis } from './mockApis';
+export {
+  type MockApiFactorySymbol,
+  type ApiMock,
+  type MockWithApiFactory,
+  mockApiFactorySymbol,
+} from './utils';
 
 /**
  * @public
@@ -38,4 +43,7 @@ export type { MockAlertApi } from './AlertApi';
 /**
  * @public
  */
-export type { MockFeatureFlagsApi, MockFeatureFlagsApiOptions } from './FeatureFlagsApi';
+export type {
+  MockFeatureFlagsApi,
+  MockFeatureFlagsApiOptions,
+} from './FeatureFlagsApi';

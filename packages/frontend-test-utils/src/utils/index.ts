@@ -20,5 +20,6 @@ export {
   type TestApiProviderPropsApiPair,
   type TestApiProviderPropsApiPairs,
   type TestApiPairs,
+  type TestApiProviderEntry,
 } from './TestApiProvider';
 export type { TestApiProviderProps } from './TestApiProvider';

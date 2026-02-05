@@ -7,8 +7,8 @@ import { AlertApi } from '@backstage/frontend-plugin-api';
 import { AlertMessage } from '@backstage/frontend-plugin-api';
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiHolder } from '@backstage/frontend-plugin-api';
-import { ApiMock } from '@backstage/test-utils';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
@@ -40,7 +40,15 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { testingLibraryDomTypesQueries } from '@testing-library/dom/types/queries';
 import { withLogCollector } from '@backstage/test-utils';
 
-export { ApiMock };
+// @public
+export type ApiMock<TApi> = {
+  factory: ApiFactory<TApi, TApi, {}>;
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+} & {
+  [Key in keyof TApi]: TApi[Key] extends (...args: infer Args) => infer Return
+    ? TApi[Key] & jest.MockInstance<Return, Args>
+    : TApi[Key];
+};
 
 // @public (undocumented)
 export function createExtensionTester<
@@ -130,8 +138,14 @@ export class MockAnalyticsApi implements AnalyticsApi {
 }
 
 // @public
+export type MockApiFactorySymbol = typeof mockApiFactorySymbol;
+
+// @public
+export const mockApiFactorySymbol: unique symbol;
+
+// @public
 export namespace mockApis {
-  export function alert(): MockAlertApi;
+  export function alert(): MockWithApiFactory<MockAlertApi>;
   export namespace alert {
     const factory: () => any;
     const mock: (
@@ -148,7 +162,7 @@ export namespace mockApis {
   }
   export function featureFlags(
     options?: MockFeatureFlagsApiOptions,
-  ): MockFeatureFlagsApi;
+  ): MockWithApiFactory<MockFeatureFlagsApi>;
   export namespace featureFlags {
     const factory: (options?: MockFeatureFlagsApiOptions | undefined) => any;
     const mock: (
@@ -220,6 +234,11 @@ export { MockStorageApi };
 
 export { MockStorageBucket };
 
+// @public
+export type MockWithApiFactory<TApi> = TApi & {
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+};
+
 export { registerMswTestHooks };
 
 // @public
@@ -254,8 +273,15 @@ export const TestApiProvider: <T extends any[]>(
 ) => JSX_2.Element;
 
 // @public
+export type TestApiProviderEntry =
+  | readonly [ApiRef<any>, any]
+  | MockWithApiFactory<any>;
+
+// @public
 export type TestApiProviderProps<TApiPairs extends any[]> = {
-  apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>];
+  apis: readonly [
+    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
+  ];
   children: ReactNode;
 };
 
@@ -271,9 +297,7 @@ export type TestApiProviderPropsApiPairs<TApiPairs> = {
 
 // @public
 export class TestApiRegistry implements ApiHolder {
-  static from<TApiPairs extends any[]>(
-    ...apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>]
-  ): TestApiRegistry;
+  static from(...apis: readonly TestApiProviderEntry[]): TestApiRegistry;
   get<T>(api: ApiRef<T>): T | undefined;
 }
 

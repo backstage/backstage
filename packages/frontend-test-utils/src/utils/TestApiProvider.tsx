@@ -18,6 +18,7 @@ import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiProvider } from '../../../core-app-api/src/apis/system';
 import { ApiHolder, ApiRef } from '@backstage/frontend-plugin-api';
+import { getMockApiFactory, type MockWithApiFactory } from '../apis/utils';
 
 /**
  * Helper type for representing an API reference paired with a partial implementation.
@@ -42,12 +43,25 @@ export type TestApiProviderPropsApiPairs<TApiPairs> = {
 export type TestApiPairs<TApiPairs> = TestApiProviderPropsApiPairs<TApiPairs>;
 
 /**
+ * Type for entries that can be passed to TestApiProvider/TestApiRegistry.
+ * Can be either a traditional [apiRef, implementation] tuple or a mock API instance
+ * marked with the MockApiSymbol.
+ *
+ * @public
+ */
+export type TestApiProviderEntry =
+  | readonly [ApiRef<any>, any]
+  | MockWithApiFactory<any>;
+
+/**
  * Properties for the {@link TestApiProvider} component.
  *
  * @public
  */
 export type TestApiProviderProps<TApiPairs extends any[]> = {
-  apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>];
+  apis: readonly [
+    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
+  ];
   children: ReactNode;
 };
 
@@ -75,20 +89,43 @@ export class TestApiRegistry implements ApiHolder {
    * import { identityApiRef } from '@backstage/frontend-plugin-api';
    * import { mockApis } from '@backstage/frontend-test-utils';
    *
-   * const apis = TestApiRegistry.from(
+   * // Traditional tuple syntax
+   * const apis1 = TestApiRegistry.from(
    *   [identityApiRef, mockApis.identity({ userEntityRef: 'user:default/guest' })],
+   * );
+   *
+   * // Direct mock API instance (no tuple needed)
+   * const apis2 = TestApiRegistry.from(
+   *   mockApis.identity({ userEntityRef: 'user:default/guest' }),
+   *   mockApis.alert(),
    * );
    * ```
    *
    * @public
-   * @param apis - A list of pairs mapping an ApiRef to its respective implementation.
+   * @param apis - A list of pairs mapping an ApiRef to its respective implementation,
+   *               or mock API instances marked with the mockApiSymbol.
    */
-  static from<TApiPairs extends any[]>(
-    ...apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>]
-  ) {
-    return new TestApiRegistry(
-      new Map(apis.map(([api, impl]) => [api.id, impl])),
-    );
+  static from(...apis: readonly TestApiProviderEntry[]) {
+    const apiMap = new Map<string, unknown>();
+
+    for (const entry of apis) {
+      const mockFactory = getMockApiFactory(entry);
+      if (mockFactory) {
+        // Handle mock API instances marked with the symbol
+        const impl = mockFactory.factory({});
+        apiMap.set(mockFactory.api.id, impl);
+      } else if (Array.isArray(entry)) {
+        // Handle traditional [apiRef, impl] tuples
+        const [apiRef, impl] = entry;
+        apiMap.set(apiRef.id, impl);
+      } else {
+        throw new Error(
+          `Invalid API entry provided to TestApiRegistry.from(). Expected either [apiRef, impl] tuple or a mock API instance.`,
+        );
+      }
+    }
+
+    return new TestApiRegistry(apiMap);
   }
 
   private constructor(private readonly apis: Map<string, unknown>) {}
@@ -121,9 +158,22 @@ export class TestApiRegistry implements ApiHolder {
  * import { identityApiRef } from '\@backstage/frontend-plugin-api';
  * import { TestApiProvider, mockApis } from '\@backstage/frontend-test-utils';
  *
+ * // Traditional tuple syntax
  * render(
  *   <TestApiProvider
  *     apis={[[identityApiRef, mockApis.identity({ userEntityRef: 'user:default/guest' })]]}
+ *   >
+ *     <MyComponent />
+ *   </TestApiProvider>
+ * );
+ *
+ * // Direct mock API instances (no tuples needed)
+ * render(
+ *   <TestApiProvider
+ *     apis={[
+ *       mockApis.identity({ userEntityRef: 'user:default/guest' }),
+ *       mockApis.alert(),
+ *     ]}
  *   >
  *     <MyComponent />
  *   </TestApiProvider>
