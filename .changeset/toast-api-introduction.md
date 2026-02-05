@@ -10,7 +10,7 @@ The new `ToastApi` provides enhanced notification capabilities compared to the e
 - **Title and Description**: Toasts support both a title and an optional description
 - **Custom Timeouts**: Each toast can specify its own timeout duration
 - **Links**: Toasts can include action links
-- **Icons**: Support for custom icons or disabling the default icon
+- **Status Variants**: Support for neutral, info, success, warning, and danger statuses
 - **Programmatic Dismiss**: Toasts can be dismissed programmatically using the key returned from `post()`
 
 **Usage:**

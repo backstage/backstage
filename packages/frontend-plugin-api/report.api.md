@@ -19,7 +19,6 @@ import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { JSX as JSX_3 } from 'react';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
-import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 import type { z } from 'zod';
@@ -1957,8 +1956,7 @@ export type ToastLink = {
 export type ToastMessage = {
   title: ReactNode;
   description?: ReactNode;
-  status?: 'info' | 'success' | 'warning' | 'danger';
-  icon?: boolean | ReactElement;
+  status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
   links?: ToastLink[];
   timeout?: number;
 };

@@ -95,7 +95,6 @@ export function ToastDisplay(props: ToastDisplayProps) {
         title: toast.title,
         description: toast.description,
         status: toast.status ?? 'success',
-        icon: toast.icon,
         links: toast.links,
       };
 

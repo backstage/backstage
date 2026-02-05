@@ -47,16 +47,14 @@
   box-sizing: border-box;
   display: flex;
   align-items: flex-start;
-  padding: 1rem;
-  gap: 0.75rem;
+  padding: var(--bui-space-4);
+  gap: var(--bui-space-3);
 
   /* Appearance */
-  border-radius: 0.5rem;
-  background-color: #1f1f1f;
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif;
-  font-size: 0.875rem;
+  border-radius: var(--bui-radius-3);
+  background-color: var(--bui-bg-surface-1);
+  font-family: var(--bui-font-regular);
+  font-size: var(--bui-font-size-3);
   outline: none;
   cursor: default;
   user-select: none;
@@ -68,18 +66,17 @@
   transform-origin: bottom center;
 
   /* Shadow */
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
-}
+  box-shadow: 0 4px 12px -2px rgba(0 0 0 / 0.4);
 
-/* Light mode toast (inverted from dark app theme) */
-[data-theme-mode='light'] .toast {
-  background-color: #ffffff;
-  color: #1f1f1f;
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  /* Focus ring */
+  &:focus-visible {
+    outline: 2px solid var(--bui-border-focus);
+    outline-offset: 2px;
+  }
 }
 
 .toast:focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--bui-border-focus);
   outline-offset: 2px;
 }
 
@@ -97,30 +94,34 @@
 }
 
 /* Status variants - color icon and title */
+.toast[data-status='neutral'] .toast-title {
+  color: var(--bui-fg-primary);
+}
+
 .toast[data-status='info'] .toast-icon,
 .toast[data-status='info'] .toast-title {
-  color: #3b82f6;
+  color: var(--bui-fg-info);
 }
 
 .toast[data-status='success'] .toast-icon,
 .toast[data-status='success'] .toast-title {
-  color: #22c55e;
+  color: var(--bui-fg-success);
 }
 
 .toast[data-status='warning'] .toast-icon,
 .toast[data-status='warning'] .toast-title {
-  color: #f59e0b;
+  color: var(--bui-fg-warning);
 }
 
 .toast[data-status='danger'] .toast-icon,
 .toast[data-status='danger'] .toast-title {
-  color: #ef4444;
+  color: var(--bui-fg-danger);
 }
 
 .toast-wrapper {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: var(--bui-space-3);
   flex: 1;
   min-width: 0;
 }
@@ -128,7 +129,7 @@
 .toast-content {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--bui-space-1);
 }
 
 /* Icon */
@@ -137,7 +138,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0.125rem;
+  margin-top: var(--bui-space-0_5);
 }
 
 .toast-icon svg {
@@ -147,29 +148,26 @@
 
 /* Title */
 .toast-title {
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: var(--bui-font-weight-bold);
+  font-size: var(--bui-font-size-3);
   word-wrap: break-word;
-  margin-top: 0.125rem;
+  margin-top: var(--bui-space-0_5);
 }
 
 /* Description */
 .toast-description {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.875rem;
+  color: var(--bui-fg-secondary);
+  font-size: var(--bui-font-size-3);
+  opacity: 0.9;
   word-wrap: break-word;
-}
-
-[data-theme-mode='light'] .toast-description {
-  color: rgba(0, 0, 0, 0.6);
 }
 
 /* Links */
 .toast-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 0.25rem;
+  gap: var(--bui-space-3);
+  margin-top: var(--bui-space-1);
 }
 
 .toast-links a {
@@ -205,11 +203,12 @@
   margin: -0.25rem -0.25rem 0 0;
   padding: 0;
   border: none;
-  border-radius: 0.25rem;
+  border-radius: var(--bui-radius-2);
   background: transparent;
   color: inherit;
   cursor: pointer;
   transition: background-color 0.15s ease;
+  color: var(--bui-fg-primary);
 }
 
 .toast-close-button svg {
@@ -218,22 +217,14 @@
 }
 
 .toast-close-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme-mode='light'] .toast-close-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--bui-bg-neutral-on-surface-1-hover);
 }
 
 .toast-close-button:focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--bui-border-focus);
   outline-offset: 1px;
 }
 
 .toast-close-button:active {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-[data-theme-mode='light'] .toast-close-button:active {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--bui-bg-neutral-on-surface-1-pressed);
 }

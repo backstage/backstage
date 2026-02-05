@@ -14,7 +14,7 @@ Deprecated `AlertApi` in favor of the new `ToastApi`.
 
 - **Title and Description**: Display a prominent title with optional description text
 - **Action Links**: Include clickable links within notifications
-- **Custom Icons**: Override default icons or disable them entirely
+- **Status Variants**: Support for neutral, info, success, warning, and danger statuses
 - **Per-toast Timeout**: Control auto-dismiss timing for each notification individually
 - **Programmatic Dismiss**: Close notifications via the key returned from `post()`
 
