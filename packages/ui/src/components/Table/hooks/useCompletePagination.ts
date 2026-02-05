@@ -44,7 +44,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   const { sort, filter, search } = query;
 
   const [items, setItems] = useState<T[]>([]);
-  const [isLoading, setIsLoading] = useState(data ? false : true);
+  const [isLoading, setIsLoading] = useState(!data);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [loadCount, setLoadCount] = useState(0);
 
