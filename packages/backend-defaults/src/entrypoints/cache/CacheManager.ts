@@ -160,7 +160,7 @@ export class CacheManager {
       );
     }
 
-    logger?.info('[REDIS PATCH] Store', { store });
+    logger?.debug('backend.cache: selected store', { store });
 
     switch (store) {
       case 'redis':
@@ -206,7 +206,6 @@ export class CacheManager {
 
     const clientConfig = redisConfig.getOptionalConfig('client');
     const socketConfig = clientConfig?.getOptionalConfig('socket');
-    const keepAliveConfig = socketConfig?.getOptional('keepAlive');
     const keepAlive = redisConfig.getOptionalBoolean('client.socket.keepAlive');
     const keepAliveInitialDelay = CacheManager.readOptionalDuration(
       redisConfig,
@@ -220,13 +219,6 @@ export class CacheManager {
       redisConfig,
       'client.socket.socketTimeout',
     );
-
-    logger?.info('[REDIS PATCH] Read socket config', {
-      keepAliveConfig,
-      keepAliveInitialDelay,
-      pingInterval,
-      socketTimeout,
-    });
 
     if (keepAlive === false && keepAliveInitialDelay !== undefined) {
       logger?.warn(
@@ -253,7 +245,7 @@ export class CacheManager {
       }
     }
 
-    logger?.info('[REDIS PATCH] Derived socket options', {
+    logger?.debug('backend.cache: derived socket options', {
       keepAliveForSocket,
       keepAliveInitialDelayForSocket,
     });
@@ -273,14 +265,6 @@ export class CacheManager {
       jitterMs !== undefined ||
       maxRetries !== undefined ||
       stopOnSocketTimeout !== undefined;
-
-    logger?.info('[REDIS PATCH] Read reconnect config', {
-      baseDelayMs,
-      maxDelayMs,
-      jitterMs,
-      maxRetries,
-      stopOnSocketTimeout,
-    });
 
     const reconnectStrategy = hasReconnectConfig
       ? (retries: number, cause: Error) => {
@@ -376,10 +360,20 @@ export class CacheManager {
       }
     }
 
-    logger?.info('[REDIS PATCH] Passing Redis options to Redis client', {
+    logger?.debug('backend.cache: redis client options', {
       hasClientOptions: Boolean(redisOptions.client),
       hasSocketOptions: Boolean(redisOptions.socket),
-      hasPingInterval: pingInterval !== undefined,
+      pingInterval,
+      socketTimeout,
+      keepAliveForSocket,
+      keepAliveInitialDelayForSocket,
+      reconnect: {
+        baseDelayMs,
+        maxDelayMs,
+        jitterMs,
+        maxRetries,
+        stopOnSocketTimeout,
+      },
       hasClusterOptions: Boolean(redisOptions.cluster),
     });
 
