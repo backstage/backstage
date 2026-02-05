@@ -23,6 +23,11 @@ export {
 } from './utils';
 
 /**
+ * Mock API classes are exported as types only to prevent direct instantiation.
+ * Always use the `mockApis` namespace to create mock instances (e.g., `mockApis.alert()`).
+ */
+
+/**
  * @public
  */
 export type { MockAlertApi } from './AlertApi';
