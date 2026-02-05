@@ -27,17 +27,22 @@ import { metricsServiceFactory } from '@backstage/backend-defaults/alpha';
 export namespace metricsServiceMock {
   export const factory = () => metricsServiceFactory;
 
-  export const mock = simpleMock<MetricsService>(metricsServiceRef, () => {
-    const createMockCounter = () => ({ add: jest.fn() });
-    const createMockHistogram = () => ({ record: jest.fn() });
-    return {
-      createCounter: jest.fn().mockReturnValue(createMockCounter()),
-      createUpDownCounter: jest.fn().mockReturnValue(createMockCounter()),
-      createHistogram: jest.fn().mockReturnValue(createMockHistogram()),
-      createGauge: jest.fn().mockReturnValue(createMockCounter()),
-      createObservableCounter: jest.fn(),
-      createObservableUpDownCounter: jest.fn(),
-      createObservableGauge: jest.fn(),
-    };
+  const createMockCounter = () => ({ add: jest.fn() });
+  const createMockHistogram = () => ({ record: jest.fn() });
+  const createMockObservable = () => ({
+    addCallback: jest.fn(),
+    removeCallback: jest.fn(),
   });
+
+  export const mock = simpleMock<MetricsService>(metricsServiceRef, () => ({
+    createCounter: jest.fn().mockImplementation(createMockCounter),
+    createUpDownCounter: jest.fn().mockImplementation(createMockCounter),
+    createHistogram: jest.fn().mockImplementation(createMockHistogram),
+    createGauge: jest.fn().mockImplementation(createMockCounter),
+    createObservableCounter: jest.fn().mockImplementation(createMockObservable),
+    createObservableUpDownCounter: jest
+      .fn()
+      .mockImplementation(createMockObservable),
+    createObservableGauge: jest.fn().mockImplementation(createMockObservable),
+  }));
 }

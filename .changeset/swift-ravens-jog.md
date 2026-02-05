@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-mcp-actions-backend': minor
+'@backstage/plugin-mcp-actions-backend': patch
 ---
 
 Adds two new metrics to track MCP server operations and sessions.
