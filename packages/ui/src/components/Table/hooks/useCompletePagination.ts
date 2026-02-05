@@ -54,7 +54,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   // Load data on mount and when loadCount changes (reload trigger)
   useEffect(() => {
     if (data) {
-      return undefined;
+      return;
     }
 
     let cancelled = false;
