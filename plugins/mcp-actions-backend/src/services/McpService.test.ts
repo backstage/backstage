@@ -41,9 +41,10 @@ describe('McpService', () => {
       action: async () => ({ output: { output: 'test' } }),
     });
 
+    const mockMetrics = metricsServiceMock.mock();
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
-      metrics: metricsServiceMock.mock(),
+      metrics: mockMetrics,
     });
 
     const server = mcpService.getServer({
@@ -94,6 +95,60 @@ describe('McpService', () => {
         name: 'mock-action',
       },
     ]);
+
+    const histogram = mockMetrics.createHistogram.mock.results[0]?.value;
+    expect(histogram.record).toHaveBeenCalledTimes(1);
+    expect(histogram.record).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({
+        'mcp.method.name': 'tools/list',
+      }),
+    );
+    expect(histogram.record.mock.calls[0][1]).not.toHaveProperty('error.type');
+  });
+
+  it('should record metrics with error.type when tools/list fails', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockActionsRegistry.list = jest
+      .fn()
+      .mockRejectedValue(new Error('List failed'));
+
+    const mockMetrics = metricsServiceMock.mock();
+    const mcpService = await McpService.create({
+      actions: mockActionsRegistry,
+      metrics: mockMetrics,
+    });
+
+    const server = mcpService.getServer({
+      credentials: mockCredentials.user(),
+    });
+
+    const client = new Client({
+      name: 'test client',
+      version: '1.0',
+    });
+
+    const [clientTransport, serverTransport] =
+      InMemoryTransport.createLinkedPair();
+
+    await Promise.all([
+      client.connect(clientTransport),
+      server.connect(serverTransport),
+    ]);
+
+    await expect(
+      client.request({ method: 'tools/list' }, ListToolsResultSchema),
+    ).rejects.toThrow();
+
+    const histogram = mockMetrics.createHistogram.mock.results[0]?.value;
+    expect(histogram.record).toHaveBeenCalledTimes(1);
+    expect(histogram.record).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({
+        'mcp.method.name': 'tools/list',
+        'error.type': 'Error',
+      }),
+    );
   });
 
   it('should call the action when the tool is invoked', async () => {
@@ -111,9 +166,10 @@ describe('McpService', () => {
       action: mockAction,
     });
 
+    const mockMetrics = metricsServiceMock.mock();
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
-      metrics: metricsServiceMock.mock(),
+      metrics: mockMetrics,
     });
 
     const server = mcpService.getServer({
@@ -159,12 +215,25 @@ describe('McpService', () => {
         ].join('\n'),
       },
     ]);
+
+    const histogram = mockMetrics.createHistogram.mock.results[0]?.value;
+    expect(histogram.record).toHaveBeenCalledTimes(1);
+    expect(histogram.record).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({
+        'mcp.method.name': 'tools/call',
+        'gen_ai.tool.name': 'mock-action',
+        'gen_ai.operation.name': 'execute_tool',
+      }),
+    );
+    expect(histogram.record.mock.calls[0][1]).not.toHaveProperty('error.type');
   });
 
   it('should return an error when the action is not found', async () => {
+    const mockMetrics = metricsServiceMock.mock();
     const mcpService = await McpService.create({
       actions: actionsRegistryServiceMock(),
-      metrics: metricsServiceMock.mock(),
+      metrics: mockMetrics,
     });
 
     const server = mcpService.getServer({
@@ -200,5 +269,78 @@ describe('McpService', () => {
       ],
       isError: true,
     });
+
+    const histogram = mockMetrics.createHistogram.mock.results[0]?.value;
+    expect(histogram.record).toHaveBeenCalledTimes(1);
+    expect(histogram.record).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({
+        'mcp.method.name': 'tools/call',
+        'gen_ai.tool.name': 'mock-action',
+        'gen_ai.operation.name': 'execute_tool',
+        'error.type': 'tool_error',
+      }),
+    );
+  });
+
+  it('should record metrics with error.type when tool invocation throws', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const customError = new Error('Action failed');
+    customError.name = 'CustomError';
+    mockActionsRegistry.register({
+      name: 'failing-action',
+      title: 'Failing',
+      description: 'Fails',
+      schema: {
+        input: z => z.object({}),
+        output: z => z.object({}),
+      },
+      action: jest.fn().mockRejectedValue(customError),
+    });
+
+    const mockMetrics = metricsServiceMock.mock();
+    const mcpService = await McpService.create({
+      actions: mockActionsRegistry,
+      metrics: mockMetrics,
+    });
+
+    const server = mcpService.getServer({
+      credentials: mockCredentials.user(),
+    });
+
+    const client = new Client({
+      name: 'test client',
+      version: '1.0',
+    });
+
+    const [clientTransport, serverTransport] =
+      InMemoryTransport.createLinkedPair();
+
+    await Promise.all([
+      client.connect(clientTransport),
+      server.connect(serverTransport),
+    ]);
+
+    await expect(
+      client.request(
+        {
+          method: 'tools/call',
+          params: { name: 'failing-action', arguments: {} },
+        },
+        CallToolResultSchema,
+      ),
+    ).rejects.toThrow('Action failed');
+
+    const histogram = mockMetrics.createHistogram.mock.results[0]?.value;
+    expect(histogram.record).toHaveBeenCalledTimes(1);
+    expect(histogram.record).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({
+        'mcp.method.name': 'tools/call',
+        'gen_ai.tool.name': 'failing-action',
+        'gen_ai.operation.name': 'execute_tool',
+        'error.type': 'CustomError',
+      }),
+    );
   });
 });

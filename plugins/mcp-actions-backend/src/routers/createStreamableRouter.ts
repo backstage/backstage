@@ -98,7 +98,7 @@ export const createStreamableRouter = ({
       const durationSeconds = (performance.now() - sessionStart) / 1000;
 
       sessionDuration.record(durationSeconds, {
-        'mcp.protocol.version': '2025-06-18',
+        'mcp.protocol.version': LATEST_PROTOCOL_VERSION,
         'network.transport': 'tcp',
         'network.protocol.name': 'http',
         'error.type': sessionErrorType,
