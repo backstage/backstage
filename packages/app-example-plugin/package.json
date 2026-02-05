@@ -1,12 +1,12 @@
 {
-  "name": "app-next-example-plugin",
+  "name": "app-example-plugin",
   "version": "0.0.32-next.0",
   "description": "Backstage internal example plugin",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "example",
     "pluginPackages": [
-      "app-next-example-plugin"
+      "app-example-plugin"
     ]
   },
   "publishConfig": {
@@ -22,7 +22,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/app-next-example-plugin"
+    "directory": "packages/app-example-plugin"
   },
   "license": "Apache-2.0",
   "sideEffects": false,

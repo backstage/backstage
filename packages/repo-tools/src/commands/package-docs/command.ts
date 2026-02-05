@@ -31,8 +31,8 @@ const execAsync = promisify(exec);
 
 const EXCLUDE = [
   'packages/app',
-  'packages/app-next',
-  'packages/app-next-example-plugin',
+  'packages/app-legacy',
+  'packages/app-example-plugin',
   'packages/cli',
   'packages/cli-common',
   'packages/cli-node',
