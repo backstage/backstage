@@ -1409,171 +1409,211 @@ describe('Catalog Backend Integration', () => {
     });
   });
 
-  it('should publish entity change events when entities are created', async () => {
-    const harness = await TestHarness.create({
-      db: await databases.init('SQLITE_3'),
-      experimentalEntityChangeEvents: true,
-    });
-
-    await harness.setInputEntities([
-      {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: {
-          name: 'test',
-          annotations: {
-            'backstage.io/managed-by-location': 'url:.',
-            'backstage.io/managed-by-origin-location': 'url:.',
-          },
-        },
-      },
-    ]);
-
-    await expect(harness.process()).resolves.toEqual({});
-
-    const events = harness
-      .getPublishedEvents()
-      .filter(event => event.topic === CATALOG_ENTITY_CHANGE_TOPIC);
-    expect(events).toContainEqual(
-      expect.objectContaining({
-        topic: CATALOG_ENTITY_CHANGE_TOPIC,
-        eventPayload: expect.objectContaining({
-          entityRef: 'component:default/test',
-          action: 'created',
-          entity: expect.objectContaining({
-            metadata: expect.objectContaining({ name: 'test' }),
-          }),
-        }),
-      }),
-    );
-  });
-
-  it('should publish entity change events when entities are updated', async () => {
-    const harness = await TestHarness.create({
-      db: await databases.init('SQLITE_3'),
-      experimentalEntityChangeEvents: true,
-    });
-
-    await harness.setInputEntities([
-      {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: {
-          name: 'test',
-          annotations: {
-            'backstage.io/managed-by-location': 'url:.',
-            'backstage.io/managed-by-origin-location': 'url:.',
-          },
-        },
-      },
-    ]);
-
-    await expect(harness.process()).resolves.toEqual({});
-    harness.clearPublishedEvents();
-
-    await harness.setInputEntities([
-      {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: {
-          name: 'test',
-          description: 'Updated description',
-          annotations: {
-            'backstage.io/managed-by-location': 'url:.',
-            'backstage.io/managed-by-origin-location': 'url:.',
-          },
-        },
-      },
-    ]);
-
-    await expect(harness.process()).resolves.toEqual({});
-
-    const events = harness
-      .getPublishedEvents()
-      .filter(event => event.topic === CATALOG_ENTITY_CHANGE_TOPIC);
-    expect(events).toContainEqual(
-      expect.objectContaining({
-        topic: CATALOG_ENTITY_CHANGE_TOPIC,
-        eventPayload: expect.objectContaining({
-          entityRef: 'component:default/test',
-          action: 'updated',
-          entity: expect.objectContaining({
-            metadata: expect.objectContaining({
-              name: 'test',
-              description: 'Updated description',
+  it.each([
+    {
+      enabled: true,
+      expectedEvents: (entityRef: string) => [
+        expect.objectContaining({
+          topic: CATALOG_ENTITY_CHANGE_TOPIC,
+          eventPayload: expect.objectContaining({
+            entityRef,
+            action: 'created',
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({ name: 'test' }),
             }),
           }),
         }),
-      }),
-    );
-  });
+      ],
+    },
+    {
+      enabled: false,
+      expectedEvents: () => [],
+    },
+  ])(
+    'should handle entity change events correctly when experimentalEntityChangeEvents=$enabled for entity creation',
+    async ({ enabled, expectedEvents }) => {
+      const harness = await TestHarness.create({
+        db: await databases.init('SQLITE_3'),
+        experimentalEntityChangeEvents: enabled,
+      });
 
-  it('should publish entity change events when entities are deleted', async () => {
-    const generatedApis = ['api-1'];
-
-    const harness = await TestHarness.create({
-      db: await databases.init('SQLITE_3'),
-      experimentalEntityChangeEvents: true,
-      async processEntity(
-        entity: Entity,
-        location: LocationSpec,
-        emit: CatalogProcessorEmit,
-      ) {
-        if (entity.metadata.name === 'test') {
-          for (const api of generatedApis) {
-            emit(
-              processingResult.entity(location, {
-                apiVersion: 'backstage.io/v1alpha1',
-                kind: 'API',
-                metadata: {
-                  name: api,
-                  annotations: {
-                    'backstage.io/managed-by-location': 'url:.',
-                    'backstage.io/managed-by-origin-location': 'url:.',
-                  },
-                },
-              }),
-            );
-          }
-        }
-        return entity;
-      },
-    });
-
-    await harness.setInputEntities([
-      {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: {
-          name: 'test',
-          annotations: {
-            'backstage.io/managed-by-location': 'url:.',
-            'backstage.io/managed-by-origin-location': 'url:.',
+      await harness.setInputEntities([
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'test',
+            annotations: {
+              'backstage.io/managed-by-location': 'url:.',
+              'backstage.io/managed-by-origin-location': 'url:.',
+            },
           },
         },
-      },
-    ]);
+      ]);
 
-    await expect(harness.process()).resolves.toEqual({});
-    harness.clearPublishedEvents();
+      await expect(harness.process()).resolves.toEqual({});
 
-    generatedApis.pop();
-    await expect(harness.process()).resolves.toEqual({});
-    await harness.removeOrphanedEntities();
+      const events = harness
+        .getPublishedEvents()
+        .filter(event => event.topic === CATALOG_ENTITY_CHANGE_TOPIC);
 
-    const events = harness
-      .getPublishedEvents()
-      .filter(event => event.topic === CATALOG_ENTITY_CHANGE_TOPIC);
-    expect(events).toContainEqual(
-      expect.objectContaining({
-        topic: CATALOG_ENTITY_CHANGE_TOPIC,
-        eventPayload: expect.objectContaining({
-          entityRef: 'api:default/api-1',
-          action: 'deleted',
+      expect(events).toEqual(expectedEvents('component:default/test'));
+    },
+  );
+
+  it.each([
+    {
+      enabled: true,
+      expectedEvents: (entityRef: string) => [
+        expect.objectContaining({
+          topic: CATALOG_ENTITY_CHANGE_TOPIC,
+          eventPayload: expect.objectContaining({
+            entityRef,
+            action: 'updated',
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({
+                name: 'test',
+                description: 'Updated description',
+              }),
+            }),
+          }),
         }),
-      }),
-    );
-  });
+      ],
+    },
+    {
+      enabled: false,
+      expectedEvents: () => [],
+    },
+  ])(
+    'should handle entity change events correctly when experimentalEntityChangeEvents=$enabled for entity updates',
+    async ({ enabled, expectedEvents }) => {
+      const harness = await TestHarness.create({
+        db: await databases.init('SQLITE_3'),
+        experimentalEntityChangeEvents: enabled,
+      });
+
+      await harness.setInputEntities([
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'test',
+            annotations: {
+              'backstage.io/managed-by-location': 'url:.',
+              'backstage.io/managed-by-origin-location': 'url:.',
+            },
+          },
+        },
+      ]);
+
+      await expect(harness.process()).resolves.toEqual({});
+      harness.clearPublishedEvents();
+
+      await harness.setInputEntities([
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'test',
+            description: 'Updated description',
+            annotations: {
+              'backstage.io/managed-by-location': 'url:.',
+              'backstage.io/managed-by-origin-location': 'url:.',
+            },
+          },
+        },
+      ]);
+
+      await expect(harness.process()).resolves.toEqual({});
+
+      const events = harness
+        .getPublishedEvents()
+        .filter(event => event.topic === CATALOG_ENTITY_CHANGE_TOPIC);
+
+      expect(events).toEqual(expectedEvents('component:default/test'));
+    },
+  );
+
+  it.each([
+    {
+      enabled: true,
+      expectedEvents: (entityRef: string) => [
+        expect.objectContaining({
+          topic: CATALOG_ENTITY_CHANGE_TOPIC,
+          eventPayload: expect.objectContaining({
+            entityRef,
+            action: 'deleted',
+          }),
+        }),
+      ],
+    },
+    {
+      enabled: false,
+      expectedEvents: () => [],
+    },
+  ])(
+    'should handle entity change events correctly when experimentalEntityChangeEvents=$enabled for entity deletion',
+    async ({ enabled, expectedEvents }) => {
+      const generatedApis = ['api-1'];
+
+      const harness = await TestHarness.create({
+        db: await databases.init('SQLITE_3'),
+        experimentalEntityChangeEvents: enabled,
+        async processEntity(
+          entity: Entity,
+          location: LocationSpec,
+          emit: CatalogProcessorEmit,
+        ) {
+          if (entity.metadata.name === 'test') {
+            for (const api of generatedApis) {
+              emit(
+                processingResult.entity(location, {
+                  apiVersion: 'backstage.io/v1alpha1',
+                  kind: 'API',
+                  metadata: {
+                    name: api,
+                    annotations: {
+                      'backstage.io/managed-by-location': 'url:.',
+                      'backstage.io/managed-by-origin-location': 'url:.',
+                    },
+                  },
+                }),
+              );
+            }
+          }
+          return entity;
+        },
+      });
+
+      await harness.setInputEntities([
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'test',
+            annotations: {
+              'backstage.io/managed-by-location': 'url:.',
+              'backstage.io/managed-by-origin-location': 'url:.',
+            },
+          },
+        },
+      ]);
+
+      await expect(harness.process()).resolves.toEqual({});
+      harness.clearPublishedEvents();
+
+      generatedApis.pop();
+      await expect(harness.process()).resolves.toEqual({});
+      harness.clearPublishedEvents(); // removes update events from orphaning annotation
+      await harness.removeOrphanedEntities();
+
+      const events = harness
+        .getPublishedEvents()
+        .filter(event => event.topic === CATALOG_ENTITY_CHANGE_TOPIC);
+
+      expect(events).toEqual(expectedEvents('api:default/api-1'));
+    },
+  );
 
   it('should publish entity change events for generated entities lifecycle', async () => {
     const generatedApis = ['api-1', 'api-2'];
