@@ -51,6 +51,12 @@ export const createStreamableRouter = ({
     const sessionStart = performance.now();
     let sessionErrorType: string | undefined;
 
+    const baseAttributes: McpServerSessionAttributes = {
+      'mcp.protocol.version': LATEST_PROTOCOL_VERSION,
+      'network.transport': 'tcp',
+      'network.protocol.name': 'http',
+    };
+
     try {
       const server = mcpService.getServer({
         credentials: await httpAuth.credentials(req),
@@ -71,11 +77,7 @@ export const createStreamableRouter = ({
 
         const durationSeconds = (performance.now() - sessionStart) / 1000;
 
-        sessionDuration.record(durationSeconds, {
-          'mcp.protocol.version': LATEST_PROTOCOL_VERSION,
-          'network.transport': 'tcp',
-          'network.protocol.name': 'http',
-        });
+        sessionDuration.record(durationSeconds, baseAttributes);
       });
     } catch (error) {
       sessionErrorType = isError(error) ? error.name : 'Error';
@@ -98,9 +100,7 @@ export const createStreamableRouter = ({
       const durationSeconds = (performance.now() - sessionStart) / 1000;
 
       sessionDuration.record(durationSeconds, {
-        'mcp.protocol.version': LATEST_PROTOCOL_VERSION,
-        'network.transport': 'tcp',
-        'network.protocol.name': 'http',
+        ...baseAttributes,
         'error.type': sessionErrorType,
       });
     }
