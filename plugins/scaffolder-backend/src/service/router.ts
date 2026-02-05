@@ -89,6 +89,7 @@ import {
   DatabaseTaskStore,
   DefaultTemplateActionRegistry,
   TaskWorker,
+  TemplateActionRegistry,
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
@@ -164,6 +165,7 @@ export interface RouterOptions {
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
   actionsRegistry: ActionsService;
+  actionRegistry?: TemplateActionRegistry;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -268,11 +270,9 @@ export async function createRouter(
   } else {
     taskBroker = options.taskBroker;
   }
-
-  const actionRegistry = new DefaultTemplateActionRegistry(
-    actionsRegistry,
-    logger,
-  );
+  const actionRegistry =
+    options.actionRegistry ??
+    new DefaultTemplateActionRegistry(actionsRegistry, logger);
 
   const templateExtensions = {
     additionalTemplateFilters: convertFiltersToRecord(

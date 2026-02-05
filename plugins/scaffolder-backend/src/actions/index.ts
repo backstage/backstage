@@ -16,10 +16,12 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 import { createDryRunTemplateAction } from './createDryRunTemplateAction';
+import { createListScaffolderActionsAction } from './createListScaffolderActionsAction';
 
 export const createScaffolderActions = (options: {
   actionsRegistry: ActionsRegistryService;
   scaffolderService: ScaffolderService;
 }) => {
   createDryRunTemplateAction(options);
+  createListScaffolderActionsAction(options);
 };
