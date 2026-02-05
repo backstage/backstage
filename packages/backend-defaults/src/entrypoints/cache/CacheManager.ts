@@ -207,18 +207,15 @@ export class CacheManager {
     const clientConfig = redisConfig.getOptionalConfig('client');
     const socketConfig = clientConfig?.getOptionalConfig('socket');
     const keepAlive = redisConfig.getOptionalBoolean('client.socket.keepAlive');
-    const keepAliveInitialDelay = CacheManager.readOptionalDuration(
-      redisConfig,
-      'client.socket.keepAliveInitialDelay',
-    );
-    const pingInterval = CacheManager.readOptionalDuration(
-      redisConfig,
-      'client.pingInterval',
-    );
-    const socketTimeout = CacheManager.readOptionalDuration(
-      redisConfig,
-      'client.socket.socketTimeout',
-    );
+    const keepAliveInitialDelay = socketConfig
+      ? CacheManager.readOptionalDuration(socketConfig, 'keepAliveInitialDelay')
+      : undefined;
+    const pingInterval = clientConfig
+      ? CacheManager.readOptionalDuration(clientConfig, 'pingInterval')
+      : undefined;
+    const socketTimeout = socketConfig
+      ? CacheManager.readOptionalDuration(socketConfig, 'socketTimeout')
+      : undefined;
 
     let keepAliveForSocket: boolean | undefined;
     let keepAliveInitialDelayForSocket: number | undefined;
