@@ -21,7 +21,6 @@ import {
   createTestEntityPage,
   catalogApiMock,
 } from '@backstage/plugin-catalog-react/testUtils';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import orgPlugin from './alpha';
 
 const EntityGroupProfileCard = orgPlugin.getExtension(
@@ -230,12 +229,7 @@ describe('org plugin entity cards', () => {
           createTestEntityPage({ entity: groupEntity }),
           EntityMembersListCard,
         ],
-        apis: [
-          [
-            catalogApiRef,
-            catalogApiMock({ entities: [groupEntity, memberUser] }),
-          ],
-        ],
+        apis: [catalogApiMock({ entities: [groupEntity, memberUser] })],
       });
 
       expect(await screen.findByText('Alice Smith')).toBeInTheDocument();
@@ -261,7 +255,7 @@ describe('org plugin entity cards', () => {
           createTestEntityPage({ entity: groupEntity }),
           EntityMembersListCard,
         ],
-        apis: [[catalogApiRef, catalogApiMock({ entities: [groupEntity] })]],
+        apis: [catalogApiMock({ entities: [groupEntity] })],
       });
 
       expect(

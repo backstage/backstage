@@ -19,7 +19,7 @@ export {
   type MockApiFactorySymbol,
   type ApiMock,
   type MockWithApiFactory,
-  mockApiFactorySymbol,
+  attachMockApiFactory,
 } from './utils';
 
 /**

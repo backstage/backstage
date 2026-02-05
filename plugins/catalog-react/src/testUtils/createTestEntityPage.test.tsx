@@ -23,7 +23,6 @@ import {
   EntityCardBlueprint,
   EntityContentBlueprint,
 } from '../alpha/blueprints';
-import { catalogApiRef } from '../api';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -386,7 +385,7 @@ describe('createTestEntityPage', () => {
           createTestEntityPage({ entity: mockEntity }),
           catalogApiCard,
         ],
-        apis: [[catalogApiRef, catalogApiMock({ entities: customEntities })]],
+        apis: [catalogApiMock({ entities: customEntities })],
       });
 
       // Should use the user-provided catalog API with custom entities, not mockEntity

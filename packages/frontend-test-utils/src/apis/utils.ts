@@ -20,7 +20,7 @@ import { ApiFactory } from '@backstage/frontend-plugin-api';
 /**
  * Symbol used to mark mock API instances with their corresponding API factory.
  *
- * @public
+ * @ignore
  */
 export const mockApiFactorySymbol = Symbol.for('@backstage/mock-api');
 
@@ -64,6 +64,37 @@ export type MockWithApiFactory<TApi> = TApi & {
  * @internal
  */
 export function mockWithApiFactory<TApi, TImpl extends TApi = TApi>(
+  apiRef: ApiRef<TApi>,
+  implementation: TImpl,
+): TImpl & { [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}> } {
+  const marked = implementation as TImpl & {
+    [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+  };
+  (marked as any)[mockApiFactorySymbol] = {
+    api: apiRef,
+    deps: {},
+    factory: () => implementation,
+  };
+  return marked;
+}
+
+/**
+ * Attaches mock API factory metadata to an API instance, allowing it to be
+ * passed directly to test utilities without needing to explicitly provide
+ * the [apiRef, implementation] tuple.
+ *
+ * @public
+ * @example
+ * ```ts
+ * const catalogApi = attachMockApiFactory(
+ *   catalogApiRef,
+ *   new InMemoryCatalogClient()
+ * );
+ * // Can now be passed directly to TestApiProvider
+ * <TestApiProvider apis={[catalogApi]}>
+ * ```
+ */
+export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
   apiRef: ApiRef<TApi>,
   implementation: TImpl,
 ): TImpl & { [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}> } {

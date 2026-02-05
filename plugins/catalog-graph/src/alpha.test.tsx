@@ -21,7 +21,6 @@ import {
   createTestEntityPage,
   catalogApiMock,
 } from '@backstage/plugin-catalog-react/testUtils';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import catalogGraphPlugin from './alpha';
 import { catalogGraphRouteRef } from './routes';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from './api';
@@ -58,7 +57,7 @@ describe('catalog-graph alpha plugin', () => {
           '/catalog-graph': catalogGraphRouteRef,
         },
         apis: [
-          [catalogApiRef, catalogApiMock({ entities: [entity] })],
+          catalogApiMock({ entities: [entity] }),
           [catalogGraphApiRef, new DefaultCatalogGraphApi()],
         ],
       });
@@ -95,7 +94,7 @@ describe('catalog-graph alpha plugin', () => {
           '/catalog-graph': catalogGraphRouteRef,
         },
         apis: [
-          [catalogApiRef, catalogApiMock({ entities: [entity] })],
+          catalogApiMock({ entities: [entity] }),
           [catalogGraphApiRef, new DefaultCatalogGraphApi()],
         ],
       });
@@ -131,7 +130,7 @@ describe('catalog-graph alpha plugin', () => {
           '/catalog-graph': catalogGraphRouteRef,
         },
         apis: [
-          [catalogApiRef, catalogApiMock({ entities: [entity] })],
+          catalogApiMock({ entities: [entity] }),
           [catalogGraphApiRef, new DefaultCatalogGraphApi()],
         ],
       });

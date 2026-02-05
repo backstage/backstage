@@ -65,6 +65,14 @@ export type ApiMock<TApi> = {
     : TApi[Key];
 };
 
+// @public
+export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
+  apiRef: ApiRef<TApi>,
+  implementation: TImpl,
+): TImpl & {
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+};
+
 // @public (undocumented)
 export function createExtensionTester<
   T extends ExtensionDefinitionParameters,
@@ -158,9 +166,6 @@ export class MockAnalyticsApi implements AnalyticsApi {
 
 // @public
 export type MockApiFactorySymbol = typeof mockApiFactorySymbol;
-
-// @public
-export const mockApiFactorySymbol: unique symbol;
 
 // @public
 export namespace mockApis {

@@ -11,10 +11,13 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { MockWithApiFactory } from '@backstage/frontend-test-utils';
 import { PropsWithChildren } from 'react';
 
 // @public
-export function catalogApiMock(options?: { entities?: Entity[] }): CatalogApi;
+export function catalogApiMock(options?: {
+  entities?: Entity[];
+}): MockWithApiFactory<CatalogApi>;
 
 // @public
 export namespace catalogApiMock {
