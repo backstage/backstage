@@ -51,15 +51,16 @@ export class Auth0Strategy extends Auth0InternalStrategy {
   authenticate(req: express.Request, options: Record<string, any>): void {
     super.authenticate(req, {
       ...options,
-      invitation: req.query.invitation?.toString(),
+      organization: req.query.organization,
+      invitation: req.query.invitation,
     });
   }
 
   authorizationParams(options: Record<string, any>): Record<string, any> {
     const params = super.authorizationParams(options);
 
-    if (this.organization) {
-      params.organization = this.organization;
+    if (options.organization || this.organization) {
+      params.organization = options.organization || this.organization;
     }
 
     if (options.invitation) {
