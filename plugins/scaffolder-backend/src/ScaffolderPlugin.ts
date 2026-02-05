@@ -52,6 +52,7 @@ import {
   createFilesystemReadDirAction,
   createFilesystemRenameAction,
   createWaitAction,
+  DefaultTemplateActionRegistry,
 } from './scaffolder';
 import { createRouter } from './service/router';
 import { loggerToWinstonLogger } from './util/loggerToWinstonLogger';
@@ -59,7 +60,11 @@ import {
   convertFiltersToRecord,
   convertGlobalsToRecord,
 } from './util/templating';
-import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  actionsServiceRef,
+  actionsRegistryServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
+import { createScaffolderActions } from './actions';
 
 /**
  * Scaffolder plugin
@@ -144,6 +149,7 @@ export const scaffolderPlugin = createBackendPlugin({
         catalog: catalogServiceRef,
         events: eventsServiceRef,
         actionsRegistry: actionsServiceRef,
+        actionsRegistryService: actionsRegistryServiceRef,
       },
       async init({
         logger,
@@ -159,9 +165,17 @@ export const scaffolderPlugin = createBackendPlugin({
         events,
         auditor,
         actionsRegistry,
+        actionsRegistryService,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
+
+        // Create the action registry early so we can use it for both
+        // the router and the MCP actions
+        const templateActionRegistry = new DefaultTemplateActionRegistry(
+          actionsRegistry,
+          logger,
+        );
 
         const templateExtensions = {
           additionalTemplateFilters: convertFiltersToRecord(
@@ -229,8 +243,15 @@ export const scaffolderPlugin = createBackendPlugin({
           events,
           auditor,
           actionsRegistry,
+          actionRegistry: templateActionRegistry, // Pass the pre-created TemplateActionRegistry
         });
         httpRouter.use(router);
+
+        // Register MCP actions for scaffolder with the full action registry
+        createScaffolderActions({
+          actionsRegistry: actionsRegistryService,
+          templateActionRegistry, // Pass the registry containing ALL template actions
+        });
       },
     });
   },
