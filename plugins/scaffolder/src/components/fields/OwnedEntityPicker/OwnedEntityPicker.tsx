@@ -52,8 +52,6 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
 /**
  * Builds a `uiSchema` for an `EntityPicker` from a parent `OwnedEntityPicker`.
  * Migrates deprecated parameters such as `allowedKinds` to `catalogFilter` structure.
- * Uses `ownedByCurrentUser` query parameter so the backend restricts to the current
- * user's entities, avoiding 431 when users belong to many groups.
  *
  * @param uiSchema The `uiSchema` of an `OwnedEntityPicker` component.
  * @returns The `uiSchema` for an `EntityPicker` component.

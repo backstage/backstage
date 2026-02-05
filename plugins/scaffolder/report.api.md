@@ -76,6 +76,7 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    ownedByCurrentUser?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -105,6 +106,7 @@ export const EntityPickerFieldSchema: FieldSchema_2<
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    ownedByCurrentUser?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -206,6 +208,7 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    ownedByCurrentUser?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -251,6 +254,7 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    ownedByCurrentUser?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -280,6 +284,7 @@ export const OwnedEntityPickerFieldSchema: FieldSchema_2<
   {
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    ownedByCurrentUser?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,

@@ -291,6 +291,7 @@ components:
       in: query
       description: When true, restricts results to entities owned by the current user.
       required: false
+      allowReserved: true
       schema:
         type: boolean
   requestBodies: {}

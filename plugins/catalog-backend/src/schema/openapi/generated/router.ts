@@ -201,6 +201,7 @@ export const spec = {
         description:
           'When true, restricts results to entities owned by the current user.',
         required: false,
+        allowReserved: true,
         schema: {
           type: 'boolean',
         },
