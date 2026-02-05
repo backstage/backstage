@@ -63,11 +63,13 @@ export type MockWithApiFactory<TApi> = TApi & {
  *
  * @internal
  */
-export function mockWithApiFactory<TApi>(
+export function mockWithApiFactory<TApi, TImpl extends TApi = TApi>(
   apiRef: ApiRef<TApi>,
-  implementation: TApi,
-): MockWithApiFactory<TApi> {
-  const marked = implementation as MockWithApiFactory<TApi>;
+  implementation: TImpl,
+): TImpl & { [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}> } {
+  const marked = implementation as TImpl & {
+    [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+  };
   (marked as any)[mockApiFactorySymbol] = {
     api: apiRef,
     deps: {},

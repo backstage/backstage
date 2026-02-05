@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-export {
-  MockConfigApi,
-  type ErrorWithContext,
-  MockErrorApi,
-  type MockErrorApiOptions,
-  MockFetchApi,
-  type MockFetchApiOptions,
-  MockPermissionApi,
-  MockStorageApi,
-  type MockStorageBucket,
-} from '@backstage/test-utils';
-
-export { MockAnalyticsApi } from './AnalyticsApi/MockAnalyticsApi';
 export { mockApis } from './mockApis';
 export {
   type MockApiFactorySymbol,
@@ -43,7 +30,46 @@ export type { MockAlertApi } from './AlertApi';
 /**
  * @public
  */
+export type { MockAnalyticsApi } from './AnalyticsApi';
+
+/**
+ * @public
+ */
+export type { MockConfigApi } from './ConfigApi';
+
+/**
+ * @public
+ */
+export type {
+  MockErrorApi,
+  MockErrorApiOptions,
+  ErrorWithContext,
+} from './ErrorApi';
+
+/**
+ * @public
+ */
+export type { MockFetchApi, MockFetchApiOptions } from './FetchApi';
+
+/**
+ * @public
+ */
 export type {
   MockFeatureFlagsApi,
   MockFeatureFlagsApiOptions,
 } from './FeatureFlagsApi';
+
+/**
+ * @public
+ */
+export type { MockPermissionApi } from './PermissionApi';
+
+/**
+ * @public
+ */
+export type { MockStorageApi, MockStorageBucket } from './StorageApi';
+
+/**
+ * @public
+ */
+export type { MockTranslationApi } from './TranslationApi';

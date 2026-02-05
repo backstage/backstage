@@ -16,15 +16,46 @@
 
 import {
   alertApiRef,
+  analyticsApiRef,
+  configApiRef,
   createApiFactory,
+  discoveryApiRef,
+  errorApiRef,
+  fetchApiRef,
   featureFlagsApiRef,
+  identityApiRef,
+  storageApiRef,
+  translationApiRef,
+  type AnalyticsApi,
+  type ConfigApi,
+  type DiscoveryApi,
+  type ErrorApi,
+  type FetchApi,
+  type IdentityApi,
+  type StorageApi,
+  type TranslationApi,
 } from '@backstage/frontend-plugin-api';
-import { mockApis as testUtilsMockApis } from '@backstage/test-utils';
+import {
+  permissionApiRef,
+  type PermissionApi,
+} from '@backstage/plugin-permission-react';
+import { JsonObject } from '@backstage/types';
+import {
+  AuthorizeResult,
+  EvaluatePermissionRequest,
+} from '@backstage/plugin-permission-common';
 import { MockAlertApi } from './AlertApi';
 import {
   MockFeatureFlagsApi,
   MockFeatureFlagsApiOptions,
 } from './FeatureFlagsApi';
+import { MockAnalyticsApi } from './AnalyticsApi';
+import { MockConfigApi } from './ConfigApi';
+import { MockErrorApi, MockErrorApiOptions } from './ErrorApi';
+import { MockFetchApi, MockFetchApiOptions } from './FetchApi';
+import { MockStorageApi } from './StorageApi';
+import { MockPermissionApi } from './PermissionApi';
+import { MockTranslationApi } from './TranslationApi';
 import {
   ApiMock,
   mockWithApiFactory,
@@ -211,12 +242,289 @@ export namespace mockApis {
     }));
   }
 
-  // Re-export all mockApis from test-utils
-  export const analytics = testUtilsMockApis.analytics;
-  export const config = testUtilsMockApis.config;
-  export const discovery = testUtilsMockApis.discovery;
-  export const identity = testUtilsMockApis.identity;
-  export const permission = testUtilsMockApis.permission;
-  export const storage = testUtilsMockApis.storage;
-  export const translation = testUtilsMockApis.translation;
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#AnalyticsApi}.
+   *
+   * @public
+   */
+  export function analytics(): MockAnalyticsApi &
+    MockWithApiFactory<AnalyticsApi> {
+    const instance = new MockAnalyticsApi();
+    return mockWithApiFactory(analyticsApiRef, instance) as MockAnalyticsApi &
+      MockWithApiFactory<AnalyticsApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/core-plugin-api#AnalyticsApi}.
+   *
+   * @public
+   */
+  export namespace analytics {
+    export const mock = simpleMock(analyticsApiRef, () => ({
+      captureEvent: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+   * By default returns the default translation.
+   *
+   * @public
+   */
+  export function translation(): MockTranslationApi &
+    MockWithApiFactory<TranslationApi> {
+    const instance = MockTranslationApi.create();
+    return mockWithApiFactory(
+      translationApiRef,
+      instance,
+    ) as MockTranslationApi & MockWithApiFactory<TranslationApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+   *
+   * @see {@link @backstage/frontend-plugin-api#mockApis.translation}
+   * @public
+   */
+  export namespace translation {
+    /**
+     * Creates a mock of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+     *
+     * @public
+     */
+    export const mock = simpleMock(translationApiRef, () => ({
+      getTranslation: jest.fn(),
+      translation$: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#ConfigApi}.
+   *
+   * @public
+   */
+  export function config(options?: {
+    data?: JsonObject;
+  }): MockConfigApi & MockWithApiFactory<ConfigApi> {
+    const instance = new MockConfigApi(options?.data ?? {});
+    return mockWithApiFactory(configApiRef, instance) as MockConfigApi &
+      MockWithApiFactory<ConfigApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/core-plugin-api#ConfigApi}.
+   *
+   * @public
+   */
+  export namespace config {
+    export const mock = simpleMock(configApiRef, () => ({
+      has: jest.fn(),
+      keys: jest.fn(),
+      get: jest.fn(),
+      getOptional: jest.fn(),
+      getConfig: jest.fn(),
+      getOptionalConfig: jest.fn(),
+      getConfigArray: jest.fn(),
+      getOptionalConfigArray: jest.fn(),
+      getNumber: jest.fn(),
+      getOptionalNumber: jest.fn(),
+      getBoolean: jest.fn(),
+      getOptionalBoolean: jest.fn(),
+      getString: jest.fn(),
+      getOptionalString: jest.fn(),
+      getStringArray: jest.fn(),
+      getOptionalStringArray: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#DiscoveryApi}.
+   *
+   * @public
+   */
+  export function discovery(options?: {
+    baseUrl?: string;
+  }): DiscoveryApi & MockWithApiFactory<DiscoveryApi> {
+    const baseUrl = options?.baseUrl ?? 'http://example.com';
+    const instance: DiscoveryApi = {
+      async getBaseUrl(pluginId: string) {
+        return `${baseUrl}/api/${pluginId}`;
+      },
+    };
+    return mockWithApiFactory(discoveryApiRef, instance) as DiscoveryApi &
+      MockWithApiFactory<DiscoveryApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/core-plugin-api#DiscoveryApi}.
+   *
+   * @public
+   */
+  export namespace discovery {
+    export const mock = simpleMock(discoveryApiRef, () => ({
+      getBaseUrl: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#IdentityApi}.
+   *
+   * @public
+   */
+  export function identity(options?: {
+    userEntityRef?: string;
+    ownershipEntityRefs?: string[];
+    token?: string;
+    email?: string;
+    displayName?: string;
+    picture?: string;
+  }): IdentityApi & MockWithApiFactory<IdentityApi> {
+    const {
+      userEntityRef = 'user:default/test',
+      ownershipEntityRefs = ['user:default/test'],
+      token,
+      email,
+      displayName,
+      picture,
+    } = options ?? {};
+    const instance: IdentityApi = {
+      async getBackstageIdentity() {
+        return { type: 'user', ownershipEntityRefs, userEntityRef };
+      },
+      async getCredentials() {
+        return { token };
+      },
+      async getProfileInfo() {
+        return { email, displayName, picture };
+      },
+      async signOut() {},
+    };
+    return mockWithApiFactory(identityApiRef, instance) as IdentityApi &
+      MockWithApiFactory<IdentityApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/core-plugin-api#IdentityApi}.
+   *
+   * @public
+   */
+  export namespace identity {
+    export const mock = simpleMock(identityApiRef, () => ({
+      getBackstageIdentity: jest.fn(),
+      getCredentials: jest.fn(),
+      getProfileInfo: jest.fn(),
+      signOut: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/plugin-permission-react#PermissionApi}.
+   *
+   * @public
+   */
+  export function permission(options?: {
+    authorize?:
+      | AuthorizeResult.ALLOW
+      | AuthorizeResult.DENY
+      | ((
+          request: EvaluatePermissionRequest,
+        ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
+  }): MockPermissionApi & MockWithApiFactory<PermissionApi> {
+    const authorizeInput = options?.authorize;
+    const handler =
+      typeof authorizeInput === 'function'
+        ? authorizeInput
+        : () => authorizeInput ?? AuthorizeResult.ALLOW;
+    const instance = new MockPermissionApi(handler);
+    return mockWithApiFactory(permissionApiRef, instance) as MockPermissionApi &
+      MockWithApiFactory<PermissionApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/plugin-permission-react#PermissionApi}.
+   *
+   * @public
+   */
+  export namespace permission {
+    export const mock = simpleMock(permissionApiRef, () => ({
+      authorize: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#StorageApi}.
+   *
+   * @public
+   */
+  export function storage(options?: {
+    data?: JsonObject;
+  }): MockStorageApi & MockWithApiFactory<StorageApi> {
+    const instance = MockStorageApi.create(options?.data);
+    return mockWithApiFactory(storageApiRef, instance) as MockStorageApi &
+      MockWithApiFactory<StorageApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/core-plugin-api#StorageApi}.
+   *
+   * @public
+   */
+  export namespace storage {
+    export const mock = simpleMock(storageApiRef, () => ({
+      forBucket: jest.fn(),
+      snapshot: jest.fn(),
+      set: jest.fn(),
+      remove: jest.fn(),
+      observe$: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#ErrorApi}.
+   *
+   * @public
+   */
+  export function error(
+    options?: MockErrorApiOptions,
+  ): MockErrorApi & MockWithApiFactory<ErrorApi> {
+    const instance = new MockErrorApi(options);
+    return mockWithApiFactory(errorApiRef, instance) as MockErrorApi &
+      MockWithApiFactory<ErrorApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/core-plugin-api#ErrorApi}.
+   *
+   * @public
+   */
+  export namespace error {
+    export const mock = simpleMock(errorApiRef, () => ({
+      post: jest.fn(),
+      error$: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#FetchApi}.
+   *
+   * @public
+   */
+  export function fetch(
+    options?: MockFetchApiOptions,
+  ): MockFetchApi & MockWithApiFactory<FetchApi> {
+    const instance = new MockFetchApi(options);
+    return mockWithApiFactory(fetchApiRef, instance) as MockFetchApi &
+      MockWithApiFactory<FetchApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/core-plugin-api#FetchApi}.
+   *
+   * @public
+   */
+  export namespace fetch {
+    export const mock = simpleMock(fetchApiRef, () => ({
+      fetch: jest.fn(),
+    }));
+  }
 }

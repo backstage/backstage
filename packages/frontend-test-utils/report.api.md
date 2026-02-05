@@ -12,7 +12,19 @@ import { ApiHolder } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
-import { ErrorWithContext } from '@backstage/test-utils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { Config } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
+import { ConfigApi as ConfigApi_2 } from '@backstage/frontend-plugin-api';
+import crossFetch from 'cross-fetch';
+import { DiscoveryApi } from '@backstage/frontend-plugin-api';
+import { DiscoveryApi as DiscoveryApi_2 } from '@backstage/core-plugin-api';
+import { ErrorApi } from '@backstage/core-plugin-api';
+import { ErrorApi as ErrorApi_2 } from '@backstage/frontend-plugin-api';
+import { ErrorApiError } from '@backstage/core-plugin-api';
+import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
+import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
@@ -20,24 +32,28 @@ import { FeatureFlag } from '@backstage/frontend-plugin-api';
 import { FeatureFlagsApi } from '@backstage/frontend-plugin-api';
 import { FeatureFlagsSaveOptions } from '@backstage/frontend-plugin-api';
 import { FeatureFlagState } from '@backstage/frontend-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
+import { FetchApi as FetchApi_2 } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { IdentityApi } from '@backstage/frontend-plugin-api';
+import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
-import { mockApis as mockApis_2 } from '@backstage/test-utils';
-import { MockConfigApi } from '@backstage/test-utils';
-import { MockErrorApi } from '@backstage/test-utils';
-import { MockErrorApiOptions } from '@backstage/test-utils';
-import { MockFetchApi } from '@backstage/test-utils';
-import { MockFetchApiOptions } from '@backstage/test-utils';
-import { MockPermissionApi } from '@backstage/test-utils';
-import { MockStorageApi } from '@backstage/test-utils';
-import { MockStorageBucket } from '@backstage/test-utils';
 import { Observable } from '@backstage/types';
+import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { StorageApi } from '@backstage/core-plugin-api';
+import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
+import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { testingLibraryDomTypesQueries } from '@testing-library/dom/types/queries';
+import { TranslationApi } from '@backstage/core-plugin-api/alpha';
+import { TranslationApi as TranslationApi_2 } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationSnapshot } from '@backstage/core-plugin-api/alpha';
 import { withLogCollector } from '@backstage/test-utils';
 
 // @public
@@ -62,7 +78,11 @@ export function createExtensionTester<
   },
 ): ExtensionTester<NonNullable<T['output']>>;
 
-export { ErrorWithContext };
+// @public
+export type ErrorWithContext = {
+  error: ErrorApiError;
+  context?: ErrorApiErrorContext;
+};
 
 // @public (undocumented)
 export class ExtensionQuery<UOutput extends ExtensionDataRef> {
@@ -160,6 +180,97 @@ export namespace mockApis {
       alert$: jest.Mock<any, any, any>;
     }>;
   }
+  export function analytics(): MockAnalyticsApi &
+    MockWithApiFactory<AnalyticsApi>;
+  export namespace analytics {
+    const // (undocumented)
+      mock: (
+        partialImpl?:
+          | Partial<{
+              captureEvent: jest.Mock<any, any, any>;
+            }>
+          | undefined,
+      ) => ApiMock<{
+        captureEvent: jest.Mock<any, any, any>;
+      }>;
+  }
+  export function config(options?: {
+    data?: JsonObject;
+  }): MockConfigApi & MockWithApiFactory<ConfigApi_2>;
+  export namespace config {
+    const // (undocumented)
+      mock: (
+        partialImpl?:
+          | Partial<{
+              has: jest.Mock<any, any, any>;
+              keys: jest.Mock<any, any, any>;
+              get: jest.Mock<any, any, any>;
+              getOptional: jest.Mock<any, any, any>;
+              getConfig: jest.Mock<any, any, any>;
+              getOptionalConfig: jest.Mock<any, any, any>;
+              getConfigArray: jest.Mock<any, any, any>;
+              getOptionalConfigArray: jest.Mock<any, any, any>;
+              getNumber: jest.Mock<any, any, any>;
+              getOptionalNumber: jest.Mock<any, any, any>;
+              getBoolean: jest.Mock<any, any, any>;
+              getOptionalBoolean: jest.Mock<any, any, any>;
+              getString: jest.Mock<any, any, any>;
+              getOptionalString: jest.Mock<any, any, any>;
+              getStringArray: jest.Mock<any, any, any>;
+              getOptionalStringArray: jest.Mock<any, any, any>;
+            }>
+          | undefined,
+      ) => ApiMock<{
+        has: jest.Mock<any, any, any>;
+        keys: jest.Mock<any, any, any>;
+        get: jest.Mock<any, any, any>;
+        getOptional: jest.Mock<any, any, any>;
+        getConfig: jest.Mock<any, any, any>;
+        getOptionalConfig: jest.Mock<any, any, any>;
+        getConfigArray: jest.Mock<any, any, any>;
+        getOptionalConfigArray: jest.Mock<any, any, any>;
+        getNumber: jest.Mock<any, any, any>;
+        getOptionalNumber: jest.Mock<any, any, any>;
+        getBoolean: jest.Mock<any, any, any>;
+        getOptionalBoolean: jest.Mock<any, any, any>;
+        getString: jest.Mock<any, any, any>;
+        getOptionalString: jest.Mock<any, any, any>;
+        getStringArray: jest.Mock<any, any, any>;
+        getOptionalStringArray: jest.Mock<any, any, any>;
+      }>;
+  }
+  export function discovery(options?: {
+    baseUrl?: string;
+  }): DiscoveryApi & MockWithApiFactory<DiscoveryApi>;
+  export namespace discovery {
+    const // (undocumented)
+      mock: (
+        partialImpl?:
+          | Partial<{
+              getBaseUrl: jest.Mock<any, any, any>;
+            }>
+          | undefined,
+      ) => ApiMock<{
+        getBaseUrl: jest.Mock<any, any, any>;
+      }>;
+  }
+  export function error(
+    options?: MockErrorApiOptions,
+  ): MockErrorApi & MockWithApiFactory<ErrorApi_2>;
+  export namespace error {
+    const // (undocumented)
+      mock: (
+        partialImpl?:
+          | Partial<{
+              post: jest.Mock<any, any, any>;
+              error$: jest.Mock<any, any, any>;
+            }>
+          | undefined,
+      ) => ApiMock<{
+        post: jest.Mock<any, any, any>;
+        error$: jest.Mock<any, any, any>;
+      }>;
+  }
   export function featureFlags(
     options?: MockFeatureFlagsApiOptions,
   ): MockWithApiFactory<MockFeatureFlagsApi>;
@@ -181,27 +292,148 @@ export namespace mockApis {
       save: jest.Mock<any, any, any>;
     }>;
   }
-  const // (undocumented)
-    analytics: typeof mockApis_2.analytics;
-  const // (undocumented)
-    config: typeof mockApis_2.config;
-  const // (undocumented)
-    discovery: typeof mockApis_2.discovery;
-  const // (undocumented)
-    identity: typeof mockApis_2.identity;
-  const // (undocumented)
-    permission: typeof mockApis_2.permission;
-  const // (undocumented)
-    storage: typeof mockApis_2.storage;
-  const // (undocumented)
-    translation: typeof mockApis_2.translation;
+  export function fetch(
+    options?: MockFetchApiOptions,
+  ): MockFetchApi & MockWithApiFactory<FetchApi_2>;
+  export namespace fetch {
+    const // (undocumented)
+      mock: (
+        partialImpl?:
+          | Partial<{
+              fetch: jest.Mock<any, any, any>;
+            }>
+          | undefined,
+      ) => ApiMock<{
+        fetch: jest.Mock<any, any, any>;
+      }>;
+  }
+  export function identity(options?: {
+    userEntityRef?: string;
+    ownershipEntityRefs?: string[];
+    token?: string;
+    email?: string;
+    displayName?: string;
+    picture?: string;
+  }): IdentityApi & MockWithApiFactory<IdentityApi>;
+  export namespace identity {
+    const // (undocumented)
+      mock: (
+        partialImpl?:
+          | Partial<{
+              getBackstageIdentity: jest.Mock<any, any, any>;
+              getCredentials: jest.Mock<any, any, any>;
+              getProfileInfo: jest.Mock<any, any, any>;
+              signOut: jest.Mock<any, any, any>;
+            }>
+          | undefined,
+      ) => ApiMock<{
+        getBackstageIdentity: jest.Mock<any, any, any>;
+        getCredentials: jest.Mock<any, any, any>;
+        getProfileInfo: jest.Mock<any, any, any>;
+        signOut: jest.Mock<any, any, any>;
+      }>;
+  }
+  export function permission(options?: {
+    authorize?:
+      | AuthorizeResult.ALLOW
+      | AuthorizeResult.DENY
+      | ((
+          request: EvaluatePermissionRequest,
+        ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
+  }): MockPermissionApi & MockWithApiFactory<PermissionApi>;
+  export namespace permission {
+    const // (undocumented)
+      mock: (
+        partialImpl?:
+          | Partial<{
+              authorize: jest.Mock<any, any, any>;
+            }>
+          | undefined,
+      ) => ApiMock<{
+        authorize: jest.Mock<any, any, any>;
+      }>;
+  }
+  export function storage(options?: {
+    data?: JsonObject;
+  }): MockStorageApi & MockWithApiFactory<StorageApi_2>;
+  export namespace storage {
+    const // (undocumented)
+      mock: (
+        partialImpl?:
+          | Partial<{
+              forBucket: jest.Mock<any, any, any>;
+              snapshot: jest.Mock<any, any, any>;
+              set: jest.Mock<any, any, any>;
+              remove: jest.Mock<any, any, any>;
+              observe$: jest.Mock<any, any, any>;
+            }>
+          | undefined,
+      ) => ApiMock<{
+        forBucket: jest.Mock<any, any, any>;
+        snapshot: jest.Mock<any, any, any>;
+        set: jest.Mock<any, any, any>;
+        remove: jest.Mock<any, any, any>;
+        observe$: jest.Mock<any, any, any>;
+      }>;
+  }
+  export function translation(): MockTranslationApi &
+    MockWithApiFactory<TranslationApi_2>;
+  export namespace translation {
+    const mock: (
+      partialImpl?:
+        | Partial<{
+            getTranslation: jest.Mock<any, any, any>;
+            translation$: jest.Mock<any, any, any>;
+          }>
+        | undefined,
+    ) => ApiMock<{
+      getTranslation: jest.Mock<any, any, any>;
+      translation$: jest.Mock<any, any, any>;
+    }>;
+  }
 }
 
-export { MockConfigApi };
+// @public
+export class MockConfigApi implements ConfigApi {
+  constructor(data: JsonObject);
+  get<T = JsonValue>(key?: string): T;
+  getBoolean(key: string): boolean;
+  getConfig(key: string): Config;
+  getConfigArray(key: string): Config[];
+  getNumber(key: string): number;
+  getOptional<T = JsonValue>(key?: string): T | undefined;
+  getOptionalBoolean(key: string): boolean | undefined;
+  getOptionalConfig(key: string): Config | undefined;
+  getOptionalConfigArray(key: string): Config[] | undefined;
+  getOptionalNumber(key: string): number | undefined;
+  getOptionalString(key: string): string | undefined;
+  getOptionalStringArray(key: string): string[] | undefined;
+  getString(key: string): string;
+  getStringArray(key: string): string[];
+  has(key: string): boolean;
+  keys(): string[];
+}
 
-export { MockErrorApi };
+// @public
+export class MockErrorApi implements ErrorApi {
+  constructor(options?: MockErrorApiOptions);
+  // (undocumented)
+  error$(): Observable<{
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
+  }>;
+  // (undocumented)
+  getErrors(): ErrorWithContext[];
+  // (undocumented)
+  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
+  // (undocumented)
+  waitForError(pattern: RegExp, timeoutMs?: number): Promise<ErrorWithContext>;
+}
 
-export { MockErrorApiOptions };
+// @public
+export type MockErrorApiOptions = {
+  collect?: boolean;
+};
 
 // @public
 export class MockFeatureFlagsApi implements FeatureFlagsApi {
@@ -224,15 +456,85 @@ export interface MockFeatureFlagsApiOptions {
   initialStates?: Record<string, FeatureFlagState>;
 }
 
-export { MockFetchApi };
+// @public
+export class MockFetchApi implements FetchApi {
+  constructor(options?: MockFetchApiOptions);
+  get fetch(): typeof crossFetch;
+}
 
-export { MockFetchApiOptions };
+// @public
+export interface MockFetchApiOptions {
+  baseImplementation?: undefined | 'none' | typeof crossFetch;
+  injectIdentityAuth?:
+    | undefined
+    | {
+        token: string;
+      }
+    | {
+        identityApi: Pick<IdentityApi_2, 'getCredentials'>;
+      };
+  resolvePluginProtocol?:
+    | undefined
+    | {
+        discoveryApi: Pick<DiscoveryApi_2, 'getBaseUrl'>;
+      };
+}
 
-export { MockPermissionApi };
+// @public
+export class MockPermissionApi implements PermissionApi {
+  constructor(
+    requestHandler?: (
+      request: EvaluatePermissionRequest,
+    ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY,
+  );
+  // (undocumented)
+  authorize(
+    request: EvaluatePermissionRequest,
+  ): Promise<EvaluatePermissionResponse>;
+}
 
-export { MockStorageApi };
+// @public
+export class MockStorageApi implements StorageApi {
+  // (undocumented)
+  static create(data?: MockStorageBucket): MockStorageApi;
+  // (undocumented)
+  forBucket(name: string): StorageApi;
+  // (undocumented)
+  observe$<T extends JsonValue>(
+    key: string,
+  ): Observable<StorageValueSnapshot<T>>;
+  // (undocumented)
+  remove(key: string): Promise<void>;
+  // (undocumented)
+  set<T>(key: string, data: T): Promise<void>;
+  // (undocumented)
+  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
+}
 
-export { MockStorageBucket };
+// @public
+export type MockStorageBucket = {
+  [key: string]: any;
+};
+
+// @public
+export class MockTranslationApi implements TranslationApi {
+  // (undocumented)
+  static create(): MockTranslationApi;
+  // (undocumented)
+  getTranslation<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(
+    translationRef: TranslationRef<string, TMessages>,
+  ): TranslationSnapshot<TMessages>;
+  // (undocumented)
+  translation$<
+    TMessages extends {
+      [key in string]: string;
+    },
+  >(): Observable<TranslationSnapshot<TMessages>>;
+}
 
 // @public
 export type MockWithApiFactory<TApi> = TApi & {
@@ -286,8 +588,13 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
 };
 
 // @public
-export type TestApiProviderPropsApiPair<TApi> = TApi extends infer TImpl
-  ? readonly [ApiRef<TApi>, Partial<TImpl>]
+export type TestApiProviderPropsApiPair<TApi> = TApi extends readonly [
+  infer _Ref,
+  infer _Impl,
+]
+  ? TApi
+  : TApi extends infer TImpl
+  ? readonly [ApiRef<TApi>, Partial<TImpl>] | MockWithApiFactory<TApi>
   : never;
 
 // @public
