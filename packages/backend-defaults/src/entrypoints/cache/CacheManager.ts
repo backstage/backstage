@@ -220,12 +220,6 @@ export class CacheManager {
       'client.socket.socketTimeout',
     );
 
-    if (keepAlive === false && keepAliveInitialDelay !== undefined) {
-      logger?.warn(
-        "Both 'client.socket.keepAlive' (false) and 'client.socket.keepAliveInitialDelay' are set. Ignoring 'keepAliveInitialDelay' because keepalive is disabled.",
-      );
-    }
-
     let keepAliveForSocket: boolean | undefined;
     let keepAliveInitialDelayForSocket: number | undefined;
 
