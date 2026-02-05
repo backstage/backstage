@@ -55,10 +55,13 @@ export function useInvertedThemeMode(): ThemeMode {
       attributeFilter: ['data-theme-mode'],
     });
 
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ['data-theme-mode'],
-    });
+    // Body might not exist in some edge cases (e.g., during SSR or early lifecycle)
+    if (document.body) {
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['data-theme-mode'],
+      });
+    }
 
     return () => observer.disconnect();
   }, []);

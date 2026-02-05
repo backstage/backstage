@@ -88,6 +88,7 @@ export class ToastApiForwarder implements ToastApi {
   private readonly subject = new PublishSubject<ToastMessageWithKey>();
   private readonly closeSubject = new PublishSubject<string>();
   private readonly recentToasts: ToastMessageWithKey[] = [];
+  private readonly closedKeys = new Set<string>();
   private readonly maxBufferSize = 10;
 
   post(toast: ToastMessage): string {
@@ -104,16 +105,28 @@ export class ToastApiForwarder implements ToastApi {
   }
 
   close(key: string): void {
+    // Track closed keys to prevent replaying dismissed toasts
+    this.closedKeys.add(key);
+
     // Remove from recent buffer if still there
     const index = this.recentToasts.findIndex(t => t.key === key);
     if (index !== -1) {
       this.recentToasts.splice(index, 1);
     }
     this.closeSubject.next(key);
+
+    // Clean up old closed keys when buffer is cleared
+    if (this.recentToasts.length === 0) {
+      this.closedKeys.clear();
+    }
   }
 
   toast$(): Observable<ToastMessageWithKey> {
-    return this.subject.asObservable(this.recentToasts);
+    // Filter out any toasts that were closed to handle race conditions
+    const activeToasts = this.recentToasts.filter(
+      t => !this.closedKeys.has(t.key),
+    );
+    return this.subject.asObservable(activeToasts);
   }
 
   /**

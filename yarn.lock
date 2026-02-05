@@ -4234,8 +4234,10 @@ __metadata:
     "@material-ui/core": "npm:^4.9.13"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:^4.0.0-alpha.61"
+    "@react-aria/button": "npm:^3.13.3"
     "@react-aria/toast": "npm:^3.0.9"
     "@react-hookz/web": "npm:^24.0.0"
+    "@react-stately/toast": "npm:^3.1.2"
     "@remixicon/react": "npm:^4.6.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -4244,11 +4246,8 @@ __metadata:
     motion: "npm:^12.0.0"
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
-    react-aria: "npm:^3.41.1"
-    react-aria-components: "npm:^1.14.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
-    react-stately: "npm:^3.35.0"
     react-use: "npm:^17.2.4"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76"
@@ -8013,7 +8012,6 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@react-aria/toast": "npm:^3.0.9"
     "@remixicon/react": "npm:^4.6.0"
     "@tanstack/react-table": "npm:^8.21.3"
     "@types/react": "npm:^18.0.0"
@@ -8025,12 +8023,10 @@ __metadata:
     globals: "npm:^15.11.0"
     lightningcss: "npm:^1.29.1"
     mini-css-extract-plugin: "npm:^2.9.2"
-    motion: "npm:^12.0.0"
     react: "npm:^18.0.2"
     react-aria-components: "npm:^1.14.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
-    react-stately: "npm:^3.35.0"
     storybook: "npm:^10.3.0-alpha.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -15055,7 +15051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/button@npm:^3.14.4":
+"@react-aria/button@npm:^3.13.3, @react-aria/button@npm:^3.14.4":
   version: 3.14.4
   resolution: "@react-aria/button@npm:3.14.4"
   dependencies:
@@ -43714,7 +43710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-aria@npm:^3.41.1, react-aria@npm:^3.45.0":
+"react-aria@npm:^3.45.0":
   version: 3.46.0
   resolution: "react-aria@npm:3.46.0"
   dependencies:
@@ -44374,7 +44370,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-stately@npm:^3.35.0, react-stately@npm:^3.43.0":
+"react-stately@npm:^3.43.0":
   version: 3.43.0
   resolution: "react-stately@npm:3.43.0"
   dependencies:

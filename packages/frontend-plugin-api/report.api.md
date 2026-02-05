@@ -1941,6 +1941,7 @@ export type ToastApi = {
   post(toast: ToastMessage): string;
   close(key: string): void;
   toast$(): Observable<ToastMessageWithKey>;
+  close$(): Observable<string>;
 };
 
 // @public

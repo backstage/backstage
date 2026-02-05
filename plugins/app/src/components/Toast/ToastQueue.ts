@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ToastQueue } from 'react-stately';
+import { ToastQueue } from '@react-stately/toast';
 import type { ToastContent } from './types';
 
 /**

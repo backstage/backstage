@@ -24,7 +24,7 @@ import {
   useState,
 } from 'react';
 import { useToast } from '@react-aria/toast';
-import { Button } from 'react-aria-components';
+import { useButton } from '@react-aria/button';
 import { motion } from 'motion/react';
 import {
   RiInformationLine,
@@ -76,6 +76,9 @@ export const Toast = forwardRef(
       toastRef,
     );
 
+    // Close button ref for useButton hook
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
+
     // Extract only ARIA and accessibility props from toastProps to avoid
     // conflicts with motion.div's event handler types (motion has its own drag API)
     const ariaProps = {
@@ -118,6 +121,15 @@ export const Toast = forwardRef(
       onClose?.();
       state.close(toast.key);
     };
+
+    // Get button props from useButton hook
+    const { buttonProps } = useButton(
+      {
+        'aria-label': closeButtonProps['aria-label'],
+        onPress: handleClose,
+      },
+      closeButtonRef,
+    );
 
     // Get content from toast
     const content = toast.content;
@@ -246,8 +258,8 @@ export const Toast = forwardRef(
             )}
             {content.links && content.links.length > 0 && (
               <div className="toast-links">
-                {content.links.map((link, idx) => (
-                  <a key={idx} href={link.href}>
+                {content.links.map(link => (
+                  <a key={link.href} href={link.href}>
                     {link.label}
                   </a>
                 ))}
@@ -255,14 +267,14 @@ export const Toast = forwardRef(
             )}
           </div>
         </div>
-        <Button
-          slot="close"
+        {/* eslint-disable-next-line react/forbid-elements */}
+        <button
+          {...buttonProps}
+          ref={closeButtonRef}
           className="toast-close-button"
-          aria-label={closeButtonProps['aria-label']}
-          onPress={handleClose}
         >
           <RiCloseLine aria-hidden="true" />
-        </Button>
+        </button>
       </motion.div>
     );
   },
