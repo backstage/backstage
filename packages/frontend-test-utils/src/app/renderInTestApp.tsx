@@ -32,10 +32,12 @@ import {
   FrontendFeature,
   createFrontendModule,
   createApiFactory,
+  type ApiRef,
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
-import { type TestApiPairs } from '../utils';
+import { type TestApiProviderPropsApiPairs } from '../utils';
+import { getMockApiFactory, type MockWithApiFactory } from '../apis/utils';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 
@@ -88,15 +90,16 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
    *
    * @example
    * ```ts
-   * import { identityApiRef } from '@backstage/frontend-plugin-api';
    * import { mockApis } from '@backstage/frontend-test-utils';
    *
    * renderInTestApp(<MyComponent />, {
-   *   apis: [[identityApiRef, mockApis.identity({ userEntityRef: 'user:default/guest' })]],
+   *   apis: [mockApis.identity({ userEntityRef: 'user:default/guest' })],
    * })
    * ```
    */
-  apis?: readonly [...TestApiPairs<TApiPairs>];
+  apis?: readonly [
+    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
+  ];
 };
 
 const NavItem = (props: {
@@ -241,9 +244,14 @@ export function renderInTestApp<TApiPairs extends any[] = any[]>(
       },
     ]),
     __internal: options?.apis && {
-      apiFactoryOverrides: options.apis.map(([apiRef, implementation]) =>
-        createApiFactory(apiRef, implementation),
-      ),
+      apiFactoryOverrides: options.apis.map(entry => {
+        const mockFactory = getMockApiFactory(entry);
+        if (mockFactory) {
+          return mockFactory;
+        }
+        const [apiRef, implementation] = entry as readonly [ApiRef<any>, any];
+        return createApiFactory(apiRef, implementation);
+      }),
     },
   } as CreateSpecializedAppInternalOptions);
 

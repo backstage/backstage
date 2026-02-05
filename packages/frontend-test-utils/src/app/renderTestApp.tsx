@@ -25,14 +25,16 @@ import {
   ExtensionDefinition,
   FrontendFeature,
   RouteRef,
+  type ApiRef,
 } from '@backstage/frontend-plugin-api';
-import { render } from '@testing-library/react';
+import { render, type RenderResult } from '@testing-library/react';
 import appPlugin from '@backstage/plugin-app';
 import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { MemoryRouter } from 'react-router-dom';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
-import { type TestApiPairs } from '../utils';
+import { type TestApiProviderPropsApiPairs } from '../utils';
+import { getMockApiFactory, type MockWithApiFactory } from '../apis/utils';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 
@@ -89,16 +91,17 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
    *
    * @example
    * ```ts
-   * import { identityApiRef } from '@backstage/frontend-plugin-api';
    * import { mockApis } from '@backstage/frontend-test-utils';
    *
    * renderTestApp({
-   *   apis: [[identityApiRef, mockApis.identity({ userEntityRef: 'user:default/guest' })]],
+   *   apis: [mockApis.identity({ userEntityRef: 'user:default/guest' })],
    *   extensions: [...],
    * })
    * ```
    */
-  apis?: readonly [...TestApiPairs<TApiPairs>];
+  apis?: readonly [
+    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
+  ];
 };
 
 const appPluginOverride = appPlugin.withOverrides({
@@ -116,11 +119,11 @@ const appPluginOverride = appPlugin.withOverrides({
  * @public
  */
 export function renderTestApp<TApiPairs extends any[] = any[]>(
-  options: RenderTestAppOptions<TApiPairs>,
-) {
-  const extensions = [...(options.extensions ?? [])];
+  options?: RenderTestAppOptions<TApiPairs>,
+): RenderResult {
+  const extensions = [...(options?.extensions ?? [])];
 
-  if (options.mountedRoutes) {
+  if (options?.mountedRoutes) {
     for (const [path, routeRef] of Object.entries(options.mountedRoutes)) {
       extensions.push(
         createExtension({
@@ -150,7 +153,7 @@ export function renderTestApp<TApiPairs extends any[] = any[]>(
           params: {
             component: ({ children }) => (
               <MemoryRouter
-                initialEntries={options.initialRouteEntries}
+                initialEntries={options?.initialRouteEntries}
                 future={{
                   v7_relativeSplatPath: true,
                   v7_startTransition: true,
@@ -170,7 +173,7 @@ export function renderTestApp<TApiPairs extends any[] = any[]>(
     appPluginOverride,
   ];
 
-  if (options.features) {
+  if (options?.features) {
     features.push(...options.features);
   }
 
@@ -183,9 +186,14 @@ export function renderTestApp<TApiPairs extends any[] = any[]>(
       },
     ]),
     __internal: options?.apis && {
-      apiFactoryOverrides: options.apis.map(([apiRef, implementation]) =>
-        createApiFactory(apiRef, implementation),
-      ),
+      apiFactoryOverrides: options.apis.map(entry => {
+        const mockFactory = getMockApiFactory(entry);
+        if (mockFactory) {
+          return mockFactory;
+        }
+        const [apiRef, implementation] = entry as readonly [ApiRef<any>, any];
+        return createApiFactory(apiRef, implementation);
+      }),
     },
   } as CreateSpecializedAppInternalOptions);
 

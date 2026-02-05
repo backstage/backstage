@@ -49,7 +49,6 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
-import { testingLibraryDomTypesQueries } from '@testing-library/dom/types/queries';
 import { TranslationApi } from '@backstage/core-plugin-api/alpha';
 import { TranslationApi as TranslationApi_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -551,8 +550,8 @@ export function renderInTestApp<TApiPairs extends any[] = any[]>(
 
 // @public
 export function renderTestApp<TApiPairs extends any[] = any[]>(
-  options: RenderTestAppOptions<TApiPairs>,
-): RenderResult<testingLibraryDomTypesQueries, HTMLElement, HTMLElement>;
+  options?: RenderTestAppOptions<TApiPairs>,
+): RenderResult;
 
 // @public
 export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
@@ -563,7 +562,9 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   mountedRoutes?: {
     [path: string]: RouteRef;
   };
-  apis?: readonly [...TestApiPairs<TApiPairs>];
+  apis?: readonly [
+    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
+  ];
 };
 
 // @public
@@ -588,13 +589,8 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
 };
 
 // @public
-export type TestApiProviderPropsApiPair<TApi> = TApi extends readonly [
-  infer _Ref,
-  infer _Impl,
-]
-  ? TApi
-  : TApi extends infer TImpl
-  ? readonly [ApiRef<TApi>, Partial<TImpl>] | MockWithApiFactory<TApi>
+export type TestApiProviderPropsApiPair<TApi> = TApi extends infer TImpl
+  ? readonly [ApiRef<TApi>, Partial<TImpl>]
   : never;
 
 // @public
@@ -616,7 +612,9 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   config?: JsonObject;
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
-  apis?: readonly [...TestApiPairs<TApiPairs>];
+  apis?: readonly [
+    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
+  ];
 };
 
 export { withLogCollector };

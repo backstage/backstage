@@ -45,7 +45,7 @@ export type TestApiPairs<TApiPairs> = TestApiProviderPropsApiPairs<TApiPairs>;
 /**
  * Type for entries that can be passed to TestApiProvider/TestApiRegistry.
  * Can be either a traditional [apiRef, implementation] tuple or a mock API instance
- * marked with the MockApiSymbol.
+ * marked with the mockApiFactorySymbol.
  *
  * @public
  */
