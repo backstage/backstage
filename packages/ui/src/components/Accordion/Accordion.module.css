@@ -73,13 +73,13 @@
     width: 1rem;
     height: 1rem;
 
-    [data-expanded='true'] & {
+    .bui-Accordion[data-expanded='true'] > .bui-AccordionTrigger & {
       transform: rotate(180deg);
     }
   }
 
   .bui-AccordionPanel {
-    [data-expanded='true'] & {
+    .bui-Accordion[data-expanded='true'] > & {
       padding-top: var(--bui-space-1);
     }
   }
