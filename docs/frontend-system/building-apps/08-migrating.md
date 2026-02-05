@@ -901,39 +901,7 @@ It's encouraged that once you switch over to using the new frontend system, that
 
 This practice is also pretty important early on, as it's going to help you get familiar with the practices of the new frontend system.
 
-When creating a new Backstage app with `create-app` you'll automatically get these choices in the `yarn new` command, but if you want to bring these templates to an older app, you can add the following to your root `package.json`:
-
-```json
-{
-  ...
-  "scripts": {
-    ...
-    "new": "backstage-cli new"
-  },
-  "backstage": {
-    "cli": {
-      "new": {
-        "globals": {
-          "license": "UNLICENSED"
-        },
-        "templates": [
-          "@backstage/cli/templates/new-frontend-plugin",
-          "@backstage/cli/templates/new-frontend-plugin-module",
-          "@backstage/cli/templates/backend-plugin",
-          "@backstage/cli/templates/backend-plugin-module",
-          "@backstage/cli/templates/plugin-web-library",
-          "@backstage/cli/templates/plugin-node-library",
-          "@backstage/cli/templates/plugin-common-library",
-          "@backstage/cli/templates/web-library",
-          "@backstage/cli/templates/node-library",
-          "@backstage/cli/templates/catalog-provider-module",
-          "@backstage/cli/templates/scaffolder-backend-module"
-        ]
-      }
-    }
-  }
-}
-```
+The `yarn new` command now defaults to the new frontend system templates for frontend plugins. If you have an older app that was created before this change, you can simply update the `@backstage/cli` package to get access to the new templates.
 
 ## Troubleshooting
 

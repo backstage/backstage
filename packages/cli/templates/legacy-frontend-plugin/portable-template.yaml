@@ -3,3 +3,4 @@ role: frontend-plugin
 description: A new frontend plugin
 values:
   pluginVar: '{{ camelCase pluginId }}Plugin'
+  extensionName: '{{ upperFirst ( camelCase pluginId ) }}Page'
