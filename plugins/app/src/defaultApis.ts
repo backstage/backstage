@@ -37,6 +37,7 @@ import {
   VMwareCloudAuth,
   OpenShiftAuth,
 } from '../../../packages/core-app-api/src/apis/implementations';
+import { ToastApiForwarder } from './apis';
 
 import {
   alertApiRef,
@@ -59,7 +60,11 @@ import {
   vmwareCloudAuthApiRef,
   openshiftAuthApiRef,
 } from '@backstage/core-plugin-api';
-import { ApiBlueprint, dialogApiRef } from '@backstage/frontend-plugin-api';
+import {
+  ApiBlueprint,
+  dialogApiRef,
+  toastApiRef,
+} from '@backstage/frontend-plugin-api';
 import {
   ScmAuth,
   ScmIntegrationsApi,
@@ -101,6 +106,15 @@ export const apis = [
         api: alertApiRef,
         deps: {},
         factory: () => new AlertApiForwarder(),
+      }),
+  }),
+  ApiBlueprint.make({
+    name: 'toast',
+    params: defineParams =>
+      defineParams({
+        api: toastApiRef,
+        deps: {},
+        factory: () => new ToastApiForwarder(),
       }),
   }),
   analyticsApi,

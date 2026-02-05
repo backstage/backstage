@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-export { appPlugin as default } from './plugin';
-
-// Toast components for alert display
-export { ToastDisplay, ToastContainer, toastQueue } from './components/Toast';
+export { ToastDisplay } from './ToastDisplay';
+export { ToastContainer } from './ToastContainer';
+export { toastQueue } from './ToastQueue';
 export type {
   ToastContent,
   ToastLink,
   ToastDisplayProps,
   ToastContainerProps,
-} from './components/Toast';
+} from './types';
