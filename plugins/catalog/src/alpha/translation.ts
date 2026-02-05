@@ -79,7 +79,7 @@ export const catalogTranslationRef = createTranslationRef({
       kind: 'Kind',
       type: 'Type',
       lifecycle: 'Lifecycle',
-      Owner: 'Owner',
+      owner: 'Owner',
     },
     catalogTable: {
       warningPanelTitle: 'Could not fetch catalog entities.',

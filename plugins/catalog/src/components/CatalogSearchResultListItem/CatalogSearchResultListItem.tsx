@@ -147,7 +147,7 @@ export function CatalogSearchResultListItem(
           )}
           {result.owner && (
             <Chip
-              label={`${t('searchResultItem.Owner')}: ${result.owner}`}
+              label={`${t('searchResultItem.owner')}: ${result.owner}`}
               size="small"
             />
           )}
