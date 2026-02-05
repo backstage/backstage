@@ -285,22 +285,27 @@ export class CacheManager {
         }
       : undefined;
 
-    const socketOptions =
+    let socketOptions: Record<string, unknown> | undefined;
+    if (
       keepAliveForSocket !== undefined ||
       keepAliveInitialDelayForSocket !== undefined ||
       socketTimeout !== undefined ||
       reconnectStrategy !== undefined
-        ? {
-            ...(keepAliveForSocket !== undefined
-              ? { keepAlive: keepAliveForSocket }
-              : {}),
-            ...(keepAliveInitialDelayForSocket !== undefined
-              ? { keepAliveInitialDelay: keepAliveInitialDelayForSocket }
-              : {}),
-            ...(socketTimeout !== undefined ? { socketTimeout } : {}),
-            ...(reconnectStrategy !== undefined ? { reconnectStrategy } : {}),
-          }
-        : undefined;
+    ) {
+      socketOptions = {};
+      if (keepAliveForSocket !== undefined) {
+        socketOptions.keepAlive = keepAliveForSocket;
+      }
+      if (keepAliveInitialDelayForSocket !== undefined) {
+        socketOptions.keepAliveInitialDelay = keepAliveInitialDelayForSocket;
+      }
+      if (socketTimeout !== undefined) {
+        socketOptions.socketTimeout = socketTimeout;
+      }
+      if (reconnectStrategy !== undefined) {
+        socketOptions.reconnectStrategy = reconnectStrategy;
+      }
+    }
 
     if (socketOptions) {
       // node-redis docs indicate keepAlive is boolean even if types differ.
