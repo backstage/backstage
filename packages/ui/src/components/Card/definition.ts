@@ -32,9 +32,9 @@ export const CardDefinition = defineComponent<CardOwnProps>()({
   classNames: {
     root: 'bui-Card',
   },
-  surface: 'container',
+  bg: 'container',
   propDefs: {
-    surface: { dataAttribute: true, default: '1' },
+    bg: { dataAttribute: true },
     children: {},
     className: {},
   },

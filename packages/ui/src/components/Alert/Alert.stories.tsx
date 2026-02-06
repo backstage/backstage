@@ -284,50 +284,46 @@ export const LongContent = meta.story({
   ),
 });
 
-export const OnDifferentSurfaces = meta.story({
+export const OnDifferentBackgrounds = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Flex direction="column" gap="4">
-        <Text>Default Surface</Text>
+        <Text>Default</Text>
         <Flex direction="column" gap="2" p="4">
-          <Alert status="info" icon={true} title="Alert on default surface" />
-          <Alert
-            status="success"
-            icon={true}
-            title="Alert on default surface"
-          />
+          <Alert status="info" icon={true} title="Alert on default bg" />
+          <Alert status="success" icon={true} title="Alert on default bg" />
         </Flex>
       </Flex>
 
       <Flex direction="column" gap="4">
-        <Text>On Surface 0</Text>
-        <Flex direction="column" gap="2" surface="0" p="4">
-          <Alert status="info" icon={true} title="Alert on surface 0" />
-          <Alert status="success" icon={true} title="Alert on surface 0" />
+        <Text>On Neutral 1</Text>
+        <Flex direction="column" gap="2" bg="neutral-1" p="4">
+          <Alert status="info" icon={true} title="Alert on neutral-1" />
+          <Alert status="success" icon={true} title="Alert on neutral-1" />
         </Flex>
       </Flex>
 
       <Flex direction="column" gap="4">
-        <Text>On Surface 1</Text>
-        <Flex direction="column" gap="2" surface="1" p="4">
-          <Alert status="info" icon={true} title="Alert on surface 1" />
-          <Alert status="success" icon={true} title="Alert on surface 1" />
+        <Text>On Neutral 2</Text>
+        <Flex direction="column" gap="2" bg="neutral-2" p="4">
+          <Alert status="info" icon={true} title="Alert on neutral-2" />
+          <Alert status="success" icon={true} title="Alert on neutral-2" />
         </Flex>
       </Flex>
 
       <Flex direction="column" gap="4">
-        <Text>On Surface 2</Text>
-        <Flex direction="column" gap="2" surface="2" p="4">
-          <Alert status="info" icon={true} title="Alert on surface 2" />
-          <Alert status="success" icon={true} title="Alert on surface 2" />
+        <Text>On Neutral 3</Text>
+        <Flex direction="column" gap="2" bg="neutral-3" p="4">
+          <Alert status="info" icon={true} title="Alert on neutral-3" />
+          <Alert status="success" icon={true} title="Alert on neutral-3" />
         </Flex>
       </Flex>
 
       <Flex direction="column" gap="4">
-        <Text>On Surface 3</Text>
-        <Flex direction="column" gap="2" surface="3" p="4">
-          <Alert status="info" icon={true} title="Alert on surface 3" />
-          <Alert status="success" icon={true} title="Alert on surface 3" />
+        <Text>On Neutral 4</Text>
+        <Flex direction="column" gap="2" bg="neutral-4" p="4">
+          <Alert status="info" icon={true} title="Alert on neutral-4" />
+          <Alert status="success" icon={true} title="Alert on neutral-4" />
         </Flex>
       </Flex>
     </Flex>
@@ -349,7 +345,7 @@ export const Responsive = meta.story({
 
 export const WithUtilityProps = meta.story({
   render: () => (
-    <Box surface="1" py="4">
+    <Box bg="neutral-1" py="4">
       <Alert
         status="success"
         icon={true}

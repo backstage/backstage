@@ -30,31 +30,31 @@
     width: 100%;
   }
 
-  .bui-Card[data-surface='0'] {
-    background-color: var(--bui-bg-surface-0);
+  .bui-Card[data-bg='neutral-1'] {
+    background-color: var(--bui-bg-neutral-1);
   }
 
-  .bui-Card[data-surface='1'] {
-    background-color: var(--bui-bg-surface-1);
+  .bui-Card[data-bg='neutral-2'] {
+    background-color: var(--bui-bg-neutral-2);
   }
 
-  .bui-Card[data-surface='2'] {
-    background-color: var(--bui-bg-surface-2);
+  .bui-Card[data-bg='neutral-3'] {
+    background-color: var(--bui-bg-neutral-3);
   }
 
-  .bui-Card[data-surface='3'] {
-    background-color: var(--bui-bg-surface-3);
+  .bui-Card[data-bg='neutral-4'] {
+    background-color: var(--bui-bg-neutral-4);
   }
 
-  .bui-Card[data-surface='danger'] {
+  .bui-Card[data-bg='danger'] {
     background-color: var(--bui-bg-danger);
   }
 
-  .bui-Card[data-surface='warning'] {
+  .bui-Card[data-bg='warning'] {
     background-color: var(--bui-bg-warning);
   }
 
-  .bui-Card[data-surface='success'] {
+  .bui-Card[data-bg='success'] {
     background-color: var(--bui-bg-success);
   }
 

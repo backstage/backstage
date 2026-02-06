@@ -128,72 +128,71 @@ export const WithListRow = meta.story({
   ),
 });
 
-export const Surfaces = meta.story({
+export const Backgrounds = meta.story({
   render: args => (
     <Flex align="start" style={{ flexWrap: 'wrap' }} gap="4">
       <Card {...args} style={{ width: '200px' }}>
         <CardHeader>Default</CardHeader>
-        <CardBody>No surface prop</CardBody>
+        <CardBody>No bg prop</CardBody>
       </Card>
-      <Card {...args} surface="0" style={{ width: '200px' }}>
-        <CardHeader>Surface 0</CardHeader>
-        <CardBody>Explicit surface 0</CardBody>
+      <Card {...args} bg="neutral-1" style={{ width: '200px' }}>
+        <CardHeader>Neutral 1</CardHeader>
+        <CardBody>Explicit neutral-1</CardBody>
       </Card>
-      <Card {...args} surface="1" style={{ width: '200px' }}>
-        <CardHeader>Surface 1</CardHeader>
-        <CardBody>Explicit surface 1</CardBody>
+      <Card {...args} bg="neutral-2" style={{ width: '200px' }}>
+        <CardHeader>Neutral 2</CardHeader>
+        <CardBody>Explicit neutral-2</CardBody>
       </Card>
-      <Card {...args} surface="2" style={{ width: '200px' }}>
-        <CardHeader>Surface 2</CardHeader>
-        <CardBody>Explicit surface 2</CardBody>
+      <Card {...args} bg="neutral-3" style={{ width: '200px' }}>
+        <CardHeader>Neutral 3</CardHeader>
+        <CardBody>Explicit neutral-3</CardBody>
       </Card>
-      <Card {...args} surface="3" style={{ width: '200px' }}>
-        <CardHeader>Surface 3</CardHeader>
-        <CardBody>Explicit surface 3</CardBody>
+      <Card {...args} bg="neutral-4" style={{ width: '200px' }}>
+        <CardHeader>Neutral 4</CardHeader>
+        <CardBody>Explicit neutral-4</CardBody>
       </Card>
       <Card
         {...args}
-        surface={{ initial: '0', sm: '1' }}
+        bg={{ initial: 'neutral-1', sm: 'neutral-2' }}
         style={{ width: '200px' }}
       >
         <CardHeader>Responsive</CardHeader>
-        <CardBody>Surface 0 → 1</CardBody>
+        <CardBody>Neutral 1 → 2</CardBody>
       </Card>
-      <Card {...args} surface="danger" style={{ width: '200px' }}>
+      <Card {...args} bg="danger" style={{ width: '200px' }}>
         <CardHeader>Danger</CardHeader>
-        <CardBody>Surface danger</CardBody>
+        <CardBody>Bg danger</CardBody>
       </Card>
-      <Card {...args} surface="warning" style={{ width: '200px' }}>
+      <Card {...args} bg="warning" style={{ width: '200px' }}>
         <CardHeader>Warning</CardHeader>
-        <CardBody>Surface warning</CardBody>
+        <CardBody>Bg warning</CardBody>
       </Card>
-      <Card {...args} surface="success" style={{ width: '200px' }}>
+      <Card {...args} bg="success" style={{ width: '200px' }}>
         <CardHeader>Success</CardHeader>
-        <CardBody>Surface success</CardBody>
+        <CardBody>Bg success</CardBody>
       </Card>
     </Flex>
   ),
 });
 
-export const SurfacesNested = meta.story({
+export const BgNested = meta.story({
   render: args => (
     <Flex direction="column">
       <Box style={{ maxWidth: '600px' }} mb="4">
-        In this test, we are nesting cards on different surfaces to ensure that
-        the correct surface is applied to each element. If a Button is placed on
-        a surface that doesn't have the surface prop set, it will inherit the
-        surface from the parent.
+        In this test, we are nesting cards to ensure that the correct background
+        is applied to each element. Buttons automatically inherit the bg context
+        and increment their neutral level.
       </Box>
-      <Card {...args} surface="1" style={{ width: '500px' }}>
-        <CardHeader>Surface 1</CardHeader>
+      <Card {...args} bg="neutral-1" style={{ width: '500px' }}>
+        <CardHeader>Neutral 1</CardHeader>
         <CardBody>
           <Button variant="secondary">Button</Button>
-          <Card {...args} surface="2" style={{ marginTop: '16px' }}>
-            <CardHeader>Surface 2</CardHeader>
+          <Card {...args} bg="neutral-2" style={{ marginTop: '16px' }}>
+            <CardHeader>Neutral 2</CardHeader>
             <CardBody>
               <Button variant="secondary">Button</Button>
               <Card {...args} style={{ marginTop: '16px' }}>
-                <CardHeader>Inherited</CardHeader>
+                <CardHeader>Auto-incremented</CardHeader>
                 <CardBody>
                   <Button variant="secondary">Button</Button>
                 </CardBody>
@@ -206,31 +205,31 @@ export const SurfacesNested = meta.story({
   ),
 });
 
-export const SurfacesAutoIncrement = meta.story({
+export const BgAutoIncrement = meta.story({
   render: args => (
     <Flex align="start" style={{ flexWrap: 'wrap' }} gap="4">
-      <Box surface="0" p="4" style={{ borderRadius: '8px' }}>
-        <Card {...args} surface="auto" style={{ width: '200px' }}>
-          <CardHeader>On surface 0</CardHeader>
-          <CardBody>Card auto → 1</CardBody>
+      <Box bg="neutral-1" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-1</CardHeader>
+          <CardBody>Card auto → neutral-2</CardBody>
         </Card>
       </Box>
-      <Box surface="1" p="4" style={{ borderRadius: '8px' }}>
-        <Card {...args} surface="auto" style={{ width: '200px' }}>
-          <CardHeader>On surface 1</CardHeader>
-          <CardBody>Card auto → 2</CardBody>
+      <Box bg="neutral-2" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-2</CardHeader>
+          <CardBody>Card auto → neutral-3</CardBody>
         </Card>
       </Box>
-      <Box surface="2" p="4" style={{ borderRadius: '8px' }}>
-        <Card {...args} surface="auto" style={{ width: '200px' }}>
-          <CardHeader>On surface 2</CardHeader>
-          <CardBody>Card auto → 3</CardBody>
+      <Box bg="neutral-3" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-3</CardHeader>
+          <CardBody>Card auto → neutral-4</CardBody>
         </Card>
       </Box>
-      <Box surface="3" p="4" style={{ borderRadius: '8px' }}>
-        <Card {...args} surface="auto" style={{ width: '200px' }}>
-          <CardHeader>On surface 3</CardHeader>
-          <CardBody>Card auto → 3 (capped)</CardBody>
+      <Box bg="neutral-4" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-4</CardHeader>
+          <CardBody>Card auto → neutral-4 (capped)</CardBody>
         </Card>
       </Box>
     </Flex>

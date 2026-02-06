@@ -36,25 +36,19 @@ export interface ComponentConfig<
   propDefs: { [K in keyof P]: PropDefConfig<P[K]> };
   // readonly for compatibility with const inference from factory
   utilityProps?: readonly UtilityPropKey[];
-  surface?: 'container' | 'leaf';
+  bg?: 'container' | 'leaf';
 }
 
 /**
- * Type constraint that validates surface props are present in the props type.
- * - If surface is 'leaf', P must include 'onSurface'
- * - If surface is 'container', P must include 'surface'
+ * Type constraint that validates bg props are present in the props type.
+ * - If bg is 'container', P must include 'bg'
+ * - If bg is 'leaf', no prop constraint (fully automatic)
  */
-export type SurfacePropsConstraint<P, Surface> = Surface extends 'leaf'
-  ? 'onSurface' extends keyof P
+export type BgPropsConstraint<P, BgMode> = BgMode extends 'container'
+  ? 'bg' extends keyof P
     ? {}
     : {
-        __error: 'Leaf components must include onSurface in props type. Extend LeafProps.';
-      }
-  : Surface extends 'container'
-  ? 'surface' extends keyof P
-    ? {}
-    : {
-        __error: 'Container components must include surface in props type. Extend ContainerProps.';
+        __error: 'Bg container components must include bg in props type.';
       }
   : {};
 
@@ -81,12 +75,11 @@ type ResolvedOwnProps<
   [K in keyof PropDefs & keyof P]: ResolvePropType<P[K], PropDefs[K]>;
 };
 
-type ChildrenProps<Surface extends 'container' | 'leaf' | undefined> =
-  Surface extends 'container'
-    ? { surfaceChildren: ReactNode; children?: never }
-    : Surface extends 'leaf'
-    ? { children: ReactNode; surfaceChildren?: never }
-    : { children: ReactNode };
+type ChildrenProps<
+  BgMode extends 'container' | 'leaf' | undefined = undefined,
+> = BgMode extends 'container'
+  ? { bgChildren: ReactNode; children?: never }
+  : { children: ReactNode; bgChildren?: never };
 
 type DataAttributeKeys<PropDefs> = {
   [K in keyof PropDefs]: PropDefs[K] extends { dataAttribute: true }
@@ -98,7 +91,7 @@ type DataAttributes<PropDefs> = {
   [K in DataAttributeKeys<PropDefs> as `data-${Lowercase<
     string & K
   >}`]?: string;
-} & { 'data-on-surface'?: string };
+} & { 'data-bg'?: string };
 
 export type UtilityKeys<D extends ComponentConfig<any, any>> =
   D['utilityProps'] extends ReadonlyArray<infer K extends string> ? K : never;
@@ -127,7 +120,7 @@ export interface UseDefinitionResult<
   ownProps: {
     classes: Record<keyof D['classNames'], string>;
   } & ResolvedOwnProps<P, D['propDefs']> &
-    ChildrenProps<D['surface']>;
+    ChildrenProps<D['bg']>;
 
   // Rest props excludes both propDefs keys AND utility prop keys
   restProps: keyof Omit<P, keyof D['propDefs'] | UtilityKeys<D>> extends never

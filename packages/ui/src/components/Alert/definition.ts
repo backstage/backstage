@@ -34,7 +34,6 @@ export const AlertDefinition = defineComponent<AlertOwnProps>()({
     spinner: 'bui-AlertSpinner',
     actions: 'bui-AlertActions',
   },
-  surface: 'container',
   propDefs: {
     status: { dataAttribute: true, default: 'info' },
     loading: { dataAttribute: true },
@@ -42,7 +41,6 @@ export const AlertDefinition = defineComponent<AlertOwnProps>()({
     customActions: {},
     title: {},
     description: {},
-    surface: {},
     className: {},
     style: {},
   },

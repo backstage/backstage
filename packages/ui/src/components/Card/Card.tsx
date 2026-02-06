@@ -39,11 +39,11 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
     CardDefinition,
     props,
   );
-  const { classes, surfaceChildren } = ownProps;
+  const { classes, bgChildren } = ownProps;
 
   return (
     <div ref={ref} className={classes.root} {...dataAttributes} {...restProps}>
-      {surfaceChildren}
+      {bgChildren}
     </div>
   );
 });

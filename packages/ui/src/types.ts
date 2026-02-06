@@ -182,29 +182,18 @@ export interface ComponentDefinition {
 }
 
 /**
- * Surface type
+ * Background type for the neutral bg system.
  *
- * Supports absolute levels ('0'-'3'), intent surfaces ('danger', 'warning', 'success'),
- * and 'auto' which increments from the parent surface context.
+ * Supports neutral levels ('neutral-1' through 'neutral-4') and
+ * intent backgrounds ('danger', 'warning', 'success').
  *
  * @public
  */
-export type Surface =
-  | '0'
-  | '1'
-  | '2'
-  | '3'
+export type Bg =
+  | 'neutral-1'
+  | 'neutral-2'
+  | 'neutral-3'
+  | 'neutral-4'
   | 'danger'
   | 'warning'
-  | 'success'
-  | 'auto';
-
-/** @public */
-export interface LeafSurfaceProps {
-  onSurface?: Responsive<Surface>;
-}
-
-/** @public */
-export interface ContainerSurfaceProps {
-  surface?: Responsive<Surface>;
-}
+  | 'success';

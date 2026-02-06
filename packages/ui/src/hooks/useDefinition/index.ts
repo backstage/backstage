@@ -21,4 +21,5 @@ export type {
   PropDefConfig,
   UseDefinitionOptions,
   UseDefinitionResult,
+  BgPropsConstraint,
 } from './types';
