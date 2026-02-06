@@ -83,7 +83,7 @@ const ListRow = ({ children }: { children: React.ReactNode }) => {
       style={{
         height: 40,
         width: '100%',
-        backgroundColor: 'var(--bui-gray-3)',
+        backgroundColor: 'var(--bui-bg-neutral-3)',
         display: 'flex',
         alignItems: 'center',
         paddingInline: 'var(--bui-space-3)',

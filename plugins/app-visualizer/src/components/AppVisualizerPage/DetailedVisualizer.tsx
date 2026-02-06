@@ -264,7 +264,7 @@ function Extension({ node, depth }: { node: AppNode; depth: number }) {
         style={{
           width: 'fit-content',
           color: enabled ? 'var(--bui-fg-primary)' : 'var(--bui-fg-disabled)',
-          background: 'var(--bui-bg-surface-1)',
+          background: 'var(--bui-bg-neutral-1)',
           borderTopRightRadius: 'var(--bui-radius-2)',
           borderBottomRightRadius: 'var(--bui-radius-2)',
         }}
@@ -362,7 +362,7 @@ export function DetailedVisualizer({ tree }: { tree: AppTree }) {
         m="2"
         style={{
           flex: '0 0 auto',
-          background: 'var(--bui-bg-surface-1)',
+          background: 'var(--bui-bg-neutral-1)',
           border: '1px solid var(--bui-border)',
           borderRadius: 'var(--bui-radius-2)',
         }}
