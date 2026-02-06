@@ -98,13 +98,14 @@ function serializeFilter(filter?: EntityFilterQuery): any[] | undefined {
 
 function deserializeFilter(filter?: any[]): EntityFilterQuery | undefined {
   if (!filter) return undefined;
-  return filter.map(f =>
-    Object.fromEntries(
-      Object.entries(f).map(([k, v]: [string, any]) => [
-        k,
-        deserializeFilterValue(v),
-      ]),
-    ),
+  return filter.map(
+    f =>
+      Object.fromEntries(
+        Object.entries(f).map(([k, v]: [string, any]) => [
+          k,
+          deserializeFilterValue(v),
+        ]),
+      ) as Record<string, string | symbol | (string | symbol)[]>,
   );
 }
 
