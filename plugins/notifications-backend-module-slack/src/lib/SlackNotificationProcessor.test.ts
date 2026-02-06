@@ -17,7 +17,7 @@
 import { mockServices } from '@backstage/backend-test-utils';
 import { SlackNotificationProcessor } from './SlackNotificationProcessor';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import { WebClient } from '@slack/web-api';
+import { KnownBlock, WebClient } from '@slack/web-api';
 import { Entity } from '@backstage/catalog-model';
 import pThrottle from 'p-throttle';
 import { durationToMilliseconds } from '@backstage/types';
@@ -211,7 +211,7 @@ describe('SlackNotificationProcessor', () => {
 
   it('should use a custom block kit renderer when provided', async () => {
     const slack = new WebClient();
-    const customBlocks = [
+    const customBlocks: KnownBlock[] = [
       {
         type: 'section',
         text: { type: 'mrkdwn', text: 'Custom block' },
