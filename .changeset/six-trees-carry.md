@@ -2,4 +2,4 @@
 '@backstage/backend-defaults': minor
 ---
 
-**BREAKING** Removed deprecated Bitbucket support
+**BREAKING** Removed deprecated `BitbucketUrlReader` please us the `BitbucketCloudUrlReader` or the `BitbucketServerUrlReader` instead.
