@@ -171,7 +171,6 @@ export type MockApiFactorySymbol = typeof mockApiFactorySymbol;
 export namespace mockApis {
   export function alert(): MockWithApiFactory<MockAlertApi>;
   export namespace alert {
-    const factory: () => any;
     const mock: (
       partialImpl?:
         | Partial<{
@@ -279,7 +278,6 @@ export namespace mockApis {
     options?: MockFeatureFlagsApiOptions,
   ): MockWithApiFactory<MockFeatureFlagsApi>;
   export namespace featureFlags {
-    const factory: (options?: MockFeatureFlagsApiOptions | undefined) => any;
     const mock: (
       partialImpl?:
         | Partial<{

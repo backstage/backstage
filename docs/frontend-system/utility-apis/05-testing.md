@@ -9,7 +9,7 @@ When testing frontend components and extensions, you often need to provide mock 
 
 ## The `mockApis` namespace
 
-The `mockApis` namespace is the main entry point for creating mock utility API instances in tests. It provides three usage patterns for each API:
+The `mockApis` namespace is the main entry point for creating mock utility API instances in tests. It provides two usage patterns for each API:
 
 ### Fake instances
 
@@ -41,10 +41,6 @@ const catalogApi = mockApis.permission.mock({
 
 expect(catalogApi.authorize).toHaveBeenCalledTimes(1);
 ```
-
-### API factories
-
-Call `.factory()` to get an `ApiFactory` suitable for more advanced wiring scenarios.
 
 ## Providing mock APIs in tests
 

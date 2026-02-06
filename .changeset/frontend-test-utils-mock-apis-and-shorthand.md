@@ -1,8 +1,8 @@
 ---
-'@backstage/frontend-test-utils': patch
+'@backstage/frontend-test-utils': minor
 ---
 
-Added a new `mockApis` namespace with mock implementations of many core APIs. Mock API instances can be passed directly to `TestApiProvider`, `renderInTestApp`, and `renderTestApp` without needing `[apiRef, impl]` tuples.
+**BREAKING**: The `mockApis` namespace is no longer a re-export from `@backstage/test-utils`. It's now a standalone namespace with mock implementations of most core APIs. Mock API instances can be passed directly to `TestApiProvider`, `renderInTestApp`, and `renderTestApp` without needing `[apiRef, impl]` tuples. As part of this change, the `.factory()` method on some mocks has been removed, since it's now redundant.
 
 ```tsx
 // Before

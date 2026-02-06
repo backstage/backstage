@@ -91,19 +91,6 @@ function simpleMock<TApi>(
   };
 }
 
-/** @internal */
-function simpleFactory<TApi, TArgs extends unknown[]>(
-  ref: any,
-  factory: (...args: TArgs) => TApi,
-): (...args: TArgs) => any {
-  return (...args) =>
-    createApiFactory({
-      api: ref,
-      deps: {},
-      factory: () => factory(...args),
-    });
-}
-
 /**
  * Mock implementations of the core utility APIs, to be used in tests.
  *
@@ -111,7 +98,7 @@ function simpleFactory<TApi, TArgs extends unknown[]>(
  * @remarks
  *
  * There are some variations among the APIs depending on what needs tests
- * might have, but overall there are three main usage patterns:
+ * might have, but overall there are two main usage patterns:
  *
  * 1: Creating an actual fake API instance, often with a simplified version
  * of functionality, by calling the mock API itself as a function.
@@ -132,14 +119,6 @@ function simpleFactory<TApi, TArgs extends unknown[]>(
  * // After exercising your test, you can make assertions on the mock:
  * expect(foo.someMethod).toHaveBeenCalledTimes(2);
  * expect(foo.otherMethod).toHaveBeenCalledWith(testData);
- * ```
- *
- * 3: Creating an API factory that behaves similarly to the mock as per above.
- *
- * ```ts
- * const factory = mockApis.foo.factory({
- *   someMethod: () => 'mocked result',
- * });
  * ```
  */
 export namespace mockApis {
@@ -169,13 +148,6 @@ export namespace mockApis {
    * @public
    */
   export namespace alert {
-    /**
-     * Creates a factory for a fake implementation of
-     * {@link @backstage/frontend-plugin-api#AlertApi}.
-     *
-     * @public
-     */
-    export const factory = simpleFactory(alertApiRef, alert);
     /**
      * Creates a mock implementation of
      * {@link @backstage/frontend-plugin-api#AlertApi}. All methods are
@@ -219,13 +191,6 @@ export namespace mockApis {
    * @public
    */
   export namespace featureFlags {
-    /**
-     * Creates a factory for a fake implementation of
-     * {@link @backstage/frontend-plugin-api#FeatureFlagsApi}.
-     *
-     * @public
-     */
-    export const factory = simpleFactory(featureFlagsApiRef, featureFlags);
     /**
      * Creates a mock implementation of
      * {@link @backstage/frontend-plugin-api#FeatureFlagsApi}. All methods are
