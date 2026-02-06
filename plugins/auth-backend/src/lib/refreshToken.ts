@@ -14,19 +14,38 @@
  * limitations under the License.
  */
 
-import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
+import {
+  randomBytes,
+  scrypt,
+  timingSafeEqual,
+  ScryptOptions,
+} from 'node:crypto';
 
 const SALT_LENGTH = 16;
 const KEY_LENGTH = 64;
-const SCRYPT_OPTIONS = { N: 16384, r: 8, p: 1 };
+const SCRYPT_OPTIONS: ScryptOptions = { N: 16384, r: 8, p: 1 };
+
+function scryptAsync(
+  password: string,
+  salt: Buffer,
+  keylen: number,
+  options: ScryptOptions,
+): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    scrypt(password, salt, keylen, options, (err, derivedKey) => {
+      if (err) reject(err);
+      else resolve(derivedKey);
+    });
+  });
+}
 
 /**
  * Hash a token using scrypt
  * @internal
  */
-function hashToken(token: string): string {
+async function hashToken(token: string): Promise<string> {
   const salt = randomBytes(SALT_LENGTH);
-  const hash = scryptSync(token, salt, KEY_LENGTH, SCRYPT_OPTIONS);
+  const hash = await scryptAsync(token, salt, KEY_LENGTH, SCRYPT_OPTIONS);
 
   // Store salt + hash together
   return `${salt.toString('base64')}.${hash.toString('base64')}`;
@@ -37,18 +56,18 @@ function hashToken(token: string): string {
  *
  * @param id - The session ID to embed in the token
  * @returns Object containing the token and its hash
- * @public
+ * @internal
  */
-export function generateRefreshToken(id: string): {
+export async function generateRefreshToken(id: string): Promise<{
   token: string;
   hash: string;
-} {
+}> {
   // Generate 32 bytes of random data
   const randomPart = randomBytes(32).toString('base64url');
 
   // Format: <id>.<random_bytes>
   const token = `${id}.${randomPart}`;
-  const hash = hashToken(token);
+  const hash = await hashToken(token);
 
   return { token, hash };
 }
@@ -59,7 +78,7 @@ export function generateRefreshToken(id: string): {
  * @param token - The refresh token
  * @returns The session ID
  * @throws Error if token format is invalid
- * @public
+ * @internal
  */
 export function getRefreshTokenId(token: string): string {
   if (!token || typeof token !== 'string') {
@@ -80,9 +99,12 @@ export function getRefreshTokenId(token: string): string {
  * @param token - The refresh token to verify
  * @param storedHash - The stored hash (salt.hash format)
  * @returns true if token is valid, false otherwise
- * @public
+ * @internal
  */
-export function verifyRefreshToken(token: string, storedHash: string): boolean {
+export async function verifyRefreshToken(
+  token: string,
+  storedHash: string,
+): Promise<boolean> {
   try {
     const [saltBase64, hashBase64] = storedHash.split('.');
     if (!saltBase64 || !hashBase64) {
@@ -92,7 +114,12 @@ export function verifyRefreshToken(token: string, storedHash: string): boolean {
     const salt = Buffer.from(saltBase64, 'base64');
     const storedHashBuffer = Buffer.from(hashBase64, 'base64');
 
-    const computedHash = scryptSync(token, salt, KEY_LENGTH, SCRYPT_OPTIONS);
+    const computedHash = await scryptAsync(
+      token,
+      salt,
+      KEY_LENGTH,
+      SCRYPT_OPTIONS,
+    );
 
     // Use timing-safe comparison to prevent timing attacks
     return timingSafeEqual(storedHashBuffer, computedHash);

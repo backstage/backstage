@@ -27,7 +27,7 @@ import { TokenIssuer } from '../identity/types';
 
 /**
  * Service for managing offline access (refresh tokens)
- * @public
+ * @internal
  */
 export class OfflineAccessService {
   readonly #offlineSessionDb: OfflineSessionDatabase;
@@ -57,13 +57,9 @@ export class OfflineAccessService {
   }): Promise<string> {
     const { userEntityRef, oidcClientId } = options;
 
-    // Generate a new session ID
     const sessionId = uuid();
+    const { token, hash } = await generateRefreshToken(sessionId);
 
-    // Generate refresh token with embedded session ID
-    const { token, hash } = generateRefreshToken(sessionId);
-
-    // Store session in database
     await this.#offlineSessionDb.createSession({
       id: sessionId,
       userEntityRef,
@@ -87,7 +83,6 @@ export class OfflineAccessService {
   }): Promise<{ accessToken: string; refreshToken: string }> {
     const { refreshToken, tokenIssuer } = options;
 
-    // Extract session ID from token
     let sessionId: string;
     try {
       sessionId = getRefreshTokenId(refreshToken);
@@ -96,29 +91,26 @@ export class OfflineAccessService {
       throw new AuthenticationError('Invalid refresh token format');
     }
 
-    // Get current session for verification
     const session = await this.#offlineSessionDb.getSessionById(sessionId);
     if (!session) {
       throw new AuthenticationError('Invalid refresh token');
     }
 
-    // Check if session is expired (cleanup on read)
     if (this.#offlineSessionDb.isSessionExpired(session)) {
       await this.#offlineSessionDb.deleteSession(sessionId);
       throw new AuthenticationError('Invalid refresh token');
     }
 
-    // Verify token hash against stored hash
-    const isValid = verifyRefreshToken(refreshToken, session.tokenHash);
+    // Verify the caller actually holds a valid token, not just the session ID
+    const isValid = await verifyRefreshToken(refreshToken, session.tokenHash);
     if (!isValid) {
       throw new AuthenticationError('Invalid refresh token');
     }
 
-    // Generate new refresh token with same session ID
     const { token: newRefreshToken, hash: newHash } =
-      generateRefreshToken(sessionId);
+      await generateRefreshToken(sessionId);
 
-    // Atomically rotate token to prevent race conditions
+    // Atomically swap the hash so a concurrent request with the same token fails
     const rotatedSession = await this.#offlineSessionDb.getAndRotateToken(
       sessionId,
       session.tokenHash,
@@ -129,9 +121,6 @@ export class OfflineAccessService {
       throw new AuthenticationError('Invalid refresh token');
     }
 
-    // Issue new access token
-    // Note: Ownership references (ent) will be computed by the token issuer
-    // or should be provided through the catalog resolution mechanism
     const { token: accessToken } = await tokenIssuer.issueToken({
       claims: {
         sub: rotatedSession.userEntityRef,

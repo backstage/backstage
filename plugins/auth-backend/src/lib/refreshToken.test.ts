@@ -22,9 +22,9 @@ import {
 
 describe('refreshToken', () => {
   describe('generateRefreshToken', () => {
-    it('should generate a token with embedded ID', () => {
+    it('should generate a token with embedded ID', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const { token, hash } = generateRefreshToken(sessionId);
+      const { token, hash } = await generateRefreshToken(sessionId);
 
       expect(token).toBeDefined();
       expect(hash).toBeDefined();
@@ -36,38 +36,38 @@ describe('refreshToken', () => {
       expect(extractedId).toBe(sessionId);
     });
 
-    it('should generate unique tokens for the same ID', () => {
+    it('should generate unique tokens for the same ID', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const result1 = generateRefreshToken(sessionId);
-      const result2 = generateRefreshToken(sessionId);
+      const result1 = await generateRefreshToken(sessionId);
+      const result2 = await generateRefreshToken(sessionId);
 
       expect(result1.token).not.toBe(result2.token);
       expect(result1.hash).not.toBe(result2.hash);
     });
 
-    it('should generate different hashes for different tokens', () => {
+    it('should generate different hashes for different tokens', async () => {
       const sessionId1 = '123e4567-e89b-4d3a-a456-426614174000';
       const sessionId2 = '223e4567-e89b-4d3a-a456-426614174001';
 
-      const result1 = generateRefreshToken(sessionId1);
-      const result2 = generateRefreshToken(sessionId2);
+      const result1 = await generateRefreshToken(sessionId1);
+      const result2 = await generateRefreshToken(sessionId2);
 
       expect(result1.hash).not.toBe(result2.hash);
     });
   });
 
   describe('getRefreshTokenId', () => {
-    it('should extract the session ID from a valid token', () => {
+    it('should extract the session ID from a valid token', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const { token } = generateRefreshToken(sessionId);
+      const { token } = await generateRefreshToken(sessionId);
 
       const extractedId = getRefreshTokenId(token);
       expect(extractedId).toBe(sessionId);
     });
 
-    it('should handle tokens with any session ID format', () => {
+    it('should handle tokens with any session ID format', async () => {
       const sessionId = 'any-session-id-format';
-      const { token } = generateRefreshToken(sessionId);
+      const { token } = await generateRefreshToken(sessionId);
 
       const extractedId = getRefreshTokenId(token);
       expect(extractedId).toBe(sessionId);
@@ -87,65 +87,65 @@ describe('refreshToken', () => {
   });
 
   describe('verifyRefreshToken', () => {
-    it('should verify a valid token against its hash', () => {
+    it('should verify a valid token against its hash', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const { token, hash } = generateRefreshToken(sessionId);
+      const { token, hash } = await generateRefreshToken(sessionId);
 
-      const isValid = verifyRefreshToken(token, hash);
+      const isValid = await verifyRefreshToken(token, hash);
       expect(isValid).toBe(true);
     });
 
-    it('should reject an invalid token', () => {
+    it('should reject an invalid token', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const { hash } = generateRefreshToken(sessionId);
-      const { token: wrongToken } = generateRefreshToken(sessionId);
+      const { hash } = await generateRefreshToken(sessionId);
+      const { token: wrongToken } = await generateRefreshToken(sessionId);
 
-      const isValid = verifyRefreshToken(wrongToken, hash);
+      const isValid = await verifyRefreshToken(wrongToken, hash);
       expect(isValid).toBe(false);
     });
 
-    it('should reject a modified token', () => {
+    it('should reject a modified token', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const { token, hash } = generateRefreshToken(sessionId);
+      const { token, hash } = await generateRefreshToken(sessionId);
 
       // Modify the token slightly
       const modifiedToken = `${token.slice(0, -1)}X`;
 
-      const isValid = verifyRefreshToken(modifiedToken, hash);
+      const isValid = await verifyRefreshToken(modifiedToken, hash);
       expect(isValid).toBe(false);
     });
 
-    it('should reject with invalid hash format', () => {
+    it('should reject with invalid hash format', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const { token } = generateRefreshToken(sessionId);
+      const { token } = await generateRefreshToken(sessionId);
 
-      const isValid = verifyRefreshToken(token, 'invalid-hash');
+      const isValid = await verifyRefreshToken(token, 'invalid-hash');
       expect(isValid).toBe(false);
     });
 
-    it('should reject with empty hash', () => {
+    it('should reject with empty hash', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const { token } = generateRefreshToken(sessionId);
+      const { token } = await generateRefreshToken(sessionId);
 
-      const isValid = verifyRefreshToken(token, '');
+      const isValid = await verifyRefreshToken(token, '');
       expect(isValid).toBe(false);
     });
 
-    it('should handle malformed hash gracefully', () => {
+    it('should handle malformed hash gracefully', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const { token } = generateRefreshToken(sessionId);
+      const { token } = await generateRefreshToken(sessionId);
 
-      expect(verifyRefreshToken(token, 'not.a.valid.hash')).toBe(false);
-      expect(verifyRefreshToken(token, '.')).toBe(false);
+      expect(await verifyRefreshToken(token, 'not.a.valid.hash')).toBe(false);
+      expect(await verifyRefreshToken(token, '.')).toBe(false);
     });
 
-    it('should be timing-safe (multiple verifications should work)', () => {
+    it('should be timing-safe (multiple verifications should work)', async () => {
       const sessionId = '123e4567-e89b-4d3a-a456-426614174000';
-      const { token, hash } = generateRefreshToken(sessionId);
+      const { token, hash } = await generateRefreshToken(sessionId);
 
       // Verify multiple times to ensure timing safety
       for (let i = 0; i < 10; i++) {
-        expect(verifyRefreshToken(token, hash)).toBe(true);
+        expect(await verifyRefreshToken(token, hash)).toBe(true);
       }
     });
   });

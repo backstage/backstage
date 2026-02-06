@@ -71,6 +71,7 @@ export const authPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
+        lifecycle: coreServices.lifecycle,
         catalog: catalogServiceRef,
       },
       async init({
@@ -81,15 +82,25 @@ export const authPlugin = createBackendPlugin({
         discovery,
         auth,
         httpAuth,
+        lifecycle,
         catalog,
       }) {
-        // Create offline session database and access service if refresh tokens are enabled
         let offlineAccess: OfflineAccessService | undefined;
         const refreshTokensEnabled = config.getOptionalBoolean(
           'auth.experimentalRefreshToken.enabled',
         );
 
         if (refreshTokensEnabled) {
+          const dcrEnabled = config.getOptionalBoolean(
+            'auth.experimentalDynamicClientRegistration.enabled',
+          );
+          if (!dcrEnabled) {
+            logger.warn(
+              'Refresh tokens are enabled but dynamic client registration is not. ' +
+                'The refresh token endpoint requires DCR to be enabled.',
+            );
+          }
+
           const tokenLifetime = config.has(
             'auth.experimentalRefreshToken.tokenLifetime',
           )
@@ -113,12 +124,45 @@ export const authPlugin = createBackendPlugin({
             durationToMilliseconds(maxRotationLifetime) / 1000,
           );
 
+          if (tokenLifetimeSeconds <= 0) {
+            throw new Error(
+              'auth.experimentalRefreshToken.tokenLifetime must be a positive duration',
+            );
+          }
+          if (maxRotationLifetimeSeconds <= 0) {
+            throw new Error(
+              'auth.experimentalRefreshToken.maxRotationLifetime must be a positive duration',
+            );
+          }
+          if (maxRotationLifetimeSeconds <= tokenLifetimeSeconds) {
+            throw new Error(
+              'auth.experimentalRefreshToken.maxRotationLifetime must be greater than tokenLifetime',
+            );
+          }
+
           const maxTokensPerUser =
             config.getOptionalNumber(
               'auth.experimentalRefreshToken.maxTokensPerUser',
             ) ?? 20;
 
+          if (maxTokensPerUser <= 0) {
+            throw new Error(
+              'auth.experimentalRefreshToken.maxTokensPerUser must be a positive number',
+            );
+          }
+
           const knex = await database.getClient();
+
+          if (
+            knex.client.config.client.includes('sqlite') ||
+            knex.client.config.client.includes('better-sqlite')
+          ) {
+            logger.warn(
+              'Refresh tokens are enabled with SQLite, which does not support row-level locking. ' +
+                'Concurrent token rotation may not be fully protected against race conditions. ' +
+                'Use PostgreSQL for production deployments.',
+            );
+          }
 
           const offlineSessionDb = OfflineSessionDatabase.create({
             knex,
@@ -130,6 +174,24 @@ export const authPlugin = createBackendPlugin({
           offlineAccess = OfflineAccessService.create({
             offlineSessionDb,
             logger,
+          });
+
+          // Periodically clean up expired sessions every hour
+          const cleanupIntervalMs = 60 * 60 * 1000;
+          const cleanupInterval = setInterval(async () => {
+            try {
+              const deleted = await offlineSessionDb.cleanupExpiredSessions();
+              if (deleted > 0) {
+                logger.info(`Cleaned up ${deleted} expired offline sessions`);
+              }
+            } catch (error) {
+              logger.error('Failed to cleanup expired offline sessions', error);
+            }
+          }, cleanupIntervalMs);
+          cleanupInterval.unref();
+
+          lifecycle.addShutdownHook(() => {
+            clearInterval(cleanupInterval);
           });
         }
 
