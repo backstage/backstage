@@ -448,4 +448,46 @@ describe('CatalogTable component', () => {
     const labelCellValue = screen.getByText('generic');
     expect(labelCellValue).toBeInTheDocument();
   });
+
+  it('should display count based on filtered entities length, not totalItems', async () => {
+    // This test verifies that when totalItems differs from entities.length
+    // (e.g., due to client-side filtering like starred entities),
+    // the count in the title reflects the actual filtered count
+    const filteredEntities = [entities[0]]; // Only 1 entity visible after filtering
+
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            entities: filteredEntities,
+            totalItems: 3, // Backend reports 3 total, but only 1 is shown after filtering
+            filters: {
+              user: new UserListFilter(
+                'starred',
+                () => false,
+                () => false,
+              ),
+              kind: {
+                value: 'component',
+                label: 'Component',
+                getCatalogFilters: () => ({ kind: 'component' }),
+                toQueryValue: () => 'component',
+              },
+            },
+          }}
+        >
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // Should show (1) based on filtered entities, not (3) from totalItems
+    expect(screen.getByText(/Starred Components \(1\)/)).toBeInTheDocument();
+    expect(screen.queryByText(/\(3\)/)).not.toBeInTheDocument();
+  });
 });
