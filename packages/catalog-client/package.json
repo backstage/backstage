@@ -51,11 +51,13 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
     "cross-fetch": "^4.0.0",
+    "lodash": "^4.17.21",
     "uri-template": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
+    "@types/lodash": "^4.14.151",
     "msw": "^1.0.0"
   }
 }
