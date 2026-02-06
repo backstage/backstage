@@ -74,8 +74,9 @@ behavior. To preview documentation with a different app, use
 `--preview-app-bundle-path` with a path to the bundle of the app to use instead.
 Typically, a `dist` or `build` directory.
 
-NOTE: When using a custom `techdocs` docker image, make sure the entry point is
-also `ENTRYPOINT ["mkdocs"]` or override with `--docker-entrypoint`.
+:::note
+When using a custom `techdocs` Docker image, ensure the entry point is set to `ENTRYPOINT ["mkdocs"]` or override it with `--docker-entrypoint`.
+:::
 
 Command reference:
 
@@ -170,8 +171,9 @@ TechDocs site belongs to. You can find the values in your Entity's
 use `default`. The directory structure used in the storage bucket is
 `namespace/kind/name/<files>`.
 
-Note that the values are case-sensitive. An example for `--entity` is
-`default/Component/<entityName>`.
+:::note
+The values are case-sensitive. For example, use `--entity default/Component/<entityName>`.
+:::
 
 Command reference:
 
@@ -249,9 +251,9 @@ techdocs-cli migrate --publisher-type <awsS3|googleGcs|azureBlobStorage> --stora
 Afterward, update your TechDocs CLI to `v[0.7.0]` to ensure further publishing
 happens using a lower-case entity triplet.
 
-Note: arguments for this command largely match those of the `publish` command,
-depending on your chosen storage provider. Run `techdocs-cli migrate --help` for
-details.
+:::note
+The arguments for this command largely match those of the `publish` command, depending on your chosen storage provider. Run `techdocs-cli migrate --help` for details.
+:::
 
 #### Authentication
 
