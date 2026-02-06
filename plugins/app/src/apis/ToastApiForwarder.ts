@@ -16,8 +16,8 @@
 
 import {
   ToastApi,
-  ToastMessage,
-  ToastMessageWithKey,
+  ToastApiMessage,
+  ToastApiMessageWithKey,
 } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
@@ -85,15 +85,15 @@ class PublishSubject<T> {
  * @internal
  */
 export class ToastApiForwarder implements ToastApi {
-  private readonly subject = new PublishSubject<ToastMessageWithKey>();
+  private readonly subject = new PublishSubject<ToastApiMessageWithKey>();
   private readonly closeSubject = new PublishSubject<string>();
-  private readonly recentToasts: ToastMessageWithKey[] = [];
+  private readonly recentToasts: ToastApiMessageWithKey[] = [];
   private readonly closedKeys = new Set<string>();
   private readonly maxBufferSize = 10;
 
-  post(toast: ToastMessage): string {
+  post(toast: ToastApiMessage): string {
     const key = generateToastKey();
-    const toastWithKey: ToastMessageWithKey = { ...toast, key };
+    const toastWithKey: ToastApiMessageWithKey = { ...toast, key };
 
     this.recentToasts.push(toastWithKey);
     if (this.recentToasts.length > this.maxBufferSize) {
@@ -121,7 +121,7 @@ export class ToastApiForwarder implements ToastApi {
     }
   }
 
-  toast$(): Observable<ToastMessageWithKey> {
+  toast$(): Observable<ToastApiMessageWithKey> {
     // Filter out any toasts that were closed to handle race conditions
     const activeToasts = this.recentToasts.filter(
       t => !this.closedKeys.has(t.key),

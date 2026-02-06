@@ -21,7 +21,7 @@ import { Observable } from '@backstage/types';
  * Message handled by the {@link AlertApi}.
  *
  * @public
- * @deprecated Use {@link ToastMessage} from {@link ToastApi} instead. AlertApi will be removed in a future release.
+ * @deprecated Use {@link ToastApiMessage} from {@link ToastApi} instead. AlertApi will be removed in a future release.
  *
  * Migration guide:
  * - `message` becomes `title`
