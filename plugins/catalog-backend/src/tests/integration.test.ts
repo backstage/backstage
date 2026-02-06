@@ -1139,16 +1139,22 @@ describe('Catalog Backend Integration', () => {
     await expect(harness.process()).resolves.toEqual({});
 
     // Expect to find A and B' in the catalog
-    await expect(harness.getRefreshStateReferences()).resolves.toEqual([
-      {
-        sourceKey: 'test',
-        targetEntityRef: 'component:default/a',
-      },
-      {
-        sourceEntityRef: 'component:default/a',
-        targetEntityRef: 'component:default/b',
-      },
-    ]);
+
+    await expect(harness.getRefreshStateReferences()).resolves.toEqual(
+      // The refresh state cleanup no longer removes unrelated references
+      // belonging to other sources or parents.
+      expect.arrayContaining([
+        {
+          sourceKey: 'test',
+          targetEntityRef: 'component:default/a',
+        },
+        {
+          sourceEntityRef: 'component:default/a',
+          targetEntityRef: 'component:default/b',
+        },
+      ]),
+    );
+
     await expect(harness.getRefreshState()).resolves.toEqual({
       'component:default/a': expect.objectContaining({
         locationKey: null,
