@@ -134,6 +134,5 @@ export interface TableProps<T extends TableItem> {
   selection?: TableSelection;
   emptyState?: ReactNode;
   className?: string;
-  columnSizing?: 'content' | 'manual';
   style?: React.CSSProperties;
 }
