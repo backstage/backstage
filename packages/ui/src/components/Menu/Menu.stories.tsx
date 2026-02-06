@@ -444,3 +444,21 @@ export const WithScroll = meta.story({
     </MenuTrigger>
   ),
 });
+
+export const LongContent = meta.story({
+  args: {
+    children: null,
+  },
+  render: () => (
+    <MenuTrigger>
+      <Button aria-label="Support">Support</Button>
+      <Menu>
+        <MenuItem>#data-application-portal-support</MenuItem>
+        <MenuItem>This is another very long menu item that should handle overflow gracefully</MenuItem>
+        <MenuItem iconStart={<RiChat1Line />}>
+          #super-long-channel-name-with-many-words
+        </MenuItem>
+      </Menu>
+    </MenuTrigger>
+  ),
+});
