@@ -26,6 +26,7 @@ import {
   TestDatabases,
 } from '@backstage/backend-test-utils';
 import {
+  NotificationProcessor,
   NotificationRecipientResolver,
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
@@ -824,6 +825,118 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([]);
+    });
+  });
+
+  describe('POST /notifications with custom processor', () => {
+    const httpAuth = mockServices.httpAuth({
+      defaultCredentials: mockCredentials.service(),
+    });
+
+    const customProcessor: NotificationProcessor = {
+      getName: () => 'customProcessor',
+      processOptions: jest.fn(),
+      preProcess: jest.fn(),
+      postProcess: jest.fn(),
+      getNotificationFilters: jest.fn(),
+    };
+
+    beforeEach(async () => {
+      jest.resetAllMocks();
+      const client = await database.getClient();
+      await client('notification').del();
+      await client('broadcast').del();
+      await client('user_settings').del();
+
+      (customProcessor.processOptions as jest.Mock).mockImplementation(
+        opts => opts,
+      );
+      (customProcessor.preProcess as jest.Mock).mockImplementation(
+        (notification, _options) => notification,
+      );
+
+      const router = await createRouter({
+        logger: mockServices.logger.mock(),
+        store,
+        signals: signalService,
+        userInfo,
+        config,
+        httpAuth,
+        auth,
+        catalog,
+        processors: [customProcessor],
+      });
+      app = express().use(router).use(mockErrorHandler());
+    });
+
+    const sendNotification = async (data: NotificationSendOptions) =>
+      request(app)
+        .post('/notifications')
+        .send(data)
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json');
+
+    it('should not call processor preProcess if topic is excluded', async () => {
+      (customProcessor.getNotificationFilters as jest.Mock).mockReturnValue({
+        excludedTopics: ['topic1'],
+      });
+      // Should be processed
+      await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+          topic: 'topic2',
+        },
+      });
+      // Excluded, should not be processed
+      await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+          topic: 'topic1',
+        },
+      });
+      expect(customProcessor.preProcess).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not call processor preProcess if topic is not included', async () => {
+      (customProcessor.getNotificationFilters as jest.Mock).mockReturnValue({
+        includedTopics: ['topic1'],
+      });
+      // Should not be processed, not included topic
+      await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+          topic: 'topic2',
+        },
+      });
+      // Should not be processed, no topic
+      await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+        },
+      });
+      // Included, should be processed
+      await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+          topic: 'topic1',
+        },
+      });
+      expect(customProcessor.preProcess).toHaveBeenCalledTimes(1);
     });
   });
 
