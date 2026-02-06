@@ -16,6 +16,7 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { SlackNotificationProcessor } from './SlackNotificationProcessor';
+import { USER_REFS_FROM_REQUEST_KEY } from './constants';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { WebClient } from '@slack/web-api';
 import { Entity } from '@backstage/catalog-model';
@@ -315,6 +316,82 @@ describe('SlackNotificationProcessor', () => {
       );
 
       expect(slack.chat.postMessage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when group and user recipients are both provided', () => {
+    it('should send a group message and only DM explicit users', async () => {
+      const slack = new WebClient();
+      const extraUser: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: {
+          name: 'other',
+          namespace: 'default',
+          annotations: {
+            'slack.com/bot-notify': 'U99999999',
+          },
+        },
+        spec: {},
+      };
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: [...DEFAULT_ENTITIES_RESPONSE.items, extraUser],
+        }),
+        slack,
+      })[0];
+
+      const processedOptions = await processor.processOptions({
+        recipients: {
+          type: 'entity',
+          entityRef: ['group:default/mock', 'user:default/mock'],
+        },
+        payload: { title: 'notification' },
+      });
+
+      expect(processedOptions.payload.metadata).toEqual(
+        expect.objectContaining({
+          [USER_REFS_FROM_REQUEST_KEY]: ['user:default/mock'],
+        }),
+      );
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: 'group-user-1',
+          user: 'user:default/other',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            link: '/catalog/user/default/other',
+          },
+        },
+        processedOptions,
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(1);
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: 'explicit-user-1',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            link: '/catalog/user/default/mock',
+          },
+        },
+        processedOptions,
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(2);
+      expect(slack.chat.postMessage).toHaveBeenLastCalledWith(
+        expect.objectContaining({ channel: 'U12345678' }),
+      );
     });
   });
 
