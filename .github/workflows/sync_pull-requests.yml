@@ -56,6 +56,14 @@ jobs:
           review-state: ${{ steps.context.outputs.review-state }}
           actor: ${{ steps.context.outputs.actor }}
           action: ${{ steps.context.outputs.action }}
+          required-checks: |
+            DCO
+            E2E Linux 22.x
+            E2E Linux 24.x
+            Test 22.x
+            Test 24.x
+            Verify 22.x
+            Verify 24.x
 
   # Runs when CI or E2E workflows complete to update priority based on check status
   update-on-ci:
@@ -80,3 +88,11 @@ jobs:
           project-number: '14'
           pr-number: ${{ github.event.workflow_run.pull_requests[0].number }}
           action: synchronize
+          required-checks: |
+            DCO
+            E2E Linux 22.x
+            E2E Linux 24.x
+            Test 22.x
+            Test 24.x
+            Verify 22.x
+            Verify 24.x
