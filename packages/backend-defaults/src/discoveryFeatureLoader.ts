@@ -21,6 +21,39 @@ import {
 import { PackageDiscoveryService } from './PackageDiscoveryService';
 
 /**
+ * Options for the discovery feature loader.
+ *
+ * @public
+ */
+export interface DiscoveryFeatureLoaderOptions {
+  /**
+   * Packages that should always be excluded from discovery, regardless of configuration.
+   */
+  alwaysExcludedPackages?: string[];
+}
+
+/**
+ * Create a discovery feature loader with custom options.
+ *
+ * @public
+ */
+export function discoveryFeatureLoaderFactory(
+  options?: DiscoveryFeatureLoaderOptions,
+) {
+  return createBackendFeatureLoader({
+    deps: {
+      config: coreServices.rootConfig,
+      logger: coreServices.rootLogger,
+    },
+    async loader({ config, logger }) {
+      const service = new PackageDiscoveryService(config, logger, options);
+      const { features } = await service.getBackendFeatures();
+      return features;
+    },
+  });
+}
+
+/**
  * A loader that discovers backend features from the current package.json and its dependencies.
  *
  * @public
@@ -38,14 +71,4 @@ import { PackageDiscoveryService } from './PackageDiscoveryService';
  * backend.start();
  * ```
  */
-export const discoveryFeatureLoader = createBackendFeatureLoader({
-  deps: {
-    config: coreServices.rootConfig,
-    logger: coreServices.rootLogger,
-  },
-  async loader({ config, logger }) {
-    const service = new PackageDiscoveryService(config, logger);
-    const { features } = await service.getBackendFeatures();
-    return features;
-  },
-});
+export const discoveryFeatureLoader = discoveryFeatureLoaderFactory();

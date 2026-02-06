@@ -486,6 +486,7 @@ export default {
               },
               [
                 'backend-system/building-backends/index',
+                'backend-system/building-backends/backend-package-discovery',
                 'backend-system/building-backends/migrating',
               ],
             ),
