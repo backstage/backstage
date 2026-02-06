@@ -230,13 +230,6 @@ export const tablePropDefs: Record<string, PropDef> = {
     values: ['ReactNode'],
     description: 'Content to display when the table has no data.',
   },
-  columnSizing: {
-    type: 'enum',
-    values: ['content', 'manual'],
-    default: 'content',
-    description:
-      'Set to "manual" (or define any of the width properties on a column) to manually control column widths.',
-  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };

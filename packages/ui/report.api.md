@@ -1700,7 +1700,6 @@ export function Table<T extends TableItem>({
   selection,
   emptyState,
   className,
-  columnSizing,
   style,
 }: TableProps<T>): JSX_2.Element;
 
@@ -1812,8 +1811,6 @@ export interface TableProps<T extends TableItem> {
   className?: string;
   // (undocumented)
   columnConfig: readonly ColumnConfig<T>[];
-  // (undocumented)
-  columnSizing?: 'content' | 'manual';
   // (undocumented)
   data: T[] | undefined;
   // (undocumented)
