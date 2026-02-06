@@ -143,39 +143,52 @@ And if you’d like to go even further, you can target specific component class 
 
 #### Base colors
 
-These colors are used for special purposes like ring, scrollbar, ...
+| Token Name    | Description                                                             |
+| ------------- | ----------------------------------------------------------------------- |
+| `--bui-black` | Pure black color. This one should be the same in light and dark themes. |
+| `--bui-white` | Pure white color. This one should be the same in light and dark themes. |
 
-| Token Name     | Description                                                             |
-| -------------- | ----------------------------------------------------------------------- |
-| `--bui-black`  | Pure black color. This one should be the same in light and dark themes. |
-| `--bui-white`  | Pure white color. This one should be the same in light and dark themes. |
-| `--bui-gray-1` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-2` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-3` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-4` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-5` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-6` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-7` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-8` | You can use these mostly for backgrounds colors.                        |
+#### Neutral background colors
 
-#### Core background colors
+These colors form a layered neutral scale for your application backgrounds. `--bui-bg-neutral-0` is the base background color. Each subsequent level (1 through 4) represents an elevated layer, with hover, pressed, and disabled variants for interactive states.
 
-These colors are used for the background of your application. We are mostly using for now a single elevated background for panels. `--bui-bg-neutral-0` should mostly use as the main background color of your app.
+| Token Name                    | Description                                                  |
+| ----------------------------- | ------------------------------------------------------------ |
+| `--bui-bg-neutral-0`          | The base background color of your Backstage instance.        |
+| `--bui-bg-neutral-1`          | First elevated layer. Use for cards, dialogs, and panels.    |
+| `--bui-bg-neutral-1-hover`    | Hover state for elements on neutral-1.                       |
+| `--bui-bg-neutral-1-pressed`  | Pressed state for elements on neutral-1.                     |
+| `--bui-bg-neutral-1-disabled` | Disabled state for elements on neutral-1.                    |
+| `--bui-bg-neutral-2`          | Second elevated layer. Use for elements on top of neutral-1. |
+| `--bui-bg-neutral-2-hover`    | Hover state for elements on neutral-2.                       |
+| `--bui-bg-neutral-2-pressed`  | Pressed state for elements on neutral-2.                     |
+| `--bui-bg-neutral-2-disabled` | Disabled state for elements on neutral-2.                    |
+| `--bui-bg-neutral-3`          | Third elevated layer. Use for elements on top of neutral-2.  |
+| `--bui-bg-neutral-3-hover`    | Hover state for elements on neutral-3.                       |
+| `--bui-bg-neutral-3-pressed`  | Pressed state for elements on neutral-3.                     |
+| `--bui-bg-neutral-3-disabled` | Disabled state for elements on neutral-3.                    |
+| `--bui-bg-neutral-4`          | Fourth elevated layer. Use for elements on top of neutral-3. |
+| `--bui-bg-neutral-4-hover`    | Hover state for elements on neutral-4.                       |
+| `--bui-bg-neutral-4-pressed`  | Pressed state for elements on neutral-4.                     |
+| `--bui-bg-neutral-4-disabled` | Disabled state for elements on neutral-4.                    |
 
-| Token Name                | Description                                      |
-| ------------------------- | ------------------------------------------------ |
-| `--bui-bg-neutral-0`      | The background color of your Backstage instance. |
-| `--bui-bg-neutral-1`      | Use for any panels or elevated surfaces.         |
-| `--bui-bg-neutral-2`      | Use for any panels or elevated surfaces.         |
-| `--bui-bg-neutral-3`      | Use for any panels or elevated surfaces.         |
-| `--bui-bg-solid`          | Used for solid background colors.                |
-| `--bui-bg-solid-hover`    | Used for solid background colors when hovered.   |
-| `--bui-bg-solid-pressed`  | Used for solid background colors when pressed.   |
-| `--bui-bg-solid-disabled` | Used for solid background colors when disabled.  |
-| `--bui-bg-danger`         | Used to show errors information.                 |
-| `--bui-bg-warning`        | Used to show warnings information.               |
-| `--bui-bg-success`        | Used to show success information.                |
-| `--bui-bg-info`           | Used to show informational content.              |
+#### Solid background colors
+
+| Token Name                | Description                                     |
+| ------------------------- | ----------------------------------------------- |
+| `--bui-bg-solid`          | Used for solid background colors.               |
+| `--bui-bg-solid-hover`    | Used for solid background colors when hovered.  |
+| `--bui-bg-solid-pressed`  | Used for solid background colors when pressed.  |
+| `--bui-bg-solid-disabled` | Used for solid background colors when disabled. |
+
+#### Status background colors
+
+| Token Name         | Description                         |
+| ------------------ | ----------------------------------- |
+| `--bui-bg-danger`  | Used to show errors information.    |
+| `--bui-bg-warning` | Used to show warnings information.  |
+| `--bui-bg-success` | Used to show success information.   |
+| `--bui-bg-info`    | Used to show informational content. |
 
 #### Foreground colors
 

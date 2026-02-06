@@ -21,7 +21,7 @@
     box-shadow: var(--bui-shadow);
     border-radius: 4px;
     background: var(--bui-bg-neutral-1);
-    border: 1px solid var(--bui-gray-3);
+    border: 1px solid var(--bui-border);
     forced-color-adjust: none;
     outline: none;
     padding: var(--bui-space-2) var(--bui-space-3);
@@ -78,7 +78,7 @@
       }
 
       path:nth-child(2) {
-        fill: var(--bui-gray-3);
+        fill: var(--bui-fg-secondary);
       }
 
       /* The arrow svg overlaps the tooltip by 2px, so we
@@ -109,7 +109,7 @@
   [data-theme='dark'] .bui-Tooltip {
     background: var(--bui-bg-neutral-2);
     box-shadow: none;
-    border: 1px solid var(--bui-gray-4);
+    border: 1px solid var(--bui-border);
   }
 
   [data-theme='dark'] .bui-TooltipArrow svg path:nth-child(1) {
@@ -117,6 +117,6 @@
   }
 
   [data-theme='dark'] .bui-TooltipArrow svg path:nth-child(2) {
-    fill: var(--bui-gray-4);
+    fill: var(--bui-fg-secondary);
   }
 }
