@@ -57,9 +57,50 @@ events:
             - topic: 'catalog.entity.created' # (Required) The Backstage topic to consume from
               kafka:
                 topic: kafka-topic-name # (Required) The Kafka topic to publish to
+              # Optional: Forward event metadata as Kafka headers
+              headers:
+                forward: true # Enable forwarding metadata as headers (default: false)
+                whitelist: ['trace-id', 'source'] # Only include these keys (optional, case-insensitive)
+                # blacklist: ['authorization'] # Exclude these keys (optional, default: ['authorization'])
 ```
 
 For a complete list of all available fields that can be configured, refer to the [config.d.ts file](./config.d.ts).
+
+### Metadata Header Forwarding
+
+When publishing events from Backstage to Kafka, you can optionally forward event metadata as Kafka message headers. This is useful for:
+
+- Propagating trace IDs for distributed tracing
+- Including event types or source information
+- Adding custom metadata for downstream processing
+
+**Configuration:**
+
+```yaml
+events:
+  modules:
+    kafka:
+      kafkaPublishingEventConsumer:
+        production:
+          topics:
+            - topic: 'catalog.entity.created'
+              kafka:
+                topic: kafka-topic-name
+              headers:
+                forward: true # Enable header forwarding (default: false)
+                whitelist: ['trace-id', 'event-type'] # Optional: only forward these keys
+                # blacklist: ['authorization', 'secret'] # Optional: exclude these keys (default: ['authorization'])
+```
+
+**Behavior:**
+
+- Headers are **not forwarded by default** (backward compatible)
+- When enabled without a whitelist, all metadata is forwarded **except** `authorization` (case-insensitive)
+- When a whitelist is provided, only those keys are forwarded (blacklist is ignored)
+- Array values are converted to string arrays; undefined entries are dropped
+- The consuming side (`KafkaConsumingEventPublisher`) automatically converts Kafka headers back to event metadata
+
+**Security Note:** The default blacklist excludes `authorization` to prevent credential leakage in Kafka headers, which may be visible in monitoring tools.
 
 ### Offset Management
 
