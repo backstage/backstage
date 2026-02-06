@@ -33,3 +33,11 @@ jobs:
           version: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Link Checker
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Check all markdown files in the repo
+          args: --root-dir "$(pwd)" --verbose --no-progress './**/*.md'
+          fail: true
+          token: ${{ secrets.GITHUB_TOKEN }}
