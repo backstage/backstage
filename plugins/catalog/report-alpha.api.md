@@ -74,7 +74,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'searchResultItem.type': 'Type';
     readonly 'searchResultItem.kind': 'Kind';
     readonly 'searchResultItem.lifecycle': 'Lifecycle';
-    readonly 'searchResultItem.Owner': 'Owner';
+    readonly 'searchResultItem.owner': 'Owner';
     readonly 'catalogTable.allFilters': 'All';
     readonly 'catalogTable.warningPanelTitle': 'Could not fetch catalog entities.';
     readonly 'catalogTable.viewActionTitle': 'View';
