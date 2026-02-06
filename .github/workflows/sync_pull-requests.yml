@@ -44,7 +44,7 @@ jobs:
 
       - name: Backstage PR automation
         if: steps.download.outcome == 'success'
-        uses: backstage/actions/pr-automation@d8f699b19b0d328865976ef5f4982dfa97db9952 # v0.7.4
+        uses: backstage/actions/pr-automation@a3895cac2a515224a101c4a2b962b216ed0c9ac8 # v0.7.5
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
@@ -71,7 +71,7 @@ jobs:
           egress-policy: audit
 
       - name: Backstage PR automation
-        uses: backstage/actions/pr-automation@d8f699b19b0d328865976ef5f4982dfa97db9952 # v0.7.4
+        uses: backstage/actions/pr-automation@a3895cac2a515224a101c4a2b962b216ed0c9ac8 # v0.7.5
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
