@@ -208,40 +208,31 @@ export const SurfacesNested = meta.story({
 
 export const SurfacesAutoIncrement = meta.story({
   render: args => (
-    <Flex direction="column">
-      <Box style={{ maxWidth: '600px' }} mb="4">
-        Using surface="auto" automatically increments from the parent surface
-        level. This makes components more reusable as they don't need to know
-        their absolute surface level. Notice how each nested Card with
-        surface="auto" automatically increments: 0 → 1 → 2 → 3 (capped at 3).
+    <Flex align="start" style={{ flexWrap: 'wrap' }} gap="4">
+      <Box surface="0" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} surface="auto" style={{ width: '200px' }}>
+          <CardHeader>On surface 0</CardHeader>
+          <CardBody>Card auto → 1</CardBody>
+        </Card>
       </Box>
-      <Card {...args} surface="0" style={{ width: '500px' }}>
-        <CardHeader>Surface 0 (explicit)</CardHeader>
-        <CardBody>
-          <Card {...args} surface="auto">
-            <CardHeader>Surface auto (becomes 1)</CardHeader>
-            <CardBody>
-              <Button variant="secondary" onSurface="auto">
-                Button auto
-              </Button>
-              <Card {...args} surface="auto" style={{ marginTop: '16px' }}>
-                <CardHeader>Surface auto (becomes 2)</CardHeader>
-                <CardBody>
-                  <Card {...args} surface="auto">
-                    <CardHeader>Surface auto (becomes 3)</CardHeader>
-                    <CardBody>
-                      <Card {...args} surface="auto">
-                        <CardHeader>Surface auto (stays 3 - capped)</CardHeader>
-                        <CardBody>Capped at max surface level</CardBody>
-                      </Card>
-                    </CardBody>
-                  </Card>
-                </CardBody>
-              </Card>
-            </CardBody>
-          </Card>
-        </CardBody>
-      </Card>
+      <Box surface="1" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} surface="auto" style={{ width: '200px' }}>
+          <CardHeader>On surface 1</CardHeader>
+          <CardBody>Card auto → 2</CardBody>
+        </Card>
+      </Box>
+      <Box surface="2" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} surface="auto" style={{ width: '200px' }}>
+          <CardHeader>On surface 2</CardHeader>
+          <CardBody>Card auto → 3</CardBody>
+        </Card>
+      </Box>
+      <Box surface="3" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} surface="auto" style={{ width: '200px' }}>
+          <CardHeader>On surface 3</CardHeader>
+          <CardBody>Card auto → 3 (capped)</CardBody>
+        </Card>
+      </Box>
     </Flex>
   ),
 });
