@@ -1021,14 +1021,6 @@ const appPlugin: OverridableFrontendPlugin<
 export default appPlugin;
 
 // @public
-export interface ToastContent {
-  description?: ReactNode;
-  links?: ToastLink[];
-  status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
-  title: ReactNode;
-}
-
-// @public
 export function ToastDisplay(props: ToastDisplayProps): JSX_3.Element;
 
 // @public
@@ -1039,12 +1031,6 @@ export interface ToastDisplayProps {
     horizontal: 'left' | 'center' | 'right';
   };
   transientTimeoutMs?: number;
-}
-
-// @public
-export interface ToastLink {
-  href: string;
-  label: string;
 }
 
 // (No @packageDocumentation comment for this package)

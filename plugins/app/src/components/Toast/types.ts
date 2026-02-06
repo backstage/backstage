@@ -19,7 +19,7 @@ import type { ToastQueue, ToastState, QueuedToast } from 'react-stately';
 
 /**
  * Link item for toast notifications
- * @public
+ * @internal
  */
 export interface ToastLink {
   /** Display text for the link */
@@ -30,7 +30,7 @@ export interface ToastLink {
 
 /**
  * Content for a toast notification
- * @public
+ * @internal
  */
 export interface ToastContent {
   /** Title of the toast (required) */
@@ -72,7 +72,7 @@ export interface ToastProps {
 
 /**
  * Props for the ToastContainer component
- * @public
+ * @internal
  */
 export interface ToastContainerProps {
   /** Toast queue instance */

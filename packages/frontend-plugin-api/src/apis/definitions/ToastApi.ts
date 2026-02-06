@@ -35,7 +35,7 @@ export type ToastLink = {
  *
  * @public
  */
-export type ToastMessage = {
+export type ToastApiMessage = {
   /** Title of the toast (required) */
   title: ReactNode;
   /** Optional description text */
@@ -53,7 +53,7 @@ export type ToastMessage = {
  *
  * @public
  */
-export type ToastMessageWithKey = ToastMessage & {
+export type ToastApiMessageWithKey = ToastApiMessage & {
   /** Unique key for the toast, used for programmatic dismiss */
   key: string;
 };
@@ -96,7 +96,7 @@ export type ToastApi = {
    * @param toast - The toast message to display
    * @returns A unique key that can be used to programmatically dismiss the toast
    */
-  post(toast: ToastMessage): string;
+  post(toast: ToastApiMessage): string;
 
   /**
    * Programmatically close/dismiss a toast by its key.
@@ -108,7 +108,7 @@ export type ToastApi = {
   /**
    * Observe toasts posted by other parts of the application.
    */
-  toast$(): Observable<ToastMessageWithKey>;
+  toast$(): Observable<ToastApiMessageWithKey>;
 
   /**
    * Observe close events for programmatic toast dismissal.
