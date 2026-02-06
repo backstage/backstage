@@ -209,6 +209,43 @@ describe('SlackNotificationProcessor', () => {
     });
   });
 
+  it('should use a custom block kit renderer when provided', async () => {
+    const slack = new WebClient();
+    const customBlocks = [
+      {
+        type: 'section',
+        text: { type: 'mrkdwn', text: 'Custom block' },
+      },
+    ];
+
+    const processor = SlackNotificationProcessor.fromConfig(config, {
+      auth,
+      logger,
+      catalog: catalogServiceMock({
+        entities: DEFAULT_ENTITIES_RESPONSE.items,
+      }),
+      slack,
+      blockKitRenderer: () => customBlocks,
+    })[0];
+
+    await processor.processOptions({
+      recipients: { type: 'entity', entityRef: 'group:default/mock' },
+      payload: { title: 'notification' },
+    });
+
+    expect(slack.chat.postMessage).toHaveBeenCalledWith({
+      channel: 'C12345678',
+      text: 'notification',
+      attachments: [
+        {
+          color: '#00A699',
+          blocks: customBlocks,
+          fallback: 'notification',
+        },
+      ],
+    });
+  });
+
   describe('when a user notification is sent directly', () => {
     it('should send a notification to a user', async () => {
       const slack = new WebClient();

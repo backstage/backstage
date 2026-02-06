@@ -20,6 +20,10 @@ import {
 import { notificationsProcessingExtensionPoint } from '@backstage/plugin-notifications-node';
 import { SlackNotificationProcessor } from './lib/SlackNotificationProcessor';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import {
+  notificationsSlackBlockKitExtensionPoint,
+  SlackBlockKitRenderer,
+} from './extensions';
 
 /**
  * The Slack notification processor for use with the notifications plugin.
@@ -31,6 +35,16 @@ export const notificationsModuleSlack = createBackendModule({
   pluginId: 'notifications',
   moduleId: 'slack',
   register(reg) {
+    let blockKitRenderer: SlackBlockKitRenderer | undefined;
+    reg.registerExtensionPoint(notificationsSlackBlockKitExtensionPoint, {
+      setBlockKitRenderer(renderer) {
+        if (blockKitRenderer) {
+          throw new Error(`Slack block kit renderer was already registered`);
+        }
+        blockKitRenderer = renderer;
+      },
+    });
+
     reg.registerInit({
       deps: {
         auth: coreServices.auth,
@@ -45,6 +59,7 @@ export const notificationsModuleSlack = createBackendModule({
             auth,
             logger,
             catalog,
+            blockKitRenderer,
           }),
         );
       },

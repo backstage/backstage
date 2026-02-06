@@ -19,13 +19,16 @@ import {
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import { ChatPostMessageArguments, KnownBlock } from '@slack/web-api';
+import { SlackBlockKitRenderer } from '../extensions';
 
 export function toChatPostMessageArgs(options: {
   channel: string;
   payload: NotificationPayload;
   username?: string;
+  blockKitRenderer?: SlackBlockKitRenderer;
 }): ChatPostMessageArguments {
-  const { channel, payload, username } = options;
+  const { channel, payload, username, blockKitRenderer } = options;
+  const blocks = (blockKitRenderer ?? toSlackBlockKit)(payload);
 
   const args: ChatPostMessageArguments = {
     channel,
@@ -34,7 +37,7 @@ export function toChatPostMessageArgs(options: {
     attachments: [
       {
         color: getColor(payload.severity),
-        blocks: toSlackBlockKit(payload),
+        blocks,
         fallback: payload.title,
       },
     ],
