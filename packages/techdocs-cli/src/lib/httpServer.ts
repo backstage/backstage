@@ -17,29 +17,39 @@
 import serveHandler from 'serve-handler';
 import http from 'node:http';
 import httpProxy from 'http-proxy';
+import fs from 'fs-extra';
 import { createLogger } from './utility';
+import path from 'path';
 import {
   proxyHtmlWithLivereloadInjection,
   proxyMkdocsLivereload,
 } from './livereload';
+
+interface PathContent {
+  content: string;
+  contentType: string;
+}
 
 export default class HTTPServer {
   private readonly proxyEndpoint: string;
   private readonly backstageBundleDir: string;
   private readonly backstagePort: number;
   private readonly mkdocsTargetAddress: string;
+  private readonly siteDir: string;
   private readonly verbose: boolean;
 
   constructor(
     backstageBundleDir: string,
     backstagePort: number,
     mkdocsTargetAddress: string,
+    siteDir: string,
     verbose: boolean,
   ) {
     this.proxyEndpoint = '/api/techdocs/';
     this.backstageBundleDir = backstageBundleDir;
     this.backstagePort = backstagePort;
     this.mkdocsTargetAddress = mkdocsTargetAddress;
+    this.siteDir = siteDir;
     this.verbose = verbose;
   }
 
@@ -52,13 +62,22 @@ export default class HTTPServer {
     return (request: http.IncomingMessage): [httpProxy, string] => {
       // If the request path is prefixed with this.proxyEndpoint, remove it.
       const proxyEndpointPath = new RegExp(`^${this.proxyEndpoint}`, 'i');
-      const forwardPath = request.url?.replace(proxyEndpointPath, '') || '';
+      const forwardPath =
+        request.url
+          ?.replace(proxyEndpointPath, '')
+          .replace('static/docs/default/component/local/', '/') || '';
 
       return [proxy, forwardPath];
     };
   }
 
   public async serve(): Promise<http.Server> {
+    const entityMetadata = await this.readMetadataFile(
+      path.join(this.siteDir, 'entity_metadata.json'),
+    );
+    const techdocsMetadata = await this.readMetadataFile(
+      path.join(this.siteDir, 'techdocs_metadata.json'),
+    );
     return new Promise<http.Server>((resolve, reject) => {
       const proxyHandler = this.createProxy();
       const server = http.createServer(
@@ -97,6 +116,28 @@ export default class HTTPServer {
 
             response.setHeader('Access-Control-Allow-Origin', '*');
             response.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+
+            const forwardPathExceptionsMap: Record<string, PathContent> = {
+              'metadata/entity/default/component/local': {
+                content: entityMetadata,
+                contentType: 'text/event-stream',
+              },
+              'metadata/techdocs/default/component/local': {
+                content: techdocsMetadata,
+                contentType: 'text/event-stream',
+              },
+              'sync/default/component/local': {
+                content: 'sync',
+                contentType: 'text/plain',
+              },
+            };
+            for (const mappedPath of Object.keys(forwardPathExceptionsMap)) {
+              if (forwardPath.includes(mappedPath)) {
+                response.setHeader('Content-Type', 'text/event-stream');
+                response.end(forwardPathExceptionsMap[mappedPath].content);
+                return;
+              }
+            }
 
             request.url = forwardPath;
             proxy.web(request, response);
@@ -143,5 +184,14 @@ export default class HTTPServer {
         reject(error);
       });
     });
+  }
+
+  private async readMetadataFile(metadataFilePath: string): Promise<string> {
+    try {
+      return await fs.readFile(metadataFilePath, 'utf8');
+    } catch (error) {
+      // no-op
+    }
+    return '{}';
   }
 }
