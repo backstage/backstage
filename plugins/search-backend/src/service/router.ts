@@ -19,18 +19,13 @@ import { z } from 'zod';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
-import {
-  PermissionAuthorizer,
-  PermissionEvaluator,
-  toPermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
   IndexableResultSet,
   SearchResultSet,
 } from '@backstage/plugin-search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
-import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 import { createOpenApiRouter } from '../schema/openapi';
 import {
   AuthService,
@@ -61,7 +56,7 @@ export type RouterOptions = {
   engine: SearchEngine;
   types: Record<string, DocumentTypeInfo>;
   discovery?: DiscoveryService;
-  permissions: PermissionEvaluator | PermissionAuthorizer;
+  permissions: PermissionEvaluator;
   config: Config;
   logger: LoggerService;
   auth: AuthService;
@@ -79,15 +74,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = await createOpenApiRouter();
-  const {
-    engine: inputEngine,
-    types,
-    permissions,
-    config,
-    logger,
-    auth,
-    httpAuth,
-  } = options;
+  const { engine, types, config, logger, auth, httpAuth } = options;
 
   const maxPageLimit =
     config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;
@@ -120,26 +107,6 @@ export async function createRouter(
       )
       .optional(),
   });
-
-  let permissionEvaluator: PermissionEvaluator;
-  if ('authorizeConditional' in permissions) {
-    permissionEvaluator = permissions as PermissionEvaluator;
-  } else {
-    logger.warn(
-      'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
-    );
-    permissionEvaluator = toPermissionEvaluator(permissions);
-  }
-
-  const engine = config.getOptionalBoolean('permission.enabled')
-    ? new AuthorizedSearchEngine(
-        inputEngine,
-        types,
-        permissionEvaluator,
-        auth,
-        config,
-      )
-    : inputEngine;
 
   const filterResultSet = ({ results, ...resultSet }: SearchResultSet) => ({
     ...resultSet,
