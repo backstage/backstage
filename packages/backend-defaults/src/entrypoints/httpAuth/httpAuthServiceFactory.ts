@@ -211,6 +211,11 @@ export class DefaultHttpAuthService implements HttpAuthService {
     let credentials: BackstageCredentials<BackstageUserPrincipal>;
     if (options?.credentials) {
       if (this.#auth.isPrincipal(options.credentials, 'none')) {
+        // clear legacy cookie with domain explicitly set to the external base url
+        res.clearCookie(
+          BACKSTAGE_AUTH_COOKIE,
+          await this.#getCookieOptions(res.req, 'legacyDomain'),
+        );
         res.clearCookie(
           BACKSTAGE_AUTH_COOKIE,
           await this.#getCookieOptions(res.req),
@@ -239,6 +244,12 @@ export class DefaultHttpAuthService implements HttpAuthService {
       throw new Error('User credentials is unexpectedly missing token');
     }
 
+    // clear legacy cookie with domain explicitly set to the external base url
+    res.clearCookie(
+      BACKSTAGE_AUTH_COOKIE,
+      await this.#getCookieOptions(res.req, 'legacyDomain'),
+    );
+
     res.cookie(BACKSTAGE_AUTH_COOKIE, token, {
       ...(await this.#getCookieOptions(res.req)),
       expires: expiresAt,
@@ -247,8 +258,11 @@ export class DefaultHttpAuthService implements HttpAuthService {
     return { expiresAt };
   }
 
-  async #getCookieOptions(_req: Request): Promise<{
-    domain: string;
+  async #getCookieOptions(
+    _req: Request,
+    mode: 'hostOnly' | 'legacyDomain' = 'hostOnly',
+  ): Promise<{
+    domain?: string;
     httpOnly: true;
     secure: boolean;
     priority: 'high';
@@ -266,11 +280,11 @@ export class DefaultHttpAuthService implements HttpAuthService {
       externalBaseUrl.hostname === 'localhost';
 
     return {
-      domain: externalBaseUrl.hostname,
       httpOnly: true,
       secure,
       priority: 'high',
       sameSite: secure ? 'none' : 'lax',
+      ...(mode === 'legacyDomain' ? { domain: externalBaseUrl.hostname } : {}),
     };
   }
 
@@ -293,7 +307,7 @@ export class DefaultHttpAuthService implements HttpAuthService {
 
       return existingCredentials.expiresAt;
     } catch (error) {
-      if (error.name === 'AuthenticationError') {
+      if (error instanceof Error && error.name === 'AuthenticationError') {
         return undefined;
       }
       throw error;
