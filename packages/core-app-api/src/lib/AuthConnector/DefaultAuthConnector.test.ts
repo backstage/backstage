@@ -242,6 +242,92 @@ describe('DefaultAuthConnector', () => {
     });
   });
 
+  it('should use authorization params', async () => {
+    const popupSpy = jest
+      .spyOn(loginPopup, 'openLoginPopup')
+      .mockResolvedValue('my-session');
+    const connector = new DefaultAuthConnector({
+      ...defaultOptions,
+      oauthRequestApi: new MockOAuthApi(),
+      sessionTransform: str => str,
+      authorizationParams: {
+        foo: 'bar',
+      },
+    });
+
+    const sessionPromise = connector.createSession({
+      scopes: new Set(),
+      instantPopup: true,
+    });
+
+    await expect(sessionPromise).resolves.toBe('my-session');
+
+    expect(popupSpy).toHaveBeenCalledWith({
+      name: 'My Provider Login',
+      url: 'http://my-host/api/auth/my-provider/start?foo=bar&scope=&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
+      width: 450,
+      height: 730,
+    });
+  });
+
+  it('should use authorization params function', async () => {
+    const popupSpy = jest
+      .spyOn(loginPopup, 'openLoginPopup')
+      .mockResolvedValue('my-session');
+    const connector = new DefaultAuthConnector({
+      ...defaultOptions,
+      oauthRequestApi: new MockOAuthApi(),
+      sessionTransform: str => str,
+      authorizationParams: () => ({
+        foo: 'bar',
+      }),
+    });
+    const sessionPromise = connector.createSession({
+      scopes: new Set(),
+      instantPopup: true,
+    });
+
+    await expect(sessionPromise).resolves.toBe('my-session');
+
+    expect(popupSpy).toHaveBeenCalledWith({
+      name: 'My Provider Login',
+      url: 'http://my-host/api/auth/my-provider/start?foo=bar&scope=&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
+      width: 450,
+      height: 730,
+    });
+  });
+
+  it('does not allow authorization params to override env, origin, flow, or scope', async () => {
+    const popupSpy = jest
+      .spyOn(loginPopup, 'openLoginPopup')
+      .mockResolvedValue('my-session');
+    const connector = new DefaultAuthConnector({
+      ...defaultOptions,
+      oauthRequestApi: new MockOAuthApi(),
+      sessionTransform: str => str,
+      authorizationParams: {
+        env: 'development',
+        origin: 'http://my-host',
+        flow: 'redirect',
+        scope: 'foo',
+      },
+    });
+
+    const sessionPromise = connector.createSession({
+      scopes: new Set(),
+      instantPopup: true,
+    });
+
+    await expect(sessionPromise).resolves.toBe('my-session');
+
+    expect(popupSpy).toHaveBeenCalledWith({
+      name: 'My Provider Login',
+      url: 'http://my-host/api/auth/my-provider/start?env=production&origin=http%3A%2F%2Flocalhost&flow=popup&scope=',
+      width: 450,
+      height: 730,
+    });
+  });
+
   it('should use join func to join scopes', async () => {
     const mockOauth = new MockOAuthApi();
     const popupSpy = jest
