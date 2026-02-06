@@ -21,8 +21,6 @@ import {
   BitbucketCloudIntegration,
   BitbucketCloudIntegrationConfig,
 } from './bitbucketCloud';
-import { BitbucketIntegrationConfig } from './bitbucket';
-import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import {
   BitbucketServerIntegration,
   BitbucketServerIntegrationConfig,
@@ -62,10 +60,6 @@ describe('ScmIntegrations', () => {
     host: 'azureblobstorage.local',
   } as AzureBlobStorageIntegrationConfig);
 
-  const bitbucket = new BitbucketIntegration({
-    host: 'bitbucket.local',
-  } as BitbucketIntegrationConfig);
-
   const bitbucketCloud = new BitbucketCloudIntegration({
     host: 'bitbucket.org',
   } as BitbucketCloudIntegrationConfig);
@@ -103,7 +97,6 @@ describe('ScmIntegrations', () => {
     awsCodeCommit: basicIntegrations([awsCodeCommit], item => item.config.host),
     azure: basicIntegrations([azure], item => item.config.host),
     azureBlobStorage: basicIntegrations([azureBlob], item => item.config.host),
-    bitbucket: basicIntegrations([bitbucket], item => item.config.host),
     bitbucketCloud: basicIntegrations([bitbucketCloud], item => item.title),
     bitbucketServer: basicIntegrations(
       [bitbucketServer],
@@ -126,7 +119,6 @@ describe('ScmIntegrations', () => {
     expect(i.azureBlobStorage.byUrl('https://azureblobstorage.local')).toBe(
       azureBlob,
     );
-    expect(i.bitbucket.byUrl('https://bitbucket.local')).toBe(bitbucket);
     expect(i.bitbucketCloud.byUrl('https://bitbucket.org')).toBe(
       bitbucketCloud,
     );
@@ -147,7 +139,6 @@ describe('ScmIntegrations', () => {
         awsCodeCommit,
         azure,
         azureBlob,
-        bitbucket,
         bitbucketCloud,
         bitbucketServer,
         gerrit,
@@ -166,7 +157,6 @@ describe('ScmIntegrations', () => {
     expect(i.azureBlobStorage.byUrl('https://azureblobstorage.local')).toBe(
       azureBlob,
     );
-    expect(i.byUrl('https://bitbucket.local')).toBe(bitbucket);
     expect(i.byUrl('https://bitbucket.org')).toBe(bitbucketCloud);
     expect(i.byUrl('https://bitbucket-server.local')).toBe(bitbucketServer);
     expect(i.byUrl('https://gerrit.local')).toBe(gerrit);
@@ -179,7 +169,6 @@ describe('ScmIntegrations', () => {
     expect(i.byHost('awscodecommit.local')).toBe(awsCodeCommit);
     expect(i.byHost('azure.local')).toBe(azure);
     expect(i.byHost('azureblobstorage.local')).toBe(azureBlob);
-    expect(i.byHost('bitbucket.local')).toBe(bitbucket);
     expect(i.byHost('bitbucket.org')).toBe(bitbucketCloud);
     expect(i.byHost('bitbucket-server.local')).toBe(bitbucketServer);
     expect(i.byHost('gerrit.local')).toBe(gerrit);

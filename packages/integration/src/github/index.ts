@@ -19,7 +19,7 @@ export {
   readGithubIntegrationConfigs,
 } from './config';
 export type { GithubAppConfig, GithubIntegrationConfig } from './config';
-export { getGithubFileFetchUrl, getGitHubRequestOptions } from './core';
+export { getGithubFileFetchUrl } from './core';
 export { DefaultGithubCredentialsProvider } from './DefaultGithubCredentialsProvider';
 export {
   GithubAppCredentialsMux,

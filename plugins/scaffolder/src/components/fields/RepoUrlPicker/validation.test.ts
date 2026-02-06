@@ -28,10 +28,12 @@ describe('RepoPicker Validation', () => {
 
   const config = new ConfigReader({
     integrations: {
-      bitbucket: [
+      bitbucketCloud: [
         {
           host: 'bitbucket.org',
         },
+      ],
+      bitbucketServer: [
         {
           host: 'server.bitbucket.com',
         },

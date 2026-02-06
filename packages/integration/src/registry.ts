@@ -19,7 +19,6 @@ import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AwsCodeCommitIntegration } from './awsCodeCommit';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketCloudIntegration } from './bitbucketCloud/BitbucketCloudIntegration';
-import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { BitbucketServerIntegration } from './bitbucketServer/BitbucketServerIntegration';
 import { GerritIntegration } from './gerrit/GerritIntegration';
 import { GithubIntegration } from './github/GithubIntegration';
@@ -39,10 +38,6 @@ export interface ScmIntegrationRegistry
   awsCodeCommit: ScmIntegrationsGroup<AwsCodeCommitIntegration>;
   azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntergation>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
-  /**
-   * @deprecated in favor of `bitbucketCloud` and `bitbucketServer`
-   */
-  bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
   bitbucketServer: ScmIntegrationsGroup<BitbucketServerIntegration>;
   gerrit: ScmIntegrationsGroup<GerritIntegration>;

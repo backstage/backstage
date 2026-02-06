@@ -10,7 +10,6 @@ import { AzureCredentialsManager } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
-import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import { GerritIntegration } from '@backstage/integration';
@@ -163,38 +162,6 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
 export class BitbucketServerUrlReader implements UrlReaderService {
   constructor(
     integration: BitbucketServerIntegration,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(
-    url: string,
-    options?: UrlReaderServiceReadTreeOptions,
-  ): Promise<UrlReaderServiceReadTreeResponse>;
-  // (undocumented)
-  readUrl(
-    url: string,
-    options?: UrlReaderServiceReadUrlOptions,
-  ): Promise<UrlReaderServiceReadUrlResponse>;
-  // (undocumented)
-  search(
-    url: string,
-    options?: UrlReaderServiceSearchOptions,
-  ): Promise<UrlReaderServiceSearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
-
-// @public @deprecated
-export class BitbucketUrlReader implements UrlReaderService {
-  constructor(
-    integration: BitbucketIntegration,
-    logger: LoggerService,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },

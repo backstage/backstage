@@ -63,30 +63,6 @@ export function getGithubFileFetchUrl(
   }
 }
 
-/**
- * Gets the request options necessary to make requests to a given provider.
- *
- * @deprecated This function is no longer used internally
- * @param config - The relevant provider config
- * @public
- */
-export function getGitHubRequestOptions(
-  config: GithubIntegrationConfig,
-  credentials: GithubCredentials,
-): { headers: Record<string, string> } {
-  const headers: Record<string, string> = {};
-
-  if (chooseEndpoint(config, credentials) === 'api') {
-    headers.Accept = 'application/vnd.github.v3.raw';
-  }
-
-  if (credentials.token) {
-    headers.Authorization = `token ${credentials.token}`;
-  }
-
-  return { headers };
-}
-
 export function chooseEndpoint(
   config: GithubIntegrationConfig,
   credentials: GithubCredentials,
