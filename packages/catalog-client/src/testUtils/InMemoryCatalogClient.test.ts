@@ -685,10 +685,9 @@ describe('InMemoryCatalogClient', () => {
 
     it('returns empty result for invalid cursor', async () => {
       const client = new InMemoryCatalogClient({ entities });
-      const cursor = Buffer.from(
-        JSON.stringify({ id: 'nonexistent', offset: 0, totalItems: 0 }),
-      ).toString('base64');
-      const result = await client.queryEntities({ cursor });
+      const result = await client.queryEntities({
+        cursor: 'not-valid-base64!',
+      });
       expect(result).toEqual({ items: [], pageInfo: {}, totalItems: 0 });
     });
   });

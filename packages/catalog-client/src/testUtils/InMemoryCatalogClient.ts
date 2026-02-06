@@ -61,6 +61,53 @@ function parseCursor(cursor: string): Record<string, unknown> {
   return JSON.parse(Buffer.from(cursor, 'base64').toString('utf8'));
 }
 
+// CATALOG_FILTER_EXISTS is a Symbol that doesn't survive JSON serialization,
+// so we swap it with a sentinel string when encoding/decoding cursors.
+const FILTER_EXISTS_SENTINEL = '\0CATALOG_FILTER_EXISTS';
+
+function serializeFilterValue(v: unknown): unknown {
+  if (v === CATALOG_FILTER_EXISTS) return FILTER_EXISTS_SENTINEL;
+  if (Array.isArray(v)) {
+    return v.map(x =>
+      x === CATALOG_FILTER_EXISTS ? FILTER_EXISTS_SENTINEL : x,
+    );
+  }
+  return v;
+}
+
+function deserializeFilterValue(v: unknown): unknown {
+  if (v === FILTER_EXISTS_SENTINEL) return CATALOG_FILTER_EXISTS;
+  if (Array.isArray(v)) {
+    return v.map(x =>
+      x === FILTER_EXISTS_SENTINEL ? CATALOG_FILTER_EXISTS : x,
+    );
+  }
+  return v;
+}
+
+function serializeFilter(filter?: EntityFilterQuery): any[] | undefined {
+  if (!filter) return undefined;
+  return [filter]
+    .flat()
+    .map(f =>
+      Object.fromEntries(
+        Object.entries(f).map(([k, v]) => [k, serializeFilterValue(v)]),
+      ),
+    );
+}
+
+function deserializeFilter(filter?: any[]): EntityFilterQuery | undefined {
+  if (!filter) return undefined;
+  return filter.map(f =>
+    Object.fromEntries(
+      Object.entries(f).map(([k, v]: [string, any]) => [
+        k,
+        deserializeFilterValue(v),
+      ]),
+    ),
+  );
+}
+
 function buildEntitySearch(entity: Entity) {
   const rows = traverse(entity);
 
@@ -198,11 +245,11 @@ function applyOrdering(entities: Entity[], order?: EntityOrderQuery): Entity[] {
       const aRow = aRows.find(r => r.key.toLocaleLowerCase('en-US') === key);
       const bRow = bRows.find(r => r.key.toLocaleLowerCase('en-US') === key);
       const aValue =
-        aRow?.value != null
+        aRow?.value !== null && aRow?.value !== undefined
           ? String(aRow.value).toLocaleLowerCase('en-US')
           : null;
       const bValue =
-        bRow?.value != null
+        bRow?.value !== null && bRow?.value !== undefined
           ? String(bRow.value).toLocaleLowerCase('en-US')
           : null;
 
@@ -217,7 +264,9 @@ function applyOrdering(entities: Entity[], order?: EntityOrderQuery): Entity[] {
     // Stable tie-breaker by entity ref, matching backend behavior
     const aRef = stringifyEntityRef(a);
     const bRef = stringifyEntityRef(b);
-    return aRef < bRef ? -1 : aRef > bRef ? 1 : 0;
+    if (aRef < bRef) return -1;
+    if (aRef > bRef) return 1;
+    return 0;
   });
 }
 
@@ -240,9 +289,9 @@ function applyFullTextFilter(
       ) {
         return false;
       }
-      const value =
-        row.value != null ? String(row.value).toLocaleLowerCase('en-US') : null;
-      return value != null && value.includes(term);
+      if (row.value === null || row.value === undefined) return false;
+      const value = String(row.value).toLocaleLowerCase('en-US');
+      return value.includes(term);
     });
   });
 }
@@ -257,8 +306,6 @@ function applyFullTextFilter(
  */
 export class InMemoryCatalogClient implements CatalogApi {
   #entities: Entity[];
-  #queryCache = new Map<string, Entity[]>();
-  #nextQueryId = 0;
 
   constructor(options?: { entities?: Entity[] }) {
     this.#entities = options?.entities?.slice() ?? [];
@@ -277,8 +324,8 @@ export class InMemoryCatalogClient implements CatalogApi {
     if (request?.after) {
       try {
         const cursor = parseCursor(request.after);
-        if (cursor.offset != null) offset = cursor.offset as number;
-        if (cursor.limit != null) limit = cursor.limit as number;
+        if (cursor.offset !== undefined) offset = cursor.offset as number;
+        if (cursor.limit !== undefined) limit = cursor.limit as number;
       } catch {
         // ignore invalid cursor
       }
@@ -287,7 +334,7 @@ export class InMemoryCatalogClient implements CatalogApi {
     if (offset > 0) {
       items = items.slice(offset);
     }
-    if (limit != null) {
+    if (limit !== undefined) {
       items = items.slice(0, limit);
     }
 
@@ -316,70 +363,53 @@ export class InMemoryCatalogClient implements CatalogApi {
   async queryEntities(
     request?: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
+    // Decode query parameters from cursor or from the request directly
+    let filter: EntityFilterQuery | undefined;
+    let orderFields: EntityOrderQuery | undefined;
+    let fullTextFilter: { term: string; fields?: string[] } | undefined;
+    let offset: number;
+    let limit: number | undefined;
+
     if (request && 'cursor' in request) {
-      const cursorData = parseCursor(request.cursor);
-      const { id, offset, totalItems } = cursorData as {
-        id: string;
-        offset: number;
-        totalItems: number;
-      };
-      const cachedItems = this.#queryCache.get(id);
-      if (!cachedItems) {
+      let c: Record<string, unknown>;
+      try {
+        c = parseCursor(request.cursor);
+      } catch {
         return { items: [], pageInfo: {}, totalItems: 0 };
       }
-      const limit = request.limit ?? cachedItems.length;
-      const pageItems = cachedItems.slice(offset, offset + limit);
-
-      const pageInfo: QueryEntitiesResponse['pageInfo'] = {};
-      if (offset + limit < totalItems) {
-        pageInfo.nextCursor = makeCursor({
-          id,
-          offset: offset + limit,
-          totalItems,
-        });
-      }
-      if (offset > 0) {
-        pageInfo.prevCursor = makeCursor({
-          id,
-          offset: Math.max(0, offset - limit),
-          totalItems,
-        });
-      }
-
-      return {
-        items: request.fields
-          ? pageItems.map(e => applyFieldsFilter(e, request.fields))
-          : pageItems,
-        totalItems,
-        pageInfo,
-      };
+      filter = deserializeFilter(c.filter as any[]);
+      orderFields = c.orderFields as EntityOrderQuery | undefined;
+      fullTextFilter = c.fullTextFilter as typeof fullTextFilter;
+      offset = c.offset as number;
+      limit = request.limit;
+    } else {
+      filter = request?.filter;
+      orderFields = request?.orderFields;
+      fullTextFilter = request?.fullTextFilter;
+      offset = request?.offset ?? 0;
+      limit = request?.limit;
     }
 
-    const filter = createFilter(request?.filter);
-    let items = this.#entities.filter(filter);
+    // Apply filter
+    let items = this.#entities.filter(createFilter(filter));
 
-    // Resolve full-text filter default fields to match catalog backend behavior:
-    // when no fields are specified, search the first sort field, or metadata.uid
-    if (request?.fullTextFilter) {
-      const orderFields = request.orderFields
-        ? [request.orderFields].flat()
-        : [];
+    // Apply full-text filter, defaulting to the sort field or metadata.uid
+    if (fullTextFilter) {
+      const orderFieldsList = orderFields ? [orderFields].flat() : [];
       items = applyFullTextFilter(items, {
-        ...request.fullTextFilter,
-        fields: request.fullTextFilter.fields ?? [
-          orderFields[0]?.field ?? 'metadata.uid',
+        ...fullTextFilter,
+        fields: fullTextFilter.fields ?? [
+          orderFieldsList[0]?.field ?? 'metadata.uid',
         ],
       });
     }
 
-    items = applyOrdering(items, request?.orderFields);
+    items = applyOrdering(items, orderFields);
 
     const totalItems = items.length;
-    const offset = request?.offset ?? 0;
-    const limit = request?.limit;
 
     // No pagination requested, return all items
-    if (limit == null && offset === 0) {
+    if (limit === undefined && offset === 0) {
       return {
         items: request?.fields
           ? items.map(e => applyFieldsFilter(e, request?.fields))
@@ -390,26 +420,25 @@ export class InMemoryCatalogClient implements CatalogApi {
     }
 
     const effectiveLimit = limit ?? totalItems;
-
-    // Cache the full result set for cursor-based pagination
-    const id = String(this.#nextQueryId++);
-    this.#queryCache.set(id, items);
-
     const pageItems = items.slice(offset, offset + effectiveLimit);
 
+    const cursorBase = {
+      filter: serializeFilter(filter),
+      orderFields,
+      fullTextFilter,
+      totalItems,
+    };
     const pageInfo: QueryEntitiesResponse['pageInfo'] = {};
     if (offset + effectiveLimit < totalItems) {
       pageInfo.nextCursor = makeCursor({
-        id,
+        ...cursorBase,
         offset: offset + effectiveLimit,
-        totalItems,
       });
     }
     if (offset > 0) {
       pageInfo.prevCursor = makeCursor({
-        id,
+        ...cursorBase,
         offset: Math.max(0, offset - effectiveLimit),
-        totalItems,
       });
     }
 
@@ -472,7 +501,7 @@ export class InMemoryCatalogClient implements CatalogApi {
                   facet.toLocaleLowerCase('en-US'),
               )
               .map(row => row.value)
-              .filter(v => v != null)
+              .filter(v => v !== null && v !== undefined)
               .map(v => String(v)),
           );
           for (const value of uniqueValues) {
