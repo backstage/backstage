@@ -77,6 +77,22 @@ export function useDefinition<
     }
   }
 
+  // Override data-surface for container components with the resolved value
+  // This ensures 'auto' is replaced with the actual computed surface level
+  if (
+    definition.surface === 'container' &&
+    resolvedSurface !== undefined &&
+    dataAttributes['data-surface'] !== undefined
+  ) {
+    const surfaceValue =
+      typeof resolvedSurface === 'object'
+        ? resolveResponsiveValue(resolvedSurface as any, breakpoint)
+        : resolvedSurface;
+    if (surfaceValue !== undefined) {
+      dataAttributes['data-surface'] = String(surfaceValue);
+    }
+  }
+
   // Add data-on-surface for leaf components
   if (definition.surface === 'leaf' && resolvedSurface !== undefined) {
     // Handle responsive surface values - for data attributes, use the resolved string
