@@ -101,26 +101,31 @@ export interface Config {
 
     /**
      * Configuration for refresh tokens (offline access)
+     * @visibility backend
      */
     experimentalRefreshToken?: {
       /**
        * Whether to enable refresh tokens
        * @default false
+       * @visibility backend
        */
       enabled?: boolean;
       /**
        * Token lifetime before rotation required
        * @default '30 days'
+       * @visibility backend
        */
       tokenLifetime?: HumanDuration | string;
       /**
        * Maximum session lifetime across all rotations
        * @default '1 year'
+       * @visibility backend
        */
       maxRotationLifetime?: HumanDuration | string;
       /**
        * Maximum number of refresh tokens per user
        * @default 20
+       * @visibility backend
        */
       maxTokensPerUser?: number;
     };

@@ -36,7 +36,7 @@
 | `id`              | `character varying`        | false    | 255        | -                   |
 | `last_used_at`    | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
 | `oidc_client_id`  | `character varying`        | true     | 255        | -                   |
-| `token_hash`      | `character varying`        | false    | 255        | -                   |
+| `token_hash`      | `text`                     | false    | -          | -                   |
 | `user_entity_ref` | `character varying`        | false    | 255        | -                   |
 
 ### Indices

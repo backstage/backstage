@@ -82,8 +82,6 @@ function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
 async function authenticateClient(
   req: { headers: { authorization?: string } },
   oidc: OidcService,
-  _logger: LoggerService,
-  _errorContext: string,
   bodyClientId?: string,
   bodyClientSecret?: string,
 ): Promise<{ clientId: string; clientSecret: string }> {
@@ -430,17 +428,11 @@ export class OidcRouter {
               );
             }
 
-            // Client authentication is optional for refresh_token grant
-            // Public clients (e.g. CLI tools) may not have a client secret
+            // Optional per RFC 6749 Section 6, public clients may not have secrets
             const hasCredentials =
               req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i);
             if (hasCredentials) {
-              await authenticateClient(
-                req,
-                this.oidc,
-                this.logger,
-                'Failed to refresh token',
-              );
+              await authenticateClient(req, this.oidc);
             }
 
             const result = await this.oidc.refreshAccessToken({
@@ -505,36 +497,24 @@ export class OidcRouter {
         try {
           const {
             token,
-            token_type_hint: tokenTypeHint,
             client_id: bodyClientId,
             client_secret: bodyClientSecret,
           } = validateRequest(revokeRequestBodySchema, req.body ?? {});
 
-          // Only refresh_token revocation is supported currently
-          if (tokenTypeHint && tokenTypeHint !== 'refresh_token') {
-            // Hint is optional; ignore unsupported hints per RFC 7009
-          }
-
-          // Client authentication: client_secret_basic or client_secret_post
           await authenticateClient(
             req,
             this.oidc,
-            this.logger,
-            'Failed to revoke token',
             bodyClientId,
             bodyClientSecret,
           );
 
-          // Revoke refresh token if offline access is enabled
           try {
             await this.oidc.revokeRefreshToken(token);
           } catch (e) {
-            // RFC 7009: The authorization server responds with HTTP status code 200
-            // even if the client submitted an invalid token
+            // RFC 7009 says always respond 200 even for invalid tokens
             this.logger.debug('Failed to revoke token', e);
           }
 
-          // Successful (or no-op) revocation
           return res.status(200).send('');
         } catch (e) {
           throw OidcError.fromError(e);
@@ -547,7 +527,7 @@ export class OidcRouter {
     return router;
   }
 }
-function ensureTrailingSlash(appUrl: string): string | URL | undefined {
+function ensureTrailingSlash(appUrl: string): string {
   if (appUrl.endsWith('/')) {
     return appUrl;
   }

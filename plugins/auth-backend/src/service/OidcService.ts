@@ -111,6 +111,7 @@ export class OidcService {
       code_challenge_methods_supported: ['S256', 'plain'],
       ...(dcrEnabled && {
         registration_endpoint: `${this.baseUrl}/v1/register`,
+        revocation_endpoint: `${this.baseUrl}/v1/revoke`,
       }),
     };
   }

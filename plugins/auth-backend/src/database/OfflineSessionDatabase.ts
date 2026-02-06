@@ -30,7 +30,7 @@ type DbOfflineSessionRow = {
 
 /**
  * Represents an offline session for refresh tokens
- * @public
+ * @internal
  */
 export type OfflineSession = {
   id: string;
@@ -43,7 +43,7 @@ export type OfflineSession = {
 
 /**
  * Options for creating a new offline session
- * @public
+ * @internal
  */
 export type CreateOfflineSessionOptions = {
   id: string;
@@ -54,7 +54,7 @@ export type CreateOfflineSessionOptions = {
 
 /**
  * Database layer for managing offline sessions (refresh tokens)
- * @public
+ * @internal
  */
 export class OfflineSessionDatabase {
   readonly #knex: Knex;
@@ -98,10 +98,11 @@ export class OfflineSessionDatabase {
     const { id, userEntityRef, oidcClientId, tokenHash } = options;
 
     await this.#knex.transaction(async trx => {
-      // Delete existing session for same OIDC client if present
+      // Delete existing session for same user and OIDC client
       if (oidcClientId) {
         await trx<DbOfflineSessionRow>(TABLE_NAME)
           .where('oidc_client_id', oidcClientId)
+          .andWhere('user_entity_ref', userEntityRef)
           .delete();
       }
 

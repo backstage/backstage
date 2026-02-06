@@ -285,6 +285,97 @@ describe('OfflineSessionDatabase', () => {
       });
     });
 
+    describe('getAndRotateToken', () => {
+      it('should rotate token when hash matches', async () => {
+        await db.createSession({
+          id: 'session-1',
+          userEntityRef: 'user:default/test',
+          tokenHash: 'old-hash',
+        });
+
+        const result = await db.getAndRotateToken(
+          'session-1',
+          'old-hash',
+          'new-hash',
+        );
+
+        expect(result).toBeDefined();
+        expect(result!.tokenHash).toBe('old-hash');
+
+        const updated = await db.getSessionById('session-1');
+        expect(updated!.tokenHash).toBe('new-hash');
+      });
+
+      it('should return undefined when hash does not match', async () => {
+        await db.createSession({
+          id: 'session-1',
+          userEntityRef: 'user:default/test',
+          tokenHash: 'current-hash',
+        });
+
+        const result = await db.getAndRotateToken(
+          'session-1',
+          'wrong-hash',
+          'new-hash',
+        );
+
+        expect(result).toBeUndefined();
+
+        const unchanged = await db.getSessionById('session-1');
+        expect(unchanged!.tokenHash).toBe('current-hash');
+      });
+
+      it('should return undefined for non-existent session', async () => {
+        const result = await db.getAndRotateToken(
+          'non-existent',
+          'hash',
+          'new-hash',
+        );
+
+        expect(result).toBeUndefined();
+      });
+
+      it('should return undefined when session expired by token lifetime', async () => {
+        await knex('offline_sessions').insert({
+          id: 'expired-session',
+          user_entity_ref: 'user:default/test',
+          token_hash: 'hash-1',
+          created_at: DateTime.now().toJSDate(),
+          last_used_at: DateTime.now()
+            .minus({ seconds: TOKEN_LIFETIME_SECONDS + 1 })
+            .toJSDate(),
+        });
+
+        const result = await db.getAndRotateToken(
+          'expired-session',
+          'hash-1',
+          'new-hash',
+        );
+
+        expect(result).toBeUndefined();
+      });
+
+      it('should return undefined when session expired by max rotation lifetime', async () => {
+        await knex('offline_sessions').insert({
+          id: 'expired-session',
+          user_entity_ref: 'user:default/test',
+          token_hash: 'hash-1',
+          created_at: DateTime.now()
+            .minus({ seconds: MAX_ROTATION_LIFETIME_SECONDS + 1 })
+            .toJSDate(),
+          last_used_at: DateTime.now().toJSDate(),
+        });
+
+        const result = await db.getAndRotateToken(
+          'expired-session',
+          'hash-1',
+          'new-hash',
+        );
+
+        expect(result).toBeUndefined();
+      });
+    });
+
     describe('isSessionExpired', () => {
       it('should return true for session expired by token lifetime', () => {
         const session = {

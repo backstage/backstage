@@ -42,7 +42,7 @@ exports.up = async function up(knex) {
       .comment('OIDC client identifier (optional, for OIDC flows)');
 
     table
-      .string('token_hash')
+      .text('token_hash')
       .notNullable()
       .comment('Current refresh token hash (scrypt)');
 
