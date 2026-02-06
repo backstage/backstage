@@ -11,7 +11,7 @@ an application instead of a user or bot account.
 It also provides a much clearer and better authorization model as a opposed to
 the OAuth apps and their respective scopes.
 
-## Caveats
+:::warning "Caveats"
 
 - This authentication method is built for authenticating towards
   organization repositories and not towards personal repositories.
@@ -26,6 +26,7 @@ the OAuth apps and their respective scopes.
 - The created GitHub App is private by default, this is most likely what you
   want for github.com but it's recommended to make your application public for
   GitHub Enterprise in order to share application across your GHE organizations.
+  :::
 
 A GitHub app created with the cli will have read
 access by default. You have to manually update the GitHub App settings in GitHub

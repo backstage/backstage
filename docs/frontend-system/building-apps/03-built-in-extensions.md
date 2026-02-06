@@ -174,14 +174,14 @@ Renders a route element for each route received as input and a `NotFoundErrorPag
 | :--: | :-------: | :----: | :----------: |
 |  -   |    app    | routes | `app/routes` |
 
-#### Caveats
-
+:::warning "Caveats"
 Be careful when overriding this extension, as to do so correctly you must consider these implementation requirements:
 
 - The routing system is managed by more than one extension, and they all use `react-router` behind the scenes. There are also some utilities that are based on the same `routing` library like `useRouteRefParams`. Therefore, you cannot use a different library without causing side effects in these other extensions and helper utilities;
 - Don't remove configs or inputs, just extend these things yourself with optional new options, otherwise it will cause breaking changes for extensions like `createPageExtension` that depend on this type of inputs;
 - Remember to user the route refs for getting paths dynamically, otherwise if an adopter modifies a path through configuration, the route is not going to point to the configured path;
 - Adopters expect to be able to customize the `NotFoundErrorPage` component via Components API, you should render this component for routes not configured.
+  :::
 
 #### Inputs
 
