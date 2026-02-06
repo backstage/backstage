@@ -25,7 +25,11 @@ import Autocomplete, {
 import { useSearch } from '../../context';
 import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 import { SearchFilterComponentProps } from './SearchFilter';
-import { ensureFilterValueWithLabel, FilterValueWithLabel } from './types';
+import {
+  ensureFilterValueWithLabel,
+  FilterValue,
+  FilterValueWithLabel,
+} from './types';
 
 /**
  * @public
@@ -67,7 +71,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
   );
   const { filters, setFilters } = useSearch();
   const filterValueWithLabel = ensureFilterValueWithLabel(
-    filters[name] as string | string[] | undefined,
+    filters[name] as FilterValue | FilterValue[] | undefined,
   );
   const filterValue = useMemo(
     () => filterValueWithLabel || (multiple ? [] : null),
@@ -85,13 +89,12 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       if (newValue) {
         return {
           ...others,
-          [name]: Array.isArray(newValue)
-            ? newValue.map(v => v.value)
-            : newValue.value,
+          [name]: newValue,
         };
       }
       return { ...others };
     });
+    setInputValue('');
   };
 
   // Provide the input field.
@@ -114,6 +117,16 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       <Chip label={option.label} color="primary" {...getTagProps({ index })} />
     ));
 
+  const handleInputChange = (
+    _: ChangeEvent<{}>,
+    newValue: string,
+    reason: string,
+  ) => {
+    if (reason === 'input' || !multiple) {
+      setInputValue(newValue);
+    }
+  };
+
   return (
     <Autocomplete
       filterSelectedOptions={filterSelectedOptions}
@@ -125,8 +138,10 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       loading={loading}
       value={filterValue}
       onChange={handleChange}
-      onInputChange={(_, newValue) => setInputValue(newValue)}
+      inputValue={inputValue}
+      onInputChange={handleInputChange}
       getOptionLabel={option => option.label}
+      renderOption={option => option.label}
       renderInput={renderInput}
       renderTags={renderTags}
     />
