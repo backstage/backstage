@@ -16,6 +16,8 @@
 
 import Auth0InternalStrategy from 'passport-auth0';
 import type { StateStore } from 'passport-oauth2';
+import type express from 'express';
+import { InputError } from '@backstage/errors';
 
 /** @public */
 export interface Auth0StrategyOptionsWithRequest {
@@ -47,15 +49,38 @@ export class Auth0Strategy extends Auth0InternalStrategy {
     this.organization = options.organization;
   }
 
+  authenticate(req: express.Request, options: Record<string, any>): void {
+    const { organization, invitation } = req.query;
+
+    // Throw an error if the organization in the request does not match the organization configured in the strategy
+    if (
+      organization &&
+      this.organization &&
+      organization !== this.organization
+    ) {
+      throw new InputError(
+        'Organization mismatch. The organization provided in the request does not match the organization configured in the strategy.',
+      );
+    }
+
+    super.authenticate(req, {
+      ...options,
+      ...(organization ? { organization } : {}),
+      ...(invitation ? { invitation } : {}),
+    });
+  }
+
   authorizationParams(options: Record<string, any>): Record<string, any> {
     const params = super.authorizationParams(options);
 
-    if (this.organization) {
-      return {
-        ...params,
-        organization: this.organization,
-      };
+    if (options.organization || this.organization) {
+      params.organization = options.organization || this.organization;
     }
+
+    if (options.invitation) {
+      params.invitation = options.invitation;
+    }
+
     return params;
   }
 }
