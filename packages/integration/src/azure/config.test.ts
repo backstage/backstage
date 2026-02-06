@@ -280,7 +280,6 @@ describe('readAzureIntegrationConfig', () => {
     const output = readAzureIntegrationConfig(
       buildConfig({
         host: 'dev.azure.com',
-        token: 't',
       }),
     );
 
