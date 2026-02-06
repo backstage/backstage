@@ -27,6 +27,13 @@ import {
 import { PortableTemplate } from '../types';
 import { resolvePackageParams } from './resolvePackageParams';
 
+const knownPluginPackages: Record<string, string> = {
+  auth: '@backstage/plugin-auth-backend',
+  catalog: '@backstage/plugin-catalog-backend',
+  events: '@backstage/plugin-events-backend',
+  scaffolder: '@backstage/plugin-scaffolder-backend',
+};
+
 type CollectTemplateParamsOptions = {
   config: PortableTemplateConfig;
   template: PortableTemplate;
@@ -79,11 +86,16 @@ export async function collectPortableTemplateInput(
     ...promptAnswers,
   };
 
+  const pluginPackage =
+    knownPluginPackages[answers.pluginId as string] ??
+    (answers.pluginPackage as string);
+
   const roleParams = {
     role: template.role,
     name: answers.name,
     pluginId: answers.pluginId,
     moduleId: answers.moduleId,
+    pluginPackage,
   } as PortableTemplateInputRoleParams;
 
   const packageParams = resolvePackageParams({
@@ -152,6 +164,26 @@ export function moduleIdIdPrompt(): DistinctQuestion {
   };
 }
 
+export function pluginPackagePrompt(): DistinctQuestion {
+  return {
+    type: 'input',
+    name: 'pluginPackage',
+    message:
+      'Enter the package name of the plugin this module extends (e.g. @backstage/plugin-catalog-backend) [required]',
+    validate: (value: string) => {
+      if (!value) {
+        return 'Please enter the package name of the plugin';
+      }
+      if (!isValidNpmPackageName(value)) {
+        return 'Please enter a valid npm package name (e.g. @backstage/plugin-catalog-backend or my-plugin-backend)';
+      }
+      return true;
+    },
+    when: (answers: PortableTemplateParams) =>
+      !knownPluginPackages[answers.pluginId as string],
+  };
+}
+
 export function getPromptsForRole(
   role: PortableTemplateRole,
 ): Array<DistinctQuestion> {
@@ -167,8 +199,9 @@ export function getPromptsForRole(
     case 'backend-plugin':
       return [pluginIdPrompt()];
     case 'frontend-plugin-module':
-    case 'backend-plugin-module':
       return [pluginIdPrompt(), moduleIdIdPrompt()];
+    case 'backend-plugin-module':
+      return [pluginIdPrompt(), moduleIdIdPrompt(), pluginPackagePrompt()];
     default:
       return [];
   }
@@ -192,4 +225,14 @@ export function ownerPrompt(): DistinctQuestion {
       return true;
     },
   };
+}
+
+// Reuses the same pattern as namePrompt/pluginIdPrompt but extended to support npm scopes
+// Matches: @scope/package-name, @scope/package, package-name, package
+const packageNamePattern = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const scopedPackageNamePattern =
+  /^@[a-z0-9]+(-[a-z0-9]+)*\/[a-z0-9]+(-[a-z0-9]+)*$/;
+
+function isValidNpmPackageName(name: string) {
+  return packageNamePattern.test(name) || scopedPackageNamePattern.test(name);
 }
