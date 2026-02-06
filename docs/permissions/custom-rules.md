@@ -146,7 +146,7 @@ To install custom rules in a plugin, we need to use the [`PermissionsRegistrySer
    backend.add(import('./extensions/catalogPermissionRules'));
    ```
 
-3. Now when you run you Backstage instance - `yarn start` - the rule will be added to the catalog plugin.
+3. Now when you run your Backstage instance - `yarn start` - the rule will be added to the catalog plugin.
 
 The updated policy will allow catalog entity resource permissions if any of the following are true:
 
