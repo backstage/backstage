@@ -94,7 +94,7 @@
     align-items: center;
     border-radius: var(--bui-radius-2);
     border: 1px solid var(--bui-border);
-    background-color: var(--bui-bg-surface-1);
+    background-color: var(--bui-bg-neutral-1);
     transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
 
     &[data-size='small'] {

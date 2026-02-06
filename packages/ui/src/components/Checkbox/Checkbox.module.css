@@ -45,7 +45,7 @@
     box-shadow: inset 0 0 0 1px var(--bui-border);
     border-radius: 2px;
     transition: background-color 0.2s ease-in-out;
-    background-color: var(--bui-bg-surface-1);
+    background-color: var(--bui-bg-neutral-1);
     padding: 0;
     flex-shrink: 0;
     color: transparent;
@@ -63,7 +63,7 @@
     }
 
     .bui-Checkbox[data-indeterminate] & {
-      background-color: var(--bui-bg-surface-1);
+      background-color: var(--bui-bg-neutral-1);
       box-shadow: inset 0 0 0 1px var(--bui-border);
       color: var(--bui-fg-primary);
     }

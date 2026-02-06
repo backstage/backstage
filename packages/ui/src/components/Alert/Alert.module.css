@@ -18,7 +18,7 @@
 
 @layer components {
   .bui-Alert {
-    --alert-bg: var(--bui-bg-surface-1);
+    --alert-bg: var(--bui-bg-neutral-1);
     --alert-fg: var(--bui-fg-primary);
 
     display: flex;
