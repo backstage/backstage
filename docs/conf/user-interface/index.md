@@ -103,13 +103,13 @@ Backstage UI is using light by default under `:root` but you can target it more 
 
 [data-theme-mode='light'] {
   /* Light theme specific styles */
-  --bui-bg-surface-0: #f8f8f8;
+  --bui-bg-neutral-0: #f8f8f8;
   --bui-fg-primary: #000;
 }
 
 [data-theme-mode='dark'] {
   /* Dark theme specific styles */
-  --bui-bg-surface-0: #333333;
+  --bui-bg-neutral-0: #333333;
   --bui-fg-primary: #fff;
 }
 ```
@@ -124,9 +124,9 @@ And if you’d like to go even further, you can target specific component class 
 
 | Token Name           | Description                                                                                   |
 | -------------------- | --------------------------------------------------------------------------------------------- |
-| `--bui-bg-surface-0` | This is used to define the background color of your app. It will only be used once.           |
-| `--bui-bg-surface-1` | We ar using this color to sit on top of `--bui-bg-surface-0` mostly for `Card`, `Dialog`, ... |
-| `--bui-bg-surface-2` | This is for content inside elevated components. This colour is less common.                   |
+| `--bui-bg-neutral-0` | This is used to define the background color of your app. It will only be used once.           |
+| `--bui-bg-neutral-1` | We ar using this color to sit on top of `--bui-bg-neutral-0` mostly for `Card`, `Dialog`, ... |
+| `--bui-bg-neutral-2` | This is for content inside elevated components. This colour is less common.                   |
 | `--bui-bg-solid`     | This is used for main actions like primary buttons.                                           |
 | `--bui-fg-solid`     | This is for texts or icons on top of a solid backgrounds.                                     |
 | `--bui-fg-primary`   | Your primary text or icon colours.                                                            |
@@ -160,14 +160,14 @@ These colors are used for special purposes like ring, scrollbar, ...
 
 #### Core background colors
 
-These colors are used for the background of your application. We are mostly using for now a single elevated background for panels. `--bui-bg-surface-0` should mostly use as the main background color of your app.
+These colors are used for the background of your application. We are mostly using for now a single elevated background for panels. `--bui-bg-neutral-0` should mostly use as the main background color of your app.
 
 | Token Name                | Description                                      |
 | ------------------------- | ------------------------------------------------ |
-| `--bui-bg-surface-0`      | The background color of your Backstage instance. |
-| `--bui-bg-surface-1`      | Use for any panels or elevated surfaces.         |
-| `--bui-bg-surface-2`      | Use for any panels or elevated surfaces.         |
-| `--bui-bg-surface-3`      | Use for any panels or elevated surfaces.         |
+| `--bui-bg-neutral-0`      | The background color of your Backstage instance. |
+| `--bui-bg-neutral-1`      | Use for any panels or elevated surfaces.         |
+| `--bui-bg-neutral-2`      | Use for any panels or elevated surfaces.         |
+| `--bui-bg-neutral-3`      | Use for any panels or elevated surfaces.         |
 | `--bui-bg-solid`          | Used for solid background colors.                |
 | `--bui-bg-solid-hover`    | Used for solid background colors when hovered.   |
 | `--bui-bg-solid-pressed`  | Used for solid background colors when pressed.   |
@@ -202,7 +202,7 @@ These border colors are mostly meant to be used as borders on top of any compone
 
 | Token Name              | Description                                         |
 | ----------------------- | --------------------------------------------------- |
-| `--bui-border`          | It should be used on top of `--bui-bg-surface-1`.   |
+| `--bui-border`          | It should be used on top of `--bui-bg-neutral-1`.   |
 | `--bui-border-hover`    | Used when the component is interactive and hovered. |
 | `--bui-border-pressed`  | Used when the component is interactive and hovered. |
 | `--bui-border-disabled` | Used when the component is disabled.                |

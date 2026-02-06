@@ -13,7 +13,7 @@
 }
 
 [data-theme-mode='dark'] {
-  --sb-sidebar-bg: var(--bui-bg-surface-1);
+  --sb-sidebar-bg: var(--bui-bg-neutral-1);
 }
 
 [data-theme-name='spotify'] {
@@ -24,7 +24,7 @@
   --sb-panel-right: 8px;
   --sb-sidebar-border: none;
   --sb-sidebar-border-right: none;
-  --sb-sidebar-bg: var(--bui-bg-surface-1);
+  --sb-sidebar-bg: var(--bui-bg-neutral-1);
   --sb-options-border: none;
   --sb-options-border-left: none;
   --sb-content-padding-inline: 258px;

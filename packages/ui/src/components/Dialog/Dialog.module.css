@@ -43,7 +43,7 @@
   }
 
   .bui-Dialog {
-    background: var(--bui-bg-surface-1);
+    background: var(--bui-bg-neutral-1);
     border-radius: 0.5rem;
     border: 1px solid var(--bui-border);
     color: var(--bui-fg-primary);
