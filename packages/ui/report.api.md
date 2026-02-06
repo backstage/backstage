@@ -1700,9 +1700,8 @@ export function Table<T extends TableItem>({
   selection,
   emptyState,
   className,
-  tableLayout,
+  columnSizing,
   style,
-  styles,
 }: TableProps<T>): JSX_2.Element;
 
 // @public (undocumented)
@@ -1814,6 +1813,8 @@ export interface TableProps<T extends TableItem> {
   // (undocumented)
   columnConfig: readonly ColumnConfig<T>[];
   // (undocumented)
+  columnSizing?: 'content' | 'manual';
+  // (undocumented)
   data: T[] | undefined;
   // (undocumented)
   emptyState?: ReactNode;
@@ -1833,10 +1834,6 @@ export interface TableProps<T extends TableItem> {
   sort?: SortState;
   // (undocumented)
   style?: React.CSSProperties;
-  // (undocumented)
-  styles?: Partial<Record<'tableRoot', React.CSSProperties>>;
-  // (undocumented)
-  tableLayout?: 'auto' | 'fixed';
 }
 
 // @public (undocumented)
