@@ -57,7 +57,6 @@ export type PopupOptions = {
 
 /**
  * Additional parameters to be passed to the start authorization endpoint.
- * @public
  */
 export type AuthorizationParams = {
   [key: string]: string;
