@@ -33,7 +33,7 @@ import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { MemoryRouter } from 'react-router-dom';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
-import { type TestApiProviderPropsApiPairs } from '../utils';
+import { type TestApiProviderPropsApiPairs } from '../apis';
 import { getMockApiFactory, type MockWithApiFactory } from '../apis/utils';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';

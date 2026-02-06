@@ -581,33 +581,12 @@ export const TestApiProvider: <T extends any[]>(
 ) => JSX_2.Element;
 
 // @public
-export type TestApiProviderEntry =
-  | readonly [ApiRef<any>, any]
-  | MockWithApiFactory<any>;
-
-// @public
 export type TestApiProviderProps<TApiPairs extends any[]> = {
   apis: readonly [
     ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
   ];
   children: ReactNode;
 };
-
-// @public
-export type TestApiProviderPropsApiPair<TApi> = TApi extends infer TImpl
-  ? readonly [ApiRef<TApi>, Partial<TImpl>]
-  : never;
-
-// @public
-export type TestApiProviderPropsApiPairs<TApiPairs> = {
-  [TIndex in keyof TApiPairs]: TestApiProviderPropsApiPair<TApiPairs[TIndex]>;
-};
-
-// @public
-export class TestApiRegistry implements ApiHolder {
-  static from(...apis: readonly TestApiProviderEntry[]): TestApiRegistry;
-  get<T>(api: ApiRef<T>): T | undefined;
-}
 
 // @public
 export type TestAppOptions<TApiPairs extends any[] = any[]> = {

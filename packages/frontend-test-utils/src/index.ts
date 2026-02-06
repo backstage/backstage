@@ -22,10 +22,9 @@
 
 export * from './apis';
 export * from './app';
-export * from './utils';
 
 // Explicit export to satisfy API Extractor
-export type { TestApiPairs } from './utils';
+export type { TestApiPairs } from './apis';
 
 export { withLogCollector } from '@backstage/test-utils';
 

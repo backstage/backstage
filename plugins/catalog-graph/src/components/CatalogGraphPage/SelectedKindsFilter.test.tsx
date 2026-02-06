@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiProvider } from '@backstage/core-app-api';
-import { errorApiRef } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderWithEffects } from '@backstage/test-utils';
-import { mockApis, TestApiRegistry } from '@backstage/frontend-test-utils';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SelectedKindsFilter } from './SelectedKindsFilter';
@@ -36,28 +33,28 @@ const catalogApi = catalogApiMock.mock({
     },
   }),
 });
-const apis = TestApiRegistry.from(
+const apis = [
   mockApis.alert(),
   mockApis.translation(),
-  [catalogApiRef, catalogApi],
-  [errorApiRef, { post: jest.fn() }],
-);
+  mockApis.error(),
+  catalogApi,
+] as const;
 
 describe('<SelectedKindsFilter/>', () => {
   it('should not explode while loading', async () => {
     const { baseElement } = await renderWithEffects(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={apis}>
         <SelectedKindsFilter value={['api', 'component']} onChange={() => {}} />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
     expect(baseElement).toBeInTheDocument();
   });
 
   it('should render current value', async () => {
     await renderWithEffects(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={apis}>
         <SelectedKindsFilter value={['api', 'component']} onChange={() => {}} />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(screen.getByText('API')).toBeInTheDocument();
@@ -67,9 +64,9 @@ describe('<SelectedKindsFilter/>', () => {
   it('should select value', async () => {
     const onChange = jest.fn();
     await renderWithEffects(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={apis}>
         <SelectedKindsFilter value={['api', 'component']} onChange={onChange} />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     await userEvent.click(screen.getByLabelText('Open'));
@@ -85,12 +82,12 @@ describe('<SelectedKindsFilter/>', () => {
   it('should return undefined if all values are selected', async () => {
     const onChange = jest.fn();
     await renderWithEffects(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={apis}>
         <SelectedKindsFilter
           value={['api', 'component', 'system', 'domain']}
           onChange={onChange}
         />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
     await userEvent.click(screen.getByLabelText('Open'));
 
@@ -108,9 +105,9 @@ describe('<SelectedKindsFilter/>', () => {
   it('should return all values when cleared', async () => {
     const onChange = jest.fn();
     await renderWithEffects(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={apis}>
         <SelectedKindsFilter value={[]} onChange={onChange} />
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     await userEvent.click(screen.getByRole('combobox'));

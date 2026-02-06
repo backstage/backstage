@@ -21,6 +21,14 @@ export {
   type MockWithApiFactory,
   attachMockApiFactory,
 } from './utils';
+export {
+  TestApiProvider,
+  type TestApiProviderPropsApiPair,
+  type TestApiProviderPropsApiPairs,
+  type TestApiPairs,
+  type TestApiProviderEntry,
+} from './TestApiProvider';
+export type { TestApiProviderProps } from './TestApiProvider';
 
 /**
  * Mock API classes are exported as types only to prevent direct instantiation.
