@@ -17,7 +17,7 @@
 import Auth0InternalStrategy from 'passport-auth0';
 import type { StateStore } from 'passport-oauth2';
 import type express from 'express';
-import { ConflictError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 
 /** @public */
 export interface Auth0StrategyOptionsWithRequest {
@@ -58,7 +58,7 @@ export class Auth0Strategy extends Auth0InternalStrategy {
       this.organization &&
       organization !== this.organization
     ) {
-      throw new ConflictError(
+      throw new InputError(
         'Organization mismatch. The organization provided in the request does not match the organization configured in the strategy.',
       );
     }

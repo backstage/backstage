@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend-module-auth0-provider': minor
+'@backstage/plugin-auth-backend-module-auth0-provider': patch
 ---
 
-feat: Add support for organizational invites in auth0 strategy
+Add support for organizational invites in auth0 strategy

@@ -175,7 +175,7 @@ describe('authModuleAuth0Provider', () => {
       '/api/auth/auth0/start?env=development&organization=foo-organization&invitation=foo-invitation',
     );
 
-    expect(res.status).toEqual(409);
+    expect(res.status).toEqual(400);
     expect(res.text).toContain(
       'Organization mismatch. The organization provided in the request does not match the organization configured in the strategy.',
     );
