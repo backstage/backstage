@@ -36,14 +36,13 @@ export const accordionTriggerPropDefs: Record<string, PropDef> = {
   subtitle: {
     type: 'string',
   },
-  icon: {
+  iconStart: {
     type: 'enum',
     values: ['ReactNode'],
   },
-  iconPosition: {
+  iconEnd: {
     type: 'enum',
-    values: ['start', 'end'],
-    default: 'start',
+    values: ['ReactNode'],
   },
   children: {
     type: 'enum',

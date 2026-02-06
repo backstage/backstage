@@ -27,7 +27,7 @@ export const withIconSnippet = `import { RiSettings4Line } from '@remixicon/reac
 <Accordion>
   <AccordionTrigger
     title="System Settings"
-    icon={<RiSettings4Line />}
+    iconStart={<RiSettings4Line />}
   />
   <AccordionPanel>
     <Text>Your content here</Text>

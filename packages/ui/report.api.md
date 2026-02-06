@@ -71,7 +71,8 @@ export const AccordionDefinition: {
     readonly triggerButton: 'bui-AccordionTriggerButton';
     readonly triggerTitle: 'bui-AccordionTriggerTitle';
     readonly triggerSubtitle: 'bui-AccordionTriggerSubtitle';
-    readonly triggerLeadingIcon: 'bui-AccordionTriggerLeadingIcon';
+    readonly triggerIconStart: 'bui-AccordionTriggerIconStart';
+    readonly triggerIconEnd: 'bui-AccordionTriggerIconEnd';
     readonly triggerIcon: 'bui-AccordionTriggerIcon';
     readonly panel: 'bui-AccordionPanel';
     readonly group: 'bui-AccordionGroup';

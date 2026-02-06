@@ -182,7 +182,10 @@ export const GroupMultipleOpen = meta.story({
 export const WithIcon = meta.story({
   render: () => (
     <Accordion>
-      <AccordionTrigger title="System Settings" icon={<RiSettings4Line />} />
+      <AccordionTrigger
+        title="System Settings"
+        iconStart={<RiSettings4Line />}
+      />
       <AccordionPanel>
         <Content />
       </AccordionPanel>
@@ -195,8 +198,7 @@ export const WithIconEnd = meta.story({
     <Accordion>
       <AccordionTrigger
         title="Analytics Dashboard"
-        icon={<RiBarChartBoxLine />}
-        iconPosition="end"
+        iconEnd={<RiBarChartBoxLine />}
       />
       <AccordionPanel>
         <Content />
@@ -211,7 +213,7 @@ export const MultipleWithIcons = meta.story({
       <Accordion>
         <AccordionTrigger
           title="Security Settings"
-          icon={<RiShieldCheckLine />}
+          iconStart={<RiShieldCheckLine />}
         />
         <AccordionPanel>
           <Box>
@@ -222,7 +224,7 @@ export const MultipleWithIcons = meta.story({
         </AccordionPanel>
       </Accordion>
       <Accordion>
-        <AccordionTrigger title="Notifications" icon={<RiBellLine />} />
+        <AccordionTrigger title="Notifications" iconStart={<RiBellLine />} />
         <AccordionPanel>
           <Box>
             <Text as="p">
@@ -232,7 +234,7 @@ export const MultipleWithIcons = meta.story({
         </AccordionPanel>
       </Accordion>
       <Accordion>
-        <AccordionTrigger title="Appearance" icon={<RiPaletteLine />} />
+        <AccordionTrigger title="Appearance" iconStart={<RiPaletteLine />} />
         <AccordionPanel>
           <Box>
             <Text as="p">Customize theme, colors, and display preferences</Text>
