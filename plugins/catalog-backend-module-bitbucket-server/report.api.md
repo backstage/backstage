@@ -33,6 +33,7 @@ export class BitbucketServerClient {
   getFile(options: {
     projectKey: string;
     repo: string;
+    branch: string;
     path: string;
   }): Promise<Response>;
   // (undocumented)
