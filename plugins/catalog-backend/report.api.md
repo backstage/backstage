@@ -76,7 +76,7 @@ export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
 const catalogPlugin: BackendFeature;
 export default catalogPlugin;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
