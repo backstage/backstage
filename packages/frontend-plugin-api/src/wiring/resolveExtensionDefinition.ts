@@ -46,6 +46,7 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
   readonly id: string;
   readonly attachTo: ExtensionAttachToSpec;
   readonly disabled: boolean;
+  readonly enabled?: import('../blueprints/types').ExtensionConditionFunc;
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }
 

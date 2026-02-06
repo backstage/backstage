@@ -22,3 +22,5 @@ export { ApiBlueprint } from './ApiBlueprint';
 export { AppRootElementBlueprint } from './AppRootElementBlueprint';
 export { NavItemBlueprint } from './NavItemBlueprint';
 export { PageBlueprint } from './PageBlueprint';
+export { type ExtensionConditionFunc } from './types';
+export { allOf, anyOf, not, createFeatureFlagCondition } from './helpers';
