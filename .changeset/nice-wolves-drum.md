@@ -2,4 +2,6 @@
 '@backstage/ui': minor
 ---
 
-Add icon support to Accordion component with icon and iconPosition props
+Add new `iconStart` + `iconEnd` props to `Accordion` component in Backstage UI
+
+Affected components: Accordion

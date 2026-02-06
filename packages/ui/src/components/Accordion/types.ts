@@ -39,15 +39,15 @@ export interface AccordionTriggerProps extends RAHeadingProps {
   subtitle?: string;
   children?: React.ReactNode;
   /**
-   * Icon to display in the trigger.
+   * Icon to display at the start of the trigger.
    * @defaultValue undefined
    */
-  icon?: React.ReactNode;
+  iconStart?: React.ReactNode;
   /**
-   * Position of the icon relative to the title.
-   * @defaultValue 'start'
+   * Icon to display at the end of the trigger.
+   * @defaultValue undefined
    */
-  iconPosition?: 'start' | 'end';
+  iconEnd?: React.ReactNode;
 }
 
 /**

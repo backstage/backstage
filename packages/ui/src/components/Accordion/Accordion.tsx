@@ -59,15 +59,7 @@ export const AccordionTrigger = forwardRef<
   AccordionTriggerProps
 >(
   (
-    {
-      className,
-      title,
-      subtitle,
-      children,
-      icon,
-      iconPosition = 'start',
-      ...props
-    },
+    { className, title, subtitle, children, iconStart, iconEnd, ...props },
     ref,
   ) => {
     const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
@@ -93,14 +85,14 @@ export const AccordionTrigger = forwardRef<
             children
           ) : (
             <Flex gap="2" align="center">
-              {icon && iconPosition === 'start' && (
+              {iconStart && (
                 <span
                   className={clsx(
-                    classNames.triggerLeadingIcon,
-                    styles[classNames.triggerLeadingIcon],
+                    classNames.triggerIconStart,
+                    styles[classNames.triggerIconStart],
                   )}
                 >
-                  {icon}
+                  {iconStart}
                 </span>
               )}
               <span
@@ -121,14 +113,14 @@ export const AccordionTrigger = forwardRef<
                   {subtitle}
                 </span>
               )}
-              {icon && iconPosition === 'end' && (
+              {iconEnd && (
                 <span
                   className={clsx(
-                    classNames.triggerLeadingIcon,
-                    styles[classNames.triggerLeadingIcon],
+                    classNames.triggerIconEnd,
+                    styles[classNames.triggerIconEnd],
                   )}
                 >
-                  {icon}
+                  {iconEnd}
                 </span>
               )}
             </Flex>
