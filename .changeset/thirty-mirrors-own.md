@@ -2,20 +2,6 @@
 '@backstage/ui': patch
 ---
 
-Add option to automatically determine the columns widths based on the content, and CSS styling of the inner TableRoot component.
-
-Example: A Table can now be in a container and grow wider for horizontal scrolling, and adapt column widths automatically:
-
-```tsx
-<Table
-  style={{ width: '100%', overflowX: 'auto' }}
-  columnConfig={tableColumns}
-  tableLayout="auto"
-  styles={{
-    tableRoot: { width: 'auto', minWidth: '100%' },
-  }}
-  {...tableProps}
-/>
-```
+The Table component now defaults to automatically determine the columns widths based on the content, and the prop `columnSizing` can be set to `manual` to disable this. If this prop is unset and any column has a width property set, it turns to `manual` column sizing mode.
 
 Affected components: Table

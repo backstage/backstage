@@ -230,20 +230,15 @@ export const tablePropDefs: Record<string, PropDef> = {
     values: ['ReactNode'],
     description: 'Content to display when the table has no data.',
   },
-  tableLayout: {
+  columnSizing: {
     type: 'enum',
-    values: ['auto', 'fixed'],
-    default: 'fixed',
+    values: ['content', 'manual'],
+    default: 'content',
     description:
-      'Set to "auto" to allow column widths to be automatically determined by the content.',
+      'Set to "manual" (or define any of the width properties on a column) to manually control column widths.',
   },
   ...classNamePropDefs,
   ...stylePropDefs,
-  styles: {
-    type: 'enum',
-    values: ['{ tableRoot }'],
-    description: 'Custom inline CSS styles for inner TableRoot component.',
-  },
 };
 
 // =============================================================================

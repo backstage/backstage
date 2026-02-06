@@ -29,7 +29,7 @@ import type {
   RowRenderFn,
   TablePaginationType,
 } from '../types';
-import { useMemo } from 'react';
+import { CSSProperties, useMemo } from 'react';
 import { VisuallyHidden } from '../../VisuallyHidden';
 import { Flex } from '../../Flex';
 
@@ -98,9 +98,8 @@ export function Table<T extends TableItem>({
   selection,
   emptyState,
   className,
-  tableLayout = 'fixed',
+  columnSizing,
   style,
-  styles = {},
 }: TableProps<T>) {
   const liveRegionId = useId();
 
@@ -139,12 +138,25 @@ export function Table<T extends TableItem>({
     data !== undefined,
   );
 
-  const wrapResizable =
-    tableLayout !== 'auto'
-      ? (elem: React.ReactNode) => (
-          <ResizableTableContainer>{elem}</ResizableTableContainer>
-        )
-      : (elem: React.ReactNode) => <>{elem}</>;
+  const manualColumnSizing =
+    columnSizing === 'manual' ||
+    columnConfig.some(
+      col =>
+        col.width != null ||
+        col.minWidth != null ||
+        col.maxWidth != null ||
+        col.defaultWidth != null,
+    );
+
+  const wrapResizable = manualColumnSizing
+    ? (elem: React.ReactNode) => (
+        <ResizableTableContainer>{elem}</ResizableTableContainer>
+      )
+    : (elem: React.ReactNode) => <>{elem}</>;
+
+  const tableRootStyle: CSSProperties = manualColumnSizing
+    ? {}
+    : { tableLayout: 'auto' };
 
   return (
     <div className={className} style={style}>
@@ -162,7 +174,7 @@ export function Table<T extends TableItem>({
           disabledKeys={disabledRows}
           stale={isStale}
           aria-describedby={liveRegionId}
-          style={{ tableLayout, ...styles.tableRoot }}
+          style={tableRootStyle}
         >
           <TableHeader columns={visibleColumns}>
             {column =>
