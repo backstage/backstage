@@ -341,28 +341,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         }
       }
 
-      const resolvedEach =
-        step.each &&
-        this.render(
-          step.each,
-          {
-            ...context,
-            environment: {
-              parameters: this.environment?.parameters || {},
-              secrets: this.environment?.secrets ?? {},
-            },
-            secrets: task?.secrets ?? {},
-          },
-          renderTemplate,
-        );
-
-      if (step.each && !resolvedEach) {
-        throw new InputError(
-          `Invalid value on action ${action.id}.each parameter, "${step.each}" cannot be resolved to a value`,
-        );
-      }
-
-      const iterationContext = {
+      const preIterationContext = {
         ...context,
         environment: {
           parameters: this.environment?.parameters ?? {},
@@ -371,6 +350,16 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         secrets: task.secrets ?? {},
       };
 
+      const resolvedEach =
+        step.each &&
+        this.render(step.each, preIterationContext, renderTemplate);
+
+      if (step.each && !resolvedEach) {
+        throw new InputError(
+          `Invalid value on action ${action.id}.each parameter, "${step.each}" cannot be resolved to a value`,
+        );
+      }
+
       const iterations = (
         resolvedEach
           ? Object.entries(resolvedEach).map(([key, value]) => ({
@@ -378,7 +367,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             }))
           : [{}]
       ).map(i => {
-        const fullContext = { ...iterationContext, ...i };
+        const fullContext = { ...preIterationContext, ...i };
         // Evaluate if condition once per iteration, only when using 'each'
         const shouldRun =
           !('each' in i) ||
