@@ -24,8 +24,8 @@
  * @packageDocumentation
  */
 
+import { lazy as reactLazy } from 'react';
 import {
-  coreExtensionData,
   createExtensionInput,
   PageBlueprint,
   NavItemBlueprint,
@@ -36,37 +36,60 @@ import {
   storageApiRef,
   errorApiRef,
   ApiBlueprint,
+  ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
 import { VisitListener } from './components/';
 import { visitsApiRef, VisitsStorageApi, VisitsWebStorageApi } from './api';
 import HomeIcon from '@material-ui/icons/Home';
+import {
+  homePageWidgetDataRef,
+  homePageLayoutComponentDataRef,
+  HomePageLayoutBlueprint,
+  type HomePageLayoutProps,
+} from '@backstage/plugin-home-react/alpha';
 
 const rootRouteRef = createRouteRef();
 
 const homePage = PageBlueprint.makeWithOverrides({
   inputs: {
-    props: createExtensionInput(
-      [
-        coreExtensionData.reactElement.optional(),
-        coreExtensionData.title.optional(),
-      ],
-      {
-        singleton: true,
-        optional: true,
-      },
-    ),
+    widgets: createExtensionInput([homePageWidgetDataRef]),
+    layouts: createExtensionInput([HomePageLayoutBlueprint.dataRefs.component]),
   },
-  factory: (originalFactory, { inputs }) => {
+  factory(originalFactory, { node, inputs }) {
     return originalFactory({
       path: '/home',
       routeRef: rootRouteRef,
-      loader: () =>
-        import('./components/').then(m => (
-          <m.HomepageCompositionRoot
-            children={inputs.props?.get(coreExtensionData.reactElement)}
-            title={inputs.props?.get(coreExtensionData.title)}
-          />
-        )),
+      loader: async () => {
+        const LazyDefaultLayout = reactLazy(() =>
+          import('./alpha/DefaultHomePageLayout').then(m => ({
+            default: m.DefaultHomePageLayout,
+          })),
+        );
+
+        const DefaultLayoutComponent = (props: HomePageLayoutProps) => (
+          <ExtensionBoundary node={node}>
+            <LazyDefaultLayout {...props} />
+          </ExtensionBoundary>
+        );
+
+        const layouts = [
+          ...inputs.layouts.map(layout => ({
+            Component: layout.get(homePageLayoutComponentDataRef),
+          })),
+          {
+            Component: DefaultLayoutComponent,
+          },
+        ];
+
+        const widgets = inputs.widgets.map(widget =>
+          widget.get(homePageWidgetDataRef),
+        );
+
+        // Use the first installed layout, or fall back to the default
+        const layout = layouts[0];
+
+        return <layout.Component widgets={widgets} />;
+      },
     });
   },
 });
@@ -126,12 +149,6 @@ export default createFrontendPlugin({
 });
 
 export { homeTranslationRef } from './translation';
-export {
-  HomepageBlueprint,
-  type HomepageBlueprintParams,
-  type HomepageTemplateProps,
-  type HomepageGridProps,
-} from './alpha/HomepageBlueprint';
 export {
   type LayoutConfiguration,
   type Breakpoint,

@@ -7,18 +7,16 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { CSSProperties } from 'react';
-import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { HomePageLayoutProps } from '@backstage/plugin-home-react/alpha';
 import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactElement } from 'react';
-import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
@@ -97,24 +95,27 @@ const _default: OverridableFrontendPlugin<
             }
           >;
       inputs: {
-        props: ExtensionInput<
-          | ConfigurableExtensionDataRef<
-              JSX_2.Element,
-              'core.reactElement',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'core.title',
-              {
-                optional: true;
-              }
-            >,
+        widgets: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            HomePageWidgetData,
+            'home.widget.data',
+            {}
+          >,
           {
-            singleton: true;
-            optional: true;
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        layouts: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            (props: HomePageLayoutProps) => JSX_2.Element,
+            'home.layout.component',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
             internal: false;
           }
         >;
@@ -133,68 +134,9 @@ const _default: OverridableFrontendPlugin<
 export default _default;
 
 // @alpha
-export const HomepageBlueprint: ExtensionBlueprint<{
-  kind: 'home-page';
-  params: HomepageBlueprintParams;
-  output:
-    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ExtensionDataRef<
-        string,
-        'core.title',
-        {
-          optional: true;
-        }
-      >;
-  inputs: {
-    widgets: ExtensionInput<
-      ConfigurableExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>,
-      {
-        singleton: false;
-        optional: false;
-        internal: false;
-      }
-    >;
-  };
-  config: {};
-  configInput: {};
-  dataRefs: never;
-}>;
-
-// @alpha
-export interface HomepageBlueprintParams {
-  grid?: Omit<HomepageGridProps, 'children'>;
-  render?: (props: HomepageTemplateProps) => ReactElement;
-  title?: string;
-}
-
-// @public
-export type HomepageGridProps = {
-  children?: ReactNode;
-  config?: LayoutConfiguration[];
-  title?: string;
-  rowHeight?: number;
-  breakpoints?: Record<Breakpoint, number>;
-  cols?: Record<Breakpoint, number>;
-  containerPadding?: [number, number] | Record<Breakpoint, [number, number]>;
-  containerMargin?: [number, number] | Record<Breakpoint, [number, number]>;
-  maxRows?: number;
-  style?: CSSProperties;
-  compactType?: 'vertical' | 'horizontal' | null;
-  allowOverlap?: boolean;
-  preventCollision?: boolean;
-};
-
-// @alpha
-export interface HomepageTemplateProps {
-  grid: ReactElement;
-  widgets: ReactNode[];
-}
-
-// @alpha
 export const homeTranslationRef: TranslationRef<
   'home',
   {
-    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
     readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
@@ -203,10 +145,10 @@ export const homeTranslationRef: TranslationRef<
     readonly 'customHomepageButtons.addWidget': 'Add widget';
     readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
-    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'widgetSettingsOverlay.editSettingsTooptip': 'Edit settings';
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
+    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
     readonly 'visitList.empty.title': 'There are no visits to show yet.';
     readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
@@ -214,6 +156,7 @@ export const homeTranslationRef: TranslationRef<
     readonly 'quickStart.title': 'Onboarding';
     readonly 'quickStart.description': 'Get started with Backstage';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';
+    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'visitedByType.action.viewMore': 'View more';
     readonly 'visitedByType.action.viewLess': 'View less';
     readonly 'featuredDocsCard.empty.title': 'No documents to show';

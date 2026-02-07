@@ -6,6 +6,7 @@
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { ReactElement } from 'react';
 import { RJSFSchema } from '@rjsf/utils';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
@@ -38,6 +39,44 @@ export type ComponentParts = {
   Settings?: () => JSX.Element;
   ContextProvider?: (props: any) => JSX.Element;
 };
+
+// @alpha
+export const HomePageLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'home-page-layout';
+  params: HomePageLayoutBlueprintParams;
+  output: ExtensionDataRef<
+    (props: HomePageLayoutProps) => JSX_2.Element,
+    'home.layout.component',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    component: ConfigurableExtensionDataRef<
+      (props: HomePageLayoutProps) => JSX_2.Element,
+      'home.layout.component',
+      {}
+    >;
+  };
+}>;
+
+// @alpha
+export interface HomePageLayoutBlueprintParams {
+  loader: () => Promise<(props: HomePageLayoutProps) => JSX_2.Element>;
+}
+
+// @alpha
+export const homePageLayoutComponentDataRef: ConfigurableExtensionDataRef<
+  (props: HomePageLayoutProps) => JSX_2.Element,
+  'home.layout.component',
+  {}
+>;
+
+// @alpha
+export interface HomePageLayoutProps {
+  widgets: Array<HomePageWidgetData>;
+}
 
 // @alpha
 export const HomepageWidgetBlueprint: ExtensionBlueprint<{
