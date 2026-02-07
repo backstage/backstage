@@ -15,7 +15,7 @@
  */
 
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ReactElement } from 'react';
+import { JSX, ReactElement } from 'react';
 import type { CardLayout, CardSettings } from '../extensions';
 
 /**
@@ -64,3 +64,30 @@ export const homePageWidgetDataRef =
   createExtensionDataRef<HomePageWidgetData>().with({
     id: 'home.widget.data',
   });
+
+/**
+ * Props provided to a home page layout component.
+ *
+ * @alpha
+ */
+export interface HomePageLayoutProps {
+  /**
+   * The list of widget elements and metadata to render on the home page.
+   */
+  widgets: Array<HomePageWidgetData>;
+}
+
+/**
+ * Extension data ref for home page layout components.
+ *
+ * A layout receives the collected widgets and is responsible for arranging
+ * them on the home page. This follows the same pattern as
+ * EntityContentLayoutBlueprint in the catalog plugin.
+ *
+ * @alpha
+ */
+export const homePageLayoutComponentDataRef = createExtensionDataRef<
+  (props: HomePageLayoutProps) => JSX.Element
+>().with({
+  id: 'home.layout.component',
+});

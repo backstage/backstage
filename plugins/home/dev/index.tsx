@@ -21,17 +21,20 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import HomeIcon from '@material-ui/icons/Home';
 import ReactDOM from 'react-dom/client';
+import { Fragment } from 'react';
 
 import {
   ApiBlueprint,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
-import { HomepageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
+import {
+  HomepageWidgetBlueprint,
+  HomePageLayoutBlueprint,
+} from '@backstage/plugin-home-react/alpha';
 import { HeaderWorldClock, WelcomeTitle, type ClockConfig } from '../src';
-import homePlugin, {
-  HomepageBlueprint,
-  type HomepageGridProps,
-} from '../src/alpha';
+import homePlugin from '../src/alpha';
+import { CustomHomepageGrid } from '../src/components';
+import type { LayoutConfiguration } from '../src/components/CustomHomepage/types';
 
 const clockConfigs: ClockConfig[] = [
   { label: 'NYC', timeZone: 'America/New_York' },
@@ -46,7 +49,7 @@ const timeFormat: Intl.DateTimeFormatOptions = {
   hour12: false,
 };
 
-const defaultGridConfig: NonNullable<HomepageGridProps['config']> = [
+const defaultGridConfig: LayoutConfiguration[] = [
   {
     component: 'HomePageToolkit',
     x: 0,
@@ -72,23 +75,30 @@ const defaultGridConfig: NonNullable<HomepageGridProps['config']> = [
   },
 ];
 
-const homePage = HomepageBlueprint.make({
+const homePageLayout = HomePageLayoutBlueprint.make({
   params: {
-    title: 'Home',
-    grid: {
-      config: defaultGridConfig,
-    },
-    render: ({ grid }) => (
-      <Page themeId="home">
-        <Header title={<WelcomeTitle />} pageTitleOverride="Home">
-          <HeaderWorldClock
-            clockConfigs={clockConfigs}
-            customTimeFormat={timeFormat}
-          />
-        </Header>
-        <Content>{grid}</Content>
-      </Page>
-    ),
+    loader: async () =>
+      function CustomHomePageLayout({ widgets }) {
+        return (
+          <Page themeId="home">
+            <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+              <HeaderWorldClock
+                clockConfigs={clockConfigs}
+                customTimeFormat={timeFormat}
+              />
+            </Header>
+            <Content>
+              <CustomHomepageGrid config={defaultGridConfig}>
+                {widgets.map((widget, index) => (
+                  <Fragment key={widget.name ?? index}>
+                    {widget.component}
+                  </Fragment>
+                ))}
+              </CustomHomepageGrid>
+            </Content>
+          </Page>
+        );
+      },
   },
 });
 
@@ -163,7 +173,7 @@ const homePageRandomJokeWidget = HomepageWidgetBlueprint.make({
 const homeDevModule = createFrontendModule({
   pluginId: 'home',
   extensions: [
-    homePage,
+    homePageLayout,
     homePageToolkitWidget,
     homePageStarredEntitiesWidget,
     homePageRandomJokeWidget,

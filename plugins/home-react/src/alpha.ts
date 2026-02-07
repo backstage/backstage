@@ -29,7 +29,13 @@ export {
   type HomepageWidgetBlueprintParams,
 } from './alpha/blueprints/HomepageWidgetBlueprint';
 export {
+  HomePageLayoutBlueprint,
+  type HomePageLayoutBlueprintParams,
+} from './alpha/blueprints/HomePageLayoutBlueprint';
+export {
   homePageWidgetDataRef,
   type HomePageWidgetData,
+  homePageLayoutComponentDataRef,
+  type HomePageLayoutProps,
 } from './alpha/dataRefs';
 export type { ComponentParts, CardLayout, CardSettings } from './extensions';

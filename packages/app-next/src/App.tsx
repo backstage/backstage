@@ -20,11 +20,8 @@ import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin from '@backstage/plugin-home/alpha';
 
-import {
-  coreExtensionData,
-  createExtension,
-  createFrontendModule,
-} from '@backstage/frontend-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { HomePageLayoutBlueprint } from '@backstage/plugin-home-react/alpha';
 import {
   techdocsPlugin,
   TechDocsIndexPage,
@@ -99,15 +96,14 @@ const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
 const customHomePageModule = createFrontendModule({
   pluginId: 'home',
   extensions: [
-    createExtension({
-      name: 'my-home-page',
-      attachTo: { id: 'page:home', input: 'props' },
-      output: [coreExtensionData.reactElement, coreExtensionData.title],
-      factory() {
-        return [
-          coreExtensionData.reactElement(homePage),
-          coreExtensionData.title('just a title'),
-        ];
+    HomePageLayoutBlueprint.make({
+      params: {
+        loader: async () =>
+          // This is a legacy-style home page that renders static content.
+          // In production, you'd use the widgets prop to render dynamic widgets.
+          function LegacyHomePageLayout() {
+            return homePage;
+          },
       },
     }),
   ],

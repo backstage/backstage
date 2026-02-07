@@ -15,7 +15,6 @@
  */
 
 import { lazy, ReactElement } from 'react';
-import { compatWrapper } from '@backstage/core-compat-api';
 import {
   createExtensionBlueprint,
   ExtensionBoundary,
@@ -96,12 +95,11 @@ export const HomepageWidgetBlueprint = createExtensionBlueprint({
 
     const Widget = (
       props: CardExtensionProps<Record<string, unknown>>,
-    ): ReactElement =>
-      compatWrapper(
-        <ExtensionBoundary node={node}>
-          <LazyCard {...props} />
-        </ExtensionBoundary>,
-      );
+    ): ReactElement => (
+      <ExtensionBoundary node={node}>
+        <LazyCard {...props} />
+      </ExtensionBoundary>
+    );
 
     yield homePageWidgetDataRef({
       component: <Widget {...(params.componentProps ?? {})} />,
