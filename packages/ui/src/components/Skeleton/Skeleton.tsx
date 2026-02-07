@@ -20,6 +20,7 @@ import { SkeletonDefinition } from './definition';
 import { SkeletonProps } from './types';
 import styles from './Skeleton.module.css';
 import clsx from 'clsx';
+import { CSSProperties } from 'react';
 
 /** @public */
 export const Skeleton = (props: SkeletonProps) => {
@@ -45,7 +46,7 @@ export const Skeleton = (props: SkeletonProps) => {
     !!children && width === undefined && height === undefined;
 
   // Build inline styles
-  const inlineStyles: React.CSSProperties = { ...style };
+  const inlineStyles: CSSProperties = { ...style };
 
   // Set width/height with smart defaults
   if (width !== undefined) {

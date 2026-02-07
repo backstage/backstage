@@ -23,7 +23,7 @@ export const skeletonDemo1Snippet = `<Flex gap="4">
     <Skeleton width={400} height={12} />
     <Skeleton width={240} height={12} />
   </Flex>
-</Box>`;
+</Flex>`;
 
 export const cardPlaceholderSnippet = `<Box surface="3" p="4">
   <Flex direction="column" gap="4">
@@ -70,7 +70,7 @@ export const skeletonInheritingSnippet = `<Flex direction="column" gap="4">
   </Text>
 </Flex>`;
 
-export const skeletonInferringSnippet = `import { Box, Flex, Skeleton, Text } from '@backstage/ui';
+export const skeletonInferringSnippet = `import { Avatar, Box, Flex, Skeleton, Text } from '@backstage/ui';
 
 <Flex direction="column" gap="4">
   <div>
