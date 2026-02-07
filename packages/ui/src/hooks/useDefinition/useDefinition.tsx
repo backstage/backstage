@@ -17,7 +17,7 @@
 import { ReactNode } from 'react';
 import clsx from 'clsx';
 import { useBreakpoint } from '../useBreakpoint';
-import { useBg, BgProvider, UseBgOptions } from '../useBg';
+import { useBg, BgProvider } from '../useBg';
 import { resolveResponsiveValue, processUtilityProps } from './helpers';
 import type {
   ComponentConfig,
@@ -36,14 +36,9 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
-  const bgOptions: UseBgOptions | undefined =
-    definition.bg === 'container'
-      ? { bg: props.bg }
-      : definition.bg === 'leaf'
-      ? { leaf: true }
-      : undefined;
-
-  const { bg: resolvedBg } = useBg(bgOptions);
+  const { bg: resolvedBg } = useBg(
+    definition.bg ? { mode: definition.bg, bg: props.bg } : undefined,
+  );
 
   const ownPropKeys = new Set(Object.keys(definition.propDefs));
   const utilityPropKeys = new Set(definition.utilityProps ?? []);
@@ -77,20 +72,8 @@ export function useDefinition<
     }
   }
 
-  // Set data-bg for bg container components with the resolved value
-  // This covers both explicit bg props and auto-incremented values
-  if (definition.bg === 'container' && resolvedBg !== undefined) {
-    const bgValue =
-      typeof resolvedBg === 'object'
-        ? resolveResponsiveValue(resolvedBg as any, breakpoint)
-        : resolvedBg;
-    if (bgValue !== undefined) {
-      dataAttributes['data-bg'] = String(bgValue);
-    }
-  }
-
-  // Add data-bg for bg leaf components (auto-incremented from context)
-  if (definition.bg === 'leaf' && resolvedBg !== undefined) {
+  // Set data-bg from the resolved bg value (works for both container and leaf)
+  if (definition.bg && resolvedBg !== undefined) {
     const bgValue =
       typeof resolvedBg === 'object'
         ? resolveResponsiveValue(resolvedBg as any, breakpoint)

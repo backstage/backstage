@@ -25,7 +25,7 @@ import { BgProvider, useBg } from '../../hooks/useBg';
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
   // Resolve the bg this Flex creates for its children
-  const { bg: resolvedBg } = useBg({ bg: props.bg });
+  const { bg: resolvedBg } = useBg({ mode: 'container', bg: props.bg });
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(FlexDefinition, {

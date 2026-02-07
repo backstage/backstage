@@ -24,7 +24,7 @@ import { BgProvider, useBg } from '../../hooks/useBg';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   // Resolve the bg this Grid creates for its children
-  const { bg: resolvedBg } = useBg({ bg: props.bg });
+  const { bg: resolvedBg } = useBg({ mode: 'container', bg: props.bg });
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(GridDefinition, {
@@ -60,7 +60,7 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
   // Resolve the bg this GridItem creates for its children
-  const { bg: resolvedBg } = useBg({ bg: props.bg });
+  const { bg: resolvedBg } = useBg({ mode: 'container', bg: props.bg });
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(GridItemDefinition, {

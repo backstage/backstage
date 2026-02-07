@@ -2181,13 +2181,10 @@ export const TooltipTrigger: (
 export const useBg: (options?: UseBgOptions) => BgContextValue;
 
 // @public (undocumented)
-export type UseBgOptions =
-  | {
-      bg: Responsive<Bg> | undefined;
-    }
-  | {
-      leaf: true;
-    };
+export interface UseBgOptions {
+  bg?: Responsive<Bg>;
+  mode: 'container' | 'leaf';
+}
 
 // @public (undocumented)
 export const useBreakpoint: () => {

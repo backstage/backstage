@@ -33,21 +33,22 @@ export interface BgProviderProps {
 }
 
 /** @public */
-export type UseBgOptions =
-  | {
-      /**
-       * Container mode: the explicit bg value from the component's prop.
-       * If undefined, the container auto-increments from parent context.
-       */
-      bg: Responsive<Bg> | undefined;
-    }
-  | {
-      /**
-       * Leaf mode: automatically reads bg from context and increments by 1.
-       * No prop is needed on the component.
-       */
-      leaf: true;
-    };
+export interface UseBgOptions {
+  /**
+   * The bg mode of the component.
+   *
+   * - `'container'` — for components like Box, Card, Flex that establish bg context.
+   *   If `bg` prop is provided, uses that value. Otherwise auto-increments from parent.
+   * - `'leaf'` — for components like Button that consume bg context.
+   *   Always auto-increments from parent context. The `bg` prop is ignored.
+   */
+  mode: 'container' | 'leaf';
+  /**
+   * The explicit bg value from the component's prop.
+   * Only used in container mode — leaf mode ignores this.
+   */
+  bg?: Responsive<Bg>;
+}
 
 const BgContext = createVersionedContext<{
   1: BgContextValue;
@@ -140,12 +141,13 @@ export const BgProvider = ({ bg, children }: BgProviderProps) => {
 /**
  * Hook to access and resolve the current bg context.
  *
- * Supports two modes:
- * - **Container mode** (`{ bg }`) - for components like Box that establish bg context.
- *   If bg prop is provided, uses that value. If bg is undefined but parent context exists,
- *   auto-increments from parent.
- * - **Leaf mode** (`{ leaf: true }`) - for components like Button that consume bg context.
- *   Always auto-increments from parent context. No prop needed.
+ * All bg resolution logic lives here — callers only need to specify the mode
+ * and (for containers) the explicit bg prop value.
+ *
+ * - **Container mode** — uses explicit `bg` if provided, otherwise auto-increments
+ *   from parent context. Caps at `neutral-4`.
+ * - **Leaf mode** — always auto-increments from parent context. No prop needed.
+ * - **No options** — returns the raw context value without resolution.
  *
  * @param options - Configuration for bg resolution
  * @public
@@ -158,7 +160,7 @@ export const useBg = (options?: UseBgOptions): BgContextValue => {
     return context;
   }
 
-  if ('leaf' in options) {
+  if (options.mode === 'leaf') {
     return { bg: resolveBgForLeaf(context.bg) };
   }
 

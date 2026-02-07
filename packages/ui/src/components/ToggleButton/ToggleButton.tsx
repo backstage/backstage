@@ -36,7 +36,7 @@ export const ToggleButton = forwardRef(
 
     const { children, className, iconStart, iconEnd, ...rest } = cleanedProps;
 
-    const { bg } = useBg({ leaf: true });
+    const { bg } = useBg({ mode: 'leaf' });
 
     return (
       <AriaToggleButton
