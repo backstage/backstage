@@ -163,8 +163,8 @@ const _default: OverridableFrontendPlugin<
         direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         relations?: string[] | undefined;
-        rootEntityRefs?: string[] | undefined;
         maxDepth?: number | undefined;
+        rootEntityRefs?: string[] | undefined;
         kinds?: string[] | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
