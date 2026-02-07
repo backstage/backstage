@@ -131,7 +131,7 @@ const MyReactComponent = (...) => {
 Depending on the config api in another API is slightly different though, as the
 `ConfigApi` implementation is supplied via the App itself and not instantiated
 like other APIs. See
-[packages/app/src/apis.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/app/src/apis.ts#L66)
+[packages/app-legacy/src/apis.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/app-legacy/src/apis.ts#L66)
 for an example of how this wiring is done.
 
 For standalone plugin setups in `dev/index.ts`, register a factory with a
