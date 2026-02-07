@@ -30,7 +30,6 @@ describe('WebStorage Storage API', () => {
       key: 'myfakekey',
       presence: 'absent',
       value: undefined,
-      newValue: undefined,
     });
   });
 
@@ -135,7 +134,6 @@ describe('WebStorage Storage API', () => {
       key: 'correctKey',
       presence: 'absent',
       value: undefined,
-      newValue: undefined,
     });
   });
 

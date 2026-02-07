@@ -8,7 +8,6 @@ import { AlertMessage } from '@backstage/frontend-plugin-api';
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { ApiHolder } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
@@ -39,7 +38,6 @@ import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactNode } from 'react';
@@ -546,13 +544,13 @@ export type MockWithApiFactory<TApi> = TApi & {
 export { registerMswTestHooks };
 
 // @public
-export function renderInTestApp<TApiPairs extends any[] = any[]>(
+export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
 ): RenderResult;
 
 // @public
-export function renderTestApp<TApiPairs extends any[] = any[]>(
+export function renderTestApp<const TApiPairs extends any[] = any[]>(
   options?: RenderTestAppOptions<TApiPairs>,
 ): RenderResult;
 
@@ -565,24 +563,27 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   mountedRoutes?: {
     [path: string]: RouteRef;
   };
-  apis?: readonly [
-    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
-  ];
+  apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
 // @public
-export type TestApiPairs<TApiPairs> = TestApiProviderPropsApiPairs<TApiPairs>;
+export type TestApiPair<TApi> =
+  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
+  | MockWithApiFactory<TApi>;
 
 // @public
-export const TestApiProvider: <T extends any[]>(
-  props: TestApiProviderProps<T>,
-) => JSX_2.Element;
+export type TestApiPairs<TApiPairs> = {
+  [TIndex in keyof TApiPairs]: TestApiPair<TApiPairs[TIndex]>;
+};
+
+// @public
+export function TestApiProvider<const TApiPairs extends any[]>(
+  props: TestApiProviderProps<TApiPairs>,
+): JSX.Element;
 
 // @public
 export type TestApiProviderProps<TApiPairs extends any[]> = {
-  apis: readonly [
-    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
-  ];
+  apis: readonly [...TestApiPairs<TApiPairs>];
   children: ReactNode;
 };
 
@@ -594,9 +595,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   config?: JsonObject;
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
-  apis?: readonly [
-    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
-  ];
+  apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
 export { withLogCollector };

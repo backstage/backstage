@@ -32,14 +32,15 @@ Call `.mock()` to get an instance where every method is a `jest.fn()`. You can o
 
 ```ts
 import { mockApis } from '@backstage/frontend-test-utils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-const catalogApi = mockApis.permission.mock({
+const permissionApi = mockApis.permission.mock({
   authorize: async () => ({ result: AuthorizeResult.ALLOW }),
 });
 
 // ... exercise the component ...
 
-expect(catalogApi.authorize).toHaveBeenCalledTimes(1);
+expect(permissionApi.authorize).toHaveBeenCalledTimes(1);
 ```
 
 ## Providing mock APIs in tests

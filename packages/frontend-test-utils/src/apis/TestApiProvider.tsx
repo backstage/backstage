@@ -18,44 +18,30 @@ import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiProvider } from '../../../core-app-api/src/apis/system';
 import { ApiHolder, ApiRef } from '@backstage/frontend-plugin-api';
-import { getMockApiFactory, type MockWithApiFactory } from './utils';
+import {
+  getMockApiFactory,
+  type MockWithApiFactory,
+} from './MockWithApiFactory';
 
 /**
- * Helper type for representing an API reference paired with a partial implementation.
- * @ignore
- */
-export type TestApiProviderPropsApiPair<TApi> = TApi extends infer TImpl
-  ? readonly [ApiRef<TApi>, Partial<TImpl>]
-  : never;
-
-/**
- * Helper type for representing an array of API reference pairs.
- * @ignore
- */
-export type TestApiProviderPropsApiPairs<TApiPairs> = {
-  [TIndex in keyof TApiPairs]: TestApiProviderPropsApiPair<TApiPairs[TIndex]>;
-};
-
-/**
- * Shorter alias for TestApiProviderPropsApiPairs for use in function signatures.
+ * Represents a single API implementation, either as a tuple of the reference and the implementation, or a mock with an embedded factory.
  * @public
  */
-export type TestApiPairs<TApiPairs> = TestApiProviderPropsApiPairs<TApiPairs>;
+export type TestApiPair<TApi> =
+  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
+  | MockWithApiFactory<TApi>;
 
 /**
- * Type for entries that can be passed to TestApiProvider.
- * Can be either a traditional [apiRef, implementation] tuple or a mock API instance
- * marked with the mockApiFactorySymbol.
- *
- * @internal
+ * Represents an array of mock API implementation.
+ * @public
  */
-export type TestApiProviderEntry =
-  | readonly [ApiRef<any>, any]
-  | MockWithApiFactory<any>;
+export type TestApiPairs<TApiPairs> = {
+  [TIndex in keyof TApiPairs]: TestApiPair<TApiPairs[TIndex]>;
+};
 
 /** @internal */
 export function resolveTestApiEntries(
-  apis: readonly (TestApiProviderEntry | readonly [ApiRef<any>, any])[],
+  apis: readonly TestApiPairs<any>[],
 ): ApiHolder {
   const apiMap = new Map<string, unknown>();
 
@@ -80,9 +66,7 @@ export function resolveTestApiEntries(
  * @public
  */
 export type TestApiProviderProps<TApiPairs extends any[]> = {
-  apis: readonly [
-    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
-  ];
+  apis: readonly [...TestApiPairs<TApiPairs>];
   children: ReactNode;
 };
 
@@ -131,13 +115,13 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
  *
  * @public
  */
-export const TestApiProvider = <T extends any[]>(
-  props: TestApiProviderProps<T>,
-) => {
+export function TestApiProvider<const TApiPairs extends any[]>(
+  props: TestApiProviderProps<TApiPairs>,
+): JSX.Element {
   return (
     <ApiProvider
       apis={resolveTestApiEntries(props.apis)}
       children={props.children}
     />
   );
-};
+}

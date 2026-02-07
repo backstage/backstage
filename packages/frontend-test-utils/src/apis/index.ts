@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-export { mockApis } from './mockApis';
+export { type ApiMock, mockApis } from './mockApis';
 export {
   type MockApiFactorySymbol,
-  type ApiMock,
   type MockWithApiFactory,
   attachMockApiFactory,
-} from './utils';
+} from './MockWithApiFactory';
 export {
   TestApiProvider,
-  type TestApiProviderPropsApiPair,
-  type TestApiProviderPropsApiPairs,
+  type TestApiProviderProps,
+  type TestApiPair,
   type TestApiPairs,
-  type TestApiProviderEntry,
 } from './TestApiProvider';
-export type { TestApiProviderProps } from './TestApiProvider';
 
 /**
  * Mock API classes are exported as types only to prevent direct instantiation.

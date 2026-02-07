@@ -23,9 +23,6 @@
 export * from './apis';
 export * from './app';
 
-// Explicit export to satisfy API Extractor
-export type { TestApiPairs } from './apis';
-
 export { withLogCollector } from '@backstage/test-utils';
 
 export { registerMswTestHooks } from '@backstage/test-utils';

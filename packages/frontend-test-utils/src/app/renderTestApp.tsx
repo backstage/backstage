@@ -33,10 +33,10 @@ import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { MemoryRouter } from 'react-router-dom';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
-import { type TestApiProviderPropsApiPairs } from '../apis';
-import { getMockApiFactory, type MockWithApiFactory } from '../apis/utils';
+import { getMockApiFactory } from '../apis/MockWithApiFactory';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
+import { TestApiPairs } from '../apis/TestApiProvider';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -99,9 +99,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
    * })
    * ```
    */
-  apis?: readonly [
-    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
-  ];
+  apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
 const appPluginOverride = appPlugin.withOverrides({
@@ -118,7 +116,7 @@ const appPluginOverride = appPlugin.withOverrides({
  *
  * @public
  */
-export function renderTestApp<TApiPairs extends any[] = any[]>(
+export function renderTestApp<const TApiPairs extends any[] = any[]>(
   options?: RenderTestAppOptions<TApiPairs>,
 ): RenderResult {
   const extensions = [...(options?.extensions ?? [])];

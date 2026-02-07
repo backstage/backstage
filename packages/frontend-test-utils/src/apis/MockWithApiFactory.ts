@@ -34,22 +34,6 @@ export const mockApiFactorySymbol = Symbol.for('@backstage/mock-api');
 export type MockApiFactorySymbol = typeof mockApiFactorySymbol;
 
 /**
- * Represents a mocked version of an API, where you automatically have access to
- * the mocked versions of all of its methods along with a factory that returns
- * that same mock.
- *
- * @public
- */
-export type ApiMock<TApi> = {
-  factory: ApiFactory<TApi, TApi, {}>;
-  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
-} & {
-  [Key in keyof TApi]: TApi[Key] extends (...args: infer Args) => infer Return
-    ? TApi[Key] & jest.MockInstance<Return, Args>
-    : TApi[Key];
-};
-
-/**
  * Type for an API instance that has been marked as a mock API.
  *
  * @public

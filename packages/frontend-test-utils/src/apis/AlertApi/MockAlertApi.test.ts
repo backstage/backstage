@@ -46,22 +46,26 @@ describe('MockAlertApi', () => {
     expect(api.getAlerts()).toHaveLength(0);
   });
 
-  it('should notify observers', done => {
+  it('should notify observers', async () => {
     const api = new MockAlertApi();
     const messages: string[] = [];
 
-    api.alert$().subscribe({
-      next: alert => {
-        messages.push(alert.message);
-        if (messages.length === 2) {
-          expect(messages).toEqual(['First', 'Second']);
-          done();
-        }
-      },
+    const collected = new Promise<void>(resolve => {
+      api.alert$().subscribe({
+        next: alert => {
+          messages.push(alert.message);
+          if (messages.length === 2) {
+            resolve();
+          }
+        },
+      });
     });
 
     api.post({ message: 'First' });
     api.post({ message: 'Second' });
+
+    await collected;
+    expect(messages).toEqual(['First', 'Second']);
   });
 
   it('should wait for matching alert', async () => {

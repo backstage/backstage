@@ -36,10 +36,10 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
-import { type TestApiProviderPropsApiPairs } from '../apis';
-import { getMockApiFactory, type MockWithApiFactory } from '../apis/utils';
+import { getMockApiFactory } from '../apis/MockWithApiFactory';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
+import { TestApiPairs } from '../apis/TestApiProvider';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -97,9 +97,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
    * })
    * ```
    */
-  apis?: readonly [
-    ...(TestApiProviderPropsApiPairs<TApiPairs> | MockWithApiFactory<any>[]),
-  ];
+  apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
 const NavItem = (props: {
@@ -166,7 +164,7 @@ const appPluginOverride = appPlugin.withOverrides({
  * @public
  * Renders the given element in a test app, for use in unit tests.
  */
-export function renderInTestApp<TApiPairs extends any[] = any[]>(
+export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
 ): RenderResult {

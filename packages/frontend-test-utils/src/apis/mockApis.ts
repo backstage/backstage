@@ -34,6 +34,7 @@ import {
   type IdentityApi,
   type StorageApi,
   type TranslationApi,
+  ApiFactory,
 } from '@backstage/frontend-plugin-api';
 import {
   permissionApiRef,
@@ -57,11 +58,26 @@ import { MockStorageApi } from './StorageApi';
 import { MockPermissionApi } from './PermissionApi';
 import { MockTranslationApi } from './TranslationApi';
 import {
-  ApiMock,
   mockWithApiFactory,
   mockApiFactorySymbol,
   type MockWithApiFactory,
-} from './utils';
+} from './MockWithApiFactory';
+
+/**
+ * Represents a mocked version of an API, where you automatically have access to
+ * the mocked versions of all of its methods along with a factory that returns
+ * that same mock.
+ *
+ * @public
+ */
+export type ApiMock<TApi> = {
+  factory: ApiFactory<TApi, TApi, {}>;
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+} & {
+  [Key in keyof TApi]: TApi[Key] extends (...args: infer Args) => infer Return
+    ? TApi[Key] & jest.MockInstance<Return, Args>
+    : TApi[Key];
+};
 
 /** @internal */
 function simpleMock<TApi>(
