@@ -42,6 +42,11 @@ export type DbLocationsRow = {
  * Datetime columns are both string and Date, because different database engines
  * return them in different forms on the client side.
  */
+/**
+ * The type of source that emitted this entity.
+ */
+export type DbRefreshStateSourceType = 'provider' | 'entity';
+
 export type DbRefreshStateRow = {
   /**
    * The unique ID of the entity. This is different to the entity ref, in that
@@ -53,6 +58,33 @@ export type DbRefreshStateRow = {
    * The entity string ref (on lowercase kind:namespace/name form)
    */
   entity_ref: string;
+  /**
+   * The type of source that emitted this entity.
+   *
+   * @remarks
+   *
+   * If 'provider', the source_key is the provider name.
+   * If 'entity', the source_key is the parent entity_ref that emitted this entity.
+   */
+  source_type?: DbRefreshStateSourceType;
+  /**
+   * The identifier of the source that emitted this entity.
+   *
+   * @remarks
+   *
+   * For source_type='provider', this is the provider name.
+   * For source_type='entity', this is the parent entity_ref.
+   */
+  source_key?: string;
+  /**
+   * The timestamp when this row was first created.
+   *
+   * @remarks
+   *
+   * Used for tie-breaking when multiple sources emit the same entity_ref.
+   * The oldest entity (by created_at) wins among candidates with equal priority.
+   */
+  created_at?: string | Date;
   /**
    * The JSON of the raw entity, as it was received from the entity provider.
    */

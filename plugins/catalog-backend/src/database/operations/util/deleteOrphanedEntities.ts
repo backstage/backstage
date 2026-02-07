@@ -24,6 +24,13 @@ import { markForStitching } from '../stitcher/markForStitching';
  * Finds and deletes all orphaned entities, i.e. entities that do not have any
  * incoming references to them, and also eagerly deletes all of their children
  * that would otherwise become orphaned.
+ *
+ * An entity is considered orphaned if:
+ * - source_type='entity' and the parent entity (source_key) no longer exists in refresh_state
+ * - There is no reference in refresh_state_references (backwards compatibility)
+ *
+ * Note: Provider-sourced orphans (where the provider no longer exists) are handled
+ * separately by the processing engine using the activeProviders list.
  */
 export async function deleteOrphanedEntities(options: {
   knex: Knex.Transaction | Knex;
@@ -35,17 +42,32 @@ export async function deleteOrphanedEntities(options: {
 
   // Limit iterations for sanity
   for (let i = 0; i < 100; ++i) {
+    // Find orphans using both new inline source columns and old refresh_state_references
     const candidates = await knex
       .with('orphans', ['entity_id', 'entity_ref'], orphans =>
         orphans
-          .from('refresh_state')
-          .select('refresh_state.entity_id', 'refresh_state.entity_ref')
-          .leftOuterJoin(
-            'refresh_state_references',
-            'refresh_state_references.target_entity_ref',
-            'refresh_state.entity_ref',
+          .from('refresh_state as rs')
+          .select('rs.entity_id', 'rs.entity_ref')
+          // Check inline source columns first: entity-sourced entities whose parent is gone
+          .where(builder =>
+            builder
+              .where('rs.source_type', '=', 'entity')
+              .whereNotExists(parentExists =>
+                parentExists
+                  .from('refresh_state as parent')
+                  .whereRaw('parent.entity_ref = rs.source_key'),
+              ),
           )
-          .whereNull('refresh_state_references.target_entity_ref'),
+          // Also check old refresh_state_references for backwards compatibility
+          .orWhere(builder =>
+            builder
+              .whereNull('rs.source_type')
+              .whereNotExists(refExists =>
+                refExists
+                  .from('refresh_state_references as rsr')
+                  .whereRaw('rsr.target_entity_ref = rs.entity_ref'),
+              ),
+          ),
       )
       .select({
         entityId: 'orphans.entity_id',

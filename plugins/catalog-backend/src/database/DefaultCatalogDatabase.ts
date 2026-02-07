@@ -70,29 +70,56 @@ export class DefaultCatalogDatabase implements CatalogDatabase {
 
     let currentRef = entityRef.toLocaleLowerCase('en-US');
     for (let depth = 1; depth <= MAX_ANCESTOR_DEPTH; depth += 1) {
-      const rows = await tx<DbRefreshStateReferencesRow>(
-        'refresh_state_references',
-      )
-        .where({ target_entity_ref: currentRef })
-        .select();
+      // First try to find the entity in refresh_state using inline source columns
+      const row = await tx<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: currentRef })
+        .select('source_type', 'source_key')
+        .first();
 
-      if (rows.length === 0) {
-        if (depth === 1) {
-          throw new NotFoundError(`Entity ${currentRef} not found`);
+      if (!row) {
+        // Fall back to refresh_state_references for backwards compatibility during migration
+        const refRows = await tx<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        )
+          .where({ target_entity_ref: currentRef })
+          .select();
+
+        if (refRows.length === 0) {
+          if (depth === 1) {
+            throw new NotFoundError(`Entity ${currentRef} not found`);
+          }
+          throw new NotFoundError(
+            `Entity ${entityRef} has a broken parent reference chain at ${currentRef}`,
+          );
         }
-        throw new NotFoundError(
-          `Entity ${entityRef} has a broken parent reference chain at ${currentRef}`,
-        );
+
+        const parentRef = refRows.find(
+          r => r.source_entity_ref,
+        )?.source_entity_ref;
+        if (!parentRef) {
+          return { entityRefs };
+        }
+        entityRefs.push(parentRef);
+        currentRef = parentRef;
+        continue;
       }
 
-      const parentRef = rows.find(r => r.source_entity_ref)?.source_entity_ref;
-      if (!parentRef) {
+      // Use inline source columns
+      if (row.source_type === 'provider') {
         // We've reached the top of the tree which is the entityProvider.
         // In this case we refresh the entity itself.
         return { entityRefs };
       }
-      entityRefs.push(parentRef);
-      currentRef = parentRef;
+
+      if (row.source_type === 'entity' && row.source_key) {
+        // The source_key is the parent entity_ref
+        entityRefs.push(row.source_key);
+        currentRef = row.source_key;
+        continue;
+      }
+
+      // No source info - entity may be orphaned or in an inconsistent state
+      return { entityRefs };
     }
     throw new Error(
       `Unable receive ancestors for ${entityRef}, reached maximum depth of ${MAX_ANCESTOR_DEPTH}`,

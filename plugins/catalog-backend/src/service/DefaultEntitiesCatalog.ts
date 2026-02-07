@@ -527,6 +527,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   async removeEntityByUid(uid: string): Promise<void> {
     const dbConfig = this.database.client.config;
 
+    // Get the entity_ref of the entity being deleted so we can check for other candidates
+    const entityToDelete = await this.database<DbRefreshStateRow>(
+      'refresh_state',
+    )
+      .where('entity_id', uid)
+      .select('entity_ref', 'source_type', 'source_key')
+      .first();
+
+    if (!entityToDelete) {
+      return; // Entity doesn't exist, nothing to do
+    }
+
     // Clear the hashed state of the immediate parents of the deleted entity.
     // This makes sure that when they get reprocessed, their output is written
     // down again. The reason for wanting to do this, is that if the user
@@ -535,52 +547,65 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // means it'll never try to write down the children again (it assumes that
     // they already exist). This means that without the code below, the database
     // never "heals" from accidental deletes.
-    if (dbConfig.client.includes('mysql')) {
-      // MySQL doesn't support the syntax we need to do this in a single query,
-      // http://dev.mysql.com/doc/refman/5.6/en/update.html
-      const results = await this.database<DbRefreshStateRow>('refresh_state')
-        .select('entity_id')
-        .whereIn('entity_ref', function parents(builder) {
-          return builder
-            .from<DbRefreshStateRow>('refresh_state')
-            .innerJoin<DbRefreshStateReferencesRow>(
-              'refresh_state_references',
-              {
-                'refresh_state_references.target_entity_ref':
-                  'refresh_state.entity_ref',
-              },
-            )
-            .where('refresh_state.entity_id', '=', uid)
-            .select('refresh_state_references.source_entity_ref');
-        });
+
+    // First try using inline source columns
+    if (entityToDelete.source_type === 'entity' && entityToDelete.source_key) {
+      // The parent is the source_key
       await this.database<DbRefreshStateRow>('refresh_state')
         .update({
           result_hash: 'child-was-deleted',
           next_update_at: this.database.fn.now(),
         })
-        .whereIn(
-          'entity_id',
-          results.map(key => key.entity_id),
-        );
+        .where('entity_ref', entityToDelete.source_key);
     } else {
-      await this.database<DbRefreshStateRow>('refresh_state')
-        .update({
-          result_hash: 'child-was-deleted',
-          next_update_at: this.database.fn.now(),
-        })
-        .whereIn('entity_ref', function parents(builder) {
-          return builder
-            .from<DbRefreshStateRow>('refresh_state')
-            .innerJoin<DbRefreshStateReferencesRow>(
-              'refresh_state_references',
-              {
-                'refresh_state_references.target_entity_ref':
-                  'refresh_state.entity_ref',
-              },
-            )
-            .where('refresh_state.entity_id', '=', uid)
-            .select('refresh_state_references.source_entity_ref');
-        });
+      // Fall back to refresh_state_references for backwards compatibility
+      if (dbConfig.client.includes('mysql')) {
+        // MySQL doesn't support the syntax we need to do this in a single query,
+        // http://dev.mysql.com/doc/refman/5.6/en/update.html
+        const results = await this.database<DbRefreshStateRow>('refresh_state')
+          .select('entity_id')
+          .whereIn('entity_ref', function parents(builder) {
+            return builder
+              .from<DbRefreshStateRow>('refresh_state')
+              .innerJoin<DbRefreshStateReferencesRow>(
+                'refresh_state_references',
+                {
+                  'refresh_state_references.target_entity_ref':
+                    'refresh_state.entity_ref',
+                },
+              )
+              .where('refresh_state.entity_id', '=', uid)
+              .select('refresh_state_references.source_entity_ref');
+          });
+        await this.database<DbRefreshStateRow>('refresh_state')
+          .update({
+            result_hash: 'child-was-deleted',
+            next_update_at: this.database.fn.now(),
+          })
+          .whereIn(
+            'entity_id',
+            results.map(key => key.entity_id),
+          );
+      } else {
+        await this.database<DbRefreshStateRow>('refresh_state')
+          .update({
+            result_hash: 'child-was-deleted',
+            next_update_at: this.database.fn.now(),
+          })
+          .whereIn('entity_ref', function parents(builder) {
+            return builder
+              .from<DbRefreshStateRow>('refresh_state')
+              .innerJoin<DbRefreshStateReferencesRow>(
+                'refresh_state_references',
+                {
+                  'refresh_state_references.target_entity_ref':
+                    'refresh_state.entity_ref',
+                },
+              )
+              .where('refresh_state.entity_id', '=', uid)
+              .select('refresh_state_references.source_entity_ref');
+          });
+      }
     }
 
     // Stitch the entities that the deleted one had relations to. If we do not
@@ -589,7 +614,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // having any corresponding rows in the relations table.
     const relationPeers = await this.database
       .from<DbRelationsRow>('relations')
-      .innerJoin<DbRefreshStateReferencesRow>('refresh_state', {
+      .innerJoin<DbRefreshStateRow>('refresh_state', {
         'refresh_state.entity_ref': 'relations.target_entity_ref',
       })
       .where('relations.originating_entity_id', '=', uid)
@@ -598,7 +623,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .union(other =>
         other
           .from<DbRelationsRow>('relations')
-          .innerJoin<DbRefreshStateReferencesRow>('refresh_state', {
+          .innerJoin<DbRefreshStateRow>('refresh_state', {
             'refresh_state.entity_ref': 'relations.source_entity_ref',
           })
           .where('relations.originating_entity_id', '=', uid)
@@ -606,12 +631,29 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           .select({ ref: 'relations.source_entity_ref' }),
       );
 
+    // Delete the entity
     await this.database<DbRefreshStateRow>('refresh_state')
       .where('entity_id', uid)
       .delete();
 
+    // Check if there are other candidates for this entity_ref
+    // If so, trigger a re-stitch to pick a new winner
+    const otherCandidates = await this.database<DbRefreshStateRow>(
+      'refresh_state',
+    )
+      .where('entity_ref', entityToDelete.entity_ref)
+      .select('entity_id')
+      .first();
+
+    const entityRefsToStitch = new Set(relationPeers.map(p => p.ref));
+
+    // If other candidates exist, re-stitch to pick a new winner
+    if (otherCandidates) {
+      entityRefsToStitch.add(entityToDelete.entity_ref);
+    }
+
     await this.stitcher.stitch({
-      entityRefs: new Set(relationPeers.map(p => p.ref)),
+      entityRefs: entityRefsToStitch,
     });
   }
 
@@ -639,18 +681,55 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       const currentRef = stringifyEntityRef(current);
       seenEntityRefs.add(currentRef);
 
-      const parentRows = await this.database<DbRefreshStateReferencesRow>(
-        'refresh_state_references',
-      )
-        .innerJoin<DbFinalEntitiesRow>('final_entities', {
-          'refresh_state_references.source_entity_ref':
-            'final_entities.entity_ref',
-        })
-        .where('refresh_state_references.target_entity_ref', '=', currentRef)
-        .select({
-          parentEntityRef: 'final_entities.entity_ref',
-          parentEntityJson: 'final_entities.final_entity',
-        });
+      // First try to get parent from inline source columns in refresh_state
+      const stateRow = await this.database<DbRefreshStateRow>('refresh_state')
+        .where('entity_ref', '=', currentRef)
+        .andWhere('source_type', '=', 'entity')
+        .whereNotNull('source_key')
+        .select('source_key')
+        .first();
+
+      let parentRows: Array<{
+        parentEntityRef: string;
+        parentEntityJson: string;
+      }> = [];
+
+      if (stateRow?.source_key) {
+        // Use inline source column - join with final_entities to get parent entity
+        const parentRow = await this.database<DbFinalEntitiesRow>(
+          'final_entities',
+        )
+          .where('entity_ref', '=', stateRow.source_key)
+          .whereNotNull('final_entity')
+          .select({
+            parentEntityRef: 'entity_ref',
+            parentEntityJson: 'final_entity',
+          })
+          .first();
+
+        if (parentRow && parentRow.parentEntityJson) {
+          parentRows = [
+            {
+              parentEntityRef: parentRow.parentEntityRef,
+              parentEntityJson: parentRow.parentEntityJson,
+            },
+          ];
+        }
+      } else {
+        // Fall back to refresh_state_references for backwards compatibility
+        parentRows = await this.database<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        )
+          .innerJoin<DbFinalEntitiesRow>('final_entities', {
+            'refresh_state_references.source_entity_ref':
+              'final_entities.entity_ref',
+          })
+          .where('refresh_state_references.target_entity_ref', '=', currentRef)
+          .select({
+            parentEntityRef: 'final_entities.entity_ref',
+            parentEntityJson: 'final_entities.final_entity',
+          });
+      }
 
       const parentRefs: string[] = [];
       for (const { parentEntityRef, parentEntityJson } of parentRows) {

@@ -115,6 +115,9 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               unprocessed_hash: item.hash,
               errors: '',
               location_key: item.deferred.locationKey,
+              source_type: 'provider',
+              source_key: options.sourceKey,
+              created_at: tx.fn.now(),
               next_update_at: tx.fn.now(),
               last_discovery_at: tx.fn.now(),
             })),
@@ -154,6 +157,8 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             entity,
             hash,
             locationKey,
+            sourceType: 'provider',
+            sourceKey: options.sourceKey,
           });
           if (!ok) {
             ok = await insertUnprocessedEntity({
@@ -161,6 +166,8 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               entity,
               hash,
               locationKey,
+              sourceType: 'provider',
+              sourceKey: options.sourceKey,
               logger: this.options.logger,
             });
           }

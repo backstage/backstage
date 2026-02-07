@@ -16,7 +16,7 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import { DbRefreshStateRow } from '../../tables';
+import { DbRefreshStateRow, DbRefreshStateSourceType } from '../../tables';
 
 /**
  * Attempts to update an existing refresh state row, returning true if it was
@@ -29,25 +29,39 @@ export async function updateUnprocessedEntity(options: {
   entity: Entity;
   hash: string;
   locationKey?: string;
+  sourceType?: DbRefreshStateSourceType;
+  sourceKey?: string;
 }): Promise<boolean> {
-  const { tx, entity, hash, locationKey } = options;
+  const { tx, entity, hash, locationKey, sourceType, sourceKey } = options;
 
   const entityRef = stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
 
-  const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
+  // If we have source columns, use the composite key (source_type, source_key, entity_ref)
+  // Otherwise fall back to the old location_key based matching for backwards compatibility
+  let query = tx<DbRefreshStateRow>('refresh_state')
     .update({
       unprocessed_entity: serializedEntity,
       unprocessed_hash: hash,
       location_key: locationKey,
+      source_type: sourceType,
+      source_key: sourceKey,
       last_discovery_at: tx.fn.now(),
       // We only get to this point if a processed entity actually had any changes, or
       // if an entity provider requested this mutation, meaning that we can safely
       // bump the deferred entities to the front of the queue for immediate processing.
       next_update_at: tx.fn.now(),
     })
-    .where('entity_ref', entityRef)
-    .andWhere(inner => {
+    .where('entity_ref', entityRef);
+
+  if (sourceType && sourceKey) {
+    // Use the new composite key matching
+    query = query
+      .andWhere('source_type', sourceType)
+      .andWhere('source_key', sourceKey);
+  } else {
+    // Fall back to location_key based matching for backwards compatibility
+    query = query.andWhere(inner => {
       if (!locationKey) {
         return inner.whereNull('location_key');
       }
@@ -55,6 +69,9 @@ export async function updateUnprocessedEntity(options: {
         .where('location_key', locationKey)
         .orWhereNull('location_key');
     });
+  }
+
+  const refreshResult = await query;
 
   return refreshResult === 1;
 }

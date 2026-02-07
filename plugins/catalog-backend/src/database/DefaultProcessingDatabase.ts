@@ -239,10 +239,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       return knex.raw(`now() + interval '${refreshInterval} seconds'`);
     };
 
+    // Key by entity_id instead of entity_ref to avoid updating multiple rows
+    // when the same entity_ref is emitted by multiple sources
     await knex<DbRefreshStateRow>('refresh_state')
       .whereIn(
-        'entity_ref',
-        items.map(i => i.entity_ref),
+        'entity_id',
+        items.map(i => i.entity_id),
       )
       .update({
         next_update_at: nextUpdateAt(interval),
@@ -271,13 +273,29 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<ListParentsResult> {
     const tx = txOpaque as Knex.Transaction;
 
-    const rows = await tx<DbRefreshStateReferencesRow>(
+    // First try to get parents from inline source columns in refresh_state
+    const stateRows = await tx<DbRefreshStateRow>('refresh_state')
+      .whereIn('entity_ref', options.entityRefs)
+      .andWhere('source_type', '=', 'entity')
+      .whereNotNull('source_key')
+      .select('source_key');
+
+    const entityRefsFromState = stateRows
+      .map(r => r.source_key)
+      .filter((key): key is string => !!key);
+
+    if (entityRefsFromState.length > 0) {
+      return { entityRefs: entityRefsFromState };
+    }
+
+    // Fall back to refresh_state_references for backwards compatibility during migration
+    const refRows = await tx<DbRefreshStateReferencesRow>(
       'refresh_state_references',
     )
       .whereIn('target_entity_ref', options.entityRefs)
       .select();
 
-    const entityRefs = rows.map(r => r.source_entity_ref!).filter(Boolean);
+    const entityRefs = refRows.map(r => r.source_entity_ref!).filter(Boolean);
 
     return { entityRefs };
   }
@@ -339,6 +357,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         entity,
         hash,
         locationKey,
+        sourceType: 'entity',
+        sourceKey: options.sourceEntityRef,
       });
       if (updated) {
         stateReferences.push(entityRef);
@@ -350,6 +370,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         entity,
         hash,
         locationKey,
+        sourceType: 'entity',
+        sourceKey: options.sourceEntityRef,
         logger: this.options.logger,
       });
       if (inserted) {

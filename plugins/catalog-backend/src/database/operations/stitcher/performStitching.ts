@@ -64,20 +64,38 @@ export async function performStitching(options: {
   let removeFromStitchQueueOnCompletion = options.strategy.mode === 'deferred';
 
   try {
-    const entityResult = await knex<DbRefreshStateRow>('refresh_state')
+    // Select the winning candidate from all entities with this entity_ref.
+    // Winner selection rules:
+    // 1. Non-null location_key beats null location_key
+    // 2. Among equals, oldest (by created_at) wins
+    const candidates = await knex<DbRefreshStateRow>('refresh_state')
       .where({ entity_ref: entityRef })
-      .limit(1)
-      .select('entity_id');
-    if (!entityResult.length) {
-      // Entity does no exist in refresh state table, no stitching required.
+      .orderBy([
+        // Non-null location_key wins over null
+        {
+          column: knex.raw(
+            'CASE WHEN location_key IS NULL THEN 1 ELSE 0 END',
+          ) as any,
+          order: 'asc',
+        },
+        // Oldest (by created_at) wins among equals
+        { column: 'created_at', order: 'asc', nulls: 'last' },
+      ])
+      .select('entity_id', 'processed_entity', 'errors', 'location_key');
+
+    if (!candidates.length) {
+      // Entity does not exist in refresh state table, no stitching required.
       return 'abandoned';
     }
+
+    // The first candidate is the winner
+    const winner = candidates[0];
 
     // Insert stitching ticket that will be compared before inserting the final entity.
     try {
       await knex<DbFinalEntitiesRow>('final_entities')
         .insert({
-          entity_id: entityResult[0].entity_id,
+          entity_id: winner.entity_id,
           hash: '',
           entity_ref: entityRef,
           stitch_ticket: stitchTicket,
@@ -98,31 +116,31 @@ export async function performStitching(options: {
       throw error;
     }
 
-    // Selecting from refresh_state and final_entities should yield exactly
-    // one row (except in abnormal cases where the stitch was invoked for
-    // something that didn't exist at all, in which case it's zero rows).
-    // The join with the temporary incoming_references still gives one row.
-    const [processedResult, relationsResult] = await Promise.all([
+    // Count incoming references using both new inline source columns and old table
+    // An entity has incoming references if:
+    // - Any entity has source_type='entity' and source_key pointing to this entity_ref
+    // - Or there's a row in refresh_state_references with this target
+    const [incomingCountResult, relationsResult] = await Promise.all([
       knex
-        .with('incoming_references', function incomingReferences(builder) {
-          return builder
+        .with('inline_refs', ['count'], builder =>
+          builder
+            .from('refresh_state')
+            .where('source_type', '=', 'entity')
+            .where('source_key', '=', entityRef)
+            .count({ count: '*' }),
+        )
+        .with('table_refs', ['count'], builder =>
+          builder
             .from('refresh_state_references')
             .where({ target_entity_ref: entityRef })
-            .count({ count: '*' });
-        })
+            .count({ count: '*' }),
+        )
         .select({
-          entityId: 'refresh_state.entity_id',
-          processedEntity: 'refresh_state.processed_entity',
-          errors: 'refresh_state.errors',
-          incomingReferenceCount: 'incoming_references.count',
-          previousHash: 'final_entities.hash',
+          inlineCount: 'inline_refs.count',
+          tableCount: 'table_refs.count',
         })
-        .from('refresh_state')
-        .where({ 'refresh_state.entity_ref': entityRef })
-        .crossJoin(knex.raw('incoming_references'))
-        .leftOuterJoin('final_entities', {
-          'final_entities.entity_id': 'refresh_state.entity_id',
-        }),
+        .from('inline_refs')
+        .crossJoin(knex.raw('table_refs')),
       knex
         .distinct({
           relationType: 'type',
@@ -134,24 +152,19 @@ export async function performStitching(options: {
         .orderBy('relationTarget', 'asc'),
     ]);
 
-    // If there were no rows returned, it would mean that there was no
-    // matching row even in the refresh_state. This can happen for example
-    // if we emit a relation to something that hasn't been ingested yet.
-    // It's safe to ignore this stitch attempt in that case.
-    if (!processedResult.length) {
-      logger.debug(
-        `Unable to stitch ${entityRef}, item does not exist in refresh state table`,
-      );
-      return 'abandoned';
-    }
+    // Get previous hash from final_entities
+    const previousHashResult = await knex<DbFinalEntitiesRow>('final_entities')
+      .where({ entity_id: winner.entity_id })
+      .select('hash')
+      .first();
 
-    const {
-      entityId,
-      processedEntity,
-      errors,
-      incomingReferenceCount,
-      previousHash,
-    } = processedResult[0];
+    const entityId = winner.entity_id;
+    const processedEntity = winner.processed_entity;
+    const errors = winner.errors;
+    const incomingReferenceCount =
+      Number(incomingCountResult[0]?.inlineCount ?? 0) +
+      Number(incomingCountResult[0]?.tableCount ?? 0);
+    const previousHash = previousHashResult?.hash;
 
     // If there was no processed entity in place, the target hasn't been
     // through the processing steps yet. It's safe to ignore this stitch

@@ -16,7 +16,7 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import { DbRefreshStateRow } from '../../tables';
+import { DbRefreshStateRow, DbRefreshStateSourceType } from '../../tables';
 import { v4 as uuid } from 'uuid';
 import {
   LoggerService,
@@ -32,9 +32,12 @@ export async function insertUnprocessedEntity(options: {
   entity: Entity;
   hash: string;
   locationKey?: string;
+  sourceType?: DbRefreshStateSourceType;
+  sourceKey?: string;
   logger: LoggerService;
 }): Promise<boolean> {
-  const { tx, entity, hash, logger, locationKey } = options;
+  const { tx, entity, hash, logger, locationKey, sourceType, sourceKey } =
+    options;
 
   const entityRef = stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
@@ -47,6 +50,9 @@ export async function insertUnprocessedEntity(options: {
       unprocessed_hash: hash,
       errors: '',
       location_key: locationKey,
+      source_type: sourceType,
+      source_key: sourceKey,
+      created_at: tx.fn.now(),
       next_update_at: tx.fn.now(),
       last_discovery_at: tx.fn.now(),
     });
@@ -55,8 +61,11 @@ export async function insertUnprocessedEntity(options: {
     // We have to do this because the only way to detect if there was a conflict with
     // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
     // break the ongoing transaction.
+    // The unique constraint is now on (source_type, source_key, entity_ref).
     if (tx.client.config.client.includes('pg')) {
-      query = query.onConflict('entity_ref').ignore() as any; // type here does not match runtime
+      query = query
+        .onConflict(['source_type', 'source_key', 'entity_ref'])
+        .ignore() as any; // type here does not match runtime
     }
 
     // Postgres gives as an object with rowCount, SQLite gives us an array

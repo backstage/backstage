@@ -80,149 +80,124 @@ async function findDescendantsThatWouldHaveBeenOrphanedByDeletion(options: {
 }): Promise<{ orphanEntityRefs: string[] }> {
   const { knex, refs, sourceKey } = options;
 
-  const orphans: string[] =
+  // This function uses a hybrid approach:
+  // 1. Uses inline source columns (source_type, source_key) in refresh_state for new data
+  // 2. Falls back to refresh_state_references for backwards compatibility
+  //
+  // The algorithm finds all descendants of the deletion targets and determines which
+  // would become orphans after deletion.
+
+  const orphans: string[] = await knex
     // First find all nodes that can be reached downwards from the roots
-    // (deletion targets), including the roots themselves, by traversing
-    // down the refresh_state_references table. Note that this query
-    // starts with a condition that source_key = our source key, and
-    // target_entity_ref is one of the deletion targets. This has two
-    // effects: it won't match attempts at deleting something that didn't
-    // originate from us in the first place, and also won't match non-root
-    // entities (source_key would be null for those).
-    //
-    //   KeyA - R1 - R2        Legend:
-    //                 \       -----------------------------------------
-    //                  R3     Key*    Source key
-    //                 /       R*      Entity ref
-    //   KeyA - R4 - R5        lines   Individual references; sources to
-    //              /                  the left and targets to the right
-    //   KeyB --- R6
-    //
-    // The scenario is that KeyA wants to delete R1.
-    //
-    // The query starts with the KeyA-R1 reference, and then traverses
-    // down to also find R2 and R3. It uses union instead of union all,
-    // because it wants to find the set of unique descendants even if
-    // the tree has unexpected loops etc.
-    await knex
-      .withRecursive('descendants', ['entity_ref'], initial =>
-        initial
-          .select('target_entity_ref')
-          .from('refresh_state_references')
-          .where('source_key', '=', sourceKey)
-          .whereIn('target_entity_ref', refs)
-          .union(recursive =>
-            recursive
-              .select('refresh_state_references.target_entity_ref')
-              .from('descendants')
-              .join(
-                'refresh_state_references',
-                'descendants.entity_ref',
-                'refresh_state_references.source_entity_ref',
-              ),
-          ),
-      )
-      // Then for each descendant, traverse all the way back upwards through
-      // the refresh_state_references table to get an exhaustive list of all
-      // references that are part of keeping that particular descendant
-      // alive.
-      //
-      // Continuing the scenario from above, starting from R3, it goes
-      // upwards to find every pair along every relation line.
-      //
-      //   Top branch:     R2-R3, R1-R2, KeyA-R1
-      //   Middle branch:  R5-R3, R4-R5, KeyA-R4
-      //   Bottom branch:  R6-R5, KeyB-R6
-      //
-      // Note that this all applied to the subject R3. The exact same thing
-      // will be done starting from each other descendant (R2 and R1). They
-      // only have one and two references to find, respectively.
-      //
-      // This query also uses union instead of union all, to get the set of
-      // distinct relations even if the tree has unexpected loops etc.
-      .withRecursive(
-        'ancestors',
-        ['source_key', 'source_entity_ref', 'target_entity_ref', 'subject'],
-        initial =>
-          initial
-            .select(
-              'refresh_state_references.source_key',
+    // (deletion targets), including the roots themselves.
+    // We traverse using both inline source columns and refresh_state_references.
+    .withRecursive('descendants', ['entity_ref'], initial =>
+      initial
+        // Start with entities from this provider in the deletion targets
+        .select('entity_ref')
+        .from('refresh_state')
+        .where('source_type', '=', 'provider')
+        .where('source_key', '=', sourceKey)
+        .whereIn('entity_ref', refs)
+        // Also include from refresh_state_references for backwards compatibility
+        .union(backcompat =>
+          backcompat
+            .select('target_entity_ref')
+            .from('refresh_state_references')
+            .where('source_key', '=', sourceKey)
+            .whereIn('target_entity_ref', refs),
+        )
+        // Then recursively find children
+        .union(recursive =>
+          recursive
+            // Children via inline source columns
+            .select('refresh_state.entity_ref')
+            .from('descendants')
+            .join('refresh_state', function joinChild(join) {
+              join
+                .on('refresh_state.source_type', '=', knex.raw('?', ['entity']))
+                .andOn(
+                  'refresh_state.source_key',
+                  '=',
+                  'descendants.entity_ref',
+                );
+            }),
+        )
+        .union(recursive =>
+          recursive
+            // Children via refresh_state_references
+            .select('refresh_state_references.target_entity_ref')
+            .from('descendants')
+            .join(
+              'refresh_state_references',
+              'descendants.entity_ref',
               'refresh_state_references.source_entity_ref',
-              'refresh_state_references.target_entity_ref',
+            ),
+        ),
+    )
+    // For each descendant, check if it has other sources keeping it alive
+    // An entity is retained if it has a source that is NOT being deleted
+    .with('retained', ['entity_ref'], notPartOfDeletion =>
+      notPartOfDeletion
+        // Check inline source columns: entity has a provider source that's not being deleted
+        .select('descendants.entity_ref')
+        .from('descendants')
+        .join(
+          'refresh_state',
+          'refresh_state.entity_ref',
+          'descendants.entity_ref',
+        )
+        .where('refresh_state.source_type', '=', 'provider')
+        .where(builder =>
+          builder
+            .where('refresh_state.source_key', '!=', sourceKey)
+            .orWhereNotIn('refresh_state.entity_ref', refs),
+        )
+        // Check inline source columns: entity has an entity parent that's not a descendant
+        .union(parentNotDescendant =>
+          parentNotDescendant
+            .select('descendants.entity_ref')
+            .from('descendants')
+            .join(
+              'refresh_state',
+              'refresh_state.entity_ref',
               'descendants.entity_ref',
             )
+            .where('refresh_state.source_type', '=', 'entity')
+            .whereNotIn(
+              'refresh_state.source_key',
+              function inDescendants(builder) {
+                builder.select('entity_ref').from('descendants');
+              },
+            ),
+        )
+        // Also check refresh_state_references for backwards compatibility
+        .union(refNotPartOfDeletion =>
+          refNotPartOfDeletion
+            .select('descendants.entity_ref')
             .from('descendants')
             .join(
               'refresh_state_references',
               'refresh_state_references.target_entity_ref',
               'descendants.entity_ref',
             )
-            .union(recursive =>
-              recursive
-                .select(
-                  'refresh_state_references.source_key',
-                  'refresh_state_references.source_entity_ref',
+            .whereNotNull('refresh_state_references.source_key')
+            .where(builder =>
+              builder
+                .where('refresh_state_references.source_key', '!=', sourceKey)
+                .orWhereNotIn(
                   'refresh_state_references.target_entity_ref',
-                  'ancestors.subject',
-                )
-                .from('ancestors')
-                .join(
-                  'refresh_state_references',
-                  'refresh_state_references.target_entity_ref',
-                  'ancestors.source_entity_ref',
+                  refs,
                 ),
             ),
-      )
-      // Finally, from that list of ancestor relations per descendant, pick
-      // out the ones that are roots (have a source_key). Specifically, find
-      // ones that seem to be be either (1) from another source, or (2)
-      // aren't part of the deletion targets. Those are markers that tell us
-      // that the corresponding descendant should be kept alive and NOT
-      // subject to eager deletion, because there's "something else" (not
-      // targeted for deletion) that has references down through the tree to
-      // it.
-      //
-      // Continuing the scenario from above, for R3 we have
-      //
-      //   KeyA-R1, KeyA-R4, KeyB-R6
-      //
-      // This tells us that R3 should be kept alive for two reasons: it's
-      // referenced by a node that isn't being deleted (R4), and also by
-      // another source (KeyB). What about R1 and R2? They both have
-      //
-      //   KeyA-R1
-      //
-      // So those should be deleted, since they are definitely only being
-      // kept alive by something that's about to be deleted.
-      //
-      // Final shape of the tree:
-      //
-      //                  R3
-      //                 /
-      //   KeyA - R4 - R5
-      //              /
-      //   KeyB --- R6
-      .with('retained', ['entity_ref'], notPartOfDeletion =>
-        notPartOfDeletion
-          .select('subject')
-          .from('ancestors')
-          .whereNotNull('ancestors.source_key')
-          .where(foreignKeyOrRef =>
-            foreignKeyOrRef
-              .where('ancestors.source_key', '!=', sourceKey)
-              .orWhereNotIn('ancestors.target_entity_ref', refs),
-          ),
-      )
-      // Return all descendants minus the retained ones
-      .select('descendants.entity_ref AS entity_ref')
-      .from('descendants')
-      .leftOuterJoin(
-        'retained',
-        'retained.entity_ref',
-        'descendants.entity_ref',
-      )
-      .whereNull('retained.entity_ref')
-      .then(rows => rows.map(row => row.entity_ref));
+        ),
+    )
+    // Return all descendants minus the retained ones
+    .select('descendants.entity_ref AS entity_ref')
+    .from('descendants')
+    .leftOuterJoin('retained', 'retained.entity_ref', 'descendants.entity_ref')
+    .whereNull('retained.entity_ref')
+    .then(rows => rows.map(row => row.entity_ref));
 
   return { orphanEntityRefs: orphans };
 }
