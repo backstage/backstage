@@ -110,7 +110,6 @@ export function parseGitilesUrlRef(
   ref: string;
   refType: 'sha' | 'branch' | 'tag' | 'head';
   basePath: string;
-  branch: string;
 } {
   const baseUrlParse = new URL(config.gitilesBaseUrl!);
   const urlParse = new URL(url);
@@ -145,7 +144,6 @@ export function parseGitilesUrlRef(
       refType: 'head' as const,
       path: path || '/',
       basePath: trimEnd(url.replace(path, ''), '/'),
-      branch: 'TBD',
     };
   }
   // match <project>/+/<sha>/<path>
@@ -158,7 +156,6 @@ export function parseGitilesUrlRef(
       refType: 'sha' as const,
       path: path || '/',
       basePath: trimEnd(url.replace(path, ''), '/'),
-      branch: 'TBD',
     };
   }
   const remainingPath = join(rest, '/');
@@ -186,7 +183,6 @@ export function parseGitilesUrlRef(
       refType,
       path: path || '/',
       basePath: trimEnd(url.replace(path, ''), '/'),
-      branch: 'TBD',
     };
   }
   throw new Error(`Unable to parse gitiles : ${url}`);
@@ -330,11 +326,15 @@ export function getGerritBranchApiUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { branch, project } = parseGitilesUrlRef(config, url);
+  const { ref, refType, project } = parseGitilesUrlRef(config, url);
+
+  if (refType !== 'branch') {
+    throw new Error(`Unsupported gitiles ref type: ${refType}`);
+  }
 
   return `${config.baseUrl}${getAuthenticationPrefix(
     config,
-  )}projects/${encodeURIComponent(project)}/branches/${branch}`;
+  )}projects/${encodeURIComponent(project)}/branches/${ref}`;
 }
 
 /**
