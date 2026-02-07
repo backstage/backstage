@@ -41,22 +41,48 @@ The plugin will automatically provide:
 
 #### Creating Custom Homepage Layouts
 
-Use the `HomepageBlueprint` to create custom homepage layouts:
+Use the `HomePageLayoutBlueprint` from `@backstage/plugin-home-react/alpha` to
+create custom homepage layouts. A layout receives the installed widgets and is
+responsible for arranging them on the page. If no custom layout is installed, the
+plugin provides a built-in default.
 
 ```ts
-import { HomepageBlueprint } from '@backstage/plugin-home/alpha';
+import { HomePageLayoutBlueprint } from '@backstage/plugin-home-react/alpha';
+import { CustomHomepageGrid } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
+import { Fragment } from 'react';
 
-const myHomePage = HomepageBlueprint.make({
+const myHomePageLayout = HomePageLayoutBlueprint.make({
   params: {
-    title: 'My Custom Home',
-    render: ({ grid }) => (
-      <Page themeId="home">
-        <Header title="Welcome" />
-        <Content>{grid}</Content>
-      </Page>
-    ),
+    loader: async () =>
+      function MyHomePageLayout({ widgets }) {
+        return (
+          <Page themeId="home">
+            <Header title="Welcome" />
+            <Content>
+              <CustomHomepageGrid>
+                {widgets.map((widget, index) => (
+                  <Fragment key={widget.name ?? index}>
+                    {widget.component}
+                  </Fragment>
+                ))}
+              </CustomHomepageGrid>
+            </Content>
+          </Page>
+        );
+      },
   },
+});
+```
+
+Then register the layout in a frontend module:
+
+```ts
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+
+const homeModule = createFrontendModule({
+  pluginId: 'home',
+  extensions: [myHomePageLayout],
 });
 ```
 

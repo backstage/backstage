@@ -92,7 +92,7 @@ app:
 
 The New Frontend System provides powerful customization options:
 
-**Custom Homepage Layouts**: Use the `HomepageBlueprint` to create custom homepage layouts with your own design and widget arrangements.
+**Custom Homepage Layouts**: Use the `HomePageLayoutBlueprint` from `@backstage/plugin-home-react/alpha` to create custom homepage layouts with your own design and widget arrangements. A layout receives the installed widgets and is responsible for rendering them. If no custom layout is installed, the plugin provides a built-in default.
 
 **Adding Homepage Widgets**: Register custom widgets using the `HomepageWidgetBlueprint` from the `@backstage/plugin-home-react/alpha` package.
 
