@@ -4,12 +4,18 @@
   "description": "The codeowners backend module for the catalog plugin.",
   "backstage": {
     "role": "backend-plugin-module",
-    "pluginId": "catalog"
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-codeowners"
   },
   "license": "Apache-2.0",
   "main": "src/index.ts",
