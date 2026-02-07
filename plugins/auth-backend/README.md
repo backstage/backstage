@@ -176,3 +176,7 @@ This is what the configuration looks like:
 auth:
    backstageTokenExpiration: { minutes: <user_defined_value> }
 ```
+
+## Audit Events
+
+The backend emits audit events for various operations. Events are grouped logically by `eventId`, with `meta` providing further distinction when needed.

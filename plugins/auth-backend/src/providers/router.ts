@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuditorService,
+  AuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { assertError, NotFoundError } from '@backstage/errors';
 import {
@@ -44,6 +48,7 @@ export function bindProviderRouters(
     userInfo: UserInfoDatabase;
     ownershipResolver?: AuthOwnershipResolver;
     catalog: CatalogService;
+    auditor: AuditorService;
   },
 ) {
   const {
@@ -57,6 +62,7 @@ export function bindProviderRouters(
     catalog,
     ownershipResolver,
     userInfo,
+    auditor,
   } = options;
 
   const providersConfig = config.getOptionalConfig('auth.providers');
@@ -87,6 +93,7 @@ export function bindProviderRouters(
             ownershipResolver,
             userInfo,
           }),
+          auditor,
         });
 
         const r = Router();
