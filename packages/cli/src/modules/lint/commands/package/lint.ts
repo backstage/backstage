@@ -17,9 +17,13 @@
 import fs from 'fs-extra';
 import { OptionValues } from 'commander';
 import { paths } from '../../../../lib/paths';
-import { ESLint } from 'eslint';
+import eslintModule, { ESLint as LegacyESLint } from 'eslint';
 
 export default async (directories: string[], opts: OptionValues) => {
+  // @ts-expect-error - ESLint types have not been updated for ESLint v8.57, which introduced forward-compatible loadESLint
+  const ESLint = (await eslintModule.loadESLint({
+    useFlatConfig: false,
+  })) as typeof LegacyESLint;
   const eslint = new ESLint({
     cwd: paths.targetDir,
     fix: opts.fix,
