@@ -114,17 +114,17 @@ app:
 
 Homepage widgets are React components that can be added to customizable home pages. The **key difference** between the new frontend system and legacy system is how these widget components are **registered and exported**:
 
-- **New Frontend System**: Use `HomepageWidgetBlueprint` to register widgets as extensions
+- **New Frontend System**: Use `HomePageWidgetBlueprint` to register widgets as extensions
 - **Legacy System**: Use `createCardExtension` to export widgets as card components
 
 ### New Frontend System
 
-Create widgets using the `HomepageWidgetBlueprint`:
+Create widgets using the `HomePageWidgetBlueprint`:
 
 ```ts
-import { HomepageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
-const myWidget = HomepageWidgetBlueprint.make({
+const myWidget = HomePageWidgetBlueprint.make({
   name: 'my-widget',
   params: {
     name: 'MyWidget',

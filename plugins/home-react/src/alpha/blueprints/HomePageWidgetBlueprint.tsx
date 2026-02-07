@@ -28,8 +28,12 @@ import {
 } from '../../extensions';
 import { homePageWidgetDataRef } from '../dataRefs';
 
-/** @alpha */
-export interface HomepageWidgetBlueprintParams {
+/**
+ * Parameters for creating a home page widget extension.
+ *
+ * @alpha
+ */
+export interface HomePageWidgetBlueprintParams {
   /**
    * Optional name for the widget. If not provided, the extension will use only its kind
    * in the extension ID.
@@ -71,14 +75,14 @@ const DEFAULT_WIDGET_ATTACH_POINT = {
  *
  * @alpha
  */
-export const HomepageWidgetBlueprint = createExtensionBlueprint({
-  kind: 'home-widget',
+export const HomePageWidgetBlueprint = createExtensionBlueprint({
+  kind: 'home-page-widget',
   attachTo: DEFAULT_WIDGET_ATTACH_POINT,
   dataRefs: {
     widget: homePageWidgetDataRef,
   },
   output: [homePageWidgetDataRef],
-  *factory(params: HomepageWidgetBlueprintParams, { node }) {
+  *factory(params: HomePageWidgetBlueprintParams, { node }) {
     const isCustomizable = params.settings?.schema !== undefined;
     const LazyCard = lazy(() =>
       params.components().then(parts => ({

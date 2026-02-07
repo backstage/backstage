@@ -28,7 +28,7 @@ import {
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import {
-  HomepageWidgetBlueprint,
+  HomePageWidgetBlueprint,
   HomePageLayoutBlueprint,
 } from '@backstage/plugin-home-react/alpha';
 import { HeaderWorldClock, WelcomeTitle, type ClockConfig } from '../src';
@@ -102,7 +102,7 @@ const homePageLayout = HomePageLayoutBlueprint.make({
   },
 });
 
-const homePageToolkitWidget = HomepageWidgetBlueprint.make({
+const homePageToolkitWidget = HomePageWidgetBlueprint.make({
   name: 'home-toolkit',
   params: {
     name: 'HomePageToolkit',
@@ -124,7 +124,7 @@ const homePageToolkitWidget = HomepageWidgetBlueprint.make({
   },
 });
 
-const homePageStarredEntitiesWidget = HomepageWidgetBlueprint.make({
+const homePageStarredEntitiesWidget = HomePageWidgetBlueprint.make({
   name: 'home-starred-entities',
   params: {
     name: 'HomePageStarredEntities',
@@ -136,7 +136,7 @@ const homePageStarredEntitiesWidget = HomepageWidgetBlueprint.make({
   },
 });
 
-const homePageRandomJokeWidget = HomepageWidgetBlueprint.make({
+const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
   name: 'home-random-joke',
   params: {
     name: 'HomePageRandomJoke',

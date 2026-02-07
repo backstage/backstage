@@ -79,9 +79,9 @@ export interface HomePageLayoutProps {
 }
 
 // @alpha
-export const HomepageWidgetBlueprint: ExtensionBlueprint<{
-  kind: 'home-widget';
-  params: HomepageWidgetBlueprintParams;
+export const HomePageWidgetBlueprint: ExtensionBlueprint<{
+  kind: 'home-page-widget';
+  params: HomePageWidgetBlueprintParams;
   output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
   inputs: {};
   config: {};
@@ -95,8 +95,8 @@ export const HomepageWidgetBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
-export interface HomepageWidgetBlueprintParams {
+// @alpha
+export interface HomePageWidgetBlueprintParams {
   componentProps?: Record<string, unknown>;
   components: () => Promise<ComponentParts>;
   description?: string;
