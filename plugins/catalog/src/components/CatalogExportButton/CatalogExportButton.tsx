@@ -38,6 +38,12 @@ import {
 import { setEnabledBackendFilters } from './setEnabledBackendFilters.ts';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 
+/**
+ * The available export formats for the catalog export.
+ * Currently supports CSV and JSON.
+ *
+ * @public
+ */
 export enum CatalogExportType {
   CSV = 'csv',
   JSON = 'json',
