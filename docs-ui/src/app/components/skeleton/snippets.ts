@@ -19,15 +19,22 @@ export const skeletonDefaultSnippet = `<Flex direction="column" gap="4">
 export const skeletonDemo1Snippet = `<Flex gap="4">
   <Skeleton rounded width={48} height={48} />
   <Flex direction="column" gap="4">
-    <Skeleton width={200} height={8} />
-    <Skeleton width={200} height={8} />
-    <Skeleton width={200} height={8} />
-    <Flex gap="4">
-      <Skeleton width="100%" height={8} />
-      <Skeleton width="100%" height={8} />
+    <Skeleton width={400} height={160} />
+    <Skeleton width={400} height={12} />
+    <Skeleton width={240} height={12} />
+  </Flex>
+</Box>`;
+
+export const avatarWithTextSnippet = `<Box surface="3" p="4">
+  <Flex direction="column" gap="4">
+    <Skeleton rounded width={48} height={48} />
+    <Flex direction="column" gap="4">
+      <Skeleton width={200} height={8} />
+      <Skeleton width={200} height={8} />
+      <Skeleton width={200} height={8} />
     </Flex>
   </Flex>
-</Flex>`;
+</Box>`;
 
 export const skeletonDemo2Snippet = `<Flex direction="column" gap="4">
   <Skeleton width={400} height={160} />

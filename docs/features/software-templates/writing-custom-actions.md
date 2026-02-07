@@ -91,8 +91,8 @@ The `createTemplateAction` takes an object which specifies the following:
   may ship with the `scaffolder-backend` plugin.
 - `description` - An optional field to describe the purpose of the action. This will populate in the `/create/actions`
   endpoint.
-- `schema.input` - A `zod` or JSON schema object for input values to your function
-- `schema.output` - A `zod` or JSON schema object for values which are output from the
+- `schema.input` - A `zod` schema object for input values to your function
+- `schema.output` - A `zod` schema object for values which are output from the
   function using `ctx.output`
 - `handler` - the actual code which is run as part of the action, with a context
 
@@ -195,7 +195,7 @@ argument. It looks like the following:
   executed successfully on the previous run.
 - `ctx.logger` - a [LoggerService](../../backend-system/core-services/logger.md) instance for additional logging inside your action
 - `ctx.workspacePath` - a string of the working directory of the template run
-- `ctx.input` - an object which should match the `zod` or JSON schema provided in the
+- `ctx.input` - an object which should match the `zod` schema provided in the
   `schema.input` part of the action definition
 - `ctx.output` - a function which you can call to set outputs that match the
   `zod` schema in `schema.output` for ex. `ctx.output('downloadUrl', myDownloadUrl)`

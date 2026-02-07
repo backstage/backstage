@@ -36,7 +36,7 @@
     box-sizing: border-box;
     border-radius: var(--bui-radius-3);
     border: 1px solid var(--bui-border);
-    background-color: var(--bui-bg-surface-1);
+    background-color: var(--bui-bg-neutral-1);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -160,7 +160,7 @@
       inset-block: 0;
       inset-inline: var(--bui-space-1);
       border-radius: var(--bui-radius-2);
-      background: var(--bui-bg-surface-2);
+      background: var(--bui-bg-neutral-2);
       z-index: -1;
     }
 

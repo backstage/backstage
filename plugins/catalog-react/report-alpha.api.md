@@ -13,6 +13,8 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
+import { JSXElementConstructor } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -143,20 +145,39 @@ export function convertLegacyEntityContentExtension(
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
     path?: string;
     title?: string;
+    icon?: string | ReactElement;
     defaultPath?: [Error: `Use the 'path' override instead`];
     defaultTitle?: [Error: `Use the 'title' override instead`];
   },
 ): ExtensionDefinition;
 
 // @alpha
-export const defaultEntityContentGroups: {
-  overview: string;
-  documentation: string;
-  development: string;
-  deployment: string;
-  operation: string;
-  observability: string;
+export const defaultEntityContentGroupDefinitions: {
+  overview: {
+    title: string;
+  };
+  documentation: {
+    title: string;
+  };
+  development: {
+    title: string;
+  };
+  deployment: {
+    title: string;
+  };
+  operation: {
+    title: string;
+  };
+  observability: {
+    title: string;
+  };
 };
+
+// @alpha @deprecated
+export const defaultEntityContentGroups: Record<
+  keyof typeof defaultEntityContentGroupDefinitions,
+  string
+>;
 
 // @alpha
 export const EntityCardBlueprint: ExtensionBlueprint<{
@@ -192,11 +213,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: EntityPredicate | undefined;
-    type: 'content' | 'summary' | 'info' | undefined;
+    type: 'content' | 'info' | undefined;
   };
   configInput: {
     filter?: EntityPredicate | undefined;
-    type?: 'content' | 'summary' | 'info' | undefined;
+    type?: 'content' | 'info' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -218,7 +239,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
-export type EntityCardType = 'summary' | 'info' | 'content';
+export type EntityCardType = 'info' | 'content';
 
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
@@ -230,6 +251,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     title: string;
     defaultGroup?: [Error: `Use the 'group' param instead`];
     group?: keyof typeof defaultEntityContentGroups | (string & {});
+    icon?: string | ReactElement;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
@@ -265,6 +287,13 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
+      >
+    | ExtensionDataRef<
+        string | ReactElement<any, string | JSXElementConstructor<any>>,
+        'catalog.entity-content-icon',
+        {
+          optional: true;
+        }
       >;
   inputs: {};
   config: {
@@ -272,12 +301,14 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     title: string | undefined;
     filter: EntityPredicate | undefined;
     group: string | false | undefined;
+    icon: string | undefined;
   };
   configInput: {
     filter?: EntityPredicate | undefined;
     title?: string | undefined;
     path?: string | undefined;
     group?: string | false | undefined;
+    icon?: string | undefined;
   };
   dataRefs: {
     title: ConfigurableExtensionDataRef<
@@ -300,8 +331,22 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
       'catalog.entity-content-group',
       {}
     >;
+    icon: ConfigurableExtensionDataRef<
+      string | ReactElement<any, string | JSXElementConstructor<any>>,
+      'catalog.entity-content-icon',
+      {}
+    >;
   };
 }>;
+
+// @alpha (undocumented)
+export type EntityContentGroupDefinitions = Record<
+  string,
+  {
+    title: string;
+    icon?: string | ReactElement;
+  }
+>;
 
 // @alpha (undocumented)
 export const EntityContentLayoutBlueprint: ExtensionBlueprint<{

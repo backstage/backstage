@@ -7,8 +7,4 @@ description: GitHub Actions makes it easy to automate all your software workflow
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/github-actions/plugins/github-actions
 iconUrl: https://avatars2.githubusercontent.com/u/44036562?s=400&v=4
 npmPackageName: '@backstage-community/plugin-github-actions'
-tags:
-  - ci
-  - cd
-  - github
 addedDate: '2021-01-20'

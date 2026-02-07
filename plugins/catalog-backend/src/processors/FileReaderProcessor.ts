@@ -16,8 +16,8 @@
 
 import fs from 'fs-extra';
 import g from 'glob';
-import path from 'path';
-import { promisify } from 'util';
+import path from 'node:path';
+import { promisify } from 'node:util';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,

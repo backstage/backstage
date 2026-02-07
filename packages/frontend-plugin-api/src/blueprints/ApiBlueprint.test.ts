@@ -200,6 +200,7 @@ describe('ApiBlueprint', () => {
           "test": {
             "$$type": "@backstage/ExtensionInput",
             "config": {
+              "internal": false,
               "optional": false,
               "singleton": false,
             },

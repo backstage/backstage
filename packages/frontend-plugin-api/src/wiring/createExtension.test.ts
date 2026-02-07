@@ -202,12 +202,14 @@ describe('createExtension', () => {
     });
   });
 
-  it('should create an extension with multiple attachment points', () => {
+  // Tests for backward compatibility - runtime still supports multiple attachment points
+  // but the TypeScript types no longer allow them
+  it('should create an extension with multiple attachment points (backward compat)', () => {
     const extension = createExtension({
       attachTo: [
         { id: 'root', input: 'default' },
         { id: 'other', input: 'default' },
-      ],
+      ] as any,
       output: [stringDataRef, numberDataRef.optional()],
       factory: () => [stringDataRef('bar')],
     });
@@ -216,14 +218,14 @@ describe('createExtension', () => {
     );
   });
 
-  it('should create an extension with relative attachment points', () => {
+  it('should create an extension with relative attachment points (backward compat)', () => {
     const extension = createExtension({
       attachTo: [
         { relative: {}, input: 'tabs' },
         { relative: { kind: 'page' }, input: 'tabs' },
         { relative: { name: 'index' }, input: 'tabs' },
         { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
-      ],
+      ] as any,
       output: [stringDataRef],
       factory: () => [stringDataRef('bar')],
     });
@@ -232,7 +234,7 @@ describe('createExtension', () => {
     );
   });
 
-  it('should create an extension with relative attachment points by reference', () => {
+  it('should create an extension with relative attachment points by reference (backward compat)', () => {
     const baseOpts = {
       attachTo: { id: 'root', input: 'children' },
       inputs: {
@@ -269,7 +271,7 @@ describe('createExtension', () => {
         parent2.inputs.tabs,
         parent3.inputs.tabs,
         parent4.inputs.otherTabs,
-      ],
+      ] as any,
       output: [stringDataRef],
       factory: () => [stringDataRef('bar')],
     });
@@ -281,7 +283,7 @@ describe('createExtension', () => {
         parent2.inputs.tabs,
         parent3.inputs.tabs,
         parent4.inputs.otherTabs,
-      ],
+      ] as any,
     });
     expect(String(overrdeExtension)).toBe(
       'ExtensionDefinition{attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',

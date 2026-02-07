@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  SwappableComponentBlueprint,
-  NotFoundErrorPage,
-} from '@backstage/frontend-plugin-api';
+import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@backstage/core-components';

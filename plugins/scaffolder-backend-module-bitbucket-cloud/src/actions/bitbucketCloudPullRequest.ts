@@ -27,8 +27,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
-import { getAuthorizationHeader } from './helpers';
-import { getBitbucketCloudOAuthToken } from '@backstage/integration';
+import { getAuthorizationHeader, getGitAuth } from './helpers';
 import { examples } from './bitbucketCloudPullRequest.examples';
 
 const createPullRequest = async (opts: {
@@ -359,40 +358,11 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
 
         const remoteUrl = `https://${host}/${workspace}/${repo}.git`;
 
-        let auth;
-
-        if (ctx.input.token) {
-          auth = {
-            username: 'x-token-auth',
-            password: ctx.input.token,
-          };
-        } else if (
-          integrationConfig.config.clientId &&
-          integrationConfig.config.clientSecret
-        ) {
-          const token = await getBitbucketCloudOAuthToken(
-            integrationConfig.config.clientId,
-            integrationConfig.config.clientSecret,
-          );
-          auth = {
-            username: 'x-token-auth',
-            password: token,
-          };
-        } else {
-          if (
-            !integrationConfig.config.username ||
-            !integrationConfig.config.appPassword
-          ) {
-            throw new Error(
-              'Credentials for Bitbucket Cloud integration required for this action.',
-            );
-          }
-
-          auth = {
-            username: integrationConfig.config.username,
-            password: integrationConfig.config.appPassword,
-          };
-        }
+        const auth = await getGitAuth(
+          ctx.input.token
+            ? { token: ctx.input.token }
+            : integrationConfig.config,
+        );
 
         const gitAuthorInfo = {
           name:

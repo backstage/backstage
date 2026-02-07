@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-unprocessed-entities",
-  "version": "0.2.25-next.0",
+  "version": "0.2.26-next.0",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog-unprocessed-entities",
@@ -50,11 +50,13 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-unprocessed-entities-common": "workspace:^",
+    "@backstage/plugin-devtools-react": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.60",
@@ -69,13 +71,13 @@
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {

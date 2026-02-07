@@ -18,7 +18,7 @@ import {
   basename,
   resolve as resolvePath,
   relative as relativePath,
-} from 'path';
+} from 'node:path';
 import fs from 'fs-extra';
 import { createBinRunner } from '../../util';
 import { CliHelpPage, CliModel } from './types';

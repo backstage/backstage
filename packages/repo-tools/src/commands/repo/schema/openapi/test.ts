@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { join } from 'path';
+import { join } from 'node:path';
 import chalk from 'chalk';
 import { runner } from '../../../../lib/runner';
 import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';

@@ -33,7 +33,6 @@ export default definePreview({
           { value: 'light', icon: 'circlehollow', title: 'Light' },
           { value: 'dark', icon: 'circle', title: 'Dark' },
         ],
-        showName: true,
         dynamicTitle: true,
       },
     },
@@ -47,7 +46,6 @@ export default definePreview({
           { value: 'backstage', title: 'Backstage' },
           { value: 'spotify', title: 'Spotify' },
         ],
-        showName: true,
         dynamicTitle: true,
       },
     },
@@ -136,11 +134,11 @@ export default definePreview({
         };
       }, [selectedTheme, selectedThemeName]);
 
-      document.body.style.backgroundColor = 'var(--bui-bg-surface-0)';
+      document.body.style.backgroundColor = 'var(--bui-bg-neutral-0)';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
         (element as HTMLElement).style.backgroundColor =
-          'var(--bui-bg-surface-0)';
+          'var(--bui-bg-neutral-0)';
       });
 
       return (

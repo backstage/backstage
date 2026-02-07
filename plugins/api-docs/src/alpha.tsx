@@ -109,7 +109,7 @@ const apiDocsHasApisEntityCard = EntityCardBlueprint.make({
 const apiDocsDefinitionEntityCard = EntityCardBlueprint.make({
   name: 'definition',
   params: {
-    filter: 'kind:api',
+    filter: { kind: 'api' },
     loader: () =>
       import('./components/ApiDefinitionCard').then(m => (
         <m.ApiDefinitionCard />
@@ -123,7 +123,7 @@ const apiDocsConsumedApisEntityCard = EntityCardBlueprint.make({
     // Omitting configSchema for now
     // We are skipping variants and columns are too complex to map to zod
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-    filter: 'kind:component',
+    filter: { kind: 'component' },
     loader: () =>
       import('./components/ApisCards').then(m => <m.ConsumedApisCard />),
   },
@@ -135,7 +135,7 @@ const apiDocsProvidedApisEntityCard = EntityCardBlueprint.make({
     // Omitting configSchema for now
     // We are skipping variants and columns are too complex to map to zod
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-    filter: 'kind:component',
+    filter: { kind: 'component' },
     loader: () =>
       import('./components/ApisCards').then(m => <m.ProvidedApisCard />),
   },
@@ -147,7 +147,7 @@ const apiDocsConsumingComponentsEntityCard = EntityCardBlueprint.make({
     // Omitting configSchema for now
     // We are skipping variants
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-    filter: 'kind:api',
+    filter: { kind: 'api' },
     loader: () =>
       import('./components/ComponentsCards').then(m => (
         <m.ConsumingComponentsCard />
@@ -161,7 +161,7 @@ const apiDocsProvidingComponentsEntityCard = EntityCardBlueprint.make({
     // Omitting configSchema for now
     // We are skipping variants
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-    filter: 'kind:api',
+    filter: { kind: 'api' },
     loader: () =>
       import('./components/ComponentsCards').then(m => (
         <m.ProvidingComponentsCard />
@@ -174,7 +174,7 @@ const apiDocsDefinitionEntityContent = EntityContentBlueprint.make({
   params: {
     path: '/definition',
     title: 'Definition',
-    filter: 'kind:api',
+    filter: { kind: 'api' },
     loader: async () =>
       import('./components/ApiDefinitionCard').then(m => (
         <Grid container spacing={3}>
@@ -191,7 +191,7 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
   params: {
     path: '/apis',
     title: 'APIs',
-    filter: 'kind:component',
+    filter: { kind: 'component' },
     loader: async () =>
       import('./components/ApisCards').then(m => (
         <Grid container spacing={3} alignItems="stretch">

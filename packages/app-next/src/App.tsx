@@ -45,6 +45,10 @@ import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
+import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
+import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import InfoIcon from '@material-ui/icons/Info';
 
 /*
 
@@ -111,9 +115,25 @@ const customHomePageModule = createFrontendModule({
   ],
 });
 
+// customize catalog example
+const customizedCatalog = catalogPlugin.withOverrides({
+  extensions: [
+    catalogPlugin.getExtension('entity-content:catalog/overview').override({
+      params: {
+        icon: <InfoIcon />,
+      },
+    }),
+  ],
+});
+
 const notFoundErrorPageModule = createFrontendModule({
   pluginId: 'app',
   extensions: [notFoundErrorPage],
+});
+
+const devtoolsPluginUnprocessed = createFrontendModule({
+  pluginId: 'catalog-unprocessed-entities',
+  extensions: [unprocessedEntitiesDevToolsContent],
 });
 
 const collectedLegacyPlugins = convertLegacyAppRoot(
@@ -124,6 +144,7 @@ const collectedLegacyPlugins = convertLegacyAppRoot(
 
 const app = createApp({
   features: [
+    customizedCatalog,
     pagesPlugin,
     convertedTechdocsPlugin,
     userSettingsPlugin,
@@ -133,6 +154,8 @@ const app = createApp({
     notFoundErrorPageModule,
     appModuleNav,
     customHomePageModule,
+    devtoolsPlugin,
+    devtoolsPluginUnprocessed,
     ...collectedLegacyPlugins,
   ],
   advanced: {

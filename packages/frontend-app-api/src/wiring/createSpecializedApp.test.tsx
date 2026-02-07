@@ -20,7 +20,9 @@ import {
   coreExtensionData,
   createExtension,
   createFrontendPlugin,
+  createFrontendModule,
   ApiBlueprint,
+  createApiRef,
   createRouteRef,
   createExternalRouteRef,
   createExtensionInput,
@@ -36,21 +38,22 @@ import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { Fragment } from 'react';
 
+function makeAppPlugin(label: string = 'Test') {
+  return createFrontendPlugin({
+    pluginId: 'app',
+    extensions: [
+      createExtension({
+        attachTo: { id: 'root', input: 'app' },
+        output: [coreExtensionData.reactElement],
+        factory: () => [coreExtensionData.reactElement(<div>{label}</div>)],
+      }),
+    ],
+  });
+}
 describe('createSpecializedApp', () => {
   it('should render the root app', () => {
     const app = createSpecializedApp({
-      features: [
-        createFrontendPlugin({
-          pluginId: 'test',
-          extensions: [
-            createExtension({
-              attachTo: { id: 'root', input: 'app' },
-              output: [coreExtensionData.reactElement],
-              factory: () => [coreExtensionData.reactElement(<div>Test</div>)],
-            }),
-          ],
-        }),
-      ],
+      features: [makeAppPlugin()],
     });
 
     render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
@@ -60,32 +63,7 @@ describe('createSpecializedApp', () => {
 
   it('should deduplicate features keeping the last received one', () => {
     const app = createSpecializedApp({
-      features: [
-        createFrontendPlugin({
-          pluginId: 'test',
-          extensions: [
-            createExtension({
-              attachTo: { id: 'root', input: 'app' },
-              output: [coreExtensionData.reactElement],
-              factory: () => [
-                coreExtensionData.reactElement(<div>Test 1</div>),
-              ],
-            }),
-          ],
-        }),
-        createFrontendPlugin({
-          pluginId: 'test',
-          extensions: [
-            createExtension({
-              attachTo: { id: 'root', input: 'app' },
-              output: [coreExtensionData.reactElement],
-              factory: () => [
-                coreExtensionData.reactElement(<div>Test 2</div>),
-              ],
-            }),
-          ],
-        }),
-      ],
+      features: [makeAppPlugin('Test 1'), makeAppPlugin('Test 2')],
     });
 
     render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
@@ -249,8 +227,9 @@ describe('createSpecializedApp', () => {
 
     const app = createSpecializedApp({
       features: [
-        createFrontendPlugin({
-          pluginId: 'first',
+        makeAppPlugin(),
+        createFrontendModule({
+          pluginId: 'app',
           extensions: [
             ApiBlueprint.make({
               params: defineParams =>
@@ -264,9 +243,8 @@ describe('createSpecializedApp', () => {
             }),
           ],
         }),
-        createFrontendPlugin({
-          pluginId: 'test',
-          featureFlags: [{ name: 'a' }, { name: 'b' }],
+        createFrontendModule({
+          pluginId: 'app',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -309,6 +287,107 @@ describe('createSpecializedApp', () => {
     render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(mockAnalyticsApi).toHaveBeenCalled();
+  });
+
+  it('should select the API factory from the owning plugin on conflict', () => {
+    const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+
+    const app = createSpecializedApp({
+      features: [
+        makeAppPlugin(),
+        createFrontendPlugin({
+          pluginId: 'other-before',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: testApiRef,
+                  deps: {},
+                  factory: () => ({ value: 'other' }),
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: testApiRef,
+                  deps: {},
+                  factory: () => ({ value: 'owner' }),
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'other-after',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: testApiRef,
+                  deps: {},
+                  factory: () => ({ value: 'other' }),
+                }),
+            }),
+          ],
+        }),
+      ],
+    });
+
+    expect(app.errors).toEqual([
+      expect.objectContaining({
+        code: 'API_FACTORY_CONFLICT',
+        message: expect.stringContaining("API 'test.api'"),
+      }),
+      expect.objectContaining({
+        code: 'API_FACTORY_CONFLICT',
+        message: expect.stringContaining("API 'test.api'"),
+      }),
+    ]);
+
+    expect(app.apis.get(testApiRef)).toEqual({ value: 'owner' });
+  });
+
+  it('should allow API overrides within the same plugin', () => {
+    const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+
+    const app = createSpecializedApp({
+      features: [
+        makeAppPlugin(),
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: testApiRef,
+                  deps: {},
+                  factory: () => ({ value: 'plugin' }),
+                }),
+            }),
+          ],
+        }),
+        createFrontendModule({
+          pluginId: 'test',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: testApiRef,
+                  deps: {},
+                  factory: () => ({ value: 'module' }),
+                }),
+            }),
+          ],
+        }),
+      ],
+    });
+
+    expect(app.errors).toBeUndefined();
+    expect(app.apis.get(testApiRef)).toEqual({ value: 'module' });
   });
 
   it('should use provided apis', async () => {
@@ -569,12 +648,13 @@ describe('createSpecializedApp', () => {
               output: [coreExtensionData.reactElement],
               factory: () => [coreExtensionData.reactElement(<div />)],
             }),
+            // Test backward compatibility - runtime still supports multiple attachment points
             createExtension({
               name: 'cloned',
               attachTo: [
                 { id: 'test/a', input: 'children' },
                 { id: 'test/b', input: 'children' },
-              ],
+              ] as any,
               output: [coreExtensionData.reactElement],
               factory: () => [coreExtensionData.reactElement(<div />)],
             }),

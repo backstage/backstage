@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { sep as separatorPath } from 'path';
+import { sep as separatorPath } from 'node:path';
 
 const Webpacker = {
   react: 'react',

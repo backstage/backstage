@@ -15,7 +15,7 @@
  */
 
 import { stringifyError } from '@backstage/errors';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
 import { parse as parsePgConnectionString } from 'pg-connection-string';
 import { v4 as uuid } from 'uuid';

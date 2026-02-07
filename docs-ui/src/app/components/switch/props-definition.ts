@@ -2,66 +2,44 @@ import { classNamePropDefs, stylePropDefs } from '@/utils/propDefs';
 import type { PropDef } from '@/utils/propDefs';
 
 export const switchPropDefs: Record<string, PropDef> = {
-  autoFocus: {
-    type: 'boolean',
-  },
-  defaultSelected: {
-    type: 'boolean',
-  },
-  ...classNamePropDefs,
-  isDisabled: {
-    type: 'boolean',
-  },
-  isReadOnly: {
-    type: 'boolean',
+  label: {
+    type: 'string',
+    description: 'Text label displayed next to the switch.',
   },
   isSelected: {
     type: 'boolean',
+    description:
+      'Controlled selected state. Use with onChange for controlled behavior.',
   },
-  label: {
-    type: 'string',
-  },
-  name: {
-    type: 'string',
+  defaultSelected: {
+    type: 'boolean',
+    description: 'Initial selected state for uncontrolled usage.',
   },
   onChange: {
     type: 'enum',
     values: ['(isSelected: boolean) => void'],
+    description: 'Called when the switch state changes.',
   },
-  onFocus: {
-    type: 'enum',
-    values: ['(e: FocusEvent<Target>) => void'],
+  isDisabled: {
+    type: 'boolean',
+    description: 'Prevents user interaction when true.',
   },
-  onBlur: {
-    type: 'enum',
-    values: ['(e: FocusEvent<Target>) => void'],
+  isReadOnly: {
+    type: 'boolean',
+    description: 'Makes the switch non-interactive but still focusable.',
   },
-  onFocusChange: {
-    type: 'enum',
-    values: ['(isFocused: boolean) => void'],
+  name: {
+    type: 'string',
+    description: 'Form field name for form submission.',
   },
-  onKeyDown: {
-    type: 'enum',
-    values: ['(e: KeyboardEvent) => void'],
-  },
-  onKeyUp: {
-    type: 'enum',
-    values: ['(e: KeyboardEvent) => void'],
-  },
-  onHoverStart: {
-    type: 'enum',
-    values: ['(e: HoverEvent) => void'],
-  },
-  onHoverEnd: {
-    type: 'enum',
-    values: ['(e: HoverEvent) => void'],
-  },
-  onHoverChange: {
-    type: 'enum',
-    values: ['(isHovered: boolean) => void'],
-  },
-  ...stylePropDefs,
   value: {
     type: 'string',
+    description: 'Form field value submitted when selected.',
   },
+  autoFocus: {
+    type: 'boolean',
+    description: 'Focuses the switch on mount.',
+  },
+  ...classNamePropDefs,
+  ...stylePropDefs,
 };

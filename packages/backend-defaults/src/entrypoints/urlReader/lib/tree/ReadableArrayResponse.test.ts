@@ -15,11 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 import { FromReadableArrayOptions } from '../types';
 import { ReadableArrayResponse } from './ReadableArrayResponse';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { relative } from 'path/posix';
+import { relative } from 'node:path/posix';
 
 const name1 = 'file1.yaml';
 const file1 = fs.readFileSync(
@@ -107,5 +107,17 @@ describe('ReadableArrayResponse', () => {
         [name3]: file3.toString('utf8'),
       },
     });
+  });
+
+  it('should validate relative paths', async () => {
+    const arr: FromReadableArrayOptions = [
+      { data: createReadStream(path1), path: '../other/file.yaml' },
+    ];
+
+    const res = new ReadableArrayResponse(arr, targetDir.path, 'etag');
+
+    await expect(res.dir()).rejects.toThrow(
+      'Relative path is not allowed to refer to a directory outside its parent',
+    );
   });
 });

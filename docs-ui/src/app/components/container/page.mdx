@@ -4,11 +4,10 @@ import { Snippet } from '@/components/Snippet';
 import { containerPropDefs } from './props-definition';
 import {
   containerUsageSnippet,
-  previewSnippet,
-  containerSimpleSnippet,
+  defaultSnippet,
   containerResponsiveSnippet,
 } from './snippets';
-import { Preview } from './components';
+import { Default, ResponsiveSpacing } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ContainerDefinition } from '../../../utils/definitions';
@@ -17,33 +16,30 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 <PageTitle
   type="Layout"
   title="Container"
-  description="The container component let you use our default max-width and center the content on the page."
+  description="A page wrapper that centers content and constrains its maximum width."
 />
 
-<Snippet py={4} preview={<Preview />} code={previewSnippet} />
+<Snippet preview={<Default />} code={defaultSnippet} />
 
 ## Usage
 
 <CodeBlock code={containerUsageSnippet} />
 
-## API reference
+## Core Concepts
+
+Container provides the standard page layout for plugin content. It constrains content to a maximum width, centers it horizontally, and adds consistent horizontal gutters. Use it once per page to wrap your main content area.
+
+## API Reference
 
 <PropsTable data={containerPropDefs} />
 
 ## Examples
 
-### Simple
+### Responsive spacing
 
-A simple example of how to use the Container component.
+Vertical spacing props accept breakpoint objects.
 
-<CodeBlock code={containerSimpleSnippet} />
-
-### Responsive padding & margin
-
-The Container component also supports responsive values, making it easy to
-create responsive designs.
-
-<CodeBlock code={containerResponsiveSnippet} />
+<Snippet preview={<ResponsiveSpacing />} code={containerResponsiveSnippet} />
 
 <Theming definition={ContainerDefinition} />
 

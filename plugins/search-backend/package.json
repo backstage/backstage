@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend",
-  "version": "2.0.10-next.1",
+  "version": "2.0.12-next.0",
   "description": "The Backstage backend plugin that provides your backstage app with search",
   "backstage": {
     "role": "backend-plugin",
@@ -71,7 +71,7 @@
     "lodash": "^4.17.21",
     "qs": "^6.10.1",
     "yn": "^4.0.0",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

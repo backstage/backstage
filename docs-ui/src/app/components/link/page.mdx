@@ -1,6 +1,7 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
 import { linkPropDefs } from './props-definition';
 import {
   linkUsageSnippet,
@@ -8,23 +9,29 @@ import {
   externalLinkSnippet,
   allVariantsSnippet,
   allColorsSnippet,
-  underlineSnippet,
+  weightSnippet,
+  standaloneSnippet,
 } from './snippets';
 import {
   Default,
   ExternalLink,
   AllVariants,
   AllColors,
-  Underline,
+  Weight,
+  Standalone,
 } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { LinkDefinition } from '../../../utils/definitions';
 
+export const reactAriaUrls = {
+  link: 'https://react-aria.adobe.com/Link',
+};
+
 <PageTitle
   title="Link"
-  description="A link component that renders a `<a>` element."
+  description="A styled anchor with typography variants, colors, and weights."
 />
 
 <Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
@@ -37,54 +44,62 @@ import { LinkDefinition } from '../../../utils/definitions';
 
 <PropsTable data={linkPropDefs} />
 
+<ReactAriaLink component="Link" href={reactAriaUrls.link} />
+
 ## Examples
 
-### External Link
+### External link
 
-Here's how to create an external link that opens in a new tab.
+Use `target="_blank"` to open links in a new tab.
 
 <Snippet
   align="center"
   py={4}
-  open
   preview={<ExternalLink />}
   code={externalLinkSnippet}
+  layout="side-by-side"
 />
 
 ### Variants
 
-Here's a view when links have different variants.
-
 <Snippet
   align="center"
   py={4}
-  open
   preview={<AllVariants />}
   code={allVariantsSnippet}
 />
 
 ### Colors
 
-Here's a view when links have different colors.
+Status colors for contextual links.
 
 <Snippet
   align="center"
   py={4}
-  open
   preview={<AllColors />}
   code={allColorsSnippet}
 />
 
-### Underline
-
-Here's a view when links have different underline styles.
+### Weight
 
 <Snippet
   align="center"
   py={4}
-  open
-  preview={<Underline />}
-  code={underlineSnippet}
+  preview={<Weight />}
+  code={weightSnippet}
+  layout="side-by-side"
+/>
+
+### Standalone
+
+Use `standalone` to remove the underline by default. The underline will appear on hover.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Standalone />}
+  code={standaloneSnippet}
+  layout="side-by-side"
 />
 
 <Theming definition={LinkDefinition} />

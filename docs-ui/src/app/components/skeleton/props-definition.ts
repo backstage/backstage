@@ -6,19 +6,22 @@ import {
 
 export const skeletonPropDefs: Record<string, PropDef> = {
   width: {
-    type: 'number',
+    type: 'string',
     default: '80',
-    responsive: false,
+    description:
+      'The width of the skeleton. Accepts a number (pixels) or CSS string value.',
   },
   height: {
-    type: 'number',
+    type: 'string',
     default: '24',
-    responsive: false,
+    description:
+      'The height of the skeleton. Accepts a number (pixels) or CSS string value.',
   },
   rounded: {
     type: 'boolean',
     default: 'false',
-    responsive: false,
+    description:
+      'Whether to apply fully rounded corners (for circular shapes).',
   },
   children: {
     type: 'string',

@@ -15,12 +15,12 @@
  */
 
 import inquirer from 'inquirer';
-import path from 'path';
+import path from 'node:path';
 import { Command } from 'commander';
 import * as tasks from './lib/tasks';
 import createApp from './createApp';
 import { findPaths } from '@backstage/cli-common';
-import { tmpdir } from 'os';
+import { tmpdir } from 'node:os';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.mock('./lib/tasks');

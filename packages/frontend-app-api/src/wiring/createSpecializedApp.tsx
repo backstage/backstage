@@ -284,6 +284,14 @@ export type CreateSpecializedAppOptions = {
   };
 };
 
+// Internal options type, not exported in the public API
+export interface CreateSpecializedAppInternalOptions
+  extends CreateSpecializedAppOptions {
+  __internal?: {
+    apiFactoryOverrides?: AnyApiFactory[];
+  };
+}
+
 /**
  * Creates an empty app without any default features. This is a low-level API is
  * intended for use in tests or specialized setups. Typically you want to use
@@ -296,6 +304,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   tree: AppTree;
   errors?: AppError[];
 } {
+  const internalOptions = options as CreateSpecializedAppInternalOptions;
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
     createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
@@ -337,6 +346,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
         createApiFactory(configApiRef, config),
         createApiFactory(routeResolutionApiRef, routeResolutionApi),
         createApiFactory(identityApiRef, appIdentityProxy),
+        ...(internalOptions?.__internal?.apiFactoryOverrides ?? []),
       ],
     });
 
@@ -388,7 +398,10 @@ function createApiFactories(options: {
   collector: ErrorCollector;
 }): AnyApiFactory[] {
   const emptyApiHolder = ApiRegistry.from([]);
-  const factories = new Array<AnyApiFactory>();
+  const factoriesById = new Map<
+    string,
+    { pluginId: string; factory: AnyApiFactory }
+  >();
 
   for (const apiNode of options.tree.root.edges.attachments.get('apis') ?? []) {
     if (!instantiateAppNodeTree(apiNode, emptyApiHolder, options.collector)) {
@@ -396,7 +409,45 @@ function createApiFactories(options: {
     }
     const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);
     if (apiFactory) {
-      factories.push(apiFactory);
+      const apiRefId = apiFactory.api.id;
+      const ownerId = getApiOwnerId(apiRefId);
+      const pluginId = apiNode.spec.plugin.pluginId ?? 'app';
+      const existingFactory = factoriesById.get(apiRefId);
+
+      // This allows modules to override factories provided by the plugin, but
+      // it rejects API overrides from other plugins. In the event of a
+      // conflict, the owning plugin is attempted to be inferred from the API
+      // reference ID.
+      if (existingFactory && existingFactory.pluginId !== pluginId) {
+        const shouldReplace =
+          ownerId === pluginId && existingFactory.pluginId !== ownerId;
+        const acceptedPluginId = shouldReplace
+          ? pluginId
+          : existingFactory.pluginId;
+        const rejectedPluginId = shouldReplace
+          ? existingFactory.pluginId
+          : pluginId;
+
+        options.collector.report({
+          code: 'API_FACTORY_CONFLICT',
+          message: `API '${apiRefId}' is already provided by plugin '${acceptedPluginId}', cannot also be provided by '${rejectedPluginId}'.`,
+          context: {
+            node: apiNode,
+            apiRefId,
+            pluginId: rejectedPluginId,
+            existingPluginId: acceptedPluginId,
+          },
+        });
+        if (shouldReplace) {
+          factoriesById.set(apiRefId, {
+            pluginId,
+            factory: apiFactory,
+          });
+        }
+        continue;
+      }
+
+      factoriesById.set(apiRefId, { pluginId, factory: apiFactory });
     } else {
       options.collector.report({
         code: 'API_EXTENSION_INVALID',
@@ -408,7 +459,23 @@ function createApiFactories(options: {
     }
   }
 
-  return factories;
+  return Array.from(factoriesById.values(), entry => entry.factory);
+}
+
+// TODO(Rugvip): It would be good if this was more explicit, but I think that
+//               might need to wait for some future update for API factories.
+function getApiOwnerId(apiRefId: string): string {
+  const [prefix, ...rest] = apiRefId.split('.');
+  if (!prefix) {
+    return apiRefId;
+  }
+  if (prefix === 'core') {
+    return 'app';
+  }
+  if (prefix === 'plugin' && rest[0]) {
+    return rest[0];
+  }
+  return prefix;
 }
 
 function createApiHolder(options: {

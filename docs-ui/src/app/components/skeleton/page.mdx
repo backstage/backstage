@@ -50,10 +50,28 @@ The Skeleton component automatically inherits typography from its parent context
 
 ## API reference
 
+Skeleton extends standard HTML div attributes.
+
 <PropsTable data={skeletonPropDefs} />
 
 ## Examples
 
+### Rounded
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Rounded />}
+  code={roundedSnippet}
+/>
+
+### Avatar with text
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<AvatarWithText />}
+  code={avatarWithTextSnippet}
 ### Inheriting typography
 
 Place Skeleton inside a [Text](./text) component and it automatically inherits the typography. No explicit sizing needed as the skeleton respects the theme's font-size and line-height!

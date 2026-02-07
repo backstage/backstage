@@ -1,21 +1,23 @@
 export const usage = `import { HeaderPage } from '@backstage/ui';
 
-<HeaderPage />`;
+<HeaderPage title="Page Title" />`;
 
 export const defaultSnippet = `<HeaderPage
   title="Page Title"
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Dashboard', href: '/dashboard' },
+  ]}
   tabs={[
-    { id: 'overview', label: 'Overview' },
-    { id: 'checks', label: 'Checks' },
-    { id: 'tracks', label: 'Tracks' },
-    { id: 'campaigns', label: 'Campaigns' },
-    { id: 'integrations', label: 'Integrations' },
+    { id: 'overview', label: 'Overview', href: '/overview' },
+    { id: 'settings', label: 'Settings', href: '/settings' },
   ]}
-  menuItems={[
-    { label: 'Settings', value: 'settings' },
-    { label: 'Invite new members', value: 'invite-new-members' },
-  ]}
-  customActions={<Button>Custom action</Button>}
+  customActions={
+    <>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="primary">Primary</Button>
+    </>
+  }
 />`;
 
 export const withBreadcrumbs = `<HeaderPage
@@ -32,8 +34,6 @@ export const withTabs = `<HeaderPage
     { id: 'overview', label: 'Overview', href: '/overview' },
     { id: 'checks', label: 'Checks', href: '/checks' },
     { id: 'tracks', label: 'Tracks', href: '/tracks' },
-    { id: 'campaigns', label: 'Campaigns', href: '/campaigns' },
-    { id: 'integrations', label: 'Integrations', href: '/integrations' },
   ]}
 />`;
 
@@ -42,10 +42,15 @@ export const withCustomActions = `<HeaderPage
   customActions={<Button>Custom action</Button>}
 />`;
 
-export const withMenuItems = `<HeaderPage
+export const withMenu = `<HeaderPage
   title="Page Title"
-  menuItems={[
-    { label: 'Settings', value: 'settings', onClick: () => {} },
-    { label: 'Invite new members', value: 'invite-new-members', onClick: () => {} },
-  ]}
+  customActions={
+    <MenuTrigger>
+      <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+      <Menu placement="bottom end">
+        <MenuItem href="/settings">Settings</MenuItem>
+        <MenuItem onAction={() => {}}>Logout</MenuItem>
+      </Menu>
+    </MenuTrigger>
+  }
 />`;

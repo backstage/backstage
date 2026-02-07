@@ -17,7 +17,7 @@
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { exec } from '../../../../../lib/exec';
 import {
   OPENAPI_IGNORE_FILES,

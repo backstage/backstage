@@ -1,6 +1,9 @@
-export const radioGroupUsageSnippet = `import { RadioGroup } from '@backstage/ui';
+export const radioGroupUsageSnippet = `import { RadioGroup, Radio } from '@backstage/ui';
 
-<RadioGroup />`;
+<RadioGroup label="Select an option">
+  <Radio value="option1">Option 1</Radio>
+  <Radio value="option2">Option 2</Radio>
+</RadioGroup>`;
 
 export const defaultSnippet = `<RadioGroup label="What is your favorite pokemon?">
   <Radio value="bulbasaur">Bulbasaur</Radio>

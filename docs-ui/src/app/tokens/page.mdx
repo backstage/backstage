@@ -107,8 +107,6 @@ the value, you add an object with the value and the breakpoint prefix.
 
 ## Base colors
 
-These colors are used for special purposes like ring, scrollbar, ...
-
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
@@ -133,62 +131,15 @@ These colors are used for special purposes like ring, scrollbar, ...
         Pure white color. This one should be the same in light and dark themes.
       </Table.Cell>
     </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-gray-1</Chip>
-      </Table.Cell>
-      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-gray-2</Chip>
-      </Table.Cell>
-      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-gray-3</Chip>
-      </Table.Cell>
-      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-gray-4</Chip>
-      </Table.Cell>
-      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-gray-5</Chip>
-      </Table.Cell>
-      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-gray-6</Chip>
-      </Table.Cell>
-      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-gray-7</Chip>
-      </Table.Cell>
-      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-gray-8</Chip>
-      </Table.Cell>
-      <Table.Cell>You can use these mostly for backgrounds colors.</Table.Cell>
-    </Table.Row>
   </Table.Body>
 </Table.Root>
 
-## Core background colors
+## Neutral background colors
 
-These colors are used for the background of your application. We are mostly using for now a
-single elevated background for panels. `--bui-bg-surface-0` should mostly use as the main background
-color of your app.
+These colors form a layered neutral scale for your application backgrounds.
+`--bui-bg-neutral-0` is the base background color of your app. Each subsequent level
+(1 through 4) represents an elevated layer on top of the previous one, with hover,
+pressed, and disabled variants for interactive states.
 
 <Table.Root>
   <Table.Header>
@@ -200,22 +151,129 @@ color of your app.
   <Table.Body>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-bg-surface-0</Chip>
+        <Chip head>--bui-bg-neutral-0</Chip>
       </Table.Cell>
-      <Table.Cell>The background color of your Backstage instance.</Table.Cell>
+      <Table.Cell>
+        The base background color of your Backstage instance.
+      </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-bg-surface-1</Chip>
+        <Chip head>--bui-bg-neutral-1</Chip>
       </Table.Cell>
-      <Table.Cell>Use for any panels or elevated surfaces.</Table.Cell>
+      <Table.Cell>
+        First elevated layer. Use for cards, dialogs, and panels.
+      </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-bg-surface-2</Chip>
+        <Chip head>--bui-bg-neutral-1-hover</Chip>
       </Table.Cell>
-      <Table.Cell>Use for any panels or elevated surfaces.</Table.Cell>
+      <Table.Cell>Hover state for elements on neutral-1.</Table.Cell>
     </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-1-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>Pressed state for elements on neutral-1.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-1-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Disabled state for elements on neutral-1.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-2</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Second elevated layer. Use for elements on top of neutral-1.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-2-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Hover state for elements on neutral-2.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-2-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>Pressed state for elements on neutral-2.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-2-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Disabled state for elements on neutral-2.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-3</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Third elevated layer. Use for elements on top of neutral-2.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-3-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Hover state for elements on neutral-3.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-3-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>Pressed state for elements on neutral-3.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-3-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Disabled state for elements on neutral-3.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-4</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Fourth elevated layer. Use for elements on top of neutral-3.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-4-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Hover state for elements on neutral-4.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-4-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>Pressed state for elements on neutral-4.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-4-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Disabled state for elements on neutral-4.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Solid background colors
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
     <Table.Row>
       <Table.Cell>
         <Chip head>--bui-bg-solid</Chip>
@@ -240,30 +298,19 @@ color of your app.
       </Table.Cell>
       <Table.Cell>Used for solid background colors when disabled.</Table.Cell>
     </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-tint</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for tint background colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-tint-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for tint background colors when hovered.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-tint-focus</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for tint background colors when active.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-tint-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for tint background colors when disabled.</Table.Cell>
-    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Status background colors
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
     <Table.Row>
       <Table.Cell>
         <Chip head>--bui-bg-danger</Chip>
@@ -281,6 +328,12 @@ color of your app.
         <Chip head>--bui-bg-success</Chip>
       </Table.Cell>
       <Table.Cell>Used to show success information.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-info</Chip>
+      </Table.Cell>
+      <Table.Cell>Used to show informational content.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -317,22 +370,6 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-link</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of main background surfaces.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-fg-link-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of main background surfaces.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
         <Chip head>--bui-fg-disabled</Chip>
       </Table.Cell>
       <Table.Cell>
@@ -349,23 +386,35 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-tint</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of tint background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-fg-tint-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of tint background colors when disabled.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
         <Chip head>--bui-fg-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for error states and destructive actions.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-warning</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used for warning states and cautionary information.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-success</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for success states and positive feedback.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-info</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used for informational content and neutral status.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-danger-on-bg</Chip>
       </Table.Cell>
       <Table.Cell>
         It should be used on top of danger background colors.
@@ -373,7 +422,7 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-warning</Chip>
+        <Chip head>--bui-fg-warning-on-bg</Chip>
       </Table.Cell>
       <Table.Cell>
         It should be used on top of warning background colors.
@@ -381,10 +430,18 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-success</Chip>
+        <Chip head>--bui-fg-success-on-bg</Chip>
       </Table.Cell>
       <Table.Cell>
         It should be used on top of success background colors.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-info-on-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of info background colors.
       </Table.Cell>
     </Table.Row>
   </Table.Body>
@@ -407,7 +464,7 @@ low contrast to help as a separator with the different background colors.
       <Table.Cell>
         <Chip head>--bui-border</Chip>
       </Table.Cell>
-      <Table.Cell>It should be used on top of `--bui-bg-surface-1`.</Table.Cell>
+      <Table.Cell>It should be used on top of `--bui-bg-neutral-1`.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
@@ -448,6 +505,12 @@ low contrast to help as a separator with the different background colors.
         <Chip head>--bui-border-success</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-success`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border-info</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--bui-bg-info`.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>

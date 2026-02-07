@@ -26,7 +26,7 @@
     user-select: none;
     font-weight: 500;
     color: var(--bui-fg-primary);
-    background-color: var(--bui-bg-surface-2);
+    background-color: var(--bui-bg-neutral-2);
     font-size: 1rem;
     line-height: 1;
     overflow: hidden;

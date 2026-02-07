@@ -19,7 +19,7 @@
 @layer components {
   .bui-Skeleton {
     animation: var(--bui-animate-pulse);
-    background-color: var(--bui-bg-neutral-on-surface-0);
+    background-color: var(--bui-bg-neutral-2);
     border-radius: var(--bui-radius-2);
   }
 

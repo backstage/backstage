@@ -27,7 +27,7 @@ import { metrics } from '@opentelemetry/api';
 import fs from 'fs-extra';
 import { validate as validateJsonSchema } from 'jsonschema';
 import nunjucks from 'nunjucks';
-import path from 'path';
+import path from 'node:path';
 import * as winston from 'winston';
 import {
   SecureTemplater,

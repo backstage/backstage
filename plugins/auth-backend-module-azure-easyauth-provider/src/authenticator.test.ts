@@ -22,7 +22,7 @@ import {
 import { mockServices } from '@backstage/backend-test-utils';
 import { Request } from 'express';
 import { SignJWT, JWTPayload, errors as JoseErrors } from 'jose';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 const jwtSecret = randomBytes(48);
 

@@ -1,5 +1,67 @@
 # @backstage/plugin-scaffolder
 
+## 1.35.3-next.1
+
+### Patch Changes
+
+- 4e581a6: Updated the browser tab title on the template wizard page to display the specific template title instead of the generic "Create a new component" text.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/plugin-scaffolder-react@1.19.7-next.1
+  - @backstage/core-components@0.18.7-next.1
+  - @backstage/plugin-techdocs-react@1.3.8-next.0
+  - @backstage/integration-react@1.2.15-next.1
+  - @backstage/plugin-scaffolder-common@1.7.6-next.1
+
+## 1.35.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 2eeca03: Scaffolder form fields in the new frontend system now use a Utility API pattern instead of multiple attachment points. The `FormFieldBlueprint` now uses this new approach, and while form fields created with older versions still work, they will produce a deprecation warning and will stop working in a future release.
+
+  As part of this change, the following alpha exports were removed:
+
+  - `formFieldsApiRef`
+  - `ScaffolderFormFieldsApi`
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/plugin-scaffolder-react@1.19.6-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-techdocs-react@1.3.8-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.15-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+  - @backstage/plugin-permission-react@0.4.40-next.0
+  - @backstage/plugin-scaffolder-common@1.7.6-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.35.1
+
+### Patch Changes
+
+- 9d75495: Fixed bug in RepoUrlPickerComponent component where repository names were not being autocompleted.
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-scaffolder-react@1.19.5
+  - @backstage/integration-react@1.2.14
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-scaffolder-common@1.7.5
+  - @backstage/plugin-techdocs-react@1.3.7
+
 ## 1.35.1-next.2
 
 ### Patch Changes

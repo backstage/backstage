@@ -24,6 +24,7 @@ import {
 import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   GitLabDescendantGroupsResponse,
+  GitLabFile,
   GitLabGroup,
   GitLabGroupMembersResponse,
   GitLabProject,
@@ -44,6 +45,11 @@ interface ListProjectOptions extends CommonListOptions {
   membership?: boolean;
   topics?: string;
   simple?: boolean;
+}
+
+interface ListFilesOptions extends CommonListOptions {
+  group?: string;
+  search?: string;
 }
 
 interface UserListOptions extends CommonListOptions {
@@ -169,6 +175,24 @@ export class GitLabClient {
     options?: CommonListOptions,
   ): Promise<PagedResponse<GitLabGroup>> {
     return this.pagedRequest(`/groups`, options);
+  }
+
+  async listFiles(
+    options?: ListFilesOptions,
+  ): Promise<PagedResponse<GitLabFile>> {
+    if (options?.group && options?.search) {
+      return this.pagedRequest(
+        `/groups/${encodeURIComponent(options?.group)}/search`,
+        {
+          ...options,
+          scope: 'blob',
+        },
+      );
+    }
+
+    return {
+      items: [],
+    };
   }
 
   // https://docs.gitlab.com/ee/api/groups.html#list-group-details

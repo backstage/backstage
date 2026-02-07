@@ -18,7 +18,7 @@ export const Default = () => {
   );
 };
 
-export const CustomSize = () => {
+export const HeaderAndBody = () => {
   return (
     <Card
       style={{
@@ -27,8 +27,7 @@ export const CustomSize = () => {
       }}
     >
       <CardHeader>Header</CardHeader>
-      <CardBody>Body</CardBody>
-      <CardFooter>Footer</CardFooter>
+      <CardBody>Body content without a footer</CardBody>
     </Card>
   );
 };

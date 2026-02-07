@@ -50,10 +50,7 @@ const columnsValues = [
   'auto',
 ] as const;
 
-export const utilityClassMap: Record<
-  string,
-  { class: string; cssVar?: string; values: readonly (string | number)[] }
-> = {
+export const utilityClassMap = {
   m: {
     class: 'bui-m',
     cssVar: '--m',
@@ -199,4 +196,7 @@ export const utilityClassMap: Record<
     class: 'bui-row-span',
     values: columnsValues,
   },
-};
+} as const satisfies Record<
+  string,
+  { class: string; cssVar?: string; values: readonly (string | number)[] }
+>;
