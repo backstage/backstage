@@ -31,9 +31,14 @@ import {
   InfinispanServerConfig,
   ValkeyCacheStoreOptions,
 } from './types';
+import { RedisClientOptions } from '@keyv/redis';
 import { InfinispanOptionsMapper } from './providers/infinispan/InfinispanOptionsMapper';
 import { durationToMilliseconds } from '@backstage/types';
-import { ConfigReader, readDurationFromConfig } from '@backstage/config';
+import {
+  Config,
+  ConfigReader,
+  readDurationFromConfig,
+} from '@backstage/config';
 import {
   InfinispanClientCacheInterface,
   InfinispanKeyvStore,
@@ -49,6 +54,20 @@ type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
  * @public
  */
 export class CacheManager {
+  private static readOptionalDuration(
+    config: Config,
+    key: string,
+  ): number | undefined {
+    const value = config.getOptional(key);
+    if (value === undefined) {
+      return undefined;
+    }
+    if (typeof value === 'number') {
+      return value;
+    }
+    return durationToMilliseconds(readDurationFromConfig(config, { key }));
+  }
+
   /**
    * Keys represent supported `backend.cache.store` values, mapped to factories
    * that return Keyv instances appropriate to the store.
@@ -141,6 +160,8 @@ export class CacheManager {
       );
     }
 
+    logger?.debug('backend.cache: selected store', { store });
+
     switch (store) {
       case 'redis':
         return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
@@ -165,7 +186,7 @@ export class CacheManager {
     config: RootConfigService,
     logger?: LoggerService,
   ): RedisCacheStoreOptions {
-    const redisOptions: RedisCacheStoreOptions = {
+    const redisOptions: RedisCacheStoreOptions & { socket?: object } = {
       type: 'redis',
     };
 
@@ -182,6 +203,117 @@ export class CacheManager {
         'client.noNamespaceAffectsAll',
       ),
     };
+
+    const clientConfig = redisConfig.getOptionalConfig('client');
+    const socketConfig = clientConfig?.getOptionalConfig('socket');
+    const keepAlive = redisConfig.getOptionalBoolean('client.socket.keepAlive');
+    const keepAliveInitialDelay = socketConfig
+      ? CacheManager.readOptionalDuration(socketConfig, 'keepAliveInitialDelay')
+      : undefined;
+    const pingInterval = clientConfig
+      ? CacheManager.readOptionalDuration(clientConfig, 'pingInterval')
+      : undefined;
+    const socketTimeout = socketConfig
+      ? CacheManager.readOptionalDuration(socketConfig, 'socketTimeout')
+      : undefined;
+
+    let keepAliveForSocket: boolean | undefined;
+    let keepAliveInitialDelayForSocket: number | undefined;
+
+    if (keepAlive === false) {
+      keepAliveForSocket = false;
+    } else {
+      if (keepAliveInitialDelay !== undefined) {
+        if (keepAlive !== true) {
+          logger?.warn(
+            'Socket keepalive initial delay is set without keepalive enabled. Enabling keepalive.',
+          );
+        }
+        keepAliveForSocket = true;
+        keepAliveInitialDelayForSocket = keepAliveInitialDelay;
+      } else if (keepAlive === true) {
+        keepAliveForSocket = true;
+      }
+    }
+
+    logger?.debug('backend.cache: derived socket options', {
+      keepAliveForSocket,
+      keepAliveInitialDelayForSocket,
+    });
+
+    const reconnectConfig =
+      socketConfig?.getOptionalConfig('reconnectStrategy');
+    const baseDelayMs = reconnectConfig?.getOptionalNumber('baseDelayMs');
+    const maxDelayMs = reconnectConfig?.getOptionalNumber('maxDelayMs');
+    const jitterMs = reconnectConfig?.getOptionalNumber('jitterMs');
+    const maxRetries = reconnectConfig?.getOptionalNumber('maxRetries');
+    const stopOnSocketTimeout = reconnectConfig?.getOptionalBoolean(
+      'stopOnSocketTimeout',
+    );
+    const hasReconnectConfig =
+      baseDelayMs !== undefined ||
+      maxDelayMs !== undefined ||
+      jitterMs !== undefined ||
+      maxRetries !== undefined ||
+      stopOnSocketTimeout !== undefined;
+
+    const reconnectStrategy = hasReconnectConfig
+      ? (retries: number, cause: Error) => {
+          // Exponential backoff with jitter; return false to stop reconnecting.
+          // This only runs when node-redis observes a socket close/error.
+          if (
+            stopOnSocketTimeout &&
+            (cause as { name?: string }).name === 'SocketTimeoutError'
+          ) {
+            return false;
+          }
+          if (maxRetries !== undefined && retries > maxRetries) {
+            return false;
+          }
+          const resolvedBaseDelay = Math.max(0, baseDelayMs ?? 100);
+          const resolvedMaxDelay = Math.max(0, maxDelayMs ?? 2000);
+          const resolvedJitter = Math.max(0, jitterMs ?? 50);
+          const backoff = Math.min(
+            Math.pow(2, retries) * resolvedBaseDelay,
+            resolvedMaxDelay,
+          );
+          const jitter =
+            resolvedJitter === 0
+              ? 0
+              : (Math.random() - 0.5) * 2 * resolvedJitter;
+          return backoff + jitter;
+        }
+      : undefined;
+
+    let socketOptions: Record<string, unknown> | undefined;
+    if (
+      keepAliveForSocket !== undefined ||
+      keepAliveInitialDelayForSocket !== undefined ||
+      socketTimeout !== undefined ||
+      reconnectStrategy !== undefined
+    ) {
+      socketOptions = {};
+      if (keepAliveForSocket !== undefined) {
+        socketOptions.keepAlive = keepAliveForSocket;
+      }
+      if (keepAliveInitialDelayForSocket !== undefined) {
+        socketOptions.keepAliveInitialDelay = keepAliveInitialDelayForSocket;
+      }
+      if (socketTimeout !== undefined) {
+        socketOptions.socketTimeout = socketTimeout;
+      }
+      if (reconnectStrategy !== undefined) {
+        socketOptions.reconnectStrategy = reconnectStrategy;
+      }
+    }
+
+    if (socketOptions) {
+      // node-redis docs indicate keepAlive is boolean even if types differ.
+      redisOptions.socket = socketOptions as RedisClientOptions['socket'];
+    }
+    if (pingInterval !== undefined) {
+      redisOptions.pingInterval = pingInterval;
+    }
 
     if (redisConfig.has('cluster')) {
       const clusterConfig = redisConfig.getConfig('cluster');
@@ -204,7 +336,42 @@ export class CacheManager {
           'maxCommandRedirections',
         ),
       };
+
+      if (redisOptions.socket || pingInterval !== undefined) {
+        const existingDefaults = redisOptions.cluster.defaults ?? {};
+        const existingSocket = (existingDefaults as { socket?: object })
+          ?.socket;
+        redisOptions.cluster.defaults = {
+          ...existingDefaults,
+          ...(pingInterval !== undefined ? { pingInterval } : {}),
+          ...(redisOptions.socket
+            ? {
+                socket: {
+                  ...(existingSocket ?? {}),
+                  ...redisOptions.socket,
+                },
+              }
+            : {}),
+        };
+      }
     }
+
+    logger?.debug('backend.cache: redis client options', {
+      hasClientOptions: Boolean(redisOptions.client),
+      hasSocketOptions: Boolean(redisOptions.socket),
+      pingInterval,
+      socketTimeout,
+      keepAliveForSocket,
+      keepAliveInitialDelayForSocket,
+      reconnect: {
+        baseDelayMs,
+        maxDelayMs,
+        jitterMs,
+        maxRetries,
+        stopOnSocketTimeout,
+      },
+      hasClusterOptions: Boolean(redisOptions.cluster),
+    });
 
     return redisOptions;
   }
@@ -337,23 +504,56 @@ export class CacheManager {
           `Internal error: Wrong config type passed to redis factory: ${this.storeOptions?.type}`,
         );
       }
+      const storeOptions = this.storeOptions as RedisCacheStoreOptions;
       if (!stores[pluginId]) {
-        const redisOptions = this.storeOptions?.client || {
+        const redisOptions = storeOptions.client || {
           keyPrefixSeparator: ':',
         };
-        if (this.storeOptions?.cluster) {
+        if (storeOptions.cluster) {
           // Create a Redis cluster
-          const cluster = createCluster(this.storeOptions?.cluster);
+          const cluster = createCluster(storeOptions.cluster);
           stores[pluginId] = new KeyvRedis(cluster, redisOptions);
         } else {
           // Create a regular Redis connection
-          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
+          const connection =
+            storeOptions.socket || storeOptions.pingInterval !== undefined
+              ? {
+                  url: this.connection,
+                  ...(storeOptions.socket
+                    ? { socket: storeOptions.socket }
+                    : {}),
+                  ...(storeOptions.pingInterval !== undefined
+                    ? { pingInterval: storeOptions.pingInterval }
+                    : {}),
+                }
+              : this.connection;
+          stores[pluginId] = new KeyvRedis(connection, redisOptions);
         }
 
         // Always provide an error handler to avoid stopping the process
         stores[pluginId].on('error', (err: Error) => {
           this.logger?.error('Failed to create redis cache client', err);
           this.errorHandler?.(err);
+
+          // Disconnects the client to force a new connection on the next request after errors.
+          const store = stores[pluginId];
+          if (store) {
+            try {
+              (store as { disconnect?: () => void }).disconnect?.();
+              (store as { quit?: () => void }).quit?.();
+            } catch (closeError) {
+              this.logger?.warn(
+                'Failed to close redis cache client after error',
+                closeError,
+              );
+            }
+            // Clear the store from the cache manager to force a new connection on the next request.
+            // Drops the client connection object, but does not lose the underlying cached data.
+            this.logger?.info(
+              `Clearing redis cache client for plugin ${pluginId} after error`,
+            );
+            delete stores[pluginId];
+          }
         });
       }
       return new Keyv({
