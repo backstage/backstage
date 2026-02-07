@@ -24,6 +24,7 @@ import {
   createExtensionInput,
   ApiBlueprint,
   appThemeApiRef,
+  storageApiRef,
 } from '@backstage/frontend-plugin-api';
 import { ThemeBlueprint } from '@backstage/plugin-app-react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -44,11 +45,14 @@ export const AppThemeApi = ApiBlueprint.makeWithOverrides({
     return originalFactory(defineParams =>
       defineParams({
         api: appThemeApiRef,
-        deps: {},
-        factory: () => {
-          return AppThemeSelector.createWithStorage(
-            inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
-          );
+        deps: { storageApi: storageApiRef },
+        factory: ({ storageApi }) => {
+          return AppThemeSelector.createWithStorage({
+            themes: inputs.themes.map(i =>
+              i.get(ThemeBlueprint.dataRefs.theme),
+            ),
+            storageApi,
+          });
         },
       }),
     );

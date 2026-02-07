@@ -45,6 +45,7 @@ import {
   fetchApiRef,
   discoveryApiRef,
   errorApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
 import {
   AppLanguageApi,
@@ -170,7 +171,7 @@ export class AppManager implements BackstageApp {
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
-  private readonly appLanguageApi: AppLanguageApi;
+  private appLanguageApi: AppLanguageApi;
   private readonly translationResources: Array<
     TranslationResource | TranslationMessages
   >;
@@ -241,7 +242,10 @@ export class AppManager implements BackstageApp {
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const needsFeatureFlagRegistrationRef = useRef(true);
       const appThemeApi = useMemo(
-        () => AppThemeSelector.createWithStorage(this.themes),
+        () =>
+          AppThemeSelector.createWithStorage({
+            themes: this.themes,
+          }),
         [],
       );
 
@@ -368,6 +372,14 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
       const apis = this.getApiHolder();
 
+      const storageApi = apis.get(storageApiRef);
+      this.appLanguageApi = AppLanguageSelector.createWithStorage({
+        defaultLanguage: this.appLanguageApi.getLanguage().language,
+        availableLanguages:
+          this.appLanguageApi.getAvailableLanguages().languages,
+        storageApi: storageApi,
+      });
+
       if (isProtectedApp()) {
         const errorApi = apis.get(errorApiRef);
         const fetchApi = apis.get(fetchApiRef);
@@ -435,8 +447,12 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     }
     this.apiFactoryRegistry.register('static', {
       api: appThemeApiRef,
-      deps: {},
-      factory: () => AppThemeSelector.createWithStorage(this.themes),
+      deps: { storageApi: storageApiRef },
+      factory: ({ storageApi }) =>
+        AppThemeSelector.createWithStorage({
+          themes: this.themes,
+          storageApi,
+        }),
     });
     this.apiFactoryRegistry.register('static', {
       api: configApiRef,
