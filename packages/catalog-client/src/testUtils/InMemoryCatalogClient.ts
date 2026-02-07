@@ -57,23 +57,12 @@ import type {
 } from '@backstage/plugin-catalog-common';
 import { DEFAULT_STREAM_ENTITIES_LIMIT } from '../constants.ts';
 
-function base64Encode(str: string): string {
-  const bytes = new TextEncoder().encode(str);
-  return btoa(Array.from(bytes, b => String.fromCodePoint(b)).join(''));
-}
-
-function base64Decode(str: string): string {
-  const bin = atob(str);
-  const bytes = Uint8Array.from(bin, c => c.codePointAt(0)!);
-  return new TextDecoder().decode(bytes);
-}
-
 function makeCursor(data: Record<string, unknown>): string {
-  return base64Encode(JSON.stringify(data));
+  return btoa(JSON.stringify(data));
 }
 
 function parseCursor(cursor: string): Record<string, unknown> {
-  return JSON.parse(base64Decode(cursor));
+  return JSON.parse(atob(cursor));
 }
 
 // CATALOG_FILTER_EXISTS is a Symbol that doesn't survive JSON serialization,
