@@ -15,14 +15,13 @@
  */
 
 jest.mock('@backstage/plugin-scaffolder-node', () => {
+  const mockResult = {
+    commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+  };
   return {
     ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-    initRepoAndPush: jest.fn().mockResolvedValue({
-      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
-    }),
-    commitAndPushRepo: jest.fn().mockResolvedValue({
-      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
-    }),
+    initRepoAndPush: jest.fn().mockResolvedValue(mockResult),
+    commitAndPushRepo: jest.fn().mockResolvedValue(mockResult),
   };
 });
 
@@ -31,6 +30,11 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+
+// Ensure the mock is properly typed
+const mockInitRepoAndPush = initRepoAndPush as jest.MockedFunction<
+  typeof initRepoAndPush
+>;
 
 const mockGitlabClient = {
   Namespaces: {
@@ -149,6 +153,10 @@ describe('publish:gitlab', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    // Reconfigure the mock after reset
+    mockInitRepoAndPush.mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    });
   });
 
   it('should throw an error when the repoUrl is not well formed', async () => {
@@ -733,6 +741,50 @@ describe('publish:gitlab', () => {
       name: 'repo',
       visibility: 'private',
     });
+  });
+
+  it('should use custom git implementation when useCustomGit is true', async () => {
+    // Mock the customGitPush function by spying on the module
+    const mockCustomGitPush = jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    });
+
+    // Mock child_process.spawn to avoid actual git execution
+    jest.doMock('child_process', () => ({
+      spawn: jest.fn().mockImplementation(() => {
+        const mockProcess = {
+          stdout: { on: jest.fn() },
+          stderr: { on: jest.fn() },
+          on: jest.fn((event, callback) => {
+            if (event === 'close') {
+              setTimeout(() => callback(0), 0);
+            }
+          }),
+        };
+        return mockProcess;
+      }),
+    }));
+
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({
+      id: 1234,
+      kind: 'group',
+    });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        useCustomGit: true,
+      },
+    });
+
+    // Verify that initRepoAndPush was NOT called (since we're using custom git)
+    expect(initRepoAndPush).not.toHaveBeenCalled();
   });
 
   it('should show proper error message when token has insufficient permissions or namespace not found', async () => {
