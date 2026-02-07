@@ -27,9 +27,9 @@ import { JsonValue } from '@backstage/types';
  *
  * This lookup does not traverse into arrays, returning `undefined` instead.
  *
- * @internal
+ * @public
  */
-export function valueAtPath(
+export function getJsonValueAtPath(
   value: JsonValue | undefined,
   path: string,
 ): JsonValue | undefined {
@@ -55,7 +55,7 @@ export function valueAtPath(
       }
     }
     if (path.startsWith(`${valueKey}.`)) {
-      const found = valueAtPath(
+      const found = getJsonValueAtPath(
         value[valueKey],
         path.slice(valueKey.length + 1),
       );

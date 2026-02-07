@@ -14,31 +14,39 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
+import { fromZodError } from 'zod-validation-error/v3';
+import * as zodV3 from 'zod/v3';
 import {
-  EntityPredicate,
-  EntityPredicateExpression,
-  EntityPredicatePrimitive,
-  EntityPredicateValue,
+  FilterPredicate,
+  FilterPredicateExpression,
+  FilterPredicatePrimitive,
+  FilterPredicateValue,
 } from './types';
-import type { z as zImpl, ZodType } from 'zod';
 
-/** @internal */
-export function createEntityPredicateSchema(z: typeof zImpl) {
+/**
+ * Create a Zod schema for validating filter predicates.
+ *
+ * @public
+ */
+export function createZodV3FilterPredicateSchema(
+  z: typeof zodV3.z,
+): zodV3.ZodType<FilterPredicate> {
   const primitiveSchema = z.union([
     z.string(),
     z.number(),
     z.boolean(),
-  ]) as ZodType<EntityPredicatePrimitive>;
+  ]) as zodV3.ZodType<FilterPredicatePrimitive>;
 
   // eslint-disable-next-line prefer-const
-  let valuePredicateSchema: ZodType<EntityPredicateValue>;
+  let valuePredicateSchema: zodV3.ZodType<FilterPredicateValue>;
 
   const expressionSchema = z.lazy(() =>
     z.union([
       z.record(z.string().regex(/^(?!\$).*$/), valuePredicateSchema),
       z.record(z.string().regex(/^\$/), z.never()),
     ]),
-  ) as ZodType<EntityPredicateExpression>;
+  ) as zodV3.ZodType<FilterPredicateExpression>;
 
   const predicateSchema = z.lazy(() =>
     z.union([
@@ -48,14 +56,33 @@ export function createEntityPredicateSchema(z: typeof zImpl) {
       z.object({ $any: z.array(predicateSchema) }),
       z.object({ $not: predicateSchema }),
     ]),
-  ) as ZodType<EntityPredicate>;
+  ) as zodV3.ZodType<FilterPredicate>;
 
   valuePredicateSchema = z.union([
     primitiveSchema,
     z.object({ $exists: z.boolean() }),
     z.object({ $in: z.array(primitiveSchema) }),
     z.object({ $contains: predicateSchema }),
-  ]) as ZodType<EntityPredicateValue>;
+  ]) as zodV3.ZodType<FilterPredicateValue>;
 
   return predicateSchema;
+}
+
+/**
+ * Parses a value to check that it's a valid filter predicate.
+ *
+ * @public
+ * @param value - The value to parse.
+ * @returns A valid filter predicate.
+ * @throws An error if the value is not a valid filter predicate.
+ */
+export function parseFilterPredicate(value: unknown): FilterPredicate {
+  const schema = createZodV3FilterPredicateSchema(zodV3.z);
+  const result = schema.safeParse(value);
+  if (!result.success) {
+    throw new InputError(
+      `Invalid filter predicate: ${fromZodError(result.error)}`,
+    );
+  }
+  return result.data;
 }

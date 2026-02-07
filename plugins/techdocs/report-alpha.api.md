@@ -9,10 +9,10 @@ import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
-import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
@@ -126,12 +126,12 @@ const _default: OverridableFrontendPlugin<
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         group: string | false | undefined;
         icon: string | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         title?: string | undefined;
         path?: string | undefined;
         group?: string | false | undefined;
@@ -216,7 +216,7 @@ const _default: OverridableFrontendPlugin<
         icon?: string | ReactElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'entity-icon-link:techdocs/read-docs': OverridableExtensionDefinition<{
@@ -225,10 +225,10 @@ const _default: OverridableFrontendPlugin<
       config: {
         label: string | undefined;
         title: string | undefined;
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         label?: string | undefined;
         title?: string | undefined;
       };
@@ -255,7 +255,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         useProps: () => Omit<IconLinkVerticalProps, 'color'>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean);
+        filter?: FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:techdocs': OverridableExtensionDefinition<{

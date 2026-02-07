@@ -12,11 +12,11 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react/alpha';
-import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
@@ -294,11 +294,11 @@ const _default: OverridableFrontendPlugin<
     }>;
     'entity-card:catalog/about': OverridableExtensionDefinition<{
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -356,7 +356,7 @@ const _default: OverridableFrontendPlugin<
       name: 'about';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -364,11 +364,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'depends-on-components';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -397,7 +397,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -405,11 +405,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'depends-on-resources';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -438,7 +438,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -446,11 +446,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-components';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -479,7 +479,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -487,11 +487,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-resources';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -520,7 +520,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -528,11 +528,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-subcomponents';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -561,7 +561,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -569,11 +569,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-subdomains';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -602,7 +602,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -610,11 +610,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-systems';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -643,7 +643,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -651,11 +651,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'labels';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -684,7 +684,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -692,11 +692,11 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'links';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
       output:
@@ -725,7 +725,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -733,12 +733,12 @@ const _default: OverridableFrontendPlugin<
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         group: string | false | undefined;
         icon: string | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         title?: string | undefined;
         path?: string | undefined;
         group?: string | false | undefined;
@@ -852,17 +852,17 @@ const _default: OverridableFrontendPlugin<
         icon?: string | ReactElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'entity-context-menu-item:catalog/copy-entity-url': OverridableExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'copy-entity-url';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -880,10 +880,10 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-context-menu-item';
       name: 'inspect-entity';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -901,10 +901,10 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-context-menu-item';
       name: 'unregister-entity';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -924,10 +924,10 @@ const _default: OverridableFrontendPlugin<
       config: {
         label: string | undefined;
         title: string | undefined;
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         label?: string | undefined;
         title?: string | undefined;
       };
@@ -954,7 +954,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         useProps: () => Omit<IconLinkVerticalProps, 'color'>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean);
+        filter?: FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:catalog': OverridableExtensionDefinition<{

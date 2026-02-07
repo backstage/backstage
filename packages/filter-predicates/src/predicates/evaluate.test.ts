@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { entityPredicateToFilterFunction } from './entityPredicateToFilterFunction';
-import { EntityPredicate } from './types';
+import {
+  evaluateFilterPredicate,
+  filterPredicateToFilterFunction,
+} from './evaluate';
+import { FilterPredicate } from './types';
 
-describe('entityPredicateToFilterFunction', () => {
+describe('evaluate', () => {
   const entities = [
     {
       apiVersion: 'backstage.io/v1alpha1',
@@ -129,7 +132,7 @@ describe('entityPredicateToFilterFunction', () => {
     },
   ];
 
-  it.each([
+  describe.each([
     ['s', { kind: 'component', 'spec.type': 'service' }],
     ['s', { 'metadata.tags': { $contains: 'java' } }],
     [
@@ -186,7 +189,7 @@ describe('entityPredicateToFilterFunction', () => {
         metadata: { $contains: { name: 'a' } },
       },
     ],
-    ['', { $unknown: 'ignored' } as unknown as EntityPredicate],
+    ['', { $unknown: 'ignored' } as unknown as FilterPredicate],
     [
       's,w',
       { kind: 'component', 'spec.type': { $in: ['service', 'website'] } },
@@ -234,12 +237,33 @@ describe('entityPredicateToFilterFunction', () => {
         'metadata.annotations.github.com/repo': { $exists: true },
       },
     ],
+    ['a', { 'spec.type': { $startsWith: 'g' } }],
   ])('filter entry %#', (expected, filter) => {
-    const filtered = entities.filter(entity =>
-      entityPredicateToFilterFunction(filter)(entity),
-    );
-    expect(filtered.map(e => e.metadata.name).sort()).toEqual(
-      expected.split(',').filter(Boolean).sort(),
-    );
+    it('filterPredicateToFilterFunction', () => {
+      const filtered = entities.filter(entity =>
+        filterPredicateToFilterFunction(filter)(entity),
+      );
+      expect(filtered.map(e => e.metadata.name).sort()).toEqual(
+        expected.split(',').filter(Boolean).sort(),
+      );
+    });
+
+    it('evaluateFilterPredicate', () => {
+      const filtered = entities.filter(entity =>
+        evaluateFilterPredicate(filter, entity),
+      );
+      expect(filtered.map(e => e.metadata.name).sort()).toEqual(
+        expected.split(',').filter(Boolean).sort(),
+      );
+    });
+  });
+
+  it('handles unknown filter predicate operators and matchers', () => {
+    const operator = { $unknown: 'foo' } as unknown as FilterPredicate;
+    const value = { kind: { $unknown: 'foo' } } as unknown as FilterPredicate;
+    expect(evaluateFilterPredicate(operator, entities[0])).toBe(false);
+    expect(evaluateFilterPredicate(value, entities[0])).toBe(false);
+    expect(filterPredicateToFilterFunction(operator)(entities[0])).toBe(false);
+    expect(filterPredicateToFilterFunction(value)(entities[0])).toBe(false);
   });
 });
