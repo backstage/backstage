@@ -124,7 +124,7 @@ const routes = (
       element={
         <CatalogIndexPage
           pagination={{ mode: 'offset', limit: 20 }}
-          enableExport
+          exportSettings={{ enableExport: true }}
         />
       }
     />

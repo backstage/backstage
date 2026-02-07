@@ -16,40 +16,43 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CatalogExportButton } from './CatalogExportButton';
-import { useBackstageStreamedDownload } from './file-download';
+import { useStreamingExport } from './file-download';
 import {
   catalogApiRef,
   EntityListProvider,
 } from '@backstage/plugin-catalog-react';
 import { MemoryRouter } from 'react-router-dom';
 import { TestApiProvider } from '@backstage/test-utils';
-import { alertApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
 
 const mockAlertApi = {
   post: jest.fn(),
 };
 
-jest.mock('./file-download/useBackstageStreamedDownload', () => ({
-  useBackstageStreamedDownload: jest.fn(),
+jest.mock('./file-download/useStreamingExport', () => ({
+  useStreamingExport: jest.fn(),
 }));
-const useBackstageStreamedDownloadMock =
-  useBackstageStreamedDownload as jest.Mock;
-const mockDownload = jest.fn();
+const useStreamingExportMock = useStreamingExport as jest.Mock;
+const mockExportStream = jest.fn();
 
-const getComponent = () => (
+const getComponent = (
+  onSuccess?: () => void,
+  onError?: (error: Error) => void,
+) => (
   <TestApiProvider
     apis={[
-      [
-        discoveryApiRef,
-        { getBaseUrl: (_: string) => Promise.resolve('/api/catalog') },
-      ],
       [alertApiRef, mockAlertApi],
       [catalogApiRef, {}],
     ]}
   >
     <MemoryRouter>
       <EntityListProvider>
-        <CatalogExportButton />
+        <CatalogExportButton
+          settings={{
+            onSuccess,
+            onError,
+          }}
+        />
       </EntityListProvider>
     </MemoryRouter>
   </TestApiProvider>
@@ -57,8 +60,8 @@ const getComponent = () => (
 
 describe('CatalogExportButton', () => {
   beforeEach(() => {
-    useBackstageStreamedDownloadMock.mockReturnValue({
-      download: mockDownload,
+    useStreamingExportMock.mockReturnValue({
+      exportStream: mockExportStream,
       loading: false,
       error: null,
     });
@@ -90,7 +93,7 @@ describe('CatalogExportButton', () => {
   });
 
   it('handles successful export', async () => {
-    mockDownload.mockResolvedValueOnce(undefined);
+    mockExportStream.mockResolvedValueOnce(undefined);
 
     render(getComponent());
 
@@ -100,7 +103,7 @@ describe('CatalogExportButton', () => {
     await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
 
     await waitFor(() => {
-      expect(mockDownload).toHaveBeenCalledTimes(1);
+      expect(mockExportStream).toHaveBeenCalledTimes(1);
       expect(mockAlertApi.post).toHaveBeenCalledWith({
         message: 'Catalog exported successfully',
         severity: 'success',
@@ -109,11 +112,33 @@ describe('CatalogExportButton', () => {
     });
   });
 
+  it('calls onSuccess callback if provided', async () => {
+    mockExportStream.mockResolvedValueOnce(undefined);
+    const onSuccess = jest.fn();
+
+    render(getComponent(onSuccess));
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+    await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalled();
+      // Alert should not be shown when callback is provided
+      expect(mockAlertApi.post).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Catalog exported successfully',
+        }),
+      );
+    });
+  });
+
   it('handles failed export', async () => {
     const testError = new Error('Network error');
 
-    useBackstageStreamedDownloadMock.mockReturnValue({
-      download: mockDownload,
+    useStreamingExportMock.mockReturnValue({
+      exportStream: mockExportStream,
       loading: false,
       error: testError,
     });
@@ -126,7 +151,7 @@ describe('CatalogExportButton', () => {
     await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
 
     await waitFor(() => {
-      expect(mockDownload).toHaveBeenCalledTimes(1);
+      expect(mockExportStream).toHaveBeenCalledTimes(1);
       expect(mockAlertApi.post).toHaveBeenCalledWith({
         message: `Failed to export catalog: ${testError.message}`,
         severity: 'error',
@@ -135,7 +160,35 @@ describe('CatalogExportButton', () => {
     });
   });
 
-  it('allows changing the export format and calls download with it', async () => {
+  it('calls onError callback if provided on failure', async () => {
+    const testError = new Error('Network error');
+    const onError = jest.fn();
+
+    useStreamingExportMock.mockReturnValue({
+      exportStream: mockExportStream,
+      loading: false,
+      error: testError,
+    });
+
+    render(getComponent(undefined, onError));
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+    await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(testError);
+      // Alert should not be shown when callback is provided
+      expect(mockAlertApi.post).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('Failed to export'),
+        }),
+      );
+    });
+  });
+
+  it('allows changing the export format and calls exportStream with it', async () => {
     render(getComponent());
 
     await userEvent.click(
@@ -158,13 +211,168 @@ describe('CatalogExportButton', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
 
-    const expectedParams = new URLSearchParams();
-    expectedParams.set('exportFormat', 'json');
+    await waitFor(() => {
+      expect(mockExportStream).toHaveBeenCalledWith({
+        exportFormat: 'json',
+        filename: 'catalog-export.json',
+        columns: [
+          { entityFilterKey: 'metadata.name', title: 'Name' },
+          { entityFilterKey: 'spec.type', title: 'Type' },
+          { entityFilterKey: 'spec.owner', title: 'Owner' },
+          { entityFilterKey: 'metadata.description', title: 'Description' },
+        ],
+        streamRequest: undefined,
+      });
+    });
+  });
 
-    expect(mockDownload).toHaveBeenCalledWith({
-      url: '/api/catalog/export',
-      filename: 'catalog-export.json',
-      searchParams: expectedParams,
+  it('passes custom columns to exportStream if provided', async () => {
+    const customColumns = [
+      { entityFilterKey: 'metadata.name', title: 'Name' },
+      { entityFilterKey: 'metadata.namespace', title: 'Namespace' },
+    ];
+
+    mockExportStream.mockClear();
+    useStreamingExportMock.mockReturnValue({
+      exportStream: mockExportStream,
+      loading: false,
+      error: null,
+    });
+
+    const getComponentWithColumns = () => (
+      <TestApiProvider
+        apis={[
+          [alertApiRef, mockAlertApi],
+          [catalogApiRef, {}],
+        ]}
+      >
+        <MemoryRouter>
+          <EntityListProvider>
+            <CatalogExportButton
+              settings={{
+                columns: customColumns,
+              }}
+            />
+          </EntityListProvider>
+        </MemoryRouter>
+      </TestApiProvider>
+    );
+
+    render(getComponentWithColumns());
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+    mockExportStream.mockResolvedValueOnce(undefined);
+    await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
+
+    await waitFor(() => {
+      expect(mockExportStream).toHaveBeenCalledWith(
+        expect.objectContaining({
+          columns: customColumns,
+        }),
+      );
+    });
+  });
+
+  it('shows custom export types in the dialog', async () => {
+    const customExporters = {
+      xml: jest.fn(),
+      yaml: jest.fn(),
+    };
+
+    const getComponentWithCustomTypes = () => (
+      <TestApiProvider
+        apis={[
+          [alertApiRef, mockAlertApi],
+          [catalogApiRef, {}],
+        ]}
+      >
+        <MemoryRouter>
+          <EntityListProvider>
+            <CatalogExportButton
+              settings={{
+                customExporters,
+              }}
+            />
+          </EntityListProvider>
+        </MemoryRouter>
+      </TestApiProvider>
+    );
+
+    render(getComponentWithCustomTypes());
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+
+    const formatSelect = screen.getByTestId('format-select');
+    const selectButton = within(formatSelect).getByRole('button');
+    await userEvent.click(selectButton);
+
+    // Check that both built-in and custom export types are available
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'CSV' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'JSON' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'XML' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'YAML' })).toBeInTheDocument();
+    });
+  });
+
+  it('passes custom exporter to exportStream when custom type is selected', async () => {
+    const mockCustomExporter = jest.fn();
+    const customExporters = {
+      xml: mockCustomExporter,
+    };
+
+    mockExportStream.mockClear();
+    useStreamingExportMock.mockReturnValue({
+      exportStream: mockExportStream,
+      loading: false,
+      error: null,
+    });
+
+    const getComponentWithCustomExporter = () => (
+      <TestApiProvider
+        apis={[
+          [alertApiRef, mockAlertApi],
+          [catalogApiRef, {}],
+        ]}
+      >
+        <MemoryRouter>
+          <EntityListProvider>
+            <CatalogExportButton
+              settings={{
+                customExporters,
+              }}
+            />
+          </EntityListProvider>
+        </MemoryRouter>
+      </TestApiProvider>
+    );
+
+    render(getComponentWithCustomExporter());
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+
+    const formatSelect = screen.getByTestId('format-select');
+    const selectButton = within(formatSelect).getByRole('button');
+    await userEvent.click(selectButton);
+
+    await userEvent.click(screen.getByRole('option', { name: 'XML' }));
+
+    mockExportStream.mockResolvedValueOnce(undefined);
+    await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
+
+    await waitFor(() => {
+      expect(mockExportStream).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exportFormat: 'xml',
+          customExporter: mockCustomExporter,
+        }),
+      );
     });
   });
 });

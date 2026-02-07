@@ -26,17 +26,62 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Box from '@material-ui/core/Box';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import {
-  alertApiRef,
-  discoveryApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
-import {
-  useBackstageStreamedDownload,
-  type BackstageStreamedDownloadOptions,
-} from './file-download';
-import { setEnabledBackendFilters } from './setEnabledBackendFilters.ts';
-import { useEntityList } from '@backstage/plugin-catalog-react';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useStreamingExport } from './file-download';
+import type { ExportColumn } from './file-download/serializeEntities';
+import type { StreamingExportOptions } from './file-download/useStreamingExport';
+
+/**
+ * Custom exporter function type for export formats.
+ * @public
+ */
+export type CustomExporter = StreamingExportOptions['customExporter'];
+
+/**
+ * Settings for configuring the catalog export functionality.
+ *
+ * @public
+ */
+export interface CatalogExportSettings {
+  /**
+   * When true, displays the export button in the catalog interface.
+   * Defaults to false if not specified.
+   */
+  enableExport?: boolean;
+
+  /**
+   * Custom columns to include in the export.
+   * Each column specifies an entity field path and a display title.
+   * If not specified, uses default columns: Name, Type, Owner, Description.
+   */
+  columns?: ExportColumn[];
+
+  /**
+   * Map of custom export format handlers beyond the built-in CSV and JSON formats.
+   * Key is the format name (e.g., 'xml', 'yaml'), value is the async exporter function.
+   * Custom formats will appear as options in the export dialog.
+   */
+  customExporters?: Record<string, CustomExporter>;
+
+  /**
+   * Callback function invoked when the export completes successfully.
+   * Useful for showing notifications or performing post-export actions.
+   */
+  onSuccess?: () => void;
+
+  /**
+   * Callback function invoked when the export fails.
+   * Receives the error object for custom error handling.
+   */
+  onError?: (error: Error) => void;
+
+  /**
+   * Material-UI Button props to customize the export button's appearance and behavior.
+   * Allows control over styling, size, variant, and other button properties.
+   */
+  buttonProps?: ButtonProps;
+}
 
 /**
  * The available export formats for the catalog export.
@@ -50,63 +95,87 @@ export enum CatalogExportType {
 }
 
 /**
+ * The available default export columns for the catalog export.
+ * These can be overridden by providing custom columns in the export button options.
+ *
+ * @private
+ */
+const DEFAULT_EXPORT_COLUMNS = [
+  { entityFilterKey: 'metadata.name', title: 'Name' },
+  { entityFilterKey: 'spec.type', title: 'Type' },
+  { entityFilterKey: 'spec.owner', title: 'Owner' },
+  { entityFilterKey: 'metadata.description', title: 'Description' },
+];
+
+/**
  * A button that opens a dialog to export the current catalog selection.
  *
- * @param buttonProps - Props to pass to the export button
+ * @param settings - Optional export configuration settings including columns, custom exporters, and callbacks
  * @public
  */
 export const CatalogExportButton = ({
-  buttonProps,
+  settings,
 }: {
-  buttonProps?: ButtonProps;
+  settings?: CatalogExportSettings;
 }) => {
-  const discoveryApi = useApi(discoveryApiRef);
-  const { filters } = useEntityList();
-  const {
-    download: postExport,
-    loading,
-    error,
-  } = useBackstageStreamedDownload();
+  const { exportStream, loading, error } = useStreamingExport();
   const [open, setOpen] = useState(false);
-  const [exportFormat, setExportFormat] = useState<CatalogExportType>(
+  const columns = settings?.columns;
+  const customExporters = settings?.customExporters;
+  const onSuccess = settings?.onSuccess;
+  const onError = settings?.onError;
+  const buttonProps = settings?.buttonProps;
+  const [exportFormat, setExportFormat] = useState<string>(
     CatalogExportType.CSV,
   );
   const alertApi = useApi(alertApiRef);
   const [isExporting, setIsExporting] = useState(false);
 
+  const allExportTypes = [
+    ...Object.values(CatalogExportType),
+    ...Object.keys(customExporters ?? {}),
+  ];
+
   useEffect(() => {
     if (isExporting && !loading) {
       if (error) {
-        alertApi.post({
-          message: `Failed to export catalog: ${error.message}`,
-          severity: 'error',
-        });
+        const errorMessage = `Failed to export catalog: ${error.message}`;
+        if (onError) {
+          onError(error);
+        } else {
+          alertApi.post({
+            message: errorMessage,
+            severity: 'error',
+          });
+        }
       } else {
-        alertApi.post({
-          message: 'Catalog exported successfully',
-          severity: 'success',
-        });
+        const successMessage = 'Catalog exported successfully';
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          alertApi.post({
+            message: successMessage,
+            severity: 'success',
+          });
+        }
       }
       setOpen(false);
       setIsExporting(false);
     }
-  }, [isExporting, loading, error, alertApi]);
+  }, [isExporting, loading, error, alertApi, onSuccess, onError]);
 
   const handleExport = useCallback(async () => {
     setIsExporting(true);
 
-    const newSearchParams = new URLSearchParams();
-    newSearchParams.set('exportFormat', exportFormat);
-    setEnabledBackendFilters(filters, newSearchParams);
-
-    const baseUrl = await discoveryApi.getBaseUrl('catalog');
-    const options: BackstageStreamedDownloadOptions = {
-      url: `${baseUrl}/export`,
+    // Get custom exporter if this is a custom export type
+    const customExporter = customExporters?.[exportFormat];
+    await exportStream({
+      exportFormat,
       filename: `catalog-export.${exportFormat}`,
-      searchParams: newSearchParams,
-    };
-    await postExport(options);
-  }, [filters, exportFormat, postExport, discoveryApi]);
+      columns: columns ?? DEFAULT_EXPORT_COLUMNS,
+      customExporter,
+    });
+  }, [exportFormat, exportStream, columns, customExporters]);
 
   return (
     <>
@@ -138,11 +207,9 @@ export const CatalogExportButton = ({
                 labelId="format-select-label"
                 id="format-select"
                 value={exportFormat}
-                onChange={e =>
-                  setExportFormat(e.target.value as CatalogExportType)
-                }
+                onChange={e => setExportFormat(e.target.value as string)}
               >
-                {Object.values(CatalogExportType).map(format => (
+                {allExportTypes.map(format => (
                   <MenuItem
                     key={format}
                     value={format}
@@ -162,8 +229,9 @@ export const CatalogExportButton = ({
             color="primary"
             onClick={() => handleExport()}
             disabled={!exportFormat || loading}
+            startIcon={loading ? <CircularProgress size={16} /> : undefined}
           >
-            Confirm
+            {loading ? 'Exporting…' : 'Confirm'}
           </Button>
         </DialogActions>
       </Dialog>

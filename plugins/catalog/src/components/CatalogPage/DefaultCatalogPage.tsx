@@ -41,6 +41,7 @@ import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { CatalogExportButton } from '../CatalogExportButton';
+import type { CatalogExportSettings } from '../CatalogExportButton';
 import Box from '@material-ui/core/Box';
 
 /** @internal */
@@ -48,7 +49,7 @@ export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
-  enableExport?: boolean;
+  exportSettings?: CatalogExportSettings;
 };
 
 /** @internal */
@@ -57,7 +58,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
     filters,
     content = <CatalogTable />,
     pagination,
-    enableExport = false,
+    exportSettings,
   } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
@@ -78,9 +79,9 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
                 to={createComponentLink && createComponentLink()}
               />
             )}
-            {enableExport && (
+            {exportSettings?.enableExport && (
               <Box sx={{ ml: 2 }}>
-                <CatalogExportButton />
+                <CatalogExportButton settings={exportSettings} />
               </Box>
             )}
             <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
@@ -111,7 +112,7 @@ export interface DefaultCatalogPageProps {
   filters?: ReactNode;
   initiallySelectedNamespaces?: string[];
   pagination?: EntityListPagination;
-  enableExport?: boolean;
+  exportSettings?: CatalogExportSettings;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -126,7 +127,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     ownerPickerMode,
     filters,
     initiallySelectedNamespaces,
-    enableExport,
+    exportSettings,
   } = props;
 
   return (
@@ -150,7 +151,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         />
       }
       pagination={pagination}
-      enableExport={enableExport}
+      exportSettings={exportSettings}
     />
   );
 }

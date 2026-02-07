@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { Column } from '../types';
+import stringifySync from 'csv-stringify/lib/sync';
+
+export interface ExportColumn {
+  entityFilterKey: string;
+  title: string;
+}
 
 const getByPath = (obj: any, path: string): unknown => {
   return path
@@ -22,10 +27,37 @@ const getByPath = (obj: any, path: string): unknown => {
     .reduce((acc, part) => (acc === null ? undefined : acc[part]), obj);
 };
 
-export const getEntityDataFromColumns = (entity: Entity, columns: Column[]) => {
+export const getEntityDataFromColumns = (
+  entity: Entity,
+  columns: ExportColumn[],
+) => {
   const mappedData: Record<string, unknown> = {};
   for (const col of columns) {
     mappedData[col.title] = getByPath(entity, col.entityFilterKey);
   }
   return mappedData;
+};
+
+export const serializeEntitiesToCsv = (
+  entities: Entity[],
+  columns: ExportColumn[],
+  addHeader: boolean = true,
+): string => {
+  const rows = entities.map(e => getEntityDataFromColumns(e, columns));
+  return stringifySync(rows, {
+    header: addHeader,
+    columns: columns.map(c => ({ key: c.title, header: c.title })),
+    cast: {
+      // Preserve newlines, as the JSON exporter does this as well
+      string: (value: string) => value.replace(/(\r\n|\n|\r)/gm, '\\n'),
+    },
+  });
+};
+
+export const serializeEntityToJsonRow = (
+  entity: Entity,
+  columns: ExportColumn[],
+): string => {
+  const row = getEntityDataFromColumns(entity, columns);
+  return JSON.stringify(row, null, 2);
 };

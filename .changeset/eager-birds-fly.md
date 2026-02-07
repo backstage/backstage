@@ -1,35 +1,28 @@
 ---
-'@backstage/plugin-catalog-backend-module-export': patch
 '@backstage/plugin-catalog': patch
 ---
 
-Added CSV and JSON export support to `CatalogIndexPage`.
+Added `CatalogExportButton`, which adds CSV and JSON export support to the `CatalogIndexPage`.
 
-`CatalogIndexPage` now offers an optional export feature, designed to accommodate users wanting to quickly export their current catalog view to a CSV or Json file.
-This new capability allows for easy export of the catalog data, using the filters that are applied in the UI.
+`CatalogIndexPage` now offers an optional export feature, allowing users to export their current catalog view to CSV or JSON files while respecting the filters applied in the UI.
 
-To activate the export mode, update your `App.tsx` as follows:
+The export feature is configured via the `exportSettings` prop with `enableExport: true`:
 
 ```diff
 const routes = (
   <FlatRoutes>
     ...
 -     <Route path="/catalog" element={<CatalogIndexPage />} />
-+     <Route path="/catalog" element={<CatalogIndexPage enableExport />} />
++     <Route path="/catalog" element={<CatalogIndexPage exportSettings={{ enableExport: true }} />} />
     ...
 ```
 
-Besides, install the catalog export backend module in your backend `index.ts`:
+The feature is implemented via `CatalogExportButton`, which can be embedded directly on custom catalog pages. It supports extensive customization including:
 
-```diff
-+  backend.add(import('@backstage/plugin-catalog-backend-module-export'));
-```
+- **Custom export columns**: Configure which entity fields to include in exports
+- **Custom export formats**: Add support for custom export types (XML, YAML, etc.) via custom exporter functions
+- **Export callbacks**: Handle success and error cases with custom callbacks
 
-The feature is implemented with a `CatalogExportButton` that can also be embedded manually on custom catalog index pages.
-Under the hood this leverages a new `useBackstageSteamedDownload` hook that is leveraged to download files directly through the browser, for optimal file delivery.
+For usage examples and advanced customization options, see the [Catalog Customization documentation](./catalog-customization.md#export).
 
-Affected packages:
-
-- `catalog` - with new CatalogExportButton
-- New `catalog-backend-module-export`
-- Example app and example backend
+Under the hood, exports are streamed directly through the browser for optimal performance and memory efficiency, processing entities page-by-page to minimize memory usage even when exporting large catalogs.
