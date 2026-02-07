@@ -60,10 +60,10 @@ Replace hook usage in custom components:
 + import { useBg, BgProvider } from '@backstage/ui';
 
 - const { surface } = useSurface({ surface: props.surface });
-+ const { bg } = useBg({ bg: props.bg });
++ const { bg } = useBg({ mode: 'container', bg: props.bg });
 
 - const { surface } = useSurface({ onSurface: props.onSurface });
-+ const { bg } = useBg({ leaf: true });
++ const { bg } = useBg({ mode: 'leaf' });
 ```
 
 **Affected components:** box, button, button-icon, button-link, toggle-button, card, alert, flex, grid
