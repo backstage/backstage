@@ -55,6 +55,7 @@ import { isEqual, transform } from 'lodash';
 import {
   CSSProperties,
   forwardRef,
+  isValidElement,
   MutableRefObject,
   ReactNode,
   useCallback,
@@ -482,16 +483,20 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         columns={convertColumns(columns, theme)}
         icons={tableIcons}
         title={
-          <>
-            <Typography variant="h5" component="h2">
-              {title}
-            </Typography>
-            {subtitle && (
-              <Typography color="textSecondary" variant="body1">
-                {subtitle}
+          isValidElement(title) ? (
+            title
+          ) : (
+            <>
+              <Typography variant="h5" component="h2">
+                {title}
               </Typography>
-            )}
-          </>
+              {subtitle && (
+                <Typography color="textSecondary" variant="body1">
+                  {subtitle}
+                </Typography>
+              )}
+            </>
+          )
         }
         data={tableData}
         style={{ width: '100%', ...style }}
