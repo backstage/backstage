@@ -4,7 +4,9 @@ import { CodeBlock } from '@/components/CodeBlock';
 import { skeletonPropDefs } from './props-definition';
 import {
   Demo1,
-  Demo2,
+  AvatarWithText,
+  Rounded,
+  CardPlaceholder,
   InheritingTypography,
   InferringDimensions,
   RealWorldExample,
@@ -15,13 +17,15 @@ import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { SkeletonDefinition } from '../../../utils/definitions';
 import {
+  avatarWithTextSnippet,
   skeletonUsageSnippet,
   skeletonDemo1Snippet,
-  skeletonDemo2Snippet,
+  skeletonCardPlaceholderSnippet,
   skeletonInheritingSnippet,
   skeletonInferringSnippet,
   skeletonRealWorldSnippet,
   skeletonOnSurfaceSnippet,
+  roundedSnippet,
 } from './snippets';
 
 <PageTitle
@@ -32,8 +36,8 @@ import {
 <Snippet
   align="center"
   py={4}
-  preview={<Demo2 />}
-  code={skeletonDemo2Snippet}
+  preview={<CardPlaceholder />}
+  code={skeletonCardPlaceholderSnippet}
 />
 
 ## Usage
@@ -72,6 +76,8 @@ Skeleton extends standard HTML div attributes.
   open
   preview={<AvatarWithText />}
   code={avatarWithTextSnippet}
+/>
+
 ### Inheriting typography
 
 Place Skeleton inside a [Text](./text) component and it automatically inherits the typography. No explicit sizing needed as the skeleton respects the theme's font-size and line-height!
@@ -129,8 +135,8 @@ A simple skeleton layout with image and text placeholders.
 <Snippet
   align="center"
   py={4}
-  preview={<Demo2 />}
-  code={skeletonDemo2Snippet}
+  preview={<CardPlaceholder />}
+  code={skeletonCardPlaceholderSnippet}
 />
 
 ### Surfaces

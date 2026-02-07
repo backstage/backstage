@@ -72,7 +72,7 @@ export const Demo1 = meta.story({
   ),
 });
 
-export const Demo2 = meta.story({
+export const CardPlaceholder = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Skeleton width={400} height={160} />
@@ -225,7 +225,7 @@ export const RealWorldExample = meta.story({
           padding: 24,
           border: '1px solid var(--bui-border-1)',
           borderRadius: 'var(--bui-radius-2)',
-          background: 'var(--bui-bg-surface-1)',
+          background: 'var(--bui-bg-neutral-1)',
         }}
       >
         <Flex direction="column" gap="4">

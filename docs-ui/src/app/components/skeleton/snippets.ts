@@ -25,6 +25,14 @@ export const skeletonDemo1Snippet = `<Flex gap="4">
   </Flex>
 </Box>`;
 
+export const cardPlaceholderSnippet = `<Box surface="3" p="4">
+  <Flex direction="column" gap="4">
+    <Skeleton width={400} height={160} />
+    <Skeleton width={400} height={12} />
+    <Skeleton width={240} height={12} />
+  </Flex>
+</Box>`;
+
 export const avatarWithTextSnippet = `<Box surface="3" p="4">
   <Flex direction="column" gap="4">
     <Skeleton rounded width={48} height={48} />
@@ -36,7 +44,15 @@ export const avatarWithTextSnippet = `<Box surface="3" p="4">
   </Flex>
 </Box>`;
 
-export const skeletonDemo2Snippet = `<Flex direction="column" gap="4">
+export const roundedSnippet = `<Box surface="3" p="4">
+  <Flex direction="column" gap="4">
+    <Skeleton rounded width={32} height={32} />
+    <Skeleton rounded width={48} height={48} />
+    <Skeleton rounded width={64} height={64} />
+  </Flex>
+</Box>`;
+
+export const skeletonCardPlaceholderSnippet = `<Flex direction="column" gap="4">
   <Skeleton width={400} height={160} />
   <Skeleton width={400} height={12} />
   <Skeleton width={240} height={12} />
