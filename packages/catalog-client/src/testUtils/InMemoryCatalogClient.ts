@@ -43,7 +43,11 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { NotFoundError, NotImplementedError } from '@backstage/errors';
+import {
+  InputError,
+  NotFoundError,
+  NotImplementedError,
+} from '@backstage/errors';
 import lodash from 'lodash';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
@@ -53,12 +57,23 @@ import type {
 } from '@backstage/plugin-catalog-common';
 import { DEFAULT_STREAM_ENTITIES_LIMIT } from '../constants.ts';
 
+function base64Encode(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  return btoa(Array.from(bytes, b => String.fromCodePoint(b)).join(''));
+}
+
+function base64Decode(str: string): string {
+  const bin = atob(str);
+  const bytes = Uint8Array.from(bin, c => c.codePointAt(0)!);
+  return new TextDecoder().decode(bytes);
+}
+
 function makeCursor(data: Record<string, unknown>): string {
-  return Buffer.from(JSON.stringify(data)).toString('base64');
+  return base64Encode(JSON.stringify(data));
 }
 
 function parseCursor(cursor: string): Record<string, unknown> {
-  return JSON.parse(Buffer.from(cursor, 'base64').toString('utf8'));
+  return JSON.parse(base64Decode(cursor));
 }
 
 // CATALOG_FILTER_EXISTS is a Symbol that doesn't survive JSON serialization,
@@ -328,7 +343,7 @@ export class InMemoryCatalogClient implements CatalogApi {
         if (cursor.offset !== undefined) offset = cursor.offset as number;
         if (cursor.limit !== undefined) limit = cursor.limit as number;
       } catch {
-        // ignore invalid cursor
+        throw new InputError('Invalid cursor');
       }
     }
 
@@ -376,7 +391,7 @@ export class InMemoryCatalogClient implements CatalogApi {
       try {
         c = parseCursor(request.cursor);
       } catch {
-        return { items: [], pageInfo: {}, totalItems: 0 };
+        throw new InputError('Invalid cursor');
       }
       filter = deserializeFilter(c.filter as any[]);
       orderFields = c.orderFields as EntityOrderQuery | undefined;
