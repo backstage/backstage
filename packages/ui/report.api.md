@@ -1894,7 +1894,9 @@ export const TabsDefinition: {
 export interface TabsProps extends TabsProps_2 {}
 
 // @public
-export const Tag: (props: TagProps) => JSX_2.Element;
+export const Tag: ForwardRefExoticComponent<
+  TagProps & RefAttributes<HTMLDivElement>
+>;
 
 // @public
 export const TagGroup: <T extends object>(
