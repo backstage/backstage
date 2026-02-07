@@ -20,16 +20,26 @@ import type { GridItemProps, GridProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { GridDefinition, GridItemDefinition } from './definition';
 import styles from './Grid.module.css';
+import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    GridDefinition,
-    { columns: 'auto', gap: '4', ...props },
-  );
+  // Resolve the surface this Grid creates for its children
+  // Using 'surface' parameter = container behavior (auto increments)
+  const { surface: resolvedSurface } = useSurface({
+    surface: props.surface,
+  });
 
-  const { className, ...rest } = cleanedProps;
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles(GridDefinition, {
+      columns: 'auto',
+      gap: '4',
+      ...props,
+      surface: resolvedSurface, // Use resolved surface for data attribute
+    });
 
-  return (
+  const { className, surface, ...rest } = cleanedProps;
+
+  const content = (
     <div
       ref={ref}
       className={clsx(
@@ -39,20 +49,34 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
         className,
       )}
       style={style}
+      {...dataAttributes}
       {...rest}
     />
+  );
+
+  return resolvedSurface ? (
+    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
+  ) : (
+    content
   );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    GridItemDefinition,
-    props,
-  );
+  // Resolve the surface this GridItem creates for its children
+  // Using 'surface' parameter = container behavior (auto increments)
+  const { surface: resolvedSurface } = useSurface({
+    surface: props.surface,
+  });
 
-  const { className, ...rest } = cleanedProps;
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles(GridItemDefinition, {
+      ...props,
+      surface: resolvedSurface, // Use resolved surface for data attribute
+    });
 
-  return (
+  const { className, surface, ...rest } = cleanedProps;
+
+  const content = (
     <div
       ref={ref}
       className={clsx(
@@ -62,8 +86,15 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
         className,
       )}
       style={style}
+      {...dataAttributes}
       {...rest}
     />
+  );
+
+  return resolvedSurface ? (
+    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
+  ) : (
+    content
   );
 });
 

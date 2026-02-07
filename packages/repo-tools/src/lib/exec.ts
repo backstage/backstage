@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { promisify } from 'util';
+import { promisify } from 'node:util';
 import {
   ExecOptions,
   SpawnOptions,
   exec as execCb,
   spawn as spawnOriginal,
-} from 'child_process';
+} from 'node:child_process';
 
 const execPromise = promisify(execCb);
 

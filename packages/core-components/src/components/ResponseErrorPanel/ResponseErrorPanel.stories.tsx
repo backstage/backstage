@@ -20,6 +20,7 @@ import { ErrorPanelProps } from '../ErrorPanel';
 export default {
   title: 'Data Display/ResponseErrorPanel',
   component: ResponseErrorPanel,
+  tags: ['!manifest'],
 };
 
 export const Default = (args: ErrorPanelProps) => (

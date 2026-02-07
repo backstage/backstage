@@ -19,7 +19,7 @@
 
 // This script is used to audit the list of plugins in the Plugin Directory: https://backstage.io/plugins
 
-const { resolve } = require('path');
+const { resolve } = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('js-yaml');
 

@@ -30,6 +30,9 @@ app:
         config:
           showAggregateMembersToggle: true
           initialRelationAggregation: aggregated
+    - entity-card:org/ownership:
+        config:
+          ownedKinds: ['Component', 'API', 'System']
 
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
@@ -44,6 +47,7 @@ app:
     # Pages
     - page:catalog/entity:
         config:
+          showNavItemIcons: true
           groups:
             # placing a tab at the beginning
             - overview:
@@ -53,6 +57,7 @@ app:
             # example overriding a default group title
             - documentation:
                 title: Docs
+                icon: docs
             - deployment:
                 title: Deployments
             # example adding a new group
@@ -100,9 +105,11 @@ app:
         config:
           # example associating with a default group
           group: documentation
+          icon: kind:api
     - entity-content:techdocs:
         config:
           group: documentation
+          icon: techdocs
     - entity-content:kubernetes/kubernetes:
         config:
           # example disassociating with a default group
@@ -110,6 +117,11 @@ app:
     # - entity-content:azure-devops/pipelines
     # - entity-content:azure-devops/pull-requests
     # - entity-content:azure-devops/git-tags
+
+    # Enable the catalog-unprocessed-entities tab in devtools
+    - devtools-content:catalog-unprocessed-entities: true
+    # Disable the catalog-unprocessed-entities element outside devtools
+    - page:catalog-unprocessed-entities: false
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

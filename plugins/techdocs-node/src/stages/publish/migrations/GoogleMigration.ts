@@ -16,7 +16,7 @@
 
 import { assertError } from '@backstage/errors';
 import { File } from '@google-cloud/storage';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 import { lowerCaseEntityTripletInStoragePath } from '../helpers';
 import { LoggerService } from '@backstage/backend-plugin-api';
 

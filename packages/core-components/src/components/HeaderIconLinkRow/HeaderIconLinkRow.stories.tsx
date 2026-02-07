@@ -24,6 +24,7 @@ type Props = {
 export default {
   title: 'Data Display/HeaderIconLinkRow',
   component: HeaderIconLinkRow,
+  tags: ['!manifest'],
 };
 
 export const Default = (args: Props) => <HeaderIconLinkRow {...args} />;

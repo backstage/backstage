@@ -240,13 +240,10 @@ export const WithCustomActions = meta.story({
   ),
 });
 
-export const WithAllOptionsAndTabs = meta.story({
+export const WithAllOptionsAndTabs = WithCustomActions.extend({
   args: {
-    ...WithCustomActions.input.args,
     tabs,
   },
-  decorators: [withRouter],
-  render: WithCustomActions.input.render,
 });
 
 export const WithHeaderPage = meta.story({
@@ -524,23 +521,28 @@ export const WithTabsPrefixMatchingDeep = meta.story({
     <MemoryRouter initialEntries={['/catalog/users/john/details']}>
       <Header {...args} />
       <Container>
-        <Text>
+        <Text as="p">
           <strong>Current URL:</strong> /catalog/users/john/details
         </Text>
         <br />
-        <Text>Both "Catalog" and "Users" tabs are active because:</Text>
-        <Text>
-          • <strong>Catalog</strong>: URL starts with /catalog
+        <Text as="p">
+          Active tab is <strong>Users</strong> because:
         </Text>
-        <Text>
-          • <strong>Users</strong>: URL starts with /catalog/users
-        </Text>
-        <Text>
-          • <strong>Components</strong>: not active (URL doesn't start with
-          /catalog/components)
-        </Text>
-        <br />
-        <Text>
+        <ul>
+          <li>
+            <strong>Catalog</strong>: Matches since URL starts with /catalog
+          </li>
+          <li>
+            <strong>Users</strong>: Is active since URL starts with
+            /catalog/users, and is more specific (has more url segments) than
+            "Catalog"
+          </li>
+          <li>
+            <strong>Components</strong>: not active (URL doesn't start with
+            /catalog/components)
+          </li>
+        </ul>
+        <Text as="p">
           This demonstrates how prefix matching works with deeply nested routes.
         </Text>
       </Container>

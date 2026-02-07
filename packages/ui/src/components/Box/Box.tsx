@@ -16,34 +16,27 @@
 
 import { createElement, forwardRef } from 'react';
 import { BoxProps } from './types';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
-import styles from './Box.module.css';
+import { useDefinition } from '../../hooks/useDefinition';
 import { BoxDefinition } from './definition';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+  const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
     BoxDefinition,
     props,
   );
-
-  const { as = 'div', children, className, ...rest } = cleanedProps;
+  const { classes, as, surfaceChildren } = ownProps;
 
   return createElement(
     as,
     {
       ref,
-      className: clsx(
-        classNames.root,
-        styles[classNames.root],
-        utilityClasses,
-        className,
-      ),
-      style,
-      ...rest,
+      className: classes.root,
+      style: { ...ownProps.style, ...utilityStyle },
+      ...dataAttributes,
+      ...restProps,
     },
-    children,
+    surfaceChildren,
   );
 });
 

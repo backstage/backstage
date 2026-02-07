@@ -16,10 +16,18 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ReactElement } from 'react';
 
 /** @internal */
 export const entityContentTitleDataRef = createExtensionDataRef<string>().with({
   id: 'catalog.entity-content-title',
+});
+
+/** @internal */
+export const entityContentIconDataRef = createExtensionDataRef<
+  string | ReactElement
+>().with({
+  id: 'catalog.entity-content-icon',
 });
 
 /** @internal */
@@ -33,18 +41,50 @@ export const entityFilterExpressionDataRef =
     id: 'catalog.entity-filter-expression',
   });
 
+/** @alpha */
+export type EntityContentGroupDefinitions = Record<
+  string,
+  {
+    title: string;
+    icon?: string | ReactElement;
+  }
+>;
+
 /**
  * @alpha
  * Default entity content groups.
  */
-export const defaultEntityContentGroups = {
-  overview: 'Overview',
-  documentation: 'Documentation',
-  development: 'Development',
-  deployment: 'Deployment',
-  operation: 'Operation',
-  observability: 'Observability',
-};
+export const defaultEntityContentGroupDefinitions = {
+  overview: {
+    title: 'Overview',
+  },
+  documentation: {
+    title: 'Documentation',
+  },
+  development: {
+    title: 'Development',
+  },
+  deployment: {
+    title: 'Deployment',
+  },
+  operation: {
+    title: 'Operation',
+  },
+  observability: {
+    title: 'Observability',
+  },
+} satisfies EntityContentGroupDefinitions;
+
+/**
+ * @alpha
+ * Default entity content groups.
+ * @deprecated use defaultEntityContentGroupDefinitions
+ */
+export const defaultEntityContentGroups = Object.fromEntries(
+  Object.entries(defaultEntityContentGroupDefinitions).map(
+    ([key, { title }]) => [key, title],
+  ),
+) as Record<keyof typeof defaultEntityContentGroupDefinitions, string>;
 
 /** @internal */
 export const entityContentGroupDataRef = createExtensionDataRef<string>().with({
@@ -56,13 +96,12 @@ export const entityContentGroupDataRef = createExtensionDataRef<string>().with({
  * Available entity card types
  */
 export const entityCardTypes = [
-  'summary',
   'info',
   'content',
 ] as const satisfies readonly EntityCardType[];
 
 /** @alpha */
-export type EntityCardType = 'summary' | 'info' | 'content';
+export type EntityCardType = 'info' | 'content';
 
 /** @internal */
 export const entityCardTypeDataRef =

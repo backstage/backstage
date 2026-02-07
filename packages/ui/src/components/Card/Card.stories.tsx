@@ -33,14 +33,13 @@ export const Default = meta.story({
   ),
 });
 
-export const CustomSize = meta.story({
+export const CustomSize = Default.extend({
   args: {
     style: {
       width: '300px',
       height: '200px',
     },
   },
-  render: Default.input.render,
 });
 
 export const WithLongBody = meta.story({
@@ -81,7 +80,7 @@ const ListRow = ({ children }: { children: React.ReactNode }) => {
       style={{
         height: 40,
         width: '100%',
-        backgroundColor: 'var(--bui-gray-3)',
+        backgroundColor: 'var(--bui-bg-neutral-3)',
         display: 'flex',
         alignItems: 'center',
         paddingInline: 'var(--bui-space-3)',

@@ -37,7 +37,7 @@ export interface ListItem {
 
 const meta = preview.meta({
   title: 'Backstage UI/TagGroup',
-  component: TagGroup<ListItem>,
+  component: TagGroup,
   argTypes: {
     selectionMode: {
       control: { type: 'inline-radio' },
@@ -117,11 +117,11 @@ export const SelectionModeSingle = meta.story({
     const [selected, setSelected] = useState<Selection>(new Set(['travel']));
 
     return (
-      <TagGroup
+      <TagGroup<ListItem>
+        {...args}
         items={initialList}
         selectedKeys={selected}
         onSelectionChange={setSelected}
-        {...args}
       >
         {item => <Tag>{item.name}</Tag>}
       </TagGroup>
@@ -140,11 +140,11 @@ export const SelectionModeMultiple = meta.story({
     );
 
     return (
-      <TagGroup
+      <TagGroup<ListItem>
+        {...args}
         items={initialList}
         selectedKeys={selected}
         onSelectionChange={setSelected}
-        {...args}
       >
         {item => <Tag>{item.name}</Tag>}
       </TagGroup>
@@ -198,17 +198,17 @@ export const RemovingTags = meta.story({
   render: args => {
     const [selected, setSelected] = useState<Selection>(new Set(['travel']));
 
-    const list = useListData({
+    const list = useListData<ListItem>({
       initialItems: initialList,
     });
 
     return (
-      <TagGroup
+      <TagGroup<ListItem>
+        {...args}
         items={list.items}
         onRemove={keys => list.remove(...keys)}
         selectedKeys={selected}
         onSelectionChange={setSelected}
-        {...args}
       >
         {item => <Tag>{item.name}</Tag>}
       </TagGroup>
@@ -223,17 +223,17 @@ export const WithIconAndRemoveButton = meta.story({
   render: args => {
     const [selected, setSelected] = useState<Selection>(new Set(['travel']));
 
-    const list = useListData({
+    const list = useListData<ListItem>({
       initialItems: initialList,
     });
 
     return (
-      <TagGroup
+      <TagGroup<ListItem>
+        {...args}
         items={list.items}
         onRemove={keys => list.remove(...keys)}
         selectedKeys={selected}
         onSelectionChange={setSelected}
-        {...args}
       >
         {item => (
           <Tag icon={item.icon ? item.icon : undefined}>{item.name}</Tag>

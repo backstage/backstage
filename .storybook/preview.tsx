@@ -21,6 +21,7 @@ import './storybook.css';
 import './themes/spotify.css';
 
 export default definePreview({
+  tags: ['manifest'],
   globalTypes: {
     themeMode: {
       name: 'Theme Mode',
@@ -32,7 +33,6 @@ export default definePreview({
           { value: 'light', icon: 'circlehollow', title: 'Light' },
           { value: 'dark', icon: 'circle', title: 'Dark' },
         ],
-        showName: true,
         dynamicTitle: true,
       },
     },
@@ -46,7 +46,6 @@ export default definePreview({
           { value: 'backstage', title: 'Backstage' },
           { value: 'spotify', title: 'Spotify' },
         ],
-        showName: true,
         dynamicTitle: true,
       },
     },
@@ -107,6 +106,13 @@ export default definePreview({
         // 'dark spotify': allModes['dark spotify'],
       },
     },
+
+    a11y: {
+      // 'todo' - show a11y violations in the test UI only
+      // 'error' - fail CI on a11y violations
+      // 'off' - skip a11y checks entirely
+      test: 'todo',
+    },
   },
 
   decorators: [
@@ -128,10 +134,11 @@ export default definePreview({
         };
       }, [selectedTheme, selectedThemeName]);
 
-      document.body.style.backgroundColor = 'var(--bui-bg)';
+      document.body.style.backgroundColor = 'var(--bui-bg-neutral-0)';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg)';
+        (element as HTMLElement).style.backgroundColor =
+          'var(--bui-bg-neutral-0)';
       });
 
       return (

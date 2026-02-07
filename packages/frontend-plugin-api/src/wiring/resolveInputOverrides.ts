@@ -37,6 +37,7 @@ export type ResolvedInputValueOverrides<
       {
         optional: infer IOptional extends boolean;
         singleton: boolean;
+        internal?: boolean;
       }
     >
       ? IOptional extends true
@@ -44,7 +45,11 @@ export type ResolvedInputValueOverrides<
         : KName
       : never]: TInputs[KName] extends ExtensionInput<
       infer IDataRefs,
-      { optional: boolean; singleton: infer ISingleton extends boolean }
+      {
+        optional: boolean;
+        singleton: infer ISingleton extends boolean;
+        internal?: boolean;
+      }
     >
       ? ISingleton extends true
         ? Iterable<ExtensionDataRefToValue<IDataRefs>>
@@ -56,6 +61,7 @@ export type ResolvedInputValueOverrides<
       {
         optional: infer IOptional extends boolean;
         singleton: boolean;
+        internal?: boolean;
       }
     >
       ? IOptional extends true
@@ -63,7 +69,11 @@ export type ResolvedInputValueOverrides<
         : never
       : never]?: TInputs[KName] extends ExtensionInput<
       infer IDataRefs,
-      { optional: boolean; singleton: infer ISingleton extends boolean }
+      {
+        optional: boolean;
+        singleton: infer ISingleton extends boolean;
+        internal?: boolean;
+      }
     >
       ? ISingleton extends true
         ? Iterable<ExtensionDataRefToValue<IDataRefs>>

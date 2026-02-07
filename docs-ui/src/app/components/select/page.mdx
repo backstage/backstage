@@ -1,0 +1,147 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import {
+  Preview,
+  WithLabelAndDescription,
+  Sizes,
+  WithIcon,
+  Disabled,
+  DisabledOption,
+  Searchable,
+  MultipleSelection,
+  SearchableMultiple,
+} from './components';
+import { selectPropDefs } from './props-definition';
+import {
+  selectUsageSnippet,
+  selectDefaultSnippet,
+  selectDescriptionSnippet,
+  selectSizesSnippet,
+  selectDisabledSnippet,
+  selectResponsiveSnippet,
+  selectIconSnippet,
+  selectSearchableSnippet,
+  selectMultipleSnippet,
+  selectSearchableMultipleSnippet,
+  selectDisabledOptionsSnippet,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { SelectDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  select: 'https://react-aria.adobe.com/Select',
+};
+
+<PageTitle
+  title="Select"
+  description="A dropdown for selecting from predefined options with search support."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Preview />}
+  code={selectDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={selectUsageSnippet} />
+
+## API reference
+
+<PropsTable data={selectPropDefs} />
+
+<ReactAriaLink component="Select" href={reactAriaUrls.select} />
+
+## Examples
+
+### Label and description
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<WithLabelAndDescription />}
+  code={selectDescriptionSnippet}
+/>
+
+### Sizes
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Sizes />}
+  code={selectSizesSnippet}
+/>
+
+### With icon
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<WithIcon />}
+  code={selectIconSnippet}
+/>
+
+### Disabled
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Disabled />}
+  code={selectDisabledSnippet}
+/>
+
+### Disabled options
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<DisabledOption />}
+  code={selectDisabledOptionsSnippet}
+/>
+
+### Searchable
+
+Enable filtering with the `searchable` prop.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Searchable />}
+  code={selectSearchableSnippet}
+/>
+
+### Multiple selection
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<MultipleSelection />}
+  code={selectMultipleSnippet}
+/>
+
+### Searchable multiple
+
+Combine search and multiple selection.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<SearchableMultiple />}
+  code={selectSearchableMultipleSnippet}
+/>
+
+### Responsive
+
+Size can change at different breakpoints.
+
+<CodeBlock code={selectResponsiveSnippet} />
+
+<Theming definition={SelectDefinition} />
+
+<ChangelogComponent component="select" />

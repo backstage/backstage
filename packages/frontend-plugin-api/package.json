@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-plugin-api",
-  "version": "0.13.2",
+  "version": "0.14.0-next.1",
   "backstage": {
     "role": "web-library"
   },
@@ -16,12 +16,16 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
       "package.json": [
         "package.json"
       ]
@@ -43,8 +47,8 @@
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.21.4"
+    "zod": "^3.25.76",
+    "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -58,13 +62,13 @@
     "history": "^5.3.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {

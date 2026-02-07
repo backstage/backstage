@@ -99,6 +99,7 @@ dataflow
 dataloader
 dayjs
 debounce
+debounced
 debounces
 debuggability
 declaratively
@@ -344,6 +345,7 @@ parallelization
 param
 params
 parseable
+passwordless
 Patrik
 pattison
 Peloton
@@ -523,8 +525,11 @@ transpile
 transpiled
 transpiler
 transpilers
+trixie
 truthy
 tsconfig
+TTLs
+Turbopack
 TSDoc
 typeahead
 ui
@@ -537,6 +542,7 @@ unmount
 unregister
 unregistering
 unregistration
+unreviewed
 unstarred
 untemplated
 untracked
@@ -577,3 +583,4 @@ zoomable
 zsh
 resizable
 enums
+LLMs

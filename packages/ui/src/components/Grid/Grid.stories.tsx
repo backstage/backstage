@@ -22,6 +22,8 @@ import { Flex } from '../Flex';
 const meta = preview.meta({
   title: 'Backstage UI/Grid',
   component: Grid.Root,
+  // We will add this story in the manifest when the component is not composed.
+  tags: ['!manifest'],
 });
 
 const FakeBox = () => (
@@ -101,5 +103,108 @@ export const RowAndColumns = meta.story({
         <FakeBox />
       </Grid.Item>
     </Grid.Root>
+  ),
+});
+
+export const Surfaces = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex direction="column">
+      <Flex style={{ flexWrap: 'wrap' }}>
+        <Grid.Root {...args} surface="0">
+          Surface 0
+        </Grid.Root>
+        <Grid.Root {...args} surface="1">
+          Surface 1
+        </Grid.Root>
+        <Grid.Root {...args} surface="2">
+          Surface 2
+        </Grid.Root>
+        <Grid.Root {...args} surface="3">
+          Surface 3
+        </Grid.Root>
+        <Grid.Root {...args} surface={{ initial: '0', sm: '1' }}>
+          Responsive Surface
+        </Grid.Root>
+        <Grid.Root {...args} surface="danger">
+          Surface Danger
+        </Grid.Root>
+        <Grid.Root {...args} surface="warning">
+          Surface Warning
+        </Grid.Root>
+        <Grid.Root {...args} surface="success">
+          Surface Success
+        </Grid.Root>
+      </Flex>
+      <Flex style={{ flexWrap: 'wrap' }}>
+        <Grid.Root {...args}>
+          <Grid.Item surface="0" style={{ padding: '4px' }}>
+            Surface 0
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="1" style={{ padding: '4px' }}>
+            Surface 1
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="2" style={{ padding: '4px' }}>
+            Surface 2
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="3" style={{ padding: '4px' }}>
+            Surface 3
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item
+            surface={{ initial: '0', sm: '1' }}
+            style={{ padding: '4px' }}
+          >
+            Responsive Surface
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="danger" style={{ padding: '4px' }}>
+            Surface Danger
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="warning" style={{ padding: '4px' }}>
+            Surface Warning
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="success" style={{ padding: '4px' }}>
+            Surface Success
+          </Grid.Item>
+        </Grid.Root>
+      </Flex>
+    </Flex>
+  ),
+});
+
+export const SurfacesAutoIncrement = meta.story({
+  args: { px: '6', py: '4', columns: '2', gap: '4' },
+  render: args => (
+    <Flex direction="column">
+      <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
+        Using surface="auto" automatically increments from the parent surface.
+        Each Grid.Item with auto will be one level above its Grid.Root parent.
+      </div>
+      <Grid.Root {...args} surface="0">
+        <Grid.Item>Surface 0 (Grid.Root)</Grid.Item>
+        <Grid.Item surface="auto">Surface auto (becomes 1)</Grid.Item>
+        <Grid.Item>
+          <Grid.Root {...args} surface="auto">
+            <Grid.Item>Nested: Surface auto (becomes 1)</Grid.Item>
+            <Grid.Item surface="auto">
+              Nested: Surface auto (becomes 2)
+            </Grid.Item>
+          </Grid.Root>
+        </Grid.Item>
+      </Grid.Root>
+    </Flex>
   ),
 });

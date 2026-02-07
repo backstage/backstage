@@ -1,0 +1,53 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { boxPropDefs } from './props-definition';
+import {
+  snippetUsage,
+  defaultSnippet,
+  boxSurfaceSnippet,
+  boxResponsiveSnippet,
+} from './snippets';
+import { Default, Surface, Responsive } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { BoxDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  type="Layout"
+  title="Box"
+  description="The lowest-level component in Backstage UI with spacing, sizing, and display props."
+/>
+
+<Snippet preview={<Default />} code={defaultSnippet} align="center" />
+
+## Usage
+
+<CodeBlock code={snippetUsage} />
+
+## API reference
+
+<PropsTable data={boxPropDefs} />
+
+## Examples
+
+### Surface
+
+Use surface levels to create visual hierarchy.
+
+<Snippet preview={<Surface />} code={boxSurfaceSnippet} layout="side-by-side" />
+
+### Responsive props
+
+Props can accept breakpoint objects for responsive behavior.
+
+<Snippet
+  preview={<Responsive />}
+  code={boxResponsiveSnippet}
+  layout="side-by-side"
+/>
+
+<Theming definition={BoxDefinition} />
+
+<ChangelogComponent component="box" />

@@ -1,5 +1,34 @@
 # @backstage/integration
 
+## 1.20.0-next.1
+
+### Minor Changes
+
+- 6999f6d: The AzureUrl class in the @backstage/integration package is now able to process BOTH git branches and git tags. Initially this class only processed git branches and threw an error when non-branch Azure URLs were passed in.
+
+## 1.19.3-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.19.2
+
+### Patch Changes
+
+- 3afeab4: Implementing `ScmIntegration` for `GoogleGcs`
+- 9083273: Rollback the lowercase replacing in GitHub integration config
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 3afeab4: Implementing `ScmIntegration` for `GoogleGcs`
+- 9083273: Rollback the lowercase replacing in GitHub integration config
+
 ## 1.19.0
 
 ### Minor Changes

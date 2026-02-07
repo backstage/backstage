@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export {};
+global.setImmediate = require('node:timers').setImmediate;
+global.clearImmediate = require('node:timers').clearImmediate;

@@ -30,9 +30,9 @@ import {
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
-import { Writable } from 'stream';
+import os from 'node:os';
+import path from 'node:path';
+import { Writable } from 'node:stream';
 import { Logger } from 'winston';
 import { BuildMetadataStorage } from './BuildMetadataStorage';
 import { TechDocsCache } from '../cache';

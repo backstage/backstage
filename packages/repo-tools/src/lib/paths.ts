@@ -17,7 +17,7 @@
 import { findPaths } from '@backstage/cli-common';
 import { PackageGraph } from '@backstage/cli-node';
 import { Minimatch } from 'minimatch';
-import { isAbsolute, relative as relativePath } from 'path';
+import { isAbsolute, relative as relativePath } from 'node:path';
 
 /* eslint-disable-next-line no-restricted-syntax */
 export const paths = findPaths(__dirname);

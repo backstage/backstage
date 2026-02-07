@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { ButtonIconOwnProps } from './types';
+import styles from './ButtonIcon.module.css';
 
 /**
  * Component definition for ButtonIcon
  * @public
  */
-export const ButtonIconDefinition = {
+export const ButtonIconDefinition = defineComponent<ButtonIconOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-ButtonIcon',
     content: 'bui-ButtonIconContent',
     spinner: 'bui-ButtonIconSpinner',
   },
-} as const satisfies ComponentDefinition;
+  surface: 'leaf',
+  propDefs: {
+    size: { dataAttribute: true, default: 'small' },
+    variant: { dataAttribute: true, default: 'primary' },
+    loading: { dataAttribute: true },
+    icon: {},
+    onSurface: {},
+    className: {},
+    style: {},
+  },
+});

@@ -17,6 +17,8 @@ import type { V1Deployment } from '@kubernetes/client-node';
 import type { V1Ingress } from '@kubernetes/client-node';
 import type { V1Job } from '@kubernetes/client-node';
 import type { V1LimitRange } from '@kubernetes/client-node';
+import type { V1PersistentVolume } from '@kubernetes/client-node';
+import type { V1PersistentVolumeClaim } from '@kubernetes/client-node';
 import type { V1Pod } from '@kubernetes/client-node';
 import type { V1ReplicaSet } from '@kubernetes/client-node';
 import type { V1ResourceQuota } from '@kubernetes/client-node';
@@ -267,7 +269,9 @@ export type FetchResponse =
   | StatefulSetsFetchResponse
   | DaemonSetsFetchResponse
   | PodStatusFetchResponse
-  | SecretsFetchResponse;
+  | SecretsFetchResponse
+  | PersistentVolumeFetchResponse
+  | PersistentVolumeClaimsFetchResponse;
 
 // @public (undocumented)
 export interface GroupedResponses extends DeploymentResources {
@@ -283,6 +287,10 @@ export interface GroupedResponses extends DeploymentResources {
   ingresses: V1Ingress[];
   // (undocumented)
   jobs: V1Job[];
+  // (undocumented)
+  persistentVolumeClaims: V1PersistentVolumeClaim[];
+  // (undocumented)
+  persistentVolumes: V1PersistentVolume[];
   // (undocumented)
   secrets: V1Secret[];
   // (undocumented)
@@ -383,6 +391,22 @@ export interface LogSolution extends ProposedFixBase {
 export interface ObjectsByEntityResponse {
   // (undocumented)
   items: ClusterObjects[];
+}
+
+// @public (undocumented)
+export interface PersistentVolumeClaimsFetchResponse {
+  // (undocumented)
+  resources: Array<V1PersistentVolumeClaim>;
+  // (undocumented)
+  type: 'persistentvolumeclaims';
+}
+
+// @public (undocumented)
+export interface PersistentVolumeFetchResponse {
+  // (undocumented)
+  resources: Array<V1PersistentVolume>;
+  // (undocumented)
+  type: 'persistentvolumes';
 }
 
 // @public (undocumented)

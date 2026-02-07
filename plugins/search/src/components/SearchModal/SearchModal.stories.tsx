@@ -85,6 +85,7 @@ export default {
         { mountedRoutes: { '/search': rootRouteRef } },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

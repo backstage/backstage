@@ -24,7 +24,7 @@ import {
 } from '@backstage/integration';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { UrlReaderPredicateTuple } from './types';
-import path from 'path';
+import path from 'node:path';
 import { NotModifiedError } from '@backstage/errors';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -35,7 +35,7 @@ import {
   S3ServiceException,
 } from '@aws-sdk/client-s3';
 import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
-import fs from 'fs';
+import fs from 'node:fs';
 import { mockServices } from '@backstage/backend-test-utils';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({

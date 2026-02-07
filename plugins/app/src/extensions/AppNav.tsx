@@ -19,14 +19,16 @@ import {
   coreExtensionData,
   createExtensionInput,
   NavItemBlueprint,
-  NavContentBlueprint,
-  NavContentComponentProps,
   routeResolutionApiRef,
   IconComponent,
   RouteRef,
   useApi,
-  NavContentComponent,
 } from '@backstage/frontend-plugin-api';
+import {
+  NavContentBlueprint,
+  NavContentComponent,
+  NavContentComponentProps,
+} from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
 
@@ -90,6 +92,7 @@ export const AppNav = createExtension({
     content: createExtensionInput([NavContentBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
+      internal: true,
     }),
   },
   output: [coreExtensionData.reactElement],

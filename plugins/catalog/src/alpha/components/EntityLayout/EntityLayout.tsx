@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentProps, ReactNode } from 'react';
+import { ComponentProps, ReactNode, ReactElement } from 'react';
 
 import Alert from '@material-ui/lab/Alert';
 
@@ -40,11 +40,13 @@ import {
 import { catalogTranslationRef } from '../../translation';
 import { EntityHeader } from '../EntityHeader';
 import { EntityTabs } from '../EntityTabs';
+import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 export type EntityLayoutRouteProps = {
   path: string;
   title: string;
-  group: string;
+  group?: string;
+  icon?: string | ReactElement;
   children: JSX.Element;
   if?: (entity: Entity) => boolean;
 };
@@ -77,6 +79,8 @@ export interface EntityLayoutProps {
    * It adds breadcrumbs in the Entity page to enhance user navigation and context awareness.
    */
   parentEntityRelations?: string[];
+  groupDefinitions: EntityContentGroupDefinitions;
+  showNavItemIcons?: boolean;
 }
 
 /**
@@ -102,20 +106,14 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     UNSTABLE_contextMenuOptions,
     contextMenuItems,
     children,
+    header,
     NotFoundComponent,
     parentEntityRelations,
+    groupDefinitions,
+    showNavItemIcons,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
-
-  const header = props.header ?? (
-    <EntityHeader
-      parentEntityRelations={parentEntityRelations}
-      UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-      UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-      contextMenuItems={contextMenuItems}
-    />
-  );
 
   const routes = useElementFilter(
     children,
@@ -140,6 +138,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
               title: elementProps.title,
               group: elementProps.group,
               children: elementProps.children,
+              icon: elementProps.icon,
             },
           ];
         }),
@@ -150,11 +149,24 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
-      {!loading && header}
+      {header ?? (
+        <EntityHeader
+          parentEntityRelations={parentEntityRelations}
+          UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
+          UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+          contextMenuItems={contextMenuItems}
+        />
+      )}
 
       {loading && <Progress />}
 
-      {entity && <EntityTabs routes={routes} />}
+      {entity && (
+        <EntityTabs
+          routes={routes}
+          groupDefinitions={groupDefinitions}
+          showIcons={showNavItemIcons}
+        />
+      )}
 
       {error && (
         <Content>

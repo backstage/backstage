@@ -1,5 +1,84 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 82ca951: cleaned up repo creation to make the unique portions explicit
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.9.4
+
+### Patch Changes
+
+- bb7088b: Added options to set [workflow access level][access-level] for repositories to `github:repo:create`
+
+  This is useful when creating repositories for GitHub Actions to manage access
+  to the workflows during creation.
+
+  ```diff
+   - action: github:repo:create
+      id: create-repo
+      input:
+        repoUrl: github.com?owner=owner&repo=repo
+        visibility: private
+  +     workflowAccess: organization
+  ```
+
+  [access-level]: https://docs.github.com/en/rest/actions/permissions?apiVersion=2022-11-28#set-the-level-of-access-for-workflows-outside-of-the-repository
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+
+## 0.9.4-next.1
+
+### Patch Changes
+
+- bb7088b: Added options to set [workflow access level][access-level] for repositories to `github:repo:create`
+
+  This is useful when creating repositories for GitHub Actions to manage access
+  to the workflows during creation.
+
+  ```diff
+   - action: github:repo:create
+      id: create-repo
+      input:
+        repoUrl: github.com?owner=owner&repo=repo
+        visibility: private
+  +     workflowAccess: organization
+  ```
+
+  [access-level]: https://docs.github.com/en/rest/actions/permissions?apiVersion=2022-11-28#set-the-level-of-access-for-workflows-outside-of-the-repository
+
+## 0.9.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
 ## 0.9.3
 
 ### Patch Changes

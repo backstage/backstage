@@ -32,6 +32,7 @@ export interface Config {
           audience?: string;
           connection?: string;
           connectionScope?: string;
+          organization?: string;
           sessionDuration?: HumanDuration | string;
         };
       };

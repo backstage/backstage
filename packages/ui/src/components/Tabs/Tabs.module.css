@@ -86,7 +86,7 @@
     top: calc(var(--hovered-tab-top) + 4px);
     width: var(--hovered-tab-width);
     height: calc(var(--hovered-tab-height) - 8px);
-    background-color: var(--bui-gray-2);
+    background-color: var(--bui-bg-neutral-2);
     border-radius: 4px;
     opacity: var(--hovered-tab-opacity);
     transition: left var(--hovered-transition-duration) ease-out,

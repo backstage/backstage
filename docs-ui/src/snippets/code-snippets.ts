@@ -4,8 +4,8 @@ export const customTheme = `:root {
   --bui-font-regular: system-ui;
   --bui-font-weight-regular: 400;
   --bui-font-weight-bold: 600;
-  --bui-bg: #f8f8f8;
-  --bui-bg-surface-1: #fff;
+  --bui-bg-neutral-0: #f8f8f8;
+  --bui-bg-neutral-1: #fff;
   /* ... other CSS variables */
 
   /* Add your custom components styles here */
@@ -19,8 +19,8 @@ export const customTheme = `:root {
   --bui-font-regular: system-ui;
   --bui-font-weight-regular: 400;
   --bui-font-weight-bold: 600;
-  --bui-bg: #f8f8f8;
-  --bui-bg-surface-1: #fff;
+  --bui-bg-neutral-0: #f8f8f8;
+  --bui-bg-neutral-1: #fff;
   /* ... other CSS variables */
 
   /* Add your custom components styles here */

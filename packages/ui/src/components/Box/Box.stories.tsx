@@ -18,6 +18,7 @@ import preview from '../../../../../.storybook/preview';
 import { ReactNode } from 'react';
 import { Box } from './Box';
 import { Flex } from '../Flex';
+import { Button } from '../Button';
 
 const meta = preview.meta({
   title: 'Backstage UI/Box',
@@ -340,6 +341,94 @@ export const Display = meta.story({
       </Flex>
       <Box display={{ initial: 'block', md: 'inline' }} {...args}>
         <CardDisplay>Responsive</CardDisplay>
+      </Box>
+    </Flex>
+  ),
+});
+
+export const Surfaces = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex align="center" style={{ flexWrap: 'wrap' }}>
+      <Box {...args}>Default</Box>
+      <Box surface="0" {...args}>
+        Surface 0
+      </Box>
+      <Box surface="1" {...args}>
+        Surface 1
+      </Box>
+      <Box surface="2" {...args}>
+        Surface 2
+      </Box>
+      <Box surface="3" {...args}>
+        Surface 3
+      </Box>
+      <Box surface={{ initial: '0', sm: '1' }} {...args}>
+        Responsive Surface
+      </Box>
+      <Box surface="danger" {...args}>
+        Surface Danger
+      </Box>
+      <Box surface="warning" {...args}>
+        Surface Warning
+      </Box>
+      <Box surface="success" {...args}>
+        Surface Success
+      </Box>
+    </Flex>
+  ),
+});
+
+export const SurfacesNested = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex direction="column">
+      <Box style={{ maxWidth: '600px' }} mb="4">
+        In this test, we are nesting boxes and buttons on different surfaces to
+        ensure that the correct surface is applied to each element. If a Button
+        is placed on a surface that doesn't have the surface prop set, it will
+        inherit the surface from the parent.
+      </Box>
+      <Box {...args} surface="1">
+        <Button variant="secondary">Button</Button>
+        <Box {...args} surface="2" mt="4">
+          <Button variant="secondary">Button</Button>
+          <Box {...args} mt="4">
+            <Button variant="secondary">Button</Button>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
+  ),
+});
+
+export const SurfacesAutoIncrement = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex direction="column">
+      <Box style={{ maxWidth: '600px' }} mb="4">
+        Using surface="auto" automatically increments from the parent surface
+        level. This makes components more reusable as they don't need to know
+        their absolute surface level. Notice how each nested Box with
+        surface="auto" automatically increments: 0 → 1 → 2 → 3 (capped at 3).
+      </Box>
+      <Box {...args} surface="0">
+        Surface 0 (explicit)
+        <Box {...args} surface="auto" mt="4">
+          <Box mb="3">Surface auto (becomes 1)</Box>
+          <Button variant="secondary" onSurface="auto">
+            Button auto
+          </Button>
+          <Box {...args} surface="auto" mt="4">
+            Surface auto (becomes 2)
+            <Box {...args} surface="auto" mt="4">
+              Surface auto (becomes 3)
+              <Box {...args} surface="auto" mt="4">
+                Surface auto (stays 3 - capped)
+              </Box>
+            </Box>
+          </Box>
+        </Box>
       </Box>
     </Flex>
   ),

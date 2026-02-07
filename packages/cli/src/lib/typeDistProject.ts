@@ -18,7 +18,7 @@ import {
   packageFeatureType,
   PackageRole,
 } from '@backstage/cli-node';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { Project, SourceFile, SyntaxKind, ts, Type } from 'ts-morph';
 import { paths } from './paths';
 

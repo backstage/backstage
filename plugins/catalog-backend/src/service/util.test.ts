@@ -135,14 +135,16 @@ describe('filterProviders', () => {
   it('should filter providers', () => {
     const p1 = { getProviderName: () => 'provider1', connect: jest.fn() };
     const p2 = { getProviderName: () => 'provider2', connect: jest.fn() };
+    const e1 = { provider: p1 };
+    const e2 = { provider: p2 };
 
     expect(
-      filterProviders([p1, p2], mockServices.rootConfig({ data: {} })),
-    ).toEqual([p1, p2]);
+      filterProviders([e1, e2], mockServices.rootConfig({ data: {} })),
+    ).toEqual([e1, e2]);
 
     expect(
       filterProviders(
-        [p1, p2],
+        [e1, e2],
         mockServices.rootConfig({
           data: {
             catalog: {
@@ -153,11 +155,11 @@ describe('filterProviders', () => {
           },
         }),
       ),
-    ).toEqual([p2]);
+    ).toEqual([e2]);
 
     expect(
       filterProviders(
-        [p1, p2],
+        [e1, e2],
         mockServices.rootConfig({
           data: {
             catalog: {
@@ -168,16 +170,18 @@ describe('filterProviders', () => {
           },
         }),
       ),
-    ).toEqual([p1]);
+    ).toEqual([e1]);
   });
 
   it('rejects invalid config', () => {
     const p1 = { getProviderName: () => 'provider1', connect: jest.fn() };
     const p2 = { getProviderName: () => 'provider2', connect: jest.fn() };
+    const e1 = { provider: p1 };
+    const e2 = { provider: p2 };
 
     expect(() =>
       filterProviders(
-        [p1, p2],
+        [e1, e2],
         mockServices.rootConfig({
           data: {
             catalog: {

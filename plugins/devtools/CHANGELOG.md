@@ -1,5 +1,47 @@
 # @backstage/plugin-devtools
 
+## 0.1.36-next.0
+
+### Patch Changes
+
+- f2612c2: Fixes an issue where a user lacking permission to schedule tasks can now easily see the issue through a custom icon + tooltip.
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/core-compat-api@0.5.7-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.22-next.0
+  - @backstage/plugin-devtools-react@0.1.1-next.0
+  - @backstage/plugin-permission-react@0.4.40-next.0
+
+## 0.1.35
+
+### Patch Changes
+
+- be6cef5: Add support for adding `unprocessed-entities` and other tabs to `devtools` when using the New Frontend system
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-devtools-react@0.1.0
+  - @backstage/plugin-devtools-common@0.1.21
+  - @backstage/core-compat-api@0.5.6
+
+## 0.1.35-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.1.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.6-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
 ## 0.1.34
 
 ### Patch Changes

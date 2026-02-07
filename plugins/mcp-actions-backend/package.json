@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-mcp-actions-backend",
-  "version": "0.1.6",
+  "version": "0.1.9-next.0",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "mcp-actions",
@@ -41,10 +41,10 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@cfworker/json-schema": "^4.1.1",
-    "@modelcontextprotocol/sdk": "^1.24.3",
+    "@modelcontextprotocol/sdk": "^1.25.2",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

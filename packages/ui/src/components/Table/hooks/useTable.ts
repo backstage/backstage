@@ -13,154 +13,147 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useState, useMemo, useCallback } from 'react';
-import type { TablePaginationProps } from '../../TablePagination/types';
+import { useMemo, useRef } from 'react';
+import type { SortState, TableItem, TableProps } from '../types';
 import type {
-  UseTableConfig,
+  PaginationOptions,
+  PaginationResult,
+  UseTableOptions,
   UseTableResult,
-  UseTablePagination,
 } from './types';
+import { useQueryState } from './useQueryState';
+import { useCompletePagination } from './useCompletePagination';
+import { useCursorPagination } from './useCursorPagination';
+import { useOffsetPagination } from './useOffsetPagination';
 
-/**
- * Hook for managing table state including pagination and future features like sorting.
- * Supports both controlled and uncontrolled modes using offset/pageSize pattern (Backstage style).
- *
- * @public
- */
-export function useTable<T = any>(
-  config: UseTableConfig<T> = {},
-): UseTableResult<T> {
-  const { data, pagination: paginationConfig = {} } = config;
-
+function useTableProps<T extends TableItem>(
+  paginationResult: PaginationResult<T>,
+  sortState: SortState,
+  paginationOptions: PaginationOptions = {},
+): Omit<
+  TableProps<T>,
+  'columnConfig' | 'rowConfig' | 'selection' | 'emptyState'
+> {
   const {
-    rowCount: providedRowCount,
-    offset: controlledOffset,
-    pageSize: controlledPageSize,
-    onOffsetChange,
-    onPageSizeChange,
-    defaultPageSize = 10,
-    defaultOffset = 0,
-    onNextPage,
-    onPreviousPage,
     showPageSizeOptions = true,
-  } = paginationConfig;
+    pageSizeOptions,
+    onPageSizeChange: onPageSizeChangeCallback,
+    onNextPage: onNextPageCallback,
+    onPreviousPage: onPreviousPageCallback,
+    getLabel,
+  } = paginationOptions;
 
-  // Determine if we're in controlled mode
-  const isControlled =
-    controlledOffset !== undefined || controlledPageSize !== undefined;
+  const previousDataRef = useRef(paginationResult.data);
+  if (paginationResult.data) {
+    previousDataRef.current = paginationResult.data;
+  }
 
-  // Use providedRowCount if passed, otherwise fallback to data length
-  const rowCount = providedRowCount ?? data?.length ?? 0;
+  const displayData = paginationResult.data ?? previousDataRef.current;
+  const isStale = paginationResult.loading && displayData !== undefined;
 
-  // Internal state for uncontrolled mode
-  const [internalOffset, setInternalOffset] = useState(defaultOffset);
-  const [internalPageSize, setInternalPageSize] = useState(defaultPageSize);
-
-  // Calculate current values
-  const currentOffset = controlledOffset ?? internalOffset;
-  const currentPageSize = controlledPageSize ?? internalPageSize;
-
-  // Calculate sliced data if data array is provided
-  const currentData = useMemo(() => {
-    if (!data) return undefined;
-    return data.slice(currentOffset, currentOffset + currentPageSize);
-  }, [data, currentOffset, currentPageSize]);
-
-  // Update functions
-  const setOffset = useCallback(
-    (newOffset: number) => {
-      if (isControlled) {
-        onOffsetChange?.(newOffset);
-      } else {
-        setInternalOffset(newOffset);
-      }
-    },
-    [isControlled, onOffsetChange],
-  );
-
-  const setPageSize = useCallback(
-    (newPageSize: number) => {
-      // When changing page size, reset to first page to avoid showing empty results
-      const newOffset = 0;
-
-      if (isControlled) {
-        onPageSizeChange?.(newPageSize);
-        onOffsetChange?.(newOffset);
-      } else {
-        setInternalPageSize(newPageSize);
-        setInternalOffset(newOffset);
-      }
-    },
-    [isControlled, onPageSizeChange, onOffsetChange],
-  );
-
-  const nextPage = useCallback(() => {
-    const nextOffset = currentOffset + currentPageSize;
-    if (nextOffset < rowCount) {
-      onNextPage?.();
-      setOffset(nextOffset);
-    }
-  }, [currentOffset, currentPageSize, rowCount, onNextPage, setOffset]);
-
-  const previousPage = useCallback(() => {
-    if (currentOffset > 0) {
-      onPreviousPage?.();
-      const prevOffset = Math.max(0, currentOffset - currentPageSize);
-      setOffset(prevOffset);
-    }
-  }, [currentOffset, currentPageSize, onPreviousPage, setOffset]);
-
-  // Pagination props for TablePagination component
-  const paginationProps: TablePaginationProps = useMemo(
+  const pagination = useMemo(
     () => ({
-      offset: currentOffset,
-      pageSize: currentPageSize,
-      rowCount,
-      setOffset,
-      setPageSize,
-      onNextPage,
-      onPreviousPage,
+      type: 'page' as const,
+      pageSize: paginationResult.pageSize,
+      pageSizeOptions,
+      offset: paginationResult.offset,
+      totalCount: paginationResult.totalCount,
+      hasNextPage: paginationResult.hasNextPage,
+      hasPreviousPage: paginationResult.hasPreviousPage,
+      onNextPage: () => {
+        paginationResult.onNextPage();
+        onNextPageCallback?.();
+      },
+      onPreviousPage: () => {
+        paginationResult.onPreviousPage();
+        onPreviousPageCallback?.();
+      },
+      onPageSizeChange: (size: number) => {
+        paginationResult.onPageSizeChange(size);
+        onPageSizeChangeCallback?.(size);
+      },
       showPageSizeOptions,
+      getLabel,
     }),
     [
-      currentOffset,
-      currentPageSize,
-      rowCount,
-      setOffset,
-      setPageSize,
-      onNextPage,
-      onPreviousPage,
-      showPageSizeOptions,
+      paginationResult.pageSize,
+      pageSizeOptions,
+      paginationResult.offset,
+      paginationResult.totalCount,
+      paginationResult.hasNextPage,
+      paginationResult.hasPreviousPage,
+      paginationResult.onNextPage,
+      paginationResult.onPreviousPage,
+      paginationResult.onPageSizeChange,
+      onNextPageCallback,
+      onPreviousPageCallback,
+      onPageSizeChangeCallback,
     ],
   );
 
-  const pagination: UseTablePagination<T> = useMemo(
+  return useMemo(
     () => ({
-      paginationProps,
-      offset: currentOffset,
-      pageSize: currentPageSize,
-      data: currentData,
-      nextPage,
-      previousPage,
-      setOffset,
-      setPageSize,
+      data: displayData,
+      loading: paginationResult.loading,
+      isStale,
+      error: paginationResult.error,
+      pagination,
+      sort: sortState,
     }),
     [
-      paginationProps,
-      currentOffset,
-      currentPageSize,
-      currentData,
-      nextPage,
-      previousPage,
-      setOffset,
-      setPageSize,
+      displayData,
+      paginationResult.loading,
+      isStale,
+      paginationResult.error,
+      pagination,
+      showPageSizeOptions,
+      getLabel,
+      sortState,
     ],
+  );
+}
+
+/** @public */
+export function useTable<T extends TableItem, TFilter = unknown>(
+  options: UseTableOptions<T, TFilter>,
+): UseTableResult<T, TFilter> {
+  const query = useQueryState<TFilter>(options);
+
+  const initialModeRef = useRef(options.mode);
+  if (initialModeRef.current !== options.mode) {
+    throw new Error(
+      `useTable mode cannot change from '${initialModeRef.current}' to '${options.mode}'. ` +
+        `The mode must remain stable for the lifetime of the component.`,
+    );
+  }
+
+  let pagination: PaginationResult<T> & { reload: () => void };
+
+  if (options.mode === 'complete') {
+    pagination = useCompletePagination(options, query);
+  } else if (options.mode === 'offset') {
+    pagination = useOffsetPagination(options, query);
+  } else if (options.mode === 'cursor') {
+    pagination = useCursorPagination(options, query);
+  } else {
+    throw new Error('Invalid mode');
+  }
+
+  const sortState: SortState = useMemo(
+    () => ({ descriptor: query.sort, onSortChange: query.setSort }),
+    [query.sort, query.setSort],
+  );
+
+  const tableProps = useTableProps(
+    pagination,
+    sortState,
+    options.paginationOptions ?? {},
   );
 
   return {
-    data: currentData,
-    paginationProps,
-    pagination,
+    tableProps,
+    reload: pagination.reload,
+    filter: { value: query.filter, onChange: query.setFilter },
+    search: { value: query.search, onChange: query.setSearch },
   };
 }

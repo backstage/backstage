@@ -1,38 +1,39 @@
 export type Component =
+  | 'accordion'
+  | 'alert'
   | 'avatar'
   | 'box'
   | 'button'
-  | 'button-link'
-  | 'heading'
-  | 'text'
   | 'button-icon'
-  | 'icon'
-  | 'tabs'
-  | 'menu'
-  | 'textfield'
-  | 'datatable'
-  | 'select'
-  | 'collapsible'
-  | 'accordion'
-  | 'checkbox'
-  | 'container'
-  | 'link'
-  | 'tooltip'
-  | 'scrollarea'
-  | 'flex'
-  | 'switch'
-  | 'grid'
-  | 'searchfield'
-  | 'radio-group'
+  | 'button-link'
   | 'card'
-  | 'skeleton'
+  | 'checkbox'
+  | 'collapsible'
+  | 'container'
+  | 'datatable'
+  | 'dialog'
+  | 'flex'
+  | 'grid'
   | 'header'
   | 'header-page'
+  | 'heading'
+  | 'icon'
+  | 'link'
+  | 'menu'
   | 'password-field'
+  | 'radio-group'
+  | 'scrollarea'
+  | 'searchfield'
+  | 'select'
+  | 'skeleton'
+  | 'switch'
   | 'table'
-  | 'visually-hidden'
-  | 'dialog'
-  | 'tag-group';
+  | 'tabs'
+  | 'tag-group'
+  | 'text'
+  | 'textfield'
+  | 'tooltip'
+  | 'visually-hidden';
 
 export type Version = `${number}.${number}.${number}`;
 
@@ -41,6 +42,7 @@ export interface ChangelogProps {
   description: string;
   version: Version;
   prs: string[];
-  type?: 'breaking' | 'new' | 'fix';
+  breaking?: boolean;
   commitSha?: string;
+  migration?: string;
 }

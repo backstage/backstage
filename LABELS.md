@@ -97,6 +97,27 @@ These labels indicate a workflow status for the owners.
 - `stale` - The issue or pull request has not seen any activity for a while and will be closed if no further activity is seen.
 - `no stale` - The issue or pull request should not be closed due to inactivity.
 
+## Pull Request Labels
+
+The following labels indicate the status of a pull request:
+
+- `waiting-for:review` - The pull request needs a review and will be visible in the review queue unless already assigned an owner.
+- `waiting-for:author` - Changes have been requested by a reviewer and the pull request will not receive a review until the changes are made. A comment made on the pull request by the author will also push it back into the review queue.
+- `waiting-for:decision` - The pull request has been marked as more complex and needs a decision from the owners. Progress can still be made and discussion can continue, but expect the review to take longer. These pull requests are often good candidates to bring to a [SIG](https://github.com/backstage/community/tree/main/sigs) meeting.
+- `waiting-for:merge` - The pull request has been approved and is awaiting merge. If you have write access and authored the pull request you can merge it yourself. If you do not have access to merge and the pull request has not been merged within a day of approval, please notify the assigned reviewer.
+
+The following labels indicate the size of a pull request:
+
+- `size:tiny` - Tiny pull requests receive a higher priority for reviews.
+- `size:small` - Small pull requests receive a slightly higher priority for reviews.
+- `size:medium` - Medium-sized pull requests receive no change in priority for reviews.
+- `size:large` - Large pull requests receive a slightly lower priority for reviews.
+- `size:huge` - Huge pull requests receive a lower priority for reviews.
+
+The following additional labels also apply to pull requests:
+
+- `reviewer-approved` - The pull request has been approved by a member of the reviewers group. This pull request receives a much higher priority for reviews.
+
 ## Common Issue Filters
 
 This is a collection of common issue filters that can help you find issues that you are looking for or that match your interests and skills.
@@ -106,7 +127,7 @@ This is a collection of common issue filters that can help you find issues that 
 These issues are ideal for new contributors to get started and don't require much familiarity with Backstage.
 
 - [Backend](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20label%3A%22domain%3Abackend%22%20)
-- [Documentation](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20label%3A%22domain%3Adocs%22%20)
+- [Documentation](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20label%3A%22area%3Adocumentation%22)
 - [Tooling](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20label%3A%22domain%3Atooling%22%20)
 - [Web](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20label%3A%22domain%3Aweb%22%20)
 
@@ -115,7 +136,7 @@ These issues are ideal for new contributors to get started and don't require muc
 These issues generally require some familiarity with Backstage and the codebase, and are either open for or require contributions from the community.
 
 - [Backend](<https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20(label%3Apriority%3Acontrib-welcome%20OR%20label%3Apriority%3Acontrib-needed)%20label%3A%22domain%3Abackend%22%20>)
-- [Documentation](<https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20(label%3Apriority%3Acontrib-welcome%20OR%20label%3Apriority%3Acontrib-needed)%20label%3A%22domain%3Adocs%22%20>)
+- [Documentation](<https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20(label%3Apriority%3Acontrib-welcome%20OR%20label%3Apriority%3Acontrib-needed)%20label%3A%22area%3Adocumentation%22>)
 - [Tooling](<https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20(label%3Apriority%3Acontrib-welcome%20OR%20label%3Apriority%3Acontrib-needed)%20label%3A%22domain%3Atooling%22%20>)
 - [Web](<https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20(label%3Apriority%3Acontrib-welcome%20OR%20label%3Apriority%3Acontrib-needed)%20label%3A%22domain%3Aweb%22%20>)
 

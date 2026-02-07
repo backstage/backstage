@@ -375,7 +375,7 @@ schedule:
   timeout: { minutes: 3 }
 ```
 
-More information about scheduling can be found on the [SchedulerServiceTaskScheduleDefinition](https://backstage.io/docs/reference/backend-plugin-api.schedulerservicetaskscheduledefinition) page.
+More information about scheduling can be found on the [SchedulerServiceTaskScheduleDefinition](https://backstage.io/api/stable/interfaces/_backstage_backend-plugin-api.index.SchedulerServiceTaskScheduleDefinition.html) page.
 
 Alternatively, or additionally, you can configure [github-apps](github-apps.md) authentication
 which carries a much higher rate limit at GitHub.

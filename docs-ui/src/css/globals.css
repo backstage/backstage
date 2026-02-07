@@ -17,6 +17,10 @@
   --surface-1: #f4f4f4;
   --code-bg: #3e444f;
   --code-title: #505865;
+  --badge-red-bg: color(display-p3 0.831 0.184 0.012/0.091);
+  --badge-red-color: color(display-p3 0.755 0.259 0.152);
+  --badge-gray-bg: #dee3ec;
+  --badge-gray-color: #35363d;
 }
 
 [data-theme-mode='dark'] {

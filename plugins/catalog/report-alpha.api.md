@@ -20,8 +20,10 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { JSXElementConstructor } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
@@ -33,10 +35,11 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 export const catalogTranslationRef: TranslationRef<
   'catalog',
   {
-    readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.';
+    readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates.';
     readonly 'deleteEntity.cancelButtonTitle': 'Cancel';
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
     readonly 'deleteEntity.dialogTitle': 'Are you sure you want to delete this entity?';
+    readonly 'deleteEntity.actionButtonTitle': 'Delete entity';
     readonly 'indexPage.title': '{{orgName}} Catalog';
     readonly 'indexPage.createButtonTitle': 'Create';
     readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
@@ -292,11 +295,11 @@ const _default: OverridableFrontendPlugin<
     'entity-card:catalog/about': OverridableExtensionDefinition<{
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -345,6 +348,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -361,11 +365,11 @@ const _default: OverridableFrontendPlugin<
       name: 'depends-on-components';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -402,11 +406,11 @@ const _default: OverridableFrontendPlugin<
       name: 'depends-on-resources';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -443,11 +447,11 @@ const _default: OverridableFrontendPlugin<
       name: 'has-components';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -484,11 +488,11 @@ const _default: OverridableFrontendPlugin<
       name: 'has-resources';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -525,11 +529,11 @@ const _default: OverridableFrontendPlugin<
       name: 'has-subcomponents';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -566,11 +570,11 @@ const _default: OverridableFrontendPlugin<
       name: 'has-subdomains';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -607,11 +611,11 @@ const _default: OverridableFrontendPlugin<
       name: 'has-systems';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -648,11 +652,11 @@ const _default: OverridableFrontendPlugin<
       name: 'labels';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -689,11 +693,11 @@ const _default: OverridableFrontendPlugin<
       name: 'links';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -731,12 +735,14 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
         filter: EntityPredicate | undefined;
         group: string | false | undefined;
+        icon: string | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
         title?: string | undefined;
         path?: string | undefined;
         group?: string | false | undefined;
+        icon?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -769,6 +775,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            string | ReactElement<any, string | JSXElementConstructor<any>>,
+            'catalog.entity-content-icon',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         layouts: ExtensionInput<
@@ -794,6 +807,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         cards: ExtensionInput<
@@ -822,6 +836,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -834,6 +849,7 @@ const _default: OverridableFrontendPlugin<
         title: string;
         defaultGroup?: [Error: `Use the 'group' param instead`];
         group?: keyof defaultEntityContentGroups | (string & {});
+        icon?: string | ReactElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
@@ -1000,6 +1016,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -1019,9 +1036,11 @@ const _default: OverridableFrontendPlugin<
               string,
               {
                 title: string;
+                icon?: string | undefined;
               }
             >[]
           | undefined;
+        showNavItemIcons: boolean;
         path: string | undefined;
       };
       configInput: {
@@ -1030,9 +1049,11 @@ const _default: OverridableFrontendPlugin<
               string,
               {
                 title: string;
+                icon?: string | undefined;
               }
             >[]
           | undefined;
+        showNavItemIcons?: boolean | undefined;
         path?: string | undefined;
       };
       output:
@@ -1064,6 +1085,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         contents: ExtensionInput<
@@ -1101,10 +1123,18 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              string | ReactElement<any, string | JSXElementConstructor<any>>,
+              'catalog.entity-content-icon',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         contextMenuItems: ExtensionInput<
@@ -1119,6 +1149,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };

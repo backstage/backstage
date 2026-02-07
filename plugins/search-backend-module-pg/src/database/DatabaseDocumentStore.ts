@@ -215,6 +215,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
     }
 
     query.select('type', 'document');
+    query.select(tx.raw('COUNT(*) OVER() AS total_count'));
 
     if (pgTerm && options.useHighlight) {
       const headlineOptions = `MaxWords=${options.maxWords}, MinWords=${options.minWords}, ShortWord=${options.shortWord}, HighlightAll=${options.highlightAll}, MaxFragments=${options.maxFragments}, FragmentDelimiter=${options.fragmentDelimiter}, StartSel=${options.preTag}, StopSel=${options.postTag}`;

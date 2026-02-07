@@ -5,9 +5,9 @@
 ```ts
 import { JsonObject } from '@backstage/types';
 import { Permission } from '@backstage/plugin-permission-common';
-import { Readable } from 'stream';
-import { Transform } from 'stream';
-import { Writable } from 'stream';
+import { Readable } from 'node:stream';
+import { Transform } from 'node:stream';
+import { Writable } from 'node:stream';
 
 // @public
 export interface DocumentCollatorFactory {

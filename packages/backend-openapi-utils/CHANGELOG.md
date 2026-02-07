@@ -1,5 +1,33 @@
 # @backstage/backend-openapi-utils
 
+## 0.6.6-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.6.5
+
+### Patch Changes
+
+- 6678b78: Internal update to use native feature from our request validation library for handling base path determination.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- 6678b78: Internal update to use native feature from our request validation library for handling base path determination.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.6.4
 
 ### Patch Changes

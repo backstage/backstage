@@ -17,7 +17,7 @@
 import * as mockttp from 'mockttp';
 import { OpenApiProxyValidator } from '../schema/validation';
 import getPort from 'get-port';
-import { Server } from 'http';
+import { Server } from 'node:http';
 
 export class Proxy {
   server: mockttp.Mockttp;

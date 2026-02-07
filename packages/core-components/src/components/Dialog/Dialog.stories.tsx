@@ -27,6 +27,7 @@ import CloseIcon from '@material-ui/icons/Close';
 const meta = {
   title: 'Layout/Dialog',
   component: Dialog,
+  tags: ['!manifest'],
 };
 
 export default meta;

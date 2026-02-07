@@ -23,3 +23,9 @@ This approach is equally beneficial if you conceive an idea for a potentially im
 ## Integration with the Software Catalog
 
 Should your plugin complement the Software Catalog rather than exist as a standalone feature (for instance, as an additional tab or a card within an "Overview" tab), you'll find comprehensive guidance on achieving this integration in the [Integrating Plugin into Software Catalog guide](integrating-plugin-into-software-catalog.md).
+
+## Existing Plugins
+
+There are a plethora of existing community made plugins which can be found by going to the [Backstage Plugin Directory](https://backstage.io/plugins)
+
+You can read more about it in this blog post: [The Plugin Directory is now open](https://backstage.io/blog/2020/09/30/plugin-marketplace/)

@@ -21,6 +21,7 @@ import { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';
 export default {
   title: 'Feedback/EmptyState',
   component: EmptyState,
+  tags: ['!manifest'],
 };
 
 const containerStyle = { width: '100%', height: '100vh' };
