@@ -19,6 +19,8 @@ Users should already have read through the summary section of the docs, "What is
 
 We recommend you poke around the demo site to get a feel for what Backstage can provide. If you're technical, or working with someone technical, you can run through the steps in `golden-path/create-app` and `golden-path/deploying-backstage` to get something running for just your company.
 
+## Getting leadership buy-in
+
 ## First round of stakeholder feedback
 
 If you think Backstage is a good fit for your company, it's likely there are others that do or will think the same. You may have already identified them. For this initial round of feedback, share recommendations for what that group should look like, is there any required number of technical or non-technical members, do you need leadership involved at this point, etc.
@@ -29,9 +31,7 @@ For non-technical users, it's recommended to find a technical partner to help st
 
 At this point, we're assuming you already have an instance created through `golden-path/create-app` and `golden-path/deploying-backstage`. You should now start customizing it to your company's needs. We recommend you start small, write some catalog-info YAML files and start to build a personalized catalog.
 
-## Second round of stakeholder feedback
-
-## Getting leadership buy-in
+## Preparing for GA
 
 ## Plugin ownership and inner source mentality
 
