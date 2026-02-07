@@ -26,6 +26,9 @@ import { CatalogExportType } from '../CatalogExportButton';
 import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { filtersToStreamRequest } from './filtersToStreamRequest';
 
+/**
+ * @public
+ */
 export interface StreamingExportOptions {
   exportFormat: CatalogExportType | string;
   filename: string;

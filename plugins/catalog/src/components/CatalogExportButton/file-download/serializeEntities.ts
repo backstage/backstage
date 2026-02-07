@@ -16,6 +16,9 @@
 import { Entity } from '@backstage/catalog-model';
 import stringifySync from 'csv-stringify/lib/sync';
 
+/**
+ * @public
+ */
 export interface ExportColumn {
   entityFilterKey: string;
   title: string;

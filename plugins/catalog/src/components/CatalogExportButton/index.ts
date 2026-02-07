@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 export * from './CatalogExportButton';
+export type { ExportColumn } from './file-download/serializeEntities';
+export type { StreamingExportOptions } from './file-download/useStreamingExport';
