@@ -73,9 +73,7 @@ describe('versions:migrate', () => {
   it('should bump to the moved version when the package is moved', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
-        workspaces: {
-          packages: ['packages/*'],
-        },
+        workspaces: ['packages/*'],
       }),
       node_modules: {
         '@backstage': {
@@ -177,9 +175,7 @@ describe('versions:migrate', () => {
   it('should replace the occurrences of the moved package in files inside the correct package', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
-        workspaces: {
-          packages: ['packages/*'],
-        },
+        workspaces: ['packages/*'],
       }),
       node_modules: {
         '@backstage': {
@@ -264,9 +260,7 @@ describe('versions:migrate', () => {
   it('should replace occurrences of changed packages, and is careful', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
-        workspaces: {
-          packages: ['packages/*'],
-        },
+        workspaces: ['packages/*'],
       }),
       node_modules: {
         '@backstage': {

@@ -16,12 +16,10 @@
     "type": "git",
     "url": "https://github.com/backstage/backstage"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "plugins/*"
-    ]
-  },
+  "workspaces": [
+    "packages/*",
+    "plugins/*"
+  ],
   "scripts": {
     "build-storybook": "storybook build --output-dir dist-storybook",
     "build-storybook:chromatic": "STORYBOOK_STORY_SET=chromatic storybook build --stats-json --output-dir dist-storybook",

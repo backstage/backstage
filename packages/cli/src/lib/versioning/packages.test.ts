@@ -104,9 +104,7 @@ describe('mapDependencies', () => {
   it('should read dependencies', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
-        workspaces: {
-          packages: ['pkgs/*'],
-        },
+        workspaces: ['pkgs/*'],
       }),
       pkgs: {
         a: {
