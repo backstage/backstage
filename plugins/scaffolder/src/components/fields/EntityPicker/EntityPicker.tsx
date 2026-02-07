@@ -71,6 +71,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
     errors,
   } = props;
   const catalogFilter = buildCatalogFilter(uiSchema);
+  const ownedByCurrentUser =
+    uiSchema['ui:options']?.ownedByCurrentUser ?? false;
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
@@ -89,11 +91,11 @@ export const EntityPicker = (props: EntityPickerProps) => {
       'spec.profile.displayName',
       'spec.type',
     ];
-    const { items } = await catalogApi.getEntities(
-      catalogFilter
-        ? { filter: catalogFilter, fields }
-        : { filter: undefined, fields },
-    );
+    const { items } = await catalogApi.getEntities({
+      filter: catalogFilter ?? undefined,
+      fields,
+      ...(ownedByCurrentUser && { ownedByCurrentUser: true }),
+    });
 
     const entityRefToPresentation = new Map<
       string,
@@ -202,13 +204,15 @@ export const EntityPicker = (props: EntityPickerProps) => {
         loading={loading}
         onChange={onSelect}
         options={entities?.catalogEntities || []}
-        getOptionLabel={option =>
+        getOptionLabel={option => {
+          if (option === undefined || option === null || Array.isArray(option))
+            return '';
           // option can be a string due to freeSolo.
-          typeof option === 'string'
+          return typeof option === 'string'
             ? option
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.entityRef!
-        }
+                ?.entityRef!;
+        }}
         autoSelect
         freeSolo={allowArbitraryValues}
         renderInput={params => (

@@ -77,6 +77,8 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   } = props;
 
   const catalogFilter = buildCatalogFilter(uiSchema);
+  const ownedByCurrentUser =
+    uiSchema['ui:options']?.ownedByCurrentUser ?? false;
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
@@ -86,9 +88,14 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const { value: entities, loading } = useAsync(async () => {
-    const { items } = await catalogApi.getEntities(
-      catalogFilter ? { filter: catalogFilter } : undefined,
-    );
+    const requestOptions =
+      catalogFilter || ownedByCurrentUser
+        ? {
+            ...(catalogFilter ? { filter: catalogFilter } : undefined),
+            ...(ownedByCurrentUser && { ownedByCurrentUser: true }),
+          }
+        : undefined;
+    const { items } = await catalogApi.getEntities(requestOptions);
     const entityRefToPresentation = new Map<
       string,
       EntityRefPresentationSnapshot

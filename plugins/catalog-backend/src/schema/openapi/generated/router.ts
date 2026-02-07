@@ -195,6 +195,17 @@ export const spec = {
           },
         },
       },
+      ownedByCurrentUser: {
+        name: 'ownedByCurrentUser',
+        in: 'query',
+        description:
+          'When true, restricts results to entities owned by the current user.',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'boolean',
+        },
+      },
     },
     requestBodies: {},
     responses: {
@@ -887,6 +898,9 @@ export const spec = {
             $ref: '#/components/parameters/after',
           },
           {
+            $ref: '#/components/parameters/ownedByCurrentUser',
+          },
+          {
             name: 'order',
             in: 'query',
             allowReserved: true,
@@ -1173,6 +1187,9 @@ export const spec = {
           },
           {
             $ref: '#/components/parameters/filter',
+          },
+          {
+            $ref: '#/components/parameters/ownedByCurrentUser',
           },
           {
             name: 'fullTextFilterTerm',

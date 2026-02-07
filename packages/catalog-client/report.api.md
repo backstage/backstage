@@ -234,6 +234,7 @@ export interface GetEntitiesRequest {
   limit?: number;
   offset?: number;
   order?: EntityOrderQuery;
+  ownedByCurrentUser?: boolean;
 }
 
 // @public
@@ -308,6 +309,7 @@ export type QueryEntitiesInitialRequest = {
     term: string;
     fields?: string[];
   };
+  ownedByCurrentUser?: boolean;
 };
 
 // @public

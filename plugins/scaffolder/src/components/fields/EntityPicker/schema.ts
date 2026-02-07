@@ -61,6 +61,12 @@ export const EntityPickerFieldSchema = makeFieldSchema({
       )
         .optional()
         .describe('List of key-value filter expression for entities'),
+      ownedByCurrentUser: z
+        .boolean()
+        .optional()
+        .describe(
+          'When true, restrict options to entities owned by the current user',
+        ),
     }),
 });
 

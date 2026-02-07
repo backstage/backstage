@@ -20,6 +20,7 @@ import {
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
@@ -30,7 +31,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, serializeError } from '@backstage/errors';
-import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
+import { EntityFilter, LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
@@ -40,6 +41,7 @@ import { validateEntityEnvelope } from '../processing/util';
 import { createOpenApiRouter } from '../schema/openapi';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
 import {
+  applyOwnershipFilter,
   basicEntityFilter,
   entitiesBatchRequest,
   parseEntityFilterParams,
@@ -79,6 +81,7 @@ export interface RouterOptions {
   permissionsService: PermissionsService;
   auditor: AuditorService;
   enableRelationsCompatibility?: boolean;
+  userInfo?: UserInfoService;
 }
 
 /**
@@ -108,6 +111,7 @@ export async function createRouter(
     httpAuth,
     auditor,
     enableRelationsCompatibility = false,
+    userInfo,
   } = options;
 
   const readonlyEnabled =
@@ -167,11 +171,18 @@ export async function createRouter(
         });
 
         try {
-          const filter = parseEntityFilterParams(req.query);
+          const credentials = await httpAuth.credentials(req);
+          const parsedFilter = parseEntityFilterParams(req.query);
+          const ownedByCurrentUser = Boolean(yn(req.query.ownedByCurrentUser));
+          const filter = await applyOwnershipFilter(
+            parsedFilter,
+            credentials,
+            ownedByCurrentUser,
+            userInfo,
+          );
           const fields = parseEntityTransformParams(req.query);
           const order = parseEntityOrderParams(req.query);
           const pagination = parseEntityPaginationParams(req.query);
-          const credentials = await httpAuth.credentials(req);
 
           // When pagination parameters are passed in, use the legacy slow path
           // that loads all entities into memory
@@ -264,12 +275,27 @@ export async function createRouter(
         });
 
         try {
+          const credentials = await httpAuth.credentials(req);
+          const parsedParams = parseQueryEntitiesParams(req.query);
+          const parsedFilter =
+            'filter' in parsedParams
+              ? (parsedParams.filter as EntityFilter)
+              : undefined;
+          const ownedByCurrentUser = Boolean(yn(req.query.ownedByCurrentUser));
+          const filter = await applyOwnershipFilter(
+            parsedFilter,
+            credentials,
+            ownedByCurrentUser,
+            userInfo,
+          );
+
           const { items, pageInfo, totalItems } =
             await entitiesCatalog.queryEntities({
               limit: req.query.limit,
               offset: req.query.offset,
-              ...parseQueryEntitiesParams(req.query),
-              credentials: await httpAuth.credentials(req),
+              ...parsedParams,
+              ...(filter !== undefined && { filter }),
+              credentials,
             });
 
           const meta = {

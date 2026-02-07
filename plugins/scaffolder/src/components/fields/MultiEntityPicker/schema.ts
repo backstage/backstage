@@ -48,6 +48,12 @@ export const MultiEntityPickerFieldSchema = makeFieldSchema({
         .or(entityQueryFilterExpressionSchema)
         .optional()
         .describe('List of key-value filter expression for entities'),
+      ownedByCurrentUser: z
+        .boolean()
+        .optional()
+        .describe(
+          'When true, only entities owned by the current user are included.',
+        ),
     }),
 });
 

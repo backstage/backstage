@@ -176,6 +176,12 @@ export interface GetEntitiesRequest {
    * request.
    */
   after?: string;
+  /**
+   * When true, restrict results to entities owned by the current user (user +
+   * groups from the request identity). Avoids sending large ownership ref
+   * lists in the filter.
+   */
+  ownedByCurrentUser?: boolean;
 }
 
 /**
@@ -432,6 +438,7 @@ export type QueryEntitiesInitialRequest = {
     term: string;
     fields?: string[];
   };
+  ownedByCurrentUser?: boolean;
 };
 
 /**
