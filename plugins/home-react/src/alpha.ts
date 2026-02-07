@@ -25,9 +25,9 @@
  */
 export { homeReactTranslationRef } from './translation';
 export {
-  HomepageWidgetBlueprint,
-  type HomepageWidgetBlueprintParams,
-} from './alpha/blueprints/HomepageWidgetBlueprint';
+  HomePageWidgetBlueprint,
+  type HomePageWidgetBlueprintParams,
+} from './alpha/blueprints/HomePageWidgetBlueprint';
 export {
   HomePageLayoutBlueprint,
   type HomePageLayoutBlueprintParams,
