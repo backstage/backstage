@@ -533,6 +533,7 @@ Turbopack
 TSDoc
 typeahead
 ui
+unassign
 unbreak
 Unconference
 undici
