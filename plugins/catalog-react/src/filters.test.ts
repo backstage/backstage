@@ -129,6 +129,48 @@ describe('EntityTextFilter', () => {
     expect(filter.filterEntity(users[0])).toBeTruthy();
     expect(filter.filterEntity(users[1])).toBeFalsy();
   });
+
+  it('should skip client-side filtering when custom fields are provided', () => {
+    // When custom fields are provided, filterEntity should return true
+    // (trust backend filtering) regardless of the entity content
+    const filter = new EntityTextFilter('nonexistent', ['metadata.name']);
+    expect(filter.filterEntity(entities[0])).toBeTruthy();
+    expect(filter.filterEntity(entities[1])).toBeTruthy();
+  });
+
+  describe('getFullTextFilters', () => {
+    it('should return term with default fields when no fields provided', () => {
+      const filter = new EntityTextFilter('search term');
+      expect(filter.getFullTextFilters()).toEqual({
+        term: 'search term',
+        fields: EntityTextFilter.DEFAULT_FIELDS,
+      });
+    });
+
+    it('should return term with custom fields when fields provided', () => {
+      const customFields = [
+        'metadata.name',
+        'spec.type',
+        'metadata.description',
+      ];
+      const filter = new EntityTextFilter('search term', customFields);
+      expect(filter.getFullTextFilters()).toEqual({
+        term: 'search term',
+        fields: customFields,
+      });
+    });
+
+    it('should store fields on the filter instance', () => {
+      const customFields = ['metadata.name', 'spec.owner'];
+      const filter = new EntityTextFilter('query', customFields);
+      expect(filter.fields).toEqual(customFields);
+    });
+
+    it('should have undefined fields when not provided', () => {
+      const filter = new EntityTextFilter('query');
+      expect(filter.fields).toBeUndefined();
+    });
+  });
 });
 
 describe('EntityOrphanFilter', () => {
