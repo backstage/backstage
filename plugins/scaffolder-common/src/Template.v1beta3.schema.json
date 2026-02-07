@@ -146,6 +146,10 @@
                 }
               ]
             },
+            "secrets": {
+              "type": "object",
+              "description": "A JSONSchema for validating secrets passed during task creation."
+            },
             "presentation": {
               "type": "object",
               "description": "A way to redefine the presentation of the scaffolder.",
