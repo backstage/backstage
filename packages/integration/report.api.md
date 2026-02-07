@@ -818,7 +818,6 @@ export function parseGitilesUrlRef(
   ref: string;
   refType: 'sha' | 'branch' | 'tag' | 'head';
   basePath: string;
-  branch: string;
 };
 
 // @public
