@@ -33,24 +33,6 @@ export type AzureIntegrationConfig = {
   host: string;
 
   /**
-   * The authorization token to use for requests.
-   *
-   * If no token is specified, anonymous access is used.
-   *
-   * @deprecated Use `credentials` instead.
-   */
-  token?: string;
-
-  /**
-   * The credential to use for requests.
-   *
-   * If no credential is specified anonymous access is used.
-   *
-   * @deprecated Use `credentials` instead.
-   */
-  credential?: AzureDevOpsCredential;
-
-  /**
    * The credentials to use for requests. If multiple credentials are specified the first one that matches the organization is used.
    * If not organization matches the first credential without an organization is used.
    *

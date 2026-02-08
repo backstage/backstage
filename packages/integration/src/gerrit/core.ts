@@ -232,30 +232,6 @@ export function buildGerritEditUrl(
 }
 
 /**
- * Build a Gerrit Gitiles archive url that targets a specific branch and path
- *
- * @param config - A Gerrit provider config.
- * @param project - The name of the git project
- * @param branch - The branch we will target.
- * @param filePath - The absolute file path.
- * @public
- * @deprecated `buildGerritGitilesArchiveUrl` is deprecated. Use
- *  {@link buildGerritGitilesArchiveUrlFromLocation} instead.
- */
-export function buildGerritGitilesArchiveUrl(
-  config: GerritIntegrationConfig,
-  project: string,
-  branch: string,
-  filePath: string,
-): string {
-  const archiveName =
-    filePath === '/' || filePath === '' ? '.tar.gz' : `/${filePath}.tar.gz`;
-  return `${getGitilesAuthenticationUrl(
-    config,
-  )}/${project}/+archive/refs/heads/${branch}${archiveName}`;
-}
-
-/**
  * Build a Gerrit Gitiles archive url from a Gitiles url.
  *
  * @param config - A Gerrit provider config.
@@ -350,11 +326,15 @@ export function getGerritBranchApiUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { branch, project } = parseGerritGitilesUrl(config, url);
+  const { ref, refType, project } = parseGitilesUrlRef(config, url);
+
+  if (refType !== 'branch') {
+    throw new Error(`Unsupported gitiles ref type: ${refType}`);
+  }
 
   return `${config.baseUrl}${getAuthenticationPrefix(
     config,
-  )}projects/${encodeURIComponent(project)}/branches/${branch}`;
+  )}projects/${encodeURIComponent(project)}/branches/${ref}`;
 }
 
 /**
@@ -367,7 +347,7 @@ export function getGerritCloneRepoUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { project } = parseGerritGitilesUrl(config, url);
+  const { project } = parseGitilesUrlRef(config, url);
 
   return `${config.cloneUrl}${getAuthenticationPrefix(config)}${project}`;
 }
