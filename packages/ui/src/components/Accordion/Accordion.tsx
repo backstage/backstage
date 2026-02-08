@@ -57,62 +57,87 @@ Accordion.displayName = 'Accordion';
 export const AccordionTrigger = forwardRef<
   React.ElementRef<typeof RAHeading>,
   AccordionTriggerProps
->(({ className, title, subtitle, children, ...props }, ref) => {
-  const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
+>(
+  (
+    { className, title, subtitle, children, iconStart, iconEnd, ...props },
+    ref,
+  ) => {
+    const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
 
-  return (
-    <RAHeading
-      ref={ref}
-      className={clsx(
-        classNames.trigger,
-        styles[classNames.trigger],
-        className,
-      )}
-      {...cleanedProps}
-    >
-      <RAButton
-        slot="trigger"
+    return (
+      <RAHeading
+        ref={ref}
         className={clsx(
-          classNames.triggerButton,
-          styles[classNames.triggerButton],
+          classNames.trigger,
+          styles[classNames.trigger],
+          className,
         )}
+        {...cleanedProps}
       >
-        {children ? (
-          children
-        ) : (
-          <Flex gap="2" align="center">
-            <span
-              className={clsx(
-                classNames.triggerTitle,
-                styles[classNames.triggerTitle],
+        <RAButton
+          slot="trigger"
+          className={clsx(
+            classNames.triggerButton,
+            styles[classNames.triggerButton],
+          )}
+        >
+          {children ? (
+            children
+          ) : (
+            <Flex gap="2" align="center">
+              {iconStart && (
+                <span
+                  className={clsx(
+                    classNames.triggerIconStart,
+                    styles[classNames.triggerIconStart],
+                  )}
+                >
+                  {iconStart}
+                </span>
               )}
-            >
-              {title}
-            </span>
-            {subtitle && (
               <span
                 className={clsx(
-                  classNames.triggerSubtitle,
-                  styles[classNames.triggerSubtitle],
+                  classNames.triggerTitle,
+                  styles[classNames.triggerTitle],
                 )}
               >
-                {subtitle}
+                {title}
               </span>
-            )}
-          </Flex>
-        )}
-
-        <RiArrowDownSLine
-          className={clsx(
-            classNames.triggerIcon,
-            styles[classNames.triggerIcon],
+              {subtitle && (
+                <span
+                  className={clsx(
+                    classNames.triggerSubtitle,
+                    styles[classNames.triggerSubtitle],
+                  )}
+                >
+                  {subtitle}
+                </span>
+              )}
+              {iconEnd && (
+                <span
+                  className={clsx(
+                    classNames.triggerIconEnd,
+                    styles[classNames.triggerIconEnd],
+                  )}
+                >
+                  {iconEnd}
+                </span>
+              )}
+            </Flex>
           )}
-          size={16}
-        />
-      </RAButton>
-    </RAHeading>
-  );
-});
+
+          <RiArrowDownSLine
+            className={clsx(
+              classNames.triggerIcon,
+              styles[classNames.triggerIcon],
+            )}
+            size={16}
+          />
+        </RAButton>
+      </RAHeading>
+    );
+  },
+);
 
 AccordionTrigger.displayName = 'AccordionTrigger';
 

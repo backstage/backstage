@@ -72,6 +72,8 @@ export const AccordionDefinition: {
     readonly triggerButton: 'bui-AccordionTriggerButton';
     readonly triggerTitle: 'bui-AccordionTriggerTitle';
     readonly triggerSubtitle: 'bui-AccordionTriggerSubtitle';
+    readonly triggerIconStart: 'bui-AccordionTriggerIconStart';
+    readonly triggerIconEnd: 'bui-AccordionTriggerIconEnd';
     readonly triggerIcon: 'bui-AccordionTriggerIcon';
     readonly panel: 'bui-AccordionPanel';
     readonly group: 'bui-AccordionGroup';
@@ -118,6 +120,8 @@ export interface AccordionTriggerProps extends HeadingProps {
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
+  iconEnd?: React.ReactNode;
+  iconStart?: React.ReactNode;
   // (undocumented)
   subtitle?: string;
   // (undocumented)
