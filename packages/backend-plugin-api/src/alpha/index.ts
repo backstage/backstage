@@ -27,8 +27,22 @@ export type {
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
+export type {
+  MetricsService,
+  Attributes,
+  Counter,
+  Gauge,
+  Histogram,
+  MetricOptions,
+  ObservableCounter,
+  ObservableGauge,
+  ObservableUpDownCounter,
+  UpDownCounter,
+} from './MetricsService';
+
 export {
   actionsRegistryServiceRef,
   actionsServiceRef,
   rootSystemMetadataServiceRef,
+  metricsServiceRef,
 } from './refs';
