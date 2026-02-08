@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-backend-module-auth0-provider
 
+## 0.3.0-next.1
+
+### Patch Changes
+
+- 867c905: Add support for organizational invites in auth0 strategy
+
 ## 0.3.0-next.0
 
 ### Minor Changes

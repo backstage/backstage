@@ -1,5 +1,13 @@
 # @backstage/frontend-plugin-api
 
+## 0.14.0-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12-next.0
+
 ## 0.14.0-next.1
 
 ### Minor Changes

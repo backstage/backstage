@@ -1,5 +1,29 @@
 # @backstage/frontend-test-utils
 
+## 0.4.6-next.2
+
+### Patch Changes
+
+- 15ed3f9: Added `snapshot()` method to `ExtensionTester`, which returns a tree-shaped representation of the resolved extension hierarchy. Convenient to use with `toMatchInlineSnapshot()`.
+- 013ec22: Added `mountedRoutes` option to `renderTestApp` for binding route refs to paths, matching the existing option in `renderInTestApp`:
+
+  ```typescript
+  renderTestApp({
+    extensions: [...],
+    mountedRoutes: {
+      '/my-path': myRouteRef,
+    },
+  });
+  ```
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/frontend-app-api@0.15.0-next.2
+  - @backstage/version-bridge@1.0.12-next.0
+  - @backstage/test-utils@1.7.15-next.2
+  - @backstage/plugin-app@0.4.0-next.2
+
 ## 0.4.6-next.1
 
 ### Patch Changes
