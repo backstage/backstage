@@ -42,10 +42,23 @@ This method of serving the plugin provides quicker iteration speed and a faster
 startup and hot reloads. It is only meant for local development, and the setup
 for it can be found inside the plugin's `dev/` directory.
 
+
 ### Other Plugin Library Package Types
 
-There are other plugin library package types that you can chose from. To be able to
-select the type when you create a new plugin just run: `yarn new`. You'll then be asked
-what type of plugin you wish to create like this:
+There are several plugin library package types you can choose from when creating a new plugin. To select the type, simply run `yarn new` and you'll be prompted to pick from the available types:
 
 ![List of available plugin types to pick from](../assets/plugins/create-plugin_types.png)
+
+### Troubleshooting & Common Issues
+
+- **Plugin does not appear in the UI:**
+	- Ensure the plugin is imported and registered in your app's main configuration (e.g., in `packages/app/src/App.tsx`).
+	- Restart the dev server after adding a new plugin.
+- **Build errors after creating a plugin:**
+	- Run `yarn install` in the root directory to ensure all dependencies are installed.
+	- Check for typos in the plugin ID or import paths.
+- **Hot reload not working:**
+	- Make sure you are running the plugin in isolation using `yarn workspace @backstage/plugin-<your-plugin> start`.
+- **Need more help?**
+	- Learn about [Frontend Plugin Development](https://backstage.io/docs/frontend-system/building-plugins/index) and [Backend Plugin Development](https://backstage.io/docs/backend-system/building-plugins-and-modules/index).
+	- Ask in the [Backstage Community Discord](https://discord.com/invite/MUpMjP2)
