@@ -14,6 +14,164 @@ Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of
 <Route path="/catalog" element={<CatalogIndexPage pagination />} />
 ```
 
+## Export
+
+The `CatalogIndexPage` export feature was added in v1.48.0 of Backstage. To enable export you need to pass in the `exportSettings` prop with `enableExport: true`:
+
+```tsx title="packages/app/src/App.tsx"
+<Route
+  path="/catalog"
+  element={<CatalogIndexPage exportSettings={{ enableExport: true }} />}
+/>
+```
+
+This will enable CSV and JSON export of the catalog table, including the enabled catalog backend filters in the current user's view. The `CatalogExportButton` can also be embedded directly on your custom `CatalogIndexPage`.
+
+### Customizing Export
+
+You can customize the export behavior by configuring the `exportSettings` prop with various options via the `CatalogExportSettings` interface:
+
+```tsx
+export interface CatalogExportSettings {
+  enableExport?: boolean;
+  /**
+   * Array of custom columns to include in the export.
+   * Each column specifies an entity field path and display title. Defaults to Name, Type, Owner and Description columns.
+   **/
+  columns?: ExportColumn[];
+  /**
+   * Map of custom export format handlers.
+   * Each handler is an async function that receives the catalog API, columns config and stream request and returns a Blob.
+   * Custom formats appear in the export dialog alongside built-in CSV and JSON options.
+   **/
+  customExporters?: Record<string, CustomExporter>;
+  /** Callback function invoked after successful export completion. Useful for displaying notifications or triggering post-export actions. */
+  onSuccess?: () => void;
+  /** Callback function invoked if export fails. Receives an Error object containing failure details for error handling and user notification. */
+  onError?: (error: Error) => void;
+  /** Material-UI Button component props for customizing the export button's appearance and behavior (e.g., variant, size, color). */
+  buttonProps?: ButtonProps;
+}
+```
+
+#### Custom Export Columns
+
+By default, the export includes Name, Type, Owner and Description columns. You can customize this:
+
+```tsx title="packages/app/src/App.tsx"
+import { CatalogIndexPage } from '@backstage/plugin-catalog';
+
+const customColumns = [
+  { entityFilterKey: 'metadata.name', title: 'Name' },
+  { entityFilterKey: 'metadata.namespace', title: 'Namespace' },
+  { entityFilterKey: 'spec.owner', title: 'Owner' },
+];
+
+<CatalogIndexPage
+  exportSettings={{
+    enableExport: true,
+    columns: customColumns,
+  }}
+/>;
+```
+
+When using `CatalogExportButton` directly:
+
+```tsx title="packages/app/src/App.tsx"
+import { CatalogExportButton } from '@backstage/plugin-catalog';
+
+<CatalogExportButton settings={{ columns: customColumns }} />;
+```
+
+#### Custom Export Formats
+
+You can add custom export format types beyond CSV and JSON by providing custom exporter functions:
+
+```tsx title="packages/app/src/App.tsx"
+import { CatalogIndexPage, CustomExporter } from '@backstage/plugin-catalog';
+
+const customExporters: Record<string, CustomExporter> = {
+  xml: async (catalogApi, columns, streamRequest) => {
+    const entities = [];
+    for await (const page of catalogApi.streamEntities(streamRequest)) {
+      entities.push(...page);
+    }
+    // Not shown in this example is how to create the YAML/XML serialization
+    const xmlContent = serializeToXml(entities, columns);
+    return new Blob([xmlContent], { type: 'application/xml' });
+  },
+  yaml: async (catalogApi, columns, streamRequest) => {
+    const entities = [];
+    for await (const page of catalogApi.streamEntities(streamRequest)) {
+      entities.push(...page);
+    }
+    const yamlContent = serializeToYaml(entities, columns);
+    return new Blob([yamlContent], { type: 'application/x-yaml' });
+  },
+};
+
+<CatalogIndexPage
+  exportSettings={{
+    enableExport: true,
+    customExporters,
+  }}
+/>;
+```
+
+When custom export formats are provided, they will appear in the export dialog alongside the built-in CSV and JSON options.
+
+#### Success/Error Callbacks
+
+You can also provide callbacks to handle successful or failed exports:
+
+```tsx title="packages/app/src/App.tsx"
+<CatalogIndexPage
+  exportSettings={{
+    enableExport: true,
+    onSuccess: () => {
+      // Handle successful export
+      notificationApi.success({ message: 'Export completed!' });
+    },
+    onError: error => {
+      // Handle export error
+      notificationApi.error({
+        message: `Export failed: ${error.message}`,
+      });
+    },
+  }}
+/>
+```
+
+#### Combined Example
+
+Here's an example combining all customization options:
+
+```tsx title="packages/app/src/App.tsx"
+<CatalogIndexPage
+  exportSettings={{
+    enableExport: true,
+    columns: [
+      { entityFilterKey: 'metadata.name', title: 'Name' },
+      { entityFilterKey: 'spec.type', title: 'Type' },
+      { entityFilterKey: 'spec.owner', title: 'Owner' },
+      { entityFilterKey: 'metadata.namespace', title: 'Namespace' },
+    ],
+    customExporters: {
+      xml: xmlExporter,
+      yaml: yamlExporter,
+    },
+    onSuccess: () => {
+      notificationApi.success({ message: 'Export completed!' });
+    },
+    onError: error => {
+      notificationApi.error({
+        message: `Export failed: ${error.message}`,
+      });
+    },
+  }}
+/>
+```
+
 ## Initially Selected Filter
 
 By default, the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
