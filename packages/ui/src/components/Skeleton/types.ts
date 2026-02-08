@@ -14,11 +14,32 @@
  * limitations under the License.
  */
 
-import { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
+import { Responsive, Surface } from '../../types';
 
 /** @public */
 export interface SkeletonProps extends ComponentProps<'div'> {
+  /**
+   * Width of the skeleton. If not provided, defaults to 100% for text
+   * skeletons or fits content when children are present.
+   */
   width?: number | string;
+  /**
+   * Height of the skeleton. If not provided, automatically inherits from
+   * the parent typography context or fits children's height.
+   */
   height?: number | string;
+  /**
+   * Whether to use fully rounded corners (circular).
+   */
   rounded?: boolean;
+  /**
+   * Children elements. When provided, the skeleton will infer its dimensions
+   * from the children, respecting their natural size and preventing layout shift.
+   */
+  children?: ReactNode;
+  /**
+   * Surface the skeleton is placed on. Defaults to context surface if available.
+   */
+  onSurface?: Responsive<Surface>;
 }
