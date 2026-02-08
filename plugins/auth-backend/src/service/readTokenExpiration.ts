@@ -29,8 +29,11 @@ export function readBackstageTokenExpiration(config: RootConfigService) {
 }
 
 export function readDcrTokenExpiration(config: RootConfigService) {
+  const backstageExpiration = readBackstageTokenExpiration(config);
   return readTokenExpiration(config, {
     configKey: 'auth.experimentalDynamicClientRegistration.tokenExpiration',
+    minExpiration: backstageExpiration,
+    defaultExpiration: backstageExpiration,
   });
 }
 
