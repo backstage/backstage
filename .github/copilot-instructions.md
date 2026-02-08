@@ -5,7 +5,8 @@ Backstage is an open platform for building developer portals. This is a TypeScri
 - `/packages`: Core framework packages (prefixed `@backstage/`)
 - `/plugins`: Plugin packages (prefixed `@backstage/plugin-*`)
 - `/packages/app` and `/packages/backend`: Example app for local development
-- `/packages/app-next`: Example app using the new frontend system (NFS)
+- `/packages/app`: Main example app using the new frontend system
+- `/packages/app-legacy`: Example app using the old frontend system
 - `/docs`: Documentation files
 
 Packages prefixed with `core-` (e.g., `@backstage/core-plugin-api`) are part of the old frontend system. Packages prefixed with `frontend-` (e.g., `@backstage/frontend-plugin-api`) are part of the new frontend system (NFS). Packages prefixed with `backend-` (e.g., `@backstage/backend-plugin-api`) are part of the backend system.

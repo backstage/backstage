@@ -1,4 +1,4 @@
-# app-next-example-plugin
+# app-example-plugin
 
 ## 0.0.32-next.0
 

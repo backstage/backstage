@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
+import '@backstage/cli/asset-types';
 import ReactDOM from 'react-dom/client';
-import { createApp } from '@backstage/frontend-defaults';
-import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
-
+import App from './App';
 import '@backstage/ui/css/styles.css';
 
-const app = createApp({
-  features: [appModulePublicSignIn],
-});
-
-ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());
+ReactDOM.createRoot(document.getElementById('root')!).render(<App />);

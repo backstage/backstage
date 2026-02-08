@@ -10,7 +10,7 @@ app:
     - match:
         pluginId: pages
       info:
-        description: 'This description was overridden in packages/app-next/app-config.yaml'
+        description: 'This description was overridden in packages/app/app-config.yaml'
     - match:
         pluginId: /^catalog(-.*)?$/
       info:
