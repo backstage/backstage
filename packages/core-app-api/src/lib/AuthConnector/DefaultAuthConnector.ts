@@ -26,6 +26,7 @@ import {
   AuthConnectorCreateSessionOptions,
   PopupOptions,
   AuthConnectorRefreshSessionOptions,
+  AuthorizationParams,
 } from './types';
 
 let warned = false;
@@ -64,6 +65,10 @@ type Options<AuthSession> = {
    * Options used to configure auth popup
    */
   popupOptions?: PopupOptions;
+  /**
+   * Additional parameters to be passed to the start authorization endpoint.
+   */
+  authorizationParams?: AuthorizationParams | (() => AuthorizationParams);
 };
 
 function defaultJoinScopes(scopes: Set<string>) {
@@ -86,6 +91,11 @@ export class DefaultAuthConnector<AuthSession>
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
   private readonly enableExperimentalRedirectFlow: boolean;
   private readonly popupOptions: PopupOptions | undefined;
+
+  private readonly authorizationParams:
+    | AuthorizationParams
+    | (() => AuthorizationParams)
+    | undefined;
   constructor(options: Options<AuthSession>) {
     const {
       configApi,
@@ -96,6 +106,7 @@ export class DefaultAuthConnector<AuthSession>
       oauthRequestApi,
       sessionTransform = id => id,
       popupOptions,
+      authorizationParams,
     } = options;
 
     if (!warned && !configApi) {
@@ -110,13 +121,15 @@ export class DefaultAuthConnector<AuthSession>
       ? configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ?? false
       : false;
 
+    this.authorizationParams = authorizationParams;
+
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
       onAuthRequest: async scopes => {
         if (!this.enableExperimentalRedirectFlow) {
-          return this.showPopup(scopes);
+          return this.showPopup(scopes, this.getAuthorizationParams());
         }
-        return this.executeRedirect(scopes);
+        return this.executeRedirect(scopes, this.getAuthorizationParams());
       },
     });
 
@@ -133,9 +146,12 @@ export class DefaultAuthConnector<AuthSession>
   ): Promise<AuthSession> {
     if (options.instantPopup) {
       if (this.enableExperimentalRedirectFlow) {
-        return this.executeRedirect(options.scopes);
+        return this.executeRedirect(
+          options.scopes,
+          this.getAuthorizationParams(),
+        );
       }
-      return this.showPopup(options.scopes);
+      return this.showPopup(options.scopes, this.getAuthorizationParams());
     }
     return this.authRequester(options.scopes);
   }
@@ -196,9 +212,13 @@ export class DefaultAuthConnector<AuthSession>
     }
   }
 
-  private async showPopup(scopes: Set<string>): Promise<AuthSession> {
+  private async showPopup(
+    scopes: Set<string>,
+    query: { [key: string]: string } = {},
+  ): Promise<AuthSession> {
     const scope = this.joinScopesFunc(scopes);
     const popupUrl = await this.buildUrl('/start', {
+      ...query,
       scope,
       origin: window.location.origin,
       flow: 'popup',
@@ -222,10 +242,14 @@ export class DefaultAuthConnector<AuthSession>
     return await this.sessionTransform(payload);
   }
 
-  private async executeRedirect(scopes: Set<string>): Promise<AuthSession> {
+  private async executeRedirect(
+    scopes: Set<string>,
+    query: { [key: string]: string } = {},
+  ): Promise<AuthSession> {
     const scope = this.joinScopesFunc(scopes);
     // redirect to auth api
     window.location.href = await this.buildUrl('/start', {
+      ...query,
       scope,
       origin: window.location.origin,
       redirectUrl: window.location.href,
@@ -271,5 +295,11 @@ export class DefaultAuthConnector<AuthSession>
       return '';
     }
     return `?${queryString}`;
+  }
+
+  private getAuthorizationParams(): { [key: string]: string } {
+    return typeof this.authorizationParams === 'function'
+      ? this.authorizationParams()
+      : this.authorizationParams || {};
   }
 }
