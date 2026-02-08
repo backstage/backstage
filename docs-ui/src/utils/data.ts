@@ -142,3 +142,10 @@ export const components: Page[] = [
     slug: 'visually-hidden',
   },
 ];
+
+export const hooks: Page[] = [
+  {
+    title: 'useBreakpoint',
+    slug: 'use-breakpoint',
+  },
+];
