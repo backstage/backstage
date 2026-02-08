@@ -294,3 +294,17 @@ jobs:
       - name: build microsite
         run: yarn build
         working-directory: microsite
+
+      - name: Save event context for deployment
+        run: |
+          cat ${{ github.event_path }} > event.json
+
+      - name: Upload build artifacts for preview deployment
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: microsite-preview-build
+          path: |
+            microsite/build/
+            event.json
+          retention-days: 2
+          if-no-files-found: error
