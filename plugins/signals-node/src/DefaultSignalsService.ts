@@ -38,7 +38,7 @@ export class DefaultSignalsService implements SignalsService {
     signal: SignalPayload<TMessage>,
   ) {
     await this.events.publish({
-      topic: 'signals',
+      topic: `signals:${signal.channel}`,
       eventPayload: signal,
     });
   }
