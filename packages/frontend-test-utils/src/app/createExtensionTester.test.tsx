@@ -173,11 +173,11 @@ describe('createExtensionTester', () => {
     });
 
     const tester = createExtensionTester(extension, {
-      apis: [[analyticsApiRef, analyticsApiMock]],
+      apis: [[analyticsApiRef, analyticsApiMock] as const],
     });
 
     renderInTestApp(tester.reactElement(), {
-      apis: [[analyticsApiRef, analyticsApiMock]],
+      apis: [[analyticsApiRef, analyticsApiMock] as const],
     });
 
     expect(screen.getByText('Test')).toBeInTheDocument();

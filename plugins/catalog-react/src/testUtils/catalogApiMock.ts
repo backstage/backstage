@@ -23,7 +23,11 @@ import { InMemoryCatalogClient } from '@backstage/catalog-client/testUtils';
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { CatalogApi } from '@backstage/catalog-client';
-import { ApiMock } from '@backstage/frontend-test-utils';
+import {
+  ApiMock,
+  attachMockApiFactory,
+  type MockWithApiFactory,
+} from '@backstage/frontend-test-utils';
 
 /** @internal */
 function simpleMock<TApi>(
@@ -41,13 +45,13 @@ function simpleMock<TApi>(
         }
       }
     }
-    return Object.assign(mock, {
-      factory: createApiFactory({
-        api: ref,
-        deps: {},
-        factory: () => mock,
-      }),
-    }) as ApiMock<TApi>;
+    const factory = createApiFactory({
+      api: ref,
+      deps: {},
+      factory: () => mock,
+    });
+    const marked = attachMockApiFactory(ref, mock);
+    return Object.assign(marked, { factory }) as ApiMock<TApi>;
   };
 }
 
@@ -58,8 +62,11 @@ function simpleMock<TApi>(
  *
  * @public
  */
-export function catalogApiMock(options?: { entities?: Entity[] }): CatalogApi {
-  return new InMemoryCatalogClient(options);
+export function catalogApiMock(options?: {
+  entities?: Entity[];
+}): MockWithApiFactory<CatalogApi> {
+  const instance = new InMemoryCatalogClient(options);
+  return attachMockApiFactory(catalogApiRef, instance);
 }
 
 /**

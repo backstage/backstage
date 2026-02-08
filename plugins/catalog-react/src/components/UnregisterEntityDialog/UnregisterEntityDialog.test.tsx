@@ -25,22 +25,12 @@ import { catalogApiRef } from '../../api';
 import { entityRouteRef } from '../../routes';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import * as state from './useUnregisterEntityDialogState';
-import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
 
 describe('UnregisterEntityDialog', () => {
-  const alertApi: AlertApi = {
-    post() {
-      return undefined;
-    },
-    alert$() {
-      throw new Error('not implemented');
-    },
-  };
-
-  beforeEach(() => {
-    jest.spyOn(alertApi, 'post').mockImplementation(() => {});
-  });
+  const alertApi = mockApis.alert();
 
   const entity = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -340,11 +330,13 @@ describe('UnregisterEntityDialog', () => {
     await waitFor(() => {
       expect(deleteEntity).toHaveBeenCalled();
       expect(onConfirm).toHaveBeenCalled();
-      expect(alertApi.post).toHaveBeenCalledWith({
-        message: 'Removed entity n',
-        severity: 'success',
-        display: 'transient',
-      });
+      expect(alertApi.getAlerts()).toContainEqual(
+        expect.objectContaining({
+          message: 'Removed entity n',
+          severity: 'success',
+          display: 'transient',
+        }),
+      );
     });
   });
 });
