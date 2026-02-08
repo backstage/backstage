@@ -60,6 +60,7 @@
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^",
     "@backstage/plugin-devtools": "workspace:^",
     "@backstage/plugin-home": "workspace:^",
+    "@backstage/plugin-home-react": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-kubernetes-cluster": "workspace:^",
     "@backstage/plugin-notifications": "workspace:^",

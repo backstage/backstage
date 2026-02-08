@@ -10,13 +10,20 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { HomePageLayoutProps } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
+import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @public
+export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+// @alpha
 const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
@@ -49,6 +56,27 @@ const _default: OverridableFrontendPlugin<
         element: JSX.Element;
       };
     }>;
+    'nav-item:home': OverridableExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
+      };
+    }>;
     'page:home': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
@@ -67,24 +95,27 @@ const _default: OverridableFrontendPlugin<
             }
           >;
       inputs: {
-        props: ExtensionInput<
-          | ConfigurableExtensionDataRef<
-              JSX_2.Element,
-              'core.reactElement',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'title',
-              {
-                optional: true;
-              }
-            >,
+        widgets: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            HomePageWidgetData,
+            'home.widget.data',
+            {}
+          >,
           {
-            singleton: true;
-            optional: true;
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        layouts: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            (props: HomePageLayoutProps) => JSX_2.Element,
+            'home.layout.component',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
             internal: false;
           }
         >;
@@ -102,11 +133,10 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha
 export const homeTranslationRef: TranslationRef<
   'home',
   {
-    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
     readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
@@ -115,10 +145,10 @@ export const homeTranslationRef: TranslationRef<
     readonly 'customHomepageButtons.addWidget': 'Add widget';
     readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
-    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'widgetSettingsOverlay.editSettingsTooptip': 'Edit settings';
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
+    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
     readonly 'visitList.empty.title': 'There are no visits to show yet.';
     readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
@@ -126,6 +156,7 @@ export const homeTranslationRef: TranslationRef<
     readonly 'quickStart.title': 'Onboarding';
     readonly 'quickStart.description': 'Get started with Backstage';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';
+    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'visitedByType.action.viewMore': 'View more';
     readonly 'visitedByType.action.viewLess': 'View less';
     readonly 'featuredDocsCard.empty.title': 'No documents to show';
@@ -135,12 +166,17 @@ export const homeTranslationRef: TranslationRef<
   }
 >;
 
-// @alpha (undocumented)
-export const titleExtensionDataRef: ConfigurableExtensionDataRef<
-  string,
-  'title',
-  {}
->;
+// @public
+export type LayoutConfiguration = {
+  component: ReactElement | string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  movable?: boolean;
+  deletable?: boolean;
+  resizable?: boolean;
+};
 
 // (No @packageDocumentation comment for this package)
 ```
