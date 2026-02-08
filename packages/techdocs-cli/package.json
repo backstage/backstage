@@ -65,7 +65,7 @@
     "@types/node": "^22.13.14",
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
-    "find-process": "^1.4.5",
+    "find-process": "^2.0.0",
     "nodemon": "^3.0.1",
     "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app"
   }
