@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
+import { OAuthRequestDialog } from '@backstage/core-components';
 import { AppRootElementBlueprint } from '@backstage/frontend-plugin-api';
+import { ToastDisplay } from '../components/Toast';
 
 export const oauthRequestDialogAppRootElement = AppRootElementBlueprint.make({
   name: 'oauth-request-dialog',
@@ -41,7 +42,9 @@ export const alertDisplayAppRootElement =
     },
     factory: (originalFactory, { config }) => {
       return originalFactory({
-        element: <AlertDisplay {...config} />,
+        element: (
+          <ToastDisplay transientTimeoutMs={config.transientTimeoutMs} />
+        ),
       });
     },
   });

@@ -18,6 +18,7 @@ const allStories = isChromatic
       'packages/ui',
       'packages/core-components',
       'packages/app',
+      'plugins/app',
       'plugins/org',
       'plugins/search',
       'plugins/search-react',
