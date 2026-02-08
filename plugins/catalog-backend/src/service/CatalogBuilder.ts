@@ -430,6 +430,10 @@ export class CatalogBuilder {
       config.getOptionalBoolean('catalog.enableRelationsCompatibility'),
     );
 
+    const experimentalEntityChangeEvents = Boolean(
+      config.getOptionalBoolean('catalog.experimentalEntityChangeEvents'),
+    );
+
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
     const parser = this.parser || defaultEntityDataParser;
@@ -443,6 +447,7 @@ export class CatalogBuilder {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
       logger,
+      events,
     });
 
     const processingDatabase = new DefaultProcessingDatabase({
@@ -466,7 +471,9 @@ export class CatalogBuilder {
       database: dbClient,
       logger,
       stitcher,
+      events,
       enableRelationsCompatibility,
+      experimentalEntityChangeEvents,
     });
 
     let permissionsService: PermissionsService;
@@ -560,6 +567,7 @@ export class CatalogBuilder {
         this.onProcessingError?.(event);
       },
       events,
+      experimentalEntityChangeEvents,
     });
 
     const locationAnalyzer =

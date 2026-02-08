@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { EventsService } from '@backstage/plugin-events-node';
 import { Knex } from 'knex';
 import uniq from 'lodash/uniq';
+import { CATALOG_ENTITY_CHANGE_TOPIC } from '../../../constants';
 import { StitchingStrategy } from '../../../stitching/types';
-import { DbRefreshStateRow } from '../../tables';
+import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
 import { markForStitching } from '../stitcher/markForStitching';
 
 /**
@@ -28,8 +30,10 @@ import { markForStitching } from '../stitcher/markForStitching';
 export async function deleteOrphanedEntities(options: {
   knex: Knex.Transaction | Knex;
   strategy: StitchingStrategy;
+  events?: EventsService;
+  experimentalEntityChangeEvents?: boolean;
 }): Promise<number> {
-  const { knex, strategy } = options;
+  const { knex, strategy, events, experimentalEntityChangeEvents } = options;
 
   let total = 0;
 
@@ -74,11 +78,32 @@ export async function deleteOrphanedEntities(options: {
 
     total += orphanIds.length;
 
+    // Fetch entity refs for orphans that were stitched (have final_entities rows)
+    // so we can publish deletion events after removing them
+    const orphanRefs = await knex<DbFinalEntitiesRow>('final_entities')
+      .whereIn('entity_id', orphanIds)
+      .select('entity_ref');
+
     // Delete the orphans themselves
     await knex
       .table<DbRefreshStateRow>('refresh_state')
       .delete()
       .whereIn('entity_id', orphanIds);
+
+    // Publish deletion events for orphans that had been fully stitched
+    if (experimentalEntityChangeEvents && events && orphanRefs.length > 0) {
+      await Promise.all(
+        orphanRefs.map(({ entity_ref }) =>
+          events.publish({
+            topic: CATALOG_ENTITY_CHANGE_TOPIC,
+            eventPayload: {
+              entityRef: entity_ref,
+              action: 'deleted',
+            },
+          }),
+        ),
+      );
+    }
 
     // Mark all of the things that the orphans had relations to for stitching
     await markForStitching({

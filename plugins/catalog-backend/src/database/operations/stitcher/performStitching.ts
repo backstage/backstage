@@ -37,6 +37,8 @@ import {
   LoggerService,
   isDatabaseConflictError,
 } from '@backstage/backend-plugin-api';
+import { EventsService } from '@backstage/plugin-events-node';
+import { CATALOG_ENTITY_CHANGE_TOPIC } from '../../../constants';
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =
@@ -54,8 +56,11 @@ export async function performStitching(options: {
   strategy: StitchingStrategy;
   entityRef: string;
   stitchTicket?: string;
+  events: EventsService;
+  experimentalEntityChangeEvents?: boolean;
 }): Promise<'changed' | 'unchanged' | 'abandoned'> {
-  const { knex, logger, entityRef } = options;
+  const { knex, logger, entityRef, events, experimentalEntityChangeEvents } =
+    options;
   const stitchTicket = options.stitchTicket ?? uuid();
 
   // In deferred mode, the entity is removed from the stitch queue on ANY
@@ -249,6 +254,17 @@ export async function performStitching(options: {
       await trx<DbSearchRow>('search').where({ entity_id: entityId }).delete();
       await trx.batchInsert('search', searchEntries, BATCH_SIZE);
     });
+
+    if (experimentalEntityChangeEvents) {
+      await events.publish({
+        topic: CATALOG_ENTITY_CHANGE_TOPIC,
+        eventPayload: {
+          entityRef,
+          entity,
+          action: previousHash ? 'updated' : 'created',
+        },
+      });
+    }
 
     return 'changed';
   } catch (error) {

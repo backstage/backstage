@@ -257,5 +257,15 @@ export interface Config {
         priority?: number;
       };
     };
+
+    /**
+     * Enables the experimental entity change events feature.
+     *
+     * When enabled, the catalog will emit events to the `experimental.catalog.changes`
+     * topic whenever entities are created, updated, or deleted.
+     *
+     * @experimental This feature is experimental and may change or be removed in future versions.
+     */
+    experimentalEntityChangeEvents?: boolean;
   };
 }

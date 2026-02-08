@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
+import { EventsService } from '@backstage/plugin-events-node';
 import { Knex } from 'knex';
 import splitToChunks from 'lodash/chunk';
 import { DateTime } from 'luxon';
@@ -48,6 +49,8 @@ export class DefaultStitcher implements Stitcher {
   private readonly logger: LoggerService;
   private readonly strategy: StitchingStrategy;
   private readonly tracker: StitchProgressTracker;
+  private readonly events: EventsService;
+  private readonly experimentalEntityChangeEvents: boolean;
   private stopFunc?: () => void;
 
   static fromConfig(
@@ -55,12 +58,17 @@ export class DefaultStitcher implements Stitcher {
     options: {
       knex: Knex;
       logger: LoggerService;
+      events: EventsService;
     },
   ): DefaultStitcher {
     return new DefaultStitcher({
       knex: options.knex,
       logger: options.logger,
       strategy: stitchingStrategyFromConfig(config),
+      events: options.events,
+      experimentalEntityChangeEvents:
+        config.getOptionalBoolean('catalog.experimentalEntityChangeEvents') ??
+        false,
     });
   }
 
@@ -68,10 +76,15 @@ export class DefaultStitcher implements Stitcher {
     knex: Knex;
     logger: LoggerService;
     strategy: StitchingStrategy;
+    events: EventsService;
+    experimentalEntityChangeEvents?: boolean;
   }) {
     this.knex = options.knex;
     this.logger = options.logger;
     this.strategy = options.strategy;
+    this.events = options.events;
+    this.experimentalEntityChangeEvents =
+      options.experimentalEntityChangeEvents ?? false;
     this.tracker = progressTracker(options.knex, options.logger);
   }
 
@@ -182,6 +195,8 @@ export class DefaultStitcher implements Stitcher {
         strategy: this.strategy,
         entityRef: options.entityRef,
         stitchTicket: options.stitchTicket,
+        events: this.events,
+        experimentalEntityChangeEvents: this.experimentalEntityChangeEvents,
       });
       track.markComplete(result);
     } catch (error) {

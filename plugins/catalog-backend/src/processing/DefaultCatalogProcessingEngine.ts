@@ -74,6 +74,7 @@ export class DefaultCatalogProcessingEngine {
   }) => Promise<void> | void;
   private readonly tracker: ProgressTracker;
   private readonly events: EventsService;
+  private readonly experimentalEntityChangeEvents: boolean;
 
   private stopFunc?: () => void;
 
@@ -94,6 +95,7 @@ export class DefaultCatalogProcessingEngine {
     }) => Promise<void> | void;
     tracker?: ProgressTracker;
     events: EventsService;
+    experimentalEntityChangeEvents?: boolean;
   }) {
     this.config = options.config;
     this.scheduler = options.scheduler;
@@ -108,6 +110,8 @@ export class DefaultCatalogProcessingEngine {
     this.onProcessingError = options.onProcessingError;
     this.tracker = options.tracker ?? progressTracker();
     this.events = options.events;
+    this.experimentalEntityChangeEvents =
+      options.experimentalEntityChangeEvents ?? false;
 
     this.stopFunc = undefined;
   }
@@ -361,6 +365,8 @@ export class DefaultCatalogProcessingEngine {
         const n = await deleteOrphanedEntities({
           knex: this.knex,
           strategy: stitchingStrategy,
+          events: this.events,
+          experimentalEntityChangeEvents: this.experimentalEntityChangeEvents,
         });
         if (n > 0) {
           this.logger.info(`Deleted ${n} orphaned entities`);

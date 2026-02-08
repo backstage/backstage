@@ -70,6 +70,9 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
 
 // @public (undocumented)
+export const CATALOG_ENTITY_CHANGE_TOPIC = 'experimental.catalog.changes';
+
+// @public (undocumented)
 export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
 
 // @public

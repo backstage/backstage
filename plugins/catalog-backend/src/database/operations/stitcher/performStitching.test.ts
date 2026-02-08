@@ -91,6 +91,7 @@ describe('performStitching', () => {
           stitchTimeout: { seconds: 1 },
         },
         entityRef: 'k:ns/n',
+        events: mockServices.events.mock(),
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -180,6 +181,7 @@ describe('performStitching', () => {
           stitchTimeout: { seconds: 1 },
         },
         entityRef: 'k:ns/n',
+        events: mockServices.events.mock(),
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -207,6 +209,7 @@ describe('performStitching', () => {
           stitchTimeout: { seconds: 1 },
         },
         entityRef: 'k:ns/n',
+        events: mockServices.events.mock(),
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -354,6 +357,7 @@ describe('performStitching', () => {
           logger: stitchLogger,
           strategy: { mode: 'immediate' },
           entityRef: 'k:ns/n',
+          events: mockServices.events.mock(),
         }),
       ).resolves.toBe('abandoned');
 
@@ -420,6 +424,7 @@ describe('performStitching', () => {
           logger: stitchLogger,
           strategy: { mode: 'immediate' },
           entityRef: 'k:ns/n',
+          events: mockServices.events.mock(),
         }),
       ).resolves.toBe('changed');
 
