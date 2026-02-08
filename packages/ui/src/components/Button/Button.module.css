@@ -118,19 +118,19 @@
     --bg-active: var(--bui-bg-neutral-1-pressed);
     --fg: var(--bui-fg-primary);
 
-    &[data-on-surface='1'] {
+    &[data-bg='neutral-2'] {
       --bg: var(--bui-bg-neutral-2);
       --bg-hover: var(--bui-bg-neutral-2-hover);
       --bg-active: var(--bui-bg-neutral-2-pressed);
     }
 
-    &[data-on-surface='2'] {
+    &[data-bg='neutral-3'] {
       --bg: var(--bui-bg-neutral-3);
       --bg-hover: var(--bui-bg-neutral-3-hover);
       --bg-active: var(--bui-bg-neutral-3-pressed);
     }
 
-    &[data-on-surface='3'] {
+    &[data-bg='neutral-4'] {
       --bg: var(--bui-bg-neutral-4);
       --bg-hover: var(--bui-bg-neutral-4-hover);
       --bg-active: var(--bui-bg-neutral-4-pressed);
@@ -182,17 +182,17 @@
     --bg-active: var(--bui-bg-neutral-1-pressed);
     --fg: var(--bui-fg-primary);
 
-    &[data-on-surface='1'] {
+    &[data-bg='neutral-2'] {
       --bg-hover: var(--bui-bg-neutral-2-hover);
       --bg-active: var(--bui-bg-neutral-2-pressed);
     }
 
-    &[data-on-surface='2'] {
+    &[data-bg='neutral-3'] {
       --bg-hover: var(--bui-bg-neutral-3-hover);
       --bg-active: var(--bui-bg-neutral-3-pressed);
     }
 
-    &[data-on-surface='3'] {
+    &[data-bg='neutral-4'] {
       --bg-hover: var(--bui-bg-neutral-4-hover);
       --bg-active: var(--bui-bg-neutral-4-pressed);
     }

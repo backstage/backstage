@@ -29,7 +29,7 @@ export const ButtonDefinition = defineComponent<ButtonOwnProps>()({
     content: 'bui-ButtonContent',
     spinner: 'bui-ButtonSpinner',
   },
-  surface: 'leaf',
+  bg: 'leaf',
   propDefs: {
     size: { dataAttribute: true, default: 'small' },
     variant: { dataAttribute: true, default: 'primary' },
@@ -37,7 +37,6 @@ export const ButtonDefinition = defineComponent<ButtonOwnProps>()({
     loading: { dataAttribute: true },
     iconStart: {},
     iconEnd: {},
-    onSurface: {},
     children: {},
     className: {},
     style: {},

@@ -64,3 +64,9 @@ export * from './types';
 
 // Hooks
 export { useBreakpoint } from './hooks/useBreakpoint';
+export { useBg, BgProvider } from './hooks/useBg';
+export type {
+  BgContextValue,
+  BgProviderProps,
+  UseBgOptions,
+} from './hooks/useBg';

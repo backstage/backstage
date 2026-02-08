@@ -17,7 +17,7 @@
 import { ReactNode } from 'react';
 import clsx from 'clsx';
 import { useBreakpoint } from '../useBreakpoint';
-import { useSurface, SurfaceProvider, UseSurfaceOptions } from '../useSurface';
+import { useBg, BgProvider } from '../useBg';
 import { resolveResponsiveValue, processUtilityProps } from './helpers';
 import type {
   ComponentConfig,
@@ -36,14 +36,9 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
-  const surfaceOptions: UseSurfaceOptions | undefined =
-    definition.surface === 'container'
-      ? { surface: props.surface }
-      : definition.surface === 'leaf'
-      ? { onSurface: props.onSurface }
-      : undefined;
-
-  const { surface: resolvedSurface } = useSurface(surfaceOptions);
+  const { bg: resolvedBg } = useBg(
+    definition.bg ? { mode: definition.bg, bg: props.bg } : undefined,
+  );
 
   const ownPropKeys = new Set(Object.keys(definition.propDefs));
   const utilityPropKeys = new Set(definition.utilityProps ?? []);
@@ -77,15 +72,14 @@ export function useDefinition<
     }
   }
 
-  // Add data-on-surface for leaf components
-  if (definition.surface === 'leaf' && resolvedSurface !== undefined) {
-    // Handle responsive surface values - for data attributes, use the resolved string
-    const surfaceValue =
-      typeof resolvedSurface === 'object'
-        ? resolveResponsiveValue(resolvedSurface as any, breakpoint)
-        : resolvedSurface;
-    if (surfaceValue !== undefined) {
-      dataAttributes['data-on-surface'] = String(surfaceValue);
+  // Set data-bg from the resolved bg value (works for both container and leaf)
+  if (definition.bg && resolvedBg !== undefined) {
+    const bgValue =
+      typeof resolvedBg === 'object'
+        ? resolveResponsiveValue(resolvedBg as any, breakpoint)
+        : resolvedBg;
+    if (bgValue !== undefined) {
+      dataAttributes['data-bg'] = String(bgValue);
     }
   }
 
@@ -109,13 +103,11 @@ export function useDefinition<
   }
 
   let children: ReactNode | undefined;
-  let surfaceChildren: ReactNode | undefined;
+  let bgChildren: ReactNode | undefined;
 
-  if (definition.surface === 'container') {
-    surfaceChildren = resolvedSurface ? (
-      <SurfaceProvider surface={resolvedSurface}>
-        {props.children}
-      </SurfaceProvider>
+  if (definition.bg === 'container') {
+    bgChildren = resolvedBg ? (
+      <BgProvider bg={resolvedBg}>{props.children}</BgProvider>
     ) : (
       props.children
     );
@@ -127,9 +119,7 @@ export function useDefinition<
     ownProps: {
       classes,
       ...ownPropsResolved,
-      ...(definition.surface === 'container'
-        ? { surfaceChildren }
-        : { children }),
+      ...(definition.bg === 'container' ? { bgChildren } : { children }),
     },
     restProps,
     dataAttributes,

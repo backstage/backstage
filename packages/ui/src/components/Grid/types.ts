@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  Space,
-  SpaceProps,
-  Responsive,
-  Columns,
-  Surface,
-} from '../../types';
+import type { Space, SpaceProps, Responsive, Columns, Bg } from '../../types';
 
 /** @public */
 export interface GridProps extends SpaceProps {
@@ -29,7 +23,7 @@ export interface GridProps extends SpaceProps {
   columns?: Responsive<Columns>;
   gap?: Responsive<Space>;
   style?: React.CSSProperties;
-  surface?: Responsive<Surface>;
+  bg?: Responsive<Bg>;
 }
 
 /** @public */
@@ -41,5 +35,5 @@ export interface GridItemProps {
   colStart?: Responsive<Columns>;
   rowSpan?: Responsive<Columns>;
   style?: React.CSSProperties;
-  surface?: Responsive<Surface>;
+  bg?: Responsive<Bg>;
 }
