@@ -20,6 +20,9 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const coreComponentsTranslationRef = createTranslationRef({
   id: 'core-components',
   messages: {
+    app: {
+      title: 'Backstage',
+    },
     signIn: {
       title: 'Sign In',
       loginFailed: 'Login failed',
