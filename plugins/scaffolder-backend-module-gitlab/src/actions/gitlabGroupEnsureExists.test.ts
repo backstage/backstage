@@ -86,12 +86,69 @@ describe('gitlab:group:ensureExists', () => {
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         path: ['foo', 'bar'],
+        description: 'my cool group',
       },
     });
 
     expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith('bar', 'bar', {
+      description: 'my cool group',
       parentId: 2,
     });
+
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
+  });
+
+  it('should only apply description to the last created group', async () => {
+    mockGitlabClient.Groups.search.mockResolvedValue([]);
+
+    mockGitlabClient.Groups.create
+      .mockResolvedValueOnce({
+        id: 1,
+        full_path: 'foo',
+      })
+      .mockResolvedValueOnce({
+        id: 2,
+        full_path: 'foo/bar',
+      })
+      .mockResolvedValueOnce({
+        id: 3,
+        full_path: 'foo/bar/baz',
+      });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        path: ['foo', 'bar', 'baz'],
+        description: 'only for innermost group',
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledTimes(3);
+
+    // First group: no description
+    expect(mockGitlabClient.Groups.create).toHaveBeenNthCalledWith(
+      1,
+      'foo',
+      'foo',
+      {},
+    );
+
+    // Second group: no description
+    expect(mockGitlabClient.Groups.create).toHaveBeenNthCalledWith(
+      2,
+      'bar',
+      'bar',
+      { parentId: 1 },
+    );
+
+    // Third (last) group: has description
+    expect(mockGitlabClient.Groups.create).toHaveBeenNthCalledWith(
+      3,
+      'baz',
+      'baz',
+      { parentId: 2, description: 'only for innermost group' },
+    );
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
   });

@@ -22,6 +22,7 @@ export const createGitlabGroupEnsureExistsAction: (options: {
         }
     )[];
     token?: string | undefined;
+    description?: string | undefined;
   },
   {
     groupId?: number | undefined;
