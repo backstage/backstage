@@ -2,9 +2,9 @@
 '@backstage/ui': minor
 ---
 
-**BREAKING**: Replaced `Surface` / `onSurface` system with new `Bg` background system
+**BREAKING**: Replaced `Surface` / `onSurface` system with new `ContainerBg` background system
 
-The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surface`, `onSurface`) have been replaced by a new `Bg` type with semantic neutral levels (`'neutral-1'` through `'neutral-4'`) and intents (`'danger'`, `'warning'`, `'success'`). Leaf components like Button no longer need an explicit prop — backgrounds auto-increment from parent context.
+The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surface`, `onSurface`) have been replaced by a new `ContainerBg` type with semantic neutral levels (`'neutral-1'` through `'neutral-3'`) and intents (`'danger'`, `'warning'`, `'success'`). Containers are capped at `neutral-3`; the `neutral-4` level is reserved for leaf component CSS only. Leaf components like Button no longer need an explicit prop — they receive a `data-on-bg` attribute matching the parent container's bg, and CSS handles the visual step-up.
 
 New `useBg` hook and `BgProvider` replace the deleted `useSurface` hook and `SurfaceProvider`.
 
@@ -50,7 +50,7 @@ Update type imports:
 
 ```diff
 - import type { Surface, LeafSurfaceProps, ContainerSurfaceProps } from '@backstage/ui';
-+ import type { Bg } from '@backstage/ui';
++ import type { ContainerBg } from '@backstage/ui';
 ```
 
 Replace hook usage in custom components:
@@ -73,7 +73,9 @@ Update CSS selectors targeting surface data attributes:
 + [data-bg='neutral-1'] { ... }
 
 - [data-on-surface='2'] { ... }
-+ [data-bg='neutral-2'] { ... }
++ [data-on-bg='neutral-1'] { ... }
 ```
+
+Note: Container components use `data-bg` for their own background level. Leaf components now use `data-on-bg` which reflects the parent container's bg (not an auto-incremented value).
 
 **Affected components:** Box, Button, ButtonIcon, ButtonLink, ToggleButton, Card, Alert, Flex, Grid
