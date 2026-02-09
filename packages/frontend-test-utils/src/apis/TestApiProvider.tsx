@@ -40,8 +40,8 @@ export type TestApiPairs<TApiPairs> = {
 };
 
 /** @internal */
-export function resolveTestApiEntries(
-  apis: readonly TestApiPairs<any>[],
+export function resolveTestApiEntries<const TApiPairs extends any[]>(
+  apis: readonly [...TestApiPairs<TApiPairs>],
 ): ApiHolder {
   const apiMap = new Map<string, unknown>();
 
