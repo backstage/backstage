@@ -11,10 +11,10 @@ As a rule, all names should be camel case, with the exceptions of plugin and mod
 
 ### Plugins
 
-| Description | Pattern           | Examples                              |
-| ----------- | ----------------- | ------------------------------------- |
-| export      | `<camelId>Plugin` | `catalogPlugin`, `userSettingsPlugin` |
-| ID          | `'<kebab-id>'`    | `'catalog'`, `'user-settings'`        |
+| Description | Pattern           | Examples                              | Notes                                               |
+| ----------- | ----------------- | ------------------------------------- | --------------------------------------------------- |
+| export      | `<camelId>Plugin` | `catalogPlugin`, `userSettingsPlugin` |                                                     |
+| ID          | `'<kebab-id>'`    | `'catalog'`, `'user-settings'`        | letters, digits, and dashes, starting with a letter |
 
 Example:
 
@@ -27,10 +27,10 @@ export const userSettingsPlugin = createBackendPlugin({
 
 ### Modules
 
-| Description | Pattern                      | Examples                            |
-| ----------- | ---------------------------- | ----------------------------------- |
-| export      | `<pluginId>Module<ModuleId>` | `catalogModuleGithubEntityProvider` |
-| ID          | `'<module-id>'`              | `'github-entity-provider'`          |
+| Description | Pattern                      | Examples                            | Notes                                               |
+| ----------- | ---------------------------- | ----------------------------------- | --------------------------------------------------- |
+| export      | `<pluginId>Module<ModuleId>` | `catalogModuleGithubEntityProvider` |                                                     |
+| ID          | `'<module-id>'`              | `'github-entity-provider'`          | letters, digits, and dashes, starting with a letter |
 
 Example:
 

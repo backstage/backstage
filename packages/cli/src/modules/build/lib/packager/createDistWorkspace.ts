@@ -20,8 +20,8 @@ import {
   join as joinPath,
   resolve as resolvePath,
   relative as relativePath,
-} from 'path';
-import { tmpdir } from 'os';
+} from 'node:path';
+import { tmpdir } from 'node:os';
 import * as tar from 'tar';
 import partition from 'lodash/partition';
 import { paths } from '../../../../lib/paths';

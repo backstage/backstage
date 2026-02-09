@@ -21,7 +21,7 @@ import {
   TestDatabases,
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';

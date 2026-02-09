@@ -27,7 +27,15 @@ export const LinkDefinition = {
   dataAttributes: {
     variant: ['subtitle', 'body', 'caption', 'label'] as const,
     weight: ['regular', 'bold'] as const,
-    color: ['primary', 'secondary', 'danger', 'warning', 'success'] as const,
+    color: [
+      'primary',
+      'secondary',
+      'danger',
+      'warning',
+      'success',
+      'info',
+    ] as const,
     truncate: [true, false] as const,
+    standalone: [true, false] as const,
   },
 } as const satisfies ComponentDefinition;

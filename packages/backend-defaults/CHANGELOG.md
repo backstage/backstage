@@ -1,5 +1,38 @@
 # @backstage/backend-defaults
 
+## 0.15.2-next.1
+
+### Patch Changes
+
+- 8dd518a: Support `connection.type: azure` in database client to use Microsoft Entra authentication with Azure database for PostgreSQL
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.15.1-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 44f5d04: Minor internal restructure of the postgres config loading code
+- 4fc7bf0: Bump to tar v7
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.20-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-dev-utils@0.1.7-next.0
+  - @backstage/config-loader@1.10.8-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/cli-node@0.2.17-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/backend-app-api@1.5.0-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.15.0
 
 ### Minor Changes

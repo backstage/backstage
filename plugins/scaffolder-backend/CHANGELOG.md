@@ -1,5 +1,61 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.3-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.3-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.6-next.1
+  - @backstage/plugin-scaffolder-common@1.7.6-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 3.1.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Removed unused dependency
+- 1e669cc: Migrate audit events reference docs to http://backstage.io/docs.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.17-next.0
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18-next.0
+  - @backstage/backend-openapi-utils@0.6.6-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.18-next.0
+  - @backstage/plugin-scaffolder-common@1.7.6-next.0
+
 ## 3.1.1
 
 ### Patch Changes

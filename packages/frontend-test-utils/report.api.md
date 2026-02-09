@@ -5,7 +5,9 @@
 ```ts
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { ApiHolder } from '@backstage/frontend-plugin-api';
 import { ApiMock } from '@backstage/test-utils';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { ErrorWithContext } from '@backstage/test-utils';
@@ -14,6 +16,7 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { mockApis } from '@backstage/test-utils';
 import { MockConfigApi } from '@backstage/test-utils';
 import { MockErrorApi } from '@backstage/test-utils';
@@ -23,22 +26,24 @@ import { MockFetchApiOptions } from '@backstage/test-utils';
 import { MockPermissionApi } from '@backstage/test-utils';
 import { MockStorageApi } from '@backstage/test-utils';
 import { MockStorageBucket } from '@backstage/test-utils';
+import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { TestApiProvider } from '@backstage/test-utils';
-import { TestApiProviderProps } from '@backstage/test-utils';
-import { TestApiRegistry } from '@backstage/test-utils';
 import { testingLibraryDomTypesQueries } from '@testing-library/dom/types/queries';
 import { withLogCollector } from '@backstage/test-utils';
 
 export { ApiMock };
 
 // @public (undocumented)
-export function createExtensionTester<T extends ExtensionDefinitionParameters>(
+export function createExtensionTester<
+  T extends ExtensionDefinitionParameters,
+  TApiPairs extends any[] = any[],
+>(
   subject: ExtensionDefinition<T>,
   options?: {
     config?: T['configInput'];
+    apis?: readonly [...TestApiPairs<TApiPairs>];
   },
 ): ExtensionTester<NonNullable<T['output']>>;
 
@@ -59,6 +64,14 @@ export class ExtensionQuery<UOutput extends ExtensionDataRef> {
   get instance(): AppNodeInstance;
   // (undocumented)
   get node(): AppNode;
+}
+
+// @public
+export interface ExtensionSnapshotNode {
+  children?: Record<string, ExtensionSnapshotNode[]>;
+  disabled?: true;
+  id: string;
+  outputs?: string[];
 }
 
 // @public (undocumented)
@@ -84,6 +97,7 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
   ): ExtensionQuery<NonNullable<T['output']>>;
   // (undocumented)
   reactElement(): JSX.Element;
+  snapshot(): ExtensionSnapshotNode;
 }
 
 // @public
@@ -115,38 +129,69 @@ export { MockStorageBucket };
 export { registerMswTestHooks };
 
 // @public
-export function renderInTestApp(
+export function renderInTestApp<TApiPairs extends any[] = any[]>(
   element: JSX.Element,
-  options?: TestAppOptions,
+  options?: TestAppOptions<TApiPairs>,
 ): RenderResult;
 
 // @public
-export function renderTestApp(
-  options: RenderTestAppOptions,
+export function renderTestApp<TApiPairs extends any[] = any[]>(
+  options: RenderTestAppOptions<TApiPairs>,
 ): RenderResult<testingLibraryDomTypesQueries, HTMLElement, HTMLElement>;
 
 // @public
-export type RenderTestAppOptions = {
+export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   config?: JsonObject;
   extensions?: ExtensionDefinition<any>[];
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
+  mountedRoutes?: {
+    [path: string]: RouteRef;
+  };
+  apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
-export { TestApiProvider };
-
-export { TestApiProviderProps };
-
-export { TestApiRegistry };
+// @public
+export type TestApiPairs<TApiPairs> = TestApiProviderPropsApiPairs<TApiPairs>;
 
 // @public
-export type TestAppOptions = {
+export const TestApiProvider: <T extends any[]>(
+  props: TestApiProviderProps<T>,
+) => JSX_2.Element;
+
+// @public
+export type TestApiProviderProps<TApiPairs extends any[]> = {
+  apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>];
+  children: ReactNode;
+};
+
+// @public
+export type TestApiProviderPropsApiPair<TApi> = TApi extends infer TImpl
+  ? readonly [ApiRef<TApi>, Partial<TImpl>]
+  : never;
+
+// @public
+export type TestApiProviderPropsApiPairs<TApiPairs> = {
+  [TIndex in keyof TApiPairs]: TestApiProviderPropsApiPair<TApiPairs[TIndex]>;
+};
+
+// @public
+export class TestApiRegistry implements ApiHolder {
+  static from<TApiPairs extends any[]>(
+    ...apis: readonly [...TestApiProviderPropsApiPairs<TApiPairs>]
+  ): TestApiRegistry;
+  get<T>(api: ApiRef<T>): T | undefined;
+}
+
+// @public
+export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   mountedRoutes?: {
     [path: string]: RouteRef;
   };
   config?: JsonObject;
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
+  apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
 export { withLogCollector };

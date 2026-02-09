@@ -22,11 +22,11 @@ import {
 } from '@backstage/backend-plugin-api';
 import concatStream from 'concat-stream';
 import fs from 'fs-extra';
-import platformPath from 'path';
-import { pipeline as pipelineCb, Readable } from 'stream';
+import platformPath from 'node:path';
+import { pipeline as pipelineCb, Readable } from 'node:stream';
 import * as tar from 'tar';
 import type { ReadEntry } from 'tar';
-import { promisify } from 'util';
+import { promisify } from 'node:util';
 import { stripFirstDirectoryFromPath } from './util';
 
 const pipeline = promisify(pipelineCb);

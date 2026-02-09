@@ -15,7 +15,7 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import path from 'path';
+import path from 'node:path';
 
 jest.mock(
   'lodash',

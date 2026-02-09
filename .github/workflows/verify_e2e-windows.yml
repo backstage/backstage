@@ -33,7 +33,7 @@ jobs:
     name: E2E Windows ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
         with:
           egress-policy: audit
 
@@ -58,7 +58,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: setup python
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.10'
 
@@ -80,12 +80,14 @@ jobs:
         uses: browser-actions/setup-chrome@803ef6dfb4fdf22089c9563225d95e4a515820a0 # latest
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@a3895cac2a515224a101c4a2b962b216ed0c9ac8 # v0.7.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - run: yarn tsc
       - run: yarn backstage-cli repo build
+        # BUI has a custom build script and needs to be built separately
+      - run: yarn --cwd packages/ui build
       - name: run E2E test
         run: yarn e2e-test run
         env:

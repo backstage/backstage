@@ -92,11 +92,7 @@ describe('createExtensionBlueprint', () => {
   it('should allow creation of extension blueprints with a generator', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
-      // Try multiple attachment points for this one
-      attachTo: [
-        { id: 'test-1', input: 'default' },
-        { id: 'test-2', input: 'default' },
-      ],
+      attachTo: { id: 'test-1', input: 'default' },
       output: [coreExtensionData.reactElement],
       *factory(params: { text: string }) {
         yield coreExtensionData.reactElement(<h1>{params.text}</h1>);
@@ -112,10 +108,7 @@ describe('createExtensionBlueprint', () => {
 
     expect(extension).toEqual({
       $$type: '@backstage/ExtensionDefinition',
-      attachTo: [
-        { id: 'test-1', input: 'default' },
-        { id: 'test-2', input: 'default' },
-      ],
+      attachTo: { id: 'test-1', input: 'default' },
       configSchema: undefined,
       disabled: false,
       inputs: {},
@@ -1345,7 +1338,9 @@ describe('createExtensionBlueprint', () => {
     ).toThrow('Refused to override params and factory at the same time');
   });
 
-  describe('with relative attachment points', () => {
+  // Tests for backward compatibility - runtime still supports multiple attachment points
+  // but the TypeScript types no longer allow them
+  describe('with relative attachment points (backward compat)', () => {
     const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
 
     it('should create an extension with relative attachment points', () => {
@@ -1356,7 +1351,7 @@ describe('createExtensionBlueprint', () => {
           { relative: { kind: 'page' }, input: 'tabs' },
           { relative: { name: 'index' }, input: 'tabs' },
           { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
-        ],
+        ] as any,
         output: [dataRef],
         factory: () => [dataRef('bar')],
       });
@@ -1371,7 +1366,7 @@ describe('createExtensionBlueprint', () => {
               { relative: { kind: 'page' }, input: 'tabs' },
               { relative: { name: 'index' }, input: 'tabs' },
               { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
-            ],
+            ] as any,
             params: {},
           }),
         ),
@@ -1431,7 +1426,7 @@ describe('createExtensionBlueprint', () => {
           parent2.inputs.tabs,
           parent3.inputs.tabs,
           parent4.inputs.otherTabs,
-        ],
+        ] as any,
         output: [dataRef],
         factory: () => [dataRef('bar')],
       });
@@ -1445,7 +1440,7 @@ describe('createExtensionBlueprint', () => {
               parent2.inputs.tabs,
               parent3.inputs.tabs,
               parent4.inputs.otherTabs,
-            ],
+            ] as any,
             params: {},
           }),
         ),

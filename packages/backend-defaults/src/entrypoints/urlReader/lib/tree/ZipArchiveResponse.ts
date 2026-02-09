@@ -22,8 +22,8 @@ import {
 import archiver from 'archiver';
 import yauzl, { Entry } from 'yauzl';
 import fs from 'fs-extra';
-import platformPath from 'path';
-import { Readable } from 'stream';
+import platformPath from 'node:path';
+import { Readable } from 'node:stream';
 import { streamToBuffer } from './util';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 

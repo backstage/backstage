@@ -27,6 +27,11 @@
     color: var(--bui-fg-primary);
     cursor: pointer;
 
+    &[data-disabled] {
+      cursor: not-allowed;
+      color: var(--bui-fg-disabled);
+    }
+
     &[data-pressed] .bui-SwitchIndicator {
       &:before {
         background: var(--bui-fg-solid);
@@ -45,7 +50,7 @@
 
       &[data-pressed] {
         .indicator {
-          background: var(--bui-gray-3);
+          background: var(--bui-bg-neutral-3);
         }
       }
     }
@@ -60,7 +65,7 @@
     width: 2rem;
     height: 1.143rem;
     border: 2px;
-    background: var(--bui-gray-3);
+    background: var(--bui-bg-neutral-3);
     border-radius: 1.143rem;
     transition: all 200ms;
 

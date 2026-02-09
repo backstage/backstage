@@ -15,10 +15,12 @@
  */
 
 import { BackendFeature } from '../types';
+import { ID_PATTERN, ID_PATTERN_OLD } from './constants';
 import {
   BackendModuleRegistrationPoints,
-  InternalBackendModuleRegistration,
-  InternalBackendPluginRegistration,
+  ExtensionPoint,
+  ExtensionPointFactoryContext,
+  InternalBackendModuleRegistrationV1_1,
   InternalBackendRegistrations,
 } from './types';
 
@@ -54,17 +56,55 @@ export interface CreateBackendModuleOptions {
 export function createBackendModule(
   options: CreateBackendModuleOptions,
 ): BackendFeature {
+  if (!ID_PATTERN.test(options.moduleId)) {
+    console.warn(
+      `WARNING: The moduleId '${options.moduleId}' for plugin '${options.pluginId}', will be invalid soon, please change it to match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
+  if (!ID_PATTERN_OLD.test(options.moduleId)) {
+    throw new Error(
+      `Invalid moduleId '${options.moduleId}' for plugin '${options.pluginId}', must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
+
   function getRegistrations() {
-    const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
+    const extensionPoints: InternalBackendModuleRegistrationV1_1['extensionPoints'] =
       [];
-    let init: InternalBackendModuleRegistration['init'] | undefined = undefined;
+    let init: InternalBackendModuleRegistrationV1_1['init'] | undefined =
+      undefined;
 
     options.register({
-      registerExtensionPoint(ext, impl) {
+      registerExtensionPoint<TExtensionPoint>(
+        extOrOpts:
+          | ExtensionPoint<TExtensionPoint>
+          | {
+              extensionPoint: ExtensionPoint<TExtensionPoint>;
+              factory: (
+                context: ExtensionPointFactoryContext,
+              ) => TExtensionPoint;
+            },
+        impl?: TExtensionPoint,
+      ) {
         if (init) {
           throw new Error('registerExtensionPoint called after registerInit');
         }
-        extensionPoints.push([ext, impl]);
+        if (
+          typeof extOrOpts === 'object' &&
+          extOrOpts !== null &&
+          'extensionPoint' in extOrOpts
+        ) {
+          extensionPoints.push({
+            extensionPoint: extOrOpts.extensionPoint,
+            factory: extOrOpts.factory as (
+              context: ExtensionPointFactoryContext,
+            ) => unknown,
+          });
+        } else {
+          extensionPoints.push({
+            extensionPoint: extOrOpts,
+            factory: () => impl,
+          });
+        }
       },
       registerInit(regInit) {
         if (init) {
@@ -85,7 +125,7 @@ export function createBackendModule(
 
     return [
       {
-        type: 'module',
+        type: 'module-v1.1',
         pluginId: options.pluginId,
         moduleId: options.moduleId,
         extensionPoints,

@@ -1,0 +1,98 @@
+name: Sync Pull Requests
+
+on:
+  workflow_run:
+    workflows: ['Sync Pull Requests Trigger', 'CI', 'E2E Linux']
+    types:
+      - completed
+
+jobs:
+  # Runs when Sync Pull Requests Trigger completes (PR events like opened, labeled, reviewed)
+  run:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.name == 'Sync Pull Requests Trigger' &&
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - name: Download PR context
+        id: download
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        continue-on-error: true
+        with:
+          name: pr-context
+          path: ./context
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Read context
+        if: steps.download.outcome == 'success'
+        id: context
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            core.setOutput('pr-number', fs.readFileSync('./context/pr-number', 'utf8').trim());
+            core.setOutput('label-added', fs.readFileSync('./context/label-added', 'utf8').trim());
+            core.setOutput('review-state', fs.readFileSync('./context/review-state', 'utf8').trim());
+            core.setOutput('actor', fs.readFileSync('./context/actor', 'utf8').trim());
+            core.setOutput('action', fs.readFileSync('./context/action', 'utf8').trim());
+
+      - name: Backstage PR automation
+        if: steps.download.outcome == 'success'
+        uses: backstage/actions/pr-automation@a3895cac2a515224a101c4a2b962b216ed0c9ac8 # v0.7.5
+        with:
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-owner: backstage
+          project-number: '14'
+          pr-number: ${{ steps.context.outputs.pr-number }}
+          label-added: ${{ steps.context.outputs.label-added }}
+          review-state: ${{ steps.context.outputs.review-state }}
+          actor: ${{ steps.context.outputs.actor }}
+          action: ${{ steps.context.outputs.action }}
+          required-checks: |
+            DCO
+            E2E Linux 22.x
+            E2E Linux 24.x
+            Test 22.x
+            Test 24.x
+            Verify 22.x
+            Verify 24.x
+
+  # Runs when CI or E2E workflows complete to update priority based on check status
+  update-on-ci:
+    runs-on: ubuntu-latest
+    if: >
+      (github.event.workflow_run.name == 'CI' || github.event.workflow_run.name == 'E2E Linux') &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.pull_requests[0]
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - name: Backstage PR automation
+        uses: backstage/actions/pr-automation@a3895cac2a515224a101c4a2b962b216ed0c9ac8 # v0.7.5
+        with:
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-owner: backstage
+          project-number: '14'
+          pr-number: ${{ github.event.workflow_run.pull_requests[0].number }}
+          action: synchronize
+          required-checks: |
+            DCO
+            E2E Linux 22.x
+            E2E Linux 24.x
+            Test 22.x
+            Test 24.x
+            Verify 22.x
+            Verify 24.x

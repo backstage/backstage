@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as os from 'os';
-import { resolve as resolvePath } from 'path';
+import * as os from 'node:os';
+import { resolve as resolvePath } from 'node:path';
 import { createIncludeTransform } from './include';
 import { TransformFunc } from './types';
 

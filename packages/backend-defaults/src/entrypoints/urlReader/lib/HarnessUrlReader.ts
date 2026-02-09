@@ -41,7 +41,7 @@ import {
   NotFoundError,
   NotModifiedError,
 } from '@backstage/errors';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for the Harness code v1 api.

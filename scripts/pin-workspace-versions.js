@@ -23,7 +23,7 @@
 
 const fs = require('fs-extra');
 const { getPackages } = require('@manypkg/get-packages');
-const { resolve } = require('path');
+const { resolve } = require('node:path');
 
 const depTypes = ['dependencies', 'devDependencies', 'peerDependencies'];
 

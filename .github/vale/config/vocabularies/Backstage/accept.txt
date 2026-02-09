@@ -345,6 +345,7 @@ parallelization
 param
 params
 parseable
+passwordless
 Patrik
 pattison
 Peloton
@@ -527,9 +528,12 @@ transpilers
 trixie
 truthy
 tsconfig
+TTLs
+Turbopack
 TSDoc
 typeahead
 ui
+unassign
 unbreak
 Unconference
 undici
@@ -539,6 +543,7 @@ unmount
 unregister
 unregistering
 unregistration
+unreviewed
 unstarred
 untemplated
 untracked

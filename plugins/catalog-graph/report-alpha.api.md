@@ -92,7 +92,7 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
         height: number | undefined;
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         height?: number | undefined;
@@ -107,7 +107,7 @@ const _default: OverridableFrontendPlugin<
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>

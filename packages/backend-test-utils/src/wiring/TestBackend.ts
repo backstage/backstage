@@ -109,9 +109,15 @@ function createPluginsForOrphanModules(features: Array<BackendFeature>) {
     if (isInternalBackendRegistrations(feature)) {
       const registrations = feature.getRegistrations();
       for (const registration of registrations) {
-        if (registration.type === 'plugin') {
+        if (
+          registration.type === 'plugin' ||
+          registration.type === 'plugin-v1.1'
+        ) {
           pluginIds.add(registration.pluginId);
-        } else if (registration.type === 'module') {
+        } else if (
+          registration.type === 'module' ||
+          registration.type === 'module-v1.1'
+        ) {
           modulePluginIds.add(registration.pluginId);
         }
       }
@@ -162,7 +168,7 @@ function createExtensionPointTestModules(
   const extensionPointsByPlugin = new Map<string, string[]>();
 
   for (const registration of registrations) {
-    if (registration.type === 'module') {
+    if (registration.type === 'module' || registration.type === 'module-v1.1') {
       const testDep = Object.values(registration.init.deps).filter(dep =>
         extensionPointsToSort.has(dep.id),
       );

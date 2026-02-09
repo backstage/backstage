@@ -1,5 +1,20 @@
 # @backstage/create-app
 
+## 0.7.9-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.9-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- c38b74d: Switched `next-app` template to use blueprint from `@backstage/plugin-app-react`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.18-next.0
+
 ## 0.7.8
 
 ### Patch Changes

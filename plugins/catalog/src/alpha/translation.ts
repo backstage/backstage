@@ -25,15 +25,22 @@ export const catalogTranslationRef = createTranslationRef({
       createButtonTitle: 'Create',
       supportButtonContent: 'All your software catalog entities',
     },
+    entityPage: {
+      notFoundMessage: 'There is no {{kind}} with the requested {{link}}.',
+      notFoundLinkText: 'kind, namespace, and name',
+    },
     aboutCard: {
       title: 'About',
       refreshButtonTitle: 'Schedule entity refresh',
       editButtonTitle: 'Edit Metadata',
+      editButtonAriaLabel: 'Edit',
       createSimilarButtonTitle: 'Create something similar',
       refreshScheduledMessage: 'Refresh scheduled',
+      refreshButtonAriaLabel: 'Refresh',
       launchTemplate: 'Launch Template',
       viewTechdocs: 'View TechDocs',
       viewSource: 'View Source',
+      unknown: 'unknown',
       descriptionField: {
         label: 'Description',
         value: 'No description',
@@ -69,8 +76,10 @@ export const catalogTranslationRef = createTranslationRef({
       },
     },
     searchResultItem: {
+      kind: 'Kind',
+      type: 'Type',
       lifecycle: 'Lifecycle',
-      Owner: 'Owner',
+      owner: 'Owner',
     },
     catalogTable: {
       warningPanelTitle: 'Could not fetch catalog entities.',
@@ -78,6 +87,7 @@ export const catalogTranslationRef = createTranslationRef({
       editActionTitle: 'Edit',
       starActionTitle: 'Add to favorites',
       unStarActionTitle: 'Remove from favorites',
+      allFilters: 'All',
     },
     dependencyOfComponentsCard: {
       title: 'Dependency of components',
@@ -97,6 +107,7 @@ export const catalogTranslationRef = createTranslationRef({
       inspectMenuTitle: 'Inspect entity',
       copyURLMenuTitle: 'Copy entity URL',
       unregisterMenuTitle: 'Unregister entity',
+      moreButtonAriaLabel: 'more',
     },
     entityLabelsCard: {
       title: 'Labels',
@@ -121,12 +132,16 @@ export const catalogTranslationRef = createTranslationRef({
         'Want to help us build this? Check out our Getting Started documentation.',
       docButtonTitle: 'DOCS',
     },
+    entityTabs: {
+      tabsAriaLabel: 'Tabs',
+    },
     deleteEntity: {
       dialogTitle: 'Are you sure you want to delete this entity?',
       deleteButtonTitle: 'Delete',
       cancelButtonTitle: 'Cancel',
       description:
-        'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.',
+        'This entity is not referenced by any location and is therefore not receiving updates.',
+      actionButtonTitle: 'Delete entity',
     },
     entityProcessingErrorsDescription: 'The error below originates from',
     entityRelationWarningDescription:

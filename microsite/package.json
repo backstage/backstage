@@ -20,13 +20,16 @@
   },
   "prettier": "@backstage/cli/config/prettier",
   "resolutions": {
+    "@swc/core": "1.15.3",
+    "@swc/html": "1.15.3",
     "node-polyfill-webpack-plugin": "^3.0.0"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.1.1",
-    "@docusaurus/plugin-client-redirects": "^3.1.1",
-    "@docusaurus/preset-classic": "^3.1.1",
-    "@docusaurus/types": "^3.1.1",
+    "@docusaurus/core": "^3.9.0",
+    "@docusaurus/faster": "^3.9.0",
+    "@docusaurus/plugin-client-redirects": "^3.9.0",
+    "@docusaurus/preset-classic": "^3.9.0",
+    "@docusaurus/types": "^3.9.0",
     "@mdx-js/react": "^3.0.0",
     "@swc/core": "^1.15.6",
     "clsx": "^2.0.0",
@@ -48,6 +51,6 @@
     "js-yaml": "^4.1.1",
     "prettier": "^2.6.2",
     "typescript": "~5.7.0",
-    "yaml-loader": "^0.8.0"
+    "yaml-loader": "^0.9.0"
   }
 }

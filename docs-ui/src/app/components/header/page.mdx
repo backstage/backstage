@@ -4,16 +4,14 @@ import { Snippet } from '@/components/Snippet';
 import {
   WithAllOptionsAndTabs,
   WithAllOptions,
-  WithBreadcrumbs,
   WithHeaderPage,
 } from './components';
-import { propDefs } from './props-definition';
+import { headerPropDefs } from './props-definition';
 import {
   usage,
   simple,
   defaultSnippet,
   withTabs,
-  withBreadcrumbs,
   withHeaderPage,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
@@ -22,9 +20,8 @@ import { HeaderDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
-  type="Component"
   title="Header"
-  description="A header component for the plugin."
+  description="A plugin header with icon, title, custom actions, and navigation tabs."
 />
 
 <Snippet py={4} preview={<WithAllOptionsAndTabs />} code={defaultSnippet} />
@@ -35,40 +32,26 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ## API reference
 
-<PropsTable data={propDefs} />
+<PropsTable data={headerPropDefs} />
 
 ## Examples
 
 ### Simple header
 
-A simple example of how to use the Header component.
-
 <Snippet py={4} preview={<WithAllOptions />} code={simple} open />
 
 ### Header with tabs
 
-A simple example of how to use the Header component with tabs. All links are using React Router
-under the hood and will be active when you are on the corresponding page.
+Tabs use React Router and highlight automatically based on the current route.
 
-<Snippet
-
-preview={<WithAllOptionsAndTabs />}
-code={withTabs}
-open
-/>
-
-### Header with breadcrumbs
-
-Breacrumbs should appear when you scroll down (and not directly visible as it is in the demo below).
-
-<Snippet preview={<WithBreadcrumbs />} code={withBreadcrumbs} open />
+<Snippet preview={<WithAllOptionsAndTabs />} code={withTabs} open />
 
 ### Header with HeaderPage
 
-You can use the `Header` component inside the [HeaderPage](/components/header-page) component to compose your multi-level navigation.
+Combine with [HeaderPage](/components/header-page) for multi-level navigation.
 
 <Snippet preview={<WithHeaderPage />} code={withHeaderPage} open />
 
 <Theming definition={HeaderDefinition} />
 
-<ChangelogComponent component="Header" />
+<ChangelogComponent component="header" />

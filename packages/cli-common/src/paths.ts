@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-import { dirname, resolve as resolvePath } from 'path';
+import fs from 'node:fs';
+import { dirname, resolve as resolvePath } from 'node:path';
 
 /**
  * A function that takes a set of path fragments and resolves them into a

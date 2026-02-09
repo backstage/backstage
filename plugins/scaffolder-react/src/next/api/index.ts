@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { formFieldsApi } from './FormFieldsApi';
-export { formFieldsApiRef } from './ref';
-export type { ScaffolderFormFieldsApi, FormField } from './types';
+export { type FormField } from './types';

@@ -4,7 +4,7 @@
 
 ```ts
 import { Express as Express_2 } from 'express';
-import { Server } from 'http';
+import { Server } from 'node:http';
 
 // @public
 export const wrapInOpenApiTestServer: (app: Express_2) => Server | Express_2;

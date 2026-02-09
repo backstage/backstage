@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as crypto from 'crypto';
+import * as crypto from 'node:crypto';
 import { JWTHeaderParameters, UnsecuredJWT } from 'jose';
 import NodeCache from 'node-cache';
 import { http, HttpResponse } from 'msw';

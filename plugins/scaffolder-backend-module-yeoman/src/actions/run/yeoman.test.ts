@@ -19,7 +19,7 @@ import { yeomanRun } from './yeomanRun';
 jest.mock('./yeomanRun');
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import os from 'os';
+import os from 'node:os';
 import { createRunYeomanAction } from './yeoman';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';

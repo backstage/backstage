@@ -18,15 +18,21 @@ import { createApp } from '@backstage/frontend-defaults';
 import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
-import homePlugin, {
-  titleExtensionDataRef,
-} from '@backstage/plugin-home/alpha';
+import homePlugin from '@backstage/plugin-home/alpha';
 
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import {
-  coreExtensionData,
-  createExtension,
-  createFrontendModule,
-} from '@backstage/frontend-plugin-api';
+  HomePageLayoutBlueprint,
+  type HomePageLayoutProps,
+} from '@backstage/plugin-home-react/alpha';
+import { Fragment } from 'react';
+import { Content, Header, Page } from '@backstage/core-components';
+import {
+  CustomHomepageGrid,
+  WelcomeTitle,
+  HeaderWorldClock,
+  type ClockConfig,
+} from '@backstage/plugin-home';
 import {
   techdocsPlugin,
   TechDocsIndexPage,
@@ -34,7 +40,6 @@ import {
   EntityTechdocsContent,
 } from '@backstage/plugin-techdocs';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
-import { homePage } from './HomePage';
 import { convertLegacyAppRoot } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
@@ -47,6 +52,8 @@ import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
 import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
 import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import InfoIcon from '@material-ui/icons/Info';
 
 /*
 
@@ -96,18 +103,48 @@ const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
   ],
 });
 
+const clockConfigs: ClockConfig[] = [
+  { label: 'NYC', timeZone: 'America/New_York' },
+  { label: 'UTC', timeZone: 'UTC' },
+  { label: 'STO', timeZone: 'Europe/Stockholm' },
+  { label: 'TYO', timeZone: 'Asia/Tokyo' },
+];
+
 const customHomePageModule = createFrontendModule({
   pluginId: 'home',
   extensions: [
-    createExtension({
-      name: 'my-home-page',
-      attachTo: { id: 'page:home', input: 'props' },
-      output: [coreExtensionData.reactElement, titleExtensionDataRef],
-      factory() {
-        return [
-          coreExtensionData.reactElement(homePage),
-          titleExtensionDataRef('just a title'),
-        ];
+    HomePageLayoutBlueprint.make({
+      params: {
+        loader: async () =>
+          function CustomHomePageLayout({ widgets }: HomePageLayoutProps) {
+            return (
+              <Page themeId="home">
+                <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+                  <HeaderWorldClock clockConfigs={clockConfigs} />
+                </Header>
+                <Content>
+                  <CustomHomepageGrid>
+                    {widgets.map((widget, index) => (
+                      <Fragment key={widget.name ?? index}>
+                        {widget.component}
+                      </Fragment>
+                    ))}
+                  </CustomHomepageGrid>
+                </Content>
+              </Page>
+            );
+          },
+      },
+    }),
+  ],
+});
+
+// customize catalog example
+const customizedCatalog = catalogPlugin.withOverrides({
+  extensions: [
+    catalogPlugin.getExtension('entity-content:catalog/overview').override({
+      params: {
+        icon: <InfoIcon />,
       },
     }),
   ],
@@ -131,6 +168,7 @@ const collectedLegacyPlugins = convertLegacyAppRoot(
 
 const app = createApp({
   features: [
+    customizedCatalog,
     pagesPlugin,
     convertedTechdocsPlugin,
     userSettingsPlugin,

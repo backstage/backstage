@@ -10,10 +10,9 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
-import { NavContentComponent } from '@backstage/frontend-plugin-api';
-import { NavContentComponentProps } from '@backstage/frontend-plugin-api';
+import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
-import { SignInPageProps } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TranslationMessages } from '@backstage/frontend-plugin-api';
 import { TranslationResource } from '@backstage/frontend-plugin-api';
@@ -92,9 +91,21 @@ export const NavContentBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-export { NavContentComponent };
+// @public
+export type NavContentComponent = (
+  props: NavContentComponentProps,
+) => JSX.Element | null;
 
-export { NavContentComponentProps };
+// @public
+export interface NavContentComponentProps {
+  items: Array<{
+    icon: IconComponent;
+    title: string;
+    routeRef: RouteRef<undefined>;
+    to: string;
+    text: string;
+  }>;
+}
 
 // @public
 export const RouterBlueprint: ExtensionBlueprint<{
@@ -143,7 +154,11 @@ export const SignInPageBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-export { SignInPageProps };
+// @public
+export type SignInPageProps = {
+  onSignInSuccess(identityApi: IdentityApi): void;
+  children?: ReactNode;
+};
 
 // @public
 export const SwappableComponentBlueprint: ExtensionBlueprint<{
@@ -160,14 +175,7 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
     loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
       ?
           | (() => (props: IInnerComponentProps) => JSX.Element | null)
-          | (() => Promise<
-              (props: IInnerComponentProps) => JSX.Element
-              /**
-               * Creates an extension that replaces the router component. This blueprint is limited to use by the app plugin.
-               *
-               * @public
-               */ | null
-            >)
+          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
       : never;
   }) => ExtensionBlueprintParams<{
     component: Ref extends SwappableComponentRef<
@@ -181,14 +189,7 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
     loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
       ?
           | (() => (props: IInnerComponentProps) => JSX.Element | null)
-          | (() => Promise<
-              (props: IInnerComponentProps) => JSX.Element
-              /**
-               * Creates an extension that replaces the router component. This blueprint is limited to use by the app plugin.
-               *
-               * @public
-               */ | null
-            >)
+          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
       : never;
   }>;
   output: ExtensionDataRef<

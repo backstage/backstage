@@ -19,9 +19,9 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import axios from 'axios';
 // eslint-disable-next-line no-restricted-imports
-import http from 'http';
+import http from 'node:http';
 // eslint-disable-next-line no-restricted-imports
-import https from 'https';
+import https from 'node:https';
 
 const errorMsg = 'Network requests are not allowed in tests';
 

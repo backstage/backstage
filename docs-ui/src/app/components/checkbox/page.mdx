@@ -12,10 +12,15 @@ import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { CheckboxDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  checkbox: 'https://react-aria.adobe.com/Checkbox',
+};
 
 <PageTitle
   title="Checkbox"
-  description="A checkbox component that can be used to trigger actions."
+  description="A selectable checkbox with label for boolean choices and form input."
 />
 
 <Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
@@ -28,11 +33,11 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PropsTable data={checkboxPropDefs} />
 
+<ReactAriaLink component="Checkbox" href={reactAriaUrls.checkbox} />
+
 ## Examples
 
 ### All variants
-
-Here's a view when checkboxes have different variants.
 
 <Snippet
   align="center"

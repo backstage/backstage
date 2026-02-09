@@ -1,5 +1,30 @@
 # @backstage/repo-tools
 
+## 0.16.4-next.1
+
+### Patch Changes
+
+- 6523040: Support Prettier v3 for api-reports
+- Updated dependencies
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.16.3-next.0
+
+### Patch Changes
+
+- cd75ed0: Add newline to OpenAPI license template files.
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Bump to tar v7
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/config-loader@1.10.8-next.0
+  - @backstage/cli-common@0.1.18-next.0
+  - @backstage/cli-node@0.2.17-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+
 ## 0.16.2
 
 ### Patch Changes
