@@ -258,7 +258,6 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
   };
   output:
     | ExtensionDataRef<string, 'core.routing.path', {}>
-    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
         'core.routing.ref',
@@ -266,6 +265,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
           optional: true;
         }
       >
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',

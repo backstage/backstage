@@ -13,6 +13,7 @@ import { ExpandRecursive } from '@backstage/types';
 import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams as ExtensionBlueprintParams_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
+import { ExtensionInput as ExtensionInput_2 } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
@@ -388,6 +389,7 @@ export interface ConfigurableExtensionDataRef<
 // @public (undocumented)
 export const coreExtensionData: {
   title: ConfigurableExtensionDataRef_2<string, 'core.title', {}>;
+  icon: ConfigurableExtensionDataRef_2<IconComponent, 'core.icon', {}>;
   reactElement: ConfigurableExtensionDataRef_2<
     JSX_3.Element,
     'core.reactElement',
@@ -1367,12 +1369,14 @@ export interface FrontendPlugin<
   readonly $$type: '@backstage/FrontendPlugin';
   // (undocumented)
   readonly externalRoutes: TExternalRoutes;
+  readonly icon?: IconComponent;
   // @deprecated
   readonly id: string;
   info(): Promise<FrontendPluginInfo>;
   readonly pluginId: string;
   // (undocumented)
   readonly routes: TRoutes;
+  readonly title?: string;
 }
 
 // @public
@@ -1419,6 +1423,19 @@ export const googleAuthApiRef: ApiRef<
     BackstageIdentityApi &
     SessionApi
 >;
+
+// @public
+export const HeaderActionBlueprint: ExtensionBlueprint_2<{
+  kind: 'header-action';
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ExtensionDataRef_2<JSX_3, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
 
 // @public
 export type IconComponent = ComponentType<{
@@ -1710,28 +1727,100 @@ export const PageBlueprint: ExtensionBlueprint_2<{
   params: {
     defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
-    loader: () => Promise<JSX.Element>;
+    title?: string;
+    icon?: IconComponent;
+    loader?: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
   };
   output:
     | ExtensionDataRef_2<string, 'core.routing.path', {}>
-    | ExtensionDataRef_2<JSX_3, 'core.reactElement', {}>
     | ExtensionDataRef_2<
         RouteRef<AnyRouteRefParams_2>,
         'core.routing.ref',
         {
           optional: true;
         }
+      >
+    | ExtensionDataRef_2<JSX_3, 'core.reactElement', {}>
+    | ExtensionDataRef_2<
+        string,
+        'core.title',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef_2<
+        IconComponent,
+        'core.icon',
+        {
+          optional: true;
+        }
       >;
-  inputs: {};
+  inputs: {
+    pages: ExtensionInput_2<
+      | ConfigurableExtensionDataRef_2<JSX_3, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef_2<string, 'core.routing.path', {}>
+      | ConfigurableExtensionDataRef_2<
+          RouteRef<AnyRouteRefParams_2>,
+          'core.routing.ref',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef_2<
+          string,
+          'core.title',
+          {
+            optional: true;
+          }
+        >,
+      {
+        singleton: false;
+        optional: false;
+        internal: false;
+      }
+    >;
+  };
   config: {
     path: string | undefined;
+    title: string | undefined;
   };
   configInput: {
+    title?: string | undefined;
     path?: string | undefined;
   };
   dataRefs: never;
 }>;
+
+// @public
+export const PageLayout: {
+  (props: PageLayoutProps): JSX.Element | null;
+  ref: SwappableComponentRef_2<PageLayoutProps, PageLayoutProps>;
+};
+
+// @public
+export interface PageLayoutProps {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  icon?: IconComponent;
+  // (undocumented)
+  tabs?: PageTab[];
+  // (undocumented)
+  title?: string;
+}
+
+// @public
+export interface PageTab {
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  label: string;
+  // (undocumented)
+  matchStrategy?: 'prefix' | 'exact';
+}
 
 // @public
 export type PendingOAuthRequest = {
@@ -1757,12 +1846,14 @@ export interface PluginOptions<
   externalRoutes?: TExternalRoutes;
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
+  icon?: IconComponent;
   // (undocumented)
   info?: FrontendPluginInfoOptions;
   // (undocumented)
   pluginId: TId;
   // (undocumented)
   routes?: TRoutes;
+  title?: string;
 }
 
 // @public (undocumented)
@@ -1897,6 +1988,38 @@ export type StorageValueSnapshot<TValue extends JsonValue> =
       presence: 'present';
       value: TValue;
     };
+
+// @public
+export const SubPageBlueprint: ExtensionBlueprint_2<{
+  kind: 'sub-page';
+  params: {
+    path: string;
+    title: string;
+    loader: () => Promise<JSX.Element>;
+    routeRef?: RouteRef;
+  };
+  output:
+    | ExtensionDataRef_2<string, 'core.routing.path', {}>
+    | ExtensionDataRef_2<
+        RouteRef<AnyRouteRefParams_2>,
+        'core.routing.ref',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef_2<JSX_3, 'core.reactElement', {}>
+    | ExtensionDataRef_2<string, 'core.title', {}>;
+  inputs: {};
+  config: {
+    path: string | undefined;
+    title: string | undefined;
+  };
+  configInput: {
+    title?: string | undefined;
+    path?: string | undefined;
+  };
+  dataRefs: never;
+}>;
 
 // @public
 export interface SubRouteRef<

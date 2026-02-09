@@ -15,12 +15,14 @@
  */
 
 import { JSX } from 'react';
+import { IconComponent } from '../icons/types';
 import { RouteRef } from '../routing/RouteRef';
 import { createExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export const coreExtensionData = {
   title: createExtensionDataRef<string>().with({ id: 'core.title' }),
+  icon: createExtensionDataRef<IconComponent>().with({ id: 'core.icon' }),
   reactElement: createExtensionDataRef<JSX.Element>().with({
     id: 'core.reactElement',
   }),

@@ -15,6 +15,7 @@
  */
 
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { IconComponent } from '../icons/types';
 import { RouteRef } from '../routing';
 import {
   coreExtensionData,
@@ -24,7 +25,7 @@ import {
 import { ExtensionBoundary, PageLayout, PageTab } from '../components';
 
 /**
- * Createx extensions that are routable React page components.
+ * Creates extensions that are routable React page components.
  *
  * @public
  */
@@ -44,6 +45,7 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.routeRef.optional(),
     coreExtensionData.title.optional(),
+    coreExtensionData.icon.optional(),
   ],
   config: {
     schema: {
@@ -54,30 +56,35 @@ export const PageBlueprint = createExtensionBlueprint({
   *factory(
     params: {
       /**
-       * @deprecated Use the `path' param instead.
+       * @deprecated Use the `path` param instead.
        */
       defaultPath?: [Error: `Use the 'path' param instead`];
       path: string;
       title?: string;
+      icon?: IconComponent;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
     },
     { config, node, inputs },
   ) {
-    const title = config.title ?? params.title ?? node.spec.plugin.pluginId;
+    const title =
+      config.title ??
+      params.title ??
+      node.spec.plugin.title ??
+      node.spec.plugin.pluginId;
+    const icon = params.icon ?? node.spec.plugin.icon;
 
     yield coreExtensionData.routePath(config.path ?? params.path);
     if (params.loader) {
-      // Simple page with loader - render header + content
-      const loader = params.loader; // Capture for closure
+      const loader = params.loader;
       const PageContent = () => (
-        <PageLayout title={title}>
+        <PageLayout title={title} icon={icon}>
           {ExtensionBoundary.lazy(node, loader)}
         </PageLayout>
       );
       yield coreExtensionData.reactElement(<PageContent />);
     } else if (inputs.pages.length > 0) {
-      // Parent page with sub-pages - render Header with tabs and Routes for sub-pages
+      // Parent page with sub-pages - render header with tabs
       const tabs: PageTab[] = inputs.pages.map(page => {
         const path = page.get(coreExtensionData.routePath);
         const tabTitle = page.get(coreExtensionData.title);
@@ -90,13 +97,11 @@ export const PageBlueprint = createExtensionBlueprint({
       });
 
       const PageContent = () => {
-        // Get first sub-page path for default navigation
         const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
 
         return (
-          <PageLayout title={title} tabs={tabs}>
+          <PageLayout title={title} icon={icon} tabs={tabs}>
             <Routes>
-              {/* Index route redirects to first sub-page */}
               {firstPagePath && (
                 <Route
                   index
@@ -117,14 +122,18 @@ export const PageBlueprint = createExtensionBlueprint({
 
       yield coreExtensionData.reactElement(<PageContent />);
     } else {
-      // Parent page without loader or sub-pages - render just header
-      yield coreExtensionData.reactElement(<PageLayout title={title} />);
+      yield coreExtensionData.reactElement(
+        <PageLayout title={title} icon={icon} />,
+      );
     }
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
     }
     if (title) {
       yield coreExtensionData.title(title);
+    }
+    if (icon) {
+      yield coreExtensionData.icon(icon);
     }
   },
 });
