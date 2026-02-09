@@ -68,6 +68,7 @@ backend:
   actions:
     pluginSources:
       - catalog
+      - scaffolder
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
   endpoints:
