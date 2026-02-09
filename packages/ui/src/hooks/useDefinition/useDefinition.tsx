@@ -72,9 +72,11 @@ export function useDefinition<
     }
   }
 
-  // Set data-bg from the resolved bg value (works for both container and leaf)
+  // Set the bg data attribute from the resolved bg value
+  // Containers use data-bg, leaf components use data-on-bg
   if (definition.bg && resolvedBg !== undefined) {
-    dataAttributes['data-bg'] = String(resolvedBg);
+    const attrName = definition.bg === 'leaf' ? 'data-on-bg' : 'data-bg';
+    dataAttributes[attrName] = String(resolvedBg);
   }
 
   const { utilityClasses, utilityStyle } = processUtilityProps<UtilityKeys<D>>(

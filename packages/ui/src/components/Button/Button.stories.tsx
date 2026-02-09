@@ -150,29 +150,6 @@ export const Variants = meta.story({
           </Button>
         </Flex>
       </Flex>
-      <Flex direction="column" gap="4">
-        <Text>Neutral 4</Text>
-        <Flex align="center" bg="neutral-4" p="4">
-          <Button iconStart={<RiCloudLine />} variant="primary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="secondary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="tertiary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
-            Button
-          </Button>
-        </Flex>
-      </Flex>
     </Flex>
   ),
 });

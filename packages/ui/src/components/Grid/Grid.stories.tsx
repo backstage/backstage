@@ -120,9 +120,6 @@ export const Backgrounds = meta.story({
         <Grid.Root {...args} bg="neutral-3">
           Neutral 3
         </Grid.Root>
-        <Grid.Root {...args} bg="neutral-4">
-          Neutral 4
-        </Grid.Root>
         <Grid.Root {...args} bg={{ initial: 'neutral-1', sm: 'neutral-2' }}>
           Responsive Bg
         </Grid.Root>
@@ -150,11 +147,6 @@ export const Backgrounds = meta.story({
         <Grid.Root {...args}>
           <Grid.Item bg="neutral-3" style={{ padding: '4px' }}>
             Neutral 3
-          </Grid.Item>
-        </Grid.Root>
-        <Grid.Root {...args}>
-          <Grid.Item bg="neutral-4" style={{ padding: '4px' }}>
-            Neutral 4
           </Grid.Item>
         </Grid.Root>
         <Grid.Root {...args}>

@@ -49,7 +49,6 @@ export const FlexDefinition = {
       'neutral-1',
       'neutral-2',
       'neutral-3',
-      'neutral-4',
       'danger',
       'warning',
       'success',

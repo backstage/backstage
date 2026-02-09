@@ -81,12 +81,6 @@ export const Backgrounds = meta.story({
           <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>
-      <Flex direction="column" gap="4">
-        <Text>On Neutral 4</Text>
-        <Flex align="center" bg="neutral-4" p="4">
-          <ToggleButton>Toggle</ToggleButton>
-        </Flex>
-      </Flex>
     </Flex>
   ),
 });

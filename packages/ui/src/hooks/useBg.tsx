@@ -19,18 +19,18 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import { Bg, Responsive } from '../types';
+import { ContainerBg, Responsive } from '../types';
 import { useBreakpoint } from './useBreakpoint';
 import { resolveResponsiveValue } from './useDefinition/helpers';
 
 /** @public */
 export interface BgContextValue {
-  bg: Bg | undefined;
+  bg: ContainerBg | undefined;
 }
 
 /** @public */
 export interface BgProviderProps {
-  bg: Bg;
+  bg: ContainerBg;
   children: ReactNode;
 }
 
@@ -40,16 +40,18 @@ export interface UseBgOptions {
    * The bg mode of the component.
    *
    * - `'container'` — for components like Box, Card, Flex that establish bg context.
-   *   If `bg` prop is provided, uses that value. Otherwise auto-increments from parent.
+   *   If `bg` prop is provided, uses that value. Otherwise auto-increments from parent,
+   *   capping at `neutral-3`.
    * - `'leaf'` — for components like Button that consume bg context.
-   *   Always auto-increments from parent context. The `bg` prop is ignored.
+   *   Returns the parent context bg unchanged (no increment). The leaf component's CSS
+   *   handles the visual step-up. The `bg` prop is ignored.
    */
   mode: 'container' | 'leaf';
   /**
    * The explicit bg value from the component's prop.
    * Only used in container mode — leaf mode ignores this.
    */
-  bg?: Responsive<Bg>;
+  bg?: Responsive<ContainerBg>;
 }
 
 const BgContext = createVersionedContext<{
@@ -57,19 +59,23 @@ const BgContext = createVersionedContext<{
 }>('bg-context');
 
 /**
- * Increments a neutral bg level by one, capping at 'neutral-4'.
+ * Increments a neutral bg level by one, capping at 'neutral-3'.
  * Intent backgrounds (danger, warning, success) pass through unchanged.
+ *
+ * Only used by container components for auto-increment. The 'neutral-4'
+ * level is reserved for leaf components and is never set on containers.
  *
  * @param bg - The current bg value
  * @returns The incremented bg value
  * @internal
  */
-function incrementNeutralBg(bg: Bg | undefined): Bg | undefined {
+function incrementNeutralBg(
+  bg: ContainerBg | undefined,
+): ContainerBg | undefined {
   if (!bg) return undefined;
   if (bg === 'neutral-1') return 'neutral-2';
   if (bg === 'neutral-2') return 'neutral-3';
-  if (bg === 'neutral-3') return 'neutral-4';
-  if (bg === 'neutral-4') return 'neutral-4'; // capped
+  if (bg === 'neutral-3') return 'neutral-3'; // capped at neutral-3
   // Intent values pass through unchanged
   return bg;
 }
@@ -84,9 +90,9 @@ function incrementNeutralBg(bg: Bg | undefined): Bg | undefined {
  * @internal
  */
 function resolveBgForContainer(
-  contextBg: Bg | undefined,
-  propBg: Bg | undefined,
-): Bg | undefined {
+  contextBg: ContainerBg | undefined,
+  propBg: ContainerBg | undefined,
+): ContainerBg | undefined {
   // Explicit bg prop takes priority
   if (propBg !== undefined) {
     return propBg;
@@ -103,16 +109,16 @@ function resolveBgForContainer(
 /**
  * Resolves the bg value for a leaf component.
  *
- * Always auto-increments from parent context. If no context, returns undefined.
+ * Returns the parent context bg unchanged. The leaf component's CSS
+ * handles the visual step-up (e.g. on neutral-1 surface → use neutral-2 tokens).
+ * If no context, returns undefined.
  *
  * @internal
  */
-function resolveBgForLeaf(contextBg: Bg | undefined): Bg | undefined {
-  if (contextBg === undefined) {
-    return undefined;
-  }
-
-  return incrementNeutralBg(contextBg);
+function resolveBgForLeaf(
+  contextBg: ContainerBg | undefined,
+): ContainerBg | undefined {
+  return contextBg;
 }
 
 /**
@@ -135,8 +141,8 @@ export const BgProvider = ({ bg, children }: BgProviderProps) => {
  * and (for containers) the explicit bg prop value.
  *
  * - **Container mode** — uses explicit `bg` if provided, otherwise auto-increments
- *   from parent context. Caps at `neutral-4`.
- * - **Leaf mode** — always auto-increments from parent context. No prop needed.
+ *   from parent context. Caps at `neutral-3`.
+ * - **Leaf mode** — returns the parent context bg unchanged. No prop needed.
  * - **No options** — returns the raw context value without resolution.
  *
  * @param options - Configuration for bg resolution

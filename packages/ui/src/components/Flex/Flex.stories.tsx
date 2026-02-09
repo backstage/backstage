@@ -261,9 +261,6 @@ export const Backgrounds = meta.story({
       <Flex bg="neutral-3" {...args}>
         Neutral 3
       </Flex>
-      <Flex bg="neutral-4" {...args}>
-        Neutral 4
-      </Flex>
       <Flex bg={{ initial: 'neutral-1', sm: 'neutral-2' }} {...args}>
         Responsive Bg
       </Flex>

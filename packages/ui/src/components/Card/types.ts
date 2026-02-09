@@ -15,11 +15,11 @@
  */
 
 import type { ReactNode } from 'react';
-import type { Responsive, Bg } from '../../types';
+import type { Responsive, ContainerBg } from '../../types';
 
 /** @public */
 export type CardOwnProps = {
-  bg?: Responsive<Bg>;
+  bg?: Responsive<ContainerBg>;
   children?: ReactNode;
   className?: string;
 };

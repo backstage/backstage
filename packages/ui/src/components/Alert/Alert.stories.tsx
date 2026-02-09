@@ -318,14 +318,6 @@ export const OnDifferentBackgrounds = meta.story({
           <Alert status="success" icon={true} title="Alert on neutral-3" />
         </Flex>
       </Flex>
-
-      <Flex direction="column" gap="4">
-        <Text>On Neutral 4</Text>
-        <Flex direction="column" gap="2" bg="neutral-4" p="4">
-          <Alert status="info" icon={true} title="Alert on neutral-4" />
-          <Alert status="success" icon={true} title="Alert on neutral-4" />
-        </Flex>
-      </Flex>
     </Flex>
   ),
 });

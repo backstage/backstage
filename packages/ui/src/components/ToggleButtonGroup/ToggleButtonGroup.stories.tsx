@@ -137,19 +137,6 @@ export const Backgrounds = meta.story({
           </ToggleButtonGroup>
         </Flex>
       </Flex>
-      <Flex direction="column" gap="4">
-        <Text>On Neutral 4</Text>
-        <Flex align="center" bg="neutral-4" p="4" gap="4">
-          <ToggleButtonGroup
-            selectionMode="single"
-            defaultSelectedKeys={['option1']}
-          >
-            <ToggleButton id="option1">Option 1</ToggleButton>
-            <ToggleButton id="option2">Option 2</ToggleButton>
-            <ToggleButton id="option3">Option 3</ToggleButton>
-          </ToggleButtonGroup>
-        </Flex>
-      </Flex>
     </Flex>
   ),
 });

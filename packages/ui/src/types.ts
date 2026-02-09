@@ -184,16 +184,18 @@ export interface ComponentDefinition {
 /**
  * Background type for the neutral bg system.
  *
- * Supports neutral levels ('neutral-1' through 'neutral-4') and
+ * Supports neutral levels ('neutral-1' through 'neutral-3') and
  * intent backgrounds ('danger', 'warning', 'success').
+ *
+ * The 'neutral-4' level is not exposed as a prop value -- it is reserved
+ * for leaf component CSS (e.g. Button on a 'neutral-3' surface).
  *
  * @public
  */
-export type Bg =
+export type ContainerBg =
   | 'neutral-1'
   | 'neutral-2'
   | 'neutral-3'
-  | 'neutral-4'
   | 'danger'
   | 'warning'
   | 'success';

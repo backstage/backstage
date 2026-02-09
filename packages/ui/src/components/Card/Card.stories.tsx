@@ -147,10 +147,6 @@ export const Backgrounds = meta.story({
         <CardHeader>Neutral 3</CardHeader>
         <CardBody>Explicit neutral-3</CardBody>
       </Card>
-      <Card {...args} bg="neutral-4" style={{ width: '200px' }}>
-        <CardHeader>Neutral 4</CardHeader>
-        <CardBody>Explicit neutral-4</CardBody>
-      </Card>
       <Card
         {...args}
         bg={{ initial: 'neutral-1', sm: 'neutral-2' }}
@@ -224,12 +220,6 @@ export const BgAutoIncrement = meta.story({
         <Card {...args} style={{ width: '200px' }}>
           <CardHeader>On neutral-3</CardHeader>
           <CardBody>Card auto → neutral-4</CardBody>
-        </Card>
-      </Box>
-      <Box bg="neutral-4" p="4" style={{ borderRadius: '8px' }}>
-        <Card {...args} style={{ width: '200px' }}>
-          <CardHeader>On neutral-4</CardHeader>
-          <CardBody>Card auto → neutral-4 (capped)</CardBody>
         </Card>
       </Box>
     </Flex>

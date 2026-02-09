@@ -205,20 +205,10 @@ export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
   src: string;
 }
 
-// @public
-export type Bg =
-  | 'neutral-1'
-  | 'neutral-2'
-  | 'neutral-3'
-  | 'neutral-4'
-  | 'danger'
-  | 'warning'
-  | 'success';
-
 // @public (undocumented)
 export interface BgContextValue {
   // (undocumented)
-  bg: Bg | undefined;
+  bg: ContainerBg | undefined;
 }
 
 // @public
@@ -227,7 +217,7 @@ export const BgProvider: ({ bg, children }: BgProviderProps) => JSX_2.Element;
 // @public (undocumented)
 export interface BgProviderProps {
   // (undocumented)
-  bg: Bg;
+  bg: ContainerBg;
   // (undocumented)
   children: ReactNode;
 }
@@ -300,7 +290,7 @@ export const BoxDefinition: {
 // @public (undocumented)
 export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
-  bg?: Responsive<Bg>;
+  bg?: Responsive<ContainerBg>;
   children?: ReactNode;
   className?: string;
   style?: CSSProperties;
@@ -599,7 +589,7 @@ export interface CardHeaderProps
 
 // @public (undocumented)
 export type CardOwnProps = {
-  bg?: Responsive<Bg>;
+  bg?: Responsive<ContainerBg>;
   children?: ReactNode;
   className?: string;
 };
@@ -746,6 +736,15 @@ export interface ComponentDefinition {
 export const Container: ForwardRefExoticComponent<
   ContainerProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export type ContainerBg =
+  | 'neutral-1'
+  | 'neutral-2'
+  | 'neutral-3'
+  | 'danger'
+  | 'warning'
+  | 'success';
 
 // @public
 export const ContainerDefinition: {
@@ -952,7 +951,6 @@ export const FlexDefinition: {
       'neutral-1',
       'neutral-2',
       'neutral-3',
-      'neutral-4',
       'danger',
       'warning',
       'success',
@@ -968,7 +966,7 @@ export interface FlexProps extends SpaceProps {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   // (undocumented)
-  bg?: Responsive<Bg>;
+  bg?: Responsive<ContainerBg>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
@@ -1022,7 +1020,6 @@ export const GridDefinition: {
       'neutral-1',
       'neutral-2',
       'neutral-3',
-      'neutral-4',
       'danger',
       'warning',
       'success',
@@ -1041,7 +1038,6 @@ export const GridItemDefinition: {
       'neutral-1',
       'neutral-2',
       'neutral-3',
-      'neutral-4',
       'danger',
       'warning',
       'success',
@@ -1052,7 +1048,7 @@ export const GridItemDefinition: {
 // @public (undocumented)
 export interface GridItemProps {
   // (undocumented)
-  bg?: Responsive<Bg>;
+  bg?: Responsive<ContainerBg>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
@@ -1072,7 +1068,7 @@ export interface GridItemProps {
 // @public (undocumented)
 export interface GridProps extends SpaceProps {
   // (undocumented)
-  bg?: Responsive<Bg>;
+  bg?: Responsive<ContainerBg>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
@@ -2182,7 +2178,7 @@ export const useBg: (options?: UseBgOptions) => BgContextValue;
 
 // @public (undocumented)
 export interface UseBgOptions {
-  bg?: Responsive<Bg>;
+  bg?: Responsive<ContainerBg>;
   mode: 'container' | 'leaf';
 }
 

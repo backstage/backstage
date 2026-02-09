@@ -90,7 +90,7 @@ type DataAttributes<PropDefs> = {
   [K in DataAttributeKeys<PropDefs> as `data-${Lowercase<
     string & K
   >}`]?: string;
-} & { 'data-bg'?: string };
+} & { 'data-bg'?: string; 'data-on-bg'?: string };
 
 export type UtilityKeys<D extends ComponentConfig<any, any>> =
   D['utilityProps'] extends ReadonlyArray<infer K extends string> ? K : never;
