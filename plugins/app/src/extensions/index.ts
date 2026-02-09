@@ -31,5 +31,10 @@ export {
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
 } from './elements';
-export { Progress, NotFoundErrorPage, ErrorDisplay } from './components';
+export {
+  Progress,
+  NotFoundErrorPage,
+  ErrorDisplay,
+  PageLayout,
+} from './components';
 export { PluginWrapperApi } from './PluginWrapperApi';

@@ -18,7 +18,12 @@ import {
   DependencyGraph,
   DependencyGraphTypes,
 } from '@backstage/core-components';
-import { AppNode, AppTree } from '@backstage/frontend-plugin-api';
+import {
+  AppNode,
+  AppTree,
+  useApi,
+  appTreeApiRef,
+} from '@backstage/frontend-plugin-api';
 import { Flex } from '@backstage/ui';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 
@@ -137,7 +142,9 @@ export function Node(props: { node: NodeType }) {
   );
 }
 
-export function TreeVisualizer({ tree }: { tree: AppTree }) {
+export function TreeVisualizer() {
+  const appTreeApi = useApi(appTreeApiRef);
+  const { tree } = appTreeApi.getTree();
   const graphData = useMemo(() => resolveGraphData(tree), [tree]);
 
   return (

@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-export {
-  AnalyticsImplementationBlueprint,
-  type AnalyticsImplementationFactory,
-} from './AnalyticsImplementationBlueprint';
-export { ApiBlueprint } from './ApiBlueprint';
-export { AppRootElementBlueprint } from './AppRootElementBlueprint';
-export { NavItemBlueprint } from './NavItemBlueprint';
-export { PageBlueprint } from './PageBlueprint';
-export { SubPageBlueprint } from './SubPageBlueprint';
-export { HeaderActionBlueprint } from './HeaderActionBlueprint';
+import { coreExtensionData, createExtensionBlueprint } from '../wiring';
+import { ExtensionBoundary } from '../components';
+
+/**
+ * Createx extensions that are routable React page components.
+ *
+ * @public
+ */
+export const HeaderActionBlueprint = createExtensionBlueprint({
+  kind: 'header-action',
+  attachTo: { id: 'app/routes', input: 'headerActions' },
+  output: [coreExtensionData.reactElement],
+
+  *factory(params: { loader: () => Promise<JSX.Element> }, { node }) {
+    yield coreExtensionData.reactElement(
+      ExtensionBoundary.lazy(node, params.loader),
+    );
+  },
+});
