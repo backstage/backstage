@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { RouteRef } from '../routing';
-import { coreExtensionData, createExtensionBlueprint } from '../wiring';
-import { ExtensionBoundary } from '../components';
+import {
+  coreExtensionData,
+  createExtensionBlueprint,
+  createExtensionInput,
+} from '../wiring';
+import { ExtensionBoundary, PageLayout, PageTab } from '../components';
 
 /**
  * Createx extensions that are routable React page components.
@@ -26,34 +31,100 @@ import { ExtensionBoundary } from '../components';
 export const PageBlueprint = createExtensionBlueprint({
   kind: 'page',
   attachTo: { id: 'app/routes', input: 'routes' },
+  inputs: {
+    pages: createExtensionInput([
+      coreExtensionData.routePath,
+      coreExtensionData.routeRef.optional(),
+      coreExtensionData.reactElement,
+      coreExtensionData.title.optional(),
+    ]),
+  },
   output: [
     coreExtensionData.routePath,
     coreExtensionData.reactElement,
     coreExtensionData.routeRef.optional(),
+    coreExtensionData.title.optional(),
   ],
   config: {
     schema: {
       path: z => z.string().optional(),
+      title: z => z.string().optional(),
     },
   },
   *factory(
     params: {
       /**
-       * @deprecated Use the `path` param instead.
+       * @deprecated Use the `path' param instead.
        */
       defaultPath?: [Error: `Use the 'path' param instead`];
       path: string;
-      loader: () => Promise<JSX.Element>;
+      title?: string;
+      loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
     },
-    { config, node },
+    { config, node, inputs },
   ) {
+    const title = config.title ?? params.title ?? node.spec.plugin.pluginId;
+
     yield coreExtensionData.routePath(config.path ?? params.path);
-    yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, params.loader),
-    );
+    if (params.loader) {
+      // Simple page with loader - render header + content
+      const loader = params.loader; // Capture for closure
+      const PageContent = () => (
+        <PageLayout title={title}>
+          {ExtensionBoundary.lazy(node, loader)}
+        </PageLayout>
+      );
+      yield coreExtensionData.reactElement(<PageContent />);
+    } else if (inputs.pages.length > 0) {
+      // Parent page with sub-pages - render Header with tabs and Routes for sub-pages
+      const tabs: PageTab[] = inputs.pages.map(page => {
+        const path = page.get(coreExtensionData.routePath);
+        const tabTitle = page.get(coreExtensionData.title);
+        return {
+          id: path,
+          label: tabTitle || path,
+          href: path,
+          matchStrategy: 'prefix' as const,
+        };
+      });
+
+      const PageContent = () => {
+        // Get first sub-page path for default navigation
+        const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
+
+        return (
+          <PageLayout title={title} tabs={tabs}>
+            <Routes>
+              {/* Index route redirects to first sub-page */}
+              {firstPagePath && (
+                <Route
+                  index
+                  element={<Navigate to={firstPagePath} replace />}
+                />
+              )}
+              {inputs.pages.map((page, index) => {
+                const path = page.get(coreExtensionData.routePath);
+                const element = page.get(coreExtensionData.reactElement);
+                return (
+                  <Route key={index} path={`${path}/*`} element={element} />
+                );
+              })}
+            </Routes>
+          </PageLayout>
+        );
+      };
+
+      yield coreExtensionData.reactElement(<PageContent />);
+    } else {
+      // Parent page without loader or sub-pages - render just header
+      yield coreExtensionData.reactElement(<PageLayout title={title} />);
+    }
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
+    }
+    if (title) {
+      yield coreExtensionData.title(title);
     }
   },
 });
