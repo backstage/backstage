@@ -2,7 +2,15 @@ name: Sync Pull Requests Trigger
 
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types:
+      - opened
+      - closed
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+      - ready_for_review
+      - converted_to_draft
   pull_request_review:
     types: [submitted, dismissed]
   issue_comment:
