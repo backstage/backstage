@@ -15,6 +15,7 @@
  */
 
 import { ReactNode } from 'react';
+import { IconComponent } from '../icons/types';
 import { createSwappableComponent } from './createSwappableComponent';
 
 /**
@@ -34,6 +35,7 @@ export interface PageTab {
  */
 export interface PageLayoutProps {
   title?: string;
+  icon?: IconComponent;
   tabs?: PageTab[];
   children?: ReactNode;
 }
@@ -42,7 +44,7 @@ export interface PageLayoutProps {
  * Default implementation of PageLayout using plain HTML elements
  */
 function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
-  const { title, tabs, children } = props;
+  const { title, icon: Icon, tabs, children } = props;
 
   return (
     <div
@@ -65,11 +67,15 @@ function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
           {title && (
             <div
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
                 padding: '12px 24px 8px',
                 fontSize: '18px',
                 fontWeight: 500,
               }}
             >
+              {Icon && <Icon fontSize="small" />}
               {title}
             </div>
           )}
@@ -116,7 +122,7 @@ function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
 /**
  * Swappable component for laying out page content with header and navigation.
  * The default implementation uses plain HTML elements.
- * Apps can override this with a custom implementation (e.g., using @backstage/ui).
+ * Apps can override this with a custom implementation (e.g., using \@backstage/ui).
  *
  * @public
  */

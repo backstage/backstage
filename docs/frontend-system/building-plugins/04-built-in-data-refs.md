@@ -42,6 +42,14 @@ const examplePage = createExtension({
 
 The `title` data reference can be used for defining the extension input/output of string titles.
 
+### `icon`
+
+|     id      |      type       |
+| :---------: | :-------------: |
+| `core.icon` | `IconComponent` |
+
+The `icon` data reference can be used for defining the extension input/output of icon components. The type is `IconComponent` from `@backstage/frontend-plugin-api`.
+
 ### `routePath`
 
 |         id          |   type   |

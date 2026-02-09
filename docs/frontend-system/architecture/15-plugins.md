@@ -26,6 +26,8 @@ const myPage = PageBlueprint.make({
 
 export default createFrontendPlugin({
   pluginId: 'my-plugin',
+  title: 'My Plugin',
+  icon: MyPluginIcon,
   extensions: [myPage],
 });
 ```
@@ -35,6 +37,30 @@ export default createFrontendPlugin({
 Each plugin needs an ID, which is used to uniquely identify the plugin within an entire Backstage system. The ID does not have to be globally unique across all of the NPM ecosystem, although you generally want to strive for that. It is not possible to install multiple plugins with the same ID in a single Backstage app.
 
 The plugin ID should generally be part of the of the package name and use kebab-case. See both the [frontend naming patterns section](./50-naming-patterns.md), as well as the [package metadata section](../../tooling/package-metadata.md#name) for more information.
+
+### `title` option
+
+The display title of the plugin, used in page headers and navigation. Falls back to the plugin ID if not provided.
+
+```tsx
+export default createFrontendPlugin({
+  pluginId: 'my-plugin',
+  title: 'My Plugin',
+  extensions: [...],
+});
+```
+
+### `icon` option
+
+The display icon of the plugin, used in page headers and navigation. The type is `IconComponent` from `@backstage/frontend-plugin-api`, which is a React component that accepts an optional `fontSize` prop.
+
+```tsx
+export default createFrontendPlugin({
+  pluginId: 'my-plugin',
+  icon: MyPluginIcon,
+  extensions: [...],
+});
+```
 
 ### `extensions` option
 

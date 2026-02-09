@@ -139,7 +139,6 @@ const _default: OverridableFrontendPlugin<
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
@@ -147,6 +146,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -284,25 +284,67 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       config: {
         path: string | undefined;
+        title: string | undefined;
       };
       configInput: {
+        title?: string | undefined;
         path?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            string,
+            'core.title',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            IconComponent,
+            'core.icon',
+            {
+              optional: true;
+            }
           >;
-      inputs: {};
+      inputs: {
+        pages: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef_2<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'core.title',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
       params: {
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        loader: () => Promise<JSX.Element>;
+        title?: string;
+        icon?: IconComponent;
+        loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
     }>;
@@ -311,23 +353,62 @@ const _default: OverridableFrontendPlugin<
         withoutSearch: boolean;
         withoutHeader: boolean;
         path: string | undefined;
+        title: string | undefined;
       };
       configInput: {
         withoutSearch?: boolean | undefined;
         withoutHeader?: boolean | undefined;
+        title?: string | undefined;
         path?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            string,
+            'core.title',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            IconComponent,
+            'core.icon',
+            {
+              optional: true;
+            }
           >;
       inputs: {
+        pages: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef_2<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'core.title',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
         addons: ExtensionInput<
           ConfigurableExtensionDataRef<
             TechDocsAddonOptions,
@@ -346,7 +427,9 @@ const _default: OverridableFrontendPlugin<
       params: {
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        loader: () => Promise<JSX.Element>;
+        title?: string;
+        icon?: IconComponent;
+        loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
     }>;

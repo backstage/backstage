@@ -17,6 +17,7 @@
 import {
   Extension,
   FeatureFlagConfig,
+  IconComponent,
   OverridableFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -26,6 +27,8 @@ export const OpaqueFrontendPlugin = OpaqueType.create<{
   public: OverridableFrontendPlugin;
   versions: {
     readonly version: 'v1';
+    readonly title?: string;
+    readonly icon?: IconComponent;
     readonly extensions: Extension<unknown>[];
     readonly featureFlags: FeatureFlagConfig[];
     readonly infoOptions?: {

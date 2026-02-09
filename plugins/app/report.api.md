@@ -907,6 +907,62 @@ const appPlugin: OverridableFrontendPlugin<
           : never;
       }>;
     }>;
+    'component:app/core-page-layout': OverridableExtensionDefinition<{
+      kind: 'component';
+      name: 'core-page-layout';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          ref: SwappableComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.swappableComponent',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends SwappableComponentRef<any>>(params: {
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
+    }>;
     'component:app/core-progress': OverridableExtensionDefinition<{
       kind: 'component';
       name: 'core-progress';

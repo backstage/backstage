@@ -29,6 +29,7 @@ import {
 import { FeatureFlagConfig } from './types';
 import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
 import { JsonObject } from '@backstage/types';
+import { IconComponent } from '../icons/types';
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { ID_PATTERN } from './constants';
 
@@ -141,6 +142,15 @@ export interface FrontendPlugin<
    * @deprecated Use `pluginId` instead.
    */
   readonly id: string;
+  /**
+   * The display title of the plugin, used in page headers and navigation.
+   * Falls back to the plugin ID if not provided.
+   */
+  readonly title?: string;
+  /**
+   * The display icon of the plugin, used in page headers and navigation.
+   */
+  readonly icon?: IconComponent;
   readonly routes: TRoutes;
   readonly externalRoutes: TExternalRoutes;
 
@@ -158,6 +168,15 @@ export interface PluginOptions<
   TExtensions extends readonly ExtensionDefinition[],
 > {
   pluginId: TId;
+  /**
+   * The display title of the plugin, used in page headers and navigation.
+   * Falls back to the plugin ID if not provided.
+   */
+  title?: string;
+  /**
+   * The display icon of the plugin, used in page headers and navigation.
+   */
+  icon?: IconComponent;
   routes?: TRoutes;
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
@@ -250,6 +269,8 @@ export function createFrontendPlugin<
   return OpaqueFrontendPlugin.createInstance('v1', {
     pluginId,
     id: pluginId,
+    title: options.title,
+    icon: options.icon,
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],

@@ -21,7 +21,7 @@ import {
   PageBlueprint,
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { RiEyeLine as VisualizerIcon } from '@remixicon/react';
+import { RiEyeLine } from '@remixicon/react';
 
 const rootRouteRef = createRouteRef();
 
@@ -81,9 +81,9 @@ const appVisualizerTreePage = SubPageBlueprint.make({
     routeRef: treeRouteRef,
     title: 'Tree',
     loader: () =>
-      import('./components/AppVisualizerPage/TreeVisualizer').then(
-        m => <m.TreeVisualizer />,
-      ),
+      import('./components/AppVisualizerPage/TreeVisualizer').then(m => (
+        <m.TreeVisualizer />
+      )),
   },
 });
 const appVisualizerDetailedPage = SubPageBlueprint.make({
@@ -94,9 +94,9 @@ const appVisualizerDetailedPage = SubPageBlueprint.make({
     routeRef: detailedRouteRef,
     title: 'Detailed',
     loader: () =>
-      import('./components/AppVisualizerPage/DetailedVisualizer').then(
-        m => <m.DetailedVisualizer />,
-      ),
+      import('./components/AppVisualizerPage/DetailedVisualizer').then(m => (
+        <m.DetailedVisualizer />
+      )),
   },
 });
 const appVisualizerTextPage = SubPageBlueprint.make({
@@ -107,16 +107,16 @@ const appVisualizerTextPage = SubPageBlueprint.make({
     routeRef: textRouteRef,
     title: 'Text',
     loader: () =>
-      import('./components/AppVisualizerPage/TextVisualizer').then(
-        m => <m.TextVisualizer />,
-      ),
+      import('./components/AppVisualizerPage/TextVisualizer').then(m => (
+        <m.TextVisualizer />
+      )),
   },
 });
 
 export const appVisualizerNavItem = NavItemBlueprint.make({
   params: {
     title: 'Visualizer',
-    icon: () => <VisualizerIcon />,
+    icon: () => <RiEyeLine />,
     routeRef: rootRouteRef,
   },
 });
@@ -124,6 +124,8 @@ export const appVisualizerNavItem = NavItemBlueprint.make({
 /** @public */
 export const visualizerPlugin = createFrontendPlugin({
   pluginId: 'app-visualizer',
+  title: 'App Visualizer',
+  icon: () => <RiEyeLine />,
   info: { packageJson: () => import('../package.json') },
   extensions: [
     appVisualizerPage,

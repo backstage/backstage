@@ -73,10 +73,10 @@ export const PageLayout = SwappableComponentBlueprint.make({
     define({
       component: SwappablePageLayout,
       loader: () => (props: PageLayoutProps) => {
-        const { title, tabs, children } = props;
+        const { title, icon: Icon, tabs, children } = props;
         return (
           <Flex direction="column" style={{ flexGrow: 1, minHeight: 0 }}>
-            <Header title={title} tabs={tabs} />
+            <Header title={title} icon={Icon && <Icon />} tabs={tabs} />
             <Flex direction="column" style={{ flexGrow: 1, minHeight: 0 }}>
               {children}
             </Flex>
