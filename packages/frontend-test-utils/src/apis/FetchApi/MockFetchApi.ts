@@ -24,8 +24,6 @@ import {
   FetchApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import crossFetch, { Response } from 'cross-fetch';
-
 /**
  * The options given when constructing a {@link MockFetchApi}.
  *
@@ -47,7 +45,7 @@ export interface MockFetchApiOptions {
    * `jest.fn()`, if you want to use a custom implementation or to just track
    * and assert on calls.
    */
-  baseImplementation?: undefined | 'none' | typeof crossFetch;
+  baseImplementation?: undefined | 'none' | typeof fetch;
 
   /**
    * Add translation from `plugin://` URLs to concrete http(s) URLs, basically
@@ -103,7 +101,7 @@ export class MockFetchApi implements FetchApi {
   }
 
   /** {@inheritdoc @backstage/core-plugin-api#FetchApi.fetch} */
-  get fetch(): typeof crossFetch {
+  get fetch(): typeof fetch {
     return this.implementation.fetch;
   }
 }
@@ -124,7 +122,7 @@ function build(options?: MockFetchApiOptions): FetchApi {
 
 function baseImplementation(
   options: MockFetchApiOptions | undefined,
-): typeof crossFetch {
+): typeof fetch {
   const implementation = options?.baseImplementation;
   if (!implementation) {
     // Return a wrapper that evaluates global.fetch at call time, not construction time.

@@ -17,3 +17,5 @@ renderInTestApp(<MyComponent />, {
   apis: [mockApis.identity()],
 });
 ```
+
+This change also adds `createApiMock`, a public utility for creating mock API factories, intended for plugin authors to create their own `.mock()` variants.

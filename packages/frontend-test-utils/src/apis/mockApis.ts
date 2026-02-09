@@ -18,7 +18,6 @@ import {
   alertApiRef,
   analyticsApiRef,
   configApiRef,
-  createApiFactory,
   discoveryApiRef,
   errorApiRef,
   fetchApiRef,
@@ -34,7 +33,6 @@ import {
   type IdentityApi,
   type StorageApi,
   type TranslationApi,
-  ApiFactory,
 } from '@backstage/frontend-plugin-api';
 import {
   permissionApiRef,
@@ -59,53 +57,9 @@ import { MockPermissionApi } from './PermissionApi';
 import { MockTranslationApi } from './TranslationApi';
 import {
   mockWithApiFactory,
-  mockApiFactorySymbol,
   type MockWithApiFactory,
 } from './MockWithApiFactory';
-
-/**
- * Represents a mocked version of an API, where you automatically have access to
- * the mocked versions of all of its methods along with a factory that returns
- * that same mock.
- *
- * @public
- */
-export type ApiMock<TApi> = {
-  factory: ApiFactory<TApi, TApi, {}>;
-  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
-} & {
-  [Key in keyof TApi]: TApi[Key] extends (...args: infer Args) => infer Return
-    ? TApi[Key] & jest.MockInstance<Return, Args>
-    : TApi[Key];
-};
-
-/** @internal */
-function simpleMock<TApi>(
-  ref: any,
-  mockFactory: () => jest.Mocked<TApi>,
-): (partialImpl?: Partial<TApi>) => ApiMock<TApi> {
-  return partialImpl => {
-    const mock = mockFactory();
-    if (partialImpl) {
-      for (const [key, impl] of Object.entries(partialImpl)) {
-        if (typeof impl === 'function') {
-          (mock as any)[key].mockImplementation(impl);
-        } else {
-          (mock as any)[key] = impl;
-        }
-      }
-    }
-    const factory = createApiFactory({
-      api: ref,
-      deps: {},
-      factory: () => mock,
-    });
-    const apiMock = Object.assign(mock, { factory }) as ApiMock<TApi>;
-    // Set the mock API symbol to the same factory
-    (apiMock as any)[mockApiFactorySymbol] = factory;
-    return apiMock;
-  };
-}
+import { createApiMock } from './createApiMock';
 
 /**
  * Mock implementations of the core utility APIs, to be used in tests.
@@ -172,7 +126,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = simpleMock(alertApiRef, () => ({
+    export const mock = createApiMock(alertApiRef, () => ({
       post: jest.fn(),
       alert$: jest.fn(),
     }));
@@ -215,7 +169,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = simpleMock(featureFlagsApiRef, () => ({
+    export const mock = createApiMock(featureFlagsApiRef, () => ({
       registerFlag: jest.fn(),
       getRegisteredFlags: jest.fn(),
       isActive: jest.fn(),
@@ -241,7 +195,7 @@ export namespace mockApis {
    * @public
    */
   export namespace analytics {
-    export const mock = simpleMock(analyticsApiRef, () => ({
+    export const mock = createApiMock(analyticsApiRef, () => ({
       captureEvent: jest.fn(),
     }));
   }
@@ -273,7 +227,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = simpleMock(translationApiRef, () => ({
+    export const mock = createApiMock(translationApiRef, () => ({
       getTranslation: jest.fn(),
       translation$: jest.fn(),
     }));
@@ -298,7 +252,7 @@ export namespace mockApis {
    * @public
    */
   export namespace config {
-    export const mock = simpleMock(configApiRef, () => ({
+    export const mock = createApiMock(configApiRef, () => ({
       has: jest.fn(),
       keys: jest.fn(),
       get: jest.fn(),
@@ -342,7 +296,7 @@ export namespace mockApis {
    * @public
    */
   export namespace discovery {
-    export const mock = simpleMock(discoveryApiRef, () => ({
+    export const mock = createApiMock(discoveryApiRef, () => ({
       getBaseUrl: jest.fn(),
     }));
   }
@@ -390,7 +344,7 @@ export namespace mockApis {
    * @public
    */
   export namespace identity {
-    export const mock = simpleMock(identityApiRef, () => ({
+    export const mock = createApiMock(identityApiRef, () => ({
       getBackstageIdentity: jest.fn(),
       getCredentials: jest.fn(),
       getProfileInfo: jest.fn(),
@@ -427,7 +381,7 @@ export namespace mockApis {
    * @public
    */
   export namespace permission {
-    export const mock = simpleMock(permissionApiRef, () => ({
+    export const mock = createApiMock(permissionApiRef, () => ({
       authorize: jest.fn(),
     }));
   }
@@ -451,7 +405,7 @@ export namespace mockApis {
    * @public
    */
   export namespace storage {
-    export const mock = simpleMock(storageApiRef, () => ({
+    export const mock = createApiMock(storageApiRef, () => ({
       forBucket: jest.fn(),
       snapshot: jest.fn(),
       set: jest.fn(),
@@ -479,7 +433,7 @@ export namespace mockApis {
    * @public
    */
   export namespace error {
-    export const mock = simpleMock(errorApiRef, () => ({
+    export const mock = createApiMock(errorApiRef, () => ({
       post: jest.fn(),
       error$: jest.fn(),
     }));
@@ -504,7 +458,7 @@ export namespace mockApis {
    * @public
    */
   export namespace fetch {
-    export const mock = simpleMock(fetchApiRef, () => ({
+    export const mock = createApiMock(fetchApiRef, () => ({
       fetch: jest.fn(),
     }));
   }

@@ -3966,7 +3966,6 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@types/react": "npm:^18.0.0"
     "@types/zen-observable": "npm:^0.8.0"
-    cross-fetch: "npm:^4.0.0"
     i18next: "npm:^22.4.15"
     msw: "npm:^2.0.0"
     react: "npm:^18.0.2"

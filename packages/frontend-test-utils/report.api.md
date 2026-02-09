@@ -15,7 +15,6 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ConfigApi as ConfigApi_2 } from '@backstage/frontend-plugin-api';
-import crossFetch from 'cross-fetch';
 import { DiscoveryApi } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi as DiscoveryApi_2 } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
@@ -55,7 +54,6 @@ import { withLogCollector } from '@backstage/test-utils';
 
 // @public
 export type ApiMock<TApi> = {
-  factory: ApiFactory<TApi, TApi, {}>;
   [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
 } & {
   [Key in keyof TApi]: TApi[Key] extends (...args: infer Args) => infer Return
@@ -70,6 +68,12 @@ export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
 ): TImpl & {
   [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
 };
+
+// @public
+export function createApiMock<TApi>(
+  apiRef: ApiRef<TApi>,
+  mockFactory: () => jest.Mocked<TApi>,
+): (partialImpl?: Partial<TApi>) => ApiMock<TApi>;
 
 // @public (undocumented)
 export function createExtensionTester<
@@ -170,75 +174,23 @@ export namespace mockApis {
   export function alert(): MockWithApiFactory<MockAlertApi>;
   export namespace alert {
     const mock: (
-      partialImpl?:
-        | Partial<{
-            post: jest.Mock<any, any, any>;
-            alert$: jest.Mock<any, any, any>;
-          }>
-        | undefined,
-    ) => ApiMock<{
-      post: jest.Mock<any, any, any>;
-      alert$: jest.Mock<any, any, any>;
-    }>;
+      partialImpl?: Partial<AlertApi> | undefined,
+    ) => ApiMock<AlertApi>;
   }
   export function analytics(): MockAnalyticsApi &
     MockWithApiFactory<AnalyticsApi>;
   export namespace analytics {
     const // (undocumented)
       mock: (
-        partialImpl?:
-          | Partial<{
-              captureEvent: jest.Mock<any, any, any>;
-            }>
-          | undefined,
-      ) => ApiMock<{
-        captureEvent: jest.Mock<any, any, any>;
-      }>;
+        partialImpl?: Partial<AnalyticsApi> | undefined,
+      ) => ApiMock<AnalyticsApi>;
   }
   export function config(options?: {
     data?: JsonObject;
   }): MockConfigApi & MockWithApiFactory<ConfigApi_2>;
   export namespace config {
     const // (undocumented)
-      mock: (
-        partialImpl?:
-          | Partial<{
-              has: jest.Mock<any, any, any>;
-              keys: jest.Mock<any, any, any>;
-              get: jest.Mock<any, any, any>;
-              getOptional: jest.Mock<any, any, any>;
-              getConfig: jest.Mock<any, any, any>;
-              getOptionalConfig: jest.Mock<any, any, any>;
-              getConfigArray: jest.Mock<any, any, any>;
-              getOptionalConfigArray: jest.Mock<any, any, any>;
-              getNumber: jest.Mock<any, any, any>;
-              getOptionalNumber: jest.Mock<any, any, any>;
-              getBoolean: jest.Mock<any, any, any>;
-              getOptionalBoolean: jest.Mock<any, any, any>;
-              getString: jest.Mock<any, any, any>;
-              getOptionalString: jest.Mock<any, any, any>;
-              getStringArray: jest.Mock<any, any, any>;
-              getOptionalStringArray: jest.Mock<any, any, any>;
-            }>
-          | undefined,
-      ) => ApiMock<{
-        has: jest.Mock<any, any, any>;
-        keys: jest.Mock<any, any, any>;
-        get: jest.Mock<any, any, any>;
-        getOptional: jest.Mock<any, any, any>;
-        getConfig: jest.Mock<any, any, any>;
-        getOptionalConfig: jest.Mock<any, any, any>;
-        getConfigArray: jest.Mock<any, any, any>;
-        getOptionalConfigArray: jest.Mock<any, any, any>;
-        getNumber: jest.Mock<any, any, any>;
-        getOptionalNumber: jest.Mock<any, any, any>;
-        getBoolean: jest.Mock<any, any, any>;
-        getOptionalBoolean: jest.Mock<any, any, any>;
-        getString: jest.Mock<any, any, any>;
-        getOptionalString: jest.Mock<any, any, any>;
-        getStringArray: jest.Mock<any, any, any>;
-        getOptionalStringArray: jest.Mock<any, any, any>;
-      }>;
+      mock: (partialImpl?: Partial<Config> | undefined) => ApiMock<Config>;
   }
   export function discovery(options?: {
     baseUrl?: string;
@@ -246,14 +198,8 @@ export namespace mockApis {
   export namespace discovery {
     const // (undocumented)
       mock: (
-        partialImpl?:
-          | Partial<{
-              getBaseUrl: jest.Mock<any, any, any>;
-            }>
-          | undefined,
-      ) => ApiMock<{
-        getBaseUrl: jest.Mock<any, any, any>;
-      }>;
+        partialImpl?: Partial<DiscoveryApi> | undefined,
+      ) => ApiMock<DiscoveryApi>;
   }
   export function error(
     options?: MockErrorApiOptions,
@@ -261,36 +207,16 @@ export namespace mockApis {
   export namespace error {
     const // (undocumented)
       mock: (
-        partialImpl?:
-          | Partial<{
-              post: jest.Mock<any, any, any>;
-              error$: jest.Mock<any, any, any>;
-            }>
-          | undefined,
-      ) => ApiMock<{
-        post: jest.Mock<any, any, any>;
-        error$: jest.Mock<any, any, any>;
-      }>;
+        partialImpl?: Partial<ErrorApi_2> | undefined,
+      ) => ApiMock<ErrorApi_2>;
   }
   export function featureFlags(
     options?: MockFeatureFlagsApiOptions,
   ): MockWithApiFactory<MockFeatureFlagsApi>;
   export namespace featureFlags {
     const mock: (
-      partialImpl?:
-        | Partial<{
-            registerFlag: jest.Mock<any, any, any>;
-            getRegisteredFlags: jest.Mock<any, any, any>;
-            isActive: jest.Mock<any, any, any>;
-            save: jest.Mock<any, any, any>;
-          }>
-        | undefined,
-    ) => ApiMock<{
-      registerFlag: jest.Mock<any, any, any>;
-      getRegisteredFlags: jest.Mock<any, any, any>;
-      isActive: jest.Mock<any, any, any>;
-      save: jest.Mock<any, any, any>;
-    }>;
+      partialImpl?: Partial<FeatureFlagsApi> | undefined,
+    ) => ApiMock<FeatureFlagsApi>;
   }
   export function fetch(
     options?: MockFetchApiOptions,
@@ -298,14 +224,8 @@ export namespace mockApis {
   export namespace fetch {
     const // (undocumented)
       mock: (
-        partialImpl?:
-          | Partial<{
-              fetch: jest.Mock<any, any, any>;
-            }>
-          | undefined,
-      ) => ApiMock<{
-        fetch: jest.Mock<any, any, any>;
-      }>;
+        partialImpl?: Partial<FetchApi_2> | undefined,
+      ) => ApiMock<FetchApi_2>;
   }
   export function identity(options?: {
     userEntityRef?: string;
@@ -318,20 +238,8 @@ export namespace mockApis {
   export namespace identity {
     const // (undocumented)
       mock: (
-        partialImpl?:
-          | Partial<{
-              getBackstageIdentity: jest.Mock<any, any, any>;
-              getCredentials: jest.Mock<any, any, any>;
-              getProfileInfo: jest.Mock<any, any, any>;
-              signOut: jest.Mock<any, any, any>;
-            }>
-          | undefined,
-      ) => ApiMock<{
-        getBackstageIdentity: jest.Mock<any, any, any>;
-        getCredentials: jest.Mock<any, any, any>;
-        getProfileInfo: jest.Mock<any, any, any>;
-        signOut: jest.Mock<any, any, any>;
-      }>;
+        partialImpl?: Partial<IdentityApi> | undefined,
+      ) => ApiMock<IdentityApi>;
   }
   export function permission(options?: {
     authorize?:
@@ -344,14 +252,8 @@ export namespace mockApis {
   export namespace permission {
     const // (undocumented)
       mock: (
-        partialImpl?:
-          | Partial<{
-              authorize: jest.Mock<any, any, any>;
-            }>
-          | undefined,
-      ) => ApiMock<{
-        authorize: jest.Mock<any, any, any>;
-      }>;
+        partialImpl?: Partial<PermissionApi> | undefined,
+      ) => ApiMock<PermissionApi>;
   }
   export function storage(options?: {
     data?: JsonObject;
@@ -359,43 +261,21 @@ export namespace mockApis {
   export namespace storage {
     const // (undocumented)
       mock: (
-        partialImpl?:
-          | Partial<{
-              forBucket: jest.Mock<any, any, any>;
-              snapshot: jest.Mock<any, any, any>;
-              set: jest.Mock<any, any, any>;
-              remove: jest.Mock<any, any, any>;
-              observe$: jest.Mock<any, any, any>;
-            }>
-          | undefined,
-      ) => ApiMock<{
-        forBucket: jest.Mock<any, any, any>;
-        snapshot: jest.Mock<any, any, any>;
-        set: jest.Mock<any, any, any>;
-        remove: jest.Mock<any, any, any>;
-        observe$: jest.Mock<any, any, any>;
-      }>;
+        partialImpl?: Partial<StorageApi_2> | undefined,
+      ) => ApiMock<StorageApi_2>;
   }
   export function translation(): MockTranslationApi &
     MockWithApiFactory<TranslationApi_2>;
   export namespace translation {
     const mock: (
-      partialImpl?:
-        | Partial<{
-            getTranslation: jest.Mock<any, any, any>;
-            translation$: jest.Mock<any, any, any>;
-          }>
-        | undefined,
-    ) => ApiMock<{
-      getTranslation: jest.Mock<any, any, any>;
-      translation$: jest.Mock<any, any, any>;
-    }>;
+      partialImpl?: Partial<TranslationApi_2> | undefined,
+    ) => ApiMock<TranslationApi_2>;
   }
 }
 
 // @public
 export class MockConfigApi implements ConfigApi {
-  constructor(data: JsonObject);
+  constructor({ data }: { data: JsonObject });
   get<T = JsonValue>(key?: string): T;
   getBoolean(key: string): boolean;
   getConfig(key: string): Config;
@@ -459,12 +339,12 @@ export interface MockFeatureFlagsApiOptions {
 // @public
 export class MockFetchApi implements FetchApi {
   constructor(options?: MockFetchApiOptions);
-  get fetch(): typeof crossFetch;
+  get fetch(): typeof fetch;
 }
 
 // @public
 export interface MockFetchApiOptions {
-  baseImplementation?: undefined | 'none' | typeof crossFetch;
+  baseImplementation?: undefined | 'none' | typeof fetch;
   injectIdentityAuth?:
     | undefined
     | {

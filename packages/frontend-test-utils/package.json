@@ -43,7 +43,6 @@
     "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "cross-fetch": "^4.0.0",
     "i18next": "^22.4.15",
     "zen-observable": "^0.10.0",
     "zod": "^3.25.76"

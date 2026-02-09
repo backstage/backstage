@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-export { type ApiMock, mockApis } from './mockApis';
+export { mockApis } from './mockApis';
+export { createApiMock, type ApiMock } from './createApiMock';
 export {
   type MockApiFactorySymbol,
   type MockWithApiFactory,

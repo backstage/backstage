@@ -124,28 +124,53 @@ renderTestApp({
 });
 ```
 
-### Creating your own mock APIs with `attachMockApiFactory`
+### Creating your own mock APIs
 
-If you maintain a plugin that exposes a utility API, you can use `attachMockApiFactory` to create mock instances that can be passed directly to test utilities:
+If you maintain a plugin that exposes a utility API, you can provide mock utilities that follow the same function + `.mock()` pattern as the built-in `mockApis`.
+
+Use `attachMockApiFactory` for fake instances with real behavior, and `createApiMock` for the jest-mocked `.mock()` variant where all methods are `jest.fn()`. The full pattern looks like this:
 
 ```ts
-import { attachMockApiFactory } from '@backstage/frontend-test-utils';
+import {
+  attachMockApiFactory,
+  createApiMock,
+  type ApiMock,
+} from '@backstage/frontend-test-utils';
 import { myApiRef, type MyApi } from '@internal/plugin-example-react';
 
+// Fake instance with real behavior
 export function myApiMock(options?: { greeting?: string }): MyApi {
-  const instance: MyApi = {
+  return attachMockApiFactory(myApiRef, {
     greet: async () => options?.greeting ?? 'Hello!',
-  };
-  return attachMockApiFactory(myApiRef, instance);
+  });
+}
+
+// Jest mock variant where all methods are jest.fn()
+export namespace myApiMock {
+  export const mock = createApiMock(myApiRef, () => ({
+    greet: jest.fn(),
+  }));
 }
 ```
 
-Consumers can then use it like the built-in mocks:
+Consumers can then use it just like the core mocks:
 
 ```tsx
+// Fake with real behavior
 await renderInTestApp(<MyComponent />, {
   apis: [myApiMock({ greeting: 'Hi there!' })],
 });
+
+// Jest mock for assertions
+const api = myApiMock.mock({
+  greet: async () => 'mocked',
+});
+
+await renderInTestApp(<MyComponent />, {
+  apis: [api],
+});
+
+expect(api.greet).toHaveBeenCalledTimes(1);
 ```
 
 ## Available mock APIs
@@ -160,7 +185,7 @@ The table below lists all core APIs available through the `mockApis` namespace.
 | `mockApis.discovery({ baseUrl })` | Inline                | Returns `${baseUrl}/api/${pluginId}`, defaults to `http://example.com` |
 | `mockApis.error(options?)`        | `MockErrorApi`        | Collects errors; has `getErrors()`, `waitForError()`                   |
 | `mockApis.featureFlags(options?)` | `MockFeatureFlagsApi` | In-memory flag state; has `getState()`, `setState()`, `clearState()`   |
-| `mockApis.fetch(options?)`        | `MockFetchApi`        | Wraps `cross-fetch`; supports identity injection and plugin protocol   |
+| `mockApis.fetch(options?)`        | `MockFetchApi`        | Wraps native `fetch`; supports identity injection and plugin protocol  |
 | `mockApis.identity(options?)`     | Inline                | Configurable user ref, ownership, token, profile                       |
 | `mockApis.permission(options?)`   | `MockPermissionApi`   | Defaults to `ALLOW`; accepts a handler function                        |
 | `mockApis.storage({ data })`      | `MockStorageApi`      | In-memory storage with bucket support                                  |
