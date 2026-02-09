@@ -38,6 +38,33 @@ backend:
     pluginSources:
       - catalog
 ```
+### Restricting action sources by plugin
+
+The `pluginSources` configuration limits which plugins are allowed to register actions.
+
+```yaml
+backend:
+  actions:
+    pluginSources:
+      - catalog
+### Filtering actions
+
+In addition to plugin-level restrictions, the Actions Service supports filtering actions using include and exclude rules. This allows fine-grained control over which actions are exposed or runnable in a Backstage instance.
+
+#### Include specific actions
+
+```yaml
+backend:
+  actions:
+    filter:
+      include:
+        - 'catalog.*'
+#### Exclude specific actions
+backend:
+  actions:
+    filter:
+      exclude:
+        - 'scaffolder.internal.*'
 
 ## Using the Service
 
