@@ -20,6 +20,8 @@ import {
   alertApiRef,
   AlertApi,
   AlertMessage,
+  appThemeApiRef,
+  AppThemeApi,
 } from '@backstage/core-plugin-api';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
@@ -47,6 +49,31 @@ class MockAlertApi implements AlertApi {
   }
 }
 
+// Mock AppThemeApi
+const mockAppThemeApi: AppThemeApi = {
+  getInstalledThemes: () => [
+    {
+      id: 'light',
+      variant: 'light',
+      title: 'Light',
+      Provider: ({ children }: any) => children,
+    },
+    {
+      id: 'dark',
+      variant: 'dark',
+      title: 'Dark',
+      Provider: ({ children }: any) => children,
+    },
+  ],
+  getActiveThemeId: () => 'light',
+  activeThemeId$: () =>
+    new ObservableImpl<string | undefined>(subscriber => {
+      subscriber.next('light');
+      return () => {};
+    }) as Observable<string | undefined>,
+  setActiveThemeId: () => {},
+};
+
 describe('ToastDisplay', () => {
   let toastApi: ToastApiForwarder;
   let alertApi: MockAlertApi;
@@ -62,6 +89,7 @@ describe('ToastDisplay', () => {
         apis={[
           [alertApiRef, alertApi],
           [toastApiRef, toastApi],
+          [appThemeApiRef, mockAppThemeApi],
         ]}
       >
         <ToastDisplay />

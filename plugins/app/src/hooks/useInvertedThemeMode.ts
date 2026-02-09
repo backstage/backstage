@@ -37,14 +37,19 @@ export function useInvertedThemeMode(): ThemeMode {
     appThemeApi.getActiveThemeId(),
   );
 
-  // Track system color scheme preference for "auto" mode
+  // Track system color scheme preference for "auto" mode.
+  // Guard against environments where matchMedia is unavailable (e.g. jsdom in tests).
   const mediaQuery = useMemo(
-    () => window.matchMedia('(prefers-color-scheme: dark)'),
+    () =>
+      typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-color-scheme: dark)')
+        : undefined,
     [],
   );
-  const [prefersDark, setPrefersDark] = useState(mediaQuery.matches);
+  const [prefersDark, setPrefersDark] = useState(mediaQuery?.matches ?? false);
 
   useEffect(() => {
+    if (!mediaQuery) return undefined;
     const listener = (e: MediaQueryListEvent) => setPrefersDark(e.matches);
     mediaQuery.addEventListener('change', listener);
     return () => mediaQuery.removeEventListener('change', listener);

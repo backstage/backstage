@@ -102,7 +102,7 @@ describe('appModulePublicSignIn', () => {
         <div>
           <div
             aria-label="0 notifications."
-            class="toast-container"
+            class="container"
             data-react-aria-top-layer="true"
             data-theme-mode="dark"
             role="region"
