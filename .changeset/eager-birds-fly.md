@@ -23,6 +23,6 @@ The feature is implemented via `CatalogExportButton`, which can be embedded dire
 - **Custom export formats**: Add support for custom export types (XML, YAML, etc.) via custom exporter functions
 - **Export callbacks**: Handle success and error cases with custom callbacks
 
-For usage examples and advanced customization options, see the [Catalog Customization documentation](./catalog-customization.md#export).
+For usage examples and advanced customization options, see the [Catalog Customization documentation](https://backstage.io/docs/features/software-catalog/catalog-customization/#export).
 
 Under the hood, exports are streamed directly through the browser for optimal performance and memory efficiency, processing entities page-by-page to minimize memory usage even when exporting large catalogs.
