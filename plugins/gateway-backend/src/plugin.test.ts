@@ -19,7 +19,6 @@ import { mockServices } from '@backstage/backend-test-utils';
 import {
   coreServices,
   createBackendPlugin,
-  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { EventSource } from 'eventsource';
@@ -68,13 +67,7 @@ describe('gateway', () => {
     );
     backend.add(mockServices.auth.factory());
     backend.add(mockServices.httpAuth.factory());
-    backend.add(
-      createServiceFactory({
-        service: coreServices.discovery,
-        deps: {},
-        factory: () => discovery,
-      }),
-    );
+    backend.add(discovery.factory);
     backend.add(dummyPlugin);
     backend.add(import('./'));
 

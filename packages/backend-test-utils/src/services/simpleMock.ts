@@ -30,8 +30,43 @@ export type ServiceMock<TService> = {
     : TService[Key];
 };
 
-/** @internal */
-export function simpleMock<TService>(
+/**
+ * Creates a standardized Backstage service mock factory function for producing
+ * mock service instances.
+ *
+ * @remarks
+ *
+ * Each method in the mock factory is a `jest.fn()`, and you can optionally pass
+ * partial implementations when calling the returned function. No type
+ * parameters should be provided to this function, they will be inferred from
+ * the provided service reference.
+ *
+ * The returned mock has a `.factory` property that can be passed directly to
+ * `startTestBackend` or other test utilities.
+ *
+ * @example
+ * ```ts
+ * import { createServiceMock } from '@backstage/backend-test-utils';
+ *
+ * const myServiceMock = createServiceMock(myServiceRef, () => ({
+ *   doStuff: jest.fn(),
+ *   doOtherStuff: jest.fn(),
+ * }));
+ *
+ * // Create a mock with default behavior:
+ * const mock = myServiceMock();
+ *
+ * // Or with a partial implementation:
+ * const mock = myServiceMock({ doStuff: async () => 'test' });
+ * expect(mock.doStuff).toHaveBeenCalledTimes(1);
+ *
+ * // It also has a `.factory` property for use with startTestBackend:
+ * await startTestBackend({ features: [mock.factory] });
+ * ```
+ *
+ * @public
+ */
+export function createServiceMock<TService>(
   ref: ServiceRef<TService, any>,
   mockFactory: () => jest.Mocked<TService>,
 ): (partialImpl?: Partial<TService>) => ServiceMock<TService> {
