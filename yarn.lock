@@ -3964,6 +3964,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@testing-library/jest-dom": "npm:^6.0.0"
+    "@types/jest": "npm:*"
     "@types/react": "npm:^18.0.0"
     "@types/zen-observable": "npm:^0.8.0"
     i18next: "npm:^22.4.15"
@@ -3975,11 +3976,14 @@ __metadata:
     zod: "npm:^3.25.76"
   peerDependencies:
     "@testing-library/react": ^16.0.0
+    "@types/jest": "*"
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
     react-router-dom: ^6.30.2
   peerDependenciesMeta:
+    "@types/jest":
+      optional: true
     "@types/react":
       optional: true
   languageName: unknown

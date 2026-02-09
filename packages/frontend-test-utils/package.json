@@ -50,6 +50,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
+    "@types/jest": "*",
     "@types/react": "^18.0.0",
     "@types/zen-observable": "^0.8.0",
     "msw": "^2.0.0",
@@ -59,12 +60,16 @@
   },
   "peerDependencies": {
     "@testing-library/react": "^16.0.0",
+    "@types/jest": "*",
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
+    "@types/jest": {
+      "optional": true
+    },
     "@types/react": {
       "optional": true
     }
