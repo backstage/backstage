@@ -3207,6 +3207,11 @@ __metadata:
     yn: "npm:^4.0.0"
     zod: "npm:^3.25.76"
     zod-to-json-schema: "npm:^3.25.1"
+  peerDependencies:
+    "@types/jest": "*"
+  peerDependenciesMeta:
+    "@types/jest":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -7974,11 +7979,14 @@ __metadata:
     zen-observable: "npm:^0.10.0"
   peerDependencies:
     "@testing-library/react": ^16.0.0
+    "@types/jest": "*"
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
     react-router-dom: ^6.30.2
   peerDependenciesMeta:
+    "@types/jest":
+      optional: true
     "@types/react":
       optional: true
   languageName: unknown
