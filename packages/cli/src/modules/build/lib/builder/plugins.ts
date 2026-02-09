@@ -15,6 +15,9 @@
  */
 
 import fs from 'fs-extra';
+import postcss from 'postcss';
+// @ts-expect-error - no types available
+import postcssImport from 'postcss-import';
 import {
   dirname,
   resolve as resolvePath,
@@ -27,6 +30,7 @@ import {
   OutputChunk,
   HasModuleSideEffects,
 } from 'rollup';
+import { EntryPoint } from '../../../../lib/entryPoints';
 
 type ForwardFileImportsOptions = {
   include: Array<string | RegExp> | string | RegExp | null;
@@ -168,4 +172,45 @@ export function forwardFileImports(options: ForwardFileImportsOptions) {
       };
     },
   } satisfies Plugin;
+}
+
+interface CssEntryPointsOptions {
+  entryPoints: EntryPoint[];
+  targetDir: string;
+}
+
+/**
+ * Rollup plugin that bundles CSS entry points using postcss-import.
+ * CSS files declared in package.json exports are processed and emitted
+ * as part of the Rollup bundle.
+ */
+export function cssEntryPoints(options: CssEntryPointsOptions): Plugin {
+  const cssEntries = options.entryPoints.filter(ep => ep.ext === '.css');
+
+  return {
+    name: 'backstage-css-entry-points',
+
+    async generateBundle() {
+      for (const entryPoint of cssEntries) {
+        const sourcePath = resolvePath(options.targetDir, entryPoint.path);
+        // Convert src/ path to dist/ path for output filename
+        const outputPath = entryPoint.path.replace(/^(\.\/)?src\//, '');
+
+        // Read source CSS
+        const source = await fs.readFile(sourcePath, 'utf8');
+
+        // Bundle @import statements using postcss-import
+        const result = await postcss([postcssImport()]).process(source, {
+          from: sourcePath,
+        });
+
+        // Emit the bundled CSS as an asset
+        this.emitFile({
+          type: 'asset',
+          fileName: outputPath,
+          source: result.css,
+        });
+      }
+    },
+  };
 }
