@@ -5444,11 +5444,14 @@ __metadata:
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76"
   peerDependencies:
+    "@backstage/frontend-test-utils": "workspace:^"
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
     react-router-dom: ^6.30.2
   peerDependenciesMeta:
+    "@backstage/frontend-test-utils":
+      optional: true
     "@types/react":
       optional: true
   languageName: unknown
