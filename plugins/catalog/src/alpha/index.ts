@@ -17,3 +17,5 @@
 export { default } from './plugin';
 
 export * from './translation';
+
+export { catalogExportCustomizationDataRef } from './pages';

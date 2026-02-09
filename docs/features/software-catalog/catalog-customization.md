@@ -25,7 +25,13 @@ The `CatalogIndexPage` export feature was added in v1.48.0 of Backstage. To enab
 />
 ```
 
-This will enable CSV and JSON export of the catalog table, including the enabled catalog backend filters in the current user's view. The `CatalogExportButton` can also be embedded directly on your custom `CatalogIndexPage`.
+This will enable CSV and JSON export of the catalog table, including the enabled catalog backend filters in the current user's view. The `CatalogExportButton` can also be embedded directly on your custom `CatalogIndexPage`, which will allow you to for instance put a [RequirePermission](https://backstage.io/docs/permissions/plugin-authors/05-frontend-authorization/#using-requirepermission) to limit which users can export from the catalog.
+
+:::info New Frontend System
+
+If you're using the [new frontend system](../../frontend-system/index.md), see [Configuring Catalog Export](#configuring-catalog-export) for configuration via `app-config.yaml`.
+
+:::
 
 ### Customizing Export
 
@@ -666,6 +672,113 @@ This section of the documentation explains how to create and configure catalog e
 :::warning Warning
 
 This section is a work in progress.
+
+:::
+
+### Configuring Catalog Export
+
+The catalog export feature is available in the new frontend system and can be configured via `app-config.yaml` for basic settings, or via custom extensions for advanced customization.
+
+#### Basic Configuration (via app-config.yaml)
+
+To enable catalog export, add the following configuration:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:catalog:
+        config:
+          exportSettings:
+            enableExport: true
+```
+
+This will display an "Export selection" button on the catalog index page that allows users to export the currently filtered catalog entities in CSV or JSON format.
+
+#### Advanced Configuration
+
+For advanced export customization like custom export formats, callbacks, or button styling, create a frontend module that provides a catalog export customizer extension:
+
+```tsx title="src/catalogExportCustomization.tsx"
+import {
+  createExtension,
+  createFrontendModule,
+} from '@backstage/frontend-plugin-api';
+import { catalogExportCustomizationDataRef } from '@backstage/plugin-catalog/alpha';
+import type { CustomExporter } from '@backstage/plugin-catalog';
+
+// Define custom export formats
+const yamlExporter: CustomExporter = async (
+  catalogApi,
+  columns,
+  streamRequest,
+) => {
+  const entities = [];
+  for await (const page of catalogApi.streamEntities(streamRequest)) {
+    entities.push(...page);
+  }
+  // Serialize to YAML (implementation depends on your YAML library)
+  const yamlContent = serializeToYaml(entities, columns);
+  return new Blob([yamlContent], { type: 'application/x-yaml' });
+};
+
+// Create the customizer extension
+const catalogExportCustomizer = createExtension({
+  name: 'catalog-export-customizer',
+  attachTo: { id: 'page:catalog', input: 'exportCustomizers' },
+  output: [catalogExportCustomizationDataRef],
+  factory() {
+    return [
+      catalogExportCustomizationDataRef({
+        customExporters: {
+          yaml: yamlExporter,
+        },
+        onSuccess: () => {
+          console.log('Export successful!');
+        },
+        onError: error => {
+          console.error('Export failed:', error);
+        },
+        buttonProps: {
+          variant: 'outlined',
+          color: 'secondary',
+        },
+      }),
+    ];
+  },
+});
+
+// Create the module that provides this extension
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [catalogExportCustomizer],
+});
+```
+
+Then register this module in your app features:
+
+```tsx title="packages/app-next/src/App.tsx"
+import catalogExportCustomization from './catalogExportCustomization';
+
+const app = createApp({
+  features: [
+    // ... other features
+    catalogExportCustomization,
+  ],
+});
+```
+
+#### Available Customization Options
+
+The `catalogExportCustomizationDataRef` supports the following properties:
+
+- **`customExporters`** - Record of custom export format functions (e.g., XML, YAML)
+- **`onSuccess`** - Callback function invoked on successful export
+- **`onError`** - Callback function invoked if export fails
+- **`buttonProps`** - Material-UI button props for styling the export button
+
+:::note Note
+
+Multiple extensions can provide export customizers, and they will be merged together. Custom exporters from different extensions are combined into a single exporter map.
 
 :::
 
