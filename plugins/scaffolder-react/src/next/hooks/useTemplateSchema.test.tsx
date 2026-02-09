@@ -15,10 +15,9 @@
  */
 import { useTemplateSchema } from './useTemplateSchema';
 import { renderHook } from '@testing-library/react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/frontend-test-utils';
 import { mockApis } from '@backstage/frontend-test-utils';
 import { PropsWithChildren } from 'react';
-import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { TemplateParameterSchema } from '../../types';
 
 describe('useTemplateSchema', () => {
@@ -56,7 +55,7 @@ describe('useTemplateSchema', () => {
 
     const { result } = renderHook(() => useTemplateSchema(manifest), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
+        <TestApiProvider apis={[mockFeatureFlagsApi]}>
           {children}
         </TestApiProvider>
       ),
@@ -123,10 +122,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              [
-                featureFlagsApiRef,
-                mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
-              ],
+              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
             ]}
           >
             {children}
@@ -172,10 +168,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              [
-                featureFlagsApiRef,
-                mockApis.featureFlags.mock({ isActive: jest.fn(() => true) }),
-              ],
+              mockApis.featureFlags.mock({ isActive: jest.fn(() => true) }),
             ]}
           >
             {children}
@@ -228,10 +221,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              [
-                featureFlagsApiRef,
-                mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
-              ],
+              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
             ]}
           >
             {children}
@@ -271,10 +261,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              [
-                featureFlagsApiRef,
-                mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
-              ],
+              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
             ]}
           >
             {children}
@@ -380,10 +367,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              [
-                featureFlagsApiRef,
-                mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
-              ],
+              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
             ]}
           >
             {children}
