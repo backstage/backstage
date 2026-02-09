@@ -1173,7 +1173,7 @@ describe('<EntityPicker />', () => {
 
       const listItems = screen.getAllByRole('option');
 
-      // Expect only the Component entity to be shown
+      // Expect only this Group entity to be shown
       expect(listItems).toHaveLength(1);
       expect(listItems[0]).toHaveTextContent('Display Name 57');
     });
@@ -1219,7 +1219,7 @@ describe('<EntityPicker />', () => {
 
       const listItems = screen.getAllByRole('option');
 
-      // Expect only the Component entity to be shown
+      // Expect only this Group entity to be shown
       expect(listItems).toHaveLength(1);
       expect(listItems[0]).toHaveTextContent('Display Name 57');
     });
