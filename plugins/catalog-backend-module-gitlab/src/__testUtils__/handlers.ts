@@ -201,7 +201,13 @@ const httpGroupFindByEncodedPathDynamic = all_groups_response.flatMap(group => [
 const httpSearchFilesInGroupDynamic = all_groups_response.map(group => {
   return rest.get(
     `${apiBaseUrl}/groups/${encodeURIComponent(group.full_path)}/search`,
-    (_, res, ctx) => {
+    (req, res, ctx) => {
+      const scope = req.url.searchParams.get('scope');
+
+      if (scope !== 'blobs') {
+        return res(ctx.status(400), ctx.text('400 Bad Request'));
+      }
+
       const searchResults = projects_with_catalog_info_yaml
         .filter(project =>
           project.path_with_namespace?.startsWith(group.full_path),
