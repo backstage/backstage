@@ -56,3 +56,14 @@ export const rootSystemMetadataServiceRef = createServiceRef<
   id: 'alpha.core.rootSystemMetadata',
   scope: 'root',
 });
+
+/**
+ * Service for managing metrics.
+ *
+ * @alpha
+ */
+export const metricsServiceRef = createServiceRef<
+  import('./MetricsService').MetricsService
+>({
+  id: 'alpha.core.metrics',
+});

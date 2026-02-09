@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { mcpPlugin } from './plugin';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
@@ -51,6 +52,7 @@ describe('Mcp Backend', () => {
       features: [
         mcpPlugin,
         mockPluginWithActions,
+        metricsServiceMock.mock().factory,
         mockServices.rootConfig.factory({
           data: {
             backend: {

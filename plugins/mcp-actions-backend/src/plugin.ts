@@ -25,6 +25,7 @@ import { createSseRouter } from './routers/createSseRouter';
 import {
   actionsRegistryServiceRef,
   actionsServiceRef,
+  metricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
 
 /**
@@ -46,6 +47,7 @@ export const mcpPlugin = createBackendPlugin({
         rootRouter: coreServices.rootHttpRouter,
         discovery: coreServices.discovery,
         config: coreServices.rootConfig,
+        metrics: metricsServiceRef,
       },
       async init({
         actions,
@@ -55,9 +57,11 @@ export const mcpPlugin = createBackendPlugin({
         rootRouter,
         discovery,
         config,
+        metrics,
       }) {
         const mcpService = await McpService.create({
           actions,
+          metrics,
         });
 
         const sseRouter = createSseRouter({
@@ -69,6 +73,7 @@ export const mcpPlugin = createBackendPlugin({
           mcpService,
           httpAuth,
           logger,
+          metrics,
         });
 
         const router = Router();
