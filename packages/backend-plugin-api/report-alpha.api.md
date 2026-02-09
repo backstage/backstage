@@ -4,12 +4,21 @@
 
 ```ts
 import { AnyZodObject } from 'zod';
+import { Attributes } from '@opentelemetry/api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { Counter } from '@opentelemetry/api';
+import { Gauge } from '@opentelemetry/api';
+import { Histogram } from '@opentelemetry/api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricOptions } from '@opentelemetry/api';
+import { ObservableCounter } from '@opentelemetry/api';
+import { ObservableGauge } from '@opentelemetry/api';
+import { ObservableUpDownCounter } from '@opentelemetry/api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { UpDownCounter } from '@opentelemetry/api';
 import { z } from 'zod';
 
 // @alpha (undocumented)
@@ -99,6 +108,45 @@ export type ActionsServiceAction = {
 // @alpha
 export const actionsServiceRef: ServiceRef<
   ActionsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export interface MetricsService {
+  createCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Counter<TAttributes>;
+  createGauge<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Gauge<TAttributes>;
+  createHistogram<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): Histogram<TAttributes>;
+  createObservableCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableCounter<TAttributes>;
+  createObservableGauge<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableGauge<TAttributes>;
+  createObservableUpDownCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): ObservableUpDownCounter<TAttributes>;
+  createUpDownCounter<TAttributes extends Attributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): UpDownCounter<TAttributes>;
+}
+
+// @alpha
+export const metricsServiceRef: ServiceRef<
+  MetricsService,
   'plugin',
   'singleton'
 >;

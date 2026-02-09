@@ -19,6 +19,7 @@ import { Knex } from 'knex';
 import { DefaultProcessingDatabase } from '../../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 // #region Helpers
 
@@ -81,6 +82,7 @@ describePerformanceTest('getProcessableEntities', () => {
           logger: mockServices.logger.mock(),
           events: mockServices.events.mock(),
           refreshInterval: () => 0,
+          metrics: metricsServiceMock.mock(),
         });
 
         const start = Date.now();

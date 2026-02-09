@@ -36,6 +36,7 @@ import { createRandomProcessingInterval } from '../processing/refresh';
 import { timestampToDateTime } from './conversion';
 import { generateStableHash } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 jest.setTimeout(60_000);
 
@@ -59,6 +60,7 @@ describe('DefaultProcessingDatabase', () => {
           maxSeconds: 150,
         }),
         events: mockServices.events.mock(),
+        metrics: metricsServiceMock.mock(),
       }),
     };
   }

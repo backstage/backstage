@@ -114,6 +114,7 @@ import {
   CatalogPermissionRuleInput,
 } from '@backstage/plugin-catalog-node/alpha';
 import { filterAndSortProcessors, filterProviders } from './util';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -127,6 +128,7 @@ export type CatalogEnvironment = {
   httpAuth: HttpAuthService;
   auditor: AuditorService;
   events: EventsService;
+  metrics: MetricsService;
 };
 
 /**
@@ -424,6 +426,7 @@ export class CatalogBuilder {
       auth,
       httpAuth,
       events,
+      metrics,
     } = this.env;
 
     const enableRelationsCompatibility = Boolean(
@@ -443,6 +446,7 @@ export class CatalogBuilder {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
       logger,
+      metrics,
     });
 
     const processingDatabase = new DefaultProcessingDatabase({
@@ -450,6 +454,7 @@ export class CatalogBuilder {
       logger,
       events,
       refreshInterval: this.processingInterval,
+      metrics,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
@@ -560,6 +565,7 @@ export class CatalogBuilder {
         this.onProcessingError?.(event);
       },
       events,
+      metrics,
     });
 
     const locationAnalyzer =
