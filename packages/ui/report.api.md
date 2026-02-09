@@ -218,7 +218,7 @@ export type Bg =
 // @public (undocumented)
 export interface BgContextValue {
   // (undocumented)
-  bg: Responsive<Bg> | undefined;
+  bg: Bg | undefined;
 }
 
 // @public
@@ -227,7 +227,7 @@ export const BgProvider: ({ bg, children }: BgProviderProps) => JSX_2.Element;
 // @public (undocumented)
 export interface BgProviderProps {
   // (undocumented)
-  bg: Responsive<Bg>;
+  bg: Bg;
   // (undocumented)
   children: ReactNode;
 }
