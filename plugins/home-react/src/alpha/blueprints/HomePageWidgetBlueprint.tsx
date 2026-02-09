@@ -19,6 +19,7 @@ import {
   createExtensionBlueprint,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
+import { attachComponentData } from '@backstage/core-plugin-api';
 import {
   CardExtension,
   CardExtensionProps,
@@ -84,6 +85,7 @@ export const HomePageWidgetBlueprint = createExtensionBlueprint({
   output: [homePageWidgetDataRef],
   *factory(params: HomePageWidgetBlueprintParams, { node }) {
     const isCustomizable = params.settings?.schema !== undefined;
+    const widgetName = params.name ?? node.spec.id;
     const LazyCard = lazy(() =>
       params.components().then(parts => ({
         default: (props: CardExtensionProps<Record<string, unknown>>) => (
@@ -105,10 +107,18 @@ export const HomePageWidgetBlueprint = createExtensionBlueprint({
       </ExtensionBoundary>
     );
 
+    attachComponentData(Widget, 'core.extensionName', widgetName);
+    attachComponentData(Widget, 'title', params.title);
+    attachComponentData(Widget, 'description', params.description);
+    attachComponentData(Widget, 'home.widget.config', {
+      layout: params.layout,
+      settings: params.settings,
+    });
+
     yield homePageWidgetDataRef({
       node,
       component: <Widget {...(params.componentProps ?? {})} />,
-      name: params.name,
+      name: widgetName,
       title: params.title,
       description: params.description,
       layout: params.layout,

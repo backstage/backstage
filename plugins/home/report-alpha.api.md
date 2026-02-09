@@ -175,16 +175,16 @@ export const homeTranslationRef: TranslationRef<
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
-    readonly 'visitList.few.title': 'The more pages you visit, the more pages will appear here.';
-    readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
     readonly 'visitList.empty.title': 'There are no visits to show yet.';
-    readonly 'quickStart.description': 'Get started with Backstage';
+    readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
+    readonly 'visitList.few.title': 'The more pages you visit, the more pages will appear here.';
     readonly 'quickStart.title': 'Onboarding';
+    readonly 'quickStart.description': 'Get started with Backstage';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';
     readonly 'visitedByType.action.viewMore': 'View more';
     readonly 'visitedByType.action.viewLess': 'View less';
-    readonly 'featuredDocsCard.empty.description': 'Create your own document. Check out our Getting Started Information';
     readonly 'featuredDocsCard.empty.title': 'No documents to show';
+    readonly 'featuredDocsCard.empty.description': 'Create your own document. Check out our Getting Started Information';
     readonly 'featuredDocsCard.empty.learnMoreLinkTitle': 'DOCS';
     readonly 'featuredDocsCard.learnMoreTitle': 'LEARN MORE';
   }
