@@ -21,6 +21,7 @@ import { AnimatePresence } from 'motion/react';
 import type { ToastContainerProps } from './types';
 import { useInvertedThemeMode } from '../../hooks/useInvertedThemeMode';
 import { Toast } from './Toast';
+import styles from './Toast.module.css';
 
 /**
  * A ToastContainer displays one or more toast notifications in the bottom-center of the screen.
@@ -119,7 +120,7 @@ export const ToastContainer = forwardRef(
       <div
         {...regionProps}
         ref={containerRef}
-        className={className || 'toast-container'}
+        className={className || styles.container}
         data-theme-mode={invertedThemeMode}
         data-hover-locked={isHoverLocked ? '' : undefined}
         onMouseEnter={() => setIsHovered(true)}

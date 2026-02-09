@@ -26,6 +26,7 @@ import {
   RiCloseLine,
 } from '@remixicon/react';
 import type { ToastProps } from './types';
+import styles from './Toast.module.css';
 
 // Track which toasts are being manually closed (vs auto-timeout)
 // This allows different exit animations for each case
@@ -205,7 +206,7 @@ export const Toast = forwardRef(
       <motion.div
         {...ariaProps}
         ref={toastRef}
-        className="toast"
+        className={styles.toast}
         style={
           {
             '--toast-index': index,
@@ -224,17 +225,17 @@ export const Toast = forwardRef(
         transition={{ type: 'spring', stiffness: 400, damping: 35 }}
         data-status={finalStatus}
       >
-        <div className="toast-wrapper">
-          {statusIcon && <div className="toast-icon">{statusIcon}</div>}
-          <div className="toast-content">
-            <div {...titleProps} className="toast-title">
+        <div className={styles.wrapper}>
+          {statusIcon && <div className={styles.icon}>{statusIcon}</div>}
+          <div className={styles.content}>
+            <div {...titleProps} className={styles.title}>
               {content.title}
             </div>
             {content.description && (
-              <div className="toast-description">{content.description}</div>
+              <div className={styles.description}>{content.description}</div>
             )}
             {content.links && content.links.length > 0 && (
-              <div className="toast-links">
+              <div className={styles.links}>
                 {content.links.map(link => (
                   <a key={link.href} href={link.href}>
                     {link.label}
@@ -248,7 +249,7 @@ export const Toast = forwardRef(
         <button
           {...buttonProps}
           ref={closeButtonRef}
-          className="toast-close-button"
+          className={styles.closeButton}
         >
           <RiCloseLine aria-hidden="true" />
         </button>
