@@ -21,7 +21,7 @@ Navigation item extensions are used to provide menu items that link to different
 
 ### Page - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PageBlueprint.html)
 
-Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes.
+Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes. Pages automatically inherit the plugin's `title` and `icon` as defaults, which can be overridden per-page via `PageBlueprint` params.
 
 ## Extension blueprints in `@backstage/frontend-plugin-api/alpha`
 

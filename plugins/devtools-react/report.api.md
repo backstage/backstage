@@ -15,7 +15,6 @@ export const DevToolsContentBlueprint: ExtensionBlueprint<{
   params: DevToolsContentBlueprintParams;
   output:
     | ExtensionDataRef<string, 'core.routing.path', {}>
-    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
         'core.routing.ref',
@@ -23,6 +22,7 @@ export const DevToolsContentBlueprint: ExtensionBlueprint<{
           optional: true;
         }
       >
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<string, 'core.title', {}>;
   inputs: {};
   config: {
