@@ -89,7 +89,21 @@ function findAllDeps(declSrc: string) {
     .filter(n => !n.startsWith('.'))
     // We allow references to these without an explicit dependency.
     .filter(n => !['node', 'react'].includes(n));
-  return Array.from(new Set([...importedDeps, ...referencedDeps]));
+
+  // Detect ambient global type namespaces (e.g. jest.Mocked, jest.MockInstance)
+  // that are used in type positions but don't appear as explicit imports.
+  // Strip comments first to avoid false positives from JSDoc examples.
+  const strippedSrc = declSrc
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '');
+  const ambientDeps: string[] = [];
+  if (/\bjest\.\w/.test(strippedSrc)) {
+    ambientDeps.push('jest');
+  }
+
+  return Array.from(
+    new Set([...importedDeps, ...referencedDeps, ...ambientDeps]),
+  );
 }
 
 /**
