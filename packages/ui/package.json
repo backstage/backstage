@@ -5,9 +5,7 @@
     "role": "web-library"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "keywords": [
     "backstage"
@@ -26,6 +24,16 @@
     ".": "./src/index.ts",
     "./css/styles.css": "./src/css/styles.css",
     "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "css/styles.css": [
+        "src/css/styles.css"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
