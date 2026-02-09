@@ -38,11 +38,12 @@ backend:
     pluginSources:
       - catalog
 ```
+
 ### Restricting action sources by plugin
 
 The `pluginSources` configuration limits which plugins are allowed to register actions.
 
-```yaml
+````yaml
 backend:
   actions:
     pluginSources:
@@ -102,7 +103,7 @@ export async function listAvailableActions(
     throw error;
   }
 }
-```
+````
 
 ### Invoking an Action
 
