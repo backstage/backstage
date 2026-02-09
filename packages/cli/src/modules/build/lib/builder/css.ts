@@ -15,12 +15,14 @@
  */
 
 import fs from 'fs-extra';
-import { bundle, transform } from 'lightningcss';
+import postcss from 'postcss';
+// @ts-expect-error - no types available
+import postcssImport from 'postcss-import';
 import { resolve as resolvePath, dirname } from 'node:path';
 import { EntryPoint } from '../../../../lib/entryPoints';
 
 /**
- * Bundles a CSS entry point, resolving @import statements and preserving @layer declarations.
+ * Bundles a CSS entry point, resolving @import statements.
  */
 export async function buildCSSEntryPoint(
   entryPoint: EntryPoint,
@@ -33,33 +35,20 @@ export async function buildCSSEntryPoint(
     entryPoint.path.replace(/^(\.\/)?src\//, 'dist/'),
   );
 
-  // Read source to extract @layer declaration before bundling
+  // Read source CSS
   const source = await fs.readFile(sourcePath, 'utf8');
-  const layerMatch = source.match(/@layer\s+[^;]+;/);
 
-  // Bundle @import statements using lightningcss
-  const { code: bundledCode } = bundle({
-    filename: sourcePath,
+  // Bundle @import statements using postcss-import
+  const result = await postcss([postcssImport()]).process(source, {
+    from: sourcePath,
+    to: outputPath,
   });
-
-  // Transform the bundled CSS
-  const { code } = transform({
-    filename: outputPath,
-    code: bundledCode,
-    minify: false,
-  });
-
-  // Restore @layer declaration if it was removed during bundling
-  let finalCode = code.toString();
-  if (layerMatch && !finalCode.includes(layerMatch[0])) {
-    finalCode = `${layerMatch[0]}\n\n${finalCode}`;
-  }
 
   // Ensure output directory exists
   await fs.mkdir(dirname(outputPath), { recursive: true });
 
   // Write the bundled CSS
-  await fs.writeFile(outputPath, finalCode);
+  await fs.writeFile(outputPath, result.css);
 }
 
 /**
