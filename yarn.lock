@@ -4674,6 +4674,7 @@ __metadata:
   resolution: "@backstage/plugin-auth-backend@workspace:plugins/auth-backend"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -4684,6 +4685,7 @@ __metadata:
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
     "@google-cloud/firestore": "npm:^7.0.0"
     "@types/cookie-parser": "npm:^1.4.2"
