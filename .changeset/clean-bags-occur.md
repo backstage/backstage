@@ -66,4 +66,14 @@ Replace hook usage in custom components:
 + const { bg } = useBg({ mode: 'leaf' });
 ```
 
-**Affected components:** box, button, button-icon, button-link, toggle-button, card, alert, flex, grid
+Update CSS selectors targeting surface data attributes:
+
+```diff
+- [data-surface='1'] { ... }
++ [data-bg='neutral-1'] { ... }
+
+- [data-on-surface='2'] { ... }
++ [data-bg='neutral-2'] { ... }
+```
+
+**Affected components:** Box, Button, ButtonIcon, ButtonLink, ToggleButton, Card, Alert, Flex, Grid

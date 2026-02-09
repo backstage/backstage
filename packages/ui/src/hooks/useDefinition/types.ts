@@ -75,11 +75,10 @@ type ResolvedOwnProps<
   [K in keyof PropDefs & keyof P]: ResolvePropType<P[K], PropDefs[K]>;
 };
 
-type ChildrenProps<
-  BgMode extends 'container' | 'leaf' | undefined = undefined,
-> = BgMode extends 'container'
-  ? { bgChildren: ReactNode; children?: never }
-  : { children: ReactNode; bgChildren?: never };
+type ChildrenProps<BgMode extends 'container' | 'leaf' | undefined> =
+  BgMode extends 'container'
+    ? { bgChildren: ReactNode; children?: never }
+    : { children: ReactNode; bgChildren?: never };
 
 type DataAttributeKeys<PropDefs> = {
   [K in keyof PropDefs]: PropDefs[K] extends { dataAttribute: true }

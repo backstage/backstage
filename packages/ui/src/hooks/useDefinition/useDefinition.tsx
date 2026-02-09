@@ -74,13 +74,7 @@ export function useDefinition<
 
   // Set data-bg from the resolved bg value (works for both container and leaf)
   if (definition.bg && resolvedBg !== undefined) {
-    const bgValue =
-      typeof resolvedBg === 'object'
-        ? resolveResponsiveValue(resolvedBg as any, breakpoint)
-        : resolvedBg;
-    if (bgValue !== undefined) {
-      dataAttributes['data-bg'] = String(bgValue);
-    }
+    dataAttributes['data-bg'] = String(resolvedBg);
   }
 
   const { utilityClasses, utilityStyle } = processUtilityProps<UtilityKeys<D>>(

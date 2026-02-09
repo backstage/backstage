@@ -20,15 +20,17 @@ import {
   createVersionedValueMap,
 } from '@backstage/version-bridge';
 import { Bg, Responsive } from '../types';
+import { useBreakpoint } from './useBreakpoint';
+import { resolveResponsiveValue } from './useDefinition/helpers';
 
 /** @public */
 export interface BgContextValue {
-  bg: Responsive<Bg> | undefined;
+  bg: Bg | undefined;
 }
 
 /** @public */
 export interface BgProviderProps {
-  bg: Responsive<Bg>;
+  bg: Bg;
   children: ReactNode;
 }
 
@@ -82,9 +84,9 @@ function incrementNeutralBg(bg: Bg | undefined): Bg | undefined {
  * @internal
  */
 function resolveBgForContainer(
-  contextBg: Responsive<Bg> | undefined,
-  propBg: Responsive<Bg> | undefined,
-): Responsive<Bg> | undefined {
+  contextBg: Bg | undefined,
+  propBg: Bg | undefined,
+): Bg | undefined {
   // Explicit bg prop takes priority
   if (propBg !== undefined) {
     return propBg;
@@ -92,11 +94,6 @@ function resolveBgForContainer(
 
   // No explicit bg: auto-increment from context if available
   if (contextBg === undefined) {
-    return undefined;
-  }
-
-  // If context is a responsive object, we can't auto-increment
-  if (typeof contextBg === 'object') {
     return undefined;
   }
 
@@ -110,15 +107,8 @@ function resolveBgForContainer(
  *
  * @internal
  */
-function resolveBgForLeaf(
-  contextBg: Responsive<Bg> | undefined,
-): Responsive<Bg> | undefined {
+function resolveBgForLeaf(contextBg: Bg | undefined): Bg | undefined {
   if (contextBg === undefined) {
-    return undefined;
-  }
-
-  // If context is a responsive object, we can't auto-increment
-  if (typeof contextBg === 'object') {
     return undefined;
   }
 
@@ -153,6 +143,7 @@ export const BgProvider = ({ bg, children }: BgProviderProps) => {
  * @public
  */
 export const useBg = (options?: UseBgOptions): BgContextValue => {
+  const { breakpoint } = useBreakpoint();
   const value = useContext(BgContext)?.atVersion(1);
   const context = value ?? { bg: undefined };
 
@@ -160,9 +151,15 @@ export const useBg = (options?: UseBgOptions): BgContextValue => {
     return context;
   }
 
+  // Resolve responsive prop value to a scalar for the current breakpoint
+  const resolvedPropBg =
+    options.bg !== undefined
+      ? resolveResponsiveValue(options.bg, breakpoint)
+      : undefined;
+
   if (options.mode === 'leaf') {
     return { bg: resolveBgForLeaf(context.bg) };
   }
 
-  return { bg: resolveBgForContainer(context.bg, options.bg) };
+  return { bg: resolveBgForContainer(context.bg, resolvedPropBg) };
 };

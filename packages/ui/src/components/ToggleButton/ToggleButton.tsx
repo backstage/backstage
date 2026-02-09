@@ -43,7 +43,7 @@ export const ToggleButton = forwardRef(
         className={clsx(classNames.root, styles[classNames.root], className)}
         ref={ref}
         {...dataAttributes}
-        {...(typeof bg === 'string' ? { 'data-bg': bg } : {})}
+        {...(bg ? { 'data-bg': bg } : {})}
         {...rest}
       >
         {renderProps => {
