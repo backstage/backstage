@@ -46,8 +46,8 @@ export interface MockFeatureFlagsApiOptions {
  * ```
  */
 export class MockFeatureFlagsApi implements FeatureFlagsApi {
-  private registeredFlags: FeatureFlag[] = [];
-  private states: Map<string, FeatureFlagState>;
+  private readonly registeredFlags: FeatureFlag[] = [];
+  private readonly states: Map<string, FeatureFlagState>;
 
   constructor(options?: MockFeatureFlagsApiOptions) {
     this.states = new Map(Object.entries(options?.initialStates ?? {}));
@@ -73,7 +73,10 @@ export class MockFeatureFlagsApi implements FeatureFlagsApi {
         this.states.set(name, state);
       }
     } else {
-      this.states = new Map(Object.entries(options.states));
+      this.states.clear();
+      for (const [name, state] of Object.entries(options.states)) {
+        this.states.set(name, state);
+      }
     }
   }
 

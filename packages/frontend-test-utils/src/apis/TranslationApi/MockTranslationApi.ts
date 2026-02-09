@@ -64,9 +64,9 @@ export class MockTranslationApi implements TranslationApi {
     return new MockTranslationApi(i18n, interpolator);
   }
 
-  #i18n: I18n;
-  #interpolator: JsxInterpolator;
-  #registeredRefs = new Set<string>();
+  readonly #i18n: I18n;
+  readonly #interpolator: JsxInterpolator;
+  readonly #registeredRefs = new Set<string>();
 
   private constructor(i18n: I18n, interpolator: JsxInterpolator) {
     this.#i18n = i18n;

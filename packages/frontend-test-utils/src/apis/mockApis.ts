@@ -287,7 +287,7 @@ export namespace mockApis {
   export function config(options?: {
     data?: JsonObject;
   }): MockConfigApi & MockWithApiFactory<ConfigApi> {
-    const instance = new MockConfigApi(options?.data ?? {});
+    const instance = new MockConfigApi({ data: options?.data ?? {} });
     return mockWithApiFactory(configApiRef, instance) as MockConfigApi &
       MockWithApiFactory<ConfigApi>;
   }

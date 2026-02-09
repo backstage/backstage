@@ -26,7 +26,7 @@ import { ConfigApi } from '@backstage/core-plugin-api';
  * @example
  * ```tsx
  * const mockConfig = new MockConfigApi({
- *   app: { baseUrl: 'https://example.com' },
+ *   data: { app: { baseUrl: 'https://example.com' } },
  * });
  *
  * const rendered = await renderInTestApp(
@@ -40,7 +40,7 @@ export class MockConfigApi implements ConfigApi {
   private readonly config: ConfigReader;
 
   // NOTE: not extending in order to avoid inheriting the static `.fromConfigs`
-  constructor(data: JsonObject) {
+  constructor({ data }: { data: JsonObject }) {
     this.config = new ConfigReader(data);
   }
 

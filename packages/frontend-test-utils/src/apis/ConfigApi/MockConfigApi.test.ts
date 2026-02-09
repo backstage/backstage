@@ -19,12 +19,14 @@ import { MockConfigApi } from './MockConfigApi';
 describe('MockConfigApi', () => {
   it('is able to read some basic config', () => {
     const mock = new MockConfigApi({
-      app: {
-        title: 'Hello',
+      data: {
+        app: {
+          title: 'Hello',
+        },
+        x: 1,
+        y: false,
+        z: [{ a: 3 }],
       },
-      x: 1,
-      y: false,
-      z: [{ a: 3 }],
     });
 
     expect(mock.getString('app.title')).toEqual('Hello');

@@ -31,8 +31,8 @@ import ObservableImpl from 'zen-observable';
  * ```
  */
 export class MockAlertApi implements AlertApi {
-  private alerts: AlertMessage[] = [];
-  private observers = new Set<(alert: AlertMessage) => void>();
+  private readonly alerts: AlertMessage[] = [];
+  private readonly observers = new Set<(alert: AlertMessage) => void>();
 
   post(alert: AlertMessage) {
     this.alerts.push(alert);
@@ -62,7 +62,7 @@ export class MockAlertApi implements AlertApi {
    * Clear all collected alerts.
    */
   clearAlerts(): void {
-    this.alerts = [];
+    this.alerts.length = 0;
   }
 
   /**
