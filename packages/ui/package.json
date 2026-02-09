@@ -22,17 +22,18 @@
   "sideEffects": [
     "*.css"
   ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./css/styles.css": "./src/css/styles.css",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist",
-    "css"
+    "dist"
   ],
   "scripts": {
-    "build": "yarn build:app && yarn build:css",
-    "build:app": "backstage-cli package build",
-    "build:css": "node scripts/build-css.mjs",
-    "build:css:watch": "node scripts/build-css.mjs --watch",
+    "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
@@ -50,12 +51,9 @@
     "@backstage/cli": "workspace:^",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "chalk": "^5.4.1",
     "eslint-plugin-storybook": "^10.3.0-alpha.1",
     "glob": "^11.0.1",
     "globals": "^15.11.0",
-    "lightningcss": "^1.29.1",
-    "mini-css-extract-plugin": "^2.9.2",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.30.2",

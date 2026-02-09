@@ -23,6 +23,8 @@ import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
 import { PackageRoles } from '@backstage/cli-node';
 import { runParallelWorkers } from '../../../../lib/parallel';
+import { buildCSSEntryPoints } from './css';
+import { readEntryPoints } from '../../../../lib/entryPoints';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -107,11 +109,18 @@ export const buildPackage = async (options: BuildOptions) => {
 
   const rollupConfigs = await makeRollupConfigs(options);
 
-  await fs.remove(resolvePath(options.targetDir ?? paths.targetDir, 'dist'));
+  const targetDir = options.targetDir ?? paths.targetDir;
+  await fs.remove(resolvePath(targetDir, 'dist'));
 
   const buildTasks = rollupConfigs.map(rollupBuild);
 
   await Promise.all(buildTasks);
+
+  // Build CSS entry points after the main build
+  if (options.packageJson) {
+    const entryPoints = readEntryPoints(options.packageJson);
+    await buildCSSEntryPoints(entryPoints, targetDir);
+  }
 };
 
 export const buildPackages = async (options: BuildOptions[]) => {

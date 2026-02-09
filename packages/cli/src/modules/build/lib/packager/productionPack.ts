@@ -148,7 +148,11 @@ async function rewriteEntryPoints(
 
   for (const entryPoint of entryPoints) {
     if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
-      outputExports[entryPoint.mount] = entryPoint.path;
+      // Non-script files (like CSS) get their paths rewritten from src/ to dist/
+      outputExports[entryPoint.mount] = entryPoint.path.replace(
+        /^(\.\/)?src\//,
+        './dist/',
+      );
       continue;
     }
 
