@@ -22,6 +22,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
@@ -1015,6 +1016,137 @@ describe('<EntityPicker />', () => {
       expect(queryByText(description.default!)).toBe(null);
       expect(queryByText(description.fromSchema)).toBe(null);
       expect(getByText(description.fromUiSchema)).toBeInTheDocument();
+    });
+  });
+
+  describe('with large number of entities', () => {
+    beforeEach(() => {
+      props = {
+        onChange,
+        schema,
+        required: true,
+        rawErrors,
+        formData,
+        uiSchema: { 'ui:options': {} },
+      } as unknown as FieldProps<any>;
+
+      const manyEntities = Array.from({ length: 100 }, (_, index) => {
+        const entity = makeEntity('Group', 'default', `some-team-${index}`);
+        entity.metadata.title = `Display Name ${index}`;
+        return entity;
+      });
+      manyEntities.push(makeEntity('Component', 'default', 'test-service'));
+
+      catalogApi.getEntities.mockResolvedValue({ items: manyEntities });
+    });
+
+    it('allows text filtering on entity ref kind', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      // Open the Autocomplete dropdown
+      const input = screen.getByRole('textbox');
+      fireEvent.click(input);
+
+      // Select an option from the dropdown
+      fireEvent.change(input, { target: { value: 'component' } });
+
+      const listItems = screen.getAllByRole('option');
+
+      // Expect only the Component entity to be shown
+      expect(listItems).toHaveLength(1);
+      expect(listItems[0]).toHaveTextContent('test-service');
+    });
+
+    it('allows text filtering on metadata name', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      // Open the Autocomplete dropdown
+      const input = screen.getByRole('textbox');
+      fireEvent.click(input);
+
+      // Select an option from the dropdown
+      fireEvent.change(input, { target: { value: 'some-team-57' } });
+
+      const listItems = screen.getAllByRole('option');
+
+      // Expect only the Component entity to be shown
+      expect(listItems).toHaveLength(1);
+      expect(listItems[0]).toHaveTextContent('Display Name 57');
+    });
+
+    it('allows text filtering on whole entity ref', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      // Open the Autocomplete dropdown
+      const input = screen.getByRole('textbox');
+      fireEvent.click(input);
+
+      // Select an option from the dropdown
+      fireEvent.change(input, {
+        target: { value: 'component:default/test-service' },
+      });
+
+      const listItems = screen.getAllByRole('option');
+
+      // Expect only the Component entity to be shown
+      expect(listItems).toHaveLength(1);
+      expect(listItems[0]).toHaveTextContent('test-service');
+    });
+
+    it('allows text filtering on display value', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      // Open the Autocomplete dropdown
+      const input = screen.getByRole('textbox');
+      fireEvent.click(input);
+
+      // Select an option from the dropdown
+      fireEvent.change(input, { target: { value: 'Display Name 57' } });
+
+      const listItems = screen.getAllByRole('option');
+
+      // Expect only the Component entity to be shown
+      expect(listItems).toHaveLength(1);
+      expect(listItems[0]).toHaveTextContent('Display Name 57');
+    });
+
+    it('auto scrolls to selected option', async () => {
+      // Set formData to an entity that is far down the list
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} formData="group:default/some-team-57" />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      // Open the Autocomplete dropdown
+      const input = screen.getByRole('textbox');
+      await userEvent.click(input);
+
+      // ensure that the option is scrolled into view
+      await expect(
+        screen.findByText('Display Name 57'),
+      ).resolves.toBeInTheDocument();
     });
   });
 });
