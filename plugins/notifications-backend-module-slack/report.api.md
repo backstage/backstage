@@ -4,6 +4,9 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { KnownBlock } from '@slack/web-api';
+import { NotificationPayload } from '@backstage/plugin-notifications-common';
 
 // @public
 export const ANNOTATION_SLACK_BOT_NOTIFY = 'slack.com/bot-notify';
@@ -11,4 +14,18 @@ export const ANNOTATION_SLACK_BOT_NOTIFY = 'slack.com/bot-notify';
 // @public
 const notificationsModuleSlack: BackendFeature;
 export default notificationsModuleSlack;
+
+// @public
+export interface NotificationsSlackBlockKitExtensionPoint {
+  // (undocumented)
+  setBlockKitRenderer(renderer: SlackBlockKitRenderer): void;
+}
+
+// @public (undocumented)
+export const notificationsSlackBlockKitExtensionPoint: ExtensionPoint<NotificationsSlackBlockKitExtensionPoint>;
+
+// @public (undocumented)
+export type SlackBlockKitRenderer = (
+  payload: NotificationPayload,
+) => KnownBlock[];
 ```

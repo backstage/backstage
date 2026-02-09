@@ -26,6 +26,9 @@ export type SlackBlockKitRenderer = (
 
 /**
  * @public
+ *
+ * Extension point for customizing how notification payloads are rendered into
+ * Slack Block Kit messages before they're sent.
  */
 export interface NotificationsSlackBlockKitExtensionPoint {
   setBlockKitRenderer(renderer: SlackBlockKitRenderer): void;
