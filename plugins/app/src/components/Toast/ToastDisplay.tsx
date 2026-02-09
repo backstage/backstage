@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
+import { ToastQueue } from '@react-stately/toast';
 import { ToastContainer } from './ToastContainer';
-import { toastQueue } from './ToastQueue';
 import type { ToastDisplayProps, ToastContent } from './types';
-import './Toast.css';
 
 /**
  * Maps AlertApi severity to Toast status.
@@ -85,6 +84,11 @@ export function ToastDisplay(props: ToastDisplayProps) {
   const toastApi = useApi(toastApiRef);
   const { transientTimeoutMs = 5000 } = props;
 
+  // Create toast queue once per component instance
+  const [toastQueue] = useState(
+    () => new ToastQueue<ToastContent>({ maxVisibleToasts: 4 }),
+  );
+
   // Track toast keys for programmatic close
   const toastKeyMap = useRef<Map<string, string>>(new Map());
 
@@ -108,7 +112,7 @@ export function ToastDisplay(props: ToastDisplayProps) {
     });
 
     return () => subscription.unsubscribe();
-  }, [toastApi]);
+  }, [toastApi, toastQueue]);
 
   // Subscribe to ToastApi close events for programmatic dismissal
   useEffect(() => {
@@ -121,7 +125,7 @@ export function ToastDisplay(props: ToastDisplayProps) {
     });
 
     return () => subscription.unsubscribe();
-  }, [toastApi]);
+  }, [toastApi, toastQueue]);
 
   // Subscribe to AlertApi (deprecated - provides backward compatibility during migration)
   // This subscription will be removed when AlertApi is fully deprecated
@@ -140,7 +144,7 @@ export function ToastDisplay(props: ToastDisplayProps) {
     });
 
     return () => subscription.unsubscribe();
-  }, [alertApi, transientTimeoutMs]);
+  }, [alertApi, transientTimeoutMs, toastQueue]);
 
   return <ToastContainer queue={toastQueue} />;
 }

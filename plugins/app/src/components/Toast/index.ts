@@ -20,5 +20,4 @@ export type { ToastDisplayProps } from './types';
 
 // Internal exports (used within the plugin only)
 export { ToastContainer } from './ToastContainer';
-export { toastQueue } from './ToastQueue';
 export type { ToastContent, ToastLink, ToastContainerProps } from './types';

@@ -26,7 +26,6 @@ import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { ToastDisplay } from './ToastDisplay';
 import { ToastApiForwarder } from '../../apis';
-import { toastQueue } from './ToastQueue';
 
 // Mock AlertApi with proper Observable implementation
 class MockAlertApi implements AlertApi {
@@ -53,10 +52,6 @@ describe('ToastDisplay', () => {
   let alertApi: MockAlertApi;
 
   beforeEach(() => {
-    // Clear the toast queue before each test
-    while (toastQueue.visibleToasts.length > 0) {
-      toastQueue.close(toastQueue.visibleToasts[0].key);
-    }
     toastApi = new ToastApiForwarder();
     alertApi = new MockAlertApi();
   });

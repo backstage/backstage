@@ -15,7 +15,7 @@
  */
 
 /* Toast Container - Container for all toasts (bottom center) */
-.toast-container {
+.container {
   position: fixed;
   bottom: 1rem;
   left: 50%;
@@ -26,7 +26,7 @@
 }
 
 @media (min-width: 500px) {
-  .toast-container {
+  .container {
     width: 350px;
     bottom: 2rem;
   }
@@ -67,12 +67,6 @@
 
   /* Shadow */
   box-shadow: 0 4px 12px -2px rgba(0 0 0 / 0.4);
-
-  /* Focus ring */
-  &:focus-visible {
-    outline: 2px solid var(--bui-border-focus);
-    outline-offset: 2px;
-  }
 }
 
 .toast:focus-visible {
@@ -94,31 +88,31 @@
 }
 
 /* Status variants - color icon and title */
-.toast[data-status='neutral'] .toast-title {
+.toast[data-status='neutral'] .title {
   color: var(--bui-fg-primary);
 }
 
-.toast[data-status='info'] .toast-icon,
-.toast[data-status='info'] .toast-title {
+.toast[data-status='info'] .icon,
+.toast[data-status='info'] .title {
   color: var(--bui-fg-info);
 }
 
-.toast[data-status='success'] .toast-icon,
-.toast[data-status='success'] .toast-title {
+.toast[data-status='success'] .icon,
+.toast[data-status='success'] .title {
   color: var(--bui-fg-success);
 }
 
-.toast[data-status='warning'] .toast-icon,
-.toast[data-status='warning'] .toast-title {
+.toast[data-status='warning'] .icon,
+.toast[data-status='warning'] .title {
   color: var(--bui-fg-warning);
 }
 
-.toast[data-status='danger'] .toast-icon,
-.toast[data-status='danger'] .toast-title {
+.toast[data-status='danger'] .icon,
+.toast[data-status='danger'] .title {
   color: var(--bui-fg-danger);
 }
 
-.toast-wrapper {
+.wrapper {
   display: flex;
   align-items: flex-start;
   gap: var(--bui-space-3);
@@ -126,14 +120,14 @@
   min-width: 0;
 }
 
-.toast-content {
+.content {
   display: flex;
   flex-direction: column;
   gap: var(--bui-space-1);
 }
 
 /* Icon */
-.toast-icon {
+.icon {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -141,13 +135,13 @@
   margin-top: var(--bui-space-0_5);
 }
 
-.toast-icon svg {
+.icon svg {
   width: 1rem;
   height: 1rem;
 }
 
 /* Title */
-.toast-title {
+.title {
   font-weight: var(--bui-font-weight-bold);
   font-size: var(--bui-font-size-3);
   word-wrap: break-word;
@@ -155,7 +149,7 @@
 }
 
 /* Description */
-.toast-description {
+.description {
   color: var(--bui-fg-secondary);
   font-size: var(--bui-font-size-3);
   opacity: 0.9;
@@ -163,14 +157,14 @@
 }
 
 /* Links */
-.toast-links {
+.links {
   display: flex;
   flex-wrap: wrap;
   gap: var(--bui-space-3);
   margin-top: var(--bui-space-1);
 }
 
-.toast-links a {
+.links a {
   font-family: var(--bui-font-regular);
   padding: 0;
   margin: 0;
@@ -184,7 +178,7 @@
   text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
 }
 
-.toast-links a:hover {
+.links a:hover {
   text-decoration-line: underline;
   text-decoration-style: solid;
   text-decoration-thickness: min(2px, max(1px, 0.05em));
@@ -193,7 +187,7 @@
 }
 
 /* Close Button */
-.toast-close-button {
+.closeButton {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -211,20 +205,20 @@
   color: var(--bui-fg-primary);
 }
 
-.toast-close-button svg {
+.closeButton svg {
   width: 1rem;
   height: 1rem;
 }
 
-.toast-close-button:hover {
+.closeButton:hover {
   background-color: var(--bui-bg-neutral-on-surface-1-hover);
 }
 
-.toast-close-button:focus-visible {
+.closeButton:focus-visible {
   outline: 2px solid var(--bui-border-focus);
   outline-offset: 1px;
 }
 
-.toast-close-button:active {
+.closeButton:active {
   background-color: var(--bui-bg-neutral-on-surface-1-pressed);
 }
