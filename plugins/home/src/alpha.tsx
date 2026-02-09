@@ -53,7 +53,11 @@ const rootRouteRef = createRouteRef();
 const homePage = PageBlueprint.makeWithOverrides({
   inputs: {
     widgets: createExtensionInput([homePageWidgetDataRef]),
-    layouts: createExtensionInput([HomePageLayoutBlueprint.dataRefs.component]),
+    layout: createExtensionInput([HomePageLayoutBlueprint.dataRefs.component], {
+      singleton: true,
+      optional: true,
+      internal: true,
+    }),
   },
   factory(originalFactory, { node, inputs }) {
     return originalFactory({
@@ -72,23 +76,16 @@ const homePage = PageBlueprint.makeWithOverrides({
           </ExtensionBoundary>
         );
 
-        const layouts = [
-          ...inputs.layouts.map(layout => ({
-            Component: layout.get(homePageLayoutComponentDataRef),
-          })),
-          {
-            Component: DefaultLayoutComponent,
-          },
-        ];
+        const Layout =
+          inputs.layout?.get(homePageLayoutComponentDataRef) ??
+          DefaultLayoutComponent;
 
-        const widgets = inputs.widgets.map(widget =>
-          widget.get(homePageWidgetDataRef),
-        );
+        const widgets = inputs.widgets.map(widget => ({
+          ...widget.get(homePageWidgetDataRef),
+          node: widget.node,
+        }));
 
-        // Use the first installed layout, or fall back to the default
-        const layout = layouts[0];
-
-        return <layout.Component widgets={widgets} />;
+        return <Layout widgets={widgets} />;
       },
     });
   },
@@ -149,7 +146,3 @@ export default createFrontendPlugin({
 });
 
 export { homeTranslationRef } from './translation';
-export {
-  type LayoutConfiguration,
-  type Breakpoint,
-} from './components/CustomHomepage/types';

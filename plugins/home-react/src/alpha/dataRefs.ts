@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
+import {
+  createExtensionDataRef,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
 import { JSX, ReactElement } from 'react';
 import type { CardLayout, CardSettings } from '../extensions';
 
@@ -25,6 +28,10 @@ import type { CardLayout, CardSettings } from '../extensions';
  * @alpha
  */
 export interface HomePageWidgetData {
+  /**
+   * The originating app node for this widget.
+   */
+  node: AppNode;
   /**
    * The rendered widget component (typically a card with header, content, etc.)
    */

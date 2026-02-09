@@ -16,12 +16,8 @@ import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
-
-// @public
-export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @alpha
 const _default: OverridableFrontendPlugin<
@@ -107,16 +103,16 @@ const _default: OverridableFrontendPlugin<
             internal: false;
           }
         >;
-        layouts: ExtensionInput<
+        layout: ExtensionInput<
           ConfigurableExtensionDataRef<
             (props: HomePageLayoutProps) => JSX_2.Element,
             'home.layout.component',
             {}
           >,
           {
-            singleton: false;
-            optional: false;
-            internal: false;
+            singleton: true;
+            optional: true;
+            internal: true;
           }
         >;
       };
@@ -165,18 +161,6 @@ export const homeTranslationRef: TranslationRef<
     readonly 'featuredDocsCard.learnMoreTitle': 'LEARN MORE';
   }
 >;
-
-// @public
-export type LayoutConfiguration = {
-  component: ReactElement | string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  movable?: boolean;
-  deletable?: boolean;
-  resizable?: boolean;
-};
 
 // (No @packageDocumentation comment for this package)
 ```

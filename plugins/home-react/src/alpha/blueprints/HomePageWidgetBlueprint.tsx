@@ -106,6 +106,7 @@ export const HomePageWidgetBlueprint = createExtensionBlueprint({
     );
 
     yield homePageWidgetDataRef({
+      node,
       component: <Widget {...(params.componentProps ?? {})} />,
       name: params.name,
       title: params.title,

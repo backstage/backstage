@@ -51,7 +51,7 @@ export interface HomePageLayoutBlueprintParams {
  */
 export const HomePageLayoutBlueprint = createExtensionBlueprint({
   kind: 'home-page-layout',
-  attachTo: { id: 'page:home', input: 'layouts' },
+  attachTo: { id: 'page:home', input: 'layout' },
   output: [homePageLayoutComponentDataRef],
   dataRefs: {
     component: homePageLayoutComponentDataRef,
