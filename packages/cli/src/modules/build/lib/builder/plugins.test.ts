@@ -22,8 +22,24 @@ import {
   PluginContext,
 } from 'rollup';
 
-import { forwardFileImports } from './plugins';
+import { forwardFileImports, cssEntryPoints } from './plugins';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+
+// Helper to call generateBundle hook which can be a function or ObjectHook
+async function callGenerateBundle(
+  plugin: ReturnType<typeof cssEntryPoints>,
+  ctx: PluginContext,
+  options: NormalizedOutputOptions,
+  bundle: Record<string, OutputChunk | OutputAsset>,
+  isWrite: boolean,
+) {
+  const hook = plugin.generateBundle;
+  if (typeof hook === 'function') {
+    await hook.call(ctx, options, bundle, isWrite);
+  } else if (hook && typeof hook === 'object' && 'handler' in hook) {
+    await hook.handler.call(ctx, options, bundle, isWrite);
+  }
+}
 
 const context = {
   meta: {
@@ -191,6 +207,142 @@ describe('forwardFileImports', () => {
         },
         true,
       );
+    });
+  });
+});
+
+describe('cssEntryPoints', () => {
+  it('should be created with correct name', () => {
+    const plugin = cssEntryPoints({
+      entryPoints: [],
+      targetDir: '/dev',
+    });
+    expect(plugin.name).toBe('backstage-css-entry-points');
+  });
+
+  describe('with createMockDirectory', () => {
+    const mockDir = createMockDirectory();
+
+    const emittedFiles: Array<{ fileName: string; source: string }> = [];
+    const emitContext = {
+      ...context,
+      emitFile: (file: { fileName: string; source: string }) => {
+        emittedFiles.push(file);
+        return 'asset-id';
+      },
+    } as unknown as PluginContext;
+
+    beforeEach(() => {
+      emittedFiles.length = 0;
+      mockDir.setContent({
+        dev: {
+          src: {
+            css: {
+              'styles.css': '@import "./base.css";\n.root { color: red; }',
+              'base.css': '.base { margin: 0; }',
+            },
+          },
+        },
+      });
+    });
+
+    it('should not emit when isWrite is false', async () => {
+      const plugin = cssEntryPoints({
+        entryPoints: [
+          {
+            mount: './css/styles.css',
+            path: './src/css/styles.css',
+            name: 'css/styles.css',
+            ext: '.css',
+          },
+        ],
+        targetDir: mockDir.resolve('dev'),
+      });
+
+      await callGenerateBundle(
+        plugin,
+        emitContext,
+        { dir: mockDir.resolve('dev/dist') } as NormalizedOutputOptions,
+        {},
+        false,
+      );
+
+      expect(emittedFiles).toHaveLength(0);
+    });
+
+    it('should emit only CSS entry points with resolved imports', async () => {
+      const plugin = cssEntryPoints({
+        entryPoints: [
+          // Non-CSS entry should be ignored
+          { mount: '.', path: './src/index.ts', name: 'index', ext: '.ts' },
+          {
+            mount: './css/styles.css',
+            path: './src/css/styles.css',
+            name: 'css/styles.css',
+            ext: '.css',
+          },
+        ],
+        targetDir: mockDir.resolve('dev'),
+      });
+
+      await callGenerateBundle(
+        plugin,
+        emitContext,
+        { dir: mockDir.resolve('dev/dist') } as NormalizedOutputOptions,
+        {},
+        true,
+      );
+
+      // Only CSS file should be emitted, not the .ts entry
+      expect(emittedFiles).toHaveLength(1);
+      expect(emittedFiles[0].fileName).toBe('css/styles.css');
+      expect(emittedFiles[0].source).toContain('.base { margin: 0; }');
+      expect(emittedFiles[0].source).toContain('.root { color: red; }');
+      expect(emittedFiles[0].source).not.toContain('@import');
+    });
+
+    it('should only emit once per output directory', async () => {
+      const plugin = cssEntryPoints({
+        entryPoints: [
+          {
+            mount: './css/styles.css',
+            path: './src/css/styles.css',
+            name: 'css/styles.css',
+            ext: '.css',
+          },
+        ],
+        targetDir: mockDir.resolve('dev'),
+      });
+
+      // First call should emit
+      await callGenerateBundle(
+        plugin,
+        emitContext,
+        { dir: mockDir.resolve('dev/dist') } as NormalizedOutputOptions,
+        {},
+        true,
+      );
+      expect(emittedFiles).toHaveLength(1);
+
+      // Second call to same dir should not emit again
+      await callGenerateBundle(
+        plugin,
+        emitContext,
+        { dir: mockDir.resolve('dev/dist') } as NormalizedOutputOptions,
+        {},
+        true,
+      );
+      expect(emittedFiles).toHaveLength(1);
+
+      // Call to different dir should emit
+      await callGenerateBundle(
+        plugin,
+        emitContext,
+        { dir: mockDir.resolve('dev/dist2') } as NormalizedOutputOptions,
+        {},
+        true,
+      );
+      expect(emittedFiles).toHaveLength(2);
     });
   });
 });
