@@ -186,13 +186,27 @@ interface CssEntryPointsOptions {
 export function cssEntryPoints(options: CssEntryPointsOptions): Plugin {
   const cssEntries = options.entryPoints.filter(ep => ep.ext === '.css');
 
+  // Track output directories we've already emitted CSS to, to avoid duplicates
+  // when Rollup runs generateBundle multiple times (once per output format)
+  const generatedFor = new Set<string>();
+
   return {
     name: 'backstage-css-entry-points',
 
-    async generateBundle() {
+    async generateBundle(outputOptions, _bundle, isWrite) {
+      if (!isWrite) {
+        return;
+      }
+
+      const dir = outputOptions.dir || dirname(outputOptions.file!);
+      if (generatedFor.has(dir)) {
+        return;
+      }
+      generatedFor.add(dir);
+
       for (const entryPoint of cssEntries) {
         const sourcePath = resolvePath(options.targetDir, entryPoint.path);
-        // Convert src/ path to dist/ path for output filename
+        // Strip the src/ prefix to create an output filename relative to the Rollup output directory
         const outputPath = entryPoint.path.replace(/^(\.\/)?src\//, '');
 
         // Read source CSS
