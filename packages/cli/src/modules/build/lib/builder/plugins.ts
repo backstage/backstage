@@ -16,7 +16,6 @@
 
 import fs from 'fs-extra';
 import postcss from 'postcss';
-// @ts-expect-error - no types available
 import postcssImport from 'postcss-import';
 import {
   dirname,
