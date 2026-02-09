@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { AppNode, AppTree } from '@backstage/frontend-plugin-api';
+import {
+  AppNode,
+  useApi,
+  appTreeApiRef,
+} from '@backstage/frontend-plugin-api';
 import { Box, Checkbox } from '@backstage/ui';
 import { ReactNode, useState } from 'react';
 
@@ -77,7 +81,9 @@ function nodeToText(
   ]);
 }
 
-export function TextVisualizer({ tree }: { tree: AppTree }) {
+export function TextVisualizer() {
+  const appTreeApi = useApi(appTreeApiRef);
+  const { tree } = appTreeApi.getTree();
   const [showOutputs, setShowOutputs] = useState(false);
   const [showDisabled, setShowDisabled] = useState(false);
 

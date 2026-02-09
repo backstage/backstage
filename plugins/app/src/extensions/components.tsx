@@ -17,6 +17,8 @@ import {
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
   ErrorDisplay as SwappableErrorDisplay,
+  PageLayout as SwappablePageLayout,
+  type PageLayoutProps,
 } from '@backstage/frontend-plugin-api';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
@@ -24,6 +26,7 @@ import {
   ErrorPanel,
   Progress as ProgressComponent,
 } from '@backstage/core-components';
+import { Header, Flex } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 
 export const Progress = SwappableComponentBlueprint.make({
@@ -59,6 +62,25 @@ export const ErrorDisplay = SwappableComponentBlueprint.make({
               Retry
             </Button>
           </ErrorPanel>
+        );
+      },
+    }),
+});
+
+export const PageLayout = SwappableComponentBlueprint.make({
+  name: 'core-page-layout',
+  params: define =>
+    define({
+      component: SwappablePageLayout,
+      loader: () => (props: PageLayoutProps) => {
+        const { title, tabs, children } = props;
+        return (
+          <Flex direction="column" style={{ flexGrow: 1, minHeight: 0 }}>
+            <Header title={title} tabs={tabs} />
+            <Flex direction="column" style={{ flexGrow: 1, minHeight: 0 }}>
+              {children}
+            </Flex>
+          </Flex>
         );
       },
     }),
