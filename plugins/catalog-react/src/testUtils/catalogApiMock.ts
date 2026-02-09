@@ -14,46 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  ApiFactory,
-  ApiRef,
-  createApiFactory,
-} from '@backstage/frontend-plugin-api';
+import { ApiFactory, createApiFactory } from '@backstage/frontend-plugin-api';
 import { InMemoryCatalogClient } from '@backstage/catalog-client/testUtils';
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  ApiMock,
+  createApiMock,
   attachMockApiFactory,
   type MockWithApiFactory,
 } from '@backstage/frontend-test-utils';
-
-/** @internal */
-function simpleMock<TApi>(
-  ref: ApiRef<TApi>,
-  mockFactory: () => jest.Mocked<TApi>,
-): (partialImpl?: Partial<TApi>) => ApiMock<TApi> {
-  return partialImpl => {
-    const mock = mockFactory();
-    if (partialImpl) {
-      for (const [key, impl] of Object.entries(partialImpl)) {
-        if (typeof impl === 'function') {
-          (mock as any)[key].mockImplementation(impl);
-        } else {
-          (mock as any)[key] = impl;
-        }
-      }
-    }
-    const factory = createApiFactory({
-      api: ref,
-      deps: {},
-      factory: () => mock,
-    });
-    const marked = attachMockApiFactory(ref, mock);
-    return Object.assign(marked, { factory }) as ApiMock<TApi>;
-  };
-}
 
 /**
  * Creates a fake catalog client that handles entities in memory storage. Note
@@ -92,7 +62,7 @@ export namespace catalogApiMock {
    * Creates a catalog client whose methods are mock functions, possibly with
    * some of them overloaded by the caller.
    */
-  export const mock = simpleMock(catalogApiRef, () => ({
+  export const mock = createApiMock(catalogApiRef, () => ({
     getEntities: jest.fn(),
     getEntitiesByRefs: jest.fn(),
     queryEntities: jest.fn(),
