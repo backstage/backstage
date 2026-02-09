@@ -1937,10 +1937,8 @@ export const swappableComponentsApiRef: ApiRef_2<SwappableComponentsApi>;
 
 // @public
 export type ToastApi = {
-  post(toast: ToastApiMessage): string;
-  close(key: string): void;
+  post(toast: ToastApiMessage): ToastApiPostResult;
   toast$(): Observable<ToastApiMessageWithKey>;
-  close$(): Observable<string>;
 };
 
 // @public
@@ -1955,6 +1953,12 @@ export type ToastApiMessage = {
 // @public
 export type ToastApiMessageWithKey = ToastApiMessage & {
   key: string;
+  close(): void;
+};
+
+// @public
+export type ToastApiPostResult = {
+  close(): void;
 };
 
 // @public

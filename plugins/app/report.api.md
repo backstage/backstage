@@ -1021,10 +1021,7 @@ const appPlugin: OverridableFrontendPlugin<
 export default appPlugin;
 
 // @public
-export function ToastDisplay(props: ToastDisplayProps): JSX_3.Element;
-
-// @public
-export interface ToastDisplayProps {
+export interface ToastApiMessageDisplayProps {
   // @deprecated
   anchorOrigin?: {
     vertical: 'top' | 'bottom';
@@ -1032,6 +1029,9 @@ export interface ToastDisplayProps {
   };
   transientTimeoutMs?: number;
 }
+
+// @public
+export function ToastDisplay(props: ToastApiMessageDisplayProps): JSX_3.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
