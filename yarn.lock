@@ -20584,7 +20584,7 @@ __metadata:
     "@types/serve-handler": "npm:^6.1.0"
     "@types/webpack-env": "npm:^1.15.3"
     commander: "npm:^12.0.0"
-    find-process: "npm:^1.4.5"
+    find-process: "npm:^2.0.0"
     fs-extra: "npm:^11.0.0"
     global-agent: "npm:^3.0.0"
     http-proxy: "npm:^1.18.1"
@@ -31903,16 +31903,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-process@npm:^1.4.5":
-  version: 1.4.11
-  resolution: "find-process@npm:1.4.11"
+"find-process@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "find-process@npm:2.0.0"
   dependencies:
     chalk: "npm:~4.1.2"
     commander: "npm:^12.1.0"
     loglevel: "npm:^1.9.2"
   bin:
-    find-process: bin/find-process.js
-  checksum: 10/95f7106877c86fc09804b29339cfac518a43228c1b5f4a4e9442e57ac5538369fbeafb746fa96390ecd7be6f5a9119b58c952b5c96a0cb9f2490ef19298dec1e
+    find-process: dist/bin/find-process.js
+  checksum: 10/a8f23b72e7b67c8f039c2234116f68439c067e8d0f90484b53814aac04f1891cf322c7cf4b4193a14b91a19ba9c68bd8bcfb8a556626e6667dcaaefbca3294f9
   languageName: node
   linkType: hard
 
