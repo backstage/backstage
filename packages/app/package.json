@@ -95,7 +95,7 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "axios": "^1.13.0",
+    "axios": "^1.13.5",
     "cross-env": "^10.0.0",
     "msw": "^1.0.0"
   },
