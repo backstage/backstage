@@ -18,6 +18,7 @@ import {
   ToastApi,
   ToastApiMessage,
   ToastApiMessageWithKey,
+  ToastApiPostResult,
 } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
@@ -86,14 +87,51 @@ class PublishSubject<T> {
  */
 export class ToastApiForwarder implements ToastApi {
   private readonly subject = new PublishSubject<ToastApiMessageWithKey>();
-  private readonly closeSubject = new PublishSubject<string>();
   private readonly recentToasts: ToastApiMessageWithKey[] = [];
   private readonly closedKeys = new Set<string>();
   private readonly maxBufferSize = 10;
 
-  post(toast: ToastApiMessage): string {
+  post(toast: ToastApiMessage): ToastApiPostResult {
     const key = generateToastKey();
-    const toastWithKey: ToastApiMessageWithKey = { ...toast, key };
+    const closeCallbacks: Array<() => void> = [];
+    let closed = false;
+
+    const close = () => {
+      if (closed) return;
+      closed = true;
+
+      // Track closed keys to prevent replaying dismissed toasts
+      this.closedKeys.add(key);
+
+      // Remove from recent buffer if still there
+      const index = this.recentToasts.findIndex(t => t.key === key);
+      if (index !== -1) {
+        this.recentToasts.splice(index, 1);
+      }
+
+      // Clean up old closed keys when buffer is cleared
+      if (this.recentToasts.length === 0) {
+        this.closedKeys.clear();
+      }
+
+      // Notify registered listeners (e.g. the toast display)
+      closeCallbacks.forEach(fn => fn());
+    };
+
+    const onClose = (callback: () => void) => {
+      if (closed) {
+        callback();
+      } else {
+        closeCallbacks.push(callback);
+      }
+    };
+
+    const toastWithKey: ToastApiMessageWithKey = {
+      ...toast,
+      key,
+      close,
+      onClose,
+    };
 
     this.recentToasts.push(toastWithKey);
     if (this.recentToasts.length > this.maxBufferSize) {
@@ -101,24 +139,7 @@ export class ToastApiForwarder implements ToastApi {
     }
     this.subject.next(toastWithKey);
 
-    return key;
-  }
-
-  close(key: string): void {
-    // Track closed keys to prevent replaying dismissed toasts
-    this.closedKeys.add(key);
-
-    // Remove from recent buffer if still there
-    const index = this.recentToasts.findIndex(t => t.key === key);
-    if (index !== -1) {
-      this.recentToasts.splice(index, 1);
-    }
-    this.closeSubject.next(key);
-
-    // Clean up old closed keys when buffer is cleared
-    if (this.recentToasts.length === 0) {
-      this.closedKeys.clear();
-    }
+    return { close };
   }
 
   toast$(): Observable<ToastApiMessageWithKey> {
@@ -127,15 +148,5 @@ export class ToastApiForwarder implements ToastApi {
       t => !this.closedKeys.has(t.key),
     );
     return this.subject.asObservable(activeToasts);
-  }
-
-  /**
-   * Observe close requests for toasts.
-   * This is used internally by the ToastDisplay to know when to dismiss a toast programmatically.
-   *
-   * @internal
-   */
-  close$(): Observable<string> {
-    return this.closeSubject.asObservable();
   }
 }

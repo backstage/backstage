@@ -20,10 +20,12 @@ import { Button, Flex, Text } from '../../../../../packages/ui/src';
 /* eslint-enable @backstage/no-relative-monorepo-imports */
 import { ToastQueue } from '@react-stately/toast';
 import { ToastContainer } from './index';
-import type { ToastContent } from './types';
+import type { ToastApiMessageContent } from './types';
 import { MemoryRouter } from 'react-router-dom';
 
-const toastQueue = new ToastQueue<ToastContent>({ maxVisibleToasts: 4 });
+const toastQueue = new ToastQueue<ToastApiMessageContent>({
+  maxVisibleToasts: 4,
+});
 
 const meta = preview.meta({
   title: 'Plugins/App/Toast',

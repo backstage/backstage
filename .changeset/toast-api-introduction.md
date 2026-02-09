@@ -1,6 +1,6 @@
 ---
-'@backstage/frontend-plugin-api': minor
-'@backstage/plugin-app': minor
+'@backstage/frontend-plugin-api': patch
+'@backstage/plugin-app': patch
 ---
 
 Introduced a new `ToastApi` for displaying rich toast notifications in the new frontend system.
@@ -11,7 +11,7 @@ The new `ToastApi` provides enhanced notification capabilities compared to the e
 - **Custom Timeouts**: Each toast can specify its own timeout duration
 - **Links**: Toasts can include action links
 - **Status Variants**: Support for neutral, info, success, warning, and danger statuses
-- **Programmatic Dismiss**: Toasts can be dismissed programmatically using the key returned from `post()`
+- **Programmatic Dismiss**: Toasts can be dismissed programmatically using the `close()` handle returned from `post()`
 
 **Usage:**
 
@@ -30,9 +30,9 @@ toastApi.post({
 });
 
 // Programmatic dismiss
-const key = toastApi.post({ title: 'Uploading...', status: 'info' });
+const { close } = toastApi.post({ title: 'Uploading...', status: 'info' });
 // Later...
-toastApi.close(key);
+close();
 ```
 
 The `ToastDisplay` component subscribes to both `ToastApi` and `AlertApi`, providing a migration path where both systems work side by side until `AlertApi` is fully deprecated.

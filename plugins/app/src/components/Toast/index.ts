@@ -16,8 +16,12 @@
 
 // Public exports
 export { ToastDisplay } from './ToastDisplay';
-export type { ToastDisplayProps } from './types';
+export type { ToastApiMessageDisplayProps } from './types';
 
 // Internal exports (used within the plugin only)
 export { ToastContainer } from './ToastContainer';
-export type { ToastContent, ToastLink, ToastContainerProps } from './types';
+export type {
+  ToastApiMessageContent,
+  ToastApiMessageLink,
+  ToastApiMessageContainerProps,
+} from './types';

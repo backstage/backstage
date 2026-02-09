@@ -14,57 +14,65 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useApi, appThemeApiRef } from '@backstage/core-plugin-api';
+import useObservable from 'react-use/esm/useObservable';
 
 type ThemeMode = 'light' | 'dark';
 
 /**
- * Detects the current theme mode from the DOM and returns the inverted value.
- * Checks both document.documentElement and document.body for the data-theme-mode attribute.
+ * Returns the inverted theme mode based on the active app theme.
+ * Uses the AppThemeApi to detect the current theme variant reactively.
+ * When the theme is set to "auto" (no explicit selection), falls back to
+ * the system preference via `prefers-color-scheme`.
  *
  * @returns The inverted theme mode ('light' when app is dark, 'dark' when app is light)
  * @internal
  */
 export function useInvertedThemeMode(): ThemeMode {
-  const [invertedThemeMode, setInvertedThemeMode] = useState<ThemeMode>('dark');
+  const appThemeApi = useApi(appThemeApiRef);
+
+  const themeId = useObservable(
+    appThemeApi.activeThemeId$(),
+    appThemeApi.getActiveThemeId(),
+  );
+
+  // Track system color scheme preference for "auto" mode
+  const mediaQuery = useMemo(
+    () => window.matchMedia('(prefers-color-scheme: dark)'),
+    [],
+  );
+  const [prefersDark, setPrefersDark] = useState(mediaQuery.matches);
 
   useEffect(() => {
-    const detectTheme = (): ThemeMode => {
-      // Check both html and body elements for the theme attribute
-      const htmlTheme =
-        document.documentElement.getAttribute('data-theme-mode');
-      const bodyTheme = document.body.getAttribute('data-theme-mode');
+    const listener = (e: MediaQueryListEvent) => setPrefersDark(e.matches);
+    mediaQuery.addEventListener('change', listener);
+    return () => mediaQuery.removeEventListener('change', listener);
+  }, [mediaQuery]);
 
-      // Prefer body (used by UnifiedThemeProvider) over html
-      const currentTheme = bodyTheme || htmlTheme;
+  // Resolve the active theme's variant, matching AppThemeProvider's logic:
+  // 1. If a theme is explicitly selected, use its variant
+  // 2. Otherwise (auto mode), use system preference to pick dark or light
+  // 3. Fall back to the first installed theme
+  const themes = appThemeApi.getInstalledThemes();
+  let currentVariant: ThemeMode | undefined;
 
-      // If current theme is dark, return light (inverted), otherwise return dark
-      return currentTheme === 'dark' ? 'light' : 'dark';
-    };
+  if (themeId !== undefined) {
+    currentVariant = themes.find(t => t.id === themeId)?.variant;
+  }
 
-    // Initial detection
-    setInvertedThemeMode(detectTheme());
-
-    // Watch for theme changes on both html and body
-    const observer = new MutationObserver(() => {
-      setInvertedThemeMode(detectTheme());
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme-mode'],
-    });
-
-    // Body might not exist in some edge cases (e.g., during SSR or early lifecycle)
-    if (document.body) {
-      observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['data-theme-mode'],
-      });
+  if (!currentVariant) {
+    if (prefersDark) {
+      currentVariant = themes.find(t => t.variant === 'dark')?.variant;
     }
+    currentVariant ??= themes.find(t => t.variant === 'light')?.variant;
+    currentVariant ??= themes[0]?.variant;
+  }
 
-    return () => observer.disconnect();
-  }, []);
-
-  return invertedThemeMode;
+  // Invert: if current is dark, toast should be light, and vice versa
+  // Default to 'dark' if we can't determine (safe for most light-themed apps)
+  if (currentVariant === 'dark') {
+    return 'light';
+  }
+  return 'dark';
 }

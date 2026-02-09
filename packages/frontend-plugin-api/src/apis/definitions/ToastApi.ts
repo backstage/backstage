@@ -49,13 +49,33 @@ export type ToastApiMessage = {
 };
 
 /**
- * Toast message with key, as returned by the toast$() observable.
+ * Handle returned by {@link ToastApi.post} that allows programmatic control
+ * of the posted toast.
+ *
+ * @public
+ */
+export type ToastApiPostResult = {
+  /** Dismiss the toast. */
+  close(): void;
+};
+
+/**
+ * Toast message with key, as emitted by the toast$() observable.
  *
  * @public
  */
 export type ToastApiMessageWithKey = ToastApiMessage & {
-  /** Unique key for the toast, used for programmatic dismiss */
+  /** Unique key for the toast, used internally for tracking */
   key: string;
+  /** Dismiss this toast programmatically */
+  close(): void;
+  /**
+   * Register a callback that fires when this toast is closed.
+   * Used internally by the toast display to sync with the rendering queue.
+   *
+   * @internal
+   */
+  onClose(callback: () => void): void;
 };
 
 /**
@@ -82,9 +102,9 @@ export type ToastApiMessageWithKey = ToastApiMessage & {
  * toastApi.post({ title: 'Processing...', status: 'info' });
  *
  * // Programmatic dismiss
- * const key = toastApi.post({ title: 'Uploading...', status: 'info' });
+ * const { close } = toastApi.post({ title: 'Uploading...', status: 'info' });
  * // Later...
- * toastApi.close(key);
+ * close();
  * ```
  *
  * @public
@@ -94,27 +114,14 @@ export type ToastApi = {
    * Post a toast notification for display to the user.
    *
    * @param toast - The toast message to display
-   * @returns A unique key that can be used to programmatically dismiss the toast
+   * @returns A handle with a `close()` method to programmatically dismiss the toast
    */
-  post(toast: ToastApiMessage): string;
-
-  /**
-   * Programmatically close/dismiss a toast by its key.
-   *
-   * @param key - The key returned from post()
-   */
-  close(key: string): void;
+  post(toast: ToastApiMessage): ToastApiPostResult;
 
   /**
    * Observe toasts posted by other parts of the application.
    */
   toast$(): Observable<ToastApiMessageWithKey>;
-
-  /**
-   * Observe close events for programmatic toast dismissal.
-   * Emits the key of the toast that should be closed.
-   */
-  close$(): Observable<string>;
 };
 
 /**

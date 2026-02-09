@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { ToastQueue } from '@react-stately/toast';
 import { ToastContainer } from './ToastContainer';
-import type { ToastDisplayProps, ToastContent } from './types';
+import type {
+  ToastApiMessageDisplayProps,
+  ToastApiMessageContent,
+} from './types';
 
 /**
  * Maps AlertApi severity to Toast status.
@@ -27,7 +30,7 @@ import type { ToastDisplayProps, ToastContent } from './types';
  */
 function mapSeverity(
   severity: 'success' | 'info' | 'warning' | 'error' | undefined,
-): ToastContent['status'] {
+): ToastApiMessageContent['status'] {
   if (severity === 'error') {
     return 'danger';
   }
@@ -49,7 +52,7 @@ function mapSeverity(
  * **ToastApi (recommended):**
  * - Uses toast content directly (title, description, status, icon, links)
  * - Uses the provided timeout from the toast message
- * - Supports programmatic dismiss via returned key
+ * - Supports programmatic dismiss via the returned `close()` handle
  *
  * **AlertApi (deprecated - please migrate to ToastApi):**
  * - `alert.message` → `toast.title`
@@ -64,12 +67,13 @@ function mapSeverity(
  * // Using the new ToastApi (recommended):
  * import { toastApiRef, useApi } from '@backstage/frontend-plugin-api';
  * const toastApi = useApi(toastApiRef);
- * toastApi.post({
+ * const { close } = toastApi.post({
  *   title: 'Entity saved',
  *   description: 'Your changes have been saved successfully.',
  *   status: 'success',
  *   timeout: 5000,
  * });
+ * // Later: close() to dismiss programmatically
  *
  * // Using the deprecated AlertApi (migrate to ToastApi):
  * import { alertApiRef, useApi } from '@backstage/core-plugin-api';
@@ -79,23 +83,20 @@ function mapSeverity(
  *
  * @public
  */
-export function ToastDisplay(props: ToastDisplayProps) {
+export function ToastDisplay(props: ToastApiMessageDisplayProps) {
   const alertApi = useApi(alertApiRef);
   const toastApi = useApi(toastApiRef);
   const { transientTimeoutMs = 5000 } = props;
 
   // Create toast queue once per component instance
   const [toastQueue] = useState(
-    () => new ToastQueue<ToastContent>({ maxVisibleToasts: 4 }),
+    () => new ToastQueue<ToastApiMessageContent>({ maxVisibleToasts: 4 }),
   );
-
-  // Track toast keys for programmatic close
-  const toastKeyMap = useRef<Map<string, string>>(new Map());
 
   // Subscribe to ToastApi
   useEffect(() => {
     const subscription = toastApi.toast$().subscribe(toast => {
-      const content: ToastContent = {
+      const content: ToastApiMessageContent = {
         title: toast.title,
         description: toast.description,
         status: toast.status ?? 'success',
@@ -107,21 +108,8 @@ export function ToastDisplay(props: ToastDisplayProps) {
 
       const queueKey = toastQueue.add(content, options);
 
-      // Track the mapping from API key to queue key for programmatic close
-      toastKeyMap.current.set(toast.key, queueKey);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [toastApi, toastQueue]);
-
-  // Subscribe to ToastApi close events for programmatic dismissal
-  useEffect(() => {
-    const subscription = toastApi.close$().subscribe(apiKey => {
-      const queueKey = toastKeyMap.current.get(apiKey);
-      if (queueKey) {
-        toastQueue.close(queueKey);
-        toastKeyMap.current.delete(apiKey);
-      }
+      // When the toast is programmatically closed, remove it from the queue
+      toast.onClose(() => toastQueue.close(queueKey));
     });
 
     return () => subscription.unsubscribe();
@@ -131,7 +119,7 @@ export function ToastDisplay(props: ToastDisplayProps) {
   // This subscription will be removed when AlertApi is fully deprecated
   useEffect(() => {
     const subscription = alertApi.alert$().subscribe(alert => {
-      const content: ToastContent = {
+      const content: ToastApiMessageContent = {
         title: alert.message,
         status: mapSeverity(alert.severity),
       };

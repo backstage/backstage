@@ -25,7 +25,7 @@ import {
   RiAlertLine,
   RiCloseLine,
 } from '@remixicon/react';
-import type { ToastProps } from './types';
+import type { ToastApiMessageProps } from './types';
 import styles from './Toast.module.css';
 
 // Track which toasts are being manually closed (vs auto-timeout)
@@ -43,7 +43,7 @@ const manuallyClosingToasts = new Set<string>();
  * @internal
  */
 export const Toast = forwardRef(
-  (props: ToastProps, ref: Ref<HTMLDivElement>) => {
+  (props: ToastApiMessageProps, ref: Ref<HTMLDivElement>) => {
     const {
       toast,
       state,

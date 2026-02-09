@@ -18,7 +18,7 @@ import { forwardRef, Ref, useState, useRef, useCallback, useMemo } from 'react';
 import { useToastRegion } from '@react-aria/toast';
 import { useToastQueue } from '@react-stately/toast';
 import { AnimatePresence } from 'motion/react';
-import type { ToastContainerProps } from './types';
+import type { ToastApiMessageContainerProps } from './types';
 import { useInvertedThemeMode } from '../../hooks/useInvertedThemeMode';
 import { Toast } from './Toast';
 import styles from './Toast.module.css';
@@ -36,7 +36,7 @@ import styles from './Toast.module.css';
  * @internal
  */
 export const ToastContainer = forwardRef(
-  (props: ToastContainerProps, ref: Ref<HTMLDivElement>) => {
+  (props: ToastApiMessageContainerProps, ref: Ref<HTMLDivElement>) => {
     const { queue, className } = props;
 
     // Subscribe to the toast queue state
