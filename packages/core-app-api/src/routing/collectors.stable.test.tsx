@@ -32,11 +32,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
-jest.mock('react-router', () => jest.requireActual('react-router-stable'));
-jest.mock('react-router-dom', () =>
-  jest.requireActual('react-router-dom-stable'),
-);
-
 const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
   <>{children}</>
 );

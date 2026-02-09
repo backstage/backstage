@@ -26,11 +26,6 @@ import {
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './collectors';
 
-jest.mock('react-router', () => jest.requireActual('react-router-stable'));
-jest.mock('react-router-dom', () =>
-  jest.requireActual('react-router-dom-stable'),
-);
-
 const rest = {
   element: null,
   caseSensitive: false,

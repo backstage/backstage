@@ -4,17 +4,12 @@ title: React Router 6.0 Migration
 description: Guide for how to migrate from React Router v6 beta to React Router v6 stable
 ---
 
-Backstage has for a long time been using `react-router` version `6.0.0-beta.0`.
+Older versions of Backstage used to support `react-router` version `6.0.0-beta.0`.
 We adopted this unstable version because v6 had some new features that fit
 really well with Backstage, particularly relative routing. Because we jumped on
 this early and unstable version, we knew that we would at some point need a
 breaking migration to the stable version of `react-router` v6, which is the
 point we're at now!
-
-This migration is required but controlled by each app, meaning that you choose
-when you want to migrate your app. There will however be some point in the
-future where we drop support for the beta version of `react-router`, at which
-time you would be forced to migrate.
 
 The stable version of React Router v6 brings a number of improvements and bug
 fixes. Notably, the way that paths are resolved has been improved, which fixes a
@@ -22,9 +17,9 @@ bug where paths like `/catalog` and `/catalog-import` could get confused.
 
 ## Migration
 
-### Step 1 - Upgrade to Backstage 1.6
+### Step 1 - Upgrade to Backstage 1.48
 
-The first Backstage release to support `react-router` v6 is `1.6`. You should upgrade to this version first before you start migrating. If you are an early bird and want to try out migration before that release, it is also shipped in `1.6.0-next.1`.
+The first Backstage release to entirely remove support for the `react-router` beta is `1.48`. You should upgrade to this version first before you start migrating.
 
 ### Step 2 - Move `react-router` to `peerDependencies`
 
@@ -48,13 +43,13 @@ For those interested in doing this manually, apply the below change to all `pack
 ```diff title="package.json"
  dependencies {
    ...
--  "react-router-dom": "^6.0.0-beta.0",
--  "react-router": "^6.0.0-beta.0"
+-  "react-router-dom": "^6.0.0-beta.0 || ^6.3.0",
+-  "react-router": "^6.0.0-beta.0 || ^6.3.0"
  },
  peerDependencies: {
    ...
-+  "react-router-dom": "6.0.0-beta.0 || ^6.3.0",
-+  "react-router": "6.0.0-beta.0 || ^6.3.0"
++  "react-router-dom": "^6.3.0",
++  "react-router": "^6.3.0"
  },
 ```
 
@@ -66,7 +61,7 @@ During this migration there may be external plugins that need updating. If you e
 
 ### Step 4 - Bump the React Router dependencies in your app
 
-Now it's time to do the actual migration to the latest version of React Router. At this time of writing that is `6.3.0`, but that is of course a moving target.
+Now it's time to do the actual migration to the latest version of React Router. It needs to be at least `^6.3.0`, but that is of course a moving target and newer is generally better.
 
 The first step is to modify `packages/app/package.json`:
 

@@ -20,11 +20,6 @@ import { FlatRoutes } from '../routing';
 import { AppManager } from './AppManager';
 import { AppOptions } from './types';
 
-jest.mock('react-router', () => jest.requireActual('react-router-stable'));
-jest.mock('react-router-dom', () =>
-  jest.requireActual('react-router-dom-stable'),
-);
-
 const mockAppOptions: AppOptions = {
   apis: [],
   defaultApis: [],

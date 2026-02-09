@@ -24,11 +24,6 @@ import { AppContextProvider } from '../app/AppContext';
 import { FlatRoutes } from './FlatRoutes';
 import { TestApiProvider } from '@backstage/test-utils';
 
-jest.mock('react-router', () => jest.requireActual('react-router-stable'));
-jest.mock('react-router-dom', () =>
-  jest.requireActual('react-router-dom-stable'),
-);
-
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 const Wrapper = ({ children }: { children?: ReactNode }) => (
   <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>

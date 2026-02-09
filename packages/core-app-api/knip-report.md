@@ -11,8 +11,3 @@
 | Name                         | Location     | Severity |
 | :--------------------------- | :----------- | :------- |
 | @testing-library/react-hooks | packages/core-app-api/package.json | error    |
-| react-router-dom-stable      | packages/core-app-api/package.json | error    |
-| react-router-dom-beta        | packages/core-app-api/package.json | error    |
-| react-router-stable          | packages/core-app-api/package.json | error    |
-| react-router-beta            | packages/core-app-api/package.json | error    |
-

@@ -85,7 +85,7 @@ import { ApiRegistry } from '../apis/system/ApiRegistry';
 import { resolveRouteBindings } from './resolveRouteBindings';
 import { isReactRouterBeta } from './isReactRouterBeta';
 import { InternalAppContext } from './InternalAppContext';
-import { AppRouter, getBasePath } from './AppRouter';
+import { AppRouter } from './AppRouter';
 import { AppLanguageSelector } from '../apis/implementations/AppLanguageApi';
 import { I18nextTranslationApi } from '../apis/implementations/TranslationApi';
 import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
@@ -248,12 +248,9 @@ export class AppManager implements BackstageApp {
       const { routing, featureFlags } = useMemo(() => {
         const usesReactRouterBeta = isReactRouterBeta();
         if (usesReactRouterBeta) {
-          // eslint-disable-next-line no-console
-          console.warn(`
-DEPRECATION WARNING: React Router Beta is deprecated and support for it will be removed in a future release.
-                     Please migrate to use React Router v6 stable.
-                     See https://backstage.io/docs/tutorials/react-router-stable-migration
-`);
+          throw new Error(
+            `DEPRECATION ERROR: React Router Beta is no longer supported. Please migrate to use React Router v6 stable. See https://backstage.io/docs/tutorials/react-router-stable-migration for more information.`,
+          );
         }
 
         const result = traverseElementTree({
@@ -393,7 +390,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
                 routeParents={routing.parents}
                 routeObjects={routing.objects}
                 routeBindings={routeBindings}
-                basePath={getBasePath(loadedConfig.api)}
+                basePath=""
               >
                 <InternalAppContext.Provider
                   value={{

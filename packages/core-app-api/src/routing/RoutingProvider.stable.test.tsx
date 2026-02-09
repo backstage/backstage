@@ -40,11 +40,6 @@ import { RouteResolver } from './RouteResolver';
 import { AnyRouteRef, RouteFunc } from './types';
 import { AppContextProvider } from '../app/AppContext';
 
-jest.mock('react-router', () => jest.requireActual('react-router-stable'));
-jest.mock('react-router-dom', () =>
-  jest.requireActual('react-router-dom-stable'),
-);
-
 const MockComponent = ({ children }: PropsWithChildren<{}>) => (
   <>
     {children}

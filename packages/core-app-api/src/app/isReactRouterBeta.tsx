@@ -16,6 +16,7 @@
 
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 
+// TODO(freben): Remove this entirely in the future. It only remains as a last resort to detect installations that have not moved off of the react-router beta.
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
   return !obj.index;
