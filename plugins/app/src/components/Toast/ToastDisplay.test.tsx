@@ -134,13 +134,14 @@ describe('ToastDisplay', () => {
     it('should allow programmatic dismiss via close()', async () => {
       renderToastDisplay();
 
-      let toastKey: string;
+      let closeToast: () => void;
 
       await act(async () => {
-        toastKey = toastApi.post({
+        const result = toastApi.post({
           title: 'Dismissable Toast',
           status: 'info',
         });
+        closeToast = result.close;
       });
 
       await expect(
@@ -148,7 +149,7 @@ describe('ToastDisplay', () => {
       ).resolves.toBeInTheDocument();
 
       await act(async () => {
-        toastApi.close(toastKey!);
+        closeToast!();
         // Wait for animation
         await new Promise(resolve => setTimeout(resolve, 600));
       });

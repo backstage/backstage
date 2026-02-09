@@ -21,7 +21,7 @@ import type { ToastQueue, ToastState, QueuedToast } from 'react-stately';
  * Link item for toast notifications
  * @internal
  */
-export interface ToastLink {
+export interface ToastApiMessageLink {
   /** Display text for the link */
   label: string;
   /** URL the link points to */
@@ -32,7 +32,7 @@ export interface ToastLink {
  * Content for a toast notification
  * @internal
  */
-export interface ToastContent {
+export interface ToastApiMessageContent {
   /** Title of the toast (required) */
   title: ReactNode;
   /** Optional description text */
@@ -40,18 +40,18 @@ export interface ToastContent {
   /** Status variant of the toast */
   status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
   /** Optional array of links to display */
-  links?: ToastLink[];
+  links?: ToastApiMessageLink[];
 }
 
 /**
  * Props for the Toast component
  * @internal
  */
-export interface ToastProps {
+export interface ToastApiMessageProps {
   /** Toast object from the queue */
-  toast: QueuedToast<ToastContent>;
+  toast: QueuedToast<ToastApiMessageContent>;
   /** Toast state from useToastQueue */
-  state: ToastState<ToastContent>;
+  state: ToastState<ToastApiMessageContent>;
   /** Index of the toast in the visible toasts array */
   index?: number;
   /** Whether the toast stack is expanded (hovered/focused) */
@@ -74,9 +74,9 @@ export interface ToastProps {
  * Props for the ToastContainer component
  * @internal
  */
-export interface ToastContainerProps {
+export interface ToastApiMessageContainerProps {
   /** Toast queue instance */
-  queue: ToastQueue<ToastContent>;
+  queue: ToastQueue<ToastApiMessageContent>;
   /** Custom class name */
   className?: string;
 }
@@ -85,7 +85,7 @@ export interface ToastContainerProps {
  * Props for the ToastDisplay component (AlertApi bridge)
  * @public
  */
-export interface ToastDisplayProps {
+export interface ToastApiMessageDisplayProps {
   /**
    * Number of milliseconds a transient alert will stay open for.
    * Defaults to 5000ms.

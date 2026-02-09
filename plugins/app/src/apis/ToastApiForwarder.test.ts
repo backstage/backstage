@@ -24,13 +24,11 @@ describe('ToastApiForwarder', () => {
   });
 
   describe('post', () => {
-    it('should return a unique key for each toast', () => {
-      const key1 = forwarder.post({ title: 'Toast 1' });
-      const key2 = forwarder.post({ title: 'Toast 2' });
+    it('should return a result with a close method', () => {
+      const result = forwarder.post({ title: 'Toast 1' });
 
-      expect(key1).toBeDefined();
-      expect(key2).toBeDefined();
-      expect(key1).not.toBe(key2);
+      expect(result).toBeDefined();
+      expect(typeof result.close).toBe('function');
     });
 
     it('should emit toast to subscribers', () => {
@@ -78,23 +76,40 @@ describe('ToastApiForwarder', () => {
   });
 
   describe('close', () => {
-    it('should emit close event to subscribers', () => {
-      const closedKeys: string[] = [];
+    it('should notify onClose listeners when close() is called', () => {
+      const onCloseFn = jest.fn();
 
-      forwarder.close$().subscribe(key => {
-        closedKeys.push(key);
+      const received: Array<{ onClose: (cb: () => void) => void }> = [];
+      forwarder.toast$().subscribe(toast => {
+        received.push(toast);
       });
 
-      const key = forwarder.post({ title: 'Test' });
-      forwarder.close(key);
+      const result = forwarder.post({ title: 'Test' });
+      received[0].onClose(onCloseFn);
+      result.close();
 
-      expect(closedKeys).toHaveLength(1);
-      expect(closedKeys[0]).toBe(key);
+      expect(onCloseFn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should only close once even if called multiple times', () => {
+      const onCloseFn = jest.fn();
+
+      const received: Array<{ onClose: (cb: () => void) => void }> = [];
+      forwarder.toast$().subscribe(toast => {
+        received.push(toast);
+      });
+
+      const result = forwarder.post({ title: 'Test' });
+      received[0].onClose(onCloseFn);
+      result.close();
+      result.close();
+
+      expect(onCloseFn).toHaveBeenCalledTimes(1);
     });
 
     it('should remove toast from replay buffer', () => {
-      const key = forwarder.post({ title: 'Test' });
-      forwarder.close(key);
+      const result = forwarder.post({ title: 'Test' });
+      result.close();
 
       // New subscriber should not receive the closed toast
       const received: Array<{ key: string }> = [];
@@ -103,6 +118,22 @@ describe('ToastApiForwarder', () => {
       });
 
       expect(received).toHaveLength(0);
+    });
+
+    it('should immediately call onClose callback if already closed', () => {
+      const onCloseFn = jest.fn();
+
+      const received: Array<{ onClose: (cb: () => void) => void }> = [];
+      forwarder.toast$().subscribe(toast => {
+        received.push(toast);
+      });
+
+      const result = forwarder.post({ title: 'Test' });
+      result.close();
+
+      // Register callback after close - should fire immediately
+      received[0].onClose(onCloseFn);
+      expect(onCloseFn).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -134,10 +165,10 @@ describe('ToastApiForwarder', () => {
     });
 
     it('should not replay closed toasts to new subscribers', async () => {
-      const key1 = forwarder.post({ title: 'Toast 1' });
+      const result1 = forwarder.post({ title: 'Toast 1' });
       forwarder.post({ title: 'Toast 2' });
 
-      forwarder.close(key1);
+      result1.close();
 
       const received: Array<{ title: unknown }> = [];
 
@@ -184,22 +215,6 @@ describe('ToastApiForwarder', () => {
     });
   });
 
-  describe('close$ observable', () => {
-    it('should allow multiple subscribers', () => {
-      const subscriber1: string[] = [];
-      const subscriber2: string[] = [];
-
-      forwarder.close$().subscribe(key => subscriber1.push(key));
-      forwarder.close$().subscribe(key => subscriber2.push(key));
-
-      const key = forwarder.post({ title: 'Test' });
-      forwarder.close(key);
-
-      expect(subscriber1).toEqual([key]);
-      expect(subscriber2).toEqual([key]);
-    });
-  });
-
   describe('subscription cleanup', () => {
     it('should stop receiving toasts after unsubscribe', () => {
       const received: Array<{ title: unknown }> = [];
@@ -214,25 +229,6 @@ describe('ToastApiForwarder', () => {
 
       expect(received).toHaveLength(1);
       expect(received[0].title).toBe('Before unsubscribe');
-    });
-
-    it('should stop receiving close events after unsubscribe', () => {
-      const closedKeys: string[] = [];
-
-      const subscription = forwarder.close$().subscribe(key => {
-        closedKeys.push(key);
-      });
-
-      const key1 = forwarder.post({ title: 'Toast 1' });
-      forwarder.close(key1);
-
-      subscription.unsubscribe();
-
-      const key2 = forwarder.post({ title: 'Toast 2' });
-      forwarder.close(key2);
-
-      expect(closedKeys).toHaveLength(1);
-      expect(closedKeys[0]).toBe(key1);
     });
   });
 });
