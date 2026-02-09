@@ -45,6 +45,7 @@ import {
   homePageWidgetDataRef,
   homePageLayoutComponentDataRef,
   HomePageLayoutBlueprint,
+  HomePageWidgetBlueprint,
   type HomePageLayoutProps,
 } from '@backstage/plugin-home-react/alpha';
 
@@ -128,6 +129,74 @@ const homeNavItem = NavItemBlueprint.make({
   },
 });
 
+const homePageToolkitWidget = HomePageWidgetBlueprint.make({
+  name: 'toolkit',
+  params: {
+    name: 'HomePageToolkit',
+    title: 'Toolkit',
+    components: () =>
+      import('./homePageComponents/Toolkit').then(m => ({
+        Content: m.Content,
+        ContextProvider: m.ContextProvider,
+      })),
+    componentProps: {
+      tools: [
+        {
+          url: 'https://backstage.io',
+          label: 'Backstage Docs',
+          icon: <HomeIcon />,
+        },
+      ],
+    },
+  },
+});
+
+const homePageStarredEntitiesWidget = HomePageWidgetBlueprint.make({
+  name: 'starred-entities',
+  params: {
+    name: 'HomePageStarredEntities',
+    title: 'Your Starred Entities',
+    components: () =>
+      import('./homePageComponents/StarredEntities').then(m => ({
+        Content: m.Content,
+      })),
+  },
+});
+
+const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
+  name: 'random-joke',
+  params: {
+    name: 'HomePageRandomJoke',
+    title: 'Random Joke',
+    description: 'Shows a random programming joke',
+    components: () =>
+      import('./homePageComponents/RandomJoke').then(m => ({
+        Content: m.Content,
+        Settings: m.Settings,
+        Actions: m.Actions,
+        ContextProvider: m.ContextProvider,
+      })),
+    layout: {
+      height: { minRows: 4 },
+      width: { minColumns: 3 },
+    },
+    settings: {
+      schema: {
+        title: 'Random Joke settings',
+        type: 'object',
+        properties: {
+          defaultCategory: {
+            title: 'Category',
+            type: 'string',
+            enum: ['any', 'programming', 'dad'],
+            default: 'any',
+          },
+        },
+      },
+    },
+  },
+});
+
 /**
  * Home plugin for the new frontend system.
  *
@@ -139,7 +208,15 @@ const homeNavItem = NavItemBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'home',
   info: { packageJson: () => import('../package.json') },
-  extensions: [homePage, homeNavItem, visitsApi, visitListenerAppRootElement],
+  extensions: [
+    homePage,
+    homeNavItem,
+    visitsApi,
+    visitListenerAppRootElement,
+    homePageToolkitWidget,
+    homePageStarredEntitiesWidget,
+    homePageRandomJokeWidget,
+  ],
   routes: {
     root: rootRouteRef,
   },

@@ -11,6 +11,7 @@ import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { HomePageLayoutProps } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
 import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -51,6 +52,33 @@ const _default: OverridableFrontendPlugin<
       params: {
         element: JSX.Element;
       };
+    }>;
+    'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'random-joke';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/starred-entities': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'starred-entities';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/toolkit': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'toolkit';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
     }>;
     'nav-item:home': OverridableExtensionDefinition<{
       kind: 'nav-item';
@@ -133,6 +161,7 @@ export default _default;
 export const homeTranslationRef: TranslationRef<
   'home',
   {
+    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
     readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
@@ -141,22 +170,21 @@ export const homeTranslationRef: TranslationRef<
     readonly 'customHomepageButtons.addWidget': 'Add widget';
     readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
+    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'widgetSettingsOverlay.editSettingsTooptip': 'Edit settings';
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
-    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
-    readonly 'visitList.empty.title': 'There are no visits to show yet.';
-    readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
     readonly 'visitList.few.title': 'The more pages you visit, the more pages will appear here.';
-    readonly 'quickStart.title': 'Onboarding';
+    readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
+    readonly 'visitList.empty.title': 'There are no visits to show yet.';
     readonly 'quickStart.description': 'Get started with Backstage';
+    readonly 'quickStart.title': 'Onboarding';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';
-    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'visitedByType.action.viewMore': 'View more';
     readonly 'visitedByType.action.viewLess': 'View less';
-    readonly 'featuredDocsCard.empty.title': 'No documents to show';
     readonly 'featuredDocsCard.empty.description': 'Create your own document. Check out our Getting Started Information';
+    readonly 'featuredDocsCard.empty.title': 'No documents to show';
     readonly 'featuredDocsCard.empty.learnMoreLinkTitle': 'DOCS';
     readonly 'featuredDocsCard.learnMoreTitle': 'LEARN MORE';
   }
