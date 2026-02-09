@@ -371,8 +371,12 @@ functions:
       expect(mangoWrapper.context().store).toBeDefined();
     });
 
-Note: wrapping in the test application **requires** you to do a `find()` or
+:::note Note
+
+wrapping in the test application **requires** you to do a `find()` or
 `dive()` since the wrapped component is now the application.
+
+:::
 
 ## Debugging Jest Tests
 
