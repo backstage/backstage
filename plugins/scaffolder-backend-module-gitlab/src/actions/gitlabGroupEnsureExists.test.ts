@@ -92,8 +92,6 @@ describe('gitlab:group:ensureExists', () => {
   });
 
   it('should only apply description to the last created group', async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([]);
-
     mockGitlabClient.Groups.create
       .mockResolvedValueOnce({
         id: 1,
