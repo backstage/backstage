@@ -1,6 +1,6 @@
 {
   "name": "@backstage/filter-predicates",
-  "version": "0.0.0",
+  "version": "0.1.0-next.0",
   "description": "A library for expressing filter predicates and evaluating them against values",
   "backstage": {
     "role": "common-library"

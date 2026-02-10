@@ -1,5 +1,15 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.14-next.1
+
+### Patch Changes
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/config-loader@1.10.8-next.0
+  - @backstage/plugin-permission-node@0.10.10-next.0
+
 ## 0.5.14-next.0
 
 ### Patch Changes

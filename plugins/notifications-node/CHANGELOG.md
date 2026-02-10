@@ -1,5 +1,13 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 0.2.23-next.0
 
 ### Patch Changes
