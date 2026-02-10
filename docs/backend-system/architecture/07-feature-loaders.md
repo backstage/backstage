@@ -11,6 +11,16 @@ Feature loaders are defined using the `createBackendFeatureLoader` function, exp
 
 The `loader` function can be defined in many different ways, with the main requirement being that it returns a list of `BackendFeature`s in some form. A backend feature is the kind of object that you can pass to `backend.add(...)`, for example services factories, plugins, modules, or even other feature loaders. The `loader` function can be synchronous or asynchronous, and can be defined as a generator function to allow for more complex logic.
 
+:::info Built-in package discovery loader
+
+Backstage provides a [dynamic package discovery loader](../building-backends/02-backend-package-discovery.md), that uses `createBackendFeatureLoader` internally.
+
+This loader automatically reads the backend dependencies, and loads packages according to your configuration. This may be enough for you to dynamically load plugins, without developing your own feature loaders.
+
+See the [discovery feature loader documentation](../building-backends/02-backend-package-discovery.md) for details.
+
+:::
+
 ## Examples
 
 The following are a few example of how feature loaders can be used:

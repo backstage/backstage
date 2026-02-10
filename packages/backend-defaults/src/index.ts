@@ -21,4 +21,8 @@
  */
 
 export { createBackend } from './CreateBackend';
-export { discoveryFeatureLoader } from './discoveryFeatureLoader';
+export {
+  discoveryFeatureLoader,
+  discoveryFeatureLoaderFactory,
+  type DiscoveryFeatureLoaderOptions,
+} from './discoveryFeatureLoader';

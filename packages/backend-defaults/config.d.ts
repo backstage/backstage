@@ -28,6 +28,42 @@ export interface Config {
      */
     baseUrl: string;
 
+    /**
+     * Configuration for the backend package discovery loader.
+     *
+     * These settings are only considered if the discoveryFeatureLoader is installed.
+     * To enable it, add `backend.add(discoveryFeatureLoader)` in your backend's `src/index.ts`.
+     *
+     * See the [backend package discovery documentation](https://backstage.io/docs/backend-system/building-backends/backend-package-discovery)
+     * for details on setup and configuration.
+     *
+     * @example
+     * ```yaml
+     * backend:
+     *   packages: all # Load all backend packages
+     *   # Or filter specific packages:
+     *   # packages:
+     *   #   include: ['@backstage/plugin-catalog-backend']
+     *   #   exclude: ['@backstage/plugin-auth-backend']
+     * ```
+     */
+    packages?:
+      | 'all'
+      | {
+          /**
+           * List of package names to include for automatic discovery.
+           * If not specified, all dependencies are considered for inclusion.
+           * Only packages matching the backend naming convention
+           * (ending with -backend or containing -backend-module-) will be loaded.
+           */
+          include?: string[];
+          /**
+           * List of package names to exclude from automatic discovery.
+           * Exclusions are applied after inclusions.
+           */
+          exclude?: string[];
+        };
+
     lifecycle?: {
       /**
        * The maximum time that paused requests will wait for the service to start, before returning an error.
