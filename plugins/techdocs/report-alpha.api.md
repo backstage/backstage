@@ -308,13 +308,13 @@ const _default: OverridableFrontendPlugin<
     }>;
     'page:techdocs/reader': OverridableExtensionDefinition<{
       config: {
-        withSearch: boolean;
-        withHeader: boolean;
+        withoutSearch: boolean;
+        withoutHeader: boolean;
         path: string | undefined;
       };
       configInput: {
-        withSearch?: boolean | undefined;
-        withHeader?: boolean | undefined;
+        withoutSearch?: boolean | undefined;
+        withoutHeader?: boolean | undefined;
         path?: string | undefined;
       };
       output:

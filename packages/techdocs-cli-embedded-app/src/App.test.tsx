@@ -30,7 +30,7 @@ jest.mock('./config', () => ({
             {
               'page:techdocs/reader': {
                 config: {
-                  withSearch: false,
+                  withoutSearch: true,
                 },
               },
             },

@@ -2,7 +2,7 @@
 '@backstage/plugin-techdocs': minor
 ---
 
-Add two config values to the `page:techdocs/reader` extension that configure default layout, `withSearch` and `withHeader`. Default are unchanged to `true`.
+Add two config values to the `page:techdocs/reader` extension that configure default layout, `withoutSearch` and `withoutHeader`. Default are unchanged to `false`.
 
 E.g. to disable the search and header on the Techdocs Reader Page:
 
@@ -11,6 +11,6 @@ app:
   extensions:
     - page:techdocs/reader:
         config:
-          withSearch: false
-          withHeader: false
+          withoutSearch: true
+          withoutHeader: true
 ```
