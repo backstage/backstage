@@ -573,3 +573,4 @@ zsh
 resizable
 enums
 LLMs
+backoff
