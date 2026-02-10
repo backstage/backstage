@@ -75,13 +75,20 @@ export class GraphModule {
   }
 }
 
+function parseNumber(value: string): number | undefined {
+  const num = parseInt(value, 10);
+  return isNaN(num) ? undefined : num;
+}
+
 function parseQueryRequest(url: string): GraphQueryRequest {
   const parsed =
     uriTemplates(catalogGraphApiSpec.urlTemplate).fromUri(url) ?? {};
 
   const rootEntityRefs = ensureArray(parsed.rootEntityRefs ?? []);
-  const maxDepth = parsed.maxDepth ? parseInt(parsed.maxDepth, 10) : undefined;
-  const relations = parsed.relations ? ensureArray(parsed.relations) : [];
+  const maxDepth = parsed.maxDepth ? parseNumber(parsed.maxDepth) : undefined;
+  const relations = parsed.relations
+    ? ensureArray(parsed.relations)
+    : undefined;
   const fields = parsed.fields ? ensureArray(parsed.fields) : undefined;
   const rawFilter = parsed.filter ? ensureArray(parsed.filter) : undefined;
 

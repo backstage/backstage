@@ -32,15 +32,16 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
    # From your Backstage root directory
    yarn --cwd packages/app add @backstage/plugin-catalog-graph
    ```
-2. Add a dependency to your `packages/backend/package.json`:
+2. Add a dependency to your `packages/backend/package.json` (optional but improves performance):
    ```sh
    # From your Backstage root directory
-   yarn --cwd packages/backend add @backstage/plugin-catalog-graph-backend
+   yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-graph
    ```
    and add the backend to `packages/backend/src/index.ts`
    ```ts
-   backend.add(import('@backstage/plugin-catalog-graph-backend'));
+   backend.add(import('@backstage/plugin-catalog-backend-module-graph'));
    ```
+   and configure the graph plugin to use this backend module by setting `catalogGraph.fetchMode` to `backend`, see below.
 3. Add the `CatalogGraphPage` to your `packages/app/src/App.tsx`:
 
    ```typescript

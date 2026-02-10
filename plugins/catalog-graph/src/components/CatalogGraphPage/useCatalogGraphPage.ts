@@ -113,7 +113,6 @@ export function useCatalogGraphPage({
   setIfChanged(query, newQuery, 'rootEntityRefs');
   setIfChanged(query, newQuery, 'selectedRelations');
   setIfChanged(query, newQuery, 'selectedKinds');
-  setIfChanged(query, newQuery, 'rootEntityRefs');
   setIfChanged(query, newQuery, 'maxDepth');
   setIfChanged(query, newQuery, 'unidirectional');
   setIfChanged(query, newQuery, 'mergeRelations');
