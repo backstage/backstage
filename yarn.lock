@@ -3824,6 +3824,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/filter-predicates@workspace:^, @backstage/filter-predicates@workspace:packages/filter-predicates":
+  version: 0.0.0-use.local
+  resolution: "@backstage/filter-predicates@workspace:packages/filter-predicates"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
+    zod: "npm:^3.25.76"
+    zod-validation-error: "npm:^4.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/frontend-app-api@workspace:^, @backstage/frontend-app-api@workspace:packages/frontend-app-api":
   version: 0.0.0-use.local
   resolution: "@backstage/frontend-app-api@workspace:packages/frontend-app-api"
@@ -5414,6 +5427,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"

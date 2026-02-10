@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { valueAtPath } from './valueAtPath';
+import { getJsonValueAtPath } from './getJsonValueAtPath';
 
-describe('valueAtPath', () => {
+describe('getJsonValueAtPath', () => {
   const subject = {
     name: 'Test',
     fields: {
@@ -58,6 +58,6 @@ describe('valueAtPath', () => {
     ['mixed.annotations.example.com/description', 'A test subject'],
     ['mixed.annotations.long.domain.example.com/custom', 'long'],
   ])(`should find value at path %s`, (path, expected) => {
-    expect(valueAtPath(subject, path)).toEqual(expected);
+    expect(getJsonValueAtPath(subject, path)).toEqual(expected);
   });
 });

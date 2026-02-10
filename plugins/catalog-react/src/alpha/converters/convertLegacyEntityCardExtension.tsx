@@ -20,7 +20,7 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { EntityCardBlueprint } from '../blueprints/EntityCardBlueprint';
 import kebabCase from 'lodash/kebabCase';
-import { EntityPredicate } from '../predicates/types';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '../blueprints/extensionData';
 
@@ -29,7 +29,7 @@ export function convertLegacyEntityCardExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+    filter?: string | FilterPredicate | ((entity: Entity) => boolean);
     type?: EntityCardType;
   },
 ): ExtensionDefinition {

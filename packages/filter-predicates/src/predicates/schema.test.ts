@@ -15,14 +15,17 @@
  */
 
 import { z } from 'zod';
-import { createEntityPredicateSchema } from './createEntityPredicateSchema';
-import { EntityPredicate } from './types';
+import {
+  createZodV3FilterPredicateSchema,
+  parseFilterPredicate,
+} from './schema';
+import { FilterPredicate } from './types';
 
-describe('createEntityPredicateSchema', () => {
-  const schema = createEntityPredicateSchema(z);
+describe('createZodV3FilterPredicateSchema', () => {
+  const schema = createZodV3FilterPredicateSchema(z);
 
   describe('valid predicates', () => {
-    const predicates: EntityPredicate[] = [
+    const predicates: FilterPredicate[] = [
       'string',
       '',
       1,
@@ -88,7 +91,7 @@ describe('createEntityPredicateSchema', () => {
 
   describe('invalid predicates', () => {
     const predicates: Array<
-      Exclude<EntityPredicate | unknown, EntityPredicate>
+      Exclude<FilterPredicate | unknown, FilterPredicate>
     > = [
       [],
       ['foo', 'bar'],
@@ -111,5 +114,106 @@ describe('createEntityPredicateSchema', () => {
       const result = schema.safeParse(predicate);
       expect(result.success).toBe(false);
     });
+  });
+});
+
+describe('parseFilterPredicate', () => {
+  describe('valid predicates', () => {
+    const predicates: FilterPredicate[] = [
+      'string',
+      '',
+      1,
+      { kind: 'component', 'spec.type': 'service' },
+      { 'metadata.tags': { $in: ['java'] } },
+      { 'metadata.tags': { $contains: 'java' } },
+      {
+        $all: [
+          { 'metadata.tags': { $contains: 'java' } },
+          { 'metadata.tags': { $contains: 'spring' } },
+        ],
+      },
+      { 'metadata.tags': { $in: ['go'] } },
+      { 'metadata.tags.0': 'java' },
+      { $not: { 'metadata.tags': { $in: ['java'] } } },
+      {
+        $any: [
+          { kind: 'component', 'spec.type': 'service' },
+          { kind: 'group' },
+        ],
+      },
+      {
+        relations: {
+          $contains: { type: 'ownedBy', targetRef: 'group:default/g' },
+        },
+      },
+      {
+        metadata: { $contains: { name: 'a' } },
+      },
+      { kind: 'component', 'spec.type': { $in: ['service', 'website'] } },
+      {
+        $any: [
+          {
+            $all: [
+              {
+                kind: 'component',
+                'spec.type': { $in: ['service', 'website'] },
+              },
+            ],
+          },
+          { $all: [{ kind: 'api', 'spec.type': 'grpc' }] },
+        ],
+      },
+      { kind: 'component', 'spec.type': { $in: ['service'] } },
+      { 'spec.owner': { $exists: true } },
+      { 'spec.owner': { $exists: false } },
+      { 'spec.type': 'service' },
+      { $not: { 'spec.type': 'service' } },
+      {
+        kind: 'component',
+        'metadata.annotations.github.com/repo': { $exists: true },
+      },
+      { $all: [{ x: { $exists: true } }] },
+      { $any: [{ x: { $exists: true } }] },
+      { $not: { x: { $exists: true } } },
+      { $not: { $all: [{ x: { $exists: true } }] } },
+    ];
+
+    it.each(predicates)(
+      'should return the predicate for valid input %j',
+      predicate => {
+        expect(parseFilterPredicate(predicate)).toEqual(predicate);
+      },
+    );
+  });
+
+  describe('invalid predicates', () => {
+    const predicates: Array<
+      Exclude<FilterPredicate | unknown, FilterPredicate>
+    > = [
+      [],
+      ['foo', 'bar'],
+      { kind: { 1: 'foo' } },
+      { kind: { foo: 'bar' } },
+      { kind: { $unknown: 'foo' } },
+      { kind: { $in: 'foo' } },
+      { kind: { $in: [{ x: 'foo' }] } },
+      { kind: { $in: [{ x: 'foo' }] } },
+      { 'spec.type': null },
+      { $all: [{ x: { $unknown: true } }] },
+      { $any: [{ x: { $unknown: true } }] },
+      { $not: { x: { $unknown: true } } },
+      { $not: { $all: [{ x: { $unknown: true } }] } },
+      { $unknown: 'foo' },
+      { 'metadata.tags': ['foo', 'bar'] },
+    ];
+
+    it.each(predicates)(
+      'should throw InputError for invalid predicate %j',
+      predicate => {
+        expect(() => parseFilterPredicate(predicate)).toThrow(
+          /Invalid filter predicate/,
+        );
+      },
+    );
   });
 });

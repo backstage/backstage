@@ -28,9 +28,11 @@ import {
   defaultEntityContentGroups,
   entityContentIconDataRef,
 } from './extensionData';
-import { EntityPredicate } from '../predicates/types';
+import {
+  FilterPredicate,
+  createZodV3FilterPredicateSchema,
+} from '@backstage/filter-predicates';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
-import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import { Entity } from '@backstage/catalog-model';
 import { ReactElement } from 'react';
 
@@ -63,7 +65,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       path: z => z.string().optional(),
       title: z => z.string().optional(),
       filter: z =>
-        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
+        z.union([z.string(), createZodV3FilterPredicateSchema(z)]).optional(),
       group: z => z.literal(false).or(z.string()).optional(),
       icon: z => z.string().optional(),
     },
@@ -88,7 +90,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       icon?: string | ReactElement;
       loader: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
-      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      filter?: string | FilterPredicate | ((entity: Entity) => boolean);
     },
     { node, config },
   ) {
