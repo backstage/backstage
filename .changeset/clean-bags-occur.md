@@ -4,7 +4,7 @@
 
 **BREAKING**: Replaced `Surface` / `onSurface` system with new `ContainerBg` background system
 
-The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surface`, `onSurface`) have been replaced by `ContainerBg` — a union of `'neutral-1'` | `'neutral-2'` | `'neutral-3'` | `'danger'` | `'warning'` | `'success'`. There is no `neutral-4` value; containers are capped at `neutral-3`. Leaf components like Button no longer accept a bg prop — they inherit the parent container's bg via a `data-on-bg` attribute, and CSS handles the visual step-up to the next neutral level.
+The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surface`, `onSurface`) have been replaced by `ContainerBg` — a union of `'neutral-1'` | `'neutral-2'` | `'neutral-3'` | `'danger'` | `'warning'` | `'success'`. There is no `neutral-4` value; containers are capped at `neutral-3`. Leaf components like Button no longer accept a `bg` prop — they inherit the parent container's `bg` via a `data-on-bg` attribute, and CSS handles the visual step-up to the next neutral level.
 
 New `useBg` hook and `BgProvider` replace the deleted `useSurface` hook and `SurfaceProvider`.
 
