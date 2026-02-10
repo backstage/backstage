@@ -47,6 +47,18 @@ jobs:
         with:
           egress-policy: audit
 
+      # Store the PR number for the Sync Pull Requests workflow
+      - name: Save PR context
+        if: matrix.node-version == '22.x' && github.event_name == 'pull_request'
+        run: |
+          mkdir -p ./context
+          echo "${{ github.event.pull_request.number }}" > ./context/pr-number
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: matrix.node-version == '22.x' && github.event_name == 'pull_request'
+        with:
+          name: pr-context
+          path: context/
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Configure Git
