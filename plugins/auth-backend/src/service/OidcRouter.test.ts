@@ -34,6 +34,7 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcService } from '../service/OidcService';
 import { TokenIssuer } from '../identity/types';
+import { OfflineAccessService } from './OfflineAccessService';
 
 jest.setTimeout(60_000);
 
@@ -100,6 +101,93 @@ describe('OidcRouter', () => {
       oidc: oidcDatabase,
       httpAuth: mockHttpAuth,
       config: mockConfig,
+    });
+
+    return {
+      router: oidcRouter,
+      mocks: {
+        httpAuth: mockHttpAuth,
+        auth: mockAuth,
+        oidc: oidcDatabase,
+        userInfo: userInfoDatabase,
+        service: oidcService,
+        tokenIssuer: mockTokenIssuer,
+      },
+    };
+  }
+
+  async function createRouterWithOfflineAccess(databaseId: TestDatabaseId) {
+    const knex = await databases.init(databaseId);
+
+    await knex.migrate.latest({
+      directory: resolvePackagePath(
+        '@backstage/plugin-auth-backend',
+        'migrations',
+      ),
+    });
+
+    const authDatabase = AuthDatabase.create({
+      getClient: async () => knex,
+    });
+
+    const oidcDatabase = await OidcDatabase.create({
+      database: authDatabase,
+    });
+
+    const userInfoDatabase = await UserInfoDatabase.create({
+      database: authDatabase,
+    });
+
+    const mockTokenIssuer = {
+      issueToken: jest.fn(),
+      listPublicKeys: jest.fn(),
+    } as unknown as jest.Mocked<TokenIssuer>;
+
+    const mockAuth = mockServices.auth.mock();
+    const mockHttpAuth = mockServices.httpAuth.mock();
+    const mockConfig = mockServices.rootConfig({
+      data: {
+        auth: {
+          experimentalDynamicClientRegistration: {
+            enabled: true,
+          },
+          experimentalRefreshToken: {
+            enabled: true,
+          },
+        },
+      },
+    });
+
+    const mockLifecycle = mockServices.lifecycle.mock();
+
+    const offlineAccess = await OfflineAccessService.create({
+      config: mockConfig,
+      database: { getClient: async () => knex },
+      logger: mockServices.logger.mock(),
+      lifecycle: mockLifecycle,
+    });
+
+    const oidcService = OidcService.create({
+      auth: mockAuth,
+      tokenIssuer: mockTokenIssuer,
+      baseUrl: 'http://localhost:7000',
+      userInfo: userInfoDatabase,
+      oidc: oidcDatabase,
+      config: mockConfig,
+      offlineAccess,
+    });
+
+    const oidcRouter = OidcRouter.create({
+      auth: mockAuth,
+      tokenIssuer: mockTokenIssuer,
+      baseUrl: 'http://localhost:7000',
+      appUrl: 'http://localhost:3000',
+      logger: mockServices.logger.mock(),
+      userInfo: userInfoDatabase,
+      oidc: oidcDatabase,
+      httpAuth: mockHttpAuth,
+      config: mockConfig,
+      offlineAccess,
     });
 
     return {
@@ -702,10 +790,10 @@ describe('OidcRouter', () => {
             code: 'invalid-code',
             redirect_uri: 'https://example.com/callback',
           })
-          .expect(401);
+          .expect(400);
 
         expect(tokenResponse.body).toEqual({
-          error: 'invalid_client',
+          error: 'invalid_grant',
           error_description: 'Invalid authorization code',
         });
       });
@@ -804,6 +892,208 @@ describe('OidcRouter', () => {
             sub: 'user:default/test-user-s256',
           },
         });
+      });
+    });
+
+    describe('refresh tokens', () => {
+      async function doAuthFlowWithOfflineAccess(databaseId_: TestDatabaseId) {
+        const result = await createRouterWithOfflineAccess(databaseId_);
+        const {
+          mocks: { auth, service, tokenIssuer, httpAuth },
+          router,
+        } = result;
+
+        tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-access-token',
+        });
+
+        httpAuth.credentials.mockResolvedValueOnce(
+          mockCredentials.user(MOCK_USER_ENTITY_REF),
+        );
+        auth.isPrincipal.mockReturnValueOnce(true);
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code', 'refresh_token'],
+          scope: 'openid offline_access',
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(router.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        const approvalResponse = await request(server)
+          .post(`/api/auth/v1/sessions/${authSession.id}/approve`)
+          .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
+          .expect(200);
+
+        const redirectUrl = new URL(approvalResponse.body.redirectUrl);
+        const authorizationCode = redirectUrl.searchParams.get('code')!;
+
+        const tokenResponse = await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'authorization_code',
+            code: authorizationCode,
+            redirect_uri: 'https://example.com/callback',
+          })
+          .expect(200);
+
+        return { server, tokenResponse, client, ...result };
+      }
+
+      it('should return a refresh token when offline_access scope is requested', async () => {
+        const { tokenResponse } = await doAuthFlowWithOfflineAccess(databaseId);
+
+        expect(tokenResponse.body).toEqual({
+          access_token: 'mock-access-token',
+          token_type: 'Bearer',
+          expires_in: 3600,
+          id_token: 'mock-access-token',
+          scope: 'openid offline_access',
+          refresh_token: expect.any(String),
+        });
+      });
+
+      it('should refresh a token without client credentials', async () => {
+        const { server, tokenResponse, mocks } =
+          await doAuthFlowWithOfflineAccess(databaseId);
+
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-refreshed-token',
+        });
+
+        const refreshResponse = await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: tokenResponse.body.refresh_token,
+          })
+          .expect(200);
+
+        expect(refreshResponse.body).toEqual({
+          access_token: 'mock-refreshed-token',
+          token_type: 'Bearer',
+          expires_in: 3600,
+          refresh_token: expect.any(String),
+        });
+
+        // New refresh token should be different (rotation)
+        expect(refreshResponse.body.refresh_token).not.toBe(
+          tokenResponse.body.refresh_token,
+        );
+      });
+
+      it('should refresh a token with valid client credentials', async () => {
+        const { server, tokenResponse, client, mocks } =
+          await doAuthFlowWithOfflineAccess(databaseId);
+
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-refreshed-token',
+        });
+
+        const basicAuth = Buffer.from(
+          `${client.clientId}:${client.clientSecret}`,
+        ).toString('base64');
+
+        const refreshResponse = await request(server)
+          .post('/api/auth/v1/token')
+          .set('Authorization', `Basic ${basicAuth}`)
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: tokenResponse.body.refresh_token,
+          })
+          .expect(200);
+
+        expect(refreshResponse.body).toEqual({
+          access_token: 'mock-refreshed-token',
+          token_type: 'Bearer',
+          expires_in: 3600,
+          refresh_token: expect.any(String),
+        });
+      });
+
+      it('should reject refresh with invalid client credentials', async () => {
+        const { server, tokenResponse } = await doAuthFlowWithOfflineAccess(
+          databaseId,
+        );
+
+        const badAuth = Buffer.from('bad-client:bad-secret').toString('base64');
+
+        await request(server)
+          .post('/api/auth/v1/token')
+          .set('Authorization', `Basic ${badAuth}`)
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: tokenResponse.body.refresh_token,
+          })
+          .expect(401);
+      });
+
+      it('should reject refresh with an invalid refresh token', async () => {
+        const { server } = await doAuthFlowWithOfflineAccess(databaseId);
+
+        await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: 'invalid-token',
+          })
+          .expect(400);
+      });
+
+      it('should reject reuse of a rotated refresh token', async () => {
+        const { server, tokenResponse, mocks } =
+          await doAuthFlowWithOfflineAccess(databaseId);
+
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'mock-refreshed-token',
+        });
+
+        const originalRefreshToken = tokenResponse.body.refresh_token;
+
+        // First refresh should succeed
+        await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: originalRefreshToken,
+          })
+          .expect(200);
+
+        // Reusing the same refresh token should fail (it was rotated)
+        await request(server)
+          .post('/api/auth/v1/token')
+          .send({
+            grant_type: 'refresh_token',
+            refresh_token: originalRefreshToken,
+          })
+          .expect(400);
       });
     });
   });
