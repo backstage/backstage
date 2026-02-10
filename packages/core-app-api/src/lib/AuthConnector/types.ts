@@ -54,3 +54,10 @@ export type PopupOptions = {
     | { width: number; height: number; fullscreen?: never }
     | { width?: never; height?: never; fullscreen: boolean };
 };
+
+/**
+ * Additional parameters to be passed to the start authorization endpoint.
+ */
+export type AuthorizationParams = {
+  [key: string]: string;
+};
