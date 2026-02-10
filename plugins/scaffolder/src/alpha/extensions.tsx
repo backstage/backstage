@@ -25,7 +25,10 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  FormFieldBlueprint,
+  TemplateGroupBlueprint,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
@@ -36,9 +39,16 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
     formFields: createExtensionInput([
       FormFieldBlueprint.dataRefs.formFieldLoader,
     ]),
+    groups: createExtensionInput([
+      TemplateGroupBlueprint.dataRefs.templateGroup,
+    ]),
   },
   factory(originalFactory, { apis, inputs }) {
     const formFieldsApi = apis.get(formFieldsApiRef);
+
+    const groups = inputs.groups.map(output =>
+      output.get(TemplateGroupBlueprint.dataRefs.templateGroup),
+    );
 
     return originalFactory({
       routeRef: rootRouteRef,
@@ -57,7 +67,10 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
         const formFields = [...apiFormFields, ...loadedFormFields];
 
         return import('../components/Router/Router').then(m => (
-          <m.InternalRouter formFields={formFields} />
+          <m.InternalRouter
+            formFields={formFields}
+            groups={groups.length > 0 ? groups : undefined}
+          />
         ));
       },
     });

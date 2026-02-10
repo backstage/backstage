@@ -49,6 +49,8 @@ import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
 import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import InfoIcon from '@material-ui/icons/Info';
+import scaffolderPlugin from '@backstage/plugin-scaffolder/alpha';
+import { TemplateGroupBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
 
 /*
 
@@ -142,6 +144,18 @@ const collectedLegacyPlugins = convertLegacyAppRoot(
   </FlatRoutes>,
 );
 
+const customizedScaffolder = scaffolderPlugin.withOverrides({
+  extensions: [
+    TemplateGroupBlueprint.make({
+      params: {
+        title: 'Recomended',
+        filter: entity =>
+          entity?.metadata?.tags?.includes('recommended') ?? false,
+      },
+    }),
+  ],
+});
+
 const app = createApp({
   features: [
     customizedCatalog,
@@ -156,6 +170,7 @@ const app = createApp({
     customHomePageModule,
     devtoolsPlugin,
     devtoolsPluginUnprocessed,
+    customizedScaffolder,
     ...collectedLegacyPlugins,
   ],
   advanced: {

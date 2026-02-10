@@ -16,4 +16,5 @@
 
 export * from './FormDecoratorBlueprint';
 export * from './FormFieldBlueprint';
+export * from './TemplateGroupBlueprint';
 export * from './types';
