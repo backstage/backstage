@@ -38,7 +38,7 @@ function resolveAccessLevel(level: string | number): number {
     throw new InputError(
       `Invalid access level: "${level}". Valid values are: ${Object.keys(
         accessLevelMapping,
-      ).join(', ')} or numeric values (0, 5, 10, 15, 20, 30, 40, 50)`,
+      ).join(', ')} or a numeric GitLab access level`,
     );
   }
   return resolved;
