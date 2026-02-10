@@ -22,13 +22,6 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'cluster.podsWithErrors_one': '{{count}} pod with errors';
     readonly 'cluster.podsWithErrors_other': '{{count}} pods with errors';
     readonly 'cluster.noPodsWithErrors': 'No pods with errors';
-    readonly 'errorPanel.message': 'There was a problem retrieving some Kubernetes resources for the entity: {{entityName}}. This could mean that the Error Reporting card is not completely accurate.';
-    readonly 'errorPanel.title': 'There was a problem retrieving Kubernetes objects';
-    readonly 'errorPanel.errorsLabel': 'Errors';
-    readonly 'errorPanel.clusterLabel': 'Cluster';
-    readonly 'errorPanel.clusterLabelValue': 'Cluster: {{cluster}}';
-    readonly 'errorPanel.fetchError': 'Error communicating with Kubernetes: {{errorType}}, message: {{message}}';
-    readonly 'errorPanel.resourceError': "Error fetching Kubernetes resource: '{{resourcePath}}', error: {{errorType}}, status code: {{statusCode}}";
     readonly 'pods.pods_one': '{{count}} pod';
     readonly 'pods.pods_other': '{{count}} pods';
     readonly 'podsTable.columns.name': 'name';
@@ -42,6 +35,13 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'podsTable.unknown': 'unknown';
     readonly 'podsTable.status.running': 'Running';
     readonly 'podsTable.status.ok': 'OK';
+    readonly 'errorPanel.message': 'There was a problem retrieving some Kubernetes resources for the entity: {{entityName}}. This could mean that the Error Reporting card is not completely accurate.';
+    readonly 'errorPanel.title': 'There was a problem retrieving Kubernetes objects';
+    readonly 'errorPanel.errorsLabel': 'Errors';
+    readonly 'errorPanel.clusterLabel': 'Cluster';
+    readonly 'errorPanel.clusterLabelValue': 'Cluster: {{cluster}}';
+    readonly 'errorPanel.fetchError': 'Error communicating with Kubernetes: {{errorType}}, message: {{message}}';
+    readonly 'errorPanel.resourceError': "Error fetching Kubernetes resource: '{{resourcePath}}', error: {{errorType}}, status code: {{statusCode}}";
     readonly 'fixDialog.title': '{{podName}} - {{errorType}}';
     readonly 'fixDialog.events': 'Events:';
     readonly 'fixDialog.helpButton': 'Help';

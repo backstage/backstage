@@ -73,8 +73,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.targetsField.label': 'Targets';
     readonly 'searchResultItem.type': 'Type';
     readonly 'searchResultItem.kind': 'Kind';
-    readonly 'searchResultItem.lifecycle': 'Lifecycle';
     readonly 'searchResultItem.owner': 'Owner';
+    readonly 'searchResultItem.lifecycle': 'Lifecycle';
     readonly 'catalogTable.allFilters': 'All';
     readonly 'catalogTable.warningPanelTitle': 'Could not fetch catalog entities.';
     readonly 'catalogTable.viewActionTitle': 'View';
@@ -94,14 +94,14 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.unregisterMenuTitle': 'Unregister entity';
     readonly 'entityContextMenu.moreButtonAriaLabel': 'more';
     readonly 'entityLabelsCard.title': 'Labels';
-    readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
-    readonly 'entityLabels.warningPanelTitle': 'Entity not found';
+    readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLabels.ownerLabel': 'Owner';
+    readonly 'entityLabels.warningPanelTitle': 'Entity not found';
     readonly 'entityLabels.lifecycleLabel': 'Lifecycle';
     readonly 'entityLinksCard.title': 'Links';
-    readonly 'entityLinksCard.emptyDescription': 'No links defined for this entity. You can add links to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLinksCard.readMoreButtonTitle': 'Read more';
+    readonly 'entityLinksCard.emptyDescription': 'No links defined for this entity. You can add links to your entity YAML as shown in the highlighted example below:';
     readonly 'entityNotFound.title': 'Entity was not found';
     readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.docButtonTitle': 'DOCS';

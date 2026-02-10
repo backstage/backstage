@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: app-next-example-plugin
-  title: app-next-example-plugin
+  name: app-example-plugin
+  title: app-example-plugin
   description: Backstage internal example plugin
 spec:
   lifecycle: experimental

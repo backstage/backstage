@@ -14,54 +14,14 @@
  * limitations under the License.
  */
 
-import { createApp } from '@backstage/app-defaults';
-import { AppRouter } from '@backstage/core-app-api';
-import {
-  AlertDisplay,
-  OAuthRequestDialog,
-  SignInPage,
-} from '@backstage/core-components';
-import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
 import ReactDOM from 'react-dom/client';
-import { providers } from '../src/identityProviders';
-import {
-  configApiRef,
-  createApiFactory,
-  discoveryApiRef,
-} from '@backstage/core-plugin-api';
-import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
+import { createApp } from '@backstage/frontend-defaults';
+import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
+
 import '@backstage/ui/css/styles.css';
 
 const app = createApp({
-  apis: [
-    createApiFactory({
-      api: discoveryApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) => AuthProxyDiscoveryApi.fromConfig(configApi),
-    }),
-  ],
-  components: {
-    SignInPage: props => {
-      return (
-        <SignInPage
-          {...props}
-          providers={['guest', 'custom', ...providers]}
-          title="Select a sign-in method"
-          align="center"
-        />
-      );
-    },
-  },
+  features: [appModulePublicSignIn],
 });
 
-const App = app.createRoot(
-  <>
-    <AlertDisplay transientTimeoutMs={2500} />
-    <OAuthRequestDialog />
-    <AppRouter>
-      <CookieAuthRedirect />
-    </AppRouter>
-  </>,
-);
-
-ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
+ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());

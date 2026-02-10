@@ -2,10 +2,10 @@
   "mode": "pre",
   "tag": "next",
   "initialVersions": {
-    "example-app": "0.2.117",
+    "example-app-legacy": "0.2.117",
     "@backstage/app-defaults": "1.7.4",
-    "example-app-next": "0.0.31",
-    "app-next-example-plugin": "0.0.31",
+    "example-app": "0.0.31",
+    "app-example-plugin": "0.0.31",
     "example-backend": "0.0.46",
     "@backstage/backend-app-api": "1.4.1",
     "@backstage/backend-defaults": "0.15.0",
