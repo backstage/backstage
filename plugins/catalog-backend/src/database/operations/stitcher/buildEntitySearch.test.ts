@@ -63,7 +63,6 @@ describe('buildEntitySearch', () => {
       const output = traverse(input);
       const elapsed = performance.now() - start;
 
-      // Each item produces 2 entries: { key: 'tags', value: 'tag-N' } and { key: 'tags.tag-N', value: true }
       expect(output).toHaveLength(1000);
       // Should complete well under 100ms with O(n); O(n²) would be noticeably slower
       expect(elapsed).toBeLessThan(100);
