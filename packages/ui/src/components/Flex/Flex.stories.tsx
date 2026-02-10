@@ -282,21 +282,16 @@ export const BgAutoIncrement = meta.story({
   render: args => (
     <Flex direction="column">
       <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
-        Nested Flex components automatically increment their neutral background
-        level. No explicit bg prop is needed on inner Flex components.
+        Flex is a layout primitive and is transparent to the bg system by
+        default. Only an explicit bg prop establishes a new bg level. Nested
+        Flex components without a bg prop inherit the parent context unchanged.
       </div>
       <Flex {...args} bg="neutral-1" direction="column">
         <div>Neutral 1 (explicit)</div>
-        <Flex {...args} direction="column">
-          <div>Auto (becomes neutral-2)</div>
-          <Flex {...args} direction="column">
-            <div>Auto (becomes neutral-3)</div>
-            <Flex {...args} direction="column">
-              <div>Auto (becomes neutral-4)</div>
-              <Flex {...args} direction="column">
-                <div>Auto (stays neutral-4 - capped)</div>
-              </Flex>
-            </Flex>
+        <Flex {...args} bg="neutral-2" direction="column">
+          <div>Neutral 2 (explicit)</div>
+          <Flex {...args} bg="neutral-3" direction="column">
+            <div>Neutral 3 (explicit, capped)</div>
           </Flex>
         </Flex>
       </Flex>

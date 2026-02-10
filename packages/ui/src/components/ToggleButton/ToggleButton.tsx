@@ -21,7 +21,6 @@ import type { ToggleButtonProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { ToggleButtonDefinition } from './definition';
 import styles from './ToggleButton.module.css';
-import { useBg } from '../../hooks/useBg';
 
 /** @public */
 export const ToggleButton = forwardRef(
@@ -36,14 +35,11 @@ export const ToggleButton = forwardRef(
 
     const { children, className, iconStart, iconEnd, ...rest } = cleanedProps;
 
-    const { bg } = useBg({ mode: 'leaf' });
-
     return (
       <AriaToggleButton
         className={clsx(classNames.root, styles[classNames.root], className)}
         ref={ref}
         {...dataAttributes}
-        {...(bg ? { 'data-on-bg': bg } : {})}
         {...rest}
       >
         {renderProps => {

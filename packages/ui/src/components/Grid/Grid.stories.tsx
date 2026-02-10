@@ -182,15 +182,16 @@ export const BgAutoIncrement = meta.story({
   render: args => (
     <Flex direction="column">
       <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
-        Nested Grid components automatically increment their neutral background.
-        Each nested Grid.Item inherits and increments from its parent's bg.
+        Grid is a layout primitive and is transparent to the bg system by
+        default. Only an explicit bg prop establishes a new bg level. Nested
+        grids without a bg prop inherit the parent context unchanged.
       </div>
       <Grid.Root {...args} bg="neutral-1">
         <Grid.Item>Neutral 1 (Grid.Root)</Grid.Item>
         <Grid.Item>
-          <Grid.Root {...args}>
-            <Grid.Item>Nested: Auto (becomes neutral-2)</Grid.Item>
-            <Grid.Item>Nested: Auto (becomes neutral-2)</Grid.Item>
+          <Grid.Root {...args} bg="neutral-2">
+            <Grid.Item>Nested: neutral-2 (explicit)</Grid.Item>
+            <Grid.Item>Nested: neutral-2 (explicit)</Grid.Item>
           </Grid.Root>
         </Grid.Item>
       </Grid.Root>

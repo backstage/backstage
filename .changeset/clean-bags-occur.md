@@ -4,7 +4,7 @@
 
 **BREAKING**: Replaced `Surface` / `onSurface` system with new `ContainerBg` background system
 
-The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surface`, `onSurface`) have been replaced by a new `ContainerBg` type with semantic neutral levels (`'neutral-1'` through `'neutral-3'`) and intents (`'danger'`, `'warning'`, `'success'`). Containers are capped at `neutral-3`; the `neutral-4` level is reserved for leaf component CSS only. Leaf components like Button no longer need an explicit prop — they receive a `data-on-bg` attribute matching the parent container's bg, and CSS handles the visual step-up.
+The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surface`, `onSurface`) have been replaced by `ContainerBg` — a union of `'neutral-1'` | `'neutral-2'` | `'neutral-3'` | `'danger'` | `'warning'` | `'success'`. There is no `neutral-4` value; containers are capped at `neutral-3`. Leaf components like Button no longer accept a bg prop — they inherit the parent container's bg via a `data-on-bg` attribute, and CSS handles the visual step-up to the next neutral level.
 
 New `useBg` hook and `BgProvider` replace the deleted `useSurface` hook and `SurfaceProvider`.
 
@@ -26,7 +26,7 @@ Rename the `surface` prop to `bg` on container components and update values:
 + <Grid.Root bg="neutral-1">
 ```
 
-Remove `onSurface` from leaf components — it is now fully automatic:
+Remove `onSurface` from leaf components — they now always inherit from the parent container and can no longer override the value:
 
 ```diff
 - <Button onSurface="1" variant="secondary">
@@ -37,13 +37,6 @@ Remove `onSurface` from leaf components — it is now fully automatic:
 
 - <ToggleButton onSurface="1">
 + <ToggleButton>
-```
-
-Alert no longer accepts a `surface` prop (its background is driven by `status`):
-
-```diff
-- <Alert surface="1" status="info" />
-+ <Alert status="info" />
 ```
 
 Update type imports:
@@ -72,10 +65,10 @@ Update CSS selectors targeting surface data attributes:
 - [data-surface='1'] { ... }
 + [data-bg='neutral-1'] { ... }
 
-- [data-on-surface='2'] { ... }
+- [data-on-surface='1'] { ... }
 + [data-on-bg='neutral-1'] { ... }
 ```
 
-Note: Container components use `data-bg` for their own background level. Leaf components now use `data-on-bg` which reflects the parent container's bg (not an auto-incremented value).
+Note: Container components use `data-bg` (values: `neutral-1` through `neutral-3`, plus intents). Leaf components use `data-on-bg`, which reflects the parent container's bg directly (no auto-increment).
 
-**Affected components:** Box, Button, ButtonIcon, ButtonLink, ToggleButton, Card, Alert, Flex, Grid
+**Affected components:** Box, Button, ButtonIcon, ButtonLink, ToggleButton, Card, Flex, Grid

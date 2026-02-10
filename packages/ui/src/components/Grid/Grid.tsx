@@ -23,8 +23,11 @@ import styles from './Grid.module.css';
 import { BgProvider, useBg } from '../../hooks/useBg';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  // Resolve the bg this Grid creates for its children
-  const { bg: resolvedBg } = useBg({ mode: 'container', bg: props.bg });
+  // Only establish bg context when an explicit bg prop is provided.
+  // Grid is a layout primitive — it should be transparent to the bg system by default.
+  const { bg: resolvedBg } = useBg(
+    props.bg !== undefined ? { mode: 'container', bg: props.bg } : undefined,
+  );
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(GridDefinition, {
@@ -59,8 +62,11 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  // Resolve the bg this GridItem creates for its children
-  const { bg: resolvedBg } = useBg({ mode: 'container', bg: props.bg });
+  // Only establish bg context when an explicit bg prop is provided.
+  // GridItem is a layout slot — it should be transparent to the bg system by default.
+  const { bg: resolvedBg } = useBg(
+    props.bg !== undefined ? { mode: 'container', bg: props.bg } : undefined,
+  );
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(GridItemDefinition, {

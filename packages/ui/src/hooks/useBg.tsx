@@ -62,11 +62,9 @@ const BgContext = createVersionedContext<{
  * Increments a neutral bg level by one, capping at 'neutral-3'.
  * Intent backgrounds (danger, warning, success) pass through unchanged.
  *
- * Only used by container components for auto-increment. The 'neutral-4'
- * level is reserved for leaf components and is never set on containers.
+ * The 'neutral-4' level is reserved for leaf component CSS and is never
+ * set on containers.
  *
- * @param bg - The current bg value
- * @returns The incremented bg value
  * @internal
  */
 function incrementNeutralBg(
@@ -81,44 +79,29 @@ function incrementNeutralBg(
 }
 
 /**
- * Resolves the bg value for a container component.
+ * Resolves the bg for a container component.
  *
- * - If an explicit bg prop is provided, use that.
- * - If no bg prop is provided but there is a parent context, auto-increment from parent.
- * - If no bg prop and no context, return undefined (no bg).
+ * Uses the explicit `bg` prop if provided. Otherwise auto-increments from
+ * the parent context, capping at `neutral-3`. Returns undefined when there
+ * is no prop and no parent context.
  *
  * @internal
  */
-function resolveBgForContainer(
-  contextBg: ContainerBg | undefined,
+function resolveContainerBg(
+  context: BgContextValue,
   propBg: ContainerBg | undefined,
-): ContainerBg | undefined {
+): BgContextValue {
   // Explicit bg prop takes priority
   if (propBg !== undefined) {
-    return propBg;
+    return { bg: propBg };
   }
 
   // No explicit bg: auto-increment from context if available
-  if (contextBg === undefined) {
-    return undefined;
+  if (context.bg === undefined) {
+    return { bg: undefined };
   }
 
-  return incrementNeutralBg(contextBg);
-}
-
-/**
- * Resolves the bg value for a leaf component.
- *
- * Returns the parent context bg unchanged. The leaf component's CSS
- * handles the visual step-up (e.g. on neutral-1 surface → use neutral-2 tokens).
- * If no context, returns undefined.
- *
- * @internal
- */
-function resolveBgForLeaf(
-  contextBg: ContainerBg | undefined,
-): ContainerBg | undefined {
-  return contextBg;
+  return { bg: incrementNeutralBg(context.bg) };
 }
 
 /**
@@ -137,9 +120,6 @@ export const BgProvider = ({ bg, children }: BgProviderProps) => {
 /**
  * Hook to access and resolve the current bg context.
  *
- * All bg resolution logic lives here — callers only need to specify the mode
- * and (for containers) the explicit bg prop value.
- *
  * - **Container mode** — uses explicit `bg` if provided, otherwise auto-increments
  *   from parent context. Caps at `neutral-3`.
  * - **Leaf mode** — returns the parent context bg unchanged. No prop needed.
@@ -157,15 +137,17 @@ export const useBg = (options?: UseBgOptions): BgContextValue => {
     return context;
   }
 
+  // Leaf mode: return the parent context bg unchanged.
+  // The leaf component's CSS handles the visual step-up.
+  if (options.mode === 'leaf') {
+    return context;
+  }
+
   // Resolve responsive prop value to a scalar for the current breakpoint
-  const resolvedPropBg =
+  const propBg =
     options.bg !== undefined
       ? resolveResponsiveValue(options.bg, breakpoint)
       : undefined;
 
-  if (options.mode === 'leaf') {
-    return { bg: resolveBgForLeaf(context.bg) };
-  }
-
-  return { bg: resolveBgForContainer(context.bg, resolvedPropBg) };
+  return resolveContainerBg(context, propBg);
 };
