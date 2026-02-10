@@ -25,11 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Monitor and Synchronize Snyk Policies
         uses: snyk/actions/node@9adf32b1121593767fc3c057af55b55db032dc04 # master
         with:
@@ -58,6 +58,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=7168
       - name: Upload Snyk report
-        uses: github/codeql-action/upload-sarif@f47c8e6a9bd05ef3ee422fc8d8663be7fe4bdc61 # v3.31.8
+        uses: github/codeql-action/upload-sarif@2588666de8825e1e9dc4e2329a4c985457d55b32 # v3.32.1
         with:
           sarif_file: snyk.sarif

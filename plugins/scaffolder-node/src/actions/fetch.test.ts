@@ -17,12 +17,12 @@
 jest.mock('fs-extra');
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents, fetchFile } from './fetch';
-import os from 'os';
+import os from 'node:os';
 
 describe('fetchContents helper', () => {
   beforeEach(() => {
@@ -86,6 +86,7 @@ describe('fetchContents helper', () => {
       expect(fs.copy).toHaveBeenCalledWith(
         resolvePath('/some/foo'),
         'somepath',
+        expect.objectContaining({ filter: expect.any(Function) }),
       );
     });
 

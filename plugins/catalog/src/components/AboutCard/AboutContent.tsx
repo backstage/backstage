@@ -225,7 +225,7 @@ export function AboutContent(props: AboutContentProps) {
                 text: target,
                 href: getLocationTargetHref(
                   target,
-                  (entity?.spec?.type || 'unknown') as string,
+                  (entity?.spec?.type || t('aboutCard.unknown')) as string,
                   entitySourceLocation!,
                 ),
               }))}

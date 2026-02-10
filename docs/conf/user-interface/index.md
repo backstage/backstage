@@ -103,13 +103,13 @@ Backstage UI is using light by default under `:root` but you can target it more 
 
 [data-theme-mode='light'] {
   /* Light theme specific styles */
-  --bui-bg-surface-0: #f8f8f8;
+  --bui-bg-neutral-0: #f8f8f8;
   --bui-fg-primary: #000;
 }
 
 [data-theme-mode='dark'] {
   /* Dark theme specific styles */
-  --bui-bg-surface-0: #333333;
+  --bui-bg-neutral-0: #333333;
   --bui-fg-primary: #fff;
 }
 ```
@@ -124,14 +124,17 @@ And if you’d like to go even further, you can target specific component class 
 
 | Token Name           | Description                                                                                   |
 | -------------------- | --------------------------------------------------------------------------------------------- |
-| `--bui-bg-surface-0` | This is used to define the background color of your app. It will only be used once.           |
-| `--bui-bg-surface-1` | We ar using this color to sit on top of `--bui-bg-surface-0` mostly for `Card`, `Dialog`, ... |
-| `--bui-bg-surface-2` | This is for content inside elevated components. This colour is less common.                   |
+| `--bui-bg-neutral-0` | This is used to define the background color of your app. It will only be used once.           |
+| `--bui-bg-neutral-1` | We ar using this color to sit on top of `--bui-bg-neutral-0` mostly for `Card`, `Dialog`, ... |
+| `--bui-bg-neutral-2` | This is for content inside elevated components. This colour is less common.                   |
 | `--bui-bg-solid`     | This is used for main actions like primary buttons.                                           |
 | `--bui-fg-solid`     | This is for texts or icons on top of a solid backgrounds.                                     |
 | `--bui-fg-primary`   | Your primary text or icon colours.                                                            |
 | `--bui-fg-secondary` | Your secondary text or icon colours.                                                          |
-| `--bui-fg-link`      | Used for links.                                                                               |
+| `--bui-fg-danger`    | Used for error states and destructive actions.                                                |
+| `--bui-fg-warning`   | Used for warning states and cautionary information.                                           |
+| `--bui-fg-success`   | Used for success states and positive feedback.                                                |
+| `--bui-fg-info`      | Used for informational content and neutral status.                                            |
 | `--bui-border`       | Main borders around surfaces like `Card`, `Dialog`, ...                                       |
 | `--bui-font-regular` | The main font of your app.                                                                    |
 
@@ -140,60 +143,71 @@ And if you’d like to go even further, you can target specific component class 
 
 #### Base colors
 
-These colors are used for special purposes like ring, scrollbar, ...
+| Token Name    | Description                                                             |
+| ------------- | ----------------------------------------------------------------------- |
+| `--bui-black` | Pure black color. This one should be the same in light and dark themes. |
+| `--bui-white` | Pure white color. This one should be the same in light and dark themes. |
 
-| Token Name     | Description                                                             |
-| -------------- | ----------------------------------------------------------------------- |
-| `--bui-black`  | Pure black color. This one should be the same in light and dark themes. |
-| `--bui-white`  | Pure white color. This one should be the same in light and dark themes. |
-| `--bui-gray-1` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-2` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-3` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-4` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-5` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-6` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-7` | You can use these mostly for backgrounds colors.                        |
-| `--bui-gray-8` | You can use these mostly for backgrounds colors.                        |
+#### Neutral background colors
 
-#### Core background colors
+These colors form a layered neutral scale for your application backgrounds. `--bui-bg-neutral-0` is the base background color. Each subsequent level (1 through 4) represents an elevated layer, with hover, pressed, and disabled variants for interactive states.
 
-These colors are used for the background of your application. We are mostly using for now a single elevated background for panels. `--bui-bg-surface-0` should mostly use as the main background color of your app.
+| Token Name                    | Description                                                  |
+| ----------------------------- | ------------------------------------------------------------ |
+| `--bui-bg-neutral-0`          | The base background color of your Backstage instance.        |
+| `--bui-bg-neutral-1`          | First elevated layer. Use for cards, dialogs, and panels.    |
+| `--bui-bg-neutral-1-hover`    | Hover state for elements on neutral-1.                       |
+| `--bui-bg-neutral-1-pressed`  | Pressed state for elements on neutral-1.                     |
+| `--bui-bg-neutral-1-disabled` | Disabled state for elements on neutral-1.                    |
+| `--bui-bg-neutral-2`          | Second elevated layer. Use for elements on top of neutral-1. |
+| `--bui-bg-neutral-2-hover`    | Hover state for elements on neutral-2.                       |
+| `--bui-bg-neutral-2-pressed`  | Pressed state for elements on neutral-2.                     |
+| `--bui-bg-neutral-2-disabled` | Disabled state for elements on neutral-2.                    |
+| `--bui-bg-neutral-3`          | Third elevated layer. Use for elements on top of neutral-2.  |
+| `--bui-bg-neutral-3-hover`    | Hover state for elements on neutral-3.                       |
+| `--bui-bg-neutral-3-pressed`  | Pressed state for elements on neutral-3.                     |
+| `--bui-bg-neutral-3-disabled` | Disabled state for elements on neutral-3.                    |
+| `--bui-bg-neutral-4`          | Fourth elevated layer. Use for elements on top of neutral-3. |
+| `--bui-bg-neutral-4-hover`    | Hover state for elements on neutral-4.                       |
+| `--bui-bg-neutral-4-pressed`  | Pressed state for elements on neutral-4.                     |
+| `--bui-bg-neutral-4-disabled` | Disabled state for elements on neutral-4.                    |
 
-| Token Name                | Description                                      |
-| ------------------------- | ------------------------------------------------ |
-| `--bui-bg-surface-0`      | The background color of your Backstage instance. |
-| `--bui-bg-surface-1`      | Use for any panels or elevated surfaces.         |
-| `--bui-bg-surface-2`      | Use for any panels or elevated surfaces.         |
-| `--bui-bg-surface-3`      | Use for any panels or elevated surfaces.         |
-| `--bui-bg-solid`          | Used for solid background colors.                |
-| `--bui-bg-solid-hover`    | Used for solid background colors when hovered.   |
-| `--bui-bg-solid-pressed`  | Used for solid background colors when pressed.   |
-| `--bui-bg-solid-disabled` | Used for solid background colors when disabled.  |
-| `--bui-bg-tint`           | Used for tint background colors.                 |
-| `--bui-bg-tint-hover`     | Used for tint background colors when hovered.    |
-| `--bui-bg-tint-focus`     | Used for tint background colors when active.     |
-| `--bui-bg-tint-disabled`  | Used for tint background colors when disabled.   |
-| `--bui-bg-danger`         | Used to show errors information.                 |
-| `--bui-bg-warning`        | Used to show warnings information.               |
-| `--bui-bg-success`        | Used to show success information.                |
+#### Solid background colors
+
+| Token Name                | Description                                     |
+| ------------------------- | ----------------------------------------------- |
+| `--bui-bg-solid`          | Used for solid background colors.               |
+| `--bui-bg-solid-hover`    | Used for solid background colors when hovered.  |
+| `--bui-bg-solid-pressed`  | Used for solid background colors when pressed.  |
+| `--bui-bg-solid-disabled` | Used for solid background colors when disabled. |
+
+#### Status background colors
+
+| Token Name         | Description                         |
+| ------------------ | ----------------------------------- |
+| `--bui-bg-danger`  | Used to show errors information.    |
+| `--bui-bg-warning` | Used to show warnings information.  |
+| `--bui-bg-success` | Used to show success information.   |
+| `--bui-bg-info`    | Used to show informational content. |
 
 #### Foreground colors
 
 Foreground colours are meant to work in pair with a background colours. Typically this would work for icons, texts, shapes, ... Use a matching name to know what foreground color to use. These colors are prefixed with `fg` to make it easier to identify.
 
-| Token Name               | Description                                                       |
-| ------------------------ | ----------------------------------------------------------------- |
-| `--bui-fg-primary`       | It should be used on top of main background surfaces.             |
-| `--bui-fg-secondary`     | It should be used on top of main background surfaces.             |
-| `--bui-fg-link`          | It should be used on top of main background surfaces.             |
-| `--bui-fg-link-hover`    | It should be used on top of main background surfaces.             |
-| `--bui-fg-disabled`      | It should be used on top of main background surfaces.             |
-| `--bui-fg-solid`         | It should be used on top of solid background colors.              |
-| `--bui-fg-tint`          | It should be used on top of tint background colors.               |
-| `--bui-fg-tint-disabled` | It should be used on top of tint background colors when disabled. |
-| `--bui-fg-danger`        | It should be used on top of danger background colors.             |
-| `--bui-fg-warning`       | It should be used on top of warning background colors.            |
-| `--bui-fg-success`       | It should be used on top of success background colors.            |
+| Token Name               | Description                                            |
+| ------------------------ | ------------------------------------------------------ |
+| `--bui-fg-primary`       | It should be used on top of main background surfaces.  |
+| `--bui-fg-secondary`     | It should be used on top of main background surfaces.  |
+| `--bui-fg-disabled`      | It should be used on top of main background surfaces.  |
+| `--bui-fg-solid`         | It should be used on top of solid background colors.   |
+| `--bui-fg-danger`        | Used for error states and destructive actions.         |
+| `--bui-fg-warning`       | Used for warning states and cautionary information.    |
+| `--bui-fg-success`       | Used for success states and positive feedback.         |
+| `--bui-fg-info`          | Used for informational content and neutral status.     |
+| `--bui-fg-danger-on-bg`  | It should be used on top of danger background colors.  |
+| `--bui-fg-warning-on-bg` | It should be used on top of warning background colors. |
+| `--bui-fg-success-on-bg` | It should be used on top of success background colors. |
+| `--bui-fg-info-on-bg`    | It should be used on top of info background colors.    |
 
 #### Border colors
 
@@ -201,7 +215,7 @@ These border colors are mostly meant to be used as borders on top of any compone
 
 | Token Name              | Description                                         |
 | ----------------------- | --------------------------------------------------- |
-| `--bui-border`          | It should be used on top of `--bui-bg-surface-1`.   |
+| `--bui-border`          | It should be used on top of `--bui-bg-neutral-1`.   |
 | `--bui-border-hover`    | Used when the component is interactive and hovered. |
 | `--bui-border-pressed`  | Used when the component is interactive and hovered. |
 | `--bui-border-disabled` | Used when the component is disabled.                |

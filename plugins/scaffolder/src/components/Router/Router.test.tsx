@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReactElement } from 'react';
 import { Router } from './Router';
-import {
-  renderInTestApp,
-  TestApiProvider,
-  TestAppOptions,
-} from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
@@ -30,22 +25,11 @@ import {
   ScaffolderLayouts,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateListPage, TemplateWizardPage } from '../../alpha/components';
-import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 
 jest.mock('../../alpha/components', () => ({
   TemplateWizardPage: jest.fn(() => null),
   TemplateListPage: jest.fn(() => null),
 }));
-
-const wrapInApisAndRender = (element: ReactElement, opts?: TestAppOptions) =>
-  renderInTestApp(
-    <TestApiProvider
-      apis={[[formFieldsApiRef, { getFormFields: async () => [] }]]}
-    >
-      {element}
-    </TestApiProvider>,
-    opts,
-  );
 
 describe('Router', () => {
   beforeEach(() => {
@@ -54,13 +38,13 @@ describe('Router', () => {
   });
   describe('/', () => {
     it('should render the TemplateListPage', async () => {
-      await wrapInApisAndRender(<Router />);
+      await renderInTestApp(<Router />);
 
       expect(TemplateListPage).toHaveBeenCalled();
     });
 
     it('should render user-provided TemplateListPage', async () => {
-      const { getByText } = await wrapInApisAndRender(
+      const { getByText } = await renderInTestApp(
         <Router
           components={{
             EXPERIMENTAL_TemplateListPageComponent: () => <>foobar</>,
@@ -76,7 +60,7 @@ describe('Router', () => {
 
     it('should render not found error page', async () => {
       await expect(
-        wrapInApisAndRender(<Router />, {
+        renderInTestApp(<Router />, {
           routeEntries: ['/foonotfounderror'],
         }),
       ).rejects.toThrow('Reached NotFound Page');
@@ -85,7 +69,7 @@ describe('Router', () => {
 
   describe('/templates/:templateName', () => {
     it('should render the TemplateWizard page', async () => {
-      await wrapInApisAndRender(<Router />, {
+      await renderInTestApp(<Router />, {
         routeEntries: ['/templates/default/foo'],
       });
 
@@ -93,7 +77,7 @@ describe('Router', () => {
     });
 
     it('should render user-provided TemplateWizardPage', async () => {
-      const { getByText } = await wrapInApisAndRender(
+      const { getByText } = await renderInTestApp(
         <Router
           components={{
             EXPERIMENTAL_TemplateWizardPageComponent: () => <>foobar</>,
@@ -110,7 +94,7 @@ describe('Router', () => {
     it('should pass through the FormProps property', async () => {
       const transformErrorsMock = jest.fn();
 
-      await wrapInApisAndRender(
+      await renderInTestApp(
         <Router
           formProps={{
             transformErrors: transformErrorsMock,
@@ -142,7 +126,7 @@ describe('Router', () => {
         }),
       );
 
-      await wrapInApisAndRender(
+      await renderInTestApp(
         <Router>
           <ScaffolderFieldExtensions>
             <CustomFieldExtension />
@@ -170,7 +154,7 @@ describe('Router', () => {
         }),
       );
 
-      await wrapInApisAndRender(
+      await renderInTestApp(
         <Router>
           <ScaffolderLayouts>
             <Layout />

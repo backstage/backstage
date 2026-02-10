@@ -12,7 +12,6 @@ import {
   dialogHeaderPropDefs,
   dialogBodyPropDefs,
   dialogFooterPropDefs,
-  dialogClosePropDefs,
 } from './props-definition';
 import {
   dialogUsageSnippet,
@@ -26,10 +25,16 @@ import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { DialogDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  dialogTrigger: 'https://react-aria.adobe.com/Modal#dialogtrigger',
+  modal: 'https://react-aria.adobe.com/Modal',
+};
 
 <PageTitle
   title="Dialog"
-  description="A modal dialog component that displays content in an overlay window."
+  description="A modal dialog with header, body, and footer sections supporting controlled state."
 />
 
 <Snippet
@@ -51,17 +56,26 @@ Wraps a trigger element and the dialog content to handle open/close state.
 
 <PropsTable data={dialogTriggerPropDefs} />
 
+<ReactAriaLink component="DialogTrigger" href={reactAriaUrls.dialogTrigger} />
+
 ### Dialog
 
 The main dialog container that renders as a modal overlay.
 
 <PropsTable data={dialogPropDefs} />
 
+<ReactAriaLink component="Modal" href={reactAriaUrls.modal} />
+
 ### DialogHeader
 
 Displays the dialog title with a built-in close button.
 
 <PropsTable data={dialogHeaderPropDefs} />
+
+<ReactAriaLink
+  component="Heading"
+  href="https://react-aria.adobe.com/Heading"
+/>
 
 ### DialogBody
 
@@ -94,7 +108,7 @@ Dialog with a fixed height body that scrolls when content overflows.
 
 ### Dialog with Form
 
-Dialog containing form elements for user input.
+Forms can be embedded in the dialog body.
 
 <Snippet
   align="center"

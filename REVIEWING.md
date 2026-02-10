@@ -2,6 +2,85 @@
 
 This file provides pointers for reviewing pull requests. While the main audience are reviewers, this can also be useful if you are contributing to this repository.
 
+## Quick Links
+
+- [Incoming Reviews](https://github.com/orgs/backstage/projects/14/views/1)
+- [Personal Reviews](https://github.com/orgs/backstage/projects/14/views/2)
+- Project area boards in [OWNERS.md](./OWNERS.md)
+
+## Review Workflow
+
+Pull request reviews are coordinated by maintainers and reviewers based on project area ownership. Reviews are prioritized and tracked using automated labels and a GitHub Project board. This review process applies to all pull requests in the [main Backstage repository](https://github.com/backstage/backstage), other repositories may have their own review processes.
+
+All incoming pull request reviews are tracked on the [Incoming Reviews board](https://github.com/orgs/backstage/projects/14/views/1). This board can be used by members of the `@backstage/reviewers` group to find pull requests to review, as well as maintainers that want an overview of all incoming pull requests.
+
+Project area maintainers can use the same board but with additional filters applied to only show incoming pull requests for their project area. These filtered boards are linked to for each project area in [OWNERS.md](./OWNERS.md). There is also a [personal review board](https://github.com/orgs/backstage/projects/14/views/2) that can be used to track reviews that you have been assigned to.
+
+### Submitting Reviews
+
+When reviewing a pull request, always submit a formal review using either **"Approve"** or **"Request changes"**. Do not use "Comment" as a substitute for either of these — the review automation relies on the review state to manage labels and the review board, and only formal approvals and change requests are tracked.
+
+- Use **"Approve"** when you are satisfied with the changes and believe they are ready to be merged (for your area, at least).
+- Use **"Request changes"** when changes are necessary before the pull request can be merged. This signals clearly to the author what is expected and moves the pull request out of the review queue until the author responds.
+- Use **"Comment"** only to contribute to discussion, ask questions, or leave optional or minor suggestions that do not block the pull request.
+
+Being explicit with "Approve" or "Request changes" is important both for transparent communication with the author and for the automation to function correctly. The automation reads these review states to update labels and the review board accordingly, meaning a "Comment" review will not cause any status change.
+
+### Closing Pull Requests
+
+Pull requests that have been superseded, are no longer relevant, or otherwise are not worth moving forward should be closed with a comment explaining why. Closed pull requests are automatically removed from the review board by the automation.
+
+### Review Process for @backstage/reviewers
+
+Members of the `@backstage/reviewers` do not have any specific areas that they should focus on. They can choose to filter and focus on reviews from any part of the project. They do not assign themselves specific pull requests, but instead leave reviews directly on pull requests without any further process.
+
+Reviews from this group still have meaningful impact on the review process, as they are picked up by the automation. Approving reviews from a member of this group will add the `reviewer-approved` label to the pull request, which greatly increases its priority and visibility for project area maintainers. Likewise, requesting changes will add the `waiting-for:author` label to the pull request, removing it from the review queue until the author has commented or pushed new changes.
+
+As a reward for helping out with reviews, members who actively review pull requests will have their own pull requests prioritized higher on the review board. The more reviews you contribute, the higher the priority boost your own pull requests receive.
+
+### Review Process for Project Area Maintainers
+
+Project area maintainers are responsible for reviewing and ultimately merging or closing pull requests that target their project area. They should use the global or filtered board for their project area to find pull requests to review. When they find a pull request that they want to review, they should assign themselves to the pull request, removing it from the review queue and placing it on their personal review board.
+
+Once a pull request has been assigned a single owner, it is their responsibility to review and eventually merge or close the pull request. They manage all ongoing requests on their personal review board, typically prioritizing the ones at the top of the board marked with `waiting-for:review`. If a pull request remains assigned but unreviewed for 14 days, the automation will automatically unassign the reviewer and return the pull request to the review queue.
+
+### Merging Pull Requests
+
+When a pull request has been approved, the way it gets merged depends on who the author is:
+
+- **Outside contributions:** Project area maintainers and core maintainers should merge the pull request themselves once approved, since outside contributors do not have merge access.
+- **Maintainer contributions:** Within maintainer teams, it is common to let the author choose when to merge the pull request themselves, unless there is a reason to merge it immediately. The `waiting-for:merge` label will be applied automatically when the pull request is approved.
+
+### Cross-Area Pull Requests
+
+Some pull requests may require review from multiple project areas. In these cases the most relevant owner should assign themselves and coordinate with the other owners for additional reviews. If the most relevant owner is not clear, this is preferably solved in a discussion among the owners. Frequent conflicts should lead to a discussion whether `CODEOWNERS` should be updated to simplify the review process. If some owners are currently unavailable, other owners can assign themselves to the pull request and bring it to the point where they approve the changes for their area, and then send the pull request back to the review queue.
+
+## Pull Request Automation
+
+Pull request labels and the [review board](https://github.com/orgs/backstage/projects/14) are fully managed by automation. All fields on the review board are computed automatically and **should never be updated manually**. Likewise, pull request labels that are part of the automation should not be added or removed by hand, with one exception described below.
+
+The automation is triggered by pull request events (opened, updated, reopened, labeled, unlabeled), pull request reviews (submitted, dismissed), issue comments, and CI workflow completions. The source code is available in the [`backstage/actions`](https://github.com/backstage/actions) repository, with the workflow definitions in [`.github/workflows/sync_pull-requests-trigger.yml`](.github/workflows/sync_pull-requests-trigger.yml) and [`.github/workflows/sync_pull-requests.yml`](.github/workflows/sync_pull-requests.yml).
+
+### Labels
+
+The `waiting-for:*` status labels, `reviewer-approved` label, and `size:*` labels are all **automated** based on pull request reviews, author activity, and pull request size. See [LABELS.md](./LABELS.md#pull-request-labels) for the meaning of each label.
+
+The only exception is `waiting-for:decision`, which can and should be set **manually**. Use it when discussion or a decision is needed before the pull request can move forward, for example when the approach needs to be discussed in a [SIG](https://github.com/backstage/community/tree/main/sigs) meeting. Once set, this label will **stick until manually removed** — the automation will not override it. Only remove it once a decision has been made and the pull request is ready to proceed.
+
+### Review Board Priority
+
+The priority field on the review board is a number calculated automatically by the automation. It determines the sort order of pull requests on the board. The priority is influenced by several factors:
+
+- **Pull request size** — Smaller pull requests receive higher priority, where the priority reduces significantly for roughly every 500 lines added.
+- **Reviewer approval** — Pull requests with the `reviewer-approved` label receive a large priority boost.
+- **Author review contributions** — Authors who have themselves reviewed other pull requests in the repository receive a priority boost proportional to their review activity.
+- **Draft status** — Draft pull requests receive significantly reduced priority.
+- **CI status** — Pull requests where required CI checks are failing or still pending receive reduced priority. The required checks include DCO, tests, verification, and E2E tests.
+
+### Stale Review Handling
+
+If a pull request with the `waiting-for:review` label has been assigned to a reviewer but has not received a review for 14 days, the automation will automatically unassign the reviewer and return the pull request to the review queue. This ensures that pull requests do not get stuck due to reviewer unavailability.
+
 ## Code Style
 
 See our code style documented at [STYLE.md](./STYLE.md).
@@ -61,6 +140,37 @@ Some things that changeset should NOT contain are:
 - A large amount of content, consider for example a separate migration guide instead, either in the package README or [./docs/](./docs/), and then link to that instead.
 - Documentation - changesets can describe new features, but it should not be relied on for documenting them. Documentation should either be placed in [TSDoc](https://tsdoc.org) comments, package README, or [./docs/](./docs/).
 - Diffs of internal code, for example mirroring what the pull request changes _inside_ a plugin rather than public surfaces. This is not of interest to the reader of a package changelog. Sometimes, however, a small and concise diff can be used in a changeset to illustrate changes that the user will have to make in _their own_ Backstage installation as part of an upgrade, specifically when breaking changes are made to a package.
+
+### Backstage UI Changeset Format
+
+Changesets for `@backstage/ui` must follow a standardized format to enable proper documentation generation. See [`.changeset/README.md`](.changeset/README.md#backstage-ui-changeset-format) for the complete guide.
+
+**Required structure:**
+
+```markdown
+---
+'@backstage/ui': patch
+---
+
+Brief one-line summary of the change
+
+Optional detailed description with any markdown content.
+
+**Migration:**
+
+Migration instructions (only for breaking changes)
+
+**Affected components:** Button, ButtonIcon
+```
+
+**Key requirements:**
+
+1. **Affected components marker** - Must end with `**Affected components:**` followed by comma-separated component names
+2. **Migration marker** - Use `**Migration:**` (bold, with colon) for breaking changes only
+3. **No headings** - Never use `##`, `###`, or `####` inside changeset entries (these break semantic structure when the entry becomes a list item in CHANGELOG.md)
+4. **Bold markers** - Use bold text markers, not plain text, for reliable parsing
+
+These markers enable the documentation system to extract metadata for per-component changelogs and separate migration guides.
 
 ### When is a changeset needed?
 

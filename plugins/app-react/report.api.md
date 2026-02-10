@@ -10,13 +10,36 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
-import { NavContentComponent } from '@backstage/frontend-plugin-api';
-import { NavContentComponentProps } from '@backstage/frontend-plugin-api';
+import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
-import { SignInPageProps } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TranslationMessages } from '@backstage/frontend-plugin-api';
 import { TranslationResource } from '@backstage/frontend-plugin-api';
+
+// @public
+export const AppRootWrapperBlueprint: ExtensionBlueprint<{
+  kind: 'app-root-wrapper';
+  params: {
+    Component?: [error: 'Use the `component` parameter instead'];
+    component: (props: { children: ReactNode }) => JSX.Element | null;
+  };
+  output: ExtensionDataRef<
+    (props: { children: ReactNode }) => JSX.Element | null,
+    'app.root.wrapper',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    component: ConfigurableExtensionDataRef<
+      (props: { children: ReactNode }) => JSX.Element | null,
+      'app.root.wrapper',
+      {}
+    >;
+  };
+}>;
 
 // @public
 export const IconBundleBlueprint: ExtensionBlueprint<{
@@ -68,9 +91,21 @@ export const NavContentBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-export { NavContentComponent };
+// @public
+export type NavContentComponent = (
+  props: NavContentComponentProps,
+) => JSX.Element | null;
 
-export { NavContentComponentProps };
+// @public
+export interface NavContentComponentProps {
+  items: Array<{
+    icon: IconComponent;
+    title: string;
+    routeRef: RouteRef<undefined>;
+    to: string;
+    text: string;
+  }>;
+}
 
 // @public
 export const RouterBlueprint: ExtensionBlueprint<{
@@ -119,7 +154,11 @@ export const SignInPageBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-export { SignInPageProps };
+// @public
+export type SignInPageProps = {
+  onSignInSuccess(identityApi: IdentityApi): void;
+  children?: ReactNode;
+};
 
 // @public
 export const SwappableComponentBlueprint: ExtensionBlueprint<{

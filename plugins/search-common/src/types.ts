@@ -16,7 +16,7 @@
 
 import { Permission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
-import { Readable, Transform } from 'stream';
+import { Readable, Transform } from 'node:stream';
 
 /**
  * @public

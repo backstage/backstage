@@ -1,0 +1,160 @@
+{
+  "persistentVolumeClaims": [
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "pvc-web-storage",
+        "namespace": "default",
+        "uid": "1ea073bc-7a4b-4b99-8321-0305bce85568",
+        "resourceVersion": "1362732552",
+        "creationTimestamp": "2021-07-16T22:39:58Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "web-app"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "accessModes": ["ReadWriteOnce"],
+        "resources": {
+          "requests": {
+            "storage": "10Gi"
+          }
+        },
+        "storageClassName": "standard",
+        "volumeName": "pv-web-volume"
+      },
+      "status": {
+        "phase": "Bound",
+        "accessModes": ["ReadWriteOnce"],
+        "capacity": {
+          "storage": "10Gi"
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "pvc-database-storage",
+        "namespace": "production",
+        "uid": "2fb184cd-8b5c-5c10-9432-1416cdf96679",
+        "resourceVersion": "1362732553",
+        "creationTimestamp": "2021-07-17T10:20:15Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "database"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "accessModes": ["ReadWriteOnce"],
+        "resources": {
+          "requests": {
+            "storage": "50Gi"
+          }
+        },
+        "storageClassName": "fast-ssd",
+        "volumeName": "pv-database-volume"
+      },
+      "status": {
+        "phase": "Bound",
+        "accessModes": ["ReadWriteOnce"],
+        "capacity": {
+          "storage": "50Gi"
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "pvc-cache-storage",
+        "namespace": "staging",
+        "uid": "3gc295de-9c6d-6d21-a543-2527def07790",
+        "resourceVersion": "1362732554",
+        "creationTimestamp": "2021-07-18T15:30:45Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "cache-service"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "accessModes": ["ReadWriteMany"],
+        "resources": {
+          "requests": {
+            "storage": "5Gi"
+          }
+        },
+        "storageClassName": "shared-storage"
+      },
+      "status": {
+        "phase": "Pending"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "pvc-logs-storage",
+        "namespace": "logging",
+        "uid": "4hd3a6ef-ad7e-7e32-b654-3638eff18801",
+        "resourceVersion": "1362732555",
+        "creationTimestamp": "2021-07-19T09:15:30Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "log-aggregator"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "accessModes": ["ReadWriteMany"],
+        "resources": {
+          "requests": {
+            "storage": "100Gi"
+          }
+        },
+        "storageClassName": "nfs-storage",
+        "volumeName": "pv-logs-volume"
+      },
+      "status": {
+        "phase": "Bound",
+        "accessModes": ["ReadWriteMany"],
+        "capacity": {
+          "storage": "100Gi"
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "pvc-backup-storage",
+        "namespace": "backup",
+        "uid": "5ie4b7f0-be8f-8f43-c765-4749f0029912",
+        "resourceVersion": "1362732556",
+        "creationTimestamp": "2021-07-20T16:45:22Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "backup-service"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "accessModes": ["ReadWriteOnce"],
+        "resources": {
+          "requests": {
+            "storage": "200Gi"
+          }
+        },
+        "storageClassName": "backup-storage",
+        "volumeName": "pv-backup-volume-deleted"
+      },
+      "status": {
+        "phase": "Lost"
+      }
+    }
+  ]
+}

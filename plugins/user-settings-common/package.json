@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-user-settings-common",
-  "version": "0.0.1",
+  "version": "0.1.0-next.0",
   "description": "Common functionalities for the user-settings plugin",
   "backstage": {
     "role": "common-library",
@@ -36,6 +36,9 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/types": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

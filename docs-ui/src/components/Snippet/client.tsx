@@ -12,6 +12,7 @@ interface SnippetProps {
   py?: number;
   open?: boolean;
   height?: string | number;
+  layout?: 'stacked' | 'side-by-side';
 }
 
 export const SnippetClient = ({
@@ -22,8 +23,27 @@ export const SnippetClient = ({
   py = 2,
   open = false,
   height = 'auto',
+  layout = 'stacked',
 }: SnippetProps) => {
   const [isOpen, setIsOpen] = useState(open);
+
+  if (layout === 'side-by-side') {
+    return (
+      <div className={styles.sideBySide}>
+        <div className={styles.sideBySideCode}>
+          <div className={styles.codeWrapper}>{codeContent}</div>
+        </div>
+        <div className={styles.sideBySidePreview} style={{ height }}>
+          <div
+            className={`${styles.previewContent} ${styles[align]}`}
+            style={{ padding: `${py}rem ${px}rem` }}
+          >
+            {preview}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Collapsible.Root

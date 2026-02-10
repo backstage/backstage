@@ -34,7 +34,7 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import express from 'express';
-import { Server } from 'http';
+import { Server } from 'node:http';
 import request from 'supertest';
 import { z } from 'zod';
 import { Cursor, EntitiesCatalog } from '../catalog/types';

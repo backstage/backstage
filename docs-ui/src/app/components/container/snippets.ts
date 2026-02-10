@@ -1,19 +1,13 @@
 export const containerUsageSnippet = `import { Container } from "@backstage/ui";
 
-<Container>Hello World!</Container>`;
-
-export const previewSnippet = `<div style={{ maxWidth: '600px', margin: '0 auto' }}>
-  <DecorativeBox />
-</div>`;
-
-export const containerSimpleSnippet = `<Container>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
+<Container>
+  {/* Your plugin's main content */}
 </Container>`;
 
-export const containerResponsiveSnippet = `<Container paddingY={{ xs: 'sm', md: 'md' }}>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
-  <Box>Hello World</Box>
+export const defaultSnippet = `<Container>
+  <DecorativeBox>Page content goes here</DecorativeBox>
+</Container>`;
+
+export const containerResponsiveSnippet = `<Container py={{ initial: '4', md: '8' }}>
+  <DecorativeBox>Content with vertical spacing</DecorativeBox>
 </Container>`;

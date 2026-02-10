@@ -16,7 +16,7 @@
 
 import { resolvePackagePaths } from './paths';
 import pLimit from 'p-limit';
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { paths as cliPaths } from './paths';
 import portFinder from 'portfinder';
 

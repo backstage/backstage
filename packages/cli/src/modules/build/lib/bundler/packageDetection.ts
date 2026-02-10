@@ -19,7 +19,7 @@ import { Config, ConfigReader } from '@backstage/config';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import PQueue from 'p-queue';
-import { dirname, join as joinPath, resolve as resolvePath } from 'path';
+import { dirname, join as joinPath, resolve as resolvePath } from 'node:path';
 import { paths as cliPaths } from '../../../../lib/paths';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
@@ -32,10 +32,7 @@ interface PackageDetectionConfig {
 function readPackageDetectionConfig(
   config: Config,
 ): PackageDetectionConfig | undefined {
-  // The experimental key is deprecated, but supported still for backwards compatibility
-  const packages =
-    config.getOptional('app.packages') ??
-    config.getOptional('app.experimental.packages');
+  const packages = config.getOptional('app.packages');
   if (packages === undefined || packages === null) {
     return undefined;
   }

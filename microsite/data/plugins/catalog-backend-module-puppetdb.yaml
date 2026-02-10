@@ -7,7 +7,4 @@ description: Import nodes from PuppetDB into Backstage as Resource Entities
 documentation: https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-puppetdb/README.md
 iconUrl: /img/puppet.png
 npmPackageName: '@backstage/plugin-catalog-backend-module-puppetdb'
-tags:
-  - puppet
-  - puppetdb
 addedDate: '2023-02-06'

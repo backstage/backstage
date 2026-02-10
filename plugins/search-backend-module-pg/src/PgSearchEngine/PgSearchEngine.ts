@@ -269,7 +269,12 @@ export class PgSearchEngine implements SearchEngine {
       }),
     );
 
-    return { results, nextPageCursor, previousPageCursor };
+    return {
+      results,
+      numberOfResults: rows.length > 0 ? parseInt(rows[0].total_count, 10) : 0,
+      nextPageCursor,
+      previousPageCursor,
+    };
   }
 }
 

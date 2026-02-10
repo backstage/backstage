@@ -660,7 +660,7 @@ const convertedRootFeatures = convertLegacyAppRoot(
 );
 ```
 
-Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
+Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
 
 Here is an example converting the `CustomAppBarrier` into extension:
 

@@ -9,11 +9,7 @@ description: Automatically discovering catalog entities from repositories in an 
 This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/azure/discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
-The Azure DevOps integration has a special entity provider for discovering
-catalog entities within an Azure DevOps. The provider will crawl your Azure
-DevOps organization and register entities matching the configured path. This can
-be useful as an alternative to static locations or manually adding things to the
-catalog.
+The Azure DevOps integration has a special entity provider for discovering catalog entities within an Azure DevOps. The provider will crawl your Azure DevOps organization and register entities matching the configured path. This can be useful as an alternative to static locations or manually adding things to the catalog.
 
 This guide explains how to install and configure the Azure DevOps Entity Provider (recommended) or the Azure DevOps Processor.
 
@@ -21,9 +17,7 @@ This guide explains how to install and configure the Azure DevOps Entity Provide
 
 ### Code Search Feature
 
-Azure discovery is driven by the Code Search feature in Azure DevOps, this may not be enabled by default. For Azure
-DevOps Services you can confirm this by looking at the installed extensions in your Organization Settings. For Azure
-DevOps Server you'll find this information in your Collection Settings.
+Azure discovery is driven by the Code Search feature in Azure DevOps, this may not be enabled by default. For Azure DevOps Services you can confirm this by looking at the installed extensions in your Organization Settings. For Azure DevOps Server you'll find this information in your Collection Settings.
 
 If the Code Search extension is not listed then you can install it from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ms.vss-code-search&targetId=f9352dac-ba6e-434e-9241-a848a510ce3f&utm_source=vstsproduct&utm_medium=SearchExtStatus).
 
@@ -68,7 +62,7 @@ catalog:
 
 The parameters available are:
 
-- **`host:`** _(optional)_ Leave empty for Cloud hosted, otherwise set to your self-hosted instance host.
+- **`host:`** _(optional)_ The default value is `dev.azure.com`, it is required for legacy `{org}.visualstudio.com` domains or for on-premise installations.
 - **`organization:`** Your Organization slug (or Collection for on-premise users). Required.
 - **`project:`** _(required)_ Your project slug. Wildcards are supported as shown on the examples above. Using '\*' will search all projects. For a project name containing spaces, use both single and double quotes as in `project: '"My Project Name"'`.
 - **`repository:`** _(optional)_ The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.

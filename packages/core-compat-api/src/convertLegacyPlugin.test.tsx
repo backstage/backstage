@@ -43,6 +43,7 @@ describe('convertLegacyPlugin', () => {
         "id": "test",
         "info": [Function],
         "infoOptions": undefined,
+        "pluginId": "test",
         "routes": {},
         "toString": [Function],
         "version": "v1",

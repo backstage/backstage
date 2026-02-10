@@ -10,14 +10,13 @@ import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { IconComponent } from '@backstage/frontend-plugin-api';
@@ -31,7 +30,6 @@ import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
-import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -91,6 +89,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -118,6 +117,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -137,10 +137,10 @@ const _default: OverridableFrontendPlugin<
       config: {
         label: string | undefined;
         title: string | undefined;
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         label?: string | undefined;
         title?: string | undefined;
       };
@@ -167,7 +167,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         useProps: () => Omit<IconLinkVerticalProps, 'color'>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean);
+        filter?: FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:scaffolder': OverridableExtensionDefinition<{
@@ -218,6 +218,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -411,6 +412,7 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
       {
         singleton: false;
         optional: false;
+        internal: false;
       }
     >;
   };
@@ -427,8 +429,6 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
 
 // @alpha (undocumented)
 export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi>;
-
-export { formFieldsApiRef };
 
 // @alpha @deprecated
 export type FormProps = Pick<
@@ -448,8 +448,6 @@ export interface ScaffolderFormDecoratorsApi {
   // (undocumented)
   getFormDecorators(): Promise<ScaffolderFormDecorator[]>;
 }
-
-export { ScaffolderFormFieldsApi };
 
 // @public (undocumented)
 export type ScaffolderTemplateEditorClassKey =
@@ -542,8 +540,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ownerListPicker.options.owned': 'Owned';
     readonly 'ongoingTask.title': 'Run of';
     readonly 'ongoingTask.contextMenu.cancel': 'Cancel';
-    readonly 'ongoingTask.contextMenu.startOver': 'Start Over';
     readonly 'ongoingTask.contextMenu.retry': 'Retry';
+    readonly 'ongoingTask.contextMenu.startOver': 'Start Over';
     readonly 'ongoingTask.contextMenu.hideLogs': 'Hide Logs';
     readonly 'ongoingTask.contextMenu.showLogs': 'Show Logs';
     readonly 'ongoingTask.contextMenu.hideButtonBar': 'Hide Button Bar';
@@ -564,8 +562,6 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'renderSchema.tableCell.description': 'Description';
     readonly 'templatingExtensions.content.values.title': 'Values';
     readonly 'templatingExtensions.content.values.notAvailable': 'There are no global template values defined.';
-    readonly 'templatingExtensions.content.emptyState.title': 'No information to display';
-    readonly 'templatingExtensions.content.emptyState.description': 'There are no templating extensions available or there was an issue communicating with the backend.';
     readonly 'templatingExtensions.content.filters.title': 'Filters';
     readonly 'templatingExtensions.content.filters.schema.input': 'Input';
     readonly 'templatingExtensions.content.filters.schema.output': 'Output';
@@ -573,13 +569,15 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templatingExtensions.content.filters.examples': 'Examples';
     readonly 'templatingExtensions.content.filters.notAvailable': 'There are no template filters defined.';
     readonly 'templatingExtensions.content.filters.metadataAbsent': 'Filter metadata unavailable';
-    readonly 'templatingExtensions.content.searchFieldPlaceholder': 'Search for an extension';
+    readonly 'templatingExtensions.content.emptyState.title': 'No information to display';
+    readonly 'templatingExtensions.content.emptyState.description': 'There are no templating extensions available or there was an issue communicating with the backend.';
     readonly 'templatingExtensions.content.functions.title': 'Functions';
     readonly 'templatingExtensions.content.functions.schema.output': 'Output';
     readonly 'templatingExtensions.content.functions.schema.arguments': 'Arguments';
     readonly 'templatingExtensions.content.functions.examples': 'Examples';
     readonly 'templatingExtensions.content.functions.notAvailable': 'There are no global template functions defined.';
     readonly 'templatingExtensions.content.functions.metadataAbsent': 'Function metadata unavailable';
+    readonly 'templatingExtensions.content.searchFieldPlaceholder': 'Search for an extension';
     readonly 'templatingExtensions.title': 'Templating Extensions';
     readonly 'templatingExtensions.subtitle': 'This is the collection of available templating extensions';
     readonly 'templatingExtensions.pageTitle': 'Templating Extensions';
@@ -635,6 +633,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateWizardPage.title': 'Create a new component';
     readonly 'templateWizardPage.subtitle': 'Create new software components using standard templates in your organization';
     readonly 'templateWizardPage.pageTitle': 'Create a new component';
+    readonly 'templateWizardPage.templateWithTitle': 'Create new {{templateTitle}}';
     readonly 'templateWizardPage.pageContextMenu.editConfigurationTitle': 'Edit Configuration';
     readonly 'templateEditorToolbar.customFieldExplorerTooltip': 'Custom Fields Explorer';
     readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';

@@ -20,7 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { assertError, serializeError, stringifyError } from '@backstage/errors';
-import { Hash } from 'crypto';
+import { Hash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
 import { metrics, trace } from '@opentelemetry/api';

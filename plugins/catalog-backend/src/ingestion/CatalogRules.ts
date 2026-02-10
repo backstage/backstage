@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
-import path from 'path';
+import path from 'node:path';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { minimatch } from 'minimatch';
 import { z } from 'zod';

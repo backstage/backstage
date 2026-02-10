@@ -276,6 +276,7 @@ export class AppThemeSelector implements AppThemeApi {
   activeThemeId$(): Observable<string | undefined>;
   // (undocumented)
   static createWithStorage(themes: AppTheme[]): AppThemeSelector;
+  dispose(): void;
   // (undocumented)
   getActiveThemeId(): string | undefined;
   // (undocumented)

@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { ButtonLinkOwnProps } from './types';
+import styles from './ButtonLink.module.css';
 
 /**
  * Component definition for ButtonLink
  * @public
  */
-export const ButtonLinkDefinition = {
+export const ButtonLinkDefinition = defineComponent<ButtonLinkOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-ButtonLink',
+    content: 'bui-ButtonLinkContent',
   },
-} as const satisfies ComponentDefinition;
+  surface: 'leaf',
+  propDefs: {
+    size: { dataAttribute: true, default: 'small' },
+    variant: { dataAttribute: true, default: 'primary' },
+    iconStart: {},
+    iconEnd: {},
+    onSurface: {},
+    children: {},
+    className: {},
+    style: {},
+  },
+});

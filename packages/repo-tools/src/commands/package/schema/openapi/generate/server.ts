@@ -18,7 +18,7 @@ import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import YAML from 'js-yaml';
-import { dirname, join, resolve } from 'path';
+import { dirname, join, resolve } from 'node:path';
 import { exec } from '../../../../../lib/exec';
 import {
   OLD_SCHEMA_PATH,

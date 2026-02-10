@@ -14,85 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  IconBundleBlueprint as _IconBundleBlueprint,
-  NavContentBlueprint as _NavContentBlueprint,
-  type NavContentComponent,
-  type NavContentComponentProps,
-  RouterBlueprint as _RouterBlueprint,
-  SignInPageBlueprint as _SignInPageBlueprint,
-  type SignInPageProps,
-  SwappableComponentBlueprint as _SwappableComponentBlueprint,
-  ThemeBlueprint as _ThemeBlueprint,
-  TranslationBlueprint as _TranslationBlueprint,
-} from '@backstage/frontend-plugin-api';
-
-/**
- * Creates an extension that adds/replaces an app theme. This blueprint is limited to use by the app plugin.
- *
- * @public
- */
-export const ThemeBlueprint = _ThemeBlueprint;
-
-/**
- * Blueprint for creating swappable components from a SwappableComponentRef and a loader. This blueprint is limited to use by the app plugin.
- *
- * @public
- */
-export const SwappableComponentBlueprint = _SwappableComponentBlueprint;
-
-/**
- * Creates an extension that replaces the sign in page. This blueprint is limited to use by the app plugin.
- *
- * @public
- */
-export const SignInPageBlueprint = _SignInPageBlueprint;
-
-/**
- * Creates an extension that replaces the router component. This blueprint is limited to use by the app plugin.
- *
- * @public
- */
-export const RouterBlueprint = _RouterBlueprint;
-
-/**
- * Creates an extension that replaces the entire nav bar with your own component. This blueprint is limited to use by the app plugin.
- *
- * @public
- */
-export const NavContentBlueprint = _NavContentBlueprint;
-
-/**
- * Creates an extension that adds icon bundles to your app. This blueprint is limited to use by the app plugin.
- *
- * @public
- */
-export const IconBundleBlueprint = _IconBundleBlueprint;
-
-/**
- * Props for the `SignInPage` component.
- *
- * @public
- */
-export type { SignInPageProps };
-
-/**
- * The props for the {@link NavContentComponent}.
- *
- * @public
- */
-export type { NavContentComponentProps };
-
-/**
- * A component that renders the nav bar content, to be passed to the {@link NavContentBlueprint}.
- *
- * @public
- */
-export type { NavContentComponent };
-
-/**
- * Creates an extension that adds translations to your app. This blueprint is limited to use by the app plugin.
- *
- * @public
- */
-export const TranslationBlueprint = _TranslationBlueprint;
+export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
+export { IconBundleBlueprint } from './IconBundleBlueprint';
+export { NavContentBlueprint } from './NavContentBlueprint';
+export type {
+  NavContentComponent,
+  NavContentComponentProps,
+} from './NavContentBlueprint';
+export { RouterBlueprint } from './RouterBlueprint';
+export { SignInPageBlueprint } from './SignInPageBlueprint';
+export type { SignInPageProps } from './SignInPageBlueprint';
+export { SwappableComponentBlueprint } from './SwappableComponentBlueprint';
+export { ThemeBlueprint } from './ThemeBlueprint';
+export { TranslationBlueprint } from './TranslationBlueprint';

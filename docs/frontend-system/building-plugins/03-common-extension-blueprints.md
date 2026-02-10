@@ -23,6 +23,12 @@ Navigation item extensions are used to provide menu items that link to different
 
 Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes.
 
+## Extension blueprints in `@backstage/frontend-plugin-api/alpha`
+
+### Plugin Wrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.packages-frontend-plugin-api_src_alpha.PluginWrapperBlueprint.html)
+
+Plugin wrappers allow you to install components that will wrap all elements rendered as part of a plugin. This can be useful if you need to add a global provider, for example for a query client. The provided wrapper will be rendered as separate elements for each wrapped plugin element, so be sure to use a central store like a [Utility API](../utility-apis/01-index.md) if you want to share state between wrapper instances.
+
 ## Extension blueprints in `@backstage/plugin-app-react`
 
 ### SignInPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.SignInPageBlueprint.html)
@@ -66,6 +72,31 @@ Avoid using `convertLegacyEntityCardExtension` from `@backstage/core-compat-api`
 ### EntityContent - [Example](https://github.com/backstage/backstage/blob/cd71065a02bed740011daee96a865108a785dff6/plugins/kubernetes/src/alpha/entityContents.tsx#L22-L34)
 
 Creates entity content to be displayed on the entity pages of the catalog plugin. Exported as `EntityContentBlueprint`.
+
+Supports optional params such as `group` and `icon` to:
+
+- group: string | false — associates the content with a tab group on the entity page (for example "overview", "quality", "deployment", or any custom id). You can override or disable this per-installation via app-config using `app.extensions[...].config.group`, where `false` removes the grouping.
+- icon: string — sets the tab icon. Note: when providing a string, the icon is looked up via the app's IconsApi; make sure icon bundles are enabled/installed in your app (see the Icons blueprint reference above) so that the icon id you use is available.
+
+To render icons in the entity page tabs, the page must also have icons enabled via app configuration. Set `showNavItemIcons: true` on the catalog entity page config (created via `page:catalog/entity`). Example:
+
+```yaml
+app:
+  extensions:
+    # Entity page
+    - page:catalog/entity:
+        config:
+          # Enable tab- and group-icons
+          showNavItemIcons: true
+          # Optionally override default groups and their icons
+          groups:
+            - overview:
+                title: Overview
+                icon: dashboard
+            - documentation:
+                title: Docs
+                icon: description
+```
 
 Avoid using `convertLegacyEntityContentExtension` from `@backstage/core-compat-api` to convert legacy entity content extensions to the new system. Instead, use the `EntityContentBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.
 

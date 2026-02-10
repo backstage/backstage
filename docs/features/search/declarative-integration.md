@@ -25,7 +25,7 @@ The search plugin is a collection of extensions that implement the search featur
 
 ### Installation
 
-Only one step is required to start using the `Search` plugin within declarative integration, so all you have to do is to install the `@backstage/plugin-catalog` and `@backstage/plugin-search` packages, (e.g., [app-next](https://github.com/backstage/backstage/tree/master/packages/app-next)):
+Only one step is required to start using the `Search` plugin within declarative integration, so all you have to do is to install the `@backstage/plugin-catalog` and `@backstage/plugin-search` packages, (e.g., [app](https://github.com/backstage/backstage/tree/master/packages/app)):
 
 ```sh
 yarn add @backstage/plugin-catalog @backstage/plugin-search

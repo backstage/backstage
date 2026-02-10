@@ -8,10 +8,10 @@ import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
-import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -91,8 +91,8 @@ const _default: OverridableFrontendPlugin<
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         title: string | undefined;
         height: number | undefined;
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         height?: number | undefined;
@@ -106,8 +106,8 @@ const _default: OverridableFrontendPlugin<
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -137,7 +137,7 @@ const _default: OverridableFrontendPlugin<
       name: 'relations';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -163,8 +163,8 @@ const _default: OverridableFrontendPlugin<
         direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         relations?: string[] | undefined;
-        rootEntityRefs?: string[] | undefined;
         maxDepth?: number | undefined;
+        rootEntityRefs?: string[] | undefined;
         kinds?: string[] | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;

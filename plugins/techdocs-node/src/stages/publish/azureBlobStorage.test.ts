@@ -18,7 +18,7 @@ import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import path from 'path';
+import path from 'node:path';
 import fs from 'fs-extra';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
 import {

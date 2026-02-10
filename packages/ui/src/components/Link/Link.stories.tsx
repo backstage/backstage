@@ -102,6 +102,12 @@ export const AllColors = meta.story({
         color="success"
         children="I am success"
       />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        color="info"
+        children="I am info"
+      />
     </Flex>
   ),
 });
@@ -235,6 +241,25 @@ export const Truncate = meta.story({
   },
 });
 
+export const Standalone = meta.story({
+  args: {
+    href: '/',
+    children: 'Standalone link (no underline by default)',
+    standalone: true,
+  },
+});
+
+export const StandaloneComparison = meta.story({
+  render: () => (
+    <Flex gap="4" direction="column">
+      <Text>Default link (underline by default):</Text>
+      <Link href="/" children="Sign up for Backstage" />
+      <Text>Standalone link (underline on hover only):</Text>
+      <Link href="/" standalone children="Sign up for Backstage" />
+    </Flex>
+  ),
+});
+
 export const Responsive = meta.story({
   args: {
     ...Default.input.args,
@@ -243,28 +268,4 @@ export const Responsive = meta.story({
       md: 'body-x-small',
     },
   },
-});
-
-export const Playground = meta.story({
-  args: {
-    ...Default.input.args,
-  },
-  render: args => (
-    <Flex gap="4" direction="column">
-      <Text>Title X Small</Text>
-      <Link variant="title-x-small" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Body X Small</Text>
-      <Link variant="body-x-small" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Body Small</Text>
-      <Link variant="body-small" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Body Medium</Text>
-      <Link variant="body-medium" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Body Large</Text>
-      <Link variant="body-large" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Title Small</Text>
-      <Link variant="title-small" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Title Medium</Text>
-      <Link variant="title-medium" style={{ maxWidth: '600px' }} {...args} />
-    </Flex>
-  ),
 });

@@ -1,0 +1,61 @@
+name: Sync BUI Docs
+on:
+  push:
+    branches: [master]
+
+jobs:
+  sync-docs-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@a3895cac2a515224a101c4a2b962b216ed0c9ac8 # v0.7.5
+        with:
+          cache-prefix: ${{ runner.os }}-v22.x
+
+      - name: Checkout backstage/docs-ui
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: backstage/docs-ui
+          path: bui-external-docs
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email noreply@backstage.io
+          git config --global user.name 'Github BUI Docs workflow'
+
+      - name: Install dependencies
+        working-directory: docs-ui
+        run: yarn install
+
+      - name: Build Docs UI
+        working-directory: docs-ui
+        run: |
+          yarn build
+
+      - name: Replace contents of bui-external-docs repo with docs build output
+        working-directory: bui-external-docs
+        run: |
+          git rm -rf .
+          cp -R ../docs-ui/dist/. .
+
+      - name: Commit to bui-storybook repo
+        working-directory: bui-external-docs
+        run: |
+          git add .
+          git commit -am "BUI Docs build for backstage/backstage@${{ github.sha }}"
+          git push

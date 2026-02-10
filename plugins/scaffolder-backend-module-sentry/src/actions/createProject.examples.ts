@@ -100,4 +100,24 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Creates a Sentry project with a custom API base URL.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'create-sentry-project',
+          action: 'sentry:project:create',
+          name: 'Create a Sentry project with custom API base URL.',
+          input: {
+            organizationSlug: 'my-org',
+            teamSlug: 'team-a',
+            name: 'Scaffolded project A',
+            apiBaseUrl: 'https://custom.sentry.io/api/0',
+            authToken:
+              'd16711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d6gf95',
+          },
+        },
+      ],
+    }),
+  },
 ];

@@ -14,256 +14,302 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { EntityRefLink } from '../EntityRefLink';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
-import { useCallback, useState } from 'react';
-import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState';
+import { ReactNode, useCallback, useState } from 'react';
+import {
+  UseUnregisterEntityDialogState,
+  useUnregisterEntityDialogState,
+} from './useUnregisterEntityDialogState';
 
 import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { assertError } from '@backstage/errors';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import {
+  Accordion,
+  AccordionPanel,
+  AccordionTrigger,
+  Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Text,
+} from '@backstage/ui';
 
 const useStyles = makeStyles({
-  advancedButton: {
-    fontSize: '0.7em',
-  },
-  dialogActions: {
-    display: 'inline-block',
+  bodyContent: {
+    overflowWrap: 'break-word',
   },
 });
 
-const Contents = ({
-  entity,
-  onConfirm,
-  onClose,
-}: {
-  entity: Entity;
-  onConfirm: () => any;
-  onClose: () => any;
-}) => {
+type DialogHandlers = {
+  state: UseUnregisterEntityDialogState;
+  busyAction: 'unregister' | 'delete' | null;
+  onUnregister: () => Promise<void>;
+  onDelete: () => Promise<void>;
+  onClose: () => void;
+};
+
+function useUnregisterDialogHandlers(
+  entity: Entity,
+  onConfirm: () => void,
+  onClose: () => void,
+): DialogHandlers {
   const alertApi = useApi(alertApiRef);
-  const configApi = useApi(configApiRef);
-  const classes = useStyles();
   const state = useUnregisterEntityDialogState(entity);
-  const [showDelete, setShowDelete] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const appTitle = configApi.getOptionalString('app.title') ?? 'Backstage';
+  const [busyAction, setBusyAction] = useState<'unregister' | 'delete' | null>(
+    null,
+  );
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
-  const onUnregister = useCallback(
-    async function onUnregisterFn() {
-      if ('unregisterLocation' in state) {
-        setBusy(true);
-        try {
-          await state.unregisterLocation();
-          onConfirm();
-        } catch (err) {
-          assertError(err);
-          alertApi.post({ message: err.message });
-        } finally {
-          setBusy(false);
-        }
+  const onUnregister = useCallback(async () => {
+    if ('unregisterLocation' in state) {
+      setBusyAction('unregister');
+      try {
+        await state.unregisterLocation();
+        onConfirm();
+      } catch (err) {
+        assertError(err);
+        alertApi.post({ message: err.message });
+      } finally {
+        setBusyAction(null);
       }
-    },
-    [alertApi, onConfirm, state],
-  );
+    }
+  }, [alertApi, onConfirm, state]);
 
-  const onDelete = useCallback(
-    async function onDeleteFn() {
-      if ('deleteEntity' in state) {
-        setBusy(true);
-        try {
-          await state.deleteEntity();
-          const entityName = entity.metadata.title ?? entity.metadata.name;
-          onConfirm();
-          alertApi.post({
-            message: t('unregisterEntityDialog.deleteEntitySuccessMessage', {
-              entityName,
-            }),
-            severity: 'success',
-            display: 'transient',
-          });
-        } catch (err) {
-          assertError(err);
-          alertApi.post({ message: err.message });
-        } finally {
-          setBusy(false);
-        }
+  const onDelete = useCallback(async () => {
+    if ('deleteEntity' in state) {
+      setBusyAction('delete');
+      try {
+        await state.deleteEntity();
+        const entityName = entity.metadata.title ?? entity.metadata.name;
+        onConfirm();
+        alertApi.post({
+          message: t('unregisterEntityDialog.deleteEntitySuccessMessage', {
+            entityName,
+          }),
+          severity: 'success',
+          display: 'transient',
+        });
+      } catch (err) {
+        assertError(err);
+        alertApi.post({ message: err.message });
+      } finally {
+        setBusyAction(null);
       }
-    },
-    [alertApi, onConfirm, state, entity, t],
-  );
+    }
+  }, [alertApi, onConfirm, state, entity, t]);
 
-  const DialogActionsPanel = () => (
-    <DialogActions className={classes.dialogActions}>
-      <Button onClick={onClose} color="primary">
-        {t('unregisterEntityDialog.cancelButtonTitle')}
-      </Button>
-    </DialogActions>
-  );
+  return { state, busyAction, onUnregister, onDelete, onClose };
+}
 
-  if (state.type === 'loading') {
-    return <Progress />;
-  }
+function AdvancedDeleteAccordion({
+  triggerTitle,
+  description,
+  onDelete,
+  busyAction,
+}: {
+  triggerTitle: string;
+  description: string;
+  onDelete: () => void;
+  busyAction: 'unregister' | 'delete' | null;
+}) {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
-  if (state.type === 'error') {
-    return <ResponseErrorPanel error={state.error} />;
-  }
-
-  if (state.type === 'bootstrap') {
-    return (
-      <>
-        <Alert severity="info">
-          {t('unregisterEntityDialog.bootstrapState.title', {
-            appTitle,
-            location: state.location,
-          })}
-        </Alert>
-
-        <Box marginTop={2}>
-          {!showDelete && (
-            <>
-              <Button
-                variant="text"
-                size="small"
-                color="primary"
-                className={classes.advancedButton}
-                onClick={() => setShowDelete(true)}
-              >
-                {t('unregisterEntityDialog.bootstrapState.advancedOptions')}
-              </Button>
-              <DialogActionsPanel />
-            </>
-          )}
-
-          {showDelete && (
-            <>
-              <DialogContentText>
-                {t('unregisterEntityDialog.bootstrapState.advancedDescription')}
-              </DialogContentText>
-              <Button
-                variant="contained"
-                color="secondary"
-                disabled={busy}
-                onClick={onDelete}
-              >
-                {t('unregisterEntityDialog.deleteButtonTitle')}
-              </Button>
-              <DialogActionsPanel />
-            </>
-          )}
-        </Box>
-      </>
-    );
-  }
-
-  if (state.type === 'only-delete') {
-    return (
-      <>
-        <DialogContentText>
-          {t('unregisterEntityDialog.onlyDeleteStateTitle')}
-        </DialogContentText>
-        <Button
-          variant="contained"
-          color="secondary"
-          disabled={busy}
-          onClick={onDelete}
-        >
-          {t('unregisterEntityDialog.deleteButtonTitle')}
-        </Button>
-        <DialogActionsPanel />
-      </>
-    );
-  }
-
-  if (state.type === 'unregister') {
-    return (
-      <>
-        <DialogContentText>
-          {t('unregisterEntityDialog.unregisterState.title')}
-        </DialogContentText>
-        <DialogContentText component="ul">
-          {state.colocatedEntities.map(e => (
-            <li key={`${e.kind}:${e.namespace}/${e.name}`}>
-              <EntityRefLink entityRef={e} />
-            </li>
-          ))}
-        </DialogContentText>
-        <DialogContentText>
-          {t('unregisterEntityDialog.unregisterState.subTitle')}
-        </DialogContentText>
-        <DialogContentText component="ul">
-          <li>{state.location}</li>
-        </DialogContentText>
-        <DialogContentText>
-          {t('unregisterEntityDialog.unregisterState.description', {
-            appTitle,
-          })}
-        </DialogContentText>
-        <Box marginTop={2}>
-          <Button
-            variant="contained"
-            color="secondary"
-            disabled={busy}
-            onClick={onUnregister}
-          >
-            {t('unregisterEntityDialog.unregisterState.unregisterButtonTitle')}
-          </Button>
-          {!showDelete && (
-            <Box component="span" marginLeft={2}>
-              <Button
-                variant="text"
-                size="small"
-                color="primary"
-                className={classes.advancedButton}
-                onClick={() => setShowDelete(true)}
-              >
-                {t('unregisterEntityDialog.unregisterState.advancedOptions')}
-              </Button>
-            </Box>
-          )}
-        </Box>
-
-        {showDelete && (
-          <>
-            <Box paddingTop={4} paddingBottom={4}>
-              <Divider />
-            </Box>
-            <DialogContentText>
-              {t('unregisterEntityDialog.unregisterState.advancedDescription')}
-            </DialogContentText>
+  return (
+    <Box mt="4">
+      <Accordion>
+        <AccordionTrigger title={triggerTitle} />
+        <AccordionPanel>
+          <Text as="p">{description}</Text>
+          <Box mt="4">
             <Button
-              variant="contained"
-              color="secondary"
-              disabled={busy}
-              onClick={onDelete}
+              variant="primary"
+              destructive
+              loading={busyAction === 'delete'}
+              isDisabled={busyAction !== null && busyAction !== 'delete'}
+              onPress={onDelete}
             >
               {t('unregisterEntityDialog.deleteButtonTitle')}
             </Button>
-          </>
-        )}
-      </>
-    );
-  }
+          </Box>
+        </AccordionPanel>
+      </Accordion>
+    </Box>
+  );
+}
+
+function BootstrapBody({
+  location,
+  appTitle,
+  onDelete,
+  busyAction,
+}: {
+  location: string;
+  appTitle: string;
+  onDelete: () => void;
+  busyAction: 'unregister' | 'delete' | null;
+}) {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return (
-    <Alert severity="error">
-      {t('unregisterEntityDialog.errorStateTitle')}
-    </Alert>
+    <>
+      <Alert
+        status="info"
+        icon
+        description={t('unregisterEntityDialog.bootstrapState.title', {
+          appTitle,
+          location,
+        })}
+      />
+      <AdvancedDeleteAccordion
+        triggerTitle={t(
+          'unregisterEntityDialog.bootstrapState.advancedOptions',
+        )}
+        description={t(
+          'unregisterEntityDialog.bootstrapState.advancedDescription',
+        )}
+        onDelete={onDelete}
+        busyAction={busyAction}
+      />
+    </>
   );
-};
+}
+
+function OnlyDeleteBody() {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+
+  return <Text as="p">{t('unregisterEntityDialog.onlyDeleteStateTitle')}</Text>;
+}
+
+function UnregisterBody({
+  state,
+  appTitle,
+  onDelete,
+  busyAction,
+}: {
+  state: Extract<UseUnregisterEntityDialogState, { type: 'unregister' }>;
+  appTitle: string;
+  onDelete: () => void;
+  busyAction: 'unregister' | 'delete' | null;
+}) {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+
+  return (
+    <>
+      <Text as="p">{t('unregisterEntityDialog.unregisterState.title')}</Text>
+      <ul>
+        {state.colocatedEntities.map((e: CompoundEntityRef) => (
+          <li key={`${e.kind}:${e.namespace}/${e.name}`}>
+            <EntityRefLink entityRef={e} />
+          </li>
+        ))}
+      </ul>
+      <Text as="p">{t('unregisterEntityDialog.unregisterState.subTitle')}</Text>
+      <ul>
+        <li>{state.location}</li>
+      </ul>
+      <Text as="p">
+        {t('unregisterEntityDialog.unregisterState.description', {
+          appTitle,
+        })}
+      </Text>
+      <AdvancedDeleteAccordion
+        triggerTitle={t(
+          'unregisterEntityDialog.unregisterState.advancedOptions',
+        )}
+        description={t(
+          'unregisterEntityDialog.unregisterState.advancedDescription',
+        )}
+        onDelete={onDelete}
+        busyAction={busyAction}
+      />
+    </>
+  );
+}
+
+function useDialogContent(
+  handlers: DialogHandlers,
+  appTitle: string,
+): { body: ReactNode; actionButton: ReactNode | null } {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+  const { state, busyAction, onUnregister, onDelete } = handlers;
+
+  switch (state.type) {
+    case 'loading':
+      return { body: <Progress />, actionButton: null };
+    case 'error':
+      return {
+        body: <ResponseErrorPanel error={state.error} />,
+        actionButton: null,
+      };
+    case 'bootstrap':
+      return {
+        body: (
+          <BootstrapBody
+            location={state.location}
+            appTitle={appTitle}
+            onDelete={onDelete}
+            busyAction={busyAction}
+          />
+        ),
+        actionButton: null,
+      };
+    case 'only-delete':
+      return {
+        body: <OnlyDeleteBody />,
+        actionButton: (
+          <Button
+            variant="primary"
+            destructive
+            loading={busyAction === 'delete'}
+            isDisabled={busyAction !== null && busyAction !== 'delete'}
+            onPress={onDelete}
+          >
+            {t('unregisterEntityDialog.deleteButtonTitle')}
+          </Button>
+        ),
+      };
+    case 'unregister':
+      return {
+        body: (
+          <UnregisterBody
+            state={state}
+            appTitle={appTitle}
+            onDelete={onDelete}
+            busyAction={busyAction}
+          />
+        ),
+        actionButton: (
+          <Button
+            variant="primary"
+            destructive
+            loading={busyAction === 'unregister'}
+            isDisabled={busyAction !== null && busyAction !== 'unregister'}
+            onPress={onUnregister}
+          >
+            {t('unregisterEntityDialog.unregisterState.unregisterButtonTitle')}
+          </Button>
+        ),
+      };
+    default:
+      return {
+        body: (
+          <Alert
+            status="danger"
+            description={t('unregisterEntityDialog.errorStateTitle')}
+          />
+        ),
+        actionButton: null,
+      };
+  }
+}
 
 /** @public */
 export type UnregisterEntityDialogProps = {
@@ -273,18 +319,54 @@ export type UnregisterEntityDialogProps = {
   entity: Entity;
 };
 
+function DialogContents({
+  entity,
+  onConfirm,
+  onClose,
+}: {
+  entity: Entity;
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
+  const classes = useStyles();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptionalString('app.title') ?? 'Backstage';
+
+  const handlers = useUnregisterDialogHandlers(entity, onConfirm, onClose);
+  const { body, actionButton } = useDialogContent(handlers, appTitle);
+
+  return (
+    <>
+      <DialogHeader>{t('unregisterEntityDialog.title')}</DialogHeader>
+      <DialogBody className={classes.bodyContent}>{body}</DialogBody>
+      <DialogFooter>
+        <Button variant="secondary" onPress={onClose}>
+          {t('unregisterEntityDialog.cancelButtonTitle')}
+        </Button>
+        {actionButton}
+      </DialogFooter>
+    </>
+  );
+}
+
 /** @public */
 export const UnregisterEntityDialog = (props: UnregisterEntityDialogProps) => {
   const { open, onConfirm, onClose, entity } = props;
-  const { t } = useTranslationRef(catalogReactTranslationRef);
+
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle id="responsive-dialog-title">
-        {t('unregisterEntityDialog.title')}
-      </DialogTitle>
-      <DialogContent>
-        <Contents entity={entity} onConfirm={onConfirm} onClose={onClose} />
-      </DialogContent>
+    <Dialog
+      isOpen={open}
+      onOpenChange={isOpen => !isOpen && onClose()}
+      width={600}
+    >
+      {open && (
+        <DialogContents
+          entity={entity}
+          onConfirm={onConfirm}
+          onClose={onClose}
+        />
+      )}
     </Dialog>
   );
 };

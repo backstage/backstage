@@ -174,6 +174,8 @@ const navigationExtension = createExtension({
 
 The input (see [1] above) is an object that we create using `createExtensionInput`. The first argument is the set of extension data that we accept via this input, and works just like the `output` option. The second argument is optional, and it allows us to put constraints on the extensions that are attached to our input. If the `singleton: true` option is set, only a single extension can be attached at a time, and unless the `optional: true` option is set it will also be required that there is exactly one attached extension.
 
+Another option that can be used when creating an extension input is the `internal: true` option, which restricts the input to only accept extensions from the same plugin as the extension defining the input. Extensions from other plugins that attempt to attach to an internal input will be ignored, and a warning will be reported. This is useful when you want to limit extensibility to overrides and modules of your plugin, rather than letting it be open to any plugin.
+
 So how can we now attach the output to the parent extension's input? If we think about a navigation component, like the Sidebar in Backstage, there might be plugins that want to attach a link to their plugin to this navigation component. In this case the plugin only needs to know the extension `id` and the name of the extension `input` to attach the extension `output` returned by the `factory` to the specified extension:
 
 ```tsx
@@ -335,23 +337,11 @@ const routableExtension = createExtension({
 });
 ```
 
-## Multiple attachment points
+## Sharing extensions across multiple locations
 
-For some cases it can be useful to attach extensions to multiple parents. An example of this are Scaffolder field extensions or TechDocs addons that are consumed by multiple extensions. Specifying multiple attachments is done by providing an array of attachment points to the `attachTo` property of the extension. Keep in mind that this increases the complexity of your extension tree and should only be done when necessary. The following example shows how to attach our example extension to multiple parents:
+If you need to make extensions available in multiple locations throughout your app, use a Utility API that collects the extensions and allows multiple parent extensions to consume them. This pattern provides better separation of concerns and makes data flow more explicit.
 
-```tsx
-const extension = createExtension({
-  name: 'my-extension',
-  attachTo: [
-    { id: 'my-first-parent', input: 'content' },
-    { id: 'my-second-parent', input: 'children' }, // The input names do not need to match
-  ],
-  output: [coreExtensionData.reactElement],
-  factory() {
-    return [coreExtensionData.reactElement(<div>Hello World</div>)];
-  },
-});
-```
+See the [Sharing Extensions Across Multiple Locations](./27-sharing-extensions.md) guide for a complete explanation of this pattern with detailed examples.
 
 ## Relative attachment points
 
@@ -361,7 +351,7 @@ When creating an extension or an [extension blueprint](./23-extension-blueprints
 // Parent extension with a fixed attachment point
 const parentExtension = createExtension({
   kind: 'section',
-  attachTo: [{ id: 'app/some-fixed-extension', input: 'children' }],
+  attachTo: { id: 'app/some-fixed-extension', input: 'children' },
   inputs: {
     content: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
@@ -383,7 +373,7 @@ const parentExtension = createExtension({
 // Child extension with a relative attachment point
 const childExtension = createExtension({
   kind: 'section-content',
-  attachTo: [{ relative: { kind: 'section' }, input: 'content' }],
+  attachTo: { relative: { kind: 'section' }, input: 'content' },
   output: [coreExtensionData.reactElement],
   factory() {
     return [coreExtensionData.reactElement(<p>Section Content</p>)];

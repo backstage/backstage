@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import os from 'os';
+import os from 'node:os';
 import fs from 'fs-extra';
 import fetch from 'cross-fetch';
 import handlebars from 'handlebars';
 import killTree from 'tree-kill';
-import { resolve as resolvePath, join as joinPath } from 'path';
-import path from 'path';
+import { resolve as resolvePath, join as joinPath } from 'node:path';
+import path from 'node:path';
 
 import { waitFor, print } from '../lib/helpers';
 
