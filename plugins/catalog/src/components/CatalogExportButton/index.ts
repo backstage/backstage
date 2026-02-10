@@ -15,4 +15,7 @@
  */
 export * from './CatalogExportButton';
 export type { ExportColumn } from './file-download/serializeEntities';
-export type { StreamingExportOptions } from './file-download/useStreamingExport';
+export type {
+  StreamingExportOptions,
+  StreamingCustomExporter,
+} from './file-download/useStreamingExport';

@@ -91,29 +91,63 @@ import { CatalogExportButton } from '@backstage/plugin-catalog';
 
 #### Custom Export Formats
 
-You can add custom export format types beyond CSV and JSON by providing custom exporter functions:
+You can add custom export format types beyond CSV and JSON by providing custom exporter functions. Custom exporters use **async generators** to enable true streaming downloads. Tje data is written to disk as it's generated, without buffering the entire export in memory in supported browsers.
 
 ```tsx title="packages/app/src/App.tsx"
-import { CatalogIndexPage, CustomExporter } from '@backstage/plugin-catalog';
+import {
+  CatalogIndexPage,
+  StreamingCustomExporter,
+} from '@backstage/plugin-catalog';
 
-const customExporters: Record<string, CustomExporter> = {
-  xml: async (catalogApi, columns, streamRequest) => {
-    const entities = [];
+// Custom exporter using async generator for streaming
+const xmlExporter: StreamingCustomExporter = (
+  catalogApi,
+  columns,
+  streamRequest,
+) => {
+  // Return an async generator that yields XML chunks
+  async function* generateXml() {
+    yield '<?xml version="1.0" encoding="UTF-8"?>\n<entities>\n';
+
     for await (const page of catalogApi.streamEntities(streamRequest)) {
-      entities.push(...page);
+      for (const entity of page) {
+        // Serialize each entity to XML and yield immediately
+        yield serializeEntityToXml(entity, columns);
+      }
     }
-    // Not shown in this example is how to create the YAML/XML serialization
-    const xmlContent = serializeToXml(entities, columns);
-    return new Blob([xmlContent], { type: 'application/xml' });
-  },
-  yaml: async (catalogApi, columns, streamRequest) => {
-    const entities = [];
+
+    yield '</entities>';
+  }
+
+  return {
+    generator: generateXml(),
+    contentType: 'application/xml',
+  };
+};
+
+const yamlExporter: StreamingCustomExporter = (
+  catalogApi,
+  columns,
+  streamRequest,
+) => {
+  async function* generateYaml() {
     for await (const page of catalogApi.streamEntities(streamRequest)) {
-      entities.push(...page);
+      for (const entity of page) {
+        yield serializeEntityToYaml(entity, columns);
+        yield '---\n'; // YAML document separator
+      }
     }
-    const yamlContent = serializeToYaml(entities, columns);
-    return new Blob([yamlContent], { type: 'application/x-yaml' });
-  },
+  }
+
+  return {
+    generator: generateYaml(),
+    contentType: 'application/x-yaml',
+  };
+};
+
+const customExporters: Record<string, StreamingCustomExporter> = {
+  xml: xmlExporter,
+  yaml: yamlExporter,
 };
 
 <CatalogIndexPage
@@ -704,21 +738,29 @@ import {
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import { catalogExportCustomizationDataRef } from '@backstage/plugin-catalog/alpha';
-import type { CustomExporter } from '@backstage/plugin-catalog';
+import type { StreamingCustomExporter } from '@backstage/plugin-catalog';
 
-// Define custom export formats
-const yamlExporter: CustomExporter = async (
+// Define custom export formats using streaming async generators
+const yamlExporter: StreamingCustomExporter = (
   catalogApi,
   columns,
   streamRequest,
 ) => {
-  const entities = [];
-  for await (const page of catalogApi.streamEntities(streamRequest)) {
-    entities.push(...page);
+  // Return an async generator that yields YAML chunks
+  async function* generateYaml() {
+    for await (const page of catalogApi.streamEntities(streamRequest)) {
+      for (const entity of page) {
+        // Serialize each entity to YAML and yield immediately
+        yield serializeEntityToYaml(entity, columns);
+        yield '---\n'; // YAML document separator
+      }
+    }
   }
-  // Serialize to YAML (implementation depends on your YAML library)
-  const yamlContent = serializeToYaml(entities, columns);
-  return new Blob([yamlContent], { type: 'application/x-yaml' });
+
+  return {
+    generator: generateYaml(),
+    contentType: 'application/x-yaml',
+  };
 };
 
 // Create the customizer extension

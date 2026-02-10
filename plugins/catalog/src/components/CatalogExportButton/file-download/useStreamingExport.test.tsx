@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
 import { EntityListProvider } from '@backstage/plugin-catalog-react';
@@ -21,13 +21,36 @@ import { MemoryRouter } from 'react-router-dom';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useStreamingExport } from './useStreamingExport';
 import { CatalogExportType } from '../CatalogExportButton';
-import * as downloadBlobModule from './downloadBlob';
+import * as downloadBlobModule from './downloadFile';
 
-jest.mock('./downloadBlob', () => ({
-  downloadBlob: jest.fn(),
+// Store collected content for test assertions
+let lastCollectedContent = '';
+
+jest.mock('./downloadFile', () => ({
+  streamDownload: jest.fn(async (stream: any) => {
+    // Actually consume the stream to trigger any errors in the generator
+    if (stream && stream.collect) {
+      lastCollectedContent = await stream.collect();
+    }
+  }),
+  createStreamFromAsyncGenerator: jest.fn(generator => {
+    // Return a mock ReadableStream that collects the generator output
+    return {
+      _generator: generator,
+      async collect() {
+        const chunks: string[] = [];
+        // Iterate the generator - errors will propagate
+        for await (const value of this._generator) {
+          chunks.push(value);
+        }
+        return chunks.join('');
+      },
+    };
+  }),
 }));
 
-const mockDownloadBlob = downloadBlobModule.downloadBlob as jest.Mock;
+const mockStreamDownload = downloadBlobModule.streamDownload as jest.Mock;
+const getLastCollectedContent = () => lastCollectedContent;
 
 describe('useStreamingExport', () => {
   const testEntity: Entity = {
@@ -49,13 +72,16 @@ describe('useStreamingExport', () => {
   ];
 
   const createMockCatalogApi = (entities: Entity[][], shouldError = false) => ({
-    streamEntities: jest.fn(async function* streamEntitiesGenerator() {
-      if (shouldError) {
-        throw new Error('Stream error');
-      }
-      for (const page of entities) {
-        yield page;
-      }
+    streamEntities: jest.fn(function streamEntitiesGenerator() {
+      // Return an async generator
+      return (async function* streamGenerator() {
+        if (shouldError) {
+          throw new Error('Stream error');
+        }
+        for (const page of entities) {
+          yield page;
+        }
+      })();
     }),
   });
 
@@ -72,7 +98,7 @@ describe('useStreamingExport', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockDownloadBlob.mockResolvedValue(undefined);
+    lastCollectedContent = '';
   });
 
   describe('exportStream', () => {
@@ -80,22 +106,23 @@ describe('useStreamingExport', () => {
       const catalogApi = createMockCatalogApi([[testEntity]]);
       const { result } = renderHookWithApi(catalogApi);
 
-      await result.current.exportStream({
-        exportFormat: CatalogExportType.CSV,
-        filename: 'test.csv',
-        columns: testColumns,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.CSV,
+          filename: 'test.csv',
+          columns: testColumns,
+        });
       });
 
-      await waitFor(() => {
-        expect(mockDownloadBlob).toHaveBeenCalledTimes(1);
-      });
+      expect(mockStreamDownload).toHaveBeenCalledTimes(1);
 
-      const callArgs = mockDownloadBlob.mock.calls[0];
-      const response = callArgs[0] as Response;
+      const callArgs = mockStreamDownload.mock.calls[0];
       const filename = callArgs[1] as string;
+      const contentType = callArgs[2] as string;
 
       expect(filename).toBe('test.csv');
-      const content = await response.text();
+      expect(contentType).toBe('text/csv; charset=utf-8');
+      const content = getLastCollectedContent();
       expect(content).toContain('Name');
       expect(content).toContain('Type');
       expect(content).toContain('test-component');
@@ -106,22 +133,23 @@ describe('useStreamingExport', () => {
       const catalogApi = createMockCatalogApi([[testEntity]]);
       const { result } = renderHookWithApi(catalogApi);
 
-      await result.current.exportStream({
-        exportFormat: CatalogExportType.JSON,
-        filename: 'test.json',
-        columns: testColumns,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.JSON,
+          filename: 'test.json',
+          columns: testColumns,
+        });
       });
 
-      await waitFor(() => {
-        expect(mockDownloadBlob).toHaveBeenCalledTimes(1);
-      });
+      expect(mockStreamDownload).toHaveBeenCalledTimes(1);
 
-      const callArgs = mockDownloadBlob.mock.calls[0];
-      const response = callArgs[0] as Response;
+      const callArgs = mockStreamDownload.mock.calls[0];
       const filename = callArgs[1] as string;
+      const contentType = callArgs[2] as string;
 
       expect(filename).toBe('test.json');
-      const content = await response.text();
+      expect(contentType).toBe('application/json; charset=utf-8');
+      const content = getLastCollectedContent();
       const parsed = JSON.parse(content);
       expect(parsed).toEqual([
         {
@@ -141,19 +169,17 @@ describe('useStreamingExport', () => {
       const catalogApi = createMockCatalogApi([[entity1], [entity2]]);
       const { result } = renderHookWithApi(catalogApi);
 
-      await result.current.exportStream({
-        exportFormat: CatalogExportType.CSV,
-        filename: 'test.csv',
-        columns: testColumns,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.CSV,
+          filename: 'test.csv',
+          columns: testColumns,
+        });
       });
 
-      await waitFor(() => {
-        expect(mockDownloadBlob).toHaveBeenCalledTimes(1);
-      });
+      expect(mockStreamDownload).toHaveBeenCalledTimes(1);
 
-      const callArgs = mockDownloadBlob.mock.calls[0];
-      const response = callArgs[0] as Response;
-      const content = await response.text();
+      const content = getLastCollectedContent();
 
       // Should have both entities, headers should appear only once
       expect(content).toContain('test-component');
@@ -168,16 +194,16 @@ describe('useStreamingExport', () => {
 
       const streamRequest = { filter: { kind: 'Component' } };
 
-      await result.current.exportStream({
-        exportFormat: CatalogExportType.CSV,
-        filename: 'test.csv',
-        columns: testColumns,
-        streamRequest,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.CSV,
+          filename: 'test.csv',
+          columns: testColumns,
+          streamRequest,
+        });
       });
 
-      await waitFor(() => {
-        expect(catalogApi.streamEntities).toHaveBeenCalledWith(streamRequest);
-      });
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith(streamRequest);
     });
 
     it('sets loading state correctly', async () => {
@@ -186,28 +212,27 @@ describe('useStreamingExport', () => {
 
       expect(result.current.loading).toBe(false);
 
-      const exportPromise = result.current.exportStream({
-        exportFormat: CatalogExportType.CSV,
-        filename: 'test.csv',
-        columns: testColumns,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.CSV,
+          filename: 'test.csv',
+          columns: testColumns,
+        });
       });
 
-      // Loading may be true during execution
-      await exportPromise;
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
+      expect(result.current.loading).toBe(false);
     });
 
     it('sets error state on failure', async () => {
       const catalogApi = createMockCatalogApi([[testEntity]], true);
       const { result } = renderHookWithApi(catalogApi);
 
-      await result.current.exportStream({
-        exportFormat: CatalogExportType.CSV,
-        filename: 'test.csv',
-        columns: testColumns,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.CSV,
+          filename: 'test.csv',
+          columns: testColumns,
+        });
       });
 
       await waitFor(() => {
@@ -220,59 +245,55 @@ describe('useStreamingExport', () => {
       const catalogApi = createMockCatalogApi([[testEntity]]);
       const { result } = renderHookWithApi(catalogApi);
 
-      await result.current.exportStream({
-        exportFormat: CatalogExportType.CSV,
-        filename: 'test.csv',
-        columns: testColumns,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.CSV,
+          filename: 'test.csv',
+          columns: testColumns,
+        });
       });
 
-      await waitFor(() => {
-        expect(mockDownloadBlob).toHaveBeenCalledTimes(1);
-      });
+      expect(mockStreamDownload).toHaveBeenCalledTimes(1);
 
-      const callArgs = mockDownloadBlob.mock.calls[0];
-      const response = callArgs[0] as Response;
-      expect(response.headers.get('Content-Type')).toContain('text/csv');
+      const callArgs = mockStreamDownload.mock.calls[0];
+      const contentType = callArgs[2] as string;
+      expect(contentType).toContain('text/csv');
     });
 
     it('sets correct content type for JSON', async () => {
       const catalogApi = createMockCatalogApi([[testEntity]]);
       const { result } = renderHookWithApi(catalogApi);
 
-      await result.current.exportStream({
-        exportFormat: CatalogExportType.JSON,
-        filename: 'test.json',
-        columns: testColumns,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.JSON,
+          filename: 'test.json',
+          columns: testColumns,
+        });
       });
 
-      await waitFor(() => {
-        expect(mockDownloadBlob).toHaveBeenCalledTimes(1);
-      });
+      expect(mockStreamDownload).toHaveBeenCalledTimes(1);
 
-      const callArgs = mockDownloadBlob.mock.calls[0];
-      const response = callArgs[0] as Response;
-      expect(response.headers.get('Content-Type')).toContain(
-        'application/json',
-      );
+      const callArgs = mockStreamDownload.mock.calls[0];
+      const contentType = callArgs[2] as string;
+      expect(contentType).toContain('application/json');
     });
 
     it('handles empty entity stream', async () => {
       const catalogApi = createMockCatalogApi([]);
       const { result } = renderHookWithApi(catalogApi);
 
-      await result.current.exportStream({
-        exportFormat: CatalogExportType.JSON,
-        filename: 'test.json',
-        columns: testColumns,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.JSON,
+          filename: 'test.json',
+          columns: testColumns,
+        });
       });
 
-      await waitFor(() => {
-        expect(mockDownloadBlob).toHaveBeenCalledTimes(1);
-      });
+      expect(mockStreamDownload).toHaveBeenCalledTimes(1);
 
-      const callArgs = mockDownloadBlob.mock.calls[0];
-      const response = callArgs[0] as Response;
-      const content = await response.text();
+      const content = getLastCollectedContent();
       expect(content).toBe('[]');
     });
 
@@ -281,10 +302,12 @@ describe('useStreamingExport', () => {
       const { result } = renderHookWithApi(catalogApi);
 
       // First export fails
-      await result.current.exportStream({
-        exportFormat: CatalogExportType.CSV,
-        filename: 'test.csv',
-        columns: testColumns,
+      await act(async () => {
+        await result.current.exportStream({
+          exportFormat: CatalogExportType.CSV,
+          filename: 'test.csv',
+          columns: testColumns,
+        });
       });
 
       await waitFor(() => {
@@ -296,10 +319,12 @@ describe('useStreamingExport', () => {
       const { result: result2 } = renderHookWithApi(successCatalogApi);
 
       // Second export succeeds
-      await result2.current.exportStream({
-        exportFormat: CatalogExportType.CSV,
-        filename: 'test.csv',
-        columns: testColumns,
+      await act(async () => {
+        await result2.current.exportStream({
+          exportFormat: CatalogExportType.CSV,
+          filename: 'test.csv',
+          columns: testColumns,
+        });
       });
 
       expect(result2.current.error).toBeNull();

@@ -16,7 +16,7 @@
 import { useState, useCallback } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef, useEntityList } from '@backstage/plugin-catalog-react';
-import { downloadBlob } from './downloadBlob';
+import { streamDownload, createStreamFromAsyncGenerator } from './downloadFile';
 import {
   serializeEntitiesToCsv,
   serializeEntityToJsonRow,
@@ -25,6 +25,20 @@ import {
 import { CatalogExportType } from '../CatalogExportButton';
 import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { filtersToStreamRequest } from './filtersToStreamRequest';
+
+/**
+ * A custom exporter function that returns an async generator for streaming exports.
+ * The generator should yield string chunks that will be streamed to the download.
+ * @public
+ */
+export type StreamingCustomExporter = (
+  catalogApi: any,
+  columns: ExportColumn[],
+  streamRequest?: StreamEntitiesRequest,
+) => {
+  generator: AsyncGenerator<string, void, unknown>;
+  contentType: string;
+};
 
 /**
  * @public
@@ -36,64 +50,58 @@ export interface StreamingExportOptions {
   streamRequest?: StreamEntitiesRequest;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
-  customExporter?: (
-    catalogApi: any,
-    columns: ExportColumn[],
-    streamRequest?: StreamEntitiesRequest,
-  ) => Promise<Blob>;
+  customExporter?: StreamingCustomExporter;
 }
 
 /**
- * Streams and serializes catalog entities to CSV format.
- * Writes headers only for the first page.
+ * Async generator that streams and serializes catalog entities to CSV format.
+ * Yields CSV chunks as they're generated, enabling true streaming downloads.
  */
-const streamEntitiesCsv = async (
+async function* streamEntitiesCsvGenerator(
   catalogApi: any,
   columns: ExportColumn[],
   streamRequest?: StreamEntitiesRequest,
-): Promise<Blob> => {
-  let csvContent = '';
+): AsyncGenerator<string, void, unknown> {
   let isFirstPage = true;
 
   const entityStream = catalogApi.streamEntities(streamRequest);
 
   for await (const entityPage of entityStream) {
     const pageCsv = serializeEntitiesToCsv(entityPage, columns, isFirstPage);
-    csvContent += pageCsv;
+    yield pageCsv;
     isFirstPage = false;
   }
-
-  return new Blob([csvContent], {
-    type: 'text/csv; charset=utf-8',
-  });
-};
+}
 
 /**
- * Streams and serializes catalog entities to JSON format.
- * Processes entities page-by-page to avoid loading all into memory.
+ * Async generator that streams and serializes catalog entities to JSON format.
+ * Yields JSON chunks as they're generated, enabling true streaming downloads.
  */
-const streamEntitiesJson = async (
+async function* streamEntitiesJsonGenerator(
   catalogApi: any,
   columns: ExportColumn[],
   streamRequest?: StreamEntitiesRequest,
-): Promise<Blob> => {
-  const rowStrings: string[] = [];
+): AsyncGenerator<string, void, unknown> {
+  let isFirst = true;
+
+  yield '[';
 
   const entityStream = catalogApi.streamEntities(streamRequest);
 
   for await (const entityPage of entityStream) {
     for (const entity of entityPage) {
-      rowStrings.push(serializeEntityToJsonRow(entity, columns));
+      const row = serializeEntityToJsonRow(entity, columns);
+      if (isFirst) {
+        yield `\n  ${row}`;
+        isFirst = false;
+      } else {
+        yield `,\n  ${row}`;
+      }
     }
   }
 
-  const jsonContent =
-    rowStrings.length > 0 ? `[\n  ${rowStrings.join(',\n  ')}\n]` : '[]';
-
-  return new Blob([jsonContent], {
-    type: 'application/json; charset=utf-8',
-  });
-};
+  yield '\n]';
+}
 
 /**
  * A hook for streaming and exporting catalog entities from the frontend.
@@ -131,39 +139,40 @@ export const useStreamingExport = (): {
       setError(null);
 
       try {
-        let blob: Blob;
-
         // If caller didn't provide a streamRequest, derive it from the
         // current EntityList filters so exports reflect the user's view.
         const resolvedStreamRequest =
           streamRequest ?? filtersToStreamRequest(filters);
 
         if (customExporter) {
-          blob = await customExporter(
+          const { generator, contentType } = customExporter(
             catalogApi,
             columns,
             resolvedStreamRequest,
           );
+          const stream = createStreamFromAsyncGenerator(generator);
+          await streamDownload(stream, filename, contentType);
         } else if (exportFormat === CatalogExportType.CSV) {
-          blob = await streamEntitiesCsv(
+          const generator = streamEntitiesCsvGenerator(
             catalogApi,
             columns,
             resolvedStreamRequest,
           );
+          const contentType = 'text/csv; charset=utf-8';
+          const stream = createStreamFromAsyncGenerator(generator);
+          await streamDownload(stream, filename, contentType);
         } else if (exportFormat === CatalogExportType.JSON) {
-          blob = await streamEntitiesJson(
+          const generator = streamEntitiesJsonGenerator(
             catalogApi,
             columns,
             resolvedStreamRequest,
           );
+          const contentType = 'application/json; charset=utf-8';
+          const stream = createStreamFromAsyncGenerator(generator);
+          await streamDownload(stream, filename, contentType);
         } else {
           throw new Error(`Unsupported export format: ${exportFormat}`);
         }
-
-        const response = new Response(blob, {
-          headers: { 'Content-Type': blob.type },
-        });
-        await downloadBlob(response, filename);
 
         if (onSuccess) {
           onSuccess();

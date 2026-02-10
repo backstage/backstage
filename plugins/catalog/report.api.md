@@ -685,16 +685,22 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   tableOptions?: TableOptions;
 };
 
+// @public
+export type StreamingCustomExporter = (
+  catalogApi: any,
+  columns: ExportColumn[],
+  streamRequest?: StreamEntitiesRequest,
+) => {
+  generator: AsyncGenerator<string, void, unknown>;
+  contentType: string;
+};
+
 // @public (undocumented)
 export interface StreamingExportOptions {
   // (undocumented)
   columns: ExportColumn[];
   // (undocumented)
-  customExporter?: (
-    catalogApi: any,
-    columns: ExportColumn[],
-    streamRequest?: StreamEntitiesRequest,
-  ) => Promise<Blob>;
+  customExporter?: StreamingCustomExporter;
   // (undocumented)
   exportFormat: CatalogExportType | string;
   // (undocumented)
