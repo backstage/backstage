@@ -27,7 +27,25 @@ export interface ExportColumn {
 const getByPath = (obj: any, path: string): unknown => {
   return path
     .split('.')
-    .reduce((acc, part) => (acc === null ? undefined : acc[part]), obj);
+    .reduce(
+      (acc, part) =>
+        acc === null || acc === undefined ? undefined : acc[part],
+      obj,
+    );
+};
+
+const escapeCsvValue = (value: string): string => {
+  if (value === null || value === undefined) return '';
+
+  // Preserve newlines, as the JSON exporter does this as well
+  let safe = value.replace(/(\r\n|\n|\r)/gm, '\\n');
+
+  // Prevent CSV / formula injection
+  if (/^[=+\-@]/.test(safe)) {
+    safe = `'${safe}`;
+  }
+
+  return safe;
 };
 
 export const getEntityDataFromColumns = (
@@ -51,8 +69,7 @@ export const serializeEntitiesToCsv = (
     header: addHeader,
     columns: columns.map(c => ({ key: c.title, header: c.title })),
     cast: {
-      // Preserve newlines, as the JSON exporter does this as well
-      string: (value: string) => value.replace(/(\r\n|\n|\r)/gm, '\\n'),
+      string: escapeCsvValue,
     },
   });
 };

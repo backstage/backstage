@@ -69,9 +69,9 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   });
 
   return (
-    <EntityListProvider pagination={pagination}>
-      <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
-        <Content>
+    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
+      <Content>
+        <EntityListProvider pagination={pagination}>
           <ContentHeader title="">
             {allowed && (
               <CreateButton
@@ -80,7 +80,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
               />
             )}
             {exportSettings?.enableExport && (
-              <Box sx={{ ml: 2 }}>
+              <Box ml={2}>
                 <CatalogExportButton settings={exportSettings} />
               </Box>
             )}
@@ -90,9 +90,9 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
           </CatalogFilterLayout>
-        </Content>
-      </PageWithHeader>
-    </EntityListProvider>
+        </EntityListProvider>
+      </Content>
+    </PageWithHeader>
   );
 }
 

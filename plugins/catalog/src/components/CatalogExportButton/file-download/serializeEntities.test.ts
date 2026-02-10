@@ -141,6 +141,46 @@ describe('serializeEntities', () => {
       // Newlines should be escaped
       expect(csv).toContain('Line 1\\nLine 2\\nLine 3\\nLine 4');
     });
+
+    it('protects against CSV formula injection', () => {
+      const columns: ExportColumn[] = [
+        { entityFilterKey: 'spec.formulaTest1', title: 'Test1' },
+        { entityFilterKey: 'spec.formulaTest2', title: 'Test2' },
+        { entityFilterKey: 'spec.formulaTest3', title: 'Test3' },
+        { entityFilterKey: 'spec.formulaTest4', title: 'Test4' },
+      ];
+
+      const entity = {
+        ...testEntity,
+        spec: {
+          ...testEntity.spec,
+          formulaTest1: '=1+1',
+          formulaTest2: '+1+1',
+          formulaTest3: '-2+3',
+          formulaTest4: '@SUM(A1:A10)',
+        },
+      };
+
+      const csv = serializeEntitiesToCsv([entity], columns);
+
+      // Formula injection attempts should be prefixed with a single quote
+      expect(csv).toContain("'=1+1");
+      expect(csv).toContain("'+1+1");
+      expect(csv).toContain("'-2+3");
+      expect(csv).toContain("'@SUM(A1:A10)");
+    });
+
+    it('does not modify values that do not start with formula characters', () => {
+      const columns: ExportColumn[] = [
+        { entityFilterKey: 'spec.owner', title: 'Owner' },
+      ];
+
+      const csv = serializeEntitiesToCsv([testEntity], columns);
+
+      // Regular values should not have a leading quote
+      expect(csv).toContain('team-a');
+      expect(csv).not.toContain("'team-a");
+    });
   });
 
   describe('serializeEntitiesToJson', () => {
