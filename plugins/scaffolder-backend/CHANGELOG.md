@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.3-next.2
+
+### Patch Changes
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.3-next.2
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-auth-node@0.6.13-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.17-next.1
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/plugin-permission-node@0.10.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.6-next.2
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
 ## 3.1.3-next.1
 
 ### Patch Changes

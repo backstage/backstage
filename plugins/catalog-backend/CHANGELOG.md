@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend
 
+## 3.4.0-next.2
+
+### Patch Changes
+
+- 08a5813: Fixed O(n²) performance bottleneck in `buildEntitySearch` `traverse()` by replacing `Array.some()` linear scan with a `Set` for O(1) duplicate path key detection.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/plugin-permission-node@0.10.10-next.0
+
 ## 3.4.0-next.1
 
 ### Patch Changes

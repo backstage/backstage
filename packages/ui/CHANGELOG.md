@@ -1,5 +1,66 @@
 # @backstage/ui
 
+## 0.12.0-next.2
+
+### Minor Changes
+
+- b63c25b: **BREAKING**: Removed gray scale tokens and renamed background surface tokens to neutral tokens
+
+  The `--bui-gray-1` through `--bui-gray-8` tokens have been removed. The `--bui-bg-surface-*` and `--bui-bg-neutral-on-surface-*` tokens have been replaced by a unified `--bui-bg-neutral-*` scale.
+
+  **Migration:**
+
+  Replace surface tokens directly:
+
+  ```diff
+  - background: var(--bui-bg-surface-0);
+  + background: var(--bui-bg-neutral-0);
+  ```
+
+  Replace on-surface tokens shifted by +1:
+
+  ```diff
+  - background: var(--bui-bg-neutral-on-surface-0);
+  + background: var(--bui-bg-neutral-1);
+  ```
+
+  Replace gray tokens 1-4 with neutral equivalents (`--bui-gray-5` through `--bui-gray-8` have no direct replacement):
+
+  ```diff
+  - background: var(--bui-gray-1);
+  + background: var(--bui-bg-neutral-1);
+  ```
+
+### Patch Changes
+
+- c8ae765: Fixed nested Accordion icon state issue where the inner accordion's arrow icon would incorrectly show as expanded when only the outer accordion was expanded. The CSS selector now uses a direct parent selector to ensure the icon only responds to its own accordion's expanded state.
+
+  Affected components: Accordion
+
+- 5c76d13: Allow `ref` as a prop on the `Tag` component
+
+  Affected components: Tag
+
+- 741a98d: Allow data to be passed directly to the `useTable` hook using the property `data` instead of `getData()` for mode `"complete"`.
+
+  This simplifies usage as data changes, rather than having to perform a `useEffect` when data changes, and then reloading the data. It also happens immediately, so stale data won't remain until a rerender (with an internal async state change), so less flickering.
+
+  Affected components: Table
+
+- a0fe1b2: Fixed changing columns after first render from crashing. It now renders the table with the new column layout as columns change.
+
+  Affected components: Table
+
+- becf851: export PasswordField component
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- 8c39412: The Table component now wraps the react-aria-components `Table` with a `ResizableTableContainer` only if any column has a width property set. This means that column widths can adapt to the content otherwise (if no width is explicitly set).
+
+  Affected components: Table
+
+- 20131c5: Migrated to use the standard `backstage-cli package build` for CSS bundling instead of a custom build script.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12-next.0
+
 ## 0.12.0-next.1
 
 ### Minor Changes

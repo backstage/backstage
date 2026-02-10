@@ -1,5 +1,20 @@
 # @backstage/cli
 
+## 0.35.4-next.2
+
+### Patch Changes
+
+- 20131c5: Added support for CSS exports in package builds. When a package declares a CSS file in its `exports` field (e.g., `"./styles.css": "./src/styles.css"`), the CLI will automatically bundle it during `backstage-cli package build`, resolving any `@import` statements. The export path is rewritten from `src/` to `dist/` at publish time.
+
+  Fixed `backstage-cli repo fix` to not add `typesVersions` entries for non-script exports like CSS files.
+
+- 6ce4a13: Removed `/alpha` from `scaffolderActionsExtensionPoint` import
+- 73351c2: Updated dependency `webpack` to `~5.104.0`.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/config-loader@1.10.8-next.0
+
 ## 0.35.4-next.1
 
 ### Patch Changes

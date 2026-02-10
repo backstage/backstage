@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.8.0-next.2
+
+### Patch Changes
+
+- 7e6b5e5: Fixed GitLab search API scope parameter from `'blob'` to `'blobs'`, resolving 400 errors in discovery provider.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-events-node@0.4.19-next.0
+
 ## 0.8.0-next.1
 
 ### Minor Changes
