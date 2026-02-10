@@ -15,6 +15,7 @@
  */
 
 import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
+import { performance } from 'node:perf_hooks';
 import { buildEntitySearch, mapToRows, traverse } from './buildEntitySearch';
 
 describe('buildEntitySearch', () => {
@@ -58,10 +59,11 @@ describe('buildEntitySearch', () => {
       const items = Array.from({ length: 500 }, (_, i) => `tag-${i}`);
       const input = { tags: items };
 
-      const start = Date.now();
+      const start = performance.now();
       const output = traverse(input);
-      const elapsed = Date.now() - start;
+      const elapsed = performance.now() - start;
 
+      // Each item produces 2 entries: { key: 'tags', value: 'tag-N' } and { key: 'tags.tag-N', value: true }
       expect(output).toHaveLength(1000);
       // Should complete well under 100ms with O(n); O(n²) would be noticeably slower
       expect(elapsed).toBeLessThan(100);
