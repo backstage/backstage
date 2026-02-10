@@ -33,7 +33,7 @@ const accessLevelMapping: Record<string, number> = {
 
 function resolveAccessLevel(level: string | number): number {
   if (typeof level === 'number') return level;
-  const resolved = accessLevelMapping[level.toLowerCase()];
+  const resolved = accessLevelMapping[level.toLocaleLowerCase('en-US')];
   if (resolved === undefined) {
     throw new InputError(
       `Invalid access level: "${level}". Valid values are: ${Object.keys(
