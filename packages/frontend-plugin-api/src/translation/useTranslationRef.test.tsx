@@ -19,6 +19,7 @@ import {
   MockErrorApi,
   TestApiProvider,
   withLogCollector,
+  mockApis,
 } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTranslationRef, TranslationRef } from './TranslationRef';
@@ -105,6 +106,7 @@ describe('useTranslationRef', () => {
   it('should switch between languages', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'de'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
@@ -155,6 +157,7 @@ describe('useTranslationRef', () => {
     const languageApi = AppLanguageSelector.create({
       defaultLanguage: 'de',
       availableLanguages: ['en', 'de'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({
       languageApi,

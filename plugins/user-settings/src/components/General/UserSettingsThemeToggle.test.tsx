@@ -15,7 +15,11 @@
  */
 
 import { AppTheme, appThemeApiRef } from '@backstage/core-plugin-api';
-import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
+import {
+  MockStorageApi,
+  TestApiRegistry,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -36,7 +40,10 @@ const mockTheme: AppTheme = {
 
 const apiRegistry = TestApiRegistry.from([
   appThemeApiRef,
-  AppThemeSelector.createWithStorage([mockTheme]),
+  AppThemeSelector.createWithStorage({
+    themes: [mockTheme],
+    storageApi: MockStorageApi.create(),
+  }),
 ]);
 
 describe('<UserSettingsThemeToggle />', () => {
