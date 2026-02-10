@@ -2,4 +2,4 @@
 '@backstage/repo-tools': patch
 ---
 
-The `type-deps` command now detects ambient global types from the `jest` namespace in declaration files, rather than only looking for explicit imports and reference directives.
+The `type-deps` command now follows relative imports and re-exports into declaration chunk files, and detects ambient global types such as the `jest` namespace.
