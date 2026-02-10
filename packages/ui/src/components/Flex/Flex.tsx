@@ -20,15 +20,11 @@ import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import { FlexDefinition } from './definition';
 import styles from './Flex.module.css';
-import { BgProvider, useBg } from '../../hooks/useBg';
+import { BgProvider, useBgProvider } from '../../hooks/useBg';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  // Only establish bg context when an explicit bg prop is provided.
-  // Flex is a layout primitive — it should be transparent to the bg system by default.
-  const { bg: resolvedBg } = useBg(
-    props.bg !== undefined ? { mode: 'container', bg: props.bg } : undefined,
-  );
+  const { bg: resolvedBg } = useBgProvider(props.bg);
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(FlexDefinition, {

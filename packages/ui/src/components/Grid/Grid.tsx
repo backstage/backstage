@@ -20,14 +20,10 @@ import type { GridItemProps, GridProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { GridDefinition, GridItemDefinition } from './definition';
 import styles from './Grid.module.css';
-import { BgProvider, useBg } from '../../hooks/useBg';
+import { BgProvider, useBgProvider } from '../../hooks/useBg';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  // Only establish bg context when an explicit bg prop is provided.
-  // Grid is a layout primitive — it should be transparent to the bg system by default.
-  const { bg: resolvedBg } = useBg(
-    props.bg !== undefined ? { mode: 'container', bg: props.bg } : undefined,
-  );
+  const { bg: resolvedBg } = useBgProvider(props.bg);
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(GridDefinition, {
@@ -62,11 +58,7 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  // Only establish bg context when an explicit bg prop is provided.
-  // GridItem is a layout slot — it should be transparent to the bg system by default.
-  const { bg: resolvedBg } = useBg(
-    props.bg !== undefined ? { mode: 'container', bg: props.bg } : undefined,
-  );
+  const { bg: resolvedBg } = useBgProvider(props.bg);
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(GridItemDefinition, {

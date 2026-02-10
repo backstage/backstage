@@ -277,7 +277,7 @@ export const Backgrounds = meta.story({
   ),
 });
 
-export const BgAutoIncrement = meta.story({
+export const BgNeutralAuto = meta.story({
   args: { px: '6', py: '4', gap: '4' },
   render: args => (
     <Flex direction="column">

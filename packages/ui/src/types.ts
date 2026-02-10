@@ -199,3 +199,13 @@ export type ContainerBg =
   | 'danger'
   | 'warning'
   | 'success';
+
+/**
+ * Background values accepted by provider components.
+ *
+ * Includes all `ContainerBg` values plus `'neutral-auto'` which
+ * automatically increments the neutral level from the parent context.
+ *
+ * @public
+ */
+export type ProviderBg = ContainerBg | 'neutral-auto';

@@ -32,9 +32,8 @@ export const CardDefinition = defineComponent<CardOwnProps>()({
   classNames: {
     root: 'bui-Card',
   },
-  bg: 'container',
+  bg: { provider: true, consumer: true, defaultBg: 'neutral-auto' },
   propDefs: {
-    bg: { dataAttribute: true },
     children: {},
     className: {},
   },

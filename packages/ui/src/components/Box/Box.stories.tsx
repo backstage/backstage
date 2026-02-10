@@ -379,31 +379,14 @@ export const BackgroundColors = meta.story({
 export const NestedNeutralColors = meta.story({
   args: { px: '6', py: '4' },
   render: args => (
-    <Flex direction="column" gap="6">
-      <Flex direction="column" gap="2">
-        <div>With bg="neutral-1" — nested boxes and buttons auto-increment</div>
-        <Box {...args} bg="neutral-1">
-          <Button variant="secondary">Button (neutral-2)</Button>
-          <Box {...args} mt="4">
-            <Button variant="secondary">Button (neutral-3)</Button>
-            <Box {...args} mt="4">
-              <Button variant="secondary">Button (neutral-4)</Button>
-            </Box>
-          </Box>
+    <Box {...args} bg="neutral-1">
+      <Button variant="secondary">Button (on neutral-1)</Button>
+      <Box {...args} bg="neutral-2" mt="4">
+        <Button variant="secondary">Button (on neutral-2)</Button>
+        <Box {...args} bg="neutral-3" mt="4">
+          <Button variant="secondary">Button (on neutral-3)</Button>
         </Box>
-      </Flex>
-      <Flex direction="column" gap="2">
-        <div>Without bg — no context, no auto-increment</div>
-        <Box {...args}>
-          <Button variant="secondary">Button (default)</Button>
-          <Box {...args} mt="4">
-            <Button variant="secondary">Button (default)</Button>
-            <Box {...args} mt="4">
-              <Button variant="secondary">Button (default)</Button>
-            </Box>
-          </Box>
-        </Box>
-      </Flex>
-    </Flex>
+      </Box>
+    </Box>
   ),
 });

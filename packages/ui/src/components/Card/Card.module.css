@@ -30,28 +30,16 @@
     width: 100%;
   }
 
-  .bui-Card[data-bg='neutral-1'] {
-    background-color: var(--bui-bg-neutral-1);
-  }
-
-  .bui-Card[data-bg='neutral-2'] {
+  .bui-Card[data-on-bg='neutral-1'] {
     background-color: var(--bui-bg-neutral-2);
   }
 
-  .bui-Card[data-bg='neutral-3'] {
+  .bui-Card[data-on-bg='neutral-2'] {
     background-color: var(--bui-bg-neutral-3);
   }
 
-  .bui-Card[data-bg='danger'] {
-    background-color: var(--bui-bg-danger);
-  }
-
-  .bui-Card[data-bg='warning'] {
-    background-color: var(--bui-bg-warning);
-  }
-
-  .bui-Card[data-bg='success'] {
-    background-color: var(--bui-bg-success);
+  .bui-Card[data-on-bg='neutral-3'] {
+    background-color: var(--bui-bg-neutral-4);
   }
 
   .bui-CardBody {

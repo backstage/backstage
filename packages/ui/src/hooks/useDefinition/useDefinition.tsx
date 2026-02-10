@@ -17,7 +17,7 @@
 import { ReactNode } from 'react';
 import clsx from 'clsx';
 import { useBreakpoint } from '../useBreakpoint';
-import { useBg, BgProvider } from '../useBg';
+import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
 import { resolveResponsiveValue, processUtilityProps } from './helpers';
 import type {
   ComponentConfig,
@@ -36,9 +36,17 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
-  const { bg: resolvedBg } = useBg(
-    definition.bg ? { mode: definition.bg, bg: props.bg } : undefined,
-  );
+  // Resolve the effective bg value: use the bg prop if provided,
+  // otherwise fall back to the defaultBg from the bg config
+  const effectiveBg = definition.bg?.provider
+    ? props.bg ?? definition.bg.defaultBg
+    : undefined;
+
+  // Provider: resolve bg and provide context for children
+  const providerBg = useBgProvider(effectiveBg);
+
+  // Consumer: read parent context bg
+  const consumerBg = useBgConsumer();
 
   const ownPropKeys = new Set(Object.keys(definition.propDefs));
   const utilityPropKeys = new Set(definition.utilityProps ?? []);
@@ -65,6 +73,9 @@ export function useDefinition<
     if (finalValue !== undefined) {
       ownPropsResolved[key] = finalValue;
 
+      // Skip data-bg for bg prop when the provider path handles it
+      if (key === 'bg' && definition.bg?.provider) continue;
+
       if ((config as any).dataAttribute) {
         // eslint-disable-next-line no-restricted-syntax
         dataAttributes[`data-${key.toLowerCase()}`] = String(finalValue);
@@ -72,11 +83,18 @@ export function useDefinition<
     }
   }
 
-  // Set the bg data attribute from the resolved bg value
-  // Containers use data-bg, leaf components use data-on-bg
-  if (definition.bg && resolvedBg !== undefined) {
-    const attrName = definition.bg === 'leaf' ? 'data-on-bg' : 'data-bg';
-    dataAttributes[attrName] = String(resolvedBg);
+  // Provider-only: set data-bg (provider+consumer components use data-on-bg instead)
+  if (
+    definition.bg?.provider &&
+    !definition.bg?.consumer &&
+    providerBg.bg !== undefined
+  ) {
+    dataAttributes['data-bg'] = String(providerBg.bg);
+  }
+
+  // Consumer: set data-on-bg from the parent context
+  if (definition.bg?.consumer && consumerBg.bg !== undefined) {
+    dataAttributes['data-on-bg'] = String(consumerBg.bg);
   }
 
   const { utilityClasses, utilityStyle } = processUtilityProps<UtilityKeys<D>>(
@@ -101,9 +119,9 @@ export function useDefinition<
   let children: ReactNode | undefined;
   let bgChildren: ReactNode | undefined;
 
-  if (definition.bg === 'container') {
-    bgChildren = resolvedBg ? (
-      <BgProvider bg={resolvedBg}>{props.children}</BgProvider>
+  if (definition.bg?.provider) {
+    bgChildren = providerBg.bg ? (
+      <BgProvider bg={providerBg.bg}>{props.children}</BgProvider>
     ) : (
       props.children
     );
@@ -115,7 +133,7 @@ export function useDefinition<
     ownProps: {
       classes,
       ...ownPropsResolved,
-      ...(definition.bg === 'container' ? { bgChildren } : { children }),
+      ...(definition.bg?.provider ? { bgChildren } : { children }),
     },
     restProps,
     dataAttributes,

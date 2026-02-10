@@ -19,7 +19,7 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import { ContainerBg, Responsive } from '../types';
+import { ContainerBg, ProviderBg, Responsive } from '../types';
 import { useBreakpoint } from './useBreakpoint';
 import { resolveResponsiveValue } from './useDefinition/helpers';
 
@@ -34,26 +34,6 @@ export interface BgProviderProps {
   children: ReactNode;
 }
 
-/** @public */
-export interface UseBgOptions {
-  /**
-   * The bg mode of the component.
-   *
-   * - `'container'` — for components like Box, Card, Flex that establish bg context.
-   *   If `bg` prop is provided, uses that value. Otherwise auto-increments from parent,
-   *   capping at `neutral-3`.
-   * - `'leaf'` — for components like Button that consume bg context.
-   *   Returns the parent context bg unchanged (no increment). The leaf component's CSS
-   *   handles the visual step-up. The `bg` prop is ignored.
-   */
-  mode: 'container' | 'leaf';
-  /**
-   * The explicit bg value from the component's prop.
-   * Only used in container mode — leaf mode ignores this.
-   */
-  bg?: Responsive<ContainerBg>;
-}
-
 const BgContext = createVersionedContext<{
   1: BgContextValue;
 }>('bg-context');
@@ -62,46 +42,18 @@ const BgContext = createVersionedContext<{
  * Increments a neutral bg level by one, capping at 'neutral-3'.
  * Intent backgrounds (danger, warning, success) pass through unchanged.
  *
- * The 'neutral-4' level is reserved for leaf component CSS and is never
- * set on containers.
+ * The 'neutral-4' level is reserved for consumer component CSS and is
+ * never set on providers.
  *
  * @internal
  */
-function incrementNeutralBg(
-  bg: ContainerBg | undefined,
-): ContainerBg | undefined {
-  if (!bg) return undefined;
+function incrementNeutralBg(bg: ContainerBg | undefined): ContainerBg {
+  if (!bg) return 'neutral-1';
   if (bg === 'neutral-1') return 'neutral-2';
   if (bg === 'neutral-2') return 'neutral-3';
   if (bg === 'neutral-3') return 'neutral-3'; // capped at neutral-3
   // Intent values pass through unchanged
   return bg;
-}
-
-/**
- * Resolves the bg for a container component.
- *
- * Uses the explicit `bg` prop if provided. Otherwise auto-increments from
- * the parent context, capping at `neutral-3`. Returns undefined when there
- * is no prop and no parent context.
- *
- * @internal
- */
-function resolveContainerBg(
-  context: BgContextValue,
-  propBg: ContainerBg | undefined,
-): BgContextValue {
-  // Explicit bg prop takes priority
-  if (propBg !== undefined) {
-    return { bg: propBg };
-  }
-
-  // No explicit bg: auto-increment from context if available
-  if (context.bg === undefined) {
-    return { bg: undefined };
-  }
-
-  return { bg: incrementNeutralBg(context.bg) };
 }
 
 /**
@@ -118,36 +70,44 @@ export const BgProvider = ({ bg, children }: BgProviderProps) => {
 };
 
 /**
- * Hook to access and resolve the current bg context.
+ * Hook for consumer components (e.g. Button) to read the parent bg context.
  *
- * - **Container mode** — uses explicit `bg` if provided, otherwise auto-increments
- *   from parent context. Caps at `neutral-3`.
- * - **Leaf mode** — returns the parent context bg unchanged. No prop needed.
- * - **No options** — returns the raw context value without resolution.
+ * Returns the parent container's bg unchanged. The consumer component's CSS
+ * handles the visual step-up (e.g. on a neutral-1 surface, the consumer
+ * uses neutral-2 tokens via `data-on-bg`).
  *
- * @param options - Configuration for bg resolution
  * @public
  */
-export const useBg = (options?: UseBgOptions): BgContextValue => {
-  const { breakpoint } = useBreakpoint();
+export function useBgConsumer(): BgContextValue {
   const value = useContext(BgContext)?.atVersion(1);
-  const context = value ?? { bg: undefined };
+  return value ?? { bg: undefined };
+}
 
-  if (!options) {
-    return context;
+/**
+ * Hook for provider components (e.g. Box, Card) to resolve and provide bg context.
+ *
+ * - `bg` is `undefined` -- transparent, no context change, returns `{ bg: undefined }`
+ * - `bg` is a `ContainerBg` value -- uses that value directly
+ * - `bg` is `'neutral-auto'` -- increments from the parent context, capping at `neutral-3`
+ *
+ * The caller is responsible for wrapping children with `BgProvider` when the
+ * resolved bg is defined.
+ *
+ * @public
+ */
+export function useBgProvider(bg?: Responsive<ProviderBg>): BgContextValue {
+  const { breakpoint } = useBreakpoint();
+  const context = useBgConsumer();
+
+  if (bg === undefined) {
+    return { bg: undefined };
   }
 
-  // Leaf mode: return the parent context bg unchanged.
-  // The leaf component's CSS handles the visual step-up.
-  if (options.mode === 'leaf') {
-    return context;
+  const resolved = resolveResponsiveValue(bg, breakpoint);
+
+  if (resolved === 'neutral-auto') {
+    return { bg: incrementNeutralBg(context.bg) };
   }
 
-  // Resolve responsive prop value to a scalar for the current breakpoint
-  const propBg =
-    options.bg !== undefined
-      ? resolveResponsiveValue(options.bg, breakpoint)
-      : undefined;
-
-  return resolveContainerBg(context, propBg);
-};
+  return { bg: resolved };
+}

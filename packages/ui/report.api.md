@@ -249,7 +249,9 @@ export const BoxDefinition: {
   readonly classNames: {
     readonly root: 'bui-Box';
   };
-  readonly bg: 'container';
+  readonly bg: {
+    readonly provider: true;
+  };
   readonly propDefs: {
     readonly as: {
       readonly default: 'div';
@@ -290,7 +292,7 @@ export const BoxDefinition: {
 // @public (undocumented)
 export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
-  bg?: Responsive<ContainerBg>;
+  bg?: Responsive<ProviderBg>;
   children?: ReactNode;
   className?: string;
   style?: CSSProperties;
@@ -335,7 +337,9 @@ export const ButtonDefinition: {
     readonly content: 'bui-ButtonContent';
     readonly spinner: 'bui-ButtonSpinner';
   };
-  readonly bg: 'leaf';
+  readonly bg: {
+    readonly consumer: true;
+  };
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -374,7 +378,9 @@ export const ButtonIconDefinition: {
     readonly content: 'bui-ButtonIconContent';
     readonly spinner: 'bui-ButtonIconSpinner';
   };
-  readonly bg: 'leaf';
+  readonly bg: {
+    readonly consumer: true;
+  };
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -422,7 +428,9 @@ export const ButtonLinkDefinition: {
     readonly root: 'bui-ButtonLink';
     readonly content: 'bui-ButtonLinkContent';
   };
-  readonly bg: 'leaf';
+  readonly bg: {
+    readonly consumer: true;
+  };
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -517,11 +525,12 @@ export const CardDefinition: {
   readonly classNames: {
     readonly root: 'bui-Card';
   };
-  readonly bg: 'container';
+  readonly bg: {
+    readonly provider: true;
+    readonly consumer: true;
+    readonly defaultBg: 'neutral-auto';
+  };
   readonly propDefs: {
-    readonly bg: {
-      readonly dataAttribute: true;
-    };
     readonly children: {};
     readonly className: {};
   };
@@ -589,7 +598,6 @@ export interface CardHeaderProps
 
 // @public (undocumented)
 export type CardOwnProps = {
-  bg?: Responsive<ContainerBg>;
   children?: ReactNode;
   className?: string;
 };
@@ -966,7 +974,7 @@ export interface FlexProps extends SpaceProps {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   // (undocumented)
-  bg?: Responsive<ContainerBg>;
+  bg?: Responsive<ProviderBg>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
@@ -1048,7 +1056,7 @@ export const GridItemDefinition: {
 // @public (undocumented)
 export interface GridItemProps {
   // (undocumented)
-  bg?: Responsive<ContainerBg>;
+  bg?: Responsive<ProviderBg>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
@@ -1068,7 +1076,7 @@ export interface GridItemProps {
 // @public (undocumented)
 export interface GridProps extends SpaceProps {
   // (undocumented)
-  bg?: Responsive<ContainerBg>;
+  bg?: Responsive<ProviderBg>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
@@ -1520,6 +1528,9 @@ export interface PopoverProps extends Omit<PopoverProps_2, 'children'> {
   children: React.ReactNode;
   hideArrow?: boolean;
 }
+
+// @public
+export type ProviderBg = ContainerBg | 'neutral-auto';
 
 // @public (undocumented)
 export interface QueryOptions<TFilter> {
@@ -2174,13 +2185,10 @@ export const TooltipTrigger: (
 ) => JSX_2.Element;
 
 // @public
-export const useBg: (options?: UseBgOptions) => BgContextValue;
+export function useBgConsumer(): BgContextValue;
 
-// @public (undocumented)
-export interface UseBgOptions {
-  bg?: Responsive<ContainerBg>;
-  mode: 'container' | 'leaf';
-}
+// @public
+export function useBgProvider(bg?: Responsive<ProviderBg>): BgContextValue;
 
 // @public (undocumented)
 export const useBreakpoint: () => {

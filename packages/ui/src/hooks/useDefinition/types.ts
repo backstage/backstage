@@ -27,6 +27,21 @@ export interface PropDefConfig<T> {
 
 export type UtilityPropKey = keyof typeof utilityClassMap;
 
+/**
+ * Configuration for how a component participates in the bg system.
+ *
+ * - `provider` — calls `useBgProvider`, sets `data-bg`, wraps children in `BgProvider`
+ * - `consumer` — calls `useBgConsumer`, sets `data-on-bg`
+ * - `defaultBg` — default bg value when no `bg` prop is provided (e.g. `'neutral-auto'`)
+ *
+ * A component can be provider-only, consumer-only, or both.
+ */
+export interface BgConfig {
+  provider?: boolean;
+  consumer?: boolean;
+  defaultBg?: string;
+}
+
 export interface ComponentConfig<
   P extends Record<string, any>,
   S extends Record<string, string>,
@@ -36,19 +51,22 @@ export interface ComponentConfig<
   propDefs: { [K in keyof P]: PropDefConfig<P[K]> };
   // readonly for compatibility with const inference from factory
   utilityProps?: readonly UtilityPropKey[];
-  bg?: 'container' | 'leaf';
+  bg?: BgConfig;
 }
 
 /**
  * Type constraint that validates bg props are present in the props type.
- * - If bg is 'container', P must include 'bg'
- * - If bg is 'leaf', no prop constraint (fully automatic)
+ * - Provider-only components must include 'bg' in their props
+ * - Provider+consumer components (e.g. Card) don't need a bg prop (they auto-increment)
+ * - Consumer-only components don't need a bg prop
  */
-export type BgPropsConstraint<P, BgMode> = BgMode extends 'container'
-  ? 'bg' extends keyof P
+export type BgPropsConstraint<P, Bg> = Bg extends { provider: true }
+  ? Bg extends { consumer: true }
+    ? {} // provider+consumer: bg prop is optional (auto-increment via defaultBg)
+    : 'bg' extends keyof P
     ? {}
     : {
-        __error: 'Bg container components must include bg in props type.';
+        __error: 'Bg provider components must include bg in props type.';
       }
   : {};
 
@@ -75,10 +93,11 @@ type ResolvedOwnProps<
   [K in keyof PropDefs & keyof P]: ResolvePropType<P[K], PropDefs[K]>;
 };
 
-type ChildrenProps<BgMode extends 'container' | 'leaf' | undefined> =
-  BgMode extends 'container'
-    ? { bgChildren: ReactNode; children?: never }
-    : { children: ReactNode; bgChildren?: never };
+type ChildrenProps<Bg extends BgConfig | undefined> = Bg extends {
+  provider: true;
+}
+  ? { bgChildren: ReactNode; children?: never }
+  : { children: ReactNode; bgChildren?: never };
 
 type DataAttributeKeys<PropDefs> = {
   [K in keyof PropDefs]: PropDefs[K] extends { dataAttribute: true }
