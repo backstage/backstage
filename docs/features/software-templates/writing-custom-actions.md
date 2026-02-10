@@ -28,13 +28,17 @@ boilerplate code, providing a smooth start:
 ```sh
 $ yarn backstage-cli new
 ? What do you want to create?
-  plugin-common - A new isomorphic common plugin package
-  plugin-node - A new Node.js library plugin package
-  plugin-react - A new web library plugin package
-> scaffolder-module - An module exporting custom actions for @backstage/plugin-scaffolder-backend
+  web-library - A library package, exporting shared functionality for web environments
+  node-library - A library package, exporting shared functionality for Node.js environments
+  catalog-provider-module - An Entity Provider module for the Software Catalog
+> scaffolder-backend-module - A module exporting custom actions for @backstage/plugin-scaffolder-backend
+  frontend-plugin - A new frontend plugin
+  backend-plugin - A new backend plugin
+  backend-plugin-module - A new backend module that extends an existing backend plugin
+(Move up and down to reveal more choices)
 ```
 
-When prompted, select the option to generate a scaffolder module. This creates a solid foundation for your custom
+When prompted, select the option to generate a `scaffolder-backend-module` using the down arrow key. This creates a solid foundation for your custom
 action. Enter the name of the module you wish to create, and the CLI will generate the required files and directory
 structure.
 
@@ -205,47 +209,12 @@ argument. It looks like the following:
 - `ctx.metadata` - an object containing a `name` field, indicating the template
   name. More metadata fields may be added later.
 
-## Registering Custom Actions
-
-To register your new custom action in the Backend System, you will need to create a backend module. Here is a very
-simplified example of how to do that:
-
-```ts title="packages/backend/src/index.ts"
-/* highlight-add-start */
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
-import { createBackendModule } from '@backstage/backend-plugin-api';
-/* highlight-add-end */
-
-/* highlight-add-start */
-const scaffolderModuleCustomExtensions = createBackendModule({
-  pluginId: 'scaffolder', // name of the plugin that the module is targeting
-  moduleId: 'custom-extensions',
-  register(env) {
-    env.registerInit({
-      deps: {
-        scaffolder: scaffolderActionsExtensionPoint,
-        // ... and other dependencies as needed
-      },
-      async init({ scaffolder /* ..., other dependencies */ }) {
-        // Here you have the opportunity to interact with the extension
-        // point before the plugin itself gets instantiated
-        scaffolder.addActions(createNewFileAction()); // just an example
-      },
-    });
-  },
-});
-/* highlight-add-end */
-
-const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend'));
-/* highlight-add-next-line */
-backend.add(scaffolderModuleCustomExtensions);
-```
+### Using Core Services in Custom Actions
 
 If your custom action requires core services such as `config` or `cache` they can be imported in the dependencies and
 passed to the custom action function.
 
-```ts title="packages/backend/src/index.ts"
+```ts title="module.ts"
 import {
   coreServices,
   createBackendModule,

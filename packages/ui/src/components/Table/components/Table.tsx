@@ -137,13 +137,26 @@ export function Table<T extends TableItem>({
     data !== undefined,
   );
 
+  const manualColumnSizing = columnConfig.some(
+    col =>
+      col.width != null ||
+      col.minWidth != null ||
+      col.maxWidth != null ||
+      col.defaultWidth != null,
+  );
+
+  const wrapResizable = manualColumnSizing
+    ? (elem: React.ReactNode) => (
+        <ResizableTableContainer>{elem}</ResizableTableContainer>
+      )
+    : (elem: React.ReactNode) => <>{elem}</>;
+
   return (
     <div className={className} style={style}>
       <VisuallyHidden aria-live="polite" id={liveRegionId}>
         {liveRegionLabel}
       </VisuallyHidden>
-
-      <ResizableTableContainer>
+      {wrapResizable(
         <TableRoot
           selectionMode={selectionMode}
           selectionBehavior={selectionBehavior}
@@ -207,8 +220,8 @@ export function Table<T extends TableItem>({
               );
             }}
           </TableBody>
-        </TableRoot>
-      </ResizableTableContainer>
+        </TableRoot>,
+      )}
       {pagination.type === 'page' && (
         <TablePagination
           pageSize={pagination.pageSize}
