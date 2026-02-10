@@ -16,11 +16,8 @@
 
 import { useCallback } from 'react';
 import { screen, fireEvent } from '@testing-library/react';
-import {
-  MockAnalyticsApi,
-  TestApiProvider,
-} from '@backstage/frontend-test-utils';
-import { analyticsApiRef, useAnalytics } from '@backstage/frontend-plugin-api';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
+import { useAnalytics } from '@backstage/frontend-plugin-api';
 import { Routes, Route } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
 
@@ -47,10 +44,10 @@ describe('renderInTestApp', () => {
       );
     };
 
-    const analyticsApiMock = new MockAnalyticsApi();
+    const analyticsApiMock = mockApis.analytics();
 
     renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
+      <TestApiProvider apis={[analyticsApiMock]}>
         <IndexPage />
       </TestApiProvider>,
     );
@@ -94,10 +91,10 @@ describe('renderInTestApp', () => {
       );
     };
 
-    const analyticsApiMock = new MockAnalyticsApi();
+    const analyticsApiMock = mockApis.analytics();
 
     renderInTestApp(<IndexPage />, {
-      apis: [[analyticsApiRef, analyticsApiMock]],
+      apis: [analyticsApiMock],
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'Click me' }));

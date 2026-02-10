@@ -68,7 +68,6 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
@@ -91,6 +90,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
@@ -107,12 +107,16 @@
     "zod": "^3.25.76"
   },
   "peerDependencies": {
+    "@backstage/frontend-test-utils": "workspace:^",
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
+    "@backstage/frontend-test-utils": {
+      "optional": true
+    },
     "@types/react": {
       "optional": true
     }
