@@ -5,15 +5,13 @@ sidebar_label: Viewing the Catalog
 description: Viewing the Catalog
 ---
 
-Audience: Developers
+Audience: All
 
 ## Overview
 
 When you first log into your standalone Backstage App, `Home` is selected in the sidebar, which displays the Catalog in the main panel.
 
-![Portal with annotations.](../assets/uiguide/portal-with-annotations.png)
-
-The [Technical Overview](../overview/technical-overview.md) provides greater detail, but the catalog displays two main kinds of registered entities:
+The [Technical Overview](../overview/technical-overview.md#software-catalog-system-model) provides greater detail, but the catalog displays two main kinds of registered entities:
 
 - **Core Entities**
 
@@ -26,9 +24,8 @@ The [Technical Overview](../overview/technical-overview.md) provides greater det
   - `User` - A person, such as an employee, contractor, or similar.
   - `Group` - An organizational entity, such as a team, business unit, and so on.
 
-There are three additional items that can be part of the system model:
+There are two additional items that can be part of the system model:
 
-- `Location` - A marker that references other places to look for catalog data.
 - `Type` - It has no set meaning. You can assign your own types and use them as desired.
 - `Template` - Describes both the parameters that are rendered in the frontend part of the scaffolding wizard, and the steps that are executed when scaffolding that component.
 
