@@ -4,19 +4,19 @@
 
 **BREAKING**: Replaced `Surface` / `onSurface` system with new provider/consumer background system
 
-The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surface`, `onSurface`) have been replaced by a provider/consumer bg architecture.
+The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surface`, `onSurface`) have been replaced by a provider/consumer `bg` architecture.
 
 **Types:**
 
 - `ContainerBg` — `'neutral-1'` | `'neutral-2'` | `'neutral-3'` | `'danger'` | `'warning'` | `'success'`
 - `ProviderBg` — `ContainerBg | 'neutral-auto'`
 
-There is no `neutral-4` prop value; containers are capped at `neutral-3`. Consumer components (e.g. Button) inherit the parent's bg via `data-on-bg`, and CSS handles the visual step-up.
+There is no `neutral-4` prop value; containers are capped at `neutral-3`. Consumer components (e.g. Button) inherit the parent's `bg` via `data-on-bg`, and CSS handles the visual step-up.
 
 **Hooks:**
 
-- `useBgProvider(bg?)` — for provider components. Returns `{ bg: undefined }` when no bg is given (transparent). Supports `'neutral-auto'` to auto-increment from the parent context.
-- `useBgConsumer()` — for consumer components. Returns the parent container's bg unchanged.
+- `useBgProvider(bg?)` — for provider components. Returns `{ bg: undefined }` when no `bg` is given (transparent). Supports `'neutral-auto'` to auto-increment from the parent context.
+- `useBgConsumer()` — for consumer components. Returns the parent container's `bg` unchanged.
 - The old `useBg` hook and `UseBgOptions` interface have been removed.
 
 **Component roles:**
