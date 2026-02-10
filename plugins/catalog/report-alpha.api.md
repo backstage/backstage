@@ -73,8 +73,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.targetsField.label': 'Targets';
     readonly 'searchResultItem.type': 'Type';
     readonly 'searchResultItem.kind': 'Kind';
-    readonly 'searchResultItem.lifecycle': 'Lifecycle';
     readonly 'searchResultItem.owner': 'Owner';
+    readonly 'searchResultItem.lifecycle': 'Lifecycle';
     readonly 'catalogTable.allFilters': 'All';
     readonly 'catalogTable.warningPanelTitle': 'Could not fetch catalog entities.';
     readonly 'catalogTable.viewActionTitle': 'View';
@@ -1079,15 +1079,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {
         headers: ExtensionInput<
           | ConfigurableExtensionDataRef<
-              JSX_2.Element,
-              'core.reactElement',
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
               {
                 optional: true;
               }
             >
           | ConfigurableExtensionDataRef<
-              (entity: Entity) => boolean,
-              'catalog.entity-filter-function',
+              JSX_2.Element,
+              'core.reactElement',
               {
                 optional: true;
               }

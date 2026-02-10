@@ -457,13 +457,6 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
   };
   output:
     | ExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {
-          optional: true;
-        }
-      >
-    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
@@ -473,6 +466,13 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
     | ExtensionDataRef<
         string,
         'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
         {
           optional: true;
         }

@@ -26,4 +26,3 @@
 | Name        | Location                                                 | Severity |
 | :---------- | :------------------------------------------------------- | :------- |
 | @rjsf/utils | packages/app/src/components/scaffolder/customScaffolderExtensions.tsx | error    |
-

@@ -40,4 +40,3 @@
 | @testing-library/dom        | packages/app/package.json | error    |
 | @types/jquery               | packages/app/package.json | error    |
 | cross-env                   | packages/app/package.json | error    |
-

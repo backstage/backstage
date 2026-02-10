@@ -6,4 +6,3 @@
 | :---------- | :----------- | :------- |
 | cross-fetch | packages/app-example-plugin/package.json | error    |
 | msw         | packages/app-example-plugin/package.json | error    |
-
