@@ -4,7 +4,7 @@ title: Viewing what you own
 description: View the entities that you own either directly or through a group
 ---
 
-Audience: Developers
+Audience: All
 
 You can own entities either directly or through a group that you're part of.
 
