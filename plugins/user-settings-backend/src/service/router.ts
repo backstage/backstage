@@ -17,9 +17,13 @@
 import { InputError } from '@backstage/errors';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
+import { z } from 'zod';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { SignalsService } from '@backstage/plugin-signals-node';
-import { UserSettingsSignal } from '@backstage/plugin-user-settings-common';
+import {
+  MultiGetResponse,
+  UserSettingsSignal,
+} from '@backstage/plugin-user-settings-common';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 
 export async function createRouter(options: {
@@ -30,6 +34,10 @@ export async function createRouter(options: {
   const router = Router();
   router.use(express.json());
 
+  const multiGetRequestSchema = z.object({
+    items: z.array(z.object({ bucket: z.string(), key: z.string() })),
+  });
+
   /**
    * Helper method to extract the userEntityRef from the request.
    */
@@ -39,6 +47,20 @@ export async function createRouter(options: {
     });
     return credentials.principal.userEntityRef;
   };
+
+  // get multiple values
+  router.post('/multiget', async (req, res) => {
+    const userEntityRef = await getUserEntityRef(req);
+
+    const bucketsAndKeys = multiGetRequestSchema.parse(req.body).items;
+
+    const items = await options.userSettingsStore.multiget({
+      userEntityRef,
+      items: bucketsAndKeys,
+    });
+
+    res.json({ items } satisfies MultiGetResponse);
+  });
 
   // get a single value
   router.get('/buckets/:bucket/keys/:key(*)', async (req, res) => {

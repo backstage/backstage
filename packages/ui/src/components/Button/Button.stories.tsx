@@ -82,7 +82,7 @@ export const Variants = meta.story({
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
-        <Text>On Surface 0</Text>
+        <Text>Neutral 0</Text>
         <Flex align="center" surface="0" p="4">
           <Button iconStart={<RiCloudLine />} variant="primary">
             Button
@@ -105,7 +105,7 @@ export const Variants = meta.story({
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
-        <Text>On Surface 1</Text>
+        <Text>Neutral 1</Text>
         <Flex align="center" surface="1" p="4">
           <Button iconStart={<RiCloudLine />} variant="primary">
             Button
@@ -128,50 +128,64 @@ export const Variants = meta.story({
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
-        <Text>On Surface 2</Text>
-        <Flex align="center" surface="2" p="4">
-          <Button iconStart={<RiCloudLine />} variant="primary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="secondary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="tertiary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
-            Button
-          </Button>
-        </Flex>
+        <Text>Neutral 2</Text>
+        <Box surface="1">
+          <Flex align="center" surface="2" p="4">
+            <Button iconStart={<RiCloudLine />} variant="primary">
+              Button
+            </Button>
+            <Button iconStart={<RiCloudLine />} variant="secondary">
+              Button
+            </Button>
+            <Button iconStart={<RiCloudLine />} variant="tertiary">
+              Button
+            </Button>
+            <Button iconStart={<RiCloudLine />} variant="primary" destructive>
+              Button
+            </Button>
+            <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
+              Button
+            </Button>
+            <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
+              Button
+            </Button>
+          </Flex>
+        </Box>
       </Flex>
       <Flex direction="column" gap="4">
-        <Text>On Surface 3</Text>
-        <Flex align="center" surface="3" p="4">
-          <Button iconStart={<RiCloudLine />} variant="primary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="secondary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="tertiary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
-            Button
-          </Button>
-        </Flex>
+        <Text>Neutral 3</Text>
+        <Box surface="1">
+          <Box surface="2">
+            <Flex align="center" surface="3" p="4">
+              <Button iconStart={<RiCloudLine />} variant="primary">
+                Button
+              </Button>
+              <Button iconStart={<RiCloudLine />} variant="secondary">
+                Button
+              </Button>
+              <Button iconStart={<RiCloudLine />} variant="tertiary">
+                Button
+              </Button>
+              <Button iconStart={<RiCloudLine />} variant="primary" destructive>
+                Button
+              </Button>
+              <Button
+                iconStart={<RiCloudLine />}
+                variant="secondary"
+                destructive
+              >
+                Button
+              </Button>
+              <Button
+                iconStart={<RiCloudLine />}
+                variant="tertiary"
+                destructive
+              >
+                Button
+              </Button>
+            </Flex>
+          </Box>
+        </Box>
       </Flex>
     </Flex>
   ),

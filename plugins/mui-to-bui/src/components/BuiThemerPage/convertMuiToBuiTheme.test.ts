@@ -59,9 +59,9 @@ describe('convertMuiToBuiTheme', () => {
     // Border radius tokens are only generated when radius is 0
     expect(result.css).not.toContain('--bui-radius-3:');
     // Background default maps to surface-2
-    expect(result.css).toContain('--bui-bg-surface-0: #f5f5f5;');
-    expect(result.css).toContain('--bui-bg-surface-2: #f5f5f5;');
-    expect(result.css).toContain('--bui-bg-surface-1: #ffffff;');
+    expect(result.css).toContain('--bui-bg-neutral-0: #f5f5f5;');
+    expect(result.css).toContain('--bui-bg-neutral-2: #f5f5f5;');
+    expect(result.css).toContain('--bui-bg-neutral-1: #ffffff;');
     expect(result.css).toContain('--bui-fg-primary: #000000;');
     // Secondary may not be present without Backstage additions, so don't assert it
     expect(result.css).toContain('--bui-bg-solid: #1976d2;');
@@ -98,13 +98,13 @@ describe('convertMuiToBuiTheme', () => {
 
     expect(result.css).toContain("[data-theme-mode='dark'] {");
     // Background default maps to surface-2 in dark mode as well
-    expect(result.css).toContain('--bui-bg-surface-0: #121212;');
-    expect(result.css).toContain('--bui-bg-surface-2: #121212;');
-    expect(result.css).toContain('--bui-bg-surface-1: #1e1e1e;');
+    expect(result.css).toContain('--bui-bg-neutral-0: #121212;');
+    expect(result.css).toContain('--bui-bg-neutral-2: #121212;');
+    expect(result.css).toContain('--bui-bg-neutral-1: #1e1e1e;');
     expect(result.css).toContain('--bui-fg-primary: #ffffff;');
 
     // Test style object
-    expect(result.styleObject).toHaveProperty('--bui-bg-surface-1', '#1e1e1e');
+    expect(result.styleObject).toHaveProperty('--bui-bg-neutral-1', '#1e1e1e');
     expect(result.styleObject).toHaveProperty('--bui-fg-primary', '#ffffff');
   });
 

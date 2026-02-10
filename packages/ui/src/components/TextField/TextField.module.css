@@ -76,7 +76,7 @@
     padding: 0 var(--bui-space-3);
     border-radius: var(--bui-radius-2);
     border: 1px solid var(--bui-border);
-    background-color: var(--bui-bg-surface-1);
+    background-color: var(--bui-bg-neutral-1);
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-regular);

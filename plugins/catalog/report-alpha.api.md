@@ -20,8 +20,10 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { JSXElementConstructor } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
@@ -41,11 +43,16 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'indexPage.title': '{{orgName}} Catalog';
     readonly 'indexPage.createButtonTitle': 'Create';
     readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
+    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
+    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'aboutCard.title': 'About';
+    readonly 'aboutCard.unknown': 'unknown';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
+    readonly 'aboutCard.editButtonAriaLabel': 'Edit';
     readonly 'aboutCard.createSimilarButtonTitle': 'Create something similar';
     readonly 'aboutCard.refreshScheduledMessage': 'Refresh scheduled';
+    readonly 'aboutCard.refreshButtonAriaLabel': 'Refresh';
     readonly 'aboutCard.launchTemplate': 'Launch Template';
     readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.viewSource': 'View Source';
@@ -64,8 +71,11 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.tagsField.value': 'No Tags';
     readonly 'aboutCard.tagsField.label': 'Tags';
     readonly 'aboutCard.targetsField.label': 'Targets';
+    readonly 'searchResultItem.type': 'Type';
+    readonly 'searchResultItem.kind': 'Kind';
     readonly 'searchResultItem.lifecycle': 'Lifecycle';
-    readonly 'searchResultItem.Owner': 'Owner';
+    readonly 'searchResultItem.owner': 'Owner';
+    readonly 'catalogTable.allFilters': 'All';
     readonly 'catalogTable.warningPanelTitle': 'Could not fetch catalog entities.';
     readonly 'catalogTable.viewActionTitle': 'View';
     readonly 'catalogTable.editActionTitle': 'Edit';
@@ -82,6 +92,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.inspectMenuTitle': 'Inspect entity';
     readonly 'entityContextMenu.copyURLMenuTitle': 'Copy entity URL';
     readonly 'entityContextMenu.unregisterMenuTitle': 'Unregister entity';
+    readonly 'entityContextMenu.moreButtonAriaLabel': 'more';
     readonly 'entityLabelsCard.title': 'Labels';
     readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
@@ -94,6 +105,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityNotFound.title': 'Entity was not found';
     readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.docButtonTitle': 'DOCS';
+    readonly 'entityTabs.tabsAriaLabel': 'Tabs';
     readonly entityProcessingErrorsDescription: 'The error below originates from';
     readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
     readonly 'hasComponentsCard.title': 'Has components';
@@ -733,12 +745,14 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
         filter: EntityPredicate | undefined;
         group: string | false | undefined;
+        icon: string | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
         title?: string | undefined;
         path?: string | undefined;
         group?: string | false | undefined;
+        icon?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -768,6 +782,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             string,
             'catalog.entity-content-group',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string | ReactElement<any, string | JSXElementConstructor<any>>,
+            'catalog.entity-content-icon',
             {
               optional: true;
             }
@@ -838,6 +859,7 @@ const _default: OverridableFrontendPlugin<
         title: string;
         defaultGroup?: [Error: `Use the 'group' param instead`];
         group?: keyof defaultEntityContentGroups | (string & {});
+        icon?: string | ReactElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
@@ -1024,9 +1046,11 @@ const _default: OverridableFrontendPlugin<
               string,
               {
                 title: string;
+                icon?: string | undefined;
               }
             >[]
           | undefined;
+        showNavItemIcons: boolean;
         path: string | undefined;
       };
       configInput: {
@@ -1035,9 +1059,11 @@ const _default: OverridableFrontendPlugin<
               string,
               {
                 title: string;
+                icon?: string | undefined;
               }
             >[]
           | undefined;
+        showNavItemIcons?: boolean | undefined;
         path?: string | undefined;
       };
       output:
@@ -1104,6 +1130,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               string,
               'catalog.entity-content-group',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string | ReactElement<any, string | JSXElementConstructor<any>>,
+              'catalog.entity-content-icon',
               {
                 optional: true;
               }

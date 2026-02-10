@@ -4,7 +4,7 @@
 # The last matching pattern takes precedence.
 # https://help.github.com/articles/about-codeowners/
 
-*                                                 @backstage/maintainers @backstage/reviewers
+*                                                 @backstage/maintainers
 yarn.lock                                         @backstage/maintainers @backstage-service
 */yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset                                       @backstage/operations-maintainers
@@ -29,7 +29,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /microsite/data/plugins                           @backstage/maintainers
 /microsite/static                                 @backstage/maintainers @backstage/documentation-maintainers
 /packages                                         @backstage/framework-maintainers
-/packages/backend-openapi-utils                   @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
+/packages/backend-openapi-utils                   @backstage/maintainers @backstage/openapi-tooling-maintainers
 /packages/catalog-client                          @backstage/catalog-maintainers
 /packages/catalog-model                           @backstage/catalog-maintainers
 /packages/cli                                     @backstage/tooling-maintainers
@@ -47,21 +47,21 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/app-*                                    @backstage/framework-maintainers
 /plugins/auth                                     @backstage/auth-maintainers
 /plugins/auth-*                                   @backstage/auth-maintainers
-/plugins/api-docs                                 @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/bitbucket-cloud-common                   @backstage/maintainers @backstage/reviewers @pjungermann
-/plugins/catalog                                  @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
-/plugins/catalog-*                                @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
-/plugins/catalog-backend-module-aws               @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
-/plugins/catalog-backend-module-bitbucket-cloud   @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
-/plugins/catalog-backend-module-backstage-openapi @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
-/plugins/catalog-backend-module-gitea             @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
-/plugins/catalog-backend-module-msgraph           @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @pjungermann
-/plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers
-/plugins/catalog-graph                            @backstage/maintainers @backstage/reviewers @backstage/catalog-maintainers @backstage/sda-se-reviewers
-/plugins/devtools                                 @backstage/maintainers @backstage/reviewers @awanlin
-/plugins/devtools-backend                         @backstage/maintainers @backstage/reviewers @awanlin
-/plugins/devtools-common                          @backstage/maintainers @backstage/reviewers @awanlin
-/plugins/events-*                                 @backstage/maintainers @backstage/reviewers @backstage/events-maintainers
+/plugins/api-docs                                 @backstage/maintainers @backstage/sda-se-reviewers
+/plugins/bitbucket-cloud-common                   @backstage/maintainers @pjungermann
+/plugins/catalog                                  @backstage/maintainers @backstage/catalog-maintainers
+/plugins/catalog-*                                @backstage/maintainers @backstage/catalog-maintainers
+/plugins/catalog-backend-module-aws               @backstage/maintainers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-bitbucket-cloud   @backstage/maintainers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-backstage-openapi @backstage/maintainers @backstage/openapi-tooling-maintainers
+/plugins/catalog-backend-module-gitea             @backstage/maintainers @backstage/catalog-maintainers
+/plugins/catalog-backend-module-msgraph           @backstage/maintainers @backstage/catalog-maintainers @pjungermann
+/plugins/catalog-backend-module-puppetdb          @backstage/maintainers @backstage/catalog-maintainers
+/plugins/catalog-graph                            @backstage/maintainers @backstage/catalog-maintainers @backstage/sda-se-reviewers
+/plugins/devtools                                 @backstage/maintainers @awanlin
+/plugins/devtools-backend                         @backstage/maintainers @awanlin
+/plugins/devtools-common                          @backstage/maintainers @awanlin
+/plugins/events-*                                 @backstage/maintainers @backstage/events-maintainers
 /plugins/home                                     @backstage/home-maintainers
 /plugins/home-*                                   @backstage/home-maintainers
 /plugins/kubernetes                               @backstage/kubernetes-maintainers
@@ -70,17 +70,17 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/notifications-*                          @backstage/maintainers @backstage/notifications-maintainers
 /plugins/scaffolder-backend-module-notifications  @backstage/maintainers @backstage/notifications-maintainers
 /plugins/permission-*                             @backstage/permission-maintainers
-/plugins/scaffolder                               @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
-/plugins/scaffolder-*                             @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
+/plugins/scaffolder                               @backstage/maintainers @backstage/scaffolder-maintainers
+/plugins/scaffolder-*                             @backstage/maintainers @backstage/scaffolder-maintainers
 /plugins/search                                   @backstage/search-maintainers
 /plugins/search-*                                 @backstage/search-maintainers
 /plugins/signals                                  @backstage/maintainers @backstage/notifications-maintainers
 /plugins/signals-*                                @backstage/maintainers @backstage/notifications-maintainers
 /plugins/techdocs                                 @backstage/techdocs-maintainers
 /plugins/techdocs-*                               @backstage/techdocs-maintainers
-/plugins/user-settings                            @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/user-settings-backend                    @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/user-settings-common                     @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/user-settings                            @backstage/maintainers @backstage/sda-se-reviewers
+/plugins/user-settings-backend                    @backstage/maintainers @backstage/sda-se-reviewers
+/plugins/user-settings-common                     @backstage/maintainers @backstage/sda-se-reviewers
 
 /scripts                                          @backstage/operations-maintainers
 

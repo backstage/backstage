@@ -20,6 +20,7 @@ import {
   CATALOG_FILTER_EXISTS,
   CatalogApi,
   EntityFilterQuery,
+  EntityOrderQuery,
   GetEntitiesByRefsRequest,
   GetEntitiesByRefsResponse,
   GetEntitiesRequest,
@@ -42,7 +43,12 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { NotFoundError, NotImplementedError } from '@backstage/errors';
+import {
+  InputError,
+  NotFoundError,
+  NotImplementedError,
+} from '@backstage/errors';
+import lodash from 'lodash';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
 import type {
@@ -50,6 +56,62 @@ import type {
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
 import { DEFAULT_STREAM_ENTITIES_LIMIT } from '../constants.ts';
+
+function makeCursor(data: Record<string, unknown>): string {
+  return btoa(JSON.stringify(data));
+}
+
+function parseCursor(cursor: string): Record<string, unknown> {
+  return JSON.parse(atob(cursor));
+}
+
+// CATALOG_FILTER_EXISTS is a Symbol that doesn't survive JSON serialization,
+// so we swap it with a sentinel string when encoding/decoding cursors.
+const FILTER_EXISTS_SENTINEL = '\0CATALOG_FILTER_EXISTS';
+
+function serializeFilterValue(v: unknown): unknown {
+  if (v === CATALOG_FILTER_EXISTS) return FILTER_EXISTS_SENTINEL;
+  if (Array.isArray(v)) {
+    return v.map(x =>
+      x === CATALOG_FILTER_EXISTS ? FILTER_EXISTS_SENTINEL : x,
+    );
+  }
+  return v;
+}
+
+function deserializeFilterValue(v: unknown): unknown {
+  if (v === FILTER_EXISTS_SENTINEL) return CATALOG_FILTER_EXISTS;
+  if (Array.isArray(v)) {
+    return v.map(x =>
+      x === FILTER_EXISTS_SENTINEL ? CATALOG_FILTER_EXISTS : x,
+    );
+  }
+  return v;
+}
+
+function serializeFilter(filter?: EntityFilterQuery): any[] | undefined {
+  if (!filter) return undefined;
+  return [filter]
+    .flat()
+    .map(f =>
+      Object.fromEntries(
+        Object.entries(f).map(([k, v]) => [k, serializeFilterValue(v)]),
+      ),
+    );
+}
+
+function deserializeFilter(filter?: any[]): EntityFilterQuery | undefined {
+  if (!filter) return undefined;
+  return filter.map(
+    f =>
+      Object.fromEntries(
+        Object.entries(f).map(([k, v]: [string, any]) => [
+          k,
+          deserializeFilterValue(v),
+        ]),
+      ) as Record<string, string | symbol | (string | symbol)[]>,
+  );
+}
 
 function buildEntitySearch(entity: Entity) {
   const rows = traverse(entity);
@@ -130,10 +192,120 @@ function createFilter(
   };
 }
 
+// Resolves a dot-separated field path against an entity, handling keys that
+// themselves contain dots (e.g. annotation keys like "backstage.io/orphan").
+// This matches the backend's parseEntityTransformParams implementation.
+function getPathArrayAndValue(
+  input: Entity,
+  field: string,
+): [string[], unknown] {
+  return field.split('.').reduce(
+    ([pathArray, inputSubset], pathPart, index, fieldParts) => {
+      if (lodash.hasIn(inputSubset, pathPart)) {
+        return [pathArray.concat(pathPart), (inputSubset as any)[pathPart]];
+      } else if (fieldParts[index + 1] !== undefined) {
+        fieldParts[index + 1] = `${pathPart}.${fieldParts[index + 1]}`;
+        return [pathArray, inputSubset];
+      }
+      return [pathArray, undefined];
+    },
+    [[] as string[], input as unknown],
+  );
+}
+
+function applyFieldsFilter(entity: Entity, fields?: string[]): Entity {
+  if (!fields?.length) {
+    return entity;
+  }
+  const output: Record<string, any> = {};
+  for (const field of fields) {
+    const [pathArray, value] = getPathArrayAndValue(entity, field);
+    if (value !== undefined) {
+      lodash.set(output, pathArray, value);
+    }
+  }
+  return output as Entity;
+}
+
+function applyOrdering(entities: Entity[], order?: EntityOrderQuery): Entity[] {
+  if (!order) {
+    return entities;
+  }
+  const orders = [order].flat();
+  if (orders.length === 0) {
+    return entities;
+  }
+
+  const searchMap = new Map<Entity, Array<{ key: string; value: unknown }>>();
+  for (const entity of entities) {
+    searchMap.set(entity, buildEntitySearch(entity));
+  }
+
+  return [...entities].sort((a, b) => {
+    const aRows = searchMap.get(a)!;
+    const bRows = searchMap.get(b)!;
+
+    for (const { field, order: dir } of orders) {
+      const key = field.toLocaleLowerCase('en-US');
+      const aRow = aRows.find(r => r.key.toLocaleLowerCase('en-US') === key);
+      const bRow = bRows.find(r => r.key.toLocaleLowerCase('en-US') === key);
+      const aValue =
+        aRow?.value !== null && aRow?.value !== undefined
+          ? String(aRow.value).toLocaleLowerCase('en-US')
+          : null;
+      const bValue =
+        bRow?.value !== null && bRow?.value !== undefined
+          ? String(bRow.value).toLocaleLowerCase('en-US')
+          : null;
+
+      if (aValue === null && bValue === null) continue;
+      if (aValue === null) return 1;
+      if (bValue === null) return -1;
+
+      if (aValue < bValue) return dir === 'asc' ? -1 : 1;
+      if (aValue > bValue) return dir === 'asc' ? 1 : -1;
+    }
+
+    // Stable tie-breaker by entity ref, matching backend behavior
+    const aRef = stringifyEntityRef(a);
+    const bRef = stringifyEntityRef(b);
+    if (aRef < bRef) return -1;
+    if (aRef > bRef) return 1;
+    return 0;
+  });
+}
+
+function applyFullTextFilter(
+  entities: Entity[],
+  fullTextFilter?: { term: string; fields?: string[] },
+): Entity[] {
+  if (!fullTextFilter?.term?.trim()) {
+    return entities;
+  }
+  const term = fullTextFilter.term.trim().toLocaleLowerCase('en-US');
+  const fields = fullTextFilter.fields?.map(f => f.toLocaleLowerCase('en-US'));
+
+  return entities.filter(entity => {
+    const rows = buildEntitySearch(entity);
+    return rows.some(row => {
+      if (
+        fields?.length &&
+        !fields.includes(row.key.toLocaleLowerCase('en-US'))
+      ) {
+        return false;
+      }
+      if (row.value === null || row.value === undefined) return false;
+      const value = String(row.value).toLocaleLowerCase('en-US');
+      return value.includes(term);
+    });
+  });
+}
+
 /**
- * Implements a VERY basic fake catalog client that stores entities in memory.
- * It has severely limited functionality, and is only useful under certain
- * circumstances in tests.
+ * Implements a fake catalog client that stores entities in memory.
+ * Supports filtering, ordering, pagination, full-text search, and field
+ * projection for entity query methods. Location and validation methods
+ * throw {@link @backstage/errors#NotImplementedError}.
  *
  * @public
  */
@@ -148,7 +320,34 @@ export class InMemoryCatalogClient implements CatalogApi {
     request?: GetEntitiesRequest,
   ): Promise<GetEntitiesResponse> {
     const filter = createFilter(request?.filter);
-    return { items: this.#entities.filter(filter) };
+    let items = this.#entities.filter(filter);
+    items = applyOrdering(items, request?.order);
+
+    let offset = request?.offset ?? 0;
+    let limit = request?.limit;
+
+    if (request?.after) {
+      try {
+        const cursor = parseCursor(request.after);
+        if (cursor.offset !== undefined) offset = cursor.offset as number;
+        if (cursor.limit !== undefined) limit = cursor.limit as number;
+      } catch {
+        throw new InputError('Invalid cursor');
+      }
+    }
+
+    if (offset > 0) {
+      items = items.slice(offset);
+    }
+    if (limit !== undefined) {
+      items = items.slice(0, limit);
+    }
+
+    return {
+      items: request?.fields
+        ? items.map(e => applyFieldsFilter(e, request.fields))
+        : items,
+    };
   }
 
   async getEntitiesByRefs(
@@ -156,26 +355,104 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<GetEntitiesByRefsResponse> {
     const filter = createFilter(request.filter);
     const refMap = this.#createEntityRefMap();
+    const items = request.entityRefs
+      .map(ref => refMap.get(ref))
+      .map(e => (e && filter(e) ? e : undefined));
     return {
-      items: request.entityRefs
-        .map(ref => refMap.get(ref))
-        .map(e => (e && filter(e) ? e : undefined)),
+      items: request.fields
+        ? items.map(e => (e ? applyFieldsFilter(e, request.fields) : undefined))
+        : items,
     };
   }
 
   async queryEntities(
     request?: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
+    // Decode query parameters from cursor or from the request directly
+    let filter: EntityFilterQuery | undefined;
+    let orderFields: EntityOrderQuery | undefined;
+    let fullTextFilter: { term: string; fields?: string[] } | undefined;
+    let offset: number;
+    let limit: number | undefined;
+
     if (request && 'cursor' in request) {
-      return { items: [], pageInfo: {}, totalItems: 0 };
+      let c: Record<string, unknown>;
+      try {
+        c = parseCursor(request.cursor);
+      } catch {
+        throw new InputError('Invalid cursor');
+      }
+      filter = deserializeFilter(c.filter as any[]);
+      orderFields = c.orderFields as EntityOrderQuery | undefined;
+      fullTextFilter = c.fullTextFilter as typeof fullTextFilter;
+      offset = c.offset as number;
+      limit = request.limit;
+    } else {
+      filter = request?.filter;
+      orderFields = request?.orderFields;
+      fullTextFilter = request?.fullTextFilter;
+      offset = request?.offset ?? 0;
+      limit = request?.limit;
     }
-    const filter = createFilter(request?.filter);
-    const items = this.#entities.filter(filter);
-    // TODO(Rugvip): Pagination
+
+    // Apply filter
+    let items = this.#entities.filter(createFilter(filter));
+
+    // Apply full-text filter, defaulting to the sort field or metadata.uid
+    if (fullTextFilter) {
+      const orderFieldsList = orderFields ? [orderFields].flat() : [];
+      items = applyFullTextFilter(items, {
+        ...fullTextFilter,
+        fields: fullTextFilter.fields ?? [
+          orderFieldsList[0]?.field ?? 'metadata.uid',
+        ],
+      });
+    }
+
+    items = applyOrdering(items, orderFields);
+
+    const totalItems = items.length;
+
+    // No pagination requested, return all items
+    if (limit === undefined && offset === 0) {
+      return {
+        items: request?.fields
+          ? items.map(e => applyFieldsFilter(e, request?.fields))
+          : items,
+        pageInfo: {},
+        totalItems,
+      };
+    }
+
+    const effectiveLimit = limit ?? totalItems;
+    const pageItems = items.slice(offset, offset + effectiveLimit);
+
+    const cursorBase = {
+      filter: serializeFilter(filter),
+      orderFields,
+      fullTextFilter,
+      totalItems,
+    };
+    const pageInfo: QueryEntitiesResponse['pageInfo'] = {};
+    if (offset + effectiveLimit < totalItems) {
+      pageInfo.nextCursor = makeCursor({
+        ...cursorBase,
+        offset: offset + effectiveLimit,
+      });
+    }
+    if (offset > 0) {
+      pageInfo.prevCursor = makeCursor({
+        ...cursorBase,
+        offset: Math.max(0, offset - effectiveLimit),
+      });
+    }
+
     return {
-      items,
-      pageInfo: {},
-      totalItems: items.length,
+      items: request?.fields
+        ? pageItems.map(e => applyFieldsFilter(e, request?.fields))
+        : pageItems,
+      totalItems,
+      pageInfo,
     };
   }
 
@@ -219,14 +496,21 @@ export class InMemoryCatalogClient implements CatalogApi {
         const facetValues = new Map<string, number>();
         for (const entity of filteredEntities) {
           const rows = buildEntitySearch(entity);
-          const value = rows.find(
-            row => row.key === facet.toLocaleLowerCase('en-US'),
-          )?.value;
-          if (value) {
-            facetValues.set(
-              String(value),
-              (facetValues.get(String(value)) ?? 0) + 1,
-            );
+          // Use a Set to count each distinct value once per entity,
+          // matching the backend's count(DISTINCT entity_id) behavior
+          const uniqueValues = new Set(
+            rows
+              .filter(
+                row =>
+                  row.key.toLocaleLowerCase('en-US') ===
+                  facet.toLocaleLowerCase('en-US'),
+              )
+              .map(row => row.value)
+              .filter(v => v !== null && v !== undefined)
+              .map(v => String(v)),
+          );
+          for (const value of uniqueValues) {
+            facetValues.set(value, (facetValues.get(value) ?? 0) + 1);
           }
         }
         const counts = Array.from(facetValues.entries()).map(

@@ -161,7 +161,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     <>
       <Tooltip title={t('entityContextMenu.moreButtonTitle')} arrow>
         <IconButton
-          aria-label="more"
+          aria-label={t('entityContextMenu.moreButtonAriaLabel')}
           aria-controls="long-menu"
           aria-haspopup="true"
           aria-expanded={!!anchorEl}

@@ -232,7 +232,7 @@ Remember to export your new extension via your plugin's `index.ts` so that it is
 export { YourSearchResultListItem } from './plugin.ts';
 ```
 
-For more details, see the [createSearchResultListItemExtension](https://backstage.io/docs/reference/plugin-search-react.createsearchresultlistitemextension) API reference.
+For more details, see the [createSearchResultListItemExtension](https://backstage.io/api/stable/functions/_backstage_plugin-search-react.index.createSearchResultListItemExtension.html) API reference.
 
 ### 2. Custom search result extension in the SearchPage
 

@@ -42,7 +42,7 @@ For tint colors (backgrounds, foregrounds, borders), migrate to appropriate stat
 - background: var(--bui-bg-tint);
 + background: var(--bui-bg-info);  /* For informational sections */
 + /* or */
-+ background: var(--bui-bg-neutral-on-surface-0);  /* For neutral emphasis */
++ background: var(--bui-bg-neutral-1);  /* For neutral emphasis */
 }
 ```
 

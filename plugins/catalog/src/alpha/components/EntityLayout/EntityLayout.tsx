@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentProps, ReactNode } from 'react';
+import { ComponentProps, ReactNode, ReactElement } from 'react';
 
 import Alert from '@material-ui/lab/Alert';
 
@@ -40,11 +40,13 @@ import {
 import { catalogTranslationRef } from '../../translation';
 import { EntityHeader } from '../EntityHeader';
 import { EntityTabs } from '../EntityTabs';
+import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 export type EntityLayoutRouteProps = {
   path: string;
   title: string;
-  group: string;
+  group?: string;
+  icon?: string | ReactElement;
   children: JSX.Element;
   if?: (entity: Entity) => boolean;
 };
@@ -77,6 +79,8 @@ export interface EntityLayoutProps {
    * It adds breadcrumbs in the Entity page to enhance user navigation and context awareness.
    */
   parentEntityRelations?: string[];
+  groupDefinitions: EntityContentGroupDefinitions;
+  showNavItemIcons?: boolean;
 }
 
 /**
@@ -105,6 +109,8 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     header,
     NotFoundComponent,
     parentEntityRelations,
+    groupDefinitions,
+    showNavItemIcons,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
@@ -132,6 +138,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
               title: elementProps.title,
               group: elementProps.group,
               children: elementProps.children,
+              icon: elementProps.icon,
             },
           ];
         }),
@@ -153,7 +160,13 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {loading && <Progress />}
 
-      {entity && <EntityTabs routes={routes} />}
+      {entity && (
+        <EntityTabs
+          routes={routes}
+          groupDefinitions={groupDefinitions}
+          showIcons={showNavItemIcons}
+        />
+      )}
 
       {error && (
         <Content>
@@ -167,11 +180,14 @@ export const EntityLayout = (props: EntityLayoutProps) => {
             NotFoundComponent
           ) : (
             <WarningPanel title={t('entityLabels.warningPanelTitle')}>
-              There is no {kind} with the requested{' '}
-              <Link to="https://backstage.io/docs/features/software-catalog/references">
-                kind, namespace, and name
-              </Link>
-              .
+              {t('entityPage.notFoundMessage', {
+                kind,
+                link: (
+                  <Link to="https://backstage.io/docs/features/software-catalog/references">
+                    {t('entityPage.notFoundLinkText')}
+                  </Link>
+                ),
+              })}
             </WarningPanel>
           )}
         </Content>

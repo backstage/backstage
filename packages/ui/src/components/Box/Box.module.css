@@ -24,19 +24,19 @@
   }
 
   .bui-Box[data-surface='0'] {
-    background-color: var(--bui-bg-surface-0);
+    background-color: var(--bui-bg-neutral-0);
   }
 
   .bui-Box[data-surface='1'] {
-    background-color: var(--bui-bg-surface-1);
+    background-color: var(--bui-bg-neutral-1);
   }
 
   .bui-Box[data-surface='2'] {
-    background-color: var(--bui-bg-surface-2);
+    background-color: var(--bui-bg-neutral-2);
   }
 
   .bui-Box[data-surface='3'] {
-    background-color: var(--bui-bg-surface-3);
+    background-color: var(--bui-bg-neutral-3);
   }
 
   .bui-Box[data-surface='danger'] {

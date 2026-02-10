@@ -185,7 +185,7 @@ export class GitLabClient {
         `/groups/${encodeURIComponent(options?.group)}/search`,
         {
           ...options,
-          scope: 'blob',
+          scope: 'blobs',
         },
       );
     }

@@ -9,7 +9,9 @@ import { PlaywrightTestConfig } from '@playwright/test';
 export function failOnBrowserErrors(): void;
 
 // @public
-export function generateProjects(): PlaywrightTestConfig['projects'];
+export function generateProjects(options?: {
+  channel?: string;
+}): PlaywrightTestConfig['projects'];
 
 // (No @packageDocumentation comment for this package)
 ```

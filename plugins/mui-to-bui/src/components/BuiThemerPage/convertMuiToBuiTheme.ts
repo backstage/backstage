@@ -109,12 +109,12 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     styleObject[`--bui-fg-${key}`] = value;
   });
 
-  // Generate surface colors
+  // Generate neutral background colors
   Object.entries({
-    'surface-0': palette.background.default,
-    'surface-1': palette.background.paper,
-    'surface-2': palette.background.default,
-    'surface-3': palette.background.default,
+    'neutral-0': palette.background.default,
+    'neutral-1': palette.background.paper,
+    'neutral-2': palette.background.default,
+    'neutral-3': palette.background.default,
     solid: palette.primary.main,
     'solid-hover': blend(palette.primary.main, palette.primary.dark, 0.5),
     'solid-pressed': palette.primary.dark,

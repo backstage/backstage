@@ -46,6 +46,7 @@ export * from './components/Tabs';
 export * from './components/TagGroup';
 export * from './components/Text';
 export * from './components/TextField';
+export * from './components/PasswordField';
 export * from './components/Tooltip';
 export * from './components/Menu';
 export * from './components/Popover';

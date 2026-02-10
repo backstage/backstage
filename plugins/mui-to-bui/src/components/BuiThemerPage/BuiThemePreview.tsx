@@ -46,7 +46,7 @@ export function BuiThemePreview({ mode, styleObject }: IsolatedPreviewProps) {
         // This creates a scoped context where the variables take precedence
         ...styleObject,
         width: '100%',
-        backgroundColor: 'var(--bui-bg-surface-2)',
+        backgroundColor: 'var(--bui-bg-neutral-2)',
         padding: 'var(--bui-space-3)',
         borderRadius: 'var(--bui-radius-2)',
         border: '1px solid var(--bui-border)',

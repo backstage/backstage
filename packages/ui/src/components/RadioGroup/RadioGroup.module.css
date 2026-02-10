@@ -51,7 +51,7 @@
       height: 1rem;
       box-sizing: border-box;
       border: 0.125rem solid var(--bui-border);
-      background: var(--bui-gray-1);
+      background: var(--bui-bg-neutral-1);
       border-radius: var(--bui-radius-full);
       transition: all 200ms;
       flex-shrink: 0;

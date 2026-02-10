@@ -301,7 +301,7 @@ An example of [integration with scalprum](https://github.com/backstage/backstage
 
 **Dynamic Feature configuration**
 
-The dynamic remote loading can be added directly into the [`createApp`](https://backstage.io/docs/reference/frontend-defaults.createapp) function.
+The dynamic remote loading can be added directly into the [`createApp`](https://backstage.io/api/stable/functions/_backstage_frontend-defaults.createApp.html) function.
 
 The current `feature` type can be expanded with a `DynamicFrontendFeature` type:
 
@@ -351,7 +351,7 @@ const scalprum = initialize({
 });
 ```
 
-Because the [`appLoader`](https://backstage.io/docs/reference/frontend-defaults.createapp) is already async, it is a perfect place to load the plugin registry and init the dynamic plugins.
+Because the [`appLoader`](https://backstage.io/api/stable/functions/_backstage_frontend-defaults.createApp.html) is already async, it is a perfect place to load the plugin registry and init the dynamic plugins.
 
 Initializing the dynamic feature is just a case of mapping the `DynamicFrontendFeature` to `FrontendFeature` via Scalprum:
 

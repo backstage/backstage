@@ -21,12 +21,15 @@ import {
 import { NotFoundError } from '@backstage/errors';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import pLimit from 'p-limit';
 import { UserSettingsStore, type UserSetting } from './UserSettingsStore';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-user-settings-backend',
   'migrations',
 );
+
+const dbLimit = pLimit(10);
 
 /**
  * @public
@@ -89,6 +92,75 @@ export class DatabaseUserSettingsStore implements UserSettingsStore {
       key: rows[0].key,
       value: JSON.parse(rows[0].value),
     };
+  }
+
+  async multiget(options: {
+    userEntityRef: string;
+    items: Array<{ bucket: string; key: string }>;
+  }): Promise<({ value: JsonValue } | null)[]> {
+    if (options.items.length === 0) {
+      return [];
+    }
+
+    // Split the items into a map of bucket -> keys
+    const bucketMap = new Map<string, Set<string>>();
+    for (const item of options.items) {
+      let keys = bucketMap.get(item.bucket);
+      if (!keys) {
+        keys = new Set();
+        bucketMap.set(item.bucket, keys);
+      }
+      keys.add(item.key);
+    }
+
+    // Chunks the keys per bucket to avoid hitting SQL parameter limits
+    const chunkKeys = (keys: Array<string>, size: number): string[][] => {
+      const chunks = [];
+      for (let i = 0; i < keys.length; i += size) {
+        chunks.push(keys.slice(i, i + size));
+      }
+      return chunks;
+    };
+
+    // Store the database content into a map of bucket -> {key -> value}
+    const resultsMap = new Map<string, Map<string, JsonValue>>();
+
+    await Promise.all(
+      Array.from(bucketMap.entries()).map(([bucket, keySet]) =>
+        dbLimit(async (): Promise<void> => {
+          const keyMap = new Map<string, JsonValue>();
+          resultsMap.set(bucket, keyMap);
+
+          const keyChunks = chunkKeys(Array.from(keySet), 100);
+
+          for (const keys of keyChunks) {
+            const rows = await this.db<RawDbUserSettingsRow>('user_settings')
+              .where({
+                user_entity_ref: options.userEntityRef,
+                bucket,
+              })
+              .whereIn('key', keys)
+              .select(['bucket', 'key', 'value']);
+
+            for (const row of rows) {
+              keyMap.set(row.key, JSON.parse(row.value));
+            }
+          }
+        }),
+      ),
+    );
+
+    // For each exact bucket/key requested, return either the value or null if
+    // not found
+    return options.items.map(({ bucket, key }) => {
+      const value = resultsMap.get(bucket)?.get(key);
+
+      if (typeof value === 'undefined') {
+        return null;
+      }
+
+      return { value };
+    });
   }
 
   async set(options: {

@@ -528,10 +528,12 @@ transpilers
 trixie
 truthy
 tsconfig
+TTLs
 Turbopack
 TSDoc
 typeahead
 ui
+unassign
 unbreak
 Unconference
 undici

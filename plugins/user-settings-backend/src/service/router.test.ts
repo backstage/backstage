@@ -24,9 +24,11 @@ import {
   mockServices,
   mockErrorHandler,
 } from '@backstage/backend-test-utils';
+import { JsonValue } from '@backstage/types';
 
 describe('createRouter', () => {
   const userSettingsStore: jest.Mocked<UserSettingsStore> = {
+    multiget: jest.fn(),
     get: jest.fn(),
     set: jest.fn(),
     delete: jest.fn(),
@@ -95,6 +97,124 @@ describe('createRouter', () => {
         userEntityRef: mockUserRef,
         bucket: 'my-bucket',
         key: 'my-key/with/slashes',
+      });
+    });
+
+    it('returns an error if the Authorization header is missing', async () => {
+      const responses = await request(app)
+        .get('/buckets/my-bucket/keys/my-key')
+        .set('Authorization', mockCredentials.none.header());
+
+      expect(responses.status).toEqual(401);
+      expect(userSettingsStore.get).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('GET /multi', () => {
+    const mockMultiget = (store: Record<string, Record<string, JsonValue>>) => {
+      userSettingsStore.multiget.mockImplementation(async ({ items }) => {
+        return items.map(({ bucket, key }) => {
+          const value = store[bucket]?.[key];
+          if (typeof value !== 'undefined') {
+            return { value };
+          }
+          return null;
+        });
+      });
+    };
+
+    it('returns single value', async () => {
+      const values = { 'key-1': 'a' };
+
+      mockMultiget({ 'my-bucket': values });
+
+      const responses = await request(app)
+        .post('/multiget')
+        .send({
+          items: Object.keys(values).map(key => ({
+            bucket: 'my-bucket',
+            key,
+          })),
+        });
+
+      expect(responses.status).toEqual(200);
+      expect(responses.body).toEqual({ items: [{ value: 'a' }] });
+
+      expect(userSettingsStore.multiget).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.multiget).toHaveBeenCalledWith({
+        userEntityRef: mockUserRef,
+        items: [
+          {
+            bucket: 'my-bucket',
+            key: 'key-1',
+          },
+        ],
+      });
+    });
+
+    it('returns single missing', async () => {
+      const values = { 'key-1': 'a' };
+
+      mockMultiget({ 'my-bucket': values });
+
+      const responses = await request(app)
+        .post('/multiget')
+        .send({
+          items: [{ bucket: 'my-bucket', key: 'missing-key' }],
+        });
+
+      expect(responses.status).toEqual(200);
+      expect(responses.body).toEqual({
+        items: [null],
+      });
+
+      expect(userSettingsStore.multiget).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.multiget).toHaveBeenCalledWith({
+        userEntityRef: mockUserRef,
+        items: [
+          {
+            bucket: 'my-bucket',
+            key: 'missing-key',
+          },
+        ],
+      });
+    });
+
+    it('returns existing and missing mixed', async () => {
+      const values = {
+        'key-1': 'a',
+        'key-2': 'b',
+      };
+
+      mockMultiget({ 'my-bucket': values });
+
+      const responses = await request(app)
+        .post('/multiget')
+        .send({
+          items: [
+            ...Object.keys(values).map(key => ({ bucket: 'my-bucket', key })),
+            { bucket: 'my-bucket', key: 'missing-key' },
+          ],
+        });
+
+      expect(responses.status).toEqual(200);
+      expect(responses.body).toEqual({
+        items: [{ value: 'a' }, { value: 'b' }, null],
+      });
+
+      expect(userSettingsStore.multiget).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.multiget).toHaveBeenCalledWith({
+        userEntityRef: mockUserRef,
+        items: [
+          ...Object.keys(values).map(key => ({
+            bucket: 'my-bucket',
+            key,
+          })),
+          {
+            bucket: 'my-bucket',
+            key: 'missing-key',
+          },
+        ],
       });
     });
 

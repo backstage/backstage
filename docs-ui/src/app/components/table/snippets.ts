@@ -12,7 +12,7 @@ const columns: ColumnConfig<DataType>[] = [
 function MyTable() {
   const { tableProps } = useTable({
     mode: 'complete',
-    getData: () => data,
+    data,
   });
 
   return <Table columnConfig={columns} {...tableProps} />;
@@ -39,7 +39,7 @@ const columns: ColumnConfig<typeof data[0]>[] = [
 function MyTable() {
   const { tableProps } = useTable({
     mode: 'complete',
-    getData: () => data,
+    data,
   });
 
   return <Table columnConfig={columns} {...tableProps} />;
@@ -69,7 +69,7 @@ export const tableSortingSnippet = `const columns: ColumnConfig<Item>[] = [
 
 const { tableProps } = useTable({
   mode: 'complete',
-  getData: () => data,
+  data,
   initialSort: { column: 'name', direction: 'ascending' },
   sortFn: (items, { column, direction }) => {
     return [...items].sort((a, b) => {
@@ -85,7 +85,7 @@ return <Table columnConfig={columns} {...tableProps} />;`;
 
 export const tablePaginationSnippet = `const { tableProps } = useTable({
   mode: 'complete',
-  getData: () => data,
+  data,
   paginationOptions: {
     pageSize: 10,
     pageSizeOptions: [10, 25, 50],
@@ -94,7 +94,7 @@ export const tablePaginationSnippet = `const { tableProps } = useTable({
 
 export const tableSearchSnippet = `const { tableProps, search } = useTable({
   mode: 'complete',
-  getData: () => data,
+  data,
   searchFn: (items, query) => {
     const lowerQuery = query.toLowerCase();
     return items.filter(item =>
@@ -119,7 +119,7 @@ export const tableSelectionSnippet = `const [selected, setSelected] = useState<S
 
 const { tableProps } = useTable({
   mode: 'complete',
-  getData: () => data,
+  data,
 });
 
 return (
@@ -162,7 +162,7 @@ export const tableRowActionsDisabledSnippet = `<Table
 
 export const tableEmptyStateSnippet = `const { tableProps, search } = useTable({
   mode: 'complete',
-  getData: () => data,
+  data,
   searchFn: (items, query) => { /* ... */ },
 });
 

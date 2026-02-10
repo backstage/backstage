@@ -27,7 +27,7 @@
       left: 0px;
       right: 0px;
       height: 16px;
-      background-color: var(--bui-bg-surface-0);
+      background-color: var(--bui-bg-neutral-0);
       z-index: 0;
     }
 
@@ -43,7 +43,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--bui-bg-surface-1);
+    background-color: var(--bui-bg-neutral-1);
     padding-inline: var(--bui-space-5);
     border-bottom: 1px solid var(--bui-border);
     color: var(--bui-fg-primary);
@@ -93,6 +93,6 @@
     margin-bottom: var(--bui-space-4);
     padding-inline: var(--bui-space-3);
     border-bottom: 1px solid var(--bui-border);
-    background-color: var(--bui-bg-surface-1);
+    background-color: var(--bui-bg-neutral-1);
   }
 }

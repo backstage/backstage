@@ -200,7 +200,82 @@ describe('Index page', () => {
 });
 ```
 
-That's all for testing features!
+## Testing entity extensions
+
+The `createTestEntityPage` utility from `@backstage/plugin-catalog-react/testUtils` simplifies testing entity cards and content extensions. It creates a test page that mounts at `/`, provides an `EntityProvider` context, and picks up entity extensions through input redirects.
+
+```tsx
+import { screen } from '@testing-library/react';
+import { renderTestApp } from '@backstage/frontend-test-utils';
+import { createTestEntityPage } from '@backstage/plugin-catalog-react/testUtils';
+import { myEntityCard } from './plugin';
+
+describe('MyEntityCard', () => {
+  it('should render for Component entities', async () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name: 'my-service' },
+      spec: { type: 'service', owner: 'team-a' },
+    };
+
+    renderTestApp({
+      extensions: [createTestEntityPage({ entity }), myEntityCard],
+    });
+
+    expect(await screen.findByText('My Card Title')).toBeInTheDocument();
+  });
+});
+```
+
+Entity content extensions can be tested the exact same way, just pass your content extension instead of a card. The test page also supports entity filters defined on the extensions, so you can test filter behavior by providing different entity kinds. If your extension depends on APIs you can pass mock implementation using the `apis` option `renderTestApp`, or you can pass the API extension directly alongside your content extension.
+
+Extensions that use `EntityRefLinks` or `useRelatedEntities` may require additional API mocking using the `apis` option on `renderTestApp`.
+
+## Mounting routes
+
+If your component or extension uses `useRouteRef` to generate links to other routes, you need to mount those routes in the test environment. Both `renderInTestApp` and `renderTestApp` support the `mountedRoutes` option for this purpose.
+
+For example, given a component that uses `useRouteRef` to create a link:
+
+```tsx
+import { useRouteRef } from '@backstage/frontend-plugin-api';
+import { detailsRouteRef } from './routes';
+
+export const MyComponent = () => {
+  const detailsLink = useRouteRef(detailsRouteRef);
+
+  return <a href={detailsLink()}>View details</a>;
+};
+```
+
+You can test it by mounting the route ref to a path using the `mountedRoutes` option:
+
+```tsx
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { detailsRouteRef } from './routes';
+import { MyComponent } from './MyComponent';
+
+describe('MyComponent', () => {
+  it('should render a link to the plugin page', async () => {
+    await renderInTestApp(<MyComponent />, {
+      mountedRoutes: {
+        '/my-plugin/details': detailsRouteRef,
+      },
+    });
+
+    expect(await screen.findByText('View details')).toHaveAttribute(
+      'href',
+      '/my-plugin/details',
+    );
+  });
+});
+```
+
+## Extension tree snapshots
+
+The `snapshot()` method on `ExtensionTester` returns a tree-shaped representation of the resolved extension hierarchy, which is convenient to use with Jest's `toMatchInlineSnapshot()` for verifying extension structure in tests.
 
 ## Missing something?
 

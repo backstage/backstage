@@ -280,6 +280,67 @@ describe('GitLabClient', () => {
     });
   });
 
+  describe('listFiles', () => {
+    it('should call group search API with correct scope parameter', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const pagedRequestSpy = jest.spyOn(client as any, 'pagedRequest');
+
+      await client.listFiles({
+        group: 'group1',
+        search: 'filename:catalog-info.yaml',
+        page: 1,
+        per_page: 50,
+      });
+
+      expect(pagedRequestSpy).toHaveBeenCalledWith(
+        '/groups/group1/search',
+        expect.objectContaining({
+          group: 'group1',
+          search: 'filename:catalog-info.yaml',
+          scope: 'blobs',
+          page: 1,
+          per_page: 50,
+        }),
+      );
+    });
+
+    it('should return empty items when group is missing', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const result = await client.listFiles({
+        search: 'filename:catalog-info.yaml',
+      });
+
+      expect(result.items).toEqual([]);
+    });
+
+    it('should return empty items when search is missing', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      const result = await client.listFiles({
+        group: 'my-group',
+      });
+
+      expect(result.items).toEqual([]);
+    });
+  });
+
   describe('get gitlab.com users', () => {
     it('gets all users under group', async () => {
       const client = new GitLabClient({

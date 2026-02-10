@@ -36,7 +36,13 @@ export const useTableOptionsPropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: ['function'],
     description:
-      'Function that returns or fetches data (required). Signature varies by mode.',
+      'Function that returns or fetches data (required for "offset" and "cursor" modes). For the "complete" mode, either this or `data` must be provided. Signature varies by mode.',
+  },
+  data: {
+    type: 'enum',
+    values: ['T[]'],
+    description:
+      'The data for the table. Only applicable for "complete" mode, and either this or `getData` must be provided.',
   },
   paginationOptions: {
     type: 'enum',

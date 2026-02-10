@@ -10,13 +10,17 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { HomePageLayoutProps } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
+import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha
 const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
@@ -49,6 +53,54 @@ const _default: OverridableFrontendPlugin<
         element: JSX.Element;
       };
     }>;
+    'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'random-joke';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/starred-entities': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'starred-entities';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/toolkit': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'toolkit';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'nav-item:home': OverridableExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
+      };
+    }>;
     'page:home': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
@@ -67,25 +119,28 @@ const _default: OverridableFrontendPlugin<
             }
           >;
       inputs: {
-        props: ExtensionInput<
-          | ConfigurableExtensionDataRef<
-              JSX_2.Element,
-              'core.reactElement',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'title',
-              {
-                optional: true;
-              }
-            >,
+        widgets: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            HomePageWidgetData,
+            'home.widget.data',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        layout: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            (props: HomePageLayoutProps) => JSX_2.Element,
+            'home.layout.component',
+            {}
+          >,
           {
             singleton: true;
             optional: true;
-            internal: false;
+            internal: true;
           }
         >;
       };
@@ -102,7 +157,7 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha
 export const homeTranslationRef: TranslationRef<
   'home',
   {
@@ -133,13 +188,6 @@ export const homeTranslationRef: TranslationRef<
     readonly 'featuredDocsCard.empty.learnMoreLinkTitle': 'DOCS';
     readonly 'featuredDocsCard.learnMoreTitle': 'LEARN MORE';
   }
->;
-
-// @alpha (undocumented)
-export const titleExtensionDataRef: ConfigurableExtensionDataRef<
-  string,
-  'title',
-  {}
 >;
 
 // (No @packageDocumentation comment for this package)

@@ -23,22 +23,22 @@
 
   .bui-Grid[data-surface='0'],
   .bui-GridItem[data-surface='0'] {
-    background-color: var(--bui-bg-surface-0);
+    background-color: var(--bui-bg-neutral-0);
   }
 
   .bui-Grid[data-surface='1'],
   .bui-GridItem[data-surface='1'] {
-    background-color: var(--bui-bg-surface-1);
+    background-color: var(--bui-bg-neutral-1);
   }
 
   .bui-Grid[data-surface='2'],
   .bui-GridItem[data-surface='2'] {
-    background-color: var(--bui-bg-surface-2);
+    background-color: var(--bui-bg-neutral-2);
   }
 
   .bui-Grid[data-surface='3'],
   .bui-GridItem[data-surface='3'] {
-    background-color: var(--bui-bg-surface-3);
+    background-color: var(--bui-bg-neutral-3);
   }
 
   .bui-Grid[data-surface='danger'],

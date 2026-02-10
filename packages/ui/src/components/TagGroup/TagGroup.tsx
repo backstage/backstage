@@ -21,7 +21,7 @@ import {
   Tag as ReactAriaTag,
   Button as ReactAriaButton,
 } from 'react-aria-components';
-import type { ReactNode } from 'react';
+import { forwardRef, type PropsWithRef, type ReactNode, type Ref } from 'react';
 import { RiCloseCircleLine } from '@remixicon/react';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
@@ -64,47 +64,50 @@ export const TagGroup = <T extends object>(props: TagGroupProps<T>) => {
  *
  * @public
  */
-export const Tag = (props: TagProps) => {
-  const { classNames, cleanedProps } = useStyles(TagGroupDefinition, {
-    size: 'small',
-    ...props,
-  });
-  const { children, className, icon, size, href, ...rest } = cleanedProps;
-  const textValue = typeof children === 'string' ? children : undefined;
+export const Tag = forwardRef(
+  (props: PropsWithRef<TagProps>, ref: Ref<HTMLDivElement>) => {
+    const { classNames, cleanedProps } = useStyles(TagGroupDefinition, {
+      size: 'small',
+      ...props,
+    });
+    const { children, className, icon, size, href, ...rest } = cleanedProps;
+    const textValue = typeof children === 'string' ? children : undefined;
 
-  useRoutingRegistrationEffect(href);
+    useRoutingRegistrationEffect(href);
 
-  return (
-    <ReactAriaTag
-      textValue={textValue}
-      className={clsx(classNames.tag, styles[classNames.tag], className)}
-      data-size={size}
-      href={href}
-      {...rest}
-    >
-      {({ allowsRemoving }) => (
-        <>
-          {icon && (
-            <span
-              className={clsx(classNames.tagIcon, styles[classNames.tagIcon])}
-            >
-              {icon}
-            </span>
-          )}
-          {children as ReactNode}
-          {allowsRemoving && (
-            <ReactAriaButton
-              className={clsx(
-                classNames.tagRemoveButton,
-                styles[classNames.tagRemoveButton],
-              )}
-              slot="remove"
-            >
-              <RiCloseCircleLine size={16} />
-            </ReactAriaButton>
-          )}
-        </>
-      )}
-    </ReactAriaTag>
-  );
-};
+    return (
+      <ReactAriaTag
+        ref={ref}
+        textValue={textValue}
+        className={clsx(classNames.tag, styles[classNames.tag], className)}
+        data-size={size}
+        href={href}
+        {...rest}
+      >
+        {({ allowsRemoving }) => (
+          <>
+            {icon && (
+              <span
+                className={clsx(classNames.tagIcon, styles[classNames.tagIcon])}
+              >
+                {icon}
+              </span>
+            )}
+            {children as ReactNode}
+            {allowsRemoving && (
+              <ReactAriaButton
+                className={clsx(
+                  classNames.tagRemoveButton,
+                  styles[classNames.tagRemoveButton],
+                )}
+                slot="remove"
+              >
+                <RiCloseCircleLine size={16} />
+              </ReactAriaButton>
+            )}
+          </>
+        )}
+      </ReactAriaTag>
+    );
+  },
+);

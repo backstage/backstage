@@ -75,7 +75,7 @@ export const myPlugin = createBackendPlugin({
 
 When errors are thrown from MCP actions, the backend will handle and surface error message for any error from `@backstage/errors`. Unknown errors will be handled by `@modelcontextprotocol/sdk`'s default error handling, which may result in a generic `500 Server Error` being returned. As a result, we recommend using errors from `@backstage/errors` when applicable.
 
-See https://backstage.io/docs/reference/errors/ for a full list of supported errors.
+See https://backstage.io/api/stable/modules/_backstage_errors.html for a full list of supported errors.
 
 When writing MCP tools, use the appropriate error from `@backstage/errors` when applicable:
 
