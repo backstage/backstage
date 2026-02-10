@@ -27,9 +27,12 @@ import {
   resolve as resolvePath,
   posix,
   relative as relativePath,
+  extname,
 } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { publishPreflightCheck } from '../../lib/publishing';
+
+const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx', '.json'];
 
 /**
  * A mutable object representing a package.json file with potential fixes.
@@ -122,29 +125,46 @@ export function fixPackageExports(pkg: FixablePackage) {
     }
     const newPath = trimRelative(path);
 
+    // Only script files and package.json should be added to typesVersions
     if (typeof value === 'string') {
-      typeEntries[newPath] = [trimRelative(value)];
+      if (SCRIPT_EXTS.includes(extname(value))) {
+        typeEntries[newPath] = [trimRelative(value)];
+      }
     } else if (value && typeof value === 'object' && !Array.isArray(value)) {
       if (typeof value.types === 'string') {
         typeEntries[newPath] = [trimRelative(value.types)];
-      } else if (typeof value.default === 'string') {
+      } else if (
+        typeof value.default === 'string' &&
+        SCRIPT_EXTS.includes(extname(value.default))
+      ) {
         typeEntries[newPath] = [trimRelative(value.default)];
       }
     }
   }
 
-  const typesVersions = { '*': typeEntries };
-  if (existingTypesVersions !== JSON.stringify(typesVersions)) {
-    const newPkgEntries = Object.entries(pkg.packageJson).filter(
-      ([name]) => name !== 'typesVersions',
-    );
-    newPkgEntries.splice(
-      newPkgEntries.findIndex(([name]) => name === 'exports') + 1,
-      0,
-      ['typesVersions', typesVersions],
-    );
+  const hasTypeEntries = Object.keys(typeEntries).length > 0;
+  const typesVersions = hasTypeEntries ? { '*': typeEntries } : undefined;
 
-    pkg.packageJson = Object.fromEntries(newPkgEntries) as BackstagePackageJson;
+  if (existingTypesVersions !== JSON.stringify(typesVersions)) {
+    if (pkg.packageJson.typesVersions) {
+      // Update in place to preserve field order
+      if (typesVersions) {
+        pkg.packageJson.typesVersions = typesVersions;
+      } else {
+        delete pkg.packageJson.typesVersions;
+      }
+    } else if (typesVersions) {
+      // Insert after exports when adding for the first time
+      const newPkgEntries = Object.entries(pkg.packageJson);
+      newPkgEntries.splice(
+        newPkgEntries.findIndex(([name]) => name === 'exports') + 1,
+        0,
+        ['typesVersions', typesVersions],
+      );
+      pkg.packageJson = Object.fromEntries(
+        newPkgEntries,
+      ) as BackstagePackageJson;
+    }
     pkg.changed = true;
   }
 
