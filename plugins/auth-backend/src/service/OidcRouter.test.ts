@@ -34,7 +34,6 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcService } from '../service/OidcService';
 import { TokenIssuer } from '../identity/types';
-import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
 
 jest.setTimeout(60_000);
@@ -152,20 +151,20 @@ describe('OidcRouter', () => {
           experimentalDynamicClientRegistration: {
             enabled: true,
           },
+          experimentalRefreshToken: {
+            enabled: true,
+          },
         },
       },
     });
 
-    const offlineSessionDb = OfflineSessionDatabase.create({
-      knex,
-      tokenLifetimeSeconds: 30 * 24 * 60 * 60,
-      maxRotationLifetimeSeconds: 365 * 24 * 60 * 60,
-      maxTokensPerUser: 20,
-    });
+    const mockLifecycle = mockServices.lifecycle.mock();
 
-    const offlineAccess = OfflineAccessService.create({
-      offlineSessionDb,
+    const offlineAccess = await OfflineAccessService.create({
+      config: mockConfig,
+      database: { getClient: async () => knex },
       logger: mockServices.logger.mock(),
+      lifecycle: mockLifecycle,
     });
 
     const oidcService = OidcService.create({
@@ -791,10 +790,10 @@ describe('OidcRouter', () => {
             code: 'invalid-code',
             redirect_uri: 'https://example.com/callback',
           })
-          .expect(401);
+          .expect(400);
 
         expect(tokenResponse.body).toEqual({
-          error: 'invalid_client',
+          error: 'invalid_grant',
           error_description: 'Invalid authorization code',
         });
       });
@@ -1065,7 +1064,7 @@ describe('OidcRouter', () => {
             grant_type: 'refresh_token',
             refresh_token: 'invalid-token',
           })
-          .expect(401);
+          .expect(400);
       });
 
       it('should reject reuse of a rotated refresh token', async () => {
@@ -1094,7 +1093,7 @@ describe('OidcRouter', () => {
             grant_type: 'refresh_token',
             refresh_token: originalRefreshToken,
           })
-          .expect(401);
+          .expect(400);
       });
     });
   });

@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  DatabaseService,
+  LifecycleService,
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
+import { readDurationFromConfig } from '@backstage/config';
+import { durationToMilliseconds } from '@backstage/types';
 import { v4 as uuid } from 'uuid';
 import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
 import {
@@ -33,11 +40,102 @@ export class OfflineAccessService {
   readonly #offlineSessionDb: OfflineSessionDatabase;
   readonly #logger: LoggerService;
 
-  static create(options: {
-    offlineSessionDb: OfflineSessionDatabase;
+  static async create(options: {
+    config: RootConfigService;
+    database: DatabaseService;
     logger: LoggerService;
-  }) {
-    return new OfflineAccessService(options.offlineSessionDb, options.logger);
+    lifecycle: LifecycleService;
+  }): Promise<OfflineAccessService> {
+    const { config, database, logger, lifecycle } = options;
+
+    const tokenLifetime = config.has(
+      'auth.experimentalRefreshToken.tokenLifetime',
+    )
+      ? readDurationFromConfig(config, {
+          key: 'auth.experimentalRefreshToken.tokenLifetime',
+        })
+      : { days: 30 };
+
+    const maxRotationLifetime = config.has(
+      'auth.experimentalRefreshToken.maxRotationLifetime',
+    )
+      ? readDurationFromConfig(config, {
+          key: 'auth.experimentalRefreshToken.maxRotationLifetime',
+        })
+      : { years: 1 };
+
+    const tokenLifetimeSeconds = Math.floor(
+      durationToMilliseconds(tokenLifetime) / 1000,
+    );
+    const maxRotationLifetimeSeconds = Math.floor(
+      durationToMilliseconds(maxRotationLifetime) / 1000,
+    );
+
+    if (tokenLifetimeSeconds <= 0) {
+      throw new Error(
+        'auth.experimentalRefreshToken.tokenLifetime must be a positive duration',
+      );
+    }
+    if (maxRotationLifetimeSeconds <= 0) {
+      throw new Error(
+        'auth.experimentalRefreshToken.maxRotationLifetime must be a positive duration',
+      );
+    }
+    if (maxRotationLifetimeSeconds <= tokenLifetimeSeconds) {
+      throw new Error(
+        'auth.experimentalRefreshToken.maxRotationLifetime must be greater than tokenLifetime',
+      );
+    }
+
+    const maxTokensPerUser =
+      config.getOptionalNumber(
+        'auth.experimentalRefreshToken.maxTokensPerUser',
+      ) ?? 20;
+
+    if (maxTokensPerUser <= 0) {
+      throw new Error(
+        'auth.experimentalRefreshToken.maxTokensPerUser must be a positive number',
+      );
+    }
+
+    const knex = await database.getClient();
+
+    if (
+      knex.client.config.client.includes('sqlite') ||
+      knex.client.config.client.includes('better-sqlite')
+    ) {
+      logger.warn(
+        'Refresh tokens are enabled with SQLite, which does not support row-level locking. ' +
+          'Concurrent token rotation may not be fully protected against race conditions. ' +
+          'Use PostgreSQL for production deployments.',
+      );
+    }
+
+    const offlineSessionDb = OfflineSessionDatabase.create({
+      knex,
+      tokenLifetimeSeconds,
+      maxRotationLifetimeSeconds,
+      maxTokensPerUser,
+    });
+
+    const cleanupIntervalMs = 60 * 60 * 1000;
+    const cleanupInterval = setInterval(async () => {
+      try {
+        const deleted = await offlineSessionDb.cleanupExpiredSessions();
+        if (deleted > 0) {
+          logger.info(`Cleaned up ${deleted} expired offline sessions`);
+        }
+      } catch (error) {
+        logger.error('Failed to cleanup expired offline sessions', error);
+      }
+    }, cleanupIntervalMs);
+    cleanupInterval.unref();
+
+    lifecycle.addShutdownHook(() => {
+      clearInterval(cleanupInterval);
+    });
+
+    return new OfflineAccessService(offlineSessionDb, logger);
   }
 
   private constructor(
@@ -80,8 +178,9 @@ export class OfflineAccessService {
   async refreshAccessToken(options: {
     refreshToken: string;
     tokenIssuer: TokenIssuer;
+    clientId?: string;
   }): Promise<{ accessToken: string; refreshToken: string }> {
-    const { refreshToken, tokenIssuer } = options;
+    const { refreshToken, tokenIssuer, clientId } = options;
 
     let sessionId: string;
     try {
@@ -99,6 +198,12 @@ export class OfflineAccessService {
     if (this.#offlineSessionDb.isSessionExpired(session)) {
       await this.#offlineSessionDb.deleteSession(sessionId);
       throw new AuthenticationError('Invalid refresh token');
+    }
+
+    if (clientId && session.oidcClientId && clientId !== session.oidcClientId) {
+      throw new AuthenticationError(
+        'Refresh token was not issued to this client',
+      );
     }
 
     // Verify the caller actually holds a valid token, not just the session ID

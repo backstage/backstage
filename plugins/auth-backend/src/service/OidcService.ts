@@ -100,13 +100,19 @@ export class OidcService {
         'PS512',
         'EdDSA',
       ],
-      scopes_supported: ['openid', 'offline_access'],
+      scopes_supported: [
+        'openid',
+        ...(this.offlineAccess ? ['offline_access'] : []),
+      ],
       token_endpoint_auth_methods_supported: [
         'client_secret_basic',
         'client_secret_post',
       ],
       claims_supported: ['sub', 'ent'],
-      grant_types_supported: ['authorization_code', 'refresh_token'],
+      grant_types_supported: [
+        'authorization_code',
+        ...(this.offlineAccess ? ['refresh_token'] : []),
+      ],
       authorization_endpoint: `${this.baseUrl}/v1/authorize`,
       code_challenge_methods_supported: ['S256', 'plain'],
       ...(dcrEnabled && {
@@ -466,7 +472,10 @@ export class OidcService {
     };
   }
 
-  public async refreshAccessToken(params: { refreshToken: string }): Promise<{
+  public async refreshAccessToken(params: {
+    refreshToken: string;
+    clientId?: string;
+  }): Promise<{
     accessToken: string;
     tokenType: string;
     expiresIn: number;
@@ -480,6 +489,7 @@ export class OidcService {
       await this.offlineAccess.refreshAccessToken({
         refreshToken: params.refreshToken,
         tokenIssuer: this.tokenIssuer,
+        clientId: params.clientId,
       });
 
     const expiresIn = readDcrTokenExpiration(this.config);

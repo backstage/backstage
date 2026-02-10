@@ -109,13 +109,13 @@ describe('OidcService', () => {
             'PS512',
             'EdDSA',
           ],
-          scopes_supported: ['openid', 'offline_access'],
+          scopes_supported: ['openid'],
           token_endpoint_auth_methods_supported: [
             'client_secret_basic',
             'client_secret_post',
           ],
           claims_supported: ['sub', 'ent'],
-          grant_types_supported: ['authorization_code', 'refresh_token'],
+          grant_types_supported: ['authorization_code'],
           authorization_endpoint: 'http://mock-base-url/v1/authorize',
           code_challenge_methods_supported: ['S256', 'plain'],
         });

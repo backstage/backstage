@@ -37,8 +37,12 @@ export class OidcError extends CustomErrorBase {
     };
   }
 
+  static isOidcError(error: unknown): error is OidcError {
+    return isError(error) && error.name === 'OidcError';
+  }
+
   static fromError(error: unknown): OidcError {
-    if (error instanceof OidcError) {
+    if (OidcError.isOidcError(error)) {
       return error;
     }
 
@@ -71,7 +75,7 @@ export class OidcError extends CustomErrorBase {
       res: Response,
       next: NextFunction,
     ): void => {
-      if (err instanceof OidcError) {
+      if (OidcError.isOidcError(err)) {
         logger[err.statusCode >= 500 ? 'error' : 'info'](
           `OIDC Request failed with status ${err.statusCode}: ${err.body.error} - ${err.body.error_description}`,
           err.cause,

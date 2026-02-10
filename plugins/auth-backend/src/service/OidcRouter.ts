@@ -15,7 +15,7 @@
  */
 import Router from 'express-promise-router';
 import { OidcService } from './OidcService';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, isError } from '@backstage/errors';
 import {
   AuthService,
   HttpAuthService,
@@ -53,6 +53,8 @@ const tokenRequestBodySchema = z.object({
   redirect_uri: z.string().url().optional(),
   code_verifier: z.string().optional(),
   refresh_token: z.string().optional(),
+  client_id: z.string().optional(),
+  client_secret: z.string().optional(),
 });
 
 const registerRequestBodySchema = z.object({
@@ -261,7 +263,7 @@ export class OidcRouter {
 
           return res.redirect(authSessionRedirectUrl.toString());
         } catch (error) {
-          if (error instanceof OidcError) {
+          if (OidcError.isOidcError(error)) {
             const errorParams = new URLSearchParams();
             errorParams.append('error', error.body.error);
             errorParams.append(
@@ -383,6 +385,8 @@ export class OidcRouter {
           redirect_uri: redirectUri,
           code_verifier: codeVerifier,
           refresh_token: refreshToken,
+          client_id: bodyClientId,
+          client_secret: bodyClientSecret,
         } = validateRequest(tokenRequestBodySchema, req.body);
 
         const expiresIn = readDcrTokenExpiration(this.config);
@@ -428,15 +432,25 @@ export class OidcRouter {
               );
             }
 
-            // Optional per RFC 6749 Section 6, public clients may not have secrets
+            // Authenticate if credentials are provided via Basic auth or body
             const hasCredentials =
-              req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i);
+              req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i) ||
+              (bodyClientId && bodyClientSecret);
+
+            let authenticatedClientId: string | undefined;
             if (hasCredentials) {
-              await authenticateClient(req, this.oidc);
+              const { clientId: authedId } = await authenticateClient(
+                req,
+                this.oidc,
+                bodyClientId,
+                bodyClientSecret,
+              );
+              authenticatedClientId = authedId;
             }
 
             const result = await this.oidc.refreshAccessToken({
               refreshToken,
+              clientId: authenticatedClientId,
             });
 
             return res.json({
@@ -454,6 +468,11 @@ export class OidcRouter {
             400,
           );
         } catch (error) {
+          // Invalid auth codes and refresh tokens should be invalid_grant, not invalid_client.
+          // Client auth failures are already thrown as OidcError by authenticateClient.
+          if (isError(error) && error.name === 'AuthenticationError') {
+            throw new OidcError('invalid_grant', error.message, 400, error);
+          }
           throw OidcError.fromError(error);
         }
       });
