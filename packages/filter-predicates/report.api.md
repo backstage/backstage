@@ -61,7 +61,7 @@ export type FilterPredicateValue =
       $contains: FilterPredicate;
     }
   | {
-      $startsWith: string;
+      $hasPrefix: string;
     }
   | UnknownFilterPredicateValueMatcher;
 
@@ -102,6 +102,6 @@ export type UnknownFilterPredicateOperator = {
 export type UnknownFilterPredicateValueMatcher = {
   [KMatcher in `$${string}`]: JsonValue;
 } & {
-  [KMatcher in '$exists' | '$in' | '$contains' | '$startsWith']: never;
+  [KMatcher in '$exists' | '$in' | '$contains' | '$hasPrefix']: never;
 };
 ```

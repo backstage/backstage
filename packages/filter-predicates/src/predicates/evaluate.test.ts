@@ -237,7 +237,7 @@ describe('evaluate', () => {
         'metadata.annotations.github.com/repo': { $exists: true },
       },
     ],
-    ['a', { 'spec.type': { $startsWith: 'g' } }],
+    ['a', { 'spec.type': { $hasPrefix: 'g' } }],
   ])('filter entry %#', (expected, filter) => {
     it('filterPredicateToFilterFunction', () => {
       const filtered = entities.filter(entity =>

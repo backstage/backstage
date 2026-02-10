@@ -153,7 +153,7 @@ export type FilterPredicateExpression = {
 export type UnknownFilterPredicateValueMatcher = {
   [KMatcher in `$${string}`]: JsonValue;
 } & {
-  [KMatcher in '$exists' | '$in' | '$contains' | '$startsWith']: never;
+  [KMatcher in '$exists' | '$in' | '$contains' | '$hasPrefix']: never;
 };
 
 /**
@@ -188,7 +188,7 @@ export type FilterPredicateValue =
       /**
        * Asserts that the property value is string, and that it starts with the given string.
        */
-      $startsWith: string;
+      $hasPrefix: string;
     }
   | UnknownFilterPredicateValueMatcher;
 

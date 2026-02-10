@@ -104,13 +104,13 @@ function evaluateFilterPredicateValue(
     }
     return value === undefined;
   }
-  if ('$startsWith' in filter) {
+  if ('$hasPrefix' in filter) {
     if (typeof value !== 'string') {
       return false;
     }
     return value
       .toLocaleUpperCase('en-US')
-      .startsWith(filter.$startsWith.toLocaleUpperCase('en-US'));
+      .startsWith(filter.$hasPrefix.toLocaleUpperCase('en-US'));
   }
 
   return false;
