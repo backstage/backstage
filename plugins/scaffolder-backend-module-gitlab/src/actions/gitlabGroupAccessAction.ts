@@ -63,7 +63,8 @@ export const createGitlabGroupAccessAction = (options: {
       input: {
         repoUrl: z =>
           z.string({
-            description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
+            description:
+              "The host of the GitLab instance, for example 'gitlab.com' or 'gitlab.my-company.com'.",
           }),
         token: z =>
           z
