@@ -1,5 +1,19 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- 104ca74: User-settings will now use DataLoader to batch consecutive calls into one API call to improve performance
+
+### Patch Changes
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/plugin-user-settings-common@0.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-auth-node@0.6.13-next.1
+
 ## 0.3.11-next.0
 
 ### Patch Changes

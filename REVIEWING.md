@@ -2,7 +2,7 @@
 
 This file provides pointers for reviewing pull requests. While the main audience are reviewers, this can also be useful if you are contributing to this repository.
 
-## Quick links
+## Quick Links
 
 - [Incoming Reviews](https://github.com/orgs/backstage/projects/14/views/1)
 - [Personal Reviews](https://github.com/orgs/backstage/projects/14/views/2)
@@ -10,29 +10,76 @@ This file provides pointers for reviewing pull requests. While the main audience
 
 ## Review Workflow
 
-Pull request reviews are coordinated manually by maintainers and reviewers based on project area ownership. Reviews are prioritized and tracked using labels and GitHub Project boards. This review process applies to all pull requests in the [main Backstage repository](https://github.com/backstage/backstage), other repositories may have their own review processes.
+Pull request reviews are coordinated by maintainers and reviewers based on project area ownership. Reviews are prioritized and tracked using automated labels and a GitHub Project board. This review process applies to all pull requests in the [main Backstage repository](https://github.com/backstage/backstage), other repositories may have their own review processes.
 
 All incoming pull request reviews are tracked on the [Incoming Reviews board](https://github.com/orgs/backstage/projects/14/views/1). This board can be used by members of the `@backstage/reviewers` group to find pull requests to review, as well as maintainers that want an overview of all incoming pull requests.
 
 Project area maintainers can use the same board but with additional filters applied to only show incoming pull requests for their project area. These filtered boards are linked to for each project area in [OWNERS.md](./OWNERS.md). There is also a [personal review board](https://github.com/orgs/backstage/projects/14/views/2) that can be used to track reviews that you have been assigned to.
 
-There are several labels that help track the status and prioritize pull requests. You can find more information about these labels in [LABELS.md](./LABELS.md#pull-request-labels).
+### Submitting Reviews
 
-Reviewers should use the "request changes" option when they believe changes are necessary before the pull request can be merged. This is both to clarify to the author that the pull request is not ready to be merged, but also to update the status of the pull request in the review queue. If you simply want to contribute to the discussion in a pull request, or have minor or optional suggestions, you can just leave a regular comment.
+When reviewing a pull request, always submit a formal review using either **"Approve"** or **"Request changes"**. Do not use "Comment" as a substitute for either of these — the review automation relies on the review state to manage labels and the review board, and only formal approvals and change requests are tracked.
 
-### Review process for @backstage/reviewers
+- Use **"Approve"** when you are satisfied with the changes and believe they are ready to be merged (for your area, at least).
+- Use **"Request changes"** when changes are necessary before the pull request can be merged. This signals clearly to the author what is expected and moves the pull request out of the review queue until the author responds.
+- Use **"Comment"** only to contribute to discussion, ask questions, or leave optional or minor suggestions that do not block the pull request.
 
-Members of the `@backstage/reviewers` do not have any specific areas that they should focus on, they can choose to filter and focus on reviews from any part of the project. They do not assign themselves specific pull requests, but instead leave reviews directly on pull requests without any further process.
+Being explicit with "Approve" or "Request changes" is important both for transparent communication with the author and for the automation to function correctly. The automation reads these review states to update labels and the review board accordingly, meaning a "Comment" review will not cause any status change.
 
-Reviews from this group still have meaningful impact on the review process, as they are picked up by project automation. Approving reviews will add the `reviewer-approved` label to the pull request, which greatly increases its priority and visibility for owners in the area. Likewise, requesting changes will add the `waiting-for:author` label to the pull request, which will remove it from the review queue until the author has commented or made changes.
+### Closing Pull Requests
 
-### Review process for Project Area Maintainers
+Pull requests that have been superseded, are no longer relevant, or otherwise are not worth moving forward should be closed with a comment explaining why. Closed pull requests are automatically removed from the review board by the automation.
 
-Project area maintainers are responsible for reviewing and ultimately merging or closing pull requests towards their project area. They should use the global or filtered board for their project area to find pull requests to review. When they find a pull request that they want to review, they should assign themselves to the pull request, removing it from the review queue and placing it on their personal review board.
+### Review Process for @backstage/reviewers
 
-Once a pull request has been assigned a single owner, it is their responsibility to review and eventually merge or close the pull request. They manage all ongoing requests on their personal review board, typically prioritizing the ones at the top of the board marked with `waiting-for:review`. If a pull request is left unreviewed for too long, it will automatically be unassigned and returned to the review queue. Once a pull request has been approved by the assigned owner, the owner should merge the pull request themselves if it is an outside contribution, but otherwise generally leave that to the author of the PR.
+Members of the `@backstage/reviewers` do not have any specific areas that they should focus on. They can choose to filter and focus on reviews from any part of the project. They do not assign themselves specific pull requests, but instead leave reviews directly on pull requests without any further process.
+
+Reviews from this group still have meaningful impact on the review process, as they are picked up by the automation. Approving reviews from a member of this group will add the `reviewer-approved` label to the pull request, which greatly increases its priority and visibility for project area maintainers. Likewise, requesting changes will add the `waiting-for:author` label to the pull request, removing it from the review queue until the author has commented or pushed new changes.
+
+As a reward for helping out with reviews, members who actively review pull requests will have their own pull requests prioritized higher on the review board. The more reviews you contribute, the higher the priority boost your own pull requests receive.
+
+### Review Process for Project Area Maintainers
+
+Project area maintainers are responsible for reviewing and ultimately merging or closing pull requests that target their project area. They should use the global or filtered board for their project area to find pull requests to review. When they find a pull request that they want to review, they should assign themselves to the pull request, removing it from the review queue and placing it on their personal review board.
+
+Once a pull request has been assigned a single owner, it is their responsibility to review and eventually merge or close the pull request. They manage all ongoing requests on their personal review board, typically prioritizing the ones at the top of the board marked with `waiting-for:review`. If a pull request remains assigned but unreviewed for 14 days, the automation will automatically unassign the reviewer and return the pull request to the review queue.
+
+### Merging Pull Requests
+
+When a pull request has been approved, the way it gets merged depends on who the author is:
+
+- **Outside contributions:** Project area maintainers and core maintainers should merge the pull request themselves once approved, since outside contributors do not have merge access.
+- **Maintainer contributions:** Within maintainer teams, it is common to let the author choose when to merge the pull request themselves, unless there is a reason to merge it immediately. The `waiting-for:merge` label will be applied automatically when the pull request is approved.
+
+### Cross-Area Pull Requests
 
 Some pull requests may require review from multiple project areas. In these cases the most relevant owner should assign themselves and coordinate with the other owners for additional reviews. If the most relevant owner is not clear, this is preferably solved in a discussion among the owners. Frequent conflicts should lead to a discussion whether `CODEOWNERS` should be updated to simplify the review process. If some owners are currently unavailable, other owners can assign themselves to the pull request and bring it to the point where they approve the changes for their area, and then send the pull request back to the review queue.
+
+## Pull Request Automation
+
+Pull request labels and the [review board](https://github.com/orgs/backstage/projects/14) are fully managed by automation. All fields on the review board are computed automatically and **should never be updated manually**. Likewise, pull request labels that are part of the automation should not be added or removed by hand, with one exception described below.
+
+The automation is triggered by pull request events (opened, updated, reopened, labeled, unlabeled), pull request reviews (submitted, dismissed), issue comments, and CI workflow completions. The source code is available in the [`backstage/actions`](https://github.com/backstage/actions) repository, with the workflow definitions in [`.github/workflows/sync_pull-requests-trigger.yml`](.github/workflows/sync_pull-requests-trigger.yml) and [`.github/workflows/sync_pull-requests.yml`](.github/workflows/sync_pull-requests.yml).
+
+### Labels
+
+The `waiting-for:*` status labels, `reviewer-approved` label, and `size:*` labels are all **automated** based on pull request reviews, author activity, and pull request size. See [LABELS.md](./LABELS.md#pull-request-labels) for the meaning of each label.
+
+The only exception is `waiting-for:decision`, which can and should be set **manually**. Use it when discussion or a decision is needed before the pull request can move forward, for example when the approach needs to be discussed in a [SIG](https://github.com/backstage/community/tree/main/sigs) meeting. Once set, this label will **stick until manually removed** — the automation will not override it. Only remove it once a decision has been made and the pull request is ready to proceed.
+
+### Review Board Priority
+
+The priority field on the review board is a number calculated automatically by the automation. It determines the sort order of pull requests on the board. The priority is influenced by several factors:
+
+- **Pull request size** — Smaller pull requests receive higher priority, where the priority reduces significantly for roughly every 500 lines added.
+- **Reviewer approval** — Pull requests with the `reviewer-approved` label receive a large priority boost.
+- **Author review contributions** — Authors who have themselves reviewed other pull requests in the repository receive a priority boost proportional to their review activity.
+- **Draft status** — Draft pull requests receive significantly reduced priority.
+- **CI status** — Pull requests where required CI checks are failing or still pending receive reduced priority. The required checks include DCO, tests, verification, and E2E tests.
+
+### Stale Review Handling
+
+If a pull request with the `waiting-for:review` label has been assigned to a reviewer but has not received a review for 14 days, the automation will automatically unassign the reviewer and return the pull request to the review queue. This ensures that pull requests do not get stuck due to reviewer unavailability.
 
 ## Code Style
 

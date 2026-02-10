@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 1.20.0-next.2
+
+### Patch Changes
+
+- cc6206e: Added support for `{org}.visualstudio.com` domains used by Azure DevOps
+
 ## 1.20.0-next.1
 
 ### Minor Changes

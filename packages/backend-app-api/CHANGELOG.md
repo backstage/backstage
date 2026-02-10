@@ -1,5 +1,13 @@
 # @backstage/backend-app-api
 
+## 1.5.0-next.1
+
+### Patch Changes
+
+- 6bb2f21: Fixed memory leak by properly cleaning up process event listeners on backend shutdown.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 1.5.0-next.0
 
 ### Minor Changes
