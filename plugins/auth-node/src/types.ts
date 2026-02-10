@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -320,6 +320,11 @@ export type AuthProviderFactory = (options: {
    * The function used to resolve cookie configuration based on the auth provider options.
    */
   cookieConfigurer?: CookieConfigurer;
+
+  /**
+   * Optional auditor service for emitting authentication audit events.
+   */
+  auditor?: AuditorService;
 }) => AuthProviderRouteHandlers;
 
 /** @public */

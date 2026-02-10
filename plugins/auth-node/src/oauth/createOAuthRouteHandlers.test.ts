@@ -662,6 +662,12 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should authenticate with sign-in, profile transform, and persisted scopes', async () => {
+      const mockAuditor = mockServices.auditor.mock();
+      const auditEvent = {
+        success: jest.fn().mockResolvedValue(undefined),
+        fail: jest.fn().mockResolvedValue(undefined),
+      };
+      mockAuditor.createEvent.mockResolvedValue(auditEvent);
       const agent = request.agent(
         wrapInApp(
           createOAuthRouteHandlers({
@@ -672,6 +678,7 @@ describe('createOAuthRouteHandlers', () => {
             },
             profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
             signInResolver: async () => ({ token: mockBackstageToken }),
+            auditor: mockAuditor,
           }),
         ),
       );
@@ -720,6 +727,17 @@ describe('createOAuthRouteHandlers', () => {
       expect(getRefreshTokenCookie(agent).value).toBe('refresh-token');
       expect(getGrantedScopesCookie(agent).value).toBe(
         'my-scope%20my-other-scope',
+      );
+
+      expect(mockAuditor.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventId: 'auth-login',
+          severityLevel: 'low',
+          meta: {
+            providerId: 'my-provider',
+            email: 'em@i.l',
+          },
+        }),
       );
     });
 
@@ -1008,6 +1026,12 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should refresh with sign-in, profile transform, and persisted scopes', async () => {
+      const mockAuditor = mockServices.auditor.mock();
+      const auditEvent = {
+        success: jest.fn().mockResolvedValue(undefined),
+        fail: jest.fn().mockResolvedValue(undefined),
+      };
+      mockAuditor.createEvent.mockResolvedValue(auditEvent);
       const agent = request.agent(
         wrapInApp(
           createOAuthRouteHandlers({
@@ -1018,6 +1042,7 @@ describe('createOAuthRouteHandlers', () => {
             },
             profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
             signInResolver: async () => ({ token: mockBackstageToken }),
+            auditor: mockAuditor,
           }),
         ),
       );
@@ -1073,9 +1098,12 @@ describe('createOAuthRouteHandlers', () => {
       expect(getRefreshTokenCookie(agent).value).toBe('new-refresh-token');
     });
 
-    it('should forward errors', async () => {
+    it('should forward errors and emit failure audit event', async () => {
+      const mockAuditor = mockServices.auditor.mock();
       const agent = request.agent(
-        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+        wrapInApp(
+          createOAuthRouteHandlers({ ...baseConfig, auditor: mockAuditor }),
+        ),
       );
 
       agent.jar.setCookie(
@@ -1214,8 +1242,16 @@ describe('createOAuthRouteHandlers', () => {
 
   describe('logout', () => {
     it('should log out', async () => {
+      const mockAuditor = mockServices.auditor.mock();
+      const auditEvent = {
+        success: jest.fn().mockResolvedValue(undefined),
+        fail: jest.fn().mockResolvedValue(undefined),
+      };
+      mockAuditor.createEvent.mockResolvedValue(auditEvent);
       const agent = request.agent(
-        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+        wrapInApp(
+          createOAuthRouteHandlers({ ...baseConfig, auditor: mockAuditor }),
+        ),
       );
 
       agent.jar.setCookie(
@@ -1234,6 +1270,16 @@ describe('createOAuthRouteHandlers', () => {
       expect(res.body).toEqual({});
 
       expect(getRefreshTokenCookie(agent)).toBeUndefined();
+
+      expect(mockAuditor.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventId: 'auth-logout',
+          severityLevel: 'low',
+          meta: {
+            providerId: 'my-provider',
+          },
+        }),
+      );
     });
 
     it('should reject requests without CSRF header', async () => {

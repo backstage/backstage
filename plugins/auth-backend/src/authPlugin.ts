@@ -68,6 +68,7 @@ export const authPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         catalog: catalogServiceRef,
+        auditor: coreServices.auditor,
       },
       async init({
         httpRouter,
@@ -78,6 +79,7 @@ export const authPlugin = createBackendPlugin({
         auth,
         httpAuth,
         catalog,
+        auditor,
       }) {
         const router = await createRouter({
           logger,
@@ -89,6 +91,7 @@ export const authPlugin = createBackendPlugin({
           providerFactories: Object.fromEntries(providers),
           ownershipResolver,
           httpAuth,
+          auditor,
         });
         httpRouter.addAuthPolicy({
           path: '/',
