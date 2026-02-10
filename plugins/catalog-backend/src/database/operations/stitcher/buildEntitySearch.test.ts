@@ -50,6 +50,23 @@ describe('buildEntitySearch', () => {
       ]);
     });
 
+    it('handles large arrays without quadratic performance degradation', () => {
+      // Generate an array with 500 unique string items to verify that the
+      // Set-based dedup scales linearly rather than quadratically.
+      // With the previous Array.some() approach this would cause ~125,000
+      // comparisons; with Set.has() it's ~500 lookups.
+      const items = Array.from({ length: 500 }, (_, i) => `tag-${i}`);
+      const input = { tags: items };
+
+      const start = window.performance.now();
+      const output = traverse(input);
+      const elapsed = window.performance.now() - start;
+
+      expect(output).toHaveLength(1000);
+      // Should complete well under 100ms with O(n); O(n²) would be noticeably slower
+      expect(elapsed).toBeLessThan(100);
+    });
+
     it('skips over special keys', () => {
       const input = {
         status: { x: 1 },
