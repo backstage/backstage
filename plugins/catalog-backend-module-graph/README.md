@@ -2,14 +2,15 @@
 
 This catalog-backend module adds support for querying the graph of entities. If installed, it can be used by the catalog-graph plugin for more performant queries than iteratively fetching entities from the frontend. See [Configuration](#configuration) below.
 
-The module adds a route `/api/catalog/graph` with query parameters on the corresponding schema:
+The module adds a route `/graph/by-query` (under the `/api/catalog`) with query parameters on the corresponding schema:
 
 ```ts
 interface QueryParams {
   rootEntityRefs: string[];
   maxDepth?: number;
   relations?: string[];
-  kinds?: string[];
+  fields?: string[];
+  filter?: EntityFilterQuery;
 }
 ```
 

@@ -150,7 +150,7 @@ export function useEntityRelationGraphFromBackend(
           if (isActive()) {
             entityStore.current = {
               loading: false,
-              error: e instanceof Error ? e : new Error(`Unknown error: {e}`),
+              error: e instanceof Error ? e : new Error(`Unknown error: ${e}`),
               entities: entityStore.current.entities,
             };
             refresh({});

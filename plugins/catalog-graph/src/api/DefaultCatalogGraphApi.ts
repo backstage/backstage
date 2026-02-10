@@ -18,6 +18,7 @@ import * as parser from 'uri-template';
 
 import { ConfigApi, DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import {
+  catalogGraphApiSpec,
   GraphQueryRequest,
   GraphQueryResult,
 } from '@backstage/plugin-catalog-graph-common';
@@ -216,7 +217,8 @@ export class DefaultCatalogGraphApi implements CatalogGraphApi {
     );
 
     const defaultRelations = ensureDefaultRelationTypes(
-      defaultRelationTypes,
+      defaultRelationTypes ??
+        config.getOptional('catalogGraph.defaultRelationTypes'),
     ) ?? { exclude: [] };
 
     if (Array.isArray((defaultRelations as DefaultRelationsInclude).include)) {
@@ -264,9 +266,7 @@ export class DefaultCatalogGraphApi implements CatalogGraphApi {
   async fetchGraph(request: GraphQueryRequest): Promise<GraphQueryResult> {
     const baseUrl = await this.#discoveryApi.getBaseUrl('catalog');
 
-    const uriTemplate = `/graph/by-query{?rootEntityRefs,maxDepth,relations,fields,filter*}`;
-
-    const uri = parser.parse(uriTemplate).expand({
+    const uri = parser.parse(catalogGraphApiSpec.urlTemplate).expand({
       rootEntityRefs: request.rootEntityRefs,
       maxDepth: request.maxDepth,
       relations: request.relations,
