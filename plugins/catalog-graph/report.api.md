@@ -42,6 +42,7 @@ export type BuiltInTransformations =
 export interface CatalogGraphApi {
   readonly defaultRelations: string[];
   fetchGraph(request: GraphQueryRequest): Promise<GraphQueryResult>;
+  readonly fetchMode: 'frontend' | 'backend';
   readonly knownRelationPairs: [string, string][];
   readonly knownRelations: string[];
   readonly maxDepth: number;
@@ -95,20 +96,13 @@ export type CustomNodeClassKey = 'node' | 'text' | 'clickable';
 
 // @public
 export class DefaultCatalogGraphApi implements CatalogGraphApi {
-  constructor({
-    config,
-    discoveryApi,
-    fetchApi,
-    knownRelations,
-    additionalKnownRelations,
-    knownRelationPairs,
-    additionalKnownRelationPairs,
-    defaultRelationTypes,
-  }: DefaultCatalogGraphApiOptions);
+  constructor(options: DefaultCatalogGraphApiOptions);
   // (undocumented)
   readonly defaultRelations: string[];
   // (undocumented)
   fetchGraph(request: GraphQueryRequest): Promise<GraphQueryResult>;
+  // (undocumented)
+  readonly fetchMode: 'frontend' | 'backend';
   // (undocumented)
   readonly knownRelationPairs: [string, string][];
   // (undocumented)

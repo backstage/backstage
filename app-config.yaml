@@ -200,6 +200,9 @@ catalog:
   graph:
     limitEntities: 2000
 
+catalogGraph:
+  fetchMode: backend
+
 scaffolder:
   auditor:
     taskParameterMaxLength: 256

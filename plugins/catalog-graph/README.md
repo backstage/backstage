@@ -150,10 +150,17 @@ Once you have your custom implementation, you can follow these steps to modify t
 
 ### Configuration and custom relations
 
-This plugin can be configured to understand custom relations and relation pairs, as well as which relations to be selected by default, using `app-config.yaml`.
+This plugin can be configured to:
+
+- Use `catalog-backend-module-graph` for more effectively fetching the graph
+- Understand custom relations and relation pairs
+- Set which relations to be selected by default in the UI
 
 ```yaml
 catalogGraph:
+  # Fetch graphs more effectively if catalog-backend-module-graph is installed,
+  # by specifying 'backend', otherwise leave unset or use 'frontend'
+  fetchMode: backend
   # Override the built-in set of known relations, or
   knownRelations: [myRelationOf, myRelationFor]
   # Append known relations to the built-in set

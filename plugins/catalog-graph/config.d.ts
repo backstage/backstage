@@ -23,6 +23,16 @@ export interface Config {
    */
   catalogGraph?: {
     /**
+     * The mode to use for fetching the graph.
+     * If `catalog-backend-module-graph` is installed, this can be set to
+     * 'backend' to improve performance by constructing the graph in the backend
+     * instead of iteratively fetching entities from the frontend.
+     *
+     * Defaults to 'frontend'.
+     */
+    fetchMode?: 'frontend' | 'backend';
+
+    /**
      * Hard max depth for the graph. This is respected in both the frontend and
      * the backend.
      *

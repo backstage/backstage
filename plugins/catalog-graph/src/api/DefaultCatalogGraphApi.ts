@@ -164,24 +164,32 @@ export class DefaultCatalogGraphApi implements CatalogGraphApi {
   readonly #discoveryApi: DiscoveryApi;
   readonly #fetchApi: FetchApi;
 
+  readonly fetchMode: 'frontend' | 'backend';
   readonly knownRelations: string[];
   readonly knownRelationPairs: [string, string][];
   readonly defaultRelations: string[];
   readonly maxDepth: number;
 
-  constructor({
-    config,
-    discoveryApi,
-    fetchApi,
+  constructor(options: DefaultCatalogGraphApiOptions) {
+    const {
+      config,
+      discoveryApi,
+      fetchApi,
 
-    knownRelations,
-    additionalKnownRelations,
-    knownRelationPairs,
-    additionalKnownRelationPairs,
-    defaultRelationTypes,
-  }: DefaultCatalogGraphApiOptions) {
+      knownRelations,
+      additionalKnownRelations,
+      knownRelationPairs,
+      additionalKnownRelationPairs,
+      defaultRelationTypes,
+    } = options;
+
     this.#discoveryApi = discoveryApi;
     this.#fetchApi = fetchApi;
+
+    this.fetchMode =
+      config.getOptionalString('catalogGraph.fetchMode') === 'backend'
+        ? 'backend'
+        : 'frontend';
 
     this.knownRelations = concatRelations(
       knownRelations ??
