@@ -139,7 +139,7 @@ import {
 import { myApiRef, type MyApi } from '@internal/plugin-example-react';
 
 // Fake instance with real behavior
-export function myApiMock(options?: { greeting?: string }): MyApi {
+export function myApiMock(options?: { greeting?: string }) {
   return attachMockApiFactory(myApiRef, {
     greet: async () => options?.greeting ?? 'Hello!',
   });

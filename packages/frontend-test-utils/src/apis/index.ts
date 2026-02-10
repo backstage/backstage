@@ -78,7 +78,7 @@ export type { MockPermissionApi } from './PermissionApi';
 /**
  * @public
  */
-export type { MockStorageApi, MockStorageBucket } from './StorageApi';
+export type { MockStorageApi } from './StorageApi';
 
 /**
  * @public

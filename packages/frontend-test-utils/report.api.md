@@ -234,7 +234,7 @@ export namespace mockApis {
     email?: string;
     displayName?: string;
     picture?: string;
-  }): IdentityApi & MockWithApiFactory<IdentityApi>;
+  }): MockWithApiFactory<IdentityApi>;
   export namespace identity {
     const // (undocumented)
       mock: (
@@ -376,7 +376,7 @@ export class MockPermissionApi implements PermissionApi {
 // @public
 export class MockStorageApi implements StorageApi {
   // (undocumented)
-  static create(data?: MockStorageBucket): MockStorageApi;
+  static create(data?: JsonObject): MockStorageApi;
   // (undocumented)
   forBucket(name: string): StorageApi;
   // (undocumented)
@@ -390,11 +390,6 @@ export class MockStorageApi implements StorageApi {
   // (undocumented)
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
-
-// @public
-export type MockStorageBucket = {
-  [key: string]: any;
-};
 
 // @public
 export class MockTranslationApi implements TranslationApi {

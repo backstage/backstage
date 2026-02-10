@@ -313,7 +313,7 @@ export namespace mockApis {
     email?: string;
     displayName?: string;
     picture?: string;
-  }): IdentityApi & MockWithApiFactory<IdentityApi> {
+  }): MockWithApiFactory<IdentityApi> {
     const {
       userEntityRef = 'user:default/test',
       ownershipEntityRefs = ['user:default/test'],

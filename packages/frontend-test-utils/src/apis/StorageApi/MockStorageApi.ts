@@ -15,15 +15,8 @@
  */
 
 import { StorageApi, StorageValueSnapshot } from '@backstage/core-plugin-api';
-import { JsonValue, Observable } from '@backstage/types';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
-
-/**
- * Type for map holding data in {@link MockStorageApi}
- *
- * @public
- */
-export type MockStorageBucket = { [key: string]: any };
 
 /**
  * Mock implementation of the {@link core-plugin-api#StorageApi} to be used in tests
@@ -32,20 +25,20 @@ export type MockStorageBucket = { [key: string]: any };
  */
 export class MockStorageApi implements StorageApi {
   private readonly namespace: string;
-  private readonly data: MockStorageBucket;
+  private readonly data: JsonObject;
   private readonly bucketStorageApis: Map<string, MockStorageApi>;
 
   private constructor(
     namespace: string,
     bucketStorageApis: Map<string, MockStorageApi>,
-    data?: MockStorageBucket,
+    data?: JsonObject,
   ) {
     this.namespace = namespace;
     this.bucketStorageApis = bucketStorageApis;
     this.data = { ...data };
   }
 
-  static create(data?: MockStorageBucket) {
+  static create(data?: JsonObject) {
     // Translate a nested data object structure into a flat object with keys
     // like `/a/b` with their corresponding leaf values
     const keyValues: { [key: string]: any } = {};
@@ -83,7 +76,7 @@ export class MockStorageApi implements StorageApi {
       return {
         key,
         presence: 'present',
-        value: data,
+        value: data as T,
       };
     }
     return {
