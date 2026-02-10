@@ -6,10 +6,12 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
+import { BasicPermission } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
 import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
+import type { ExtensionConditionFunc } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Permission } from '@backstage/plugin-permission-common';
@@ -23,6 +25,11 @@ export type AsyncPermissionResult = {
   allowed: boolean;
   error?: Error;
 };
+
+// @public
+export function createPermissionCondition(
+  permission: BasicPermission,
+): ExtensionConditionFunc;
 
 // @public
 export class IdentityPermissionApi implements PermissionApi {

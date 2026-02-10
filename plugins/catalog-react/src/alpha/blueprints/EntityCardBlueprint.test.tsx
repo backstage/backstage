@@ -187,6 +187,7 @@ describe('EntityCardBlueprint', () => {
           },
         },
         "disabled": false,
+        "enabled": undefined,
         "factory": [Function],
         "inputs": {},
         "kind": "entity-card",

@@ -31,6 +31,7 @@ import {
   AppNode,
   ExtensionFactoryMiddleware,
   FrontendFeature,
+  coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -303,6 +304,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   apis: ApiHolder;
   tree: AppTree;
   errors?: AppError[];
+  completeInitialization(): Promise<JSX.Element | undefined>;
 } {
   const internalOptions = options as CreateSpecializedAppInternalOptions;
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
@@ -326,6 +328,8 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
     collector,
   );
 
+  // We need to collect all API factories first before we can check enabled conditions,
+  // since those conditions may depend on APIs like featureFlagsApiRef, configApiRef, etc.
   const factories = createApiFactories({ tree, collector });
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
@@ -372,7 +376,23 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
     }
   }
 
-  // Now instantiate the entire tree, which will skip anything that's already been instantiated
+  // Collect nodes with enabled conditions to defer until after mount
+  const nodesToEvaluate = new Set<AppNode>();
+
+  function collectNodesToEvaluate(node: AppNode) {
+    if (!node.spec.disabled && node.spec.enabled) {
+      nodesToEvaluate.add(node);
+    }
+    for (const children of node.edges.attachments.values()) {
+      for (const child of children) {
+        collectNodesToEvaluate(child);
+      }
+    }
+  }
+
+  collectNodesToEvaluate(tree.root);
+
+  // Instantiate tree with enabled conditions temporarily disabled
   instantiateAppNodeTree(
     tree.root,
     apis,
@@ -380,6 +400,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
     mergeExtensionFactoryMiddleware(
       options?.advanced?.extensionFactoryMiddleware,
     ),
+    nodesToEvaluate,
   );
 
   const routeInfo = extractRouteInfoFromAppNode(
@@ -390,7 +411,81 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   routeResolutionApi.initialize(routeInfo, routeRefsById.routes);
   appTreeApi.initialize(routeInfo);
 
-  return { apis, tree, errors: collector.collectErrors() };
+  return {
+    apis,
+    tree,
+    // Proxy the errors so that any errors collected after completeInitialization are also included.
+    get errors() {
+      return collector.collectErrors();
+    },
+    async completeInitialization() {
+      const disabledNodes = new Set<AppNode>();
+      const newlyEnabledNodes: AppNode[] = [];
+
+      // Evaluate all enabled conditions in parallel
+      await Promise.allSettled(
+        [...nodesToEvaluate].map(async node => {
+          const defaultDecision = async () => !node.spec.disabled;
+          try {
+            const isEnabled = await node.spec.enabled!(defaultDecision, {
+              apiHolder: apis,
+            });
+            if (!isEnabled) {
+              disabledNodes.add(node);
+            } else {
+              newlyEnabledNodes.push(node);
+            }
+          } catch (err) {
+            collector.report({
+              code: 'ENABLED_CHECK_FAILED',
+              message: `Error evaluating enabled condition for extension '${node.spec.id}': ${err}`,
+              context: { node },
+            });
+            disabledNodes.add(node);
+          }
+        }),
+      );
+
+      // Clear parent instances so they can be recreated with newly enabled children
+      const nodesToClear = new Set<AppNode>();
+      for (const node of newlyEnabledNodes) {
+        let current = node?.edges?.attachedTo?.node;
+        while (current && !nodesToClear.has(current)) {
+          nodesToClear.add(current);
+          current = current.edges.attachedTo?.node;
+        }
+      }
+
+      for (const node of nodesToClear) {
+        (node as any).instance = undefined;
+      }
+
+      // Re-instantiate with newly enabled extensions
+      instantiateAppNodeTree(
+        tree.root,
+        apis,
+        collector,
+        mergeExtensionFactoryMiddleware(
+          options?.advanced?.extensionFactoryMiddleware,
+        ),
+        disabledNodes,
+      );
+
+      // Re-initialize routing with newly enabled extensions
+      const reInitializedRouteInfo = extractRouteInfoFromAppNode(
+        tree.root,
+        createRouteAliasResolver(routeRefsById),
+      );
+
+      routeResolutionApi.initialize(
+        reInitializedRouteInfo,
+        routeRefsById.routes,
+      );
+      appTreeApi.initialize(reInitializedRouteInfo);
+
+      return tree.root.instance!.getData(coreExtensionData.reactElement);
+    },
+  };
 }
 
 function createApiFactories(options: {
@@ -404,7 +499,16 @@ function createApiFactories(options: {
   >();
 
   for (const apiNode of options.tree.root.edges.attachments.get('apis') ?? []) {
-    if (!instantiateAppNodeTree(apiNode, emptyApiHolder, options.collector)) {
+    // Pass empty disabledNodes set - we'll check enabled conditions later once APIs are available
+    if (
+      !instantiateAppNodeTree(
+        apiNode,
+        emptyApiHolder,
+        options.collector,
+        undefined,
+        new Set(),
+      )
+    ) {
       continue;
     }
     const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);

@@ -59,6 +59,7 @@ describe('SearchResultListItemBlueprint', () => {
           },
         },
         "disabled": false,
+        "enabled": undefined,
         "factory": [Function],
         "inputs": {},
         "kind": "search-result-list-item",

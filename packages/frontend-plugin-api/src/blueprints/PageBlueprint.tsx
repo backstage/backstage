@@ -19,7 +19,7 @@ import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
 
 /**
- * Createx extensions that are routable React page components.
+ * Creates extensions that are routable React page components.
  *
  * @public
  */
