@@ -43,25 +43,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { coreComponentsTranslationRef } from '../../translation';
 
-// NOTE: This can be removed when Node 22 is required
-//       Unit tests using DependencyGraph currently requires this
-if (!Set.prototype.difference) {
-  // eslint-disable-next-line no-extend-native
-  Object.defineProperty(Set.prototype, 'difference', {
-    value: function difference(other: Set<any>) {
-      const result = new Set();
-      for (const v of this) {
-        if (!other.has(v)) {
-          result.add(v);
-        }
-      }
-      return result;
-    },
-    writable: true,
-    configurable: true,
-  });
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
   fullscreenButton: {
     position: 'absolute',
