@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { getClient, parseRepoUrl } from '../util';
+import { getClient, parseRepoHost } from '../util';
 import { examples } from './gitlabGroupAccessAction.examples';
 
 const accessLevelMapping: Record<string, number> = {
@@ -154,7 +154,8 @@ export const createGitlabGroupAccessAction = (options: {
         );
       }
 
-      const accessLevel = resolveAccessLevel(rawAccessLevel);
+      const accessLevel =
+        action === 'add' ? resolveAccessLevel(rawAccessLevel) : 0;
 
       if (ctx.isDryRun) {
         if (userIds.length > 0) {
@@ -170,7 +171,7 @@ export const createGitlabGroupAccessAction = (options: {
         return;
       }
 
-      const { host } = parseRepoUrl(repoUrl, integrations);
+      const host = parseRepoHost(repoUrl);
 
       const api = getClient({ host, integrations, token });
 

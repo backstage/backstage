@@ -42,7 +42,7 @@ jest.mock('@gitbeaker/rest', () => ({
 
 jest.mock('../util', () => ({
   getClient: jest.fn().mockImplementation(() => mockGitlabClient),
-  parseRepoUrl: () => ({ host: 'gitlab.com', owner: 'owner', repo: 'repo' }),
+  parseRepoHost: (repoUrl: string) => repoUrl,
 }));
 
 describe('gitlab:group:access', () => {
