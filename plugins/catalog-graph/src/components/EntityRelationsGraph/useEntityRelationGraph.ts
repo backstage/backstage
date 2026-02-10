@@ -118,7 +118,7 @@ export function useEntityRelationGraph({
 
   return {
     entities: filteredEntities,
-    loading: fetchMethod === 'pending' ? true : asyncEntities.loading,
+    loading: asyncEntities.loading,
     error: asyncEntities.error,
   };
 }

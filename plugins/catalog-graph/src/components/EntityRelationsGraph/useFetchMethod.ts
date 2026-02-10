@@ -14,60 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  DiscoveryApi,
-  discoveryApiRef,
-  FetchApi,
-  fetchApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 
-import useAsync from 'react-use/esm/useAsync';
-import { useMemo } from 'react';
+import { catalogGraphApiRef } from '../../api';
 
-export type FetchMethod = 'frontend' | 'backend' | 'none' | 'pending';
-
-// Makes an empty call to the backend to check if it's available
-async function checkBackendAvailability(
-  discoveryApi: DiscoveryApi,
-  fetchApi: FetchApi,
-): Promise<boolean> {
-  const baseUrl = await discoveryApi.getBaseUrl('catalog');
-
-  const resp = await fetchApi.fetch(`${baseUrl}/graph`);
-  if (!resp.ok) {
-    return false;
-  }
-
-  await resp.json();
-
-  return true;
-}
-
-// Cache the backend availability check result, only needs to be done once
-let backendAvailable: Promise<boolean>;
+export type FetchMethod = 'frontend' | 'backend' | 'none';
 
 export function useFetchMethod(hasEntitySet: boolean): FetchMethod {
-  const discoveryApi = useApi(discoveryApiRef);
-  const fetchApi = useApi(fetchApiRef);
+  const { fetchMode } = useApi(catalogGraphApiRef);
 
-  const backendAvailability = useAsync(async () => {
-    if (!backendAvailable) {
-      backendAvailable = checkBackendAvailability(discoveryApi, fetchApi).catch(
-        () => false,
-      );
-    }
-    return backendAvailable;
-  }, [discoveryApi, fetchApi]);
-
-  return useMemo((): FetchMethod => {
-    if (hasEntitySet) {
-      return 'none';
-    } else if (backendAvailability.value === true) {
-      return 'backend';
-    } else if (backendAvailability.value === false) {
-      return 'frontend';
-    }
-    return 'pending'; // Not yet settled whether backend is available or not
-  }, [hasEntitySet, backendAvailability.value]);
+  return hasEntitySet ? 'none' : fetchMode;
 }

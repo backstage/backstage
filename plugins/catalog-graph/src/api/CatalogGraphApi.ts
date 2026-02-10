@@ -51,6 +51,9 @@ export type DefaultRelations =
  * @public
  */
 export interface CatalogGraphApi {
+  /** The mode to use for fetching the graph */
+  readonly fetchMode: 'frontend' | 'backend';
+
   /** All known relations */
   readonly knownRelations: string[];
 

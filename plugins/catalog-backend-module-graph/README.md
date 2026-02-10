@@ -1,6 +1,6 @@
 # @backstage/plugin-catalog-backend-module-graph
 
-This catalog-backend module adds support for querying the graph of entities. If installed, it will be used by the catalog-graph plugin for more performant queries than iteratively fetching entities from the frontend.
+This catalog-backend module adds support for querying the graph of entities. If installed, it can be used by the catalog-graph plugin for more performant queries than iteratively fetching entities from the frontend. See [Configuration](#configuration) below.
 
 The module adds a route `/api/catalog/graph` with query parameters on the corresponding schema:
 
@@ -58,3 +58,10 @@ catalog:
 `maxDepth` sets the maximum depth of the graph, which the query parameter will be limited to.
 
 `limitEntities` sets the maximum entities to return. The graph traversal will stop after this point.
+
+To enable the frontend `catalog-graph` plugin to use this module, configure it as:
+
+```yaml title="app-config.yaml"
+catalogGraph:
+  fetchMode: backend
+```
