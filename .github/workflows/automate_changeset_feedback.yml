@@ -34,7 +34,7 @@ jobs:
           ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
       - name: fetch base
         run: git fetch --depth 1 origin ${{ github.base_ref }}
-      - uses: backstage/actions/changeset-feedback@a3895cac2a515224a101c4a2b962b216ed0c9ac8 # v0.7.5
+      - uses: backstage/actions/changeset-feedback@c3038aa5576b9cd845ccc518ef854d3660e8cb40 # v0.7.6
         name: Generate feedback
         with:
           diff-ref: 'origin/master'
