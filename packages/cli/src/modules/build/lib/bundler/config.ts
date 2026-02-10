@@ -272,6 +272,18 @@ export async function createConfig(
             eager: !isRemote,
             ...(isRemote && { import: false }),
           },
+          'react/jsx-runtime': {
+            singleton: true,
+            requiredVersion: '*',
+            eager: !isRemote,
+            ...(isRemote && { import: false }),
+          },
+          'react/jsx-dev-runtime': {
+            singleton: true,
+            requiredVersion: '*',
+            eager: !isRemote,
+            ...(isRemote && { import: false }),
+          },
           // React Router
           'react-router': {
             singleton: true,
