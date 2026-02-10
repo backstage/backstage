@@ -77,7 +77,7 @@ describe('gitlab:group:ensureExists', () => {
     expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
       'group1',
       'group1',
-      {},
+      { description: 'This is a top-level group' },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
