@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { FilterPredicate } from '@backstage/filter-predicates';
+
 export interface Config {
   events?: {
     modules?: {
@@ -96,7 +98,7 @@ export interface Config {
                *       'message.data.action': { $in: ['created', 'deleted'] }
                * ```
                */
-              filter?: object;
+              filter?: FilterPredicate;
 
               /**
                * Pub/Sub message attributes are by default copied to the event
@@ -190,7 +192,7 @@ export interface Config {
                *       'event.eventPayload.action': { $in: ['created', 'deleted'] }
                * ```
                */
-              filter?: object;
+              filter?: FilterPredicate;
 
               /**
                * Event metadata fields are by default copied to the Pub/Sub

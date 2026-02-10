@@ -19,7 +19,9 @@ import {
   RootConfigService,
   RootLifecycleService,
 } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
+import { JsonValue } from '@backstage/types';
 import { Message, PubSub, Subscription } from '@google-cloud/pubsub';
 import { Counter, metrics } from '@opentelemetry/api';
 import { readSubscriptionTasksFromConfig } from './config';
@@ -197,7 +199,13 @@ export class GooglePubSubConsumingEventPublisher {
     message: Message,
     task: SubscriptionTask,
   ): EventParams | undefined {
-    const eventPayload = JSON.parse(message.data.toString());
+    let eventPayload: JsonValue;
+    try {
+      eventPayload = JSON.parse(message.data.toString());
+    } catch (error) {
+      throw new ForwardedError('Payload was not valid JSON', error);
+    }
+
     const attributes = message.attributes;
 
     const context: MessageContext = {
