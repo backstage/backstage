@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceMock } from './alphaCreateServiceMock';
-import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { actionsServiceFactory } from '@backstage/backend-defaults/alpha';
+export { createServiceMock } from '../../services/createServiceMock';
 
-/**
- * @alpha
- */
-export namespace actionsServiceMock {
-  export const factory = () => actionsServiceFactory;
-
-  export const mock = createServiceMock(actionsServiceRef, () => ({
-    invoke: jest.fn(),
-    list: jest.fn(),
-  }));
-}
+/** @alpha */
+export type { ServiceMock } from '../../services/createServiceMock';
