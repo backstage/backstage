@@ -16,7 +16,7 @@
 import { mockServices } from '../../services';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MockActionsRegistry } from './MockActionsRegistry';
-import { createServiceMock } from './simpleMock';
+import { createServiceMock } from '@backstage/backend-test-utils';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { actionsRegistryServiceFactory } from '@backstage/backend-defaults/alpha';
 

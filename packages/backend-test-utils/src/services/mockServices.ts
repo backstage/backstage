@@ -57,7 +57,7 @@ import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
 import { MockEventsService } from './MockEventsService';
 import { MockPermissionsService } from './MockPermissionsService';
-import { createServiceMock } from './simpleMock';
+import { createServiceMock } from './createServiceMock';
 import { MockSchedulerService } from './MockSchedulerService';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ObservableConfigProxy } from '../../../config-loader/src/sources/ObservableConfigProxy';

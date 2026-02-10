@@ -47,12 +47,13 @@ describe('gateway', () => {
     },
   });
 
-  const discovery = mockServices.discovery.mock();
-  discovery.getBaseUrl.mockImplementation(async (pluginId: string) => {
-    if (pluginId === 'external-plugin') {
-      return 'http://localhost:7778/api/external-plugin';
-    }
-    return `http://localhost:7777/api/${pluginId}`;
+  const discovery = mockServices.discovery.mock({
+    async getBaseUrl(pluginId) {
+      if (pluginId === 'external-plugin') {
+        return 'http://localhost:7778/api/external-plugin';
+      }
+      return `http://localhost:7777/api/${pluginId}`;
+    },
   });
 
   beforeAll(async () => {

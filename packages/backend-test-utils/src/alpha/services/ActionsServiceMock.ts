@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createServiceMock } from './simpleMock';
+import { createServiceMock } from '@backstage/backend-test-utils';
 import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { actionsServiceFactory } from '@backstage/backend-defaults/alpha';
 

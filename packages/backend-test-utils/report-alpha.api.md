@@ -13,6 +13,7 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceMock } from '@backstage/backend-test-utils';
 
 // @alpha (undocumented)
 export function actionsRegistryServiceMock(options?: {
@@ -69,17 +70,6 @@ export class MockActionsRegistry
     TOutputSchema extends AnyZodObject,
   >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void;
 }
-
-// @public (undocumented)
-export type ServiceMock<TService> = {
-  factory: ServiceFactory<TService>;
-} & {
-  [Key in keyof TService]: TService[Key] extends (
-    ...args: infer Args
-  ) => infer Return
-    ? TService[Key] & jest.MockInstance<Return, Args>
-    : TService[Key];
-};
 
 // (No @packageDocumentation comment for this package)
 ```
