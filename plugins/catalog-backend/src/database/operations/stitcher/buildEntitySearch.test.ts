@@ -58,9 +58,9 @@ describe('buildEntitySearch', () => {
       const items = Array.from({ length: 500 }, (_, i) => `tag-${i}`);
       const input = { tags: items };
 
-      const start = window.performance.now();
+      const start = Date.now();
       const output = traverse(input);
-      const elapsed = window.performance.now() - start;
+      const elapsed = Date.now() - start;
 
       expect(output).toHaveLength(1000);
       // Should complete well under 100ms with O(n); O(n²) would be noticeably slower
