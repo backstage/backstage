@@ -76,6 +76,10 @@ export const ColorFamily = () => {
           This creates clear visual hierarchy without manually picking colors.
         </p>
         <p className={styles.description}>
+          Neutral 0 is the application background and should only be used once,
+          at the root of your app. All other surfaces build on top of it.
+        </p>
+        <p className={styles.description}>
           Each level can be <strong>interactive</strong> or{' '}
           <strong>non-interactive</strong>. A Card, for example, can be flat
           (just a surface) or fully clickable with hover and pressed states. The

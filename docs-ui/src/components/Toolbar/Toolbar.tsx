@@ -1,10 +1,11 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
   RiArrowDownSLine,
-  RiArrowRightSLine,
   RiGithubLine,
   RiMoonLine,
+  RiSearchLine,
   RiSunLine,
 } from '@remixicon/react';
 import {
@@ -19,10 +20,8 @@ import {
 } from 'react-aria-components';
 import styles from './Toolbar.module.css';
 import { usePlayground } from '@/utils/playground-context';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { components } from '@/utils/data';
 import { Logo } from '@/components/Sidebar/Logo';
+import { CommandPalette } from '@/components/CommandPalette';
 
 interface ToolbarProps {
   version: string;
@@ -42,70 +41,36 @@ export const Toolbar = ({ version }: ToolbarProps) => {
     setSelectedThemeName,
   } = usePlayground();
 
-  const pathname = usePathname();
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
-  // Determine breadcrumb content based on current path
-  const getBreadcrumb = () => {
-    const allComponents = components;
+  useEffect(() => {
+    const isMac = /mac(os|intosh)/i.test(navigator.userAgent);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (isMac ? e.metaKey : e.ctrlKey)) {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+      }
+    };
 
-    // Components index page
-    if (pathname === '/components') {
-      return { section: null, title: 'Components' };
-    }
-
-    // Component detail pages
-    if (pathname?.startsWith('/components/')) {
-      const slug = pathname.split('/components/')[1];
-      const component = allComponents.find(c => c.slug === slug);
-      return {
-        section: 'Components',
-        sectionLink: '/components',
-        title: component?.title || slug,
-      };
-    }
-
-    // Tokens page
-    if (pathname === '/tokens') {
-      return { section: null, title: 'Tokens' };
-    }
-
-    // Changelog page
-    if (pathname === '/changelog') {
-      return { section: null, title: 'Changelog' };
-    }
-
-    return { section: null, title: '' };
-  };
-
-  const breadcrumb = getBreadcrumb();
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className={styles.toolbar}>
-      <div className={styles.breadcrumb}>
+      <div className={styles.left}>
         <div className={styles.logoMobile}>
           <Logo />
         </div>
-        <div className={styles.breadcrumbDesktop}>
-          {breadcrumb.section && breadcrumb.sectionLink ? (
-            <>
-              <Link
-                href={breadcrumb.sectionLink}
-                className={styles.breadcrumbLink}
-              >
-                {breadcrumb.section}
-              </Link>
-              <RiArrowRightSLine
-                size={16}
-                className={styles.breadcrumbSeparator}
-              />
-              <span className={styles.breadcrumbCurrent}>
-                {breadcrumb.title}
-              </span>
-            </>
-          ) : (
-            <span className={styles.breadcrumbCurrent}>{breadcrumb.title}</span>
-          )}
-        </div>
+        <button
+          type="button"
+          className={styles.searchButton}
+          onClick={() => setIsCommandPaletteOpen(true)}
+        >
+          <RiSearchLine size={14} />
+          <span className={styles.searchLabel}>Search</span>
+          <kbd className={styles.searchKbd}>⌘K</kbd>
+        </button>
       </div>
       <div className={styles.actions}>
         <Select
@@ -158,6 +123,10 @@ export const Toolbar = ({ version }: ToolbarProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onOpenChange={setIsCommandPaletteOpen}
+      />
     </div>
   );
 };
