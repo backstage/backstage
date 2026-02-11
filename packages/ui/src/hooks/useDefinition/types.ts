@@ -81,10 +81,19 @@ type ResolvedOwnProps<
   [K in keyof PropDefs & keyof P]: ResolvePropType<P[K], PropDefs[K]>;
 };
 
-type ChildrenProps<Bg extends 'provider' | 'consumer' | undefined> =
-  Bg extends 'provider'
-    ? { childrenWithBgProvider: ReactNode; children?: never }
-    : { children: ReactNode; childrenWithBgProvider?: never };
+type BaseOwnProps<
+  D extends ComponentConfig<any, any>,
+  P extends Record<string, any>,
+> = {
+  classes: Record<keyof D['classNames'], string>;
+} & ResolvedOwnProps<P, D['propDefs']>;
+
+type ResolveBgProps<
+  D extends ComponentConfig<any, any>,
+  TBase,
+> = D['bg'] extends 'provider'
+  ? Omit<TBase, 'children'> & { childrenWithBgProvider: ReactNode }
+  : TBase;
 
 type DataAttributeKeys<PropDefs> = {
   [K in keyof PropDefs]: PropDefs[K] extends { dataAttribute: true }
@@ -122,10 +131,7 @@ export interface UseDefinitionResult<
   D extends ComponentConfig<any, any>,
   P extends Record<string, any>,
 > {
-  ownProps: {
-    classes: Record<keyof D['classNames'], string>;
-  } & ResolvedOwnProps<P, D['propDefs']> &
-    ChildrenProps<D['bg']>;
+  ownProps: ResolveBgProps<D, BaseOwnProps<D, P>>;
 
   // Rest props excludes both propDefs keys AND utility prop keys
   restProps: keyof Omit<P, keyof D['propDefs'] | UtilityKeys<D>> extends never
