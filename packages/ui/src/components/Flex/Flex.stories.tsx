@@ -282,16 +282,16 @@ export const BgNeutralAuto = meta.story({
   render: args => (
     <Flex direction="column">
       <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
-        Flex is a layout primitive and is transparent to the bg system by
-        default. Only an explicit bg prop establishes a new bg level. Nested
-        Flex components without a bg prop inherit the parent context unchanged.
+        Using bg="neutral-auto" on Flex auto-increments from the parent context.
+        The first Flex defaults to neutral-1 (no parent), then each nested Flex
+        increments by one, capping at neutral-3.
       </div>
-      <Flex {...args} bg="neutral-1" direction="column">
-        <div>Neutral 1 (explicit)</div>
-        <Flex {...args} bg="neutral-2" direction="column">
-          <div>Neutral 2 (explicit)</div>
-          <Flex {...args} bg="neutral-3" direction="column">
-            <div>Neutral 3 (explicit, capped)</div>
+      <Flex {...args} bg="neutral-auto" direction="column">
+        <div>Neutral 1 (auto, no parent)</div>
+        <Flex {...args} bg="neutral-auto" direction="column">
+          <div>Neutral 2 (auto-incremented)</div>
+          <Flex {...args} bg="neutral-auto" direction="column">
+            <div>Neutral 3 (auto-incremented, capped)</div>
           </Flex>
         </Flex>
       </Flex>
