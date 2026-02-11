@@ -23,4 +23,5 @@ export { AppRootElementBlueprint } from './AppRootElementBlueprint';
 export { NavItemBlueprint } from './NavItemBlueprint';
 export { PageBlueprint } from './PageBlueprint';
 export { SubPageBlueprint } from './SubPageBlueprint';
-export { HeaderActionBlueprint } from './HeaderActionBlueprint';
+export { PageHeaderActionBlueprint } from './PageHeaderActionBlueprint';
+export { PluginHeaderActionBlueprint } from './PluginHeaderActionBlueprint';
