@@ -51,6 +51,9 @@ describe('KafkaPublishingEventConsumer', () => {
                     topic: 'kafka-topic',
                     allowAutoTopicCreation: true,
                   },
+                  headers: {
+                    forward: false,
+                  },
                 },
               ],
             },
@@ -89,6 +92,105 @@ describe('KafkaPublishingEventConsumer', () => {
       id: 'kafka:publisher:backstage-topic',
       topics: ['backstage-topic'],
       onEvent: expect.any(Function),
+    });
+  });
+
+  it('should forward headers when enabled and filter authorization by default', async () => {
+    const cfg = new ConfigReader({
+      events: {
+        modules: {
+          kafka: {
+            kafkaPublishingEventConsumer: {
+              dev: {
+                clientId: 'backstage-events',
+                brokers: ['kafka1:9092'],
+                topics: [
+                  {
+                    topic: 'backstage-topic',
+                    kafka: { topic: 'kafka-topic' },
+                    headers: { forward: true },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const consumers = KafkaPublishingEventConsumer.fromConfig({
+      config: cfg,
+      events: mockEvents,
+      logger: mockLogger,
+    });
+
+    await consumers[0].start();
+
+    // capture onEvent callback
+    const subscribeCall = jest.mocked(mockEvents.subscribe).mock.calls[0][0];
+    await subscribeCall.onEvent({
+      eventPayload: { hello: 'world' },
+      metadata: { Authorization: 'Bearer abc', 'trace-id': 'id-123' },
+      topic: 'backstage-topic',
+    } as any);
+
+    expect(mockProducer.send).toHaveBeenCalledWith({
+      topic: 'kafka-topic',
+      messages: [
+        {
+          value: expect.any(Buffer),
+          headers: { 'trace-id': 'id-123' },
+        },
+      ],
+    });
+  });
+
+  it('should use whitelist when provided', async () => {
+    const cfg = new ConfigReader({
+      events: {
+        modules: {
+          kafka: {
+            kafkaPublishingEventConsumer: {
+              dev: {
+                clientId: 'backstage-events',
+                brokers: ['kafka1:9092'],
+                topics: [
+                  {
+                    topic: 'backstage-topic',
+                    kafka: { topic: 'kafka-topic' },
+                    headers: { forward: true, whitelist: ['trace-id'] },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const consumers = KafkaPublishingEventConsumer.fromConfig({
+      config: cfg,
+      events: mockEvents,
+      logger: mockLogger,
+    });
+
+    await consumers[0].start();
+
+    const subscribeCall = jest.mocked(mockEvents.subscribe).mock.calls[0][0];
+    await subscribeCall.onEvent({
+      eventPayload: 'data',
+      metadata: { 'trace-id': 'id-123', type: 'UserCreated' },
+      topic: 'backstage-topic',
+    } as any);
+
+    expect(mockProducer.send).toHaveBeenCalledWith({
+      topic: 'kafka-topic',
+      messages: [
+        {
+          value: expect.any(Buffer),
+          headers: { 'trace-id': 'id-123' },
+        },
+      ],
     });
   });
 
