@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createElement } from 'react';
+import { createElement, memo, forwardRef } from 'react';
 import { DefaultIconsApi } from './DefaultIconsApi';
 
 describe('DefaultIconsApi', () => {
@@ -106,5 +106,32 @@ describe('DefaultIconsApi', () => {
     });
 
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('should treat React.memo components as IconComponent', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const MemoIcon = memo(() => createElement('svg'));
+    const api = new DefaultIconsApi({ myIcon: MemoIcon });
+
+    const el = api.icon('myIcon');
+    expect(el).toBeTruthy();
+    // @ts-expect-error accessing internal React element structure
+    expect(el.type).toBe(MemoIcon);
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('myIcon'));
+  });
+
+  it('should treat React.forwardRef components as IconComponent', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const RefIcon = forwardRef(() => createElement('svg'));
+    // @ts-expect-error forwardRef is not strictly IconComponent but should be handled
+    const api = new DefaultIconsApi({ myIcon: RefIcon });
+
+    const el = api.icon('myIcon');
+    expect(el).toBeTruthy();
+    // @ts-expect-error accessing internal React element structure
+    expect(el.type).toBe(RefIcon);
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('myIcon'));
   });
 });
