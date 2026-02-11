@@ -20,7 +20,7 @@ For this example, the default Note.js template will be used. The template create
 
 - Register the [GitHub Scaffolder Action module](../features/software-templates/builtin-actions.md#installing-action-modules).
 
-- [Setup up a GitHub Integration](../getting-started/config/authentication.md#setting-up-a-github-integration) with Backstage, using a GitHub Personal Access Token.
+- [Set up a GitHub Integration](../getting-started/config/authentication.md#setting-up-a-github-integration) with Backstage, using a GitHub Personal Access Token.
 
 ## Creating the component
 
