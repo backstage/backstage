@@ -399,7 +399,7 @@ const parent = createExtension({
 
 // Create a child extension that attaches to the parent's input
 const child = createExtension({
-  attachTo: page.inputs.children, // Direct reference to the input
+  attachTo: parent.inputs.children, // Direct reference to the input
   output: [coreExtensionData.reactElement], // Outputs are verified against the parent input
   // other options...
 });
