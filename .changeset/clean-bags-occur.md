@@ -11,19 +11,22 @@ The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surf
 - `ContainerBg` — `'neutral-1'` | `'neutral-2'` | `'neutral-3'` | `'danger'` | `'warning'` | `'success'`
 - `ProviderBg` — `ContainerBg | 'neutral-auto'`
 
-There is no `neutral-4` prop value; containers are capped at `neutral-3`. Consumer components (e.g. Button) inherit the parent's `bg` via `data-on-bg`, and CSS handles the visual step-up.
+Consumer components (e.g. Button) inherit the parent's `bg` via `data-on-bg`, and CSS handles the visual step-up. See "Neutral level capping" below for details on how levels are bounded.
 
 **Hooks:**
 
 - `useBgProvider(bg?)` — for provider components. Returns `{ bg: undefined }` when no `bg` is given (transparent). Supports `'neutral-auto'` to auto-increment from the parent context.
 - `useBgConsumer()` — for consumer components. Returns the parent container's `bg` unchanged.
-- The old `useBg` hook and `UseBgOptions` interface have been removed.
 
 **Component roles:**
 
-- **Provider-only** (Box, Flex, Grid): set `data-bg`, wrap children in `BgProvider`. Transparent by default.
-- **Consumer-only** (Button, ButtonIcon, ButtonLink): set `data-on-bg`, inherit from parent.
-- **Provider + Consumer** (Card): sets both `data-bg` and `data-on-bg`, wraps children. Defaults to `neutral-auto`.
+- **Provider-only** (Box, Flex, Grid): set `data-bg`, wrap children in `BgProvider`. **Transparent by default** — they do _not_ auto-increment; pass `bg="neutral-auto"` explicitly if you want automatic neutral stepping.
+- **Consumer-only** (Button, ButtonIcon, ButtonLink): set `data-on-bg`, inherit the parent container's `bg` unchanged.
+- **Provider + Consumer** (Card): sets both `data-bg` and `data-on-bg`, wraps children. Card passes `bg="neutral-auto"` to its inner Box, so it auto-increments from the parent context.
+
+**Neutral level capping:**
+
+Provider components cap at `neutral-3`. There is no `neutral-4` prop value. The `neutral-4` level exists only in consumer component CSS — for example, a Button sitting on a `neutral-3` surface uses `neutral-4` tokens internally via `data-on-bg`.
 
 **Migration:**
 
@@ -86,6 +89,6 @@ Update CSS selectors targeting surface data attributes:
 + [data-on-bg='neutral-1'] { ... }
 ```
 
-Note: Provider components use `data-bg` (values: `neutral-1` through `neutral-3`, plus intents). Consumer components use `data-on-bg`, which reflects the parent container's `bg` directly.
+Note: Provider components use `data-bg` (values: `neutral-1` through `neutral-3`, plus intent values). Consumer components use `data-on-bg`, which reflects the parent container's `bg` directly. The `neutral-4` level never appears as a prop or `data-bg` value — it is used only in consumer CSS.
 
 **Affected components:** Box, Button, ButtonIcon, ButtonLink, ToggleButton, Card, Flex, Grid

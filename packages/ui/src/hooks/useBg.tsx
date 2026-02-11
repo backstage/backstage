@@ -86,9 +86,20 @@ export function useBgConsumer(): BgContextValue {
 /**
  * Hook for provider components (e.g. Box, Card) to resolve and provide bg context.
  *
- * - `bg` is `undefined` -- transparent, no context change, returns `{ bg: undefined }`
- * - `bg` is a `ContainerBg` value -- uses that value directly
- * - `bg` is `'neutral-auto'` -- increments from the parent context, capping at `neutral-3`
+ * **Resolution rules:**
+ *
+ * - `bg` is `undefined` -- transparent, no context change, returns `{ bg: undefined }`.
+ *   This is the default for Box, Flex, and Grid (they do **not** auto-increment).
+ * - `bg` is a `ContainerBg` value -- uses that value directly (e.g. `'neutral-1'`).
+ * - `bg` is `'neutral-auto'` -- increments the neutral level from the parent context,
+ *   capping at `neutral-3`. Only components that explicitly pass `'neutral-auto'`
+ *   (e.g. Card) will auto-increment; it is never implicit.
+ *
+ * **Capping:**
+ *
+ * Provider components cap at `neutral-3`. The `neutral-4` level is **not** a valid
+ * prop value -- it exists only in consumer component CSS (e.g. a Button on a
+ * `neutral-3` surface renders with `neutral-4` tokens via `data-on-bg`).
  *
  * The caller is responsible for wrapping children with `BgProvider` when the
  * resolved bg is defined.
