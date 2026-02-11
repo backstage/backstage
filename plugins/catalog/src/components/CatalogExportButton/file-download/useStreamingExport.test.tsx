@@ -294,7 +294,7 @@ describe('useStreamingExport', () => {
       expect(mockStreamDownload).toHaveBeenCalledTimes(1);
 
       const content = getLastCollectedContent();
-      expect(content).toBe('[]');
+      expect(content).toBe('[\n]');
     });
 
     it('clears previous error on new export', async () => {
