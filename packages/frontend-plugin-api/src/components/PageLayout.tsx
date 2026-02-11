@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { IconComponent } from '../icons/types';
+import { IconElement } from '../icons/types';
 import { createSwappableComponent } from './createSwappableComponent';
 
 /**
@@ -35,7 +35,7 @@ export interface PageTab {
  */
 export interface PageLayoutProps {
   title?: string;
-  icon?: IconComponent;
+  icon?: IconElement;
   tabs?: PageTab[];
   children?: ReactNode;
 }
@@ -44,7 +44,7 @@ export interface PageLayoutProps {
  * Default implementation of PageLayout using plain HTML elements
  */
 function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
-  const { title, icon: Icon, tabs, children } = props;
+  const { title, icon, tabs, children } = props;
 
   return (
     <div
@@ -75,7 +75,7 @@ function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
                 fontWeight: 500,
               }}
             >
-              {Icon && <Icon fontSize="small" />}
+              {icon}
               {title}
             </div>
           )}

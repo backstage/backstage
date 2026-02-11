@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { IconComponent, IconsApi } from '@backstage/frontend-plugin-api';
+import {
+  IconComponent,
+  IconElement,
+  IconsApi,
+} from '@backstage/frontend-plugin-api';
 
 /**
  * Implementation for the {@link IconsApi}
@@ -24,8 +28,27 @@ import { IconComponent, IconsApi } from '@backstage/frontend-plugin-api';
 export class DefaultIconsApi implements IconsApi {
   #icons: Map<string, IconComponent>;
 
-  constructor(icons: { [key in string]: IconComponent }) {
-    this.#icons = new Map(Object.entries(icons));
+  constructor(icons: { [key in string]: IconComponent | IconElement }) {
+    const deprecatedKeys: string[] = [];
+
+    this.#icons = new Map(
+      Object.entries(icons).map(([key, icon]) => {
+        if (typeof icon === 'function') {
+          deprecatedKeys.push(key);
+          return [key, icon];
+        }
+        return [key, () => icon];
+      }),
+    );
+
+    if (deprecatedKeys.length > 0) {
+      const keys = deprecatedKeys.join(', ');
+      // eslint-disable-next-line no-console
+      console.warn(
+        `The following icons were registered as IconComponent, which is deprecated. ` +
+          `Use IconElement instead by passing <MyIcon /> rather than MyIcon: ${keys}`,
+      );
+    }
   }
 
   getIcon(key: string): IconComponent | undefined {

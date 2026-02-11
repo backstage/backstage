@@ -14,6 +14,7 @@ import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { IconComponent } from '@backstage/frontend-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { JSXElementConstructor } from 'react';
@@ -308,7 +309,7 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            IconComponent,
+            IconElement,
             'core.icon',
             {
               optional: true;
@@ -343,7 +344,7 @@ const _default: OverridableFrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
-        icon?: IconComponent;
+        icon?: IconElement;
         loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
@@ -379,7 +380,7 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            IconComponent,
+            IconElement,
             'core.icon',
             {
               optional: true;
@@ -428,7 +429,7 @@ const _default: OverridableFrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
-        icon?: IconComponent;
+        icon?: IconElement;
         loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };

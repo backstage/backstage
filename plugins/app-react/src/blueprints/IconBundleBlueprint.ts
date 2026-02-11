@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/frontend-plugin-api';
+import { IconComponent, IconElement } from '@backstage/frontend-plugin-api';
 import {
   createExtensionBlueprint,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 
 const iconsDataRef = createExtensionDataRef<{
-  [key in string]: IconComponent;
+  [key in string]: IconComponent | IconElement;
 }>().with({ id: 'core.icons' });
 
 /**
@@ -33,9 +33,9 @@ export const IconBundleBlueprint = createExtensionBlueprint({
   kind: 'icon-bundle',
   attachTo: { id: 'api:app/icons', input: 'icons' },
   output: [iconsDataRef],
-  factory: (params: { icons: { [key in string]: IconComponent } }) => [
-    iconsDataRef(params.icons),
-  ],
+  factory: (params: {
+    icons: { [key in string]: IconComponent | IconElement };
+  }) => [iconsDataRef(params.icons)],
   dataRefs: {
     icons: iconsDataRef,
   },

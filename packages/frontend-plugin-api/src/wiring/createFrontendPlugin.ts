@@ -29,7 +29,7 @@ import {
 import { FeatureFlagConfig } from './types';
 import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
 import { JsonObject } from '@backstage/types';
-import { IconComponent } from '../icons/types';
+import { IconElement } from '../icons/types';
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { ID_PATTERN } from './constants';
 
@@ -123,7 +123,7 @@ export interface OverridableFrontendPlugin<
     /**
      * Overrides the display icon of the plugin.
      */
-    icon?: IconComponent;
+    icon?: IconElement;
 
     /**
      * Overrides the original info loaders of the plugin one by one.
@@ -160,7 +160,7 @@ export interface FrontendPlugin<
   /**
    * The display icon of the plugin, used in page headers and navigation.
    */
-  readonly icon?: IconComponent;
+  readonly icon?: IconElement;
   readonly routes: TRoutes;
   readonly externalRoutes: TExternalRoutes;
 
@@ -186,7 +186,7 @@ export interface PluginOptions<
   /**
    * The display icon of the plugin, used in page headers and navigation.
    */
-  icon?: IconComponent;
+  icon?: IconElement;
   routes?: TRoutes;
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
