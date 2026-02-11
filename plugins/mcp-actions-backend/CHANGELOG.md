@@ -1,5 +1,15 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
 ## 0.1.8-next.0
 
 ### Patch Changes

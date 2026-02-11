@@ -22,13 +22,11 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
+import { mockApis } from '@backstage/frontend-test-utils';
 
 describe('DeleteEntityDialog', () => {
-  const alertApi: jest.Mocked<AlertApi> = {
-    post: jest.fn(),
-    alert$: jest.fn(),
-  };
+  const alertApi = mockApis.alert();
 
   const catalogClient = catalogApiMock.mock();
 
@@ -123,7 +121,9 @@ describe('DeleteEntityDialog', () => {
 
     await waitFor(() => {
       expect(catalogClient.removeEntityByUid).toHaveBeenCalledWith('123');
-      expect(alertApi.post).toHaveBeenCalledWith({ message: 'no no no' });
+      expect(alertApi.getAlerts()).toContainEqual(
+        expect.objectContaining({ message: 'no no no' }),
+      );
     });
   });
 });

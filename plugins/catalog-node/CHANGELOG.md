@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-node
 
+## 2.0.0-next.1
+
+### Patch Changes
+
+- 42abfb1: Updated `catalogServiceMock.mock` to use `createServiceMock` from `@backstage/backend-test-utils`, replacing the internal copy of `simpleMock`. Added `@backstage/backend-test-utils` as an optional peer dependency.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-permission-node@0.10.10-next.0
+
 ## 1.21.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder
 
+## 1.35.3-next.2
+
+### Patch Changes
+
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- b9d90a7: Added `@backstage/frontend-test-utils` as a dev dependency for mock API usage in tests.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/plugin-scaffolder-react@1.19.7-next.2
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/integration-react@1.2.15-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/plugin-permission-react@0.4.40-next.1
+  - @backstage/plugin-techdocs-react@1.3.8-next.1
+
 ## 1.35.3-next.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.118-next.1",
+  "version": "0.0.32-next.2",
   "backstage": {
     "role": "frontend"
   },
@@ -19,7 +19,7 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "start": "cross-env EXPERIMENTAL_LAZY_COMPILATION=1 backstage-cli package start",
+    "start": "backstage-cli package start --config ../../app-config.yaml --config app-config.yaml",
     "test": "backstage-cli package test"
   },
   "browserslist": {
@@ -40,11 +40,18 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
+    "@backstage/frontend-defaults": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-api-docs": "workspace:^",
+    "@backstage/plugin-app": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
+    "@backstage/plugin-app-visualizer": "workspace:^",
+    "@backstage/plugin-auth": "workspace:^",
     "@backstage/plugin-auth-react": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
@@ -54,9 +61,9 @@
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^",
     "@backstage/plugin-devtools": "workspace:^",
     "@backstage/plugin-home": "workspace:^",
+    "@backstage/plugin-home-react": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-kubernetes-cluster": "workspace:^",
-    "@backstage/plugin-mui-to-bui": "workspace:^",
     "@backstage/plugin-notifications": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
@@ -86,7 +93,7 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",
-    "@playwright/test": "^1.32.3",
+    "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
@@ -95,9 +102,7 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "axios": "^1.13.0",
-    "cross-env": "^10.0.0",
-    "msw": "^1.0.0"
+    "cross-env": "^10.0.0"
   },
   "bundled": true
 }

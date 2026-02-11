@@ -17,6 +17,7 @@
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { TemplateCategoryPicker } from './TemplateCategoryPicker';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -26,10 +27,10 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
 }));
 
 describe('TemplateCategoryPicker', () => {
-  const mockAlertApi = { post: jest.fn() };
+  const mockAlertApi = mockApis.alert();
 
   beforeEach(() => {
-    mockAlertApi.post.mockClear();
+    mockAlertApi.clearAlerts();
   });
 
   it('should post the error to errorApi if an errors is returned', async () => {
@@ -37,13 +38,16 @@ describe('TemplateCategoryPicker', () => {
       error: new Error('something broked'),
     });
 
+    mockAlertApi.clearAlerts();
+
     await renderInTestApp(
       <TestApiProvider apis={[[alertApiRef, mockAlertApi]]}>
         <TemplateCategoryPicker />
       </TestApiProvider>,
     );
 
-    expect(mockAlertApi.post).toHaveBeenCalledWith({
+    expect(mockAlertApi.getAlerts().length).toBeGreaterThanOrEqual(1);
+    expect(mockAlertApi.getAlerts()[0]).toMatchObject({
       message: expect.stringContaining('something broked'),
       severity: 'error',
     });

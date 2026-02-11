@@ -117,7 +117,6 @@ describe('OidcService', () => {
           claims_supported: ['sub', 'ent'],
           grant_types_supported: ['authorization_code'],
           authorization_endpoint: 'http://mock-base-url/v1/authorize',
-          registration_endpoint: 'http://mock-base-url/v1/register',
           code_challenge_methods_supported: ['S256', 'plain'],
         });
       });

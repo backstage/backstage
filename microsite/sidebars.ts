@@ -599,6 +599,7 @@ export default {
                 'frontend-system/utility-apis/creating',
                 'frontend-system/utility-apis/consuming',
                 'frontend-system/utility-apis/configuring',
+                'frontend-system/utility-apis/testing',
               ],
             ),
           ],

@@ -1,5 +1,14 @@
 # @techdocs/cli
 
+## 1.10.5-next.1
+
+### Patch Changes
+
+- 508d127: Updated dependency `find-process` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/plugin-techdocs-node@1.14.2-next.1
+
 ## 1.10.5-next.0
 
 ### Patch Changes

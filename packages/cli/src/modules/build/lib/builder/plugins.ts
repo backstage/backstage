@@ -15,6 +15,8 @@
  */
 
 import fs from 'fs-extra';
+import postcss from 'postcss';
+import postcssImport from 'postcss-import';
 import {
   dirname,
   resolve as resolvePath,
@@ -27,6 +29,7 @@ import {
   OutputChunk,
   HasModuleSideEffects,
 } from 'rollup';
+import { EntryPoint } from '../../../../lib/entryPoints';
 
 type ForwardFileImportsOptions = {
   include: Array<string | RegExp> | string | RegExp | null;
@@ -168,4 +171,59 @@ export function forwardFileImports(options: ForwardFileImportsOptions) {
       };
     },
   } satisfies Plugin;
+}
+
+interface CssEntryPointsOptions {
+  entryPoints: EntryPoint[];
+  targetDir: string;
+}
+
+/**
+ * Rollup plugin that bundles CSS entry points using postcss-import.
+ * CSS files declared in package.json exports are processed and emitted
+ * as part of the Rollup bundle.
+ */
+export function cssEntryPoints(options: CssEntryPointsOptions): Plugin {
+  const cssEntries = options.entryPoints.filter(ep => ep.ext === '.css');
+
+  // Track output directories we've already emitted CSS to, to avoid duplicates
+  // when Rollup runs generateBundle multiple times (once per output format)
+  const generatedFor = new Set<string>();
+
+  return {
+    name: 'backstage-css-entry-points',
+
+    async generateBundle(outputOptions, _bundle, isWrite) {
+      if (!isWrite) {
+        return;
+      }
+
+      const dir = outputOptions.dir || dirname(outputOptions.file!);
+      if (generatedFor.has(dir)) {
+        return;
+      }
+      generatedFor.add(dir);
+
+      for (const entryPoint of cssEntries) {
+        const sourcePath = resolvePath(options.targetDir, entryPoint.path);
+        // Strip the src/ prefix to create an output filename relative to the Rollup output directory
+        const outputPath = entryPoint.path.replace(/^(\.\/)?src\//, '');
+
+        // Read source CSS
+        const source = await fs.readFile(sourcePath, 'utf8');
+
+        // Bundle @import statements using postcss-import
+        const result = await postcss([postcssImport()]).process(source, {
+          from: sourcePath,
+        });
+
+        // Emit the bundled CSS as an asset
+        this.emitFile({
+          type: 'asset',
+          fileName: outputPath,
+          source: result.css,
+        });
+      }
+    },
+  };
 }

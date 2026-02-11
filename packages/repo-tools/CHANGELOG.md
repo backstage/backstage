@@ -1,5 +1,17 @@
 # @backstage/repo-tools
 
+## 0.16.4-next.2
+
+### Patch Changes
+
+- be7ebad: Updated package-docs exclude list to reflect renamed example app packages.
+- df59ee6: The `type-deps` command now follows relative imports and re-exports into declaration chunk files, and detects ambient global types such as the `jest` namespace.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/config-loader@1.10.8-next.0
+
 ## 0.16.4-next.1
 
 ### Patch Changes

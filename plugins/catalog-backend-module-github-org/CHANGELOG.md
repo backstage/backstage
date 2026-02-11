@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.3.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-catalog-backend-module-github@0.12.2-next.2
+  - @backstage/plugin-events-node@0.4.19-next.0
+
 ## 0.3.19-next.0
 
 ### Patch Changes

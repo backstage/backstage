@@ -55,6 +55,12 @@ export interface CreateMockDirectoryOptions {
   mockOsTmpDir?: boolean;
 }
 
+// @public
+export function createServiceMock<TService>(
+  ref: ServiceRef<TService, any>,
+  mockFactory: () => jest.Mocked<TService>,
+): (partialImpl?: Partial<TService>) => ServiceMock<TService>;
+
 // @public (undocumented)
 export namespace mockCredentials {
   export function limitedUser(

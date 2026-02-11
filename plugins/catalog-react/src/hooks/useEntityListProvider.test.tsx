@@ -25,7 +25,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { useMountEffect } from '@react-hookz/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
@@ -111,7 +112,7 @@ const createWrapper =
             [identityApiRef, mockIdentityApi],
             [storageApiRef, mockApis.storage()],
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-            [alertApiRef, { post: jest.fn() }],
+            [alertApiRef, mockApis.alert()],
             [translationApiRef, mockApis.translation()],
             [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
           ]}

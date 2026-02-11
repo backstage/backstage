@@ -31,7 +31,7 @@ describe('Entity details component', () => {
 });
 ```
 
-To mock [Utility APIs](../architecture/33-utility-apis.md) that are used by your component, pass API overrides to `renderInTestApp` using the `apis` option. Mock helpers are available from `@backstage/frontend-test-utils` and plugin-specific test utilities:
+To mock [Utility APIs](../architecture/33-utility-apis.md) that are used by your component, pass API overrides to `renderInTestApp` using the `apis` option. Mock helpers are available from `@backstage/frontend-test-utils` and plugin-specific test utilities. For a deeper look at the available mock APIs and how to create your own, see [Testing with Utility APIs](../utility-apis/05-testing.md).
 
 ```tsx
 import { screen } from '@testing-library/react';

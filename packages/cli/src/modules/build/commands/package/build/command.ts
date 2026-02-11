@@ -15,9 +15,14 @@
  */
 
 import { OptionValues } from 'commander';
+import fs from 'fs-extra';
 import { buildPackage, Output } from '../../../lib/builder';
 import { findRoleFromCommand } from '../../../../../lib/role';
-import { PackageGraph, PackageRoles } from '@backstage/cli-node';
+import {
+  BackstagePackageJson,
+  PackageGraph,
+  PackageRoles,
+} from '@backstage/cli-node';
 import { paths } from '../../../../../lib/paths';
 import { buildFrontend } from '../../../lib/buildFrontend';
 import { buildBackend } from '../../../lib/buildBackend';
@@ -85,8 +90,13 @@ export async function command(opts: OptionValues): Promise<void> {
     outputs.add(Output.types);
   }
 
+  const packageJson = (await fs.readJson(
+    paths.resolveTarget('package.json'),
+  )) as BackstagePackageJson;
+
   return buildPackage({
     outputs,
+    packageJson,
     minify: Boolean(opts.minify),
     workspacePackages: await PackageGraph.listTargetPackages(),
   });

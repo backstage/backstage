@@ -17,4 +17,4 @@
 export { actionsRegistryServiceMock } from './ActionsRegistryServiceMock';
 export { MockActionsRegistry } from './MockActionsRegistry';
 export { actionsServiceMock } from './ActionsServiceMock';
-export { type ServiceMock } from './simpleMock';
+export { type ServiceMock } from './alphaCreateServiceMock';

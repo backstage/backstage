@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.5-next.2
+
+### Patch Changes
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-techdocs-node@1.14.2-next.1
+
 ## 2.1.5-next.1
 
 ### Patch Changes

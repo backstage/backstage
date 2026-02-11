@@ -164,7 +164,7 @@ Let's update the route for "Home" in the Backstage sidebar to point to the new h
 | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | ![Sidebar without Catalog](../assets/getting-started/sidebar-without-catalog.png) | ![Sidebar with Catalog](../assets/getting-started/sidebar-with-catalog.png) |
 
-The code for the Backstage sidebar is most likely inside your [`packages/app/src/components/Root/Root.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/components/Root/Root.tsx).
+The code for the Backstage sidebar is most likely inside your [`packages/app-legacy/src/components/Root/Root.tsx`](https://github.com/backstage/backstage/blob/master/packages/app-legacy/src/components/Root/Root.tsx).
 
 Let's make the following changes
 

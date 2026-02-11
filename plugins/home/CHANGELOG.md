@@ -1,5 +1,22 @@
 # @backstage/plugin-home
 
+## 0.9.2-next.2
+
+### Patch Changes
+
+- 90956a6: Support new frontend system in the homepage plugin
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/core-app-api@1.19.5-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/plugin-home-react@0.1.35-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-compat-api@0.5.8-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/theme@0.7.2-next.1
+
 ## 0.9.2-next.1
 
 ### Patch Changes

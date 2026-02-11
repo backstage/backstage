@@ -19,15 +19,15 @@ import {
   entityFilterFunctionDataRef,
 } from './extensionData';
 import {
-  EntityPredicate,
-  entityPredicateToFilterFunction,
-} from '../predicates';
+  FilterPredicate,
+  filterPredicateToFilterFunction,
+} from '@backstage/filter-predicates';
 import { Entity } from '@backstage/catalog-model';
 import { AppNode } from '@backstage/frontend-plugin-api';
 
 export function* resolveEntityFilterData(
-  filter: ((entity: Entity) => boolean) | EntityPredicate | string | undefined,
-  config: { filter?: EntityPredicate | string },
+  filter: ((entity: Entity) => boolean) | FilterPredicate | string | undefined,
+  config: { filter?: FilterPredicate | string },
   node: AppNode,
 ) {
   if (typeof config.filter === 'string') {
@@ -38,7 +38,7 @@ export function* resolveEntityFilterData(
     yield entityFilterExpressionDataRef(config.filter);
   } else if (config.filter) {
     yield entityFilterFunctionDataRef(
-      entityPredicateToFilterFunction(config.filter),
+      filterPredicateToFilterFunction(config.filter),
     );
   } else if (typeof filter === 'function') {
     yield entityFilterFunctionDataRef(filter);
@@ -49,6 +49,6 @@ export function* resolveEntityFilterData(
     );
     yield entityFilterExpressionDataRef(filter);
   } else if (filter) {
-    yield entityFilterFunctionDataRef(entityPredicateToFilterFunction(filter));
+    yield entityFilterFunctionDataRef(filterPredicateToFilterFunction(filter));
   }
 }

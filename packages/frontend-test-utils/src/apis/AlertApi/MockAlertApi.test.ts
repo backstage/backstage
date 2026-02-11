@@ -1,0 +1,107 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { MockAlertApi } from './MockAlertApi';
+
+describe('MockAlertApi', () => {
+  it('should collect alerts', () => {
+    const api = new MockAlertApi();
+
+    api.post({ message: 'Test alert 1' });
+    api.post({ message: 'Test alert 2', severity: 'error' });
+    api.post({
+      message: 'Test alert 3',
+      severity: 'warning',
+      display: 'permanent',
+    });
+
+    expect(api.getAlerts()).toHaveLength(3);
+    expect(api.getAlerts()[0]).toMatchObject({ message: 'Test alert 1' });
+    expect(api.getAlerts()[1]).toMatchObject({
+      message: 'Test alert 2',
+      severity: 'error',
+    });
+  });
+
+  it('should clear alerts', () => {
+    const api = new MockAlertApi();
+
+    api.post({ message: 'Test alert' });
+    expect(api.getAlerts()).toHaveLength(1);
+
+    api.clearAlerts();
+    expect(api.getAlerts()).toHaveLength(0);
+  });
+
+  it('should notify observers', async () => {
+    const api = new MockAlertApi();
+    const messages: string[] = [];
+
+    const collected = new Promise<void>(resolve => {
+      api.alert$().subscribe({
+        next: alert => {
+          messages.push(alert.message);
+          if (messages.length === 2) {
+            resolve();
+          }
+        },
+      });
+    });
+
+    api.post({ message: 'First' });
+    api.post({ message: 'Second' });
+
+    await collected;
+    expect(messages).toEqual(['First', 'Second']);
+  });
+
+  it('should wait for matching alert', async () => {
+    const api = new MockAlertApi();
+
+    setTimeout(() => {
+      api.post({ message: 'Wrong alert' });
+      api.post({ message: 'Right alert', severity: 'error' });
+    }, 10);
+
+    const alert = await api.waitForAlert(
+      a => a.message === 'Right alert',
+      1000,
+    );
+
+    expect(alert).toMatchObject({ message: 'Right alert', severity: 'error' });
+  });
+
+  it('should timeout if alert never appears', async () => {
+    const api = new MockAlertApi();
+
+    await expect(
+      api.waitForAlert(a => a.message === 'Never posted', 100),
+    ).rejects.toThrow('Timed out waiting for alert');
+  });
+
+  it('should resolve immediately if alert already exists', async () => {
+    const api = new MockAlertApi();
+
+    api.post({ message: 'Already posted' });
+
+    const alert = await api.waitForAlert(
+      a => a.message === 'Already posted',
+      1000,
+    );
+
+    expect(alert).toMatchObject({ message: 'Already posted' });
+  });
+});
