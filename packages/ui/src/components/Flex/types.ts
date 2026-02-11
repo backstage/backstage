@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Responsive, Space, SpaceProps, Surface } from '../../types';
+import type { Responsive, Space, SpaceProps, ProviderBg } from '../../types';
 
 /** @public */
 export interface FlexProps extends SpaceProps {
@@ -25,5 +25,5 @@ export interface FlexProps extends SpaceProps {
   direction?: Responsive<'row' | 'column' | 'row-reverse' | 'column-reverse'>;
   className?: string;
   style?: React.CSSProperties;
-  surface?: Responsive<Surface>;
+  bg?: Responsive<ProviderBg>;
 }

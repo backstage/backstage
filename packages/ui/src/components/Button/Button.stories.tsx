@@ -82,31 +82,8 @@ export const Variants = meta.story({
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
-        <Text>Neutral 0</Text>
-        <Flex align="center" surface="0" p="4">
-          <Button iconStart={<RiCloudLine />} variant="primary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="secondary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="tertiary">
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
-            Button
-          </Button>
-          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
-            Button
-          </Button>
-        </Flex>
-      </Flex>
-      <Flex direction="column" gap="4">
         <Text>Neutral 1</Text>
-        <Flex align="center" surface="1" p="4">
+        <Flex align="center" bg="neutral-1" p="4">
           <Button iconStart={<RiCloudLine />} variant="primary">
             Button
           </Button>
@@ -129,63 +106,49 @@ export const Variants = meta.story({
       </Flex>
       <Flex direction="column" gap="4">
         <Text>Neutral 2</Text>
-        <Box surface="1">
-          <Flex align="center" surface="2" p="4">
-            <Button iconStart={<RiCloudLine />} variant="primary">
-              Button
-            </Button>
-            <Button iconStart={<RiCloudLine />} variant="secondary">
-              Button
-            </Button>
-            <Button iconStart={<RiCloudLine />} variant="tertiary">
-              Button
-            </Button>
-            <Button iconStart={<RiCloudLine />} variant="primary" destructive>
-              Button
-            </Button>
-            <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
-              Button
-            </Button>
-            <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
-              Button
-            </Button>
-          </Flex>
-        </Box>
+        <Flex align="center" bg="neutral-2" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
+            Button
+          </Button>
+        </Flex>
       </Flex>
       <Flex direction="column" gap="4">
         <Text>Neutral 3</Text>
-        <Box surface="1">
-          <Box surface="2">
-            <Flex align="center" surface="3" p="4">
-              <Button iconStart={<RiCloudLine />} variant="primary">
-                Button
-              </Button>
-              <Button iconStart={<RiCloudLine />} variant="secondary">
-                Button
-              </Button>
-              <Button iconStart={<RiCloudLine />} variant="tertiary">
-                Button
-              </Button>
-              <Button iconStart={<RiCloudLine />} variant="primary" destructive>
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                variant="secondary"
-                destructive
-              >
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                variant="tertiary"
-                destructive
-              >
-                Button
-              </Button>
-            </Flex>
-          </Box>
-        </Box>
+        <Flex align="center" bg="neutral-3" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
+            Button
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   ),
@@ -246,8 +209,8 @@ export const Destructive = meta.story({
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
-        <Text>On Surface 1</Text>
-        <Flex align="center" surface="1" p="4" gap="4">
+        <Text>On Neutral 1</Text>
+        <Flex align="center" bg="neutral-1" p="4" gap="4">
           <Button variant="primary" destructive>
             Primary
           </Button>
@@ -462,49 +425,33 @@ export const LoadingVariants = meta.story({
   ),
 });
 
-export const OnSurfaceAuto = meta.story({
+export const AutoBg = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <div style={{ maxWidth: '600px' }}>
-        Using onSurface="auto" on buttons inherits their container's surface
-        level, making them reusable. This is equivalent to not specifying
-        onSurface. To override, use explicit surface values like onSurface="0"
-        or onSurface="2".
+        Buttons automatically detect their parent bg context and increment the
+        neutral level by 1. No prop is needed on the button -- it's fully
+        automatic.
       </div>
-      <Box surface="0" p="4">
-        <Text>Surface 0 container</Text>
+      <Box bg="neutral-1" p="4">
+        <Text>Neutral 1 container</Text>
         <Flex gap="2" mt="2">
-          <Button variant="secondary">Default (inherits 0)</Button>
-          <Button variant="secondary" onSurface="auto">
-            Auto (inherits 0)
-          </Button>
-          <Button variant="secondary" onSurface="1">
-            Explicit 1
-          </Button>
+          <Button variant="secondary">Auto (neutral-2)</Button>
+          <Button variant="tertiary">Auto (neutral-2)</Button>
         </Flex>
       </Box>
-      <Box surface="1" p="4">
-        <Text>Surface 1 container</Text>
+      <Box bg="neutral-2" p="4">
+        <Text>Neutral 2 container</Text>
         <Flex gap="2" mt="2">
-          <Button variant="secondary">Default (inherits 1)</Button>
-          <Button variant="secondary" onSurface="auto">
-            Auto (inherits 1)
-          </Button>
-          <Button variant="secondary" onSurface="2">
-            Explicit 2
-          </Button>
+          <Button variant="secondary">Auto (neutral-3)</Button>
+          <Button variant="tertiary">Auto (neutral-3)</Button>
         </Flex>
       </Box>
-      <Box surface="2" p="4">
-        <Text>Surface 2 container</Text>
+      <Box bg="neutral-3" p="4">
+        <Text>Neutral 3 container</Text>
         <Flex gap="2" mt="2">
-          <Button variant="secondary">Default (inherits 2)</Button>
-          <Button variant="secondary" onSurface="auto">
-            Auto (inherits 2)
-          </Button>
-          <Button variant="secondary" onSurface="3">
-            Explicit 3
-          </Button>
+          <Button variant="secondary">Auto (neutral-4)</Button>
+          <Button variant="tertiary">Auto (neutral-4)</Button>
         </Flex>
       </Box>
     </Flex>

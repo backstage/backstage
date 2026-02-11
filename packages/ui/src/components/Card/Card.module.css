@@ -21,11 +21,9 @@
     display: flex;
     flex-direction: column;
     gap: var(--bui-space-3);
-    background-color: var(--bui-bg-neutral-1);
     border-radius: var(--bui-radius-3);
     padding-block: var(--bui-space-3);
     color: var(--bui-fg-primary);
-    border: 1px solid var(--bui-border);
     overflow: hidden;
     min-height: 0;
     width: 100%;
