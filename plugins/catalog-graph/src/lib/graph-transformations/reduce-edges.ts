@@ -38,7 +38,7 @@ export const reduceEdges: GraphTransformer = ctx => {
     }
 
     edgeMap.set(edgeKey, currentEdge);
-  }, [] as EntityEdge[]);
+  });
 
   ctx.edges = Array.from(edgeMap.values());
 };

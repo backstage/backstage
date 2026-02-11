@@ -121,10 +121,10 @@ export function useEntityRelationGraphFromBackend(
         try {
           const graph = await catalogGraphApi.fetchGraph(request);
 
-          if (typeof graph.cutoff === 'number' && isActive()) {
+          if (graph.cutoff && isActive()) {
             errorApi.post(
               new Error(
-                `Graph was cut off after ${graph.entities} entities due to being too large`,
+                `Graph was cut off after ${graph.entities.length} entities due to being too large`,
               ),
             );
           }

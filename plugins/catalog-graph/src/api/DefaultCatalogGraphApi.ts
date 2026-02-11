@@ -276,6 +276,10 @@ export class DefaultCatalogGraphApi implements CatalogGraphApi {
 
     const resp = await this.#fetchApi.fetch(`${baseUrl}${uri}`);
 
+    if (!resp.ok) {
+      throw new Error(`Failed to fetch catalog graph: ${resp.statusText}`);
+    }
+
     const graph = (await resp.json()) as GraphQueryResult;
 
     return graph;
