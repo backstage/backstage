@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ActionsRegistryService,
-  ActionsService,
-} from '@backstage/backend-plugin-api/alpha';
+import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { createListScaffolderActionsAction } from './createListScaffolderActionsAction';
 import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
 
 export const createScaffolderActions = (options: {
   actionsRegistry: ActionsRegistryService;
-  actionRegistry: TemplateActionRegistry;
+  templateActionRegistry: TemplateActionRegistry;
 }) => {
   createListScaffolderActionsAction(options);
 };
