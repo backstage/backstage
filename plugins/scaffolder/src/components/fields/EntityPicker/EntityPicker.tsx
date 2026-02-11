@@ -34,7 +34,8 @@ import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { FixedSizeList } from 'react-window';
 import useAsync from 'react-use/esm/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -182,6 +183,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
     }
   }, [entities, onChange, selectedEntity, required, allowArbitraryValues]);
 
+  const listRef = useRef<FixedSizeList>(null);
+
   return (
     <ScaffolderField
       rawErrors={rawErrors}
@@ -224,11 +227,29 @@ export const EntityPicker = (props: EntityPickerProps) => {
         )}
         renderOption={option => <EntityDisplayName entityRef={option} />}
         filterOptions={createFilterOptions<Entity>({
-          stringify: option =>
-            entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-              ?.primaryTitle!,
+          stringify: option => {
+            const entityRef = stringifyEntityRef(option);
+            const presentation =
+              entities?.entityRefToPresentation.get(entityRef);
+            return presentation
+              ? `${presentation.primaryTitle}${entityRef}`
+              : '';
+          },
         })}
-        ListboxComponent={VirtualizedListbox}
+        ListboxComponent={params => (
+          <VirtualizedListbox {...params} listRef={listRef} />
+        )}
+        onOpen={() => {
+          // ensure that the list has a chance to render before scrolling to the selected item
+          setTimeout(() => {
+            listRef.current?.scrollToItem(
+              entities?.catalogEntities.findIndex(
+                entity => stringifyEntityRef(entity) === formData,
+              ) ?? 0,
+              'center',
+            );
+          }, 1);
+        }}
       />
     </ScaffolderField>
   );
