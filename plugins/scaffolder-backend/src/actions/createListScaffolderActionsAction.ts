@@ -40,7 +40,7 @@ Each action includes:
 - examples: Usage examples (if available)`,
     schema: {
       input: z => z.object({}),
-      output: z => `z.object({}).passthrough(),`,
+      output: z => z.object({}).passthrough(),
     },
     action: async ({ credentials }) => {
       let actionsList: Array<{
