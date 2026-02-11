@@ -70,6 +70,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
