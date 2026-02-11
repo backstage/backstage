@@ -232,6 +232,56 @@ export type EntityOrderQuery =
     }>;
 
 // @public
+export type EntityPredicate =
+  | EntityPredicateAll
+  | EntityPredicateAny
+  | EntityPredicateNot
+  | boolean
+  | number
+  | string
+  | {
+      [key: string]: EntityPredicateValue;
+    };
+
+// @public
+export interface EntityPredicateAll {
+  // (undocumented)
+  $all: Array<EntityPredicate>;
+}
+
+// @public
+export interface EntityPredicateAny {
+  // (undocumented)
+  $any: Array<EntityPredicate>;
+}
+
+// @public
+export interface EntityPredicateExists {
+  // (undocumented)
+  $exists: boolean;
+}
+
+// @public
+export interface EntityPredicateIn {
+  // (undocumented)
+  $in: Array<string | number | boolean>;
+}
+
+// @public
+export interface EntityPredicateNot {
+  // (undocumented)
+  $not: EntityPredicate;
+}
+
+// @public
+export type EntityPredicateValue =
+  | EntityPredicateExists
+  | EntityPredicateIn
+  | boolean
+  | number
+  | string;
+
+// @public
 export interface GetEntitiesByRefsRequest {
   entityRefs: string[];
   fields?: EntityFieldsQuery | undefined;
@@ -320,6 +370,7 @@ export type QueryEntitiesInitialRequest = {
   limit?: number;
   offset?: number;
   filter?: EntityFilterQuery;
+  query?: EntityPredicate;
   orderFields?: EntityOrderQuery;
   fullTextFilter?: {
     term: string;
