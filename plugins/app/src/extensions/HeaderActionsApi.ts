@@ -15,7 +15,7 @@
  */
 
 import {
-  PluginHeaderActionBlueprint,
+  HeaderActionBlueprint,
   headerActionsApiRef,
   createExtensionInput,
   ApiBlueprint,
@@ -28,9 +28,7 @@ import { DefaultHeaderActionsApi } from '../apis/HeaderActionsApi';
 export const HeaderActionsApi = ApiBlueprint.makeWithOverrides({
   name: 'header-actions',
   inputs: {
-    actions: createExtensionInput([
-      PluginHeaderActionBlueprint.dataRefs.action,
-    ]),
+    actions: createExtensionInput([HeaderActionBlueprint.dataRefs.action]),
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory(defineParams =>
@@ -40,9 +38,7 @@ export const HeaderActionsApi = ApiBlueprint.makeWithOverrides({
         factory: () => {
           return DefaultHeaderActionsApi.fromActions(
             inputs.actions.map(actionInput => ({
-              loader: actionInput.get(
-                PluginHeaderActionBlueprint.dataRefs.action,
-              ),
+              loader: actionInput.get(HeaderActionBlueprint.dataRefs.action),
               pluginId: actionInput.node.spec.plugin.pluginId,
               nodeId: actionInput.node.spec.id,
             })),
