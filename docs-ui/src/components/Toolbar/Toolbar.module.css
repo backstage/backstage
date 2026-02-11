@@ -113,10 +113,9 @@
 }
 
 .searchLabel {
-  display: none;
+  display: inline;
   flex: 1;
   text-align: left;
-  display: inline;
 }
 
 .searchKbd {

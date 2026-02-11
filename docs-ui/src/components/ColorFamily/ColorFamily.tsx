@@ -2,8 +2,6 @@
 
 import styles from './ColorFamily.module.css';
 
-const levels = [1, 2, 3, 4] as const;
-
 const StateChip = ({
   level,
   state,
