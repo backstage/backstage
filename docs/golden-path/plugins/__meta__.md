@@ -2,7 +2,7 @@
 
 ## Why build plugins?
 
-This section should answer definitely why you should build a new plugin. The Backstage framework is deeply empowered by plugins and plugins are core to the project's success. Users should walk away from reading this section with a conviction that plugins are the right path for new functionality.
+This section should clearly explain why you should build a new plugin. The Backstage framework is deeply empowered by plugins and plugins are core to the project's success. Users should walk away from reading this section with a conviction that plugins are the right path for new functionality.
 
 ## Sustainable plugin development
 

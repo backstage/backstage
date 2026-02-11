@@ -63,7 +63,7 @@ If you're non-technical, it is highly recommended to find a technical partner fo
 
 ### Software Catalog
 
-Let's go to https://demo.backstage.io/ together. When you first navigate to the page, you will brought to the Software Catalog page. This is a view of all projects currently registered with the (Demo) Backstage instance. There are a series of filters that you can play around with. If you're _really_ interested, we recommend reading through [the software catalog system model](../../features/software-catalog/system-model.md).
+Let's go to https://demo.backstage.io/ together. When you first navigate to the page, you will be brought to the Software Catalog page. This is a view of all projects currently registered with the (Demo) Backstage instance. There are a series of filters that you can play around with. If you're _really_ interested, we recommend reading through [the software catalog system model](../../features/software-catalog/system-model.md).
 
 Let's click into a Component, say "artist-lookup". This will bring you to a specialized view for that Component. Across the top, you can see tabs for "CI/CD", "API", "Dependencies", "Docs" and "TODOs". For your company, you can change this as you see fit. The important takeaway is that all of these tabs are automatically filtered for this Component which makes it easy to see how this could start to replace many navigation to other tools.
 
