@@ -6,7 +6,7 @@ description: View the relationships between the entities in the Catalog
 
 Audience: All
 
-Each of the entities in the Catalog have various relationships to each other. For example, the demo data includes an API that provides data to a website. `guests` is the owner of the API and the website, and anyone signed in as part of the `guests` group can maintain them.
+Each of the entities in the Catalog has various relationships to each other. For example, the demo data includes an API that provides data to a website. `guests` is the owner of the API and the website, and anyone signed in as part of the `guests` group can maintain them.
 
 To see these relationships:
 
