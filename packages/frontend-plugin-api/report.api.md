@@ -1717,6 +1717,8 @@ export interface OverridableFrontendPlugin<
   // (undocumented)
   withOverrides(options: {
     extensions: Array<ExtensionDefinition>;
+    title?: string;
+    icon?: IconComponent;
     info?: FrontendPluginInfoOptions;
   }): OverridableFrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
