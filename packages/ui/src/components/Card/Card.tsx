@@ -28,6 +28,7 @@ import type {
   CardBodyProps,
   CardFooterProps,
 } from './types';
+import { Box } from '../Box/Box';
 
 /**
  * Card component.
@@ -39,12 +40,18 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
     CardDefinition,
     props,
   );
-  const { classes, bgChildren } = ownProps;
+  const { classes, children } = ownProps;
 
   return (
-    <div ref={ref} className={classes.root} {...dataAttributes} {...restProps}>
-      {bgChildren}
-    </div>
+    <Box
+      bg="neutral-auto"
+      ref={ref}
+      className={classes.root}
+      {...dataAttributes}
+      {...restProps}
+    >
+      {children}
+    </Box>
   );
 });
 

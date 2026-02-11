@@ -25,7 +25,7 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     BoxDefinition,
     props,
   );
-  const { classes, as, bgChildren } = ownProps;
+  const { classes, as, childrenWithBgProvider } = ownProps;
 
   return createElement(
     as,
@@ -36,7 +36,7 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
       ...dataAttributes,
       ...restProps,
     },
-    bgChildren,
+    childrenWithBgProvider,
   );
 });
 

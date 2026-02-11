@@ -86,6 +86,6 @@ Update CSS selectors targeting surface data attributes:
 + [data-on-bg='neutral-1'] { ... }
 ```
 
-Note: Provider components use `data-bg` (values: `neutral-1` through `neutral-3`, plus intents). Consumer components use `data-on-bg`, which reflects the parent container's bg directly (no auto-increment).
+Note: Provider components use `data-bg` (values: `neutral-1` through `neutral-3`, plus intents). Consumer components use `data-on-bg`, which reflects the parent container's `bg` directly.
 
 **Affected components:** Box, Button, ButtonIcon, ButtonLink, ToggleButton, Card, Flex, Grid

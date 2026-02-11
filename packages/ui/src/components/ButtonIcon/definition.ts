@@ -29,7 +29,7 @@ export const ButtonIconDefinition = defineComponent<ButtonIconOwnProps>()({
     content: 'bui-ButtonIconContent',
     spinner: 'bui-ButtonIconSpinner',
   },
-  bg: { consumer: true },
+  bg: 'consumer',
   propDefs: {
     size: { dataAttribute: true, default: 'small' },
     variant: { dataAttribute: true, default: 'primary' },

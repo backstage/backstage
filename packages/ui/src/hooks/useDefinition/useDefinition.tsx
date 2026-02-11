@@ -36,14 +36,10 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
-  // Resolve the effective bg value: use the bg prop if provided,
-  // otherwise fall back to the defaultBg from the bg config
-  const effectiveBg = definition.bg?.provider
-    ? props.bg ?? definition.bg.defaultBg
-    : undefined;
-
   // Provider: resolve bg and provide context for children
-  const providerBg = useBgProvider(effectiveBg);
+  const providerBg = useBgProvider(
+    definition.bg === 'provider' ? props.bg : undefined,
+  );
 
   // Consumer: read parent context bg
   const consumerBg = useBgConsumer();
@@ -74,7 +70,7 @@ export function useDefinition<
       ownPropsResolved[key] = finalValue;
 
       // Skip data-bg for bg prop when the provider path handles it
-      if (key === 'bg' && definition.bg?.provider) continue;
+      if (key === 'bg' && definition.bg === 'provider') continue;
 
       if ((config as any).dataAttribute) {
         // eslint-disable-next-line no-restricted-syntax
@@ -83,17 +79,13 @@ export function useDefinition<
     }
   }
 
-  // Provider-only: set data-bg (provider+consumer components use data-on-bg instead)
-  if (
-    definition.bg?.provider &&
-    !definition.bg?.consumer &&
-    providerBg.bg !== undefined
-  ) {
+  // Provider: set data-bg from the resolved provider bg
+  if (definition.bg === 'provider' && providerBg.bg !== undefined) {
     dataAttributes['data-bg'] = String(providerBg.bg);
   }
 
   // Consumer: set data-on-bg from the parent context
-  if (definition.bg?.consumer && consumerBg.bg !== undefined) {
+  if (definition.bg === 'consumer' && consumerBg.bg !== undefined) {
     dataAttributes['data-on-bg'] = String(consumerBg.bg);
   }
 
@@ -117,10 +109,10 @@ export function useDefinition<
   }
 
   let children: ReactNode | undefined;
-  let bgChildren: ReactNode | undefined;
+  let childrenWithBgProvider: ReactNode | undefined;
 
-  if (definition.bg?.provider) {
-    bgChildren = providerBg.bg ? (
+  if (definition.bg === 'provider') {
+    childrenWithBgProvider = providerBg.bg ? (
       <BgProvider bg={providerBg.bg}>{props.children}</BgProvider>
     ) : (
       props.children
@@ -133,7 +125,9 @@ export function useDefinition<
     ownProps: {
       classes,
       ...ownPropsResolved,
-      ...(definition.bg?.provider ? { bgChildren } : { children }),
+      ...(definition.bg === 'provider'
+        ? { childrenWithBgProvider }
+        : { children }),
     },
     restProps,
     dataAttributes,

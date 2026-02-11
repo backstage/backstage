@@ -27,7 +27,7 @@ export const BoxDefinition = defineComponent<BoxOwnProps>()({
   classNames: {
     root: 'bui-Box',
   },
-  bg: { provider: true },
+  bg: 'provider',
   propDefs: {
     as: { default: 'div' },
     bg: { dataAttribute: true },

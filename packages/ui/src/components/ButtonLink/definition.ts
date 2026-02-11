@@ -28,7 +28,7 @@ export const ButtonLinkDefinition = defineComponent<ButtonLinkOwnProps>()({
     root: 'bui-ButtonLink',
     content: 'bui-ButtonLinkContent',
   },
-  bg: { consumer: true },
+  bg: 'consumer',
   propDefs: {
     size: { dataAttribute: true, default: 'small' },
     variant: { dataAttribute: true, default: 'primary' },

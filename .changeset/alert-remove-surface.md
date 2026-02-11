@@ -10,3 +10,5 @@ The Alert component's background is now driven entirely by its `status` prop. Th
 - <Alert surface="1" status="info" />
 + <Alert status="info" />
 ```
+
+**Affected components:** Alert
