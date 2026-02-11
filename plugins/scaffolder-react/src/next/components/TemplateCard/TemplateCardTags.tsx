@@ -18,6 +18,7 @@ import type { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common'
 import Chip from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
+import { useTheme } from '@material-ui/core/styles';
 
 /**
  * The Props for the {@link TemplateCardTags} component
@@ -26,29 +27,48 @@ import Grid from '@material-ui/core/Grid';
 export interface TemplateCardTagsProps {
   template: TemplateEntityV1beta3;
 }
-export const TemplateCardTags = ({ template }: TemplateCardTagsProps) => (
-  <>
-    <Grid item xs={12}>
-      <Divider data-testid="template-card-separator--tags" />
-    </Grid>
-    <Grid item xs={12}>
-      <Grid container spacing={2} data-testid="template-card-tags">
-        {template.metadata.tags?.map(tag => (
-          <Grid
-            key={`grid-${tag}`}
-            item
-            data-testid={`template-card-tag-item-${tag}`}
-          >
-            <Chip
-              style={{ margin: 0 }}
-              size="small"
-              data-testid={`template-card-tag-chip-${tag}`}
-              label={tag}
-              key={tag}
-            />
-          </Grid>
-        ))}
+export const TemplateCardTags = ({ template }: TemplateCardTagsProps) => {
+  const theme = useTheme();
+  const newBackgroundColor = theme.palette.info.dark;
+  const newColor = theme.palette.getContrastText(newBackgroundColor);
+
+  return (
+    <>
+      <Grid item xs={12}>
+        <Divider data-testid="template-card-separator--tags" />
       </Grid>
-    </Grid>
-  </>
-);
+      <Grid item xs={12}>
+        <Grid container spacing={2} data-testid="template-card-tags">
+          {template.metadata.tags?.map(tag => {
+            const isNew = tag.toLowerCase() === 'new';
+            const chipStyle = isNew
+              ? {
+                  margin: 0,
+                  backgroundColor: newBackgroundColor,
+                  color: newColor,
+                }
+              : {
+                  margin: 0,
+                };
+
+            return (
+              <Grid
+                key={`grid-${tag}`}
+                item
+                data-testid={`template-card-tag-item-${tag}`}
+              >
+                <Chip
+                  style={chipStyle}
+                  size="small"
+                  data-testid={`template-card-tag-chip-${tag}`}
+                  label={tag}
+                  key={tag}
+                />
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Grid>
+    </>
+  );
+};
