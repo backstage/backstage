@@ -18,26 +18,13 @@ import { ReactNode } from 'react';
 import { createApiRef } from '../system';
 
 /**
- * A single header action with its node ID for ordering.
- *
- * @public
- */
-export interface HeaderAction {
-  /** The extension node ID, used for ordering across sources */
-  nodeId: string;
-  /** The rendered header action element */
-  element: ReactNode;
-}
-
-/**
  * API for retrieving plugin-scoped header actions.
  *
  * @remarks
  *
- * Plugin-level header actions are provided via {@link @backstage/frontend-plugin-api#PluginHeaderActionBlueprint}
- * and automatically scoped to the providing plugin. The `nodeId` field on each
- * action is used together with `AppTreeApi` to determine the display order
- * across both page-level and plugin-level actions.
+ * Header actions are provided via
+ * {@link @backstage/frontend-plugin-api#HeaderActionBlueprint}
+ * and automatically scoped to the providing plugin.
  *
  * @public
  */
@@ -45,7 +32,7 @@ export type HeaderActionsApi = {
   /**
    * Returns the header actions for a given plugin.
    */
-  getHeaderActions(pluginId: string): HeaderAction[];
+  getHeaderActions(pluginId: string): ReactNode[];
 };
 
 /**

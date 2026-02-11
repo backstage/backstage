@@ -20,9 +20,9 @@ import {
   createExtensionDataRef,
 } from '../wiring';
 
-const actionDataRef = createExtensionDataRef<
-  () => Promise<JSX.Element>
->().with({ id: 'core.plugin-header-action.loader' });
+const actionDataRef = createExtensionDataRef<() => Promise<JSX.Element>>().with(
+  { id: 'core.header-action.loader' },
+);
 
 /**
  * Creates extensions that provide plugin-scoped header actions.
@@ -34,8 +34,8 @@ const actionDataRef = createExtensionDataRef<
  *
  * @public
  */
-export const PluginHeaderActionBlueprint = createExtensionBlueprint({
-  kind: 'plugin-header-action',
+export const HeaderActionBlueprint = createExtensionBlueprint({
+  kind: 'header-action',
   attachTo: { id: 'api:app/header-actions', input: 'actions' },
   output: [actionDataRef],
   dataRefs: {

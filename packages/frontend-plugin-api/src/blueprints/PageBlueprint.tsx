@@ -26,35 +26,14 @@ import {
 import { ExtensionBoundary, PageLayout, PageTab } from '../components';
 import { useApi } from '../apis/system';
 import { headerActionsApiRef } from '../apis/definitions/HeaderActionsApi';
-import { appTreeApiRef } from '../apis/definitions/AppTreeApi';
-import { HeaderAction } from '../apis/definitions/HeaderActionsApi';
 
-/**
- * Hook that collects page-level and plugin-level header actions, then
- * sorts them by their position in the global app tree node list.
- */
-function useHeaderActions(
-  pageActions: HeaderAction[],
-  pluginId: string,
-): ReactNode {
+function useHeaderActions(pluginId: string): ReactNode {
   const headerActionsApi = useApi(headerActionsApiRef);
-  const appTreeApi = useApi(appTreeApiRef);
-
-  const pluginActions = headerActionsApi.getHeaderActions(pluginId);
-  const allActions = [...pageActions, ...pluginActions];
-
-  if (allActions.length === 0) {
+  const actions = headerActionsApi.getHeaderActions(pluginId);
+  if (actions.length === 0) {
     return undefined;
   }
-
-  // Build a position index from the global node ordering
-  const nodeKeys = [...appTreeApi.getTree().tree.nodes.keys()];
-  const orderIndex = new Map(nodeKeys.map((id, i) => [id, i]));
-  allActions.sort(
-    (a, b) => (orderIndex.get(a.nodeId) ?? 0) - (orderIndex.get(b.nodeId) ?? 0),
-  );
-
-  return <>{allActions.map(a => a.element)}</>;
+  return <>{actions}</>;
 }
 
 /**
@@ -72,7 +51,6 @@ export const PageBlueprint = createExtensionBlueprint({
       coreExtensionData.reactElement,
       coreExtensionData.title.optional(),
     ]),
-    headerActions: createExtensionInput([coreExtensionData.reactElement]),
   },
   output: [
     coreExtensionData.routePath,
@@ -109,16 +87,11 @@ export const PageBlueprint = createExtensionBlueprint({
     const icon = params.icon ?? node.spec.plugin.icon;
     const pluginId = node.spec.plugin.pluginId;
 
-    const pageActions: HeaderAction[] = inputs.headerActions.map(action => ({
-      nodeId: action.node.spec.id,
-      element: action.get(coreExtensionData.reactElement),
-    }));
-
     yield coreExtensionData.routePath(config.path ?? params.path);
     if (params.loader) {
       const loader = params.loader;
       const PageContent = () => {
-        const headerActions = useHeaderActions(pageActions, pluginId);
+        const headerActions = useHeaderActions(pluginId);
         return (
           <PageLayout title={title} icon={icon} headerActions={headerActions}>
             {ExtensionBoundary.lazy(node, loader)}
@@ -141,7 +114,7 @@ export const PageBlueprint = createExtensionBlueprint({
 
       const PageContent = () => {
         const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
-        const headerActions = useHeaderActions(pageActions, pluginId);
+        const headerActions = useHeaderActions(pluginId);
 
         return (
           <PageLayout
@@ -172,13 +145,9 @@ export const PageBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(<PageContent />);
     } else {
       const PageContent = () => {
-        const headerActions = useHeaderActions(pageActions, pluginId);
+        const headerActions = useHeaderActions(pluginId);
         return (
-          <PageLayout
-            title={title}
-            icon={icon}
-            headerActions={headerActions}
-          />
+          <PageLayout title={title} icon={icon} headerActions={headerActions} />
         );
       };
       yield coreExtensionData.reactElement(<PageContent />);

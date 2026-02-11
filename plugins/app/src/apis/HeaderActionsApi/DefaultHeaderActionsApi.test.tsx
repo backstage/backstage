@@ -32,19 +32,10 @@ describe('DefaultHeaderActionsApi', () => {
       },
     ]);
 
-    const actionsA = api.getHeaderActions('plugin-a');
-    const actionsB = api.getHeaderActions('plugin-b');
+    expect(api.getHeaderActions('plugin-a')).toHaveLength(1);
+    expect(api.getHeaderActions('plugin-b')).toHaveLength(1);
 
-    expect(actionsA).toHaveLength(1);
-    expect(actionsB).toHaveLength(1);
-    expect(actionsA[0].nodeId).toBe(
-      'plugin-header-action:plugin-a/action-a',
-    );
-    expect(actionsB[0].nodeId).toBe(
-      'plugin-header-action:plugin-b/action-b',
-    );
-
-    render(<>{actionsA[0].element}</>);
+    render(<>{api.getHeaderActions('plugin-a')}</>);
     await expect(
       screen.findByRole('button', { name: 'Action A' }),
     ).resolves.toBeInTheDocument();
@@ -78,16 +69,8 @@ describe('DefaultHeaderActionsApi', () => {
 
     const actions = api.getHeaderActions('plugin-a');
     expect(actions).toHaveLength(2);
-    expect(actions[0].nodeId).toBe('plugin-header-action:plugin-a/first');
-    expect(actions[1].nodeId).toBe('plugin-header-action:plugin-a/second');
 
-    render(
-      <>
-        {actions.map(a => (
-          <span key={a.nodeId}>{a.element}</span>
-        ))}
-      </>,
-    );
+    render(<>{actions}</>);
     await expect(
       screen.findByRole('button', { name: 'First' }),
     ).resolves.toBeInTheDocument();

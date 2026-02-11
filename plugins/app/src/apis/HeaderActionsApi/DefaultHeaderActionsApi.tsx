@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { Suspense, lazy } from 'react';
-import {
-  type HeaderActionsApi,
-  type HeaderAction,
-} from '@backstage/frontend-plugin-api';
+import { Suspense, ReactNode, lazy } from 'react';
+import { type HeaderActionsApi } from '@backstage/frontend-plugin-api';
 
 type ActionInput = {
   loader: () => Promise<JSX.Element>;
@@ -32,18 +29,14 @@ type ActionInput = {
  * @internal
  */
 export class DefaultHeaderActionsApi implements HeaderActionsApi {
-  constructor(
-    private readonly actionsByPlugin: Map<string, HeaderAction[]>,
-  ) {}
+  constructor(private readonly actionsByPlugin: Map<string, ReactNode[]>) {}
 
-  getHeaderActions(pluginId: string): HeaderAction[] {
+  getHeaderActions(pluginId: string): ReactNode[] {
     return this.actionsByPlugin.get(pluginId) ?? [];
   }
 
-  static fromActions(
-    actions: Array<ActionInput>,
-  ): DefaultHeaderActionsApi {
-    const actionsByPlugin = new Map<string, HeaderAction[]>();
+  static fromActions(actions: Array<ActionInput>): DefaultHeaderActionsApi {
+    const actionsByPlugin = new Map<string, ReactNode[]>();
 
     for (const action of actions) {
       let pluginActions = actionsByPlugin.get(action.pluginId);
@@ -57,14 +50,11 @@ export class DefaultHeaderActionsApi implements HeaderActionsApi {
         return { default: () => element };
       });
 
-      pluginActions.push({
-        nodeId: action.nodeId,
-        element: (
-          <Suspense key={action.nodeId} fallback={null}>
-            <LazyAction />
-          </Suspense>
-        ),
-      });
+      pluginActions.push(
+        <Suspense key={action.nodeId} fallback={null}>
+          <LazyAction />
+        </Suspense>,
+      );
     }
 
     return new DefaultHeaderActionsApi(actionsByPlugin);
