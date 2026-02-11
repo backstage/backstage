@@ -42,11 +42,11 @@ a.k.a "what am I signing myself up for?"
 
 Successfully adopting Backstage usually looks something like this,
 
-1. Setting up a PoC,
-2. Getting leadership buy-in,
-3. Identify a group of key stakeholders for the project and iterate with them aggressively,
-4. Launch to the larger organization,
-5. Drive Catalog adoption to 100%,
+1. Setting up a PoC.
+2. Getting leadership buy-in.
+3. Identify a group of key stakeholders for the project and iterate with them aggressively.
+4. Launch to the larger organization.
+5. Drive Catalog adoption to 100%.
 6. Your Backstage implementation starts to receive plugins from developers outside of your team.
 
 A truly successful Backstage implementation bridges delivering value to customers (developers), demonstrating returns to leadership, and fostering an inner source model. It's a long process but has huge dividends for those that achieve it!
@@ -57,7 +57,7 @@ Now that you know what to expect, let's walk through how to get started.
 
 :::note
 
-If you're non-technical, it is highly recommended to find a technical partner for help standing up a proof-of-concept for feedback.
+If you're non-technical, it is highly recommended to find a technical partner for help setting up a proof-of-concept for feedback.
 
 :::
 
