@@ -15,7 +15,7 @@
  */
 
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { IconComponent } from '../icons/types';
+import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import {
   coreExtensionData,
@@ -61,7 +61,7 @@ export const PageBlueprint = createExtensionBlueprint({
       defaultPath?: [Error: `Use the 'path' param instead`];
       path: string;
       title?: string;
-      icon?: IconComponent;
+      icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
     },
