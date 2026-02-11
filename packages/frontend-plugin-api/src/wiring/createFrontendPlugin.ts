@@ -113,7 +113,17 @@ export interface OverridableFrontendPlugin<
     id: TId,
   ): OverridableExtensionDefinition<TExtensionMap[TId]['T']>;
   withOverrides(options: {
-    extensions: Array<ExtensionDefinition>;
+    extensions?: Array<ExtensionDefinition>;
+
+    /**
+     * Overrides the display title of the plugin.
+     */
+    title?: string;
+
+    /**
+     * Overrides the display icon of the plugin.
+     */
+    icon?: IconComponent;
 
     /**
      * Overrides the original info loaders of the plugin one by one.
@@ -296,8 +306,9 @@ export function createFrontendPlugin<
       return `Plugin{id=${pluginId}}`;
     },
     withOverrides(overrides) {
+      const overrideExtensions = overrides.extensions ?? [];
       const overriddenExtensionIds = new Set(
-        overrides.extensions.map(
+        overrideExtensions.map(
           e => resolveExtensionDefinition(e, { namespace: pluginId }).id,
         ),
       );
@@ -310,7 +321,9 @@ export function createFrontendPlugin<
       return createFrontendPlugin({
         ...options,
         pluginId,
-        extensions: [...nonOverriddenExtensions, ...overrides.extensions],
+        title: overrides.title ?? options.title,
+        icon: overrides.icon ?? options.icon,
+        extensions: [...nonOverriddenExtensions, ...overrideExtensions],
         info: {
           ...options.info,
           ...overrides.info,
