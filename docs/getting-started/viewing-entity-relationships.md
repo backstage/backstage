@@ -78,15 +78,15 @@ You can also toggle:
   The following graphics illustrate the view of the nodes and relationships, based on the combination of the settings of `Simplified` and `Merge relations`.
     - `Simplified` = On and `Merge Relations` = On
 
-      ![Simplfied is On and Merge Relations is On.](../assets/uiguide/simplify-on-merge-relations-on.png)
+      ![Simplified is On and Merge Relations is On.](../assets/uiguide/simplify-on-merge-relations-on.png)
 
     - `Simplified` = On and `Merge Relations` = Off
 
-      ![Simplfied is On and Merge Relations is Off.](../assets/uiguide/simplify-on-merge-relations-off.png)
+      ![Simplified is On and Merge Relations is Off.](../assets/uiguide/simplify-on-merge-relations-off.png)
 
     - `Simplified` = Off and `Merge Relations` = On
 
-      ![Simplfied is Off and Merge Relations is On.](../assets/uiguide/simplify-off-merge-relations-on.png)
+      ![Simplified is Off and Merge Relations is On.](../assets/uiguide/simplify-off-merge-relations-on.png)
 
     - `Simplified` = Off and `Merge Relations` = Off
 
