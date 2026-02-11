@@ -21,7 +21,7 @@ import styles from './Toolbar.module.css';
 import { usePlayground } from '@/utils/playground-context';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { components, layoutComponents } from '@/utils/data';
+import { components } from '@/utils/data';
 import { Logo } from '@/components/Sidebar/Logo';
 
 interface ToolbarProps {
@@ -46,12 +46,7 @@ export const Toolbar = ({ version }: ToolbarProps) => {
 
   // Determine breadcrumb content based on current path
   const getBreadcrumb = () => {
-    const allComponents = [...components, ...layoutComponents];
-
-    // Root page
-    if (pathname === '/') {
-      return { section: null, title: 'Getting Started' };
-    }
+    const allComponents = components;
 
     // Components index page
     if (pathname === '/components') {
