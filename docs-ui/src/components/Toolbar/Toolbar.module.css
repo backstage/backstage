@@ -119,7 +119,7 @@
 }
 
 .searchKbd {
-  display: none;
+  display: inline;
   font-family: inherit;
   font-size: 0.6875rem;
   font-weight: 500;
@@ -127,7 +127,6 @@
   border-radius: 4px;
   padding: 2px 5px;
   color: var(--secondary);
-  display: inline;
 }
 
 .buttonGroup {

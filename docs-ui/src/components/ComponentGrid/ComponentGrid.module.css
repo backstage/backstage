@@ -27,11 +27,3 @@
     text-underline-offset: 2px;
   }
 }
-
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--link);
-  flex-shrink: 0;
-}

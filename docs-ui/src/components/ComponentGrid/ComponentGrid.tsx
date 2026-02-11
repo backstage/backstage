@@ -14,7 +14,6 @@ export const ComponentGrid = () => {
           className={styles.item}
         >
           {item.title}
-          {item.status === 'new' && <span className={styles.dot} />}
         </Link>
       ))}
     </div>
