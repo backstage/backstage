@@ -27,11 +27,32 @@ import {
 import { PortableTemplate } from '../types';
 import { resolvePackageParams } from './resolvePackageParams';
 
-const knownPluginPackages: Record<string, string> = {
+const knownBackendPluginPackages: Record<string, string> = {
+  app: '@backstage/plugin-app-backend',
   auth: '@backstage/plugin-auth-backend',
   catalog: '@backstage/plugin-catalog-backend',
   events: '@backstage/plugin-events-backend',
+  kubernetes: '@backstage/plugin-kubernetes-backend',
+  notifications: '@backstage/plugin-notifications-backend',
+  permission: '@backstage/plugin-permission-backend',
+  proxy: '@backstage/plugin-proxy-backend',
   scaffolder: '@backstage/plugin-scaffolder-backend',
+  search: '@backstage/plugin-search-backend',
+  techdocs: '@backstage/plugin-techdocs-backend',
+};
+
+const knownFrontendPluginPackages: Record<string, string> = {
+  app: '@backstage/plugin-app',
+  auth: '@backstage/plugin-auth',
+  catalog: '@backstage/plugin-catalog',
+  events: '@backstage/plugin-events',
+  kubernetes: '@backstage/plugin-kubernetes',
+  notifications: '@backstage/plugin-notifications',
+  permission: '@backstage/plugin-permission',
+  proxy: '@backstage/plugin-proxy',
+  scaffolder: '@backstage/plugin-scaffolder',
+  search: '@backstage/plugin-search',
+  techdocs: '@backstage/plugin-techdocs',
 };
 
 type CollectTemplateParamsOptions = {
@@ -86,9 +107,20 @@ export async function collectPortableTemplateInput(
     ...promptAnswers,
   };
 
-  const pluginPackage =
-    knownPluginPackages[answers.pluginId as string] ??
-    (answers.pluginPackage as string);
+  let pluginPackage: string | undefined;
+  if (
+    template.role === 'backend-plugin-module' ||
+    template.role === 'frontend-plugin-module'
+  ) {
+    const knownPackages =
+      template.role === 'backend-plugin-module'
+        ? knownBackendPluginPackages
+        : knownFrontendPluginPackages;
+
+    pluginPackage =
+      knownPackages[answers.pluginId as string] ??
+      (answers.pluginPackage as string);
+  }
 
   const roleParams = {
     role: template.role,
@@ -164,23 +196,34 @@ export function moduleIdIdPrompt(): DistinctQuestion {
   };
 }
 
-export function pluginPackagePrompt(): DistinctQuestion {
+export function pluginPackagePrompt(
+  role: 'backend-plugin-module' | 'frontend-plugin-module',
+): DistinctQuestion {
+  const knownPackages =
+    role === 'backend-plugin-module'
+      ? knownBackendPluginPackages
+      : knownFrontendPluginPackages;
+
+  const examplePackage =
+    role === 'backend-plugin-module'
+      ? '@backstage/plugin-catalog-backend'
+      : '@backstage/plugin-catalog';
+
   return {
     type: 'input',
     name: 'pluginPackage',
-    message:
-      'Enter the package name of the plugin this module extends (e.g. @backstage/plugin-catalog-backend) [required]',
+    message: `Enter the package name of the plugin this module extends (e.g. ${examplePackage}) [required]`,
     validate: (value: string) => {
       if (!value) {
         return 'Please enter the package name of the plugin';
       }
       if (!isValidNpmPackageName(value)) {
-        return 'Please enter a valid npm package name (e.g. @backstage/plugin-catalog-backend or my-plugin-backend)';
+        return `Please enter a valid npm package name (e.g. ${examplePackage} or my-plugin)`;
       }
       return true;
     },
     when: (answers: PortableTemplateParams) =>
-      !knownPluginPackages[answers.pluginId as string],
+      !knownPackages[answers.pluginId as string],
   };
 }
 
@@ -199,9 +242,8 @@ export function getPromptsForRole(
     case 'backend-plugin':
       return [pluginIdPrompt()];
     case 'frontend-plugin-module':
-      return [pluginIdPrompt(), moduleIdIdPrompt()];
     case 'backend-plugin-module':
-      return [pluginIdPrompt(), moduleIdIdPrompt(), pluginPackagePrompt()];
+      return [pluginIdPrompt(), moduleIdIdPrompt(), pluginPackagePrompt(role)];
     default:
       return [];
   }
