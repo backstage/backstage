@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
+import { InputError } from '@backstage/errors';
 import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
 
 export const createListScaffolderActionsAction = ({
@@ -39,27 +40,7 @@ Each action includes:
 - examples: Usage examples (if available)`,
     schema: {
       input: z => z.object({}),
-      output: z =>
-        z.object({
-          actions: z
-            .array(
-              z.object({
-                id: z.string().describe('The action identifier'),
-                description: z.string().describe('Action description'),
-                schema: z
-                  .object({
-                    input: z.any().describe('Input JSON schema'),
-                    output: z.any().describe('Output JSON schema'),
-                  })
-                  .describe('Input and output schemas'),
-                examples: z
-                  .array(z.any())
-                  .optional()
-                  .describe('Usage examples'),
-              }),
-            )
-            .describe('List of all available scaffolder actions'),
-        }),
+      output: z => `z.object({}).passthrough(),`,
     },
     action: async ({ credentials }) => {
       let actionsList: Array<{
@@ -79,7 +60,7 @@ Each action includes:
           examples: action.examples || [],
         }));
       } else {
-        throw new Error('templateActionRegistry must be provided');
+        throw new InputError('templateActionRegistry must be provided');
       }
 
       // Sort by id for consistency with /api/scaffolder/v2/actions
