@@ -16,20 +16,20 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
-import { Message } from '@google-cloud/pubsub';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { readSubscriptionTasksFromConfig } from './config';
+import { MessageContext } from './types';
 
-function makeMessage(
+function makeContext(
   data: JsonObject,
   attributes: Record<string, string>,
-): Message {
-  const message: Partial<Message> = {
-    attributes,
-    data: Buffer.from(JSON.stringify(data), 'utf-8'),
-    ack: jest.fn(),
-    nack: jest.fn(),
+): MessageContext {
+  return {
+    message: {
+      data,
+      attributes,
+    },
   };
-  return message as Message;
 }
 
 describe('readSubscriptionTasksFromConfig', () => {
@@ -60,16 +60,17 @@ describe('readSubscriptionTasksFromConfig', () => {
         id: 'subKey',
         project: 'pid',
         subscription: 'sid',
+        filter: expect.any(Function),
         mapToTopic: expect.any(Function),
         mapToMetadata: expect.any(Function),
       },
     ]);
 
     expect(
-      result[0].mapToTopic(makeMessage({ foo: 'bar' }, { attr: 'yes' })),
+      result[0].mapToTopic(makeContext({ foo: 'bar' }, { attr: 'yes' })),
     ).toBe('my-topic');
     expect(
-      result[0].mapToMetadata(makeMessage({ foo: 'bar' }, { attr: 'yes' })),
+      result[0].mapToMetadata(makeContext({ foo: 'bar' }, { attr: 'yes' })),
     ).toEqual({ attr: 'yes' });
   });
 
@@ -111,6 +112,7 @@ describe('readSubscriptionTasksFromConfig', () => {
         id: 'sub1',
         project: 'pid',
         subscription: 'sid',
+        filter: expect.any(Function),
         mapToTopic: expect.any(Function),
         mapToMetadata: expect.any(Function),
       },
@@ -118,6 +120,7 @@ describe('readSubscriptionTasksFromConfig', () => {
         id: 'sub2',
         project: 'pid',
         subscription: 'sid',
+        filter: expect.any(Function),
         mapToTopic: expect.any(Function),
         mapToMetadata: expect.any(Function),
       },
@@ -125,7 +128,7 @@ describe('readSubscriptionTasksFromConfig', () => {
 
     expect(
       result[0].mapToTopic(
-        makeMessage(
+        makeContext(
           { foo: 'bar' },
           { exists: 'exists', meta1: 'original1', meta2: 'original2' },
         ),
@@ -133,7 +136,7 @@ describe('readSubscriptionTasksFromConfig', () => {
     ).toBe('t.exists'); // Message attribute existed, successfully routed
     expect(
       result[0].mapToMetadata(
-        makeMessage(
+        makeContext(
           { foo: 'bar' },
           { exists: 'exists', meta1: 'original1', meta2: 'original2' },
         ),
@@ -146,7 +149,7 @@ describe('readSubscriptionTasksFromConfig', () => {
 
     expect(
       result[1].mapToTopic(
-        makeMessage(
+        makeContext(
           { foo: 'bar' },
           { exists: 'exists', meta1: 'original1', meta2: 'original2' },
         ),
@@ -154,7 +157,7 @@ describe('readSubscriptionTasksFromConfig', () => {
     ).toBeUndefined(); // Message attribute did not exist, could not be routed
     expect(
       result[1].mapToMetadata(
-        makeMessage(
+        makeContext(
           { foo: 'bar' },
           { exists: 'exists', meta1: 'original1', meta2: 'original2' },
         ),
@@ -165,6 +168,55 @@ describe('readSubscriptionTasksFromConfig', () => {
       meta2: 'original2',
       meta3: 'new',
     });
+  });
+
+  const exampleFilter: FilterPredicate = {
+    'message.attributes.x-github-event': 'push',
+  };
+
+  it('reads with filter', () => {
+    const data = {
+      events: {
+        modules: {
+          googlePubSub: {
+            googlePubSubConsumingEventPublisher: {
+              subscriptions: {
+                subKey: {
+                  subscriptionName: 'projects/pid/subscriptions/sid',
+                  targetTopic: 'github.{{ message.attributes.x-github-event }}',
+                  filter: exampleFilter,
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const result = readSubscriptionTasksFromConfig(
+      mockServices.rootConfig({ data }),
+    );
+    expect(result).toEqual([
+      {
+        id: 'subKey',
+        project: 'pid',
+        subscription: 'sid',
+        filter: expect.any(Function),
+        mapToTopic: expect.any(Function),
+        mapToMetadata: expect.any(Function),
+      },
+    ]);
+
+    expect(
+      result[0].filter(
+        makeContext({ foo: 'bar' }, { 'x-github-event': 'push' }),
+      ),
+    ).toBe(true);
+    expect(
+      result[0].filter(
+        makeContext({ foo: 'bar' }, { 'x-github-event': 'pull_request' }),
+      ),
+    ).toBe(false);
   });
 
   it('rejects malformed subscription name', () => {
