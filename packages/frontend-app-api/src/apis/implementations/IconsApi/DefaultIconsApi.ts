@@ -19,7 +19,7 @@ import {
   IconElement,
   IconsApi,
 } from '@backstage/frontend-plugin-api';
-import { createElement } from 'react';
+import { createElement, isValidElement } from 'react';
 
 /**
  * Implementation for the {@link IconsApi}
@@ -35,11 +35,11 @@ export class DefaultIconsApi implements IconsApi {
 
     this.#icons = new Map(
       Object.entries(icons).map(([key, value]) => {
-        if (typeof value === 'function') {
-          deprecatedKeys.push(key);
-          return [key, createElement(value)];
+        if (value === null || isValidElement(value)) {
+          return [key, value];
         }
-        return [key, value];
+        deprecatedKeys.push(key);
+        return [key, createElement(value as IconComponent)];
       }),
     );
 
