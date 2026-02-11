@@ -65,7 +65,7 @@ const useStyles = makeStyles(
         transition: 'filter 0.1s ease-in-out',
       },
       '& path[marker-end]:hover': {
-        filter: `drop-shadow(2px 2px 4px ${theme.palette.primary.dark});`,
+        filter: `drop-shadow(2px 2px 4px ${theme.palette.primary.dark})`,
       },
       '& g[data-testid=label]': {
         transition: 'transform 0s',
