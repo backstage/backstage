@@ -173,6 +173,7 @@ describe('useEntityRelationNodesAndEdges', () => {
         }, 1);
         return { entities: Object.values(entities) };
       },
+      ok: true,
     })) as any;
 
     (
@@ -192,6 +193,7 @@ describe('useEntityRelationNodesAndEdges', () => {
         await deferred;
         return { entities: Object.values(entities) };
       },
+      ok: true,
     })) as any;
 
     const { result } = renderHook(
@@ -212,7 +214,41 @@ describe('useEntityRelationNodesAndEdges', () => {
     deferred.resolve();
   });
 
-  test('should forward error state', async () => {
+  test('should forward error state with failing request', async () => {
+    const rootEntityRefs = ['b:d/c'];
+    const returnError = new Error('Intentional error');
+    fetchApi.fetch = jest.fn(async () => ({
+      json: async () => {
+        deferred.resolve(undefined);
+        throw returnError;
+      },
+      ok: false,
+      statusText: 'Intentional error',
+    })) as any;
+
+    const { result, rerender } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs,
+        }),
+      { wrapper: GraphContext },
+    );
+
+    // Simulate rerendering as this is triggered automatically due to the mock
+    for (let i = 0; i < 5; ++i) {
+      await new Promise(resolve => setTimeout(resolve, 1));
+      rerender();
+    }
+
+    const { nodes, edges, loading, error } = result.current;
+
+    expect(loading).toBe(false);
+    expect(error?.message).toContain(returnError.message);
+    expect(nodes).toBeUndefined();
+    expect(edges).toBeUndefined();
+  });
+
+  test('should forward error state with invalid json', async () => {
     const rootEntityRefs = ['b:d/c'];
     const returnError = new Error('Test');
     fetchApi.fetch = jest.fn(async () => ({
@@ -220,6 +256,7 @@ describe('useEntityRelationNodesAndEdges', () => {
         deferred.resolve(undefined);
         throw returnError;
       },
+      ok: true,
     })) as any;
 
     const { result, rerender } = renderHook(

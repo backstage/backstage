@@ -57,10 +57,10 @@ export class DefaultGraphService implements GraphService {
       rootEntityRefs,
       relations,
       maxDepth: userMaxDepth = Number.POSITIVE_INFINITY,
-      fields,
       filter,
     } = request;
 
+    const fields = request.fields ? request.fields.slice(0) : undefined;
     if (fields && fields.length > 0 && !fields.includes('relations')) {
       fields.push('relations');
     }
