@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createElement, type ReactNode } from 'react';
+import { createElement } from 'react';
 import { DefaultIconsApi } from './DefaultIconsApi';
 
 describe('DefaultIconsApi', () => {
@@ -24,6 +24,7 @@ describe('DefaultIconsApi', () => {
 
   it('should return undefined for unknown keys', () => {
     const api = new DefaultIconsApi({});
+    expect(api.icon('missing')).toBeUndefined();
     expect(api.getIcon('missing')).toBeUndefined();
   });
 
@@ -37,86 +38,73 @@ describe('DefaultIconsApi', () => {
     expect(api.listIconKeys()).toEqual(['a', 'b', 'c']);
   });
 
-  it('should support IconElement values and wrap them in a component', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  it('should return IconElement values directly via icon()', () => {
     const element = createElement('span', null, 'test-icon');
     const api = new DefaultIconsApi({ myIcon: element });
 
-    const Icon = api.getIcon('myIcon');
-    expect(Icon).toBeDefined();
-    expect(typeof Icon).toBe('function');
-    expect((Icon! as (props: object) => ReactNode)({})).toBe(element);
-    expect(warnSpy).not.toHaveBeenCalled();
+    expect(api.icon('myIcon')).toBe(element);
   });
 
-  it('should support null IconElement values', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  it('should return null IconElement values via icon()', () => {
     const api = new DefaultIconsApi({ empty: null });
-
-    const Icon = api.getIcon('empty');
-    expect(Icon).toBeDefined();
-    expect(typeof Icon).toBe('function');
-    expect((Icon! as (props: object) => ReactNode)({})).toBeNull();
-    expect(warnSpy).not.toHaveBeenCalled();
+    expect(api.icon('empty')).toBeNull();
   });
 
-  it('should support IconComponent values and return them directly', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const MyIcon = () => createElement('span', null, 'component-icon');
+  it('should convert IconComponent values to elements for icon()', () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const MyIcon = () => createElement('span', null, 'rendered');
     const api = new DefaultIconsApi({ myIcon: MyIcon });
 
-    expect(api.getIcon('myIcon')).toBe(MyIcon);
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('myIcon'));
+    const result = api.icon('myIcon');
+    expect(result).toBeTruthy();
+    // @ts-expect-error accessing internal React element structure
+    expect(result.type).toBe(MyIcon);
+  });
+
+  it('should wrap IconElement values in a component for getIcon()', () => {
+    const element = createElement('span', null, 'test-icon');
+    const api = new DefaultIconsApi({ myIcon: element });
+
+    const icon = api.getIcon('myIcon');
+    expect(icon).toBeDefined();
+    expect(typeof icon).toBe('function');
+    // @ts-expect-error testing runtime behavior
+    expect(icon({})).toBe(element);
+    expect(api.getIcon('myIcon')).toBe(icon);
+  });
+
+  it('should wrap null IconElement in a component for getIcon()', () => {
+    const api = new DefaultIconsApi({ empty: null });
+
+    const icon = api.getIcon('empty');
+    expect(icon).toBeDefined();
+    expect(typeof icon).toBe('function');
+    // @ts-expect-error testing runtime behavior
+    expect(icon({})).toBeNull();
   });
 
   it('should log a single warning listing all IconComponent keys', () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const A = () => createElement('span');
-    const B = () => createElement('span');
 
-    const api = new DefaultIconsApi({
-      a: A,
+    void new DefaultIconsApi({
+      a: () => createElement('span'),
       elem: createElement('span'),
-      b: B,
+      b: () => createElement('span'),
       empty: null,
     });
-    expect(api.getIcon('a')).toBe(A);
-    expect(api.getIcon('b')).toBe(B);
-    expect(api.getIcon('elem')).toEqual(expect.any(Function));
-    expect(api.getIcon('empty')).toEqual(expect.any(Function));
 
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/a, b$/));
   });
 
-  it('should handle a mix of IconComponent and IconElement values', () => {
+  it('should not warn when only IconElement values are provided', () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const element = createElement('span', null, 'elem');
-    const Component = () => createElement('span', null, 'comp');
 
-    const api = new DefaultIconsApi({
-      elem: element,
-      comp: Component,
+    void new DefaultIconsApi({
+      element: createElement('span'),
       empty: null,
     });
 
-    // Element - wrapped in a component, returned via getIcon
-    const ElemIcon = api.getIcon('elem');
-    expect(ElemIcon).toBeDefined();
-    expect((ElemIcon! as (props: object) => ReactNode)({})).toBe(element);
-
-    // Component - returned directly
-    expect(api.getIcon('comp')).toBe(Component);
-
-    // Null element - wrapped in a component
-    const EmptyIcon = api.getIcon('empty');
-    expect(EmptyIcon).toBeDefined();
-    expect((EmptyIcon! as (props: object) => ReactNode)({})).toBeNull();
-
-    // Single warning mentioning only the component key
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('comp'));
-    expect(warnSpy).toHaveBeenCalledWith(expect.not.stringContaining('elem'));
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 });

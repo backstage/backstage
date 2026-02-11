@@ -1447,8 +1447,9 @@ export type IconElement = JSX_2.Element | null;
 
 // @public
 export interface IconsApi {
-  // (undocumented)
+  // @deprecated (undocumented)
   getIcon(key: string): IconComponent | undefined;
+  icon(key: string): IconElement | undefined;
   // (undocumented)
   listIconKeys(): string[];
 }
