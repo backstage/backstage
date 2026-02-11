@@ -249,9 +249,7 @@ export const BoxDefinition: {
   readonly classNames: {
     readonly root: 'bui-Box';
   };
-  readonly bg: {
-    readonly provider: true;
-  };
+  readonly bg: 'provider';
   readonly propDefs: {
     readonly as: {
       readonly default: 'div';
@@ -337,9 +335,7 @@ export const ButtonDefinition: {
     readonly content: 'bui-ButtonContent';
     readonly spinner: 'bui-ButtonSpinner';
   };
-  readonly bg: {
-    readonly consumer: true;
-  };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -378,9 +374,7 @@ export const ButtonIconDefinition: {
     readonly content: 'bui-ButtonIconContent';
     readonly spinner: 'bui-ButtonIconSpinner';
   };
-  readonly bg: {
-    readonly consumer: true;
-  };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -428,9 +422,7 @@ export const ButtonLinkDefinition: {
     readonly root: 'bui-ButtonLink';
     readonly content: 'bui-ButtonLinkContent';
   };
-  readonly bg: {
-    readonly consumer: true;
-  };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -524,11 +516,6 @@ export const CardDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Card';
-  };
-  readonly bg: {
-    readonly provider: true;
-    readonly consumer: true;
-    readonly defaultBg: 'neutral-auto';
   };
   readonly propDefs: {
     readonly children: {};
