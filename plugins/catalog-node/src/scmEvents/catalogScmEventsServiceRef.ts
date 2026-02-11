@@ -33,14 +33,16 @@ import { DefaultCatalogScmEventsService } from './DefaultCatalogScmEventsService
  */
 export const catalogScmEventsServiceRef =
   createServiceRef<CatalogScmEventsService>({
-    id: 'catalog-scm-events',
-    scope: 'root',
+    id: 'catalog.scm-events.alpha',
     defaultFactory: async service =>
       createServiceFactory({
         service,
         deps: {},
-        factory() {
+        createRootContext() {
           return new DefaultCatalogScmEventsService();
+        },
+        factory(_, ctx) {
+          return ctx;
         },
       }),
   });

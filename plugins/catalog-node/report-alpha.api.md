@@ -134,7 +134,7 @@ export interface CatalogScmEventsService {
 // @alpha
 export const catalogScmEventsServiceRef: ServiceRef<
   CatalogScmEventsService,
-  'root',
+  'plugin',
   'singleton'
 >;
 

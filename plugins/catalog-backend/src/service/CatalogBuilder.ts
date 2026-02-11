@@ -116,6 +116,7 @@ import {
 } from '@backstage/plugin-catalog-node/alpha';
 import { filterAndSortProcessors, filterProviders } from './util';
 import { GenericScmEventRefreshProvider } from '../providers/GenericScmEventRefreshProvider';
+import { readScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -532,11 +533,17 @@ export class CatalogBuilder {
       });
     }
 
-    const locationStore = new DefaultLocationStore(dbClient, catalogScmEvents);
+    const scmEventHandlingConfig = readScmEventHandlingConfig(config);
+    const locationStore = new DefaultLocationStore(
+      dbClient,
+      catalogScmEvents,
+      scmEventHandlingConfig,
+    );
     const configLocationProvider = new ConfigLocationEntityProvider(config);
     const scmEvents = new GenericScmEventRefreshProvider(
       dbClient,
       catalogScmEvents,
+      scmEventHandlingConfig,
     );
 
     const entityProviderEntries = lodash.uniqBy(

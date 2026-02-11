@@ -33,21 +33,28 @@ import {
   DbRefreshStateRow,
   DbSearchRow,
 } from '../database/tables';
+import { ScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
 
 /**
  * Deals in a generic fashion with SCM events, refreshing entities as needed.
  *
- * It's implemented in the form of an entity provider even though itt actually
+ * It's implemented in the form of an entity provider even though its actually
  * does not behave like one, mostly in order to consistently start treating
  * events on connect time when the engine is known to be ready.
  */
 export class GenericScmEventRefreshProvider implements EntityProvider {
   readonly #knex: Knex;
   readonly #scmEvents: CatalogScmEventsService;
+  readonly #scmEventHandlingConfig: ScmEventHandlingConfig;
 
-  constructor(knex: Knex, scmEvents: CatalogScmEventsService) {
+  constructor(
+    knex: Knex,
+    scmEvents: CatalogScmEventsService,
+    scmEventHandlingConfig: ScmEventHandlingConfig,
+  ) {
     this.#knex = knex;
     this.#scmEvents = scmEvents;
+    this.#scmEventHandlingConfig = scmEventHandlingConfig;
   }
 
   getProviderName(): string {
@@ -55,7 +62,9 @@ export class GenericScmEventRefreshProvider implements EntityProvider {
   }
 
   async connect(_connection: EntityProviderConnection): Promise<void> {
-    this.#scmEvents.subscribe({ onEvents: this.#onScmEvents.bind(this) });
+    if (this.#scmEventHandlingConfig.refresh) {
+      this.#scmEvents.subscribe({ onEvents: this.#onScmEvents.bind(this) });
+    }
   }
 
   async #onScmEvents(events: CatalogScmEvent[]): Promise<void> {

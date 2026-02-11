@@ -42,15 +42,22 @@ import {
 } from '@backstage/plugin-catalog-node/alpha';
 import { chunk, uniqBy } from 'lodash';
 import parseGitUrl, { type GitUrl } from 'git-url-parse';
+import { ScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
   private readonly db: Knex;
   private readonly scmEvents: CatalogScmEventsService;
+  private readonly scmEventHandlingConfig: ScmEventHandlingConfig;
 
-  constructor(db: Knex, scmEvents: CatalogScmEventsService) {
+  constructor(
+    db: Knex,
+    scmEvents: CatalogScmEventsService,
+    scmEventHandlingConfig: ScmEventHandlingConfig,
+  ) {
     this.db = db;
     this.scmEvents = scmEvents;
+    this.scmEventHandlingConfig = scmEventHandlingConfig;
   }
 
   getProviderName(): string {
@@ -194,7 +201,12 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       entities,
     });
 
-    this.scmEvents.subscribe({ onEvents: this.#onScmEvents.bind(this) });
+    if (
+      this.scmEventHandlingConfig.unregister ||
+      this.scmEventHandlingConfig.move
+    ) {
+      this.scmEvents.subscribe({ onEvents: this.#onScmEvents.bind(this) });
+    }
   }
 
   private async locations(dbOrTx: Knex.Transaction | Knex = this.db) {
@@ -221,16 +233,28 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     const locationPrefixesToMove = new Map<string, string>();
 
     for (const event of events) {
-      if (event.type === 'location.deleted') {
+      if (
+        event.type === 'location.deleted' &&
+        this.scmEventHandlingConfig.unregister
+      ) {
         exactLocationsToDelete.add(event.url);
-      } else if (event.type === 'location.moved') {
+      } else if (
+        event.type === 'location.moved' &&
+        this.scmEventHandlingConfig.move
+      ) {
         // Since Location entities are named after their target URL, these
         // unfortunately have to be translated into deletion and creation
         exactLocationsToDelete.add(event.fromUrl);
         exactLocationsToCreate.add(event.toUrl);
-      } else if (event.type === 'repository.deleted') {
+      } else if (
+        event.type === 'repository.deleted' &&
+        this.scmEventHandlingConfig.unregister
+      ) {
         locationPrefixesToDelete.add(event.url);
-      } else if (event.type === 'repository.moved') {
+      } else if (
+        event.type === 'repository.moved' &&
+        this.scmEventHandlingConfig.move
+      ) {
         // These also have to be handled with deletions and creations
         locationPrefixesToMove.set(event.fromUrl, event.toUrl);
       }

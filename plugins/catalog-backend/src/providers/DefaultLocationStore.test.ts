@@ -52,7 +52,11 @@ describe('DefaultLocationStore', () => {
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);
     const connection = { applyMutation: jest.fn(), refresh: jest.fn() };
-    const store = new DefaultLocationStore(knex, mockScmEvents);
+    const store = new DefaultLocationStore(knex, mockScmEvents, {
+      refresh: true,
+      unregister: true,
+      move: true,
+    });
     await store.connect(connection);
     return { store, connection, knex };
   }

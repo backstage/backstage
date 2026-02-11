@@ -49,7 +49,11 @@ describe('GenericScmEventRefreshProvider', () => {
       publish: jest.fn(),
     };
 
-    const store = new GenericScmEventRefreshProvider(knex, scmEvents);
+    const store = new GenericScmEventRefreshProvider(knex, scmEvents, {
+      refresh: true,
+      unregister: true,
+      move: true,
+    });
 
     const connection = {
       applyMutation: jest.fn(),
