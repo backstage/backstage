@@ -33,20 +33,22 @@ description: Documentation landing page.
       <ul>
         <li><a href='https://backstage.io/docs/getting-started/'>Create your Backstage App</a></li>
         <li><a href='https://backstage.io/docs/getting-started/logging-in'>Logging into Backstage</a></li>
-        <li>Using the Catalog</li>
+        <li>Using the Catalog
           <ul>
             <li><a href='https://backstage.io/docs/getting-started/viewing-catalog'>Viewing the Catalog</a></li>
             <li><a href='https://backstage.io/docs/getting-started/view-what-you-own'>Viewing what you own</a></li>
             <li><a href='https://backstage.io/docs/getting-started/viewing-entity-relationships'>Viewing entity relationships</a></li>
-            <li><a href='https://backstage.io/docs/getting-started/search-catalog'>Searching the Catalog</a></li>
+            <li><a href='https://backstage.io/docs/getting-started/filter-catalog'>Filtering the Catalog</a></li>
           </ul>
+        </li>
         <li>Managing Components
           <ul>
             <li><a href='https://backstage.io/docs/getting-started/register-a-component'>Register</a></li>
             <li><a href='https://backstage.io/docs/getting-started/create-a-component'>Create</a></li>
             <li><a href='https://backstage.io/docs/getting-started/update-a-component'>Update</a></li>
             <li><a href='https://backstage.io/docs/getting-started/unregister-delete-component'>Unregister/delete</a></li>
-          </ul> 
+          </ul>
+        </li>
         <li><a href='https://backstage.io/docs/features/software-templates/configuration'>Configuring a Software Template</a></li>
         <li><a href='https://backstage.io/docs/features/software-templates/adding-templates'>Creating a Software Template</a></li>
         <li><a href='https://backstage.io/docs/features/kubernetes/'>Check health of services with Kubernetes</a></li>
