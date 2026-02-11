@@ -16,8 +16,8 @@ import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plug
 import { ExtensionInput as ExtensionInput_2 } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { JSX as JSX_2 } from 'react/jsx-runtime';
-import { JSX as JSX_3 } from 'react';
+import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
@@ -52,7 +52,7 @@ export const analyticsApiRef: ApiRef<AnalyticsApi>;
 export const AnalyticsContext: (options: {
   attributes: Partial<AnalyticsContextValue>;
   children: ReactNode;
-}) => JSX_2.Element;
+}) => JSX_3.Element;
 
 // @public
 export interface AnalyticsContextValue {
@@ -263,7 +263,7 @@ export const AppRootElementBlueprint: ExtensionBlueprint_2<{
   params: {
     element: JSX.Element;
   };
-  output: ExtensionDataRef_2<JSX_3, 'core.reactElement', {}>;
+  output: ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -389,9 +389,9 @@ export interface ConfigurableExtensionDataRef<
 // @public (undocumented)
 export const coreExtensionData: {
   title: ConfigurableExtensionDataRef_2<string, 'core.title', {}>;
-  icon: ConfigurableExtensionDataRef_2<IconComponent, 'core.icon', {}>;
+  icon: ConfigurableExtensionDataRef_2<IconElement, 'core.icon', {}>;
   reactElement: ConfigurableExtensionDataRef_2<
-    JSX_3.Element,
+    JSX_2.Element,
     'core.reactElement',
     {}
   >;
@@ -1103,7 +1103,7 @@ export type ExtensionBlueprintParams<T extends object = object> = {
 };
 
 // @public (undocumented)
-export function ExtensionBoundary(props: ExtensionBoundaryProps): JSX_2.Element;
+export function ExtensionBoundary(props: ExtensionBoundaryProps): JSX_3.Element;
 
 // @public (undocumented)
 export namespace ExtensionBoundary {
@@ -1369,7 +1369,7 @@ export interface FrontendPlugin<
   readonly $$type: '@backstage/FrontendPlugin';
   // (undocumented)
   readonly externalRoutes: TExternalRoutes;
-  readonly icon?: IconComponent;
+  readonly icon?: IconElement;
   // @deprecated
   readonly id: string;
   info(): Promise<FrontendPluginInfo>;
@@ -1430,17 +1430,20 @@ export const HeaderActionBlueprint: ExtensionBlueprint_2<{
   params: {
     loader: () => Promise<JSX.Element>;
   };
-  output: ExtensionDataRef_2<JSX_3, 'core.reactElement', {}>;
+  output: ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
   dataRefs: never;
 }>;
 
-// @public
+// @public @deprecated
 export type IconComponent = ComponentType<{
   fontSize?: 'medium' | 'large' | 'small' | 'inherit';
 }>;
+
+// @public
+export type IconElement = JSX_2.Element | null;
 
 // @public
 export interface IconsApi {
@@ -1716,9 +1719,9 @@ export interface OverridableFrontendPlugin<
   ): OverridableExtensionDefinition<TExtensionMap[TId]['T']>;
   // (undocumented)
   withOverrides(options: {
-    extensions: Array<ExtensionDefinition>;
+    extensions?: Array<ExtensionDefinition>;
     title?: string;
-    icon?: IconComponent;
+    icon?: IconElement;
     info?: FrontendPluginInfoOptions;
   }): OverridableFrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
@@ -1730,7 +1733,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
     title?: string;
-    icon?: IconComponent;
+    icon?: IconElement;
     loader?: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
   };
@@ -1743,7 +1746,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
           optional: true;
         }
       >
-    | ExtensionDataRef_2<JSX_3, 'core.reactElement', {}>
+    | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
     | ExtensionDataRef_2<
         string,
         'core.title',
@@ -1752,7 +1755,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
         }
       >
     | ExtensionDataRef_2<
-        IconComponent,
+        IconElement,
         'core.icon',
         {
           optional: true;
@@ -1760,7 +1763,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
       >;
   inputs: {
     pages: ExtensionInput_2<
-      | ConfigurableExtensionDataRef_2<JSX_3, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
       | ConfigurableExtensionDataRef_2<string, 'core.routing.path', {}>
       | ConfigurableExtensionDataRef_2<
           RouteRef<AnyRouteRefParams_2>,
@@ -1805,7 +1808,7 @@ export interface PageLayoutProps {
   // (undocumented)
   children?: ReactNode;
   // (undocumented)
-  icon?: IconComponent;
+  icon?: IconElement;
   // (undocumented)
   tabs?: PageTab[];
   // (undocumented)
@@ -1848,7 +1851,7 @@ export interface PluginOptions<
   externalRoutes?: TExternalRoutes;
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
-  icon?: IconComponent;
+  icon?: IconElement;
   // (undocumented)
   info?: FrontendPluginInfoOptions;
   // (undocumented)
@@ -2009,7 +2012,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
           optional: true;
         }
       >
-    | ExtensionDataRef_2<JSX_3, 'core.reactElement', {}>
+    | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
     | ExtensionDataRef_2<string, 'core.title', {}>;
   inputs: {};
   config: {
@@ -2105,9 +2108,9 @@ export type TranslationFunction<
           NestedMessageKeys<TKey, IMessages>,
           PluralKeys<TMessages>,
           IMessages,
-          string | JSX_3.Element
+          string | JSX_2.Element
         >
-      ): JSX_3.Element;
+      ): JSX_2.Element;
     }
   : never;
 
@@ -2283,7 +2286,7 @@ export function withApis<T extends {}>(
 ): <TProps extends T>(
   WrappedComponent: ComponentType<TProps>,
 ) => {
-  (props: PropsWithChildren<Omit<TProps, keyof T>>): JSX_2.Element;
+  (props: PropsWithChildren<Omit<TProps, keyof T>>): JSX_3.Element;
   displayName: string;
 };
 ```

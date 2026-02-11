@@ -125,7 +125,7 @@ export const appVisualizerNavItem = NavItemBlueprint.make({
 export const visualizerPlugin = createFrontendPlugin({
   pluginId: 'app-visualizer',
   title: 'App Visualizer',
-  icon: () => <RiEyeLine />,
+  icon: <RiEyeLine />,
   info: { packageJson: () => import('../package.json') },
   extensions: [
     appVisualizerPage,

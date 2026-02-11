@@ -20,6 +20,7 @@ import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { IconComponent } from '@backstage/frontend-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
@@ -218,7 +219,7 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            IconComponent,
+            IconElement,
             'core.icon',
             {
               optional: true;
@@ -267,7 +268,7 @@ const _default: OverridableFrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
-        icon?: IconComponent;
+        icon?: IconElement;
         loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
