@@ -42,243 +42,291 @@ import Button from '@material-ui/core/Button';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
+const createEntity = (): Entity => ({
+  apiVersion: 'a',
+  kind: 'b',
+  metadata: {
+    name: 'c',
+    namespace: 'd',
+  },
+});
+
+const mountedRoutes = {
+  '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+  '/catalog-graph': catalogGraphRouteRef,
+};
+
 describe('<CatalogGraphCard/>', () => {
-  let entity: Entity;
-  let wrapper: JSX.Element;
-  let apis: TestApiRegistry;
-  const config = mockApis.config();
-  const fetchApi: typeof fetchApiRef.T = {
-    fetch: jest.fn(),
-  };
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-
-    entity = {
-      apiVersion: 'a',
-      kind: 'b',
-      metadata: {
-        name: 'c',
-        namespace: 'd',
-      },
+  describe('frontend fetch mode', () => {
+    let entity: Entity;
+    let wrapper: JSX.Element;
+    let apis: TestApiRegistry;
+    const config = mockApis.config();
+    const fetchApi: typeof fetchApiRef.T = {
+      fetch: jest.fn(),
     };
-    apis = TestApiRegistry.from(
-      [translationApiRef, mockApis.translation()],
-      [configApiRef, config],
-      [discoveryApiRef, mockApis.discovery()],
-      [fetchApiRef, fetchApi],
-      [catalogApiRef, catalogApiMock()],
-      [
-        catalogGraphApiRef,
-        new DefaultCatalogGraphApi({
-          config,
-          discoveryApi: mockApis.discovery(),
-          fetchApi,
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      entity = createEntity();
+      apis = TestApiRegistry.from(
+        [translationApiRef, mockApis.translation()],
+        [configApiRef, config],
+        [discoveryApiRef, mockApis.discovery()],
+        [fetchApiRef, fetchApi],
+        [
+          catalogApiRef,
+          catalogApiMock({ entities: [{ ...entity, relations: [] }] }),
+        ],
+        [
+          catalogGraphApiRef,
+          new DefaultCatalogGraphApi({
+            config,
+            discoveryApi: mockApis.discovery(),
+            fetchApi,
+          }),
+        ],
+      );
+
+      wrapper = (
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <CatalogGraphCard />
+          </EntityProvider>
+        </ApiProvider>
+      );
+    });
+
+    test('renders without exploding', async () => {
+      await renderInTestApp(wrapper, { mountedRoutes });
+
+      expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+      expect(await screen.findAllByTestId('node')).toHaveLength(1);
+    });
+
+    test('renders with custom title', async () => {
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <CatalogGraphCard title="Custom Title" />
+          </EntityProvider>
+        </ApiProvider>,
+        { mountedRoutes },
+      );
+
+      expect(await screen.findByText('Custom Title')).toBeInTheDocument();
+    });
+
+    test('renders with action attribute', async () => {
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <CatalogGraphCard action={<Button title="Action Button" />} />
+          </EntityProvider>
+        </ApiProvider>,
+        { mountedRoutes },
+      );
+
+      expect(await screen.findByTitle('Action Button')).toBeInTheDocument();
+    });
+
+    test('renders link to standalone viewer', async () => {
+      await renderInTestApp(wrapper, { mountedRoutes });
+
+      expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+      const button = screen.getByText('View graph');
+      expect(button).toBeInTheDocument();
+      expect(button.closest('a')).toHaveAttribute(
+        'href',
+        '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=1&unidirectional=true&mergeRelations=true&direction=LR',
+      );
+    });
+
+    test('renders link to standalone viewer with custom config', async () => {
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <CatalogGraphCard maxDepth={2} mergeRelations={false} />
+          </EntityProvider>
+        </ApiProvider>,
+        { mountedRoutes },
+      );
+
+      expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+      const button = screen.getByText('View graph');
+      expect(button).toBeInTheDocument();
+      expect(button.closest('a')).toHaveAttribute(
+        'href',
+        '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=2&unidirectional=true&mergeRelations=false&direction=LR',
+      );
+    });
+
+    test('captures analytics event on click', async () => {
+      const analyticsApi = mockApis.analytics();
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [analyticsApiRef, analyticsApi],
+            [translationApiRef, mockApis.translation()],
+          ]}
+        >
+          {wrapper}
+        </TestApiProvider>,
+        { mountedRoutes },
+      );
+
+      expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+      await userEvent.click(await screen.findByText('b:d/c'));
+
+      expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'click',
+          subject: 'b:d/c',
+          attributes: {
+            to: '/entity/{kind}/{namespace}/{name}',
+          },
         }),
-      ],
-    );
-
-    wrapper = (
-      <ApiProvider apis={apis}>
-        <EntityProvider entity={entity}>
-          <CatalogGraphCard />
-        </EntityProvider>
-      </ApiProvider>
-    );
+      );
+    });
   });
 
-  test('renders without exploding', async () => {
-    fetchApi.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        entities: [
-          {
-            ...entity,
-            relations: [],
-          },
+  describe('backend fetch mode', () => {
+    let entity: Entity;
+    let wrapper: JSX.Element;
+    let apis: TestApiRegistry;
+    const config = mockApis.config({
+      data: { catalogGraph: { fetchMode: 'backend' } },
+    });
+    const fetchApi: typeof fetchApiRef.T = {
+      fetch: jest.fn(),
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      entity = createEntity();
+      fetchApi.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          entities: [{ ...entity, relations: [] }],
+          cutoff: false,
+        }),
+      });
+      apis = TestApiRegistry.from(
+        [translationApiRef, mockApis.translation()],
+        [configApiRef, config],
+        [discoveryApiRef, mockApis.discovery()],
+        [fetchApiRef, fetchApi],
+        [catalogApiRef, catalogApiMock()],
+        [
+          catalogGraphApiRef,
+          new DefaultCatalogGraphApi({
+            config,
+            discoveryApi: mockApis.discovery(),
+            fetchApi,
+          }),
         ],
-      }),
+      );
+
+      wrapper = (
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <CatalogGraphCard />
+          </EntityProvider>
+        </ApiProvider>
+      );
     });
 
-    await renderInTestApp(wrapper, {
-      mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-        '/catalog-graph': catalogGraphRouteRef,
-      },
+    test('renders without exploding', async () => {
+      await renderInTestApp(wrapper, { mountedRoutes });
+
+      expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+      expect(await screen.findAllByTestId('node')).toHaveLength(1);
+      expect(fetchApi.fetch).toHaveBeenCalled();
     });
 
-    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
-    expect(await screen.findAllByTestId('node')).toHaveLength(1);
-    expect(fetchApi.fetch).toHaveBeenCalled();
-  });
+    test('renders with custom title', async () => {
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <CatalogGraphCard title="Custom Title" />
+          </EntityProvider>
+        </ApiProvider>,
+        { mountedRoutes },
+      );
 
-  test('renders with custom title', async () => {
-    fetchApi.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        entities: [
-          {
-            ...entity,
-            relations: [],
+      expect(await screen.findByText('Custom Title')).toBeInTheDocument();
+    });
+
+    test('renders with action attribute', async () => {
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <CatalogGraphCard action={<Button title="Action Button" />} />
+          </EntityProvider>
+        </ApiProvider>,
+        { mountedRoutes },
+      );
+
+      expect(await screen.findByTitle('Action Button')).toBeInTheDocument();
+    });
+
+    test('renders link to standalone viewer', async () => {
+      await renderInTestApp(wrapper, { mountedRoutes });
+
+      expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+      const button = screen.getByText('View graph');
+      expect(button).toBeInTheDocument();
+      expect(button.closest('a')).toHaveAttribute(
+        'href',
+        '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=1&unidirectional=true&mergeRelations=true&direction=LR',
+      );
+    });
+
+    test('renders link to standalone viewer with custom config', async () => {
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <CatalogGraphCard maxDepth={2} mergeRelations={false} />
+          </EntityProvider>
+        </ApiProvider>,
+        { mountedRoutes },
+      );
+
+      expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+      const button = screen.getByText('View graph');
+      expect(button).toBeInTheDocument();
+      expect(button.closest('a')).toHaveAttribute(
+        'href',
+        '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=2&unidirectional=true&mergeRelations=false&direction=LR',
+      );
+    });
+
+    test('captures analytics event on click', async () => {
+      const analyticsApi = mockApis.analytics();
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [analyticsApiRef, analyticsApi],
+            [translationApiRef, mockApis.translation()],
+          ]}
+        >
+          {wrapper}
+        </TestApiProvider>,
+        { mountedRoutes },
+      );
+
+      expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+      await userEvent.click(await screen.findByText('b:d/c'));
+
+      expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'click',
+          subject: 'b:d/c',
+          attributes: {
+            to: '/entity/{kind}/{namespace}/{name}',
           },
-        ],
-      }),
+        }),
+      );
     });
-
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityProvider entity={entity}>
-          <CatalogGraphCard title="Custom Title" />
-        </EntityProvider>
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-          '/catalog-graph': catalogGraphRouteRef,
-        },
-      },
-    );
-
-    expect(await screen.findByText('Custom Title')).toBeInTheDocument();
-  });
-
-  test('renders with action attribute', async () => {
-    fetchApi.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        entities: [
-          {
-            ...entity,
-            relations: [],
-          },
-        ],
-      }),
-    });
-
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityProvider entity={entity}>
-          <CatalogGraphCard action={<Button title="Action Button" />} />
-        </EntityProvider>
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-          '/catalog-graph': catalogGraphRouteRef,
-        },
-      },
-    );
-
-    expect(await screen.findByTitle('Action Button')).toBeInTheDocument();
-  });
-
-  test('renders link to standalone viewer', async () => {
-    fetchApi.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        entities: [
-          {
-            ...entity,
-            relations: [],
-          },
-        ],
-      }),
-    });
-
-    await renderInTestApp(wrapper, {
-      mountedRoutes: {
-        '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-        '/catalog-graph': catalogGraphRouteRef,
-      },
-    });
-
-    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
-    const button = screen.getByText('View graph');
-    expect(button).toBeInTheDocument();
-    expect(button.closest('a')).toHaveAttribute(
-      'href',
-      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=1&unidirectional=true&mergeRelations=true&direction=LR',
-    );
-  });
-
-  test('renders link to standalone viewer with custom config', async () => {
-    fetchApi.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        entities: [
-          {
-            ...entity,
-            relations: [],
-          },
-        ],
-      }),
-    });
-
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityProvider entity={entity}>
-          <CatalogGraphCard maxDepth={2} mergeRelations={false} />
-        </EntityProvider>
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-          '/catalog-graph': catalogGraphRouteRef,
-        },
-      },
-    );
-
-    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
-    const button = screen.getByText('View graph');
-    expect(button).toBeInTheDocument();
-    expect(button.closest('a')).toHaveAttribute(
-      'href',
-      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=2&unidirectional=true&mergeRelations=false&direction=LR',
-    );
-  });
-
-  test('captures analytics event on click', async () => {
-    fetchApi.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        entities: [
-          {
-            ...entity,
-            relations: [],
-          },
-        ],
-      }),
-    });
-
-    const analyticsApi = mockApis.analytics();
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [analyticsApiRef, analyticsApi],
-          [translationApiRef, mockApis.translation()],
-        ]}
-      >
-        {wrapper}
-      </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
-          '/catalog-graph': catalogGraphRouteRef,
-        },
-      },
-    );
-
-    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
-    await userEvent.click(await screen.findByText('b:d/c'));
-
-    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        action: 'click',
-        subject: 'b:d/c',
-        attributes: {
-          to: '/entity/{kind}/{namespace}/{name}',
-        },
-      }),
-    );
   });
 });
