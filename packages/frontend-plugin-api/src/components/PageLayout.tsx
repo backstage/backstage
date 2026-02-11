@@ -36,6 +36,7 @@ export interface PageTab {
 export interface PageLayoutProps {
   title?: string;
   icon?: IconElement;
+  headerActions?: ReactNode;
   tabs?: PageTab[];
   children?: ReactNode;
 }
@@ -44,7 +45,7 @@ export interface PageLayoutProps {
  * Default implementation of PageLayout using plain HTML elements
  */
 function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
-  const { title, icon, tabs, children } = props;
+  const { title, icon, headerActions, tabs, children } = props;
 
   return (
     <div
@@ -77,6 +78,9 @@ function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
             >
               {icon}
               {title}
+              {headerActions && (
+                <div style={{ marginLeft: 'auto' }}>{headerActions}</div>
+              )}
             </div>
           )}
           {tabs && tabs.length > 0 && (

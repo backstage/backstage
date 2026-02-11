@@ -18,13 +18,13 @@ import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
 
 /**
- * Createx extensions that are routable React page components.
+ * Creates extensions that render header actions in a page layout.
  *
  * @public
  */
-export const HeaderActionBlueprint = createExtensionBlueprint({
-  kind: 'header-action',
-  attachTo: { id: 'app/routes', input: 'headerActions' },
+export const PageHeaderActionBlueprint = createExtensionBlueprint({
+  kind: 'page-header-action',
+  attachTo: { relative: { kind: 'page' }, input: 'headerActions' },
   output: [coreExtensionData.reactElement],
 
   *factory(params: { loader: () => Promise<JSX.Element> }, { node }) {
