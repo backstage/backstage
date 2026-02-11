@@ -25,11 +25,17 @@ import { assertError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
+const MATERIAL_THEME = 'material';
+
 type MkDocsObject = {
   plugins?: string[];
   docs_dir: string;
   repo_url?: string;
   edit_uri?: string;
+  theme?: {
+    name?: string;
+    font?: boolean;
+  };
 };
 
 const patchMkdocsFile = async (
@@ -182,6 +188,39 @@ export const patchMkdocsYmlWithPlugins = async (
     });
 
     return changesMade;
+  });
+};
+
+/**
+ * Disable external font download for the material theme.
+ * @param mkdocsYmlPath - Absolute path to mkdocs.yml or equivalent of a docs site
+ * @param logger
+ */
+export const patchMkdocsYmlWithFontDisabled = async (
+  mkdocsYmlPath: string,
+  logger: LoggerService,
+) => {
+  await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {
+    if (!('theme' in mkdocsYml)) {
+      // No theme section exists, create it with font disabled
+      mkdocsYml.theme = {
+        name: MATERIAL_THEME,
+        font: false,
+      };
+      return true;
+    }
+
+    // Theme section exists, check if font is not configured, add font: false
+    if (
+      mkdocsYml.theme &&
+      typeof mkdocsYml.theme === 'object' &&
+      !('font' in mkdocsYml.theme)
+    ) {
+      mkdocsYml.theme.font = false;
+      return true;
+    }
+
+    return false;
   });
 };
 
