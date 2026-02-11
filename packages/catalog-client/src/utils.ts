@@ -32,7 +32,8 @@ export function isQueryEntitiesInitialRequest(
  */
 export function cursorContainsQuery(cursor: string): boolean {
   try {
-    const decoded = JSON.parse(Buffer.from(cursor, 'base64').toString('utf8'));
+    // Use browser-compatible base64 decoding
+    const decoded = JSON.parse(atob(cursor));
     return !!decoded.query;
   } catch {
     return false;
