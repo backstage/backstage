@@ -30,10 +30,8 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, serializeError } from '@backstage/errors';
-import {
-  EntityPredicate,
-  LocationAnalyzer,
-} from '@backstage/plugin-catalog-node';
+import { parseFilterPredicate } from '@backstage/filter-predicates';
+import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
@@ -272,7 +270,10 @@ export async function createRouter(
         });
 
         try {
-          const query = req.body.query as EntityPredicate | undefined;
+          // Validate the query using the Zod schema from @backstage/filter-predicates
+          const query = req.body.query
+            ? parseFilterPredicate(req.body.query)
+            : undefined;
           const order = parseEntityOrderFieldParams(req.query);
           const pagination = parseEntityPaginationParams(req.query);
           const credentials = await httpAuth.credentials(req);

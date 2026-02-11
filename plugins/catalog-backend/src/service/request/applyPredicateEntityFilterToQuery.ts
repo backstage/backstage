@@ -15,32 +15,33 @@
  */
 
 import {
-  EntityPredicate,
-  EntityPredicatePrimitive,
-  EntityPredicateValue,
-} from '@backstage/plugin-catalog-node';
+  FilterPredicate,
+  FilterPredicatePrimitive,
+  FilterPredicateValue,
+} from '@backstage/filter-predicates';
+import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { DbSearchRow } from '../../database/tables';
 
 function isAllPredicate(
-  filter: EntityPredicate,
-): filter is { $all: EntityPredicate[] } {
+  filter: FilterPredicate,
+): filter is { $all: FilterPredicate[] } {
   return typeof filter === 'object' && filter !== null && '$all' in filter;
 }
 
 function isAnyPredicate(
-  filter: EntityPredicate,
-): filter is { $any: EntityPredicate[] } {
+  filter: FilterPredicate,
+): filter is { $any: FilterPredicate[] } {
   return typeof filter === 'object' && filter !== null && '$any' in filter;
 }
 
 function isNotPredicate(
-  filter: EntityPredicate,
-): filter is { $not: EntityPredicate } {
+  filter: FilterPredicate,
+): filter is { $not: FilterPredicate } {
   return typeof filter === 'object' && filter !== null && '$not' in filter;
 }
 
-function isPrimitive(value: unknown): value is EntityPredicatePrimitive {
+function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
   return (
     typeof value === 'string' ||
     typeof value === 'number' ||
@@ -49,18 +50,18 @@ function isPrimitive(value: unknown): value is EntityPredicatePrimitive {
 }
 
 function isExistsValue(
-  value: EntityPredicateValue,
+  value: FilterPredicateValue,
 ): value is { $exists: boolean } {
   return typeof value === 'object' && value !== null && '$exists' in value;
 }
 
 function isInValue(
-  value: EntityPredicateValue,
-): value is { $in: EntityPredicatePrimitive[] } {
+  value: FilterPredicateValue,
+): value is { $in: FilterPredicatePrimitive[] } {
   return typeof value === 'object' && value !== null && '$in' in value;
 }
 
-function isFieldExpression(filter: EntityPredicate): boolean {
+function isFieldExpression(filter: FilterPredicate): boolean {
   if (typeof filter !== 'object' || filter === null) {
     return false;
   }
@@ -109,7 +110,7 @@ function isFieldExpression(filter: EntityPredicate): boolean {
  */
 
 function applyPredicateInStrategy(
-  filter: EntityPredicate,
+  filter: FilterPredicate,
   targetQuery: Knex.QueryBuilder,
   onEntityIdField: string,
   knex: Knex,
@@ -211,6 +212,13 @@ function applyPredicateInStrategy(
                 value: String(value).toLowerCase(),
               });
             this.andWhere(onEntityIdField, 'in', matchQuery);
+          } else {
+            // Reject unsupported/invalid predicate values
+            throw new InputError(
+              `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, or $in operator, but got ${JSON.stringify(
+                value,
+              )}`,
+            );
           }
         }
       },
@@ -221,7 +229,7 @@ function applyPredicateInStrategy(
 }
 
 export function applyPredicateEntityFilterToQuery(options: {
-  filter: EntityPredicate;
+  filter: FilterPredicate;
   targetQuery: Knex.QueryBuilder;
   onEntityIdField: string;
   knex: Knex;
