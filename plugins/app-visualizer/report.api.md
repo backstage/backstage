@@ -5,6 +5,7 @@
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
@@ -19,6 +20,23 @@ const visualizerPlugin: OverridableFrontendPlugin<
   {},
   {},
   {
+    'header-action:app-visualizer': OverridableExtensionDefinition<{
+      kind: 'header-action';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<JSX.Element>,
+        'core.header-action.loader',
+        {}
+      >;
+      inputs: {};
+      params: (params: {
+        loader: () => Promise<JSX.Element>;
+      }) => ExtensionBlueprintParams<{
+        loader: () => Promise<JSX.Element>;
+      }>;
+    }>;
     'nav-item:app-visualizer': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -43,75 +61,6 @@ const visualizerPlugin: OverridableFrontendPlugin<
     'page:app-visualizer': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
-      config: {
-        path: string | undefined;
-        title: string | undefined;
-      };
-      configInput: {
-        title?: string | undefined;
-        path?: string | undefined;
-      };
-      output:
-        | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            string,
-            'core.title',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            IconElement,
-            'core.icon',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {
-        pages: ExtensionInput<
-          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-          | ConfigurableExtensionDataRef<
-              RouteRef<AnyRouteRefParams>,
-              'core.routing.ref',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'core.title',
-              {
-                optional: true;
-              }
-            >,
-          {
-            singleton: false;
-            optional: false;
-            internal: false;
-          }
-        >;
-      };
-      params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
-        path: string;
-        title?: string;
-        icon?: IconElement;
-        loader?: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
-      };
-    }>;
-    'page:app-visualizer/2': OverridableExtensionDefinition<{
-      kind: 'page';
-      name: '2';
       config: {
         path: string | undefined;
         title: string | undefined;

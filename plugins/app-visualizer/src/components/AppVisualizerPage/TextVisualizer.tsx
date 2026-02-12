@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AppNode,
-  useApi,
-  appTreeApiRef,
-} from '@backstage/frontend-plugin-api';
+import { AppNode, useApi, appTreeApiRef } from '@backstage/frontend-plugin-api';
 import { Box, Checkbox } from '@backstage/ui';
 import { ReactNode, useState } from 'react';
 

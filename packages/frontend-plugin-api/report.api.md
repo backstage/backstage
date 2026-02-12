@@ -1427,15 +1427,35 @@ export const googleAuthApiRef: ApiRef<
 // @public
 export const HeaderActionBlueprint: ExtensionBlueprint_2<{
   kind: 'header-action';
-  params: {
+  params: (params: {
     loader: () => Promise<JSX.Element>;
-  };
-  output: ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>;
+  }) => ExtensionBlueprintParams_2<{
+    loader: () => Promise<JSX.Element>;
+  }>;
+  output: ExtensionDataRef_2<
+    () => Promise<JSX.Element>,
+    'core.header-action.loader',
+    {}
+  >;
   inputs: {};
   config: {};
   configInput: {};
-  dataRefs: never;
+  dataRefs: {
+    action: ConfigurableExtensionDataRef_2<
+      () => Promise<JSX.Element>,
+      'core.header-action.loader',
+      {}
+    >;
+  };
 }>;
+
+// @public
+export type HeaderActionsApi = {
+  getHeaderActions(pluginId: string): ReactNode[];
+};
+
+// @public
+export const headerActionsApiRef: ApiRef_2<HeaderActionsApi>;
 
 // @public @deprecated
 export type IconComponent = ComponentType<{
@@ -1808,6 +1828,8 @@ export const PageLayout: {
 export interface PageLayoutProps {
   // (undocumented)
   children?: ReactNode;
+  // (undocumented)
+  headerActions?: ReactNode;
   // (undocumented)
   icon?: IconElement;
   // (undocumented)
