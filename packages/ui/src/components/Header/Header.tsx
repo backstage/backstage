@@ -86,7 +86,7 @@ export const Header = (props: HeaderProps) => {
   return (
     <header
       ref={headerRef}
-      className={clsx(classNames.root, styles[classNames.root])}
+      className={clsx(classNames.root, styles[classNames.root], className)}
     >
       <HeaderToolbar
         icon={icon}
@@ -100,7 +100,6 @@ export const Header = (props: HeaderProps) => {
           className={clsx(
             classNames.tabsWrapper,
             styles[classNames.tabsWrapper],
-            className,
           )}
         >
           <Tabs onSelectionChange={onTabSelectionChange}>
