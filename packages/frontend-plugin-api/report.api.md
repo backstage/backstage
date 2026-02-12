@@ -23,16 +23,16 @@ import { ReactNode } from 'react';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 import type { z } from 'zod';
 
-// @public
+// @public @deprecated
 export type AlertApi = {
   post(alert: AlertMessage): void;
   alert$(): Observable<AlertMessage>;
 };
 
-// @public
+// @public @deprecated
 export const alertApiRef: ApiRef<AlertApi>;
 
-// @public
+// @public @deprecated
 export type AlertMessage = {
   message: string;
   severity?: 'success' | 'info' | 'warning' | 'error';
@@ -1934,6 +1934,41 @@ export interface SwappableComponentsApi {
 
 // @public
 export const swappableComponentsApiRef: ApiRef_2<SwappableComponentsApi>;
+
+// @public
+export type ToastApi = {
+  post(toast: ToastApiMessage): ToastApiPostResult;
+  toast$(): Observable<ToastApiMessageWithKey>;
+};
+
+// @public
+export type ToastApiMessage = {
+  title: ReactNode;
+  description?: ReactNode;
+  status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
+  links?: ToastLink[];
+  timeout?: number;
+};
+
+// @public
+export type ToastApiMessageWithKey = ToastApiMessage & {
+  key: string;
+  close(): void;
+};
+
+// @public
+export type ToastApiPostResult = {
+  close(): void;
+};
+
+// @public
+export const toastApiRef: ApiRef<ToastApi>;
+
+// @public
+export type ToastLink = {
+  label: string;
+  href: string;
+};
 
 // @public (undocumented)
 export type TranslationApi = {

@@ -71,6 +71,11 @@
     "lodash": "^4.17.21",
     "yaml": "^2.0.0"
   },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "msw": "^1.0.0"
+  },
   "peerDependencies": {
     "@backstage/backend-test-utils": "workspace:^"
   },
@@ -78,10 +83,5 @@
     "@backstage/backend-test-utils": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^",
-    "msw": "^1.0.0"
   }
 }

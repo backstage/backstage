@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-export { appPlugin as default } from './plugin';
+// Public exports
+export { ToastDisplay } from './ToastDisplay';
+export type { ToastApiMessageDisplayProps } from './types';
 
-// Toast components for alert display
-export { ToastDisplay } from './components/Toast';
-export type { ToastApiMessageDisplayProps } from './components/Toast';
+// Internal exports (used within the plugin only)
+export { ToastContainer } from './ToastContainer';
+export type {
+  ToastApiMessageContent,
+  ToastApiMessageLink,
+  ToastApiMessageContainerProps,
+} from './types';
