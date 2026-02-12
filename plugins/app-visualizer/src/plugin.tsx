@@ -31,44 +31,8 @@ const appVisualizerPage = PageBlueprint.make({
     path: '/visualizer',
     routeRef: rootRouteRef,
     title: 'Visualizer',
-    // loader: async () => <div>The root page</div>,
   },
 });
-
-const appVisualizerPage2 = PageBlueprint.make({
-  name: '2',
-  params: {
-    path: '/visualizer/something-else',
-    routeRef: createRouteRef(),
-    title: 'something else',
-    loader: async () => <div>The root sdsd</div>,
-  },
-});
-/*
-// inputs:
-//   pages: [explicitly subrouteref as a data type + element + path]
-const rootPage = TabbedPageBlueprint.make({
-  params: {
-    path: '/visualizer',
-    routeRef: rootRouteRef,
-    actions: [
-    ]
-    subpages: [
-
-    ]
-  }
-})
-
-const treePageThing = PluginContentTopBarNavigableContentBlueprint.make({
-  attachTo: {
-
-  }
-  params: {
-    routeRef: treeSubRouteRef,
-    loader: () => null,
-  }
-})
- */
 
 const treeRouteRef = createRouteRef();
 const detailedRouteRef = createRouteRef();
@@ -138,7 +102,6 @@ export const visualizerPlugin = createFrontendPlugin({
   info: { packageJson: () => import('../package.json') },
   extensions: [
     appVisualizerPage,
-    appVisualizerPage2,
     appVisualizerTreePage,
     appVisualizerDetailedPage,
     appVisualizerTextPage,
