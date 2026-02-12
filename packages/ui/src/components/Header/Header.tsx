@@ -62,9 +62,19 @@ export const Header = (props: HeaderProps) => {
       );
     };
 
+    // Set height once immediately
+    updateHeight();
+
+    // Observe for resize changes if ResizeObserver is available
+    // (not present in Jest/jsdom by default)
+    if (typeof ResizeObserver === 'undefined') {
+      return () => {
+        document.documentElement.style.removeProperty('--bui-header-height');
+      };
+    }
+
     const observer = new ResizeObserver(updateHeight);
     observer.observe(el);
-    updateHeight();
 
     return () => {
       observer.disconnect();
