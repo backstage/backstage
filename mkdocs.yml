@@ -41,7 +41,7 @@ nav:
           - Viewing the Catalog: 'getting-started/viewing-catalog.md'
           - Viewing what you own: 'getting-started/view-what-you-own.md'
           - Viewing entity relationships: 'getting-started/viewing-entity-relationships.md'
-          - Searching the Catalog: 'getting-started/search-catalog.md'
+          - Filtering the Catalog: 'getting-started/filter-catalog.md'
           - Managing Components:
               - Register a component: 'getting-started/register-a-component.md'
               - Create a component: 'getting-started/create-a-component.md'
