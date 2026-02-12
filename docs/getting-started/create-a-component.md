@@ -76,11 +76,11 @@ Selecting `REPOSITORY` displays the files in the main branch of the new `tutoria
    apiVersion: backstage.io/v1alpha1
    kind: Component
    metadata:
-    name: "tutorial"
+     name: "tutorial"
    spec:
-    type: service
-    owner: user:guest
-    lifecycle: experimental
+     type: service
+     owner: user:guest
+     lifecycle: experimental
   ```
 
 - **index.js** -
