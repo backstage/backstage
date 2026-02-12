@@ -49,7 +49,7 @@ To manually register a component in the software catalog:
 4. Select `ANALYZE`.
 5. If the changes from `ANALYZE` are correct, select `IMPORT`.
 
-   ![review and select import .](../assets/uiguide/review-select-import.png)
+   ![review and select import.](../assets/uiguide/review-select-import.png)
 
 If your entity was successfully imported, the details will be displayed.
 
