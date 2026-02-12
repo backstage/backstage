@@ -53,4 +53,4 @@
 '@backstage/plugin-org': patch
 ---
 
-Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+Updated `react-router-dom` peer dependency to `^6.30.2`.
