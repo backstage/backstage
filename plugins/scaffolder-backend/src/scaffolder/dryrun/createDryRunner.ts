@@ -75,7 +75,7 @@ export type TemplateTesterCreateOptions = {
   logger: LoggerService;
   auditor?: AuditorService;
   integrations: ScmIntegrations;
-  actionRegistry: TemplateActionRegistry;
+  templateActionRegistry: TemplateActionRegistry;
   workingDirectory: string;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
@@ -97,16 +97,19 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
 
     const workflowRunner = new NunjucksWorkflowRunner({
       ...options,
-      actionRegistry: new DecoratedActionsRegistry(options.actionRegistry, [
-        createTemplateAction({
-          id: 'dry-run:extract',
-          supportsDryRun: true,
-          async handler(ctx) {
-            contentPromise = serializeDirectoryContents(ctx.workspacePath);
-            await contentPromise.catch(() => {});
-          },
-        }),
-      ]),
+      templateActionRegistry: new DecoratedActionsRegistry(
+        options.templateActionRegistry,
+        [
+          createTemplateAction({
+            id: 'dry-run:extract',
+            supportsDryRun: true,
+            async handler(ctx) {
+              contentPromise = serializeDirectoryContents(ctx.workspacePath);
+              await contentPromise.catch(() => {});
+            },
+          }),
+        ],
+      ),
       config: options.config,
     });
 

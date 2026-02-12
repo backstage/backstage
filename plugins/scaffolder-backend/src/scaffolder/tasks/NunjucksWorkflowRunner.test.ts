@@ -42,7 +42,7 @@ import {
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 
 describe('NunjucksWorkflowRunner', () => {
-  let actionRegistry: TemplateActionRegistry;
+  let templateActionRegistry: TemplateActionRegistry;
   let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
   let fakeTaskLog: jest.Mock;
@@ -118,14 +118,14 @@ describe('NunjucksWorkflowRunner', () => {
     // This one is ESM-only
     stripAnsi = await import('strip-ansi').then(m => m.default);
 
-    actionRegistry = new DefaultTemplateActionRegistry(
+    templateActionRegistry = new DefaultTemplateActionRegistry(
       actionsRegistryServiceMock(),
       mockServices.logger.mock(),
     );
     fakeActionHandler = jest.fn();
     fakeTaskLog = jest.fn();
 
-    actionRegistry.register(
+    templateActionRegistry.register(
       createTemplateAction({
         id: 'jest-mock-action',
         description: 'Mock action for testing',
@@ -133,7 +133,7 @@ describe('NunjucksWorkflowRunner', () => {
       }),
     );
 
-    actionRegistry.register(
+    templateActionRegistry.register(
       createTemplateAction({
         id: 'jest-validated-action',
         description: 'Mock action for testing',
@@ -147,7 +147,7 @@ describe('NunjucksWorkflowRunner', () => {
       }),
     );
 
-    actionRegistry.register(
+    templateActionRegistry.register(
       createTemplateAction({
         id: 'jest-zod-validated-action',
         description: 'Mock ac',
@@ -164,7 +164,7 @@ describe('NunjucksWorkflowRunner', () => {
       }),
     );
 
-    actionRegistry.register(
+    templateActionRegistry.register(
       createTemplateAction({
         id: 'output-action',
         description: 'Mock action for testing',
@@ -175,7 +175,7 @@ describe('NunjucksWorkflowRunner', () => {
       }),
     );
 
-    actionRegistry.register(
+    templateActionRegistry.register(
       createTemplateAction({
         id: 'checkpoints-action',
         description: 'Mock action with checkpoints',
@@ -243,7 +243,7 @@ describe('NunjucksWorkflowRunner', () => {
     });
 
     runner = new NunjucksWorkflowRunner({
-      actionRegistry,
+      templateActionRegistry,
       integrations,
       workingDirectory: mockDir.path,
       logger,
@@ -770,7 +770,7 @@ describe('NunjucksWorkflowRunner', () => {
   describe('redactions', () => {
     // eslint-disable-next-line jest/expect-expect
     it('should redact secrets that are passed with the task', async () => {
-      actionRegistry.register({
+      templateActionRegistry.register({
         id: 'log-secret',
         description: 'Mock action for testing',
         supportsDryRun: true,
@@ -813,7 +813,7 @@ describe('NunjucksWorkflowRunner', () => {
 
     // eslint-disable-next-line jest/expect-expect
     it('should redact secrets that are passed in the environment', async () => {
-      actionRegistry.register({
+      templateActionRegistry.register({
         id: 'log-secret',
         description: 'Mock action for testing',
         supportsDryRun: true,
@@ -856,7 +856,7 @@ describe('NunjucksWorkflowRunner', () => {
 
     // eslint-disable-next-line jest/expect-expect
     it('should redact meta fields properly', async () => {
-      actionRegistry.register({
+      templateActionRegistry.register({
         id: 'log-secret',
         description: 'Mock action for testing',
         supportsDryRun: true,

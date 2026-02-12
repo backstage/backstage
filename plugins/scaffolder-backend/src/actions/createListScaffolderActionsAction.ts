@@ -39,8 +39,14 @@ Each action includes:
 - schema: Input and output JSON schemas
 - examples: Usage examples (if available)`,
     schema: {
-      input: z => z.object({}),
-      output: z => z.object({}).passthrough(),
+      input: z => z.object({}).describe('No input is required'),
+      output: z =>
+        z
+          .object({})
+          .passthrough()
+          .describe(
+            'JSON schema representing the output parameter for the action',
+          ),
     },
     action: async ({ credentials }) => {
       let actionsList: Array<{

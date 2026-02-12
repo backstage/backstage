@@ -165,7 +165,7 @@ export interface RouterOptions {
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
   actionsRegistry: ActionsService;
-  actionRegistry?: TemplateActionRegistry;
+  templateActionRegistry?: TemplateActionRegistry;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -270,8 +270,8 @@ export async function createRouter(
   } else {
     taskBroker = options.taskBroker;
   }
-  const actionRegistry =
-    options.actionRegistry ??
+  const templateActionRegistry =
+    options.templateActionRegistry ??
     new DefaultTemplateActionRegistry(actionsRegistry, logger);
 
   const templateExtensions = {
@@ -291,7 +291,7 @@ export async function createRouter(
 
     const worker = await TaskWorker.create({
       taskBroker,
-      actionRegistry,
+      templateActionRegistry,
       integrations,
       logger,
       auditor,
@@ -307,7 +307,7 @@ export async function createRouter(
   }
 
   for (const action of actions) {
-    actionRegistry.register(action);
+    templateActionRegistry.register(action);
   }
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
@@ -324,7 +324,7 @@ export async function createRouter(
   }
 
   const dryRunner = createDryRunner({
-    actionRegistry,
+    templateActionRegistry,
     integrations,
     logger,
     auditor,
@@ -445,7 +445,7 @@ export async function createRouter(
       const credentials = await httpAuth.credentials(req);
 
       try {
-        const list = await actionRegistry.list({ credentials });
+        const list = await templateActionRegistry.list({ credentials });
         const actionsList = Array.from(list.values())
           .map(action => {
             return {

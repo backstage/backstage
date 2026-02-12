@@ -170,14 +170,11 @@ export const scaffolderPlugin = createBackendPlugin({
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
 
-        // Create a scoped logger for scaffolder plugin consistent log formatting
-        const scopedLogger = logger.child({ plugin: 'scaffolder' });
-
         // Create the action registry early so we can use it for both
         // the router and the MCP actions
         const templateActionRegistry = new DefaultTemplateActionRegistry(
           actionsRegistry,
-          scopedLogger,
+          logger,
         );
 
         const templateExtensions = {
@@ -246,7 +243,7 @@ export const scaffolderPlugin = createBackendPlugin({
           events,
           auditor,
           actionsRegistry,
-          actionRegistry: templateActionRegistry, // Pass the pre-created TemplateActionRegistry
+          templateActionRegistry, // Pass the pre-created TemplateActionRegistry
         });
         httpRouter.use(router);
 
