@@ -183,8 +183,8 @@
 
     /* Foreground colors */
     --bui-fg-primary: var(--bui-white);
-    --bui-fg-secondary: oklch(0% 0 0 / 50%);
-    --bui-fg-disabled: oklch(0% 0 0 / 28%);
+    --bui-fg-secondary: oklch(100% 0 0 / 50%);
+    --bui-fg-disabled: oklch(100% 0 0 / 28%);
     --bui-fg-solid: #101821;
     --bui-fg-solid-disabled: #6191cc;
 
