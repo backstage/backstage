@@ -25,6 +25,7 @@ export * from './components/Box';
 export * from './components/Grid';
 export * from './components/Flex';
 export * from './components/Container';
+export * from './components/FullPage';
 
 // UI components
 export * from './components/Accordion';

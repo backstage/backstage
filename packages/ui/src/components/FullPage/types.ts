@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
-
 /**
- * Component definition for Header
+ * Props for the FullPage component.
+ *
  * @public
  */
-export const HeaderDefinition = {
-  classNames: {
-    root: 'bui-Header',
-    toolbar: 'bui-HeaderToolbar',
-    toolbarWrapper: 'bui-HeaderToolbarWrapper',
-    toolbarContent: 'bui-HeaderToolbarContent',
-    toolbarControls: 'bui-HeaderToolbarControls',
-    toolbarIcon: 'bui-HeaderToolbarIcon',
-    toolbarName: 'bui-HeaderToolbarName',
-    tabsWrapper: 'bui-HeaderTabsWrapper',
-  },
-} as const satisfies ComponentDefinition;
+export interface FullPageProps extends React.ComponentPropsWithoutRef<'main'> {}

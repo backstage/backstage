@@ -20,6 +20,7 @@ import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
 import { HeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
+import { useRef, useEffect } from 'react';
 import styles from './Header.module.css';
 import clsx from 'clsx';
 
@@ -47,9 +48,35 @@ export const Header = (props: HeaderProps) => {
   } = cleanedProps;
 
   const hasTabs = tabs && tabs.length > 0;
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return undefined;
+
+    const updateHeight = () => {
+      const height = el.offsetHeight;
+      document.documentElement.style.setProperty(
+        '--bui-header-height',
+        `${height}px`,
+      );
+    };
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(el);
+    updateHeight();
+
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty('--bui-header-height');
+    };
+  }, []);
 
   return (
-    <>
+    <header
+      ref={headerRef}
+      className={clsx(classNames.root, styles[classNames.root])}
+    >
       <HeaderToolbar
         icon={icon}
         title={title}
@@ -81,6 +108,6 @@ export const Header = (props: HeaderProps) => {
           </Tabs>
         </div>
       )}
-    </>
+    </header>
   );
 };
