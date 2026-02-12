@@ -85,9 +85,17 @@ export const PageLayout = SwappableComponentBlueprint.make({
               tabs={tabs}
               customActions={headerActions}
             />
-            <Flex direction="column" style={{ flexGrow: 1, minHeight: 0 }}>
+            <main
+              style={{
+                flex: '1 1 0',
+                minHeight: 0,
+                overflow: 'auto',
+                padding: 0,
+                margin: 0,
+              }}
+            >
               {children}
-            </Flex>
+            </main>
           </Flex>
         );
       },
