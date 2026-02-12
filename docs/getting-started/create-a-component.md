@@ -49,7 +49,7 @@ To create the component:
 
 If you see an error message, similar to the following,
 
-    ![error creating new component](../assets/uiguide/error-ceating-new-component.png)
+    ![error creating new component](../assets/uiguide/error-creating-new-component.png)
 
 Perform the following steps:
 
