@@ -187,7 +187,7 @@ Choose the correct next steps for your user role, if you're likely to be deployi
   - [Viewing the Catalog](./viewing-catalog.md)
   - [Viewing what you own](./view-what-you-own.md)
   - [Viewing entity relationships](./viewing-entity-relationships.md)
-  - [Searching the Catalog](./search-catalog.md)
+  - [Filtering the Catalog](./filter-catalog.md)
   - [Register a component](./register-a-component.md)
   - [Create a new component](./create-a-component.md)
   - [Update a component](./update-a-component.md)
