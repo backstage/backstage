@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
         with:
           egress-policy: audit
 
@@ -37,7 +37,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@c3038aa5576b9cd845ccc518ef854d3660e8cb40 # v0.7.6
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -52,14 +52,14 @@ jobs:
         working-directory: ./example-app
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
       - name: Build and push
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0

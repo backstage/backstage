@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { FilterPredicate } from '@backstage/filter-predicates';
+
 export interface Config {
   events?: {
     modules?: {
@@ -66,6 +68,37 @@ export interface Config {
                * ```
                */
               targetTopic: string;
+
+              /**
+               * Message filter predicate expression.
+               *
+               * @remarks
+               *
+               * The value should be a JSON object that represents a filter predicate expression.
+               * The object being passed to the filter is on the following form:
+               *
+               * ```js
+               * {
+               *   message: {
+               *     // The raw JSON parsed message data
+               *     data: { ... },
+               *     // The message attributes as key-value pairs
+               *     attributes: { key: 'value', ... },
+               *   }
+               * }
+               * ```
+               *
+               * @example
+               *
+               * ```yaml
+               * filter:
+               *   $any:
+               *     - 'message.attributes.x-github-event': 'push'
+               *     - 'message.attributes.x-github-event': 'repository'
+               *       'message.data.action': { $in: ['created', 'deleted'] }
+               * ```
+               */
+              filter?: FilterPredicate;
 
               /**
                * Pub/Sub message attributes are by default copied to the event
@@ -127,6 +160,39 @@ export interface Config {
                * ```
                */
               targetTopicName: string;
+
+              /**
+               * Event filter predicate expression.
+               *
+               * @remarks
+               *
+               * The value should be a JSON object that represents a filter predicate expression.
+               * The object being passed to the filter is on the following form:
+               *
+               * ```js
+               * {
+               *   event: {
+               *     // The event topic
+               *     topic: '...',
+               *     // The raw event payload
+               *     eventPayload: { ... },
+               *     // The event metadata as key-value pairs
+               *     metadata: { key: 'value', ... },
+               *   }
+               * }
+               * ```
+               *
+               * @example
+               *
+               * ```yaml
+               * filter:
+               *   $any:
+               *     - 'event.topic': 'github.push'
+               *     - 'event.topic': 'github.repository'
+               *       'event.eventPayload.action': { $in: ['created', 'deleted'] }
+               * ```
+               */
+              filter?: FilterPredicate;
 
               /**
                * Event metadata fields are by default copied to the Pub/Sub

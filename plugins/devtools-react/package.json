@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-devtools-react",
-  "version": "0.1.0",
+  "version": "0.1.1-next.1",
   "description": "Web library for the devtools plugin",
   "backstage": {
     "role": "web-library",
@@ -47,17 +47,17 @@
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {

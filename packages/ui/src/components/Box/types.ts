@@ -15,12 +15,12 @@
  */
 
 import type { ReactNode, CSSProperties } from 'react';
-import type { Responsive, Surface, SpaceProps } from '../../types';
+import type { Responsive, ProviderBg, SpaceProps } from '../../types';
 
 /** @public */
 export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
-  surface?: Responsive<Surface>;
+  bg?: Responsive<ProviderBg>;
   children?: ReactNode;
   className?: string;
   style?: CSSProperties;

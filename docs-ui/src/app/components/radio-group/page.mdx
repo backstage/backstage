@@ -1,6 +1,7 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
-import { radioGroupPropDefs } from './props-definition';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { radioGroupPropDefs, radioPropDefs } from './props-definition';
 import {
   radioGroupUsageSnippet,
   defaultSnippet,
@@ -24,9 +25,13 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { CodeBlock } from '@/components/CodeBlock';
 import { RadioGroupDefinition } from '../../../utils/definitions';
 
+export const reactAriaUrls = {
+  radioGroup: 'https://react-aria.adobe.com/RadioGroup',
+};
+
 <PageTitle
   title="RadioGroup"
-  description="A radio group allows a user to select a single item from a list of mutually exclusive options."
+  description="A group of radio buttons for selecting one option from a list."
 />
 
 <Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
@@ -37,66 +42,73 @@ import { RadioGroupDefinition } from '../../../utils/definitions';
 
 ## API reference
 
+### RadioGroup
+
 <PropsTable data={radioGroupPropDefs} />
+
+<ReactAriaLink component="RadioGroup" href={reactAriaUrls.radioGroup} />
+
+### Radio
+
+Individual radio button within a group.
+
+<PropsTable data={radioPropDefs} />
+
+<ReactAriaLink component="Radio" href={reactAriaUrls.radioGroup} />
 
 ## Examples
 
 ### Horizontal
 
-Here's a simple TextField with a description.
-
 <Snippet
   align="center"
   py={4}
   open
+  layout="side-by-side"
   preview={<Horizontal />}
   code={horizontalSnippet}
 />
 
 ### Disabled
 
-You can disable the entire radio group by adding the `isDisabled` prop to the `RadioGroup` component.
-
 <Snippet
   align="center"
   py={4}
   open
+  layout="side-by-side"
   preview={<Disabled />}
   code={disabledSnippet}
 />
 
-### Disabled Single radio
-
-You can disable a single radio by adding the `isDisabled` prop to the `Radio` component.
+### Disabled single radio
 
 <Snippet
   align="center"
   py={4}
   open
+  layout="side-by-side"
   preview={<DisabledSingle />}
   code={disabledSingleSnippet}
 />
 
 ### Validation
 
-Here's an example of a radio group with errors.
-
 <Snippet
   align="center"
   py={4}
   open
+  layout="side-by-side"
   preview={<Validation />}
   code={validationSnippet}
 />
 
 ### Read only
 
-You can make the radio group read only by adding the `isReadOnly` prop to the `RadioGroup` component.
-
 <Snippet
   align="center"
   py={4}
   open
+  layout="side-by-side"
   preview={<ReadOnly />}
   code={readOnlySnippet}
 />

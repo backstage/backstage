@@ -27,9 +27,12 @@ import {
   resolve as resolvePath,
   posix,
   relative as relativePath,
+  extname,
 } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { publishPreflightCheck } from '../../lib/publishing';
+
+const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx', '.json'];
 
 /**
  * A mutable object representing a package.json file with potential fixes.
@@ -122,29 +125,46 @@ export function fixPackageExports(pkg: FixablePackage) {
     }
     const newPath = trimRelative(path);
 
+    // Only script files and package.json should be added to typesVersions
     if (typeof value === 'string') {
-      typeEntries[newPath] = [trimRelative(value)];
+      if (SCRIPT_EXTS.includes(extname(value))) {
+        typeEntries[newPath] = [trimRelative(value)];
+      }
     } else if (value && typeof value === 'object' && !Array.isArray(value)) {
       if (typeof value.types === 'string') {
         typeEntries[newPath] = [trimRelative(value.types)];
-      } else if (typeof value.default === 'string') {
+      } else if (
+        typeof value.default === 'string' &&
+        SCRIPT_EXTS.includes(extname(value.default))
+      ) {
         typeEntries[newPath] = [trimRelative(value.default)];
       }
     }
   }
 
-  const typesVersions = { '*': typeEntries };
-  if (existingTypesVersions !== JSON.stringify(typesVersions)) {
-    const newPkgEntries = Object.entries(pkg.packageJson).filter(
-      ([name]) => name !== 'typesVersions',
-    );
-    newPkgEntries.splice(
-      newPkgEntries.findIndex(([name]) => name === 'exports') + 1,
-      0,
-      ['typesVersions', typesVersions],
-    );
+  const hasTypeEntries = Object.keys(typeEntries).length > 0;
+  const typesVersions = hasTypeEntries ? { '*': typeEntries } : undefined;
 
-    pkg.packageJson = Object.fromEntries(newPkgEntries) as BackstagePackageJson;
+  if (existingTypesVersions !== JSON.stringify(typesVersions)) {
+    if (pkg.packageJson.typesVersions) {
+      // Update in place to preserve field order
+      if (typesVersions) {
+        pkg.packageJson.typesVersions = typesVersions;
+      } else {
+        delete pkg.packageJson.typesVersions;
+      }
+    } else if (typesVersions) {
+      // Insert after exports when adding for the first time
+      const newPkgEntries = Object.entries(pkg.packageJson);
+      newPkgEntries.splice(
+        newPkgEntries.findIndex(([name]) => name === 'exports') + 1,
+        0,
+        ['typesVersions', typesVersions],
+      );
+      pkg.packageJson = Object.fromEntries(
+        newPkgEntries,
+      ) as BackstagePackageJson;
+    }
     pkg.changed = true;
   }
 
@@ -430,6 +450,47 @@ export function fixPluginPackages(
   }
 }
 
+export function fixPeerModules(pkg: FixablePackage) {
+  const pkgBackstage = pkg.packageJson.backstage;
+  const role = pkgBackstage?.role;
+  if (!role) {
+    return;
+  }
+
+  const peerModules = pkgBackstage.peerModules;
+  if (peerModules === undefined) {
+    return;
+  }
+
+  const packagePath = relativePath(
+    paths.targetRoot,
+    resolvePath(pkg.dir, 'package.json'),
+  );
+
+  // Validate that peerModules is only used on plugin packages
+  if (role !== 'backend-plugin' && role !== 'frontend-plugin') {
+    throw new Error(
+      `The 'backstage.peerModules' field in "${pkg.packageJson.name}" can only be used on plugin packages (backend-plugin or frontend-plugin), but package has role '${role}' in "${packagePath}"`,
+    );
+  }
+
+  // Validate that peerModules is an array
+  if (!Array.isArray(peerModules)) {
+    throw new Error(
+      `Invalid 'backstage.peerModules' field in "${pkg.packageJson.name}", must be an array of package names in "${packagePath}"`,
+    );
+  }
+
+  // Validate that all entries are non-empty strings
+  for (const entry of peerModules) {
+    if (typeof entry !== 'string' || entry.length === 0) {
+      throw new Error(
+        `Invalid entry in 'backstage.peerModules' field in "${pkg.packageJson.name}", all entries must be non-empty package name strings in "${packagePath}"`,
+      );
+    }
+  }
+}
+
 type PackageFixer = (pkg: FixablePackage, packages: FixablePackage[]) => void;
 
 export async function command(opts: OptionValues): Promise<void> {
@@ -444,6 +505,7 @@ export async function command(opts: OptionValues): Promise<void> {
       fixRepositoryField,
       fixPluginId,
       fixPluginPackages,
+      fixPeerModules,
       // Run the publish preflight check too, to make sure we don't uncover errors during publishing
       publishPreflightCheck,
     );

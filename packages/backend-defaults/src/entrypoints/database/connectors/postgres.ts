@@ -15,9 +15,17 @@
  */
 
 import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import {
+  Config,
+  ConfigReader,
+  readDurationFromConfig,
+} from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
-import { JsonObject } from '@backstage/types';
+import {
+  durationToMilliseconds,
+  HumanDuration,
+  JsonObject,
+} from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
@@ -25,6 +33,7 @@ import { Client } from 'pg';
 import { Connector } from '../types';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 import format from 'pg-format';
+import { TokenCredential } from '@azure/identity';
 
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
@@ -74,26 +83,142 @@ export async function buildPgDatabaseConfig(
     },
     overrides,
   );
-
-  const sanitizedConfig = JSON.parse(JSON.stringify(config));
-
-  // Trim additional properties from the connection object passed to knex
-  delete sanitizedConfig.connection.type;
-  delete sanitizedConfig.connection.instance;
+  const mergedConfigReader = new ConfigReader(config);
 
   if (config.connection.type === 'default' || !config.connection.type) {
-    return sanitizedConfig;
+    const connectionValue = config.connection;
+    const sanitizedConnection =
+      typeof connectionValue === 'string' || connectionValue instanceof String
+        ? connectionValue
+        : // connection is an object, omit config-only props
+          omit(connectionValue as Record<string, unknown>, [
+            'type',
+            'instance',
+            'tokenCredential',
+          ]);
+
+    return {
+      ...config,
+      connection: sanitizedConnection,
+    };
   }
 
-  if (config.connection.type !== 'cloudsql') {
-    throw new Error(`Unknown connection type: ${config.connection.type}`);
+  switch (config.connection.type) {
+    case 'azure':
+      return buildAzurePgConfig(mergedConfigReader);
+    case 'cloudsql':
+      return buildCloudSqlConfig(mergedConfigReader);
+    default:
+      throw new Error(`Unknown connection type: ${config.connection.type}`);
+  }
+}
+
+/* Note: the following type definition is intentionally duplicated in
+ * /packages/backend-defaults/config.d.ts so the clientSecret property
+ * can be annotated with "@visibility secret" there.
+ */
+export type AzureTokenCredentialConfig = {
+  /**
+   * How early before an access token expires to refresh it with a new one.
+   * Defaults to 5 minutes
+   * Supported formats:
+   * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+   *   library.
+   * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+   * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+   */
+  tokenRenewableOffsetTime?: string | HumanDuration;
+  /**
+   * The client ID of a user-assigned managed identity.
+   * If not provided, the system-assigned managed identity is used.
+   */
+  clientId?: string;
+  clientSecret?: string;
+  tenantId?: string;
+};
+
+export async function buildAzurePgConfig(config: Config): Promise<Knex.Config> {
+  const {
+    DefaultAzureCredential,
+    ManagedIdentityCredential,
+    ClientSecretCredential,
+  } = require('@azure/identity');
+
+  const tokenConfig = config.getOptionalConfig('connection.tokenCredential');
+
+  const tokenRenewableOffsetTime = durationToMilliseconds(
+    tokenConfig?.has('tokenRenewableOffsetTime')
+      ? readDurationFromConfig(tokenConfig, { key: 'tokenRenewableOffsetTime' })
+      : { minutes: 5 },
+  );
+
+  const clientId = tokenConfig?.getOptionalString('clientId');
+  const tenantId = tokenConfig?.getOptionalString('tenantId');
+  const clientSecret = tokenConfig?.getOptionalString('clientSecret');
+  let credential: TokenCredential;
+
+  /**
+   * Determine which TokenCredential to use based on provided config
+   * 1. If clientId, tenantId and clientSecret are provided, use ClientSecretCredential
+   * 2. If only clientId is provided, use ManagedIdentityCredential with user-assigned identity
+   * 3. Otherwise, use DefaultAzureCredential (which may use system-assigned identity among other methods)
+   */
+  if (clientId && tenantId && clientSecret) {
+    credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+  } else if (clientId) {
+    credential = new ManagedIdentityCredential(clientId);
+  } else {
+    credential = new DefaultAzureCredential();
   }
 
-  if (config.client !== 'pg') {
+  const rawConfig = config.get() as Record<string, unknown>;
+
+  const normalized = normalizeConnection(rawConfig.connection as any);
+  const sanitizedConnection = omit(normalized, [
+    'type',
+    'instance',
+    'tokenCredential',
+  ]) as Partial<Knex.StaticConnectionConfig>;
+
+  async function getConnectionConfig() {
+    const token = await credential.getToken(
+      'https://ossrdbms-aad.database.windows.net/.default',
+    );
+
+    if (!token) {
+      throw new Error(
+        'Failed to acquire Azure access token for database authentication',
+      );
+    }
+
+    const connectionConfig = {
+      ...sanitizedConnection,
+      password: token.token,
+      expirationChecker: () =>
+        /* return true if the token is within the renewable offset time */
+        token.expiresOnTimestamp - tokenRenewableOffsetTime <= Date.now(),
+    };
+
+    return connectionConfig;
+  }
+
+  return {
+    ...(rawConfig as Record<string, unknown>),
+    connection: getConnectionConfig,
+  };
+}
+
+export async function buildCloudSqlConfig(
+  config: Config,
+): Promise<Knex.Config> {
+  const client = config.getOptionalString('client');
+
+  if (client && client !== 'pg') {
     throw new Error('Cloud SQL only supports the pg client');
   }
 
-  if (!config.connection.instance) {
+  const instance = config.getOptionalString('connection.instance');
+  if (!instance) {
     throw new Error('Missing instance connection name for Cloud SQL');
   }
 
@@ -103,17 +228,44 @@ export async function buildPgDatabaseConfig(
     AuthTypes,
   } = require('@google-cloud/cloud-sql-connector') as typeof import('@google-cloud/cloud-sql-connector');
   const connector = new CloudSqlConnector();
+
+  type IpType = (typeof IpAddressTypes)[keyof typeof IpAddressTypes];
+  const ipTypeRaw = config.getOptionalString('connection.ipAddressType');
+
+  let ipType: IpType | undefined;
+  if (ipTypeRaw !== undefined) {
+    if (
+      !(Object.values(IpAddressTypes) as Array<string | number>).includes(
+        ipTypeRaw as any,
+      )
+    ) {
+      throw new Error(
+        `Invalid connection.ipAddressType: ${ipTypeRaw}; valid values: ${Object.values(
+          IpAddressTypes,
+        ).join(', ')}`,
+      );
+    }
+    ipType = ipTypeRaw as unknown as IpType;
+  }
+
   const clientOpts = await connector.getOptions({
-    instanceConnectionName: config.connection.instance,
-    ipType: config.connection.ipAddressType ?? IpAddressTypes.PUBLIC,
+    instanceConnectionName: instance,
+    ipType: ipType ?? IpAddressTypes.PUBLIC,
     authType: AuthTypes.IAM,
   });
 
+  const rawConfig = config.get() as Record<string, unknown>;
+  const normalized = normalizeConnection(rawConfig.connection as any);
+  const sanitizedConnection = omit(normalized, [
+    'type',
+    'instance',
+  ]) as Partial<Knex.StaticConnectionConfig>;
+
   return {
-    ...sanitizedConfig,
+    ...(rawConfig as Record<string, unknown>),
     client: 'pg',
     connection: {
-      ...sanitizedConfig.connection,
+      ...sanitizedConnection,
       ...clientOpts,
     },
   };

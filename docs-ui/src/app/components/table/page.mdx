@@ -13,7 +13,6 @@ import {
   PrimitivesExample,
 } from './components';
 import {
-  tablePropsColumns,
   tableReturnColumns,
   useTableOptionsPropDefs,
   useTableReturnPropDefs,
@@ -163,7 +162,7 @@ You can also disable specific rows from being clicked using `getIsDisabled`:
 
 <CodeBlock code={tableRowActionsDisabledSnippet} />
 
-<Snippet preview={<RowActionsExample />} />
+<Snippet preview={<RowActionsExample />} code={tableRowActionsHrefSnippet} />
 
 ### Empty State
 
@@ -225,7 +224,7 @@ The `useTable` hook manages data fetching, pagination, sorting, and filtering.
 
 **Options**
 
-<PropsTable data={useTableOptionsPropDefs} columns={tablePropsColumns} />
+<PropsTable data={useTableOptionsPropDefs} />
 
 **Return Value**
 
@@ -235,27 +234,27 @@ The `useTable` hook manages data fetching, pagination, sorting, and filtering.
 
 The main table component.
 
-<PropsTable data={tablePropDefs} columns={tablePropsColumns} />
+<PropsTable data={tablePropDefs} />
 
 ### ColumnConfig
 
-<PropsTable data={columnConfigPropDefs} columns={tablePropsColumns} />
+<PropsTable data={columnConfigPropDefs} />
 
 ### CellText
 
-<PropsTable data={cellTextPropDefs} columns={tablePropsColumns} />
+<PropsTable data={cellTextPropDefs} />
 
 <ReactAriaLink component="Cell" href={reactAriaUrls.cell} />
 
 ### CellProfile
 
-<PropsTable data={cellProfilePropDefs} columns={tablePropsColumns} />
+<PropsTable data={cellProfilePropDefs} />
 
 <ReactAriaLink component="Cell" href={reactAriaUrls.cell} />
 
 ### TablePagination
 
-<PropsTable data={tablePaginationPropDefs} columns={tablePropsColumns} />
+<PropsTable data={tablePaginationPropDefs} />
 
 ### Primitives
 
@@ -263,7 +262,7 @@ Low-level components for building custom table layouts.
 
 #### TableRoot
 
-<PropsTable data={tableRootPropDefs} columns={tablePropsColumns} />
+<PropsTable data={tableRootPropDefs} />
 
 <ReactAriaLink component="Table" href={reactAriaUrls.table} />
 
@@ -277,13 +276,13 @@ Low-level components for building custom table layouts.
 
 #### Column
 
-<PropsTable data={columnPropDefs} columns={tablePropsColumns} />
+<PropsTable data={columnPropDefs} />
 
 <ReactAriaLink component="Column" href={reactAriaUrls.column} />
 
 #### Row
 
-<PropsTable data={rowPropDefs} columns={tablePropsColumns} />
+<PropsTable data={rowPropDefs} />
 
 <ReactAriaLink component="Row" href={reactAriaUrls.row} />
 

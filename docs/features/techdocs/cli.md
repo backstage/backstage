@@ -271,5 +271,5 @@ upon your cloud storage provider -
 
 You are welcome to contribute to TechDocs CLI to improve it and support new
 features! See the project
-[README](https://github.com/backstage/backstage/blob/main/src/packages/techdocs-cli/README.md)
+[README](https://github.com/backstage/backstage/blob/master/packages/techdocs-cli/README.md)
 for more information.

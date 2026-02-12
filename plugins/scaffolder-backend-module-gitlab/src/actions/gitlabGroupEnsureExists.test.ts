@@ -22,7 +22,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   Groups: {
-    search: jest.fn(),
+    show: jest.fn(),
     create: jest.fn(),
   },
 };
@@ -65,16 +65,9 @@ describe('gitlab:group:ensureExists', () => {
   const mockContext = createMockActionContext();
 
   it('should create a new group from string if it does not exists', async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'bar',
-      },
-      {
-        id: 2,
-        full_path: 'foo',
-      },
-    ]);
+    mockGitlabClient.Groups.show
+      .mockResolvedValueOnce({ id: 2, full_path: 'foo' })
+      .mockRejectedValueOnce({ cause: { response: { status: 404 } } });
 
     mockGitlabClient.Groups.create.mockResolvedValue({
       id: 3,
@@ -86,32 +79,80 @@ describe('gitlab:group:ensureExists', () => {
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         path: ['foo', 'bar'],
+        description: 'my cool group',
       },
     });
 
     expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith('bar', 'bar', {
+      description: 'my cool group',
       parentId: 2,
     });
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
   });
 
-  it('should create a new group from pathstring if it does not exists', async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
+  it('should only apply description to the last created group', async () => {
+    mockGitlabClient.Groups.create
+      .mockResolvedValueOnce({
         id: 1,
-        full_path: 'bar',
-      },
-      {
-        id: 2,
         full_path: 'foo',
-      },
-    ]);
+      })
+      .mockResolvedValueOnce({
+        id: 2,
+        full_path: 'foo/bar',
+      })
+      .mockResolvedValueOnce({
+        id: 3,
+        full_path: 'foo/bar/baz',
+      });
 
-    mockGitlabClient.Groups.create.mockResolvedValue({
-      id: 3,
-      full_path: 'foo/bar',
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        path: ['foo', 'bar', 'baz'],
+        description: 'only for innermost group',
+      },
     });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledTimes(3);
+
+    // First group: no description
+    expect(mockGitlabClient.Groups.create).toHaveBeenNthCalledWith(
+      1,
+      'foo',
+      'foo',
+      {},
+    );
+
+    // Second group: no description
+    expect(mockGitlabClient.Groups.create).toHaveBeenNthCalledWith(
+      2,
+      'bar',
+      'bar',
+      { parentId: 1 },
+    );
+
+    // Third (last) group: has description
+    expect(mockGitlabClient.Groups.create).toHaveBeenNthCalledWith(
+      3,
+      'baz',
+      'baz',
+      { parentId: 2, description: 'only for innermost group' },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
+  });
+
+  it('should create a new group from pathstring if it does not exists', async () => {
+    mockGitlabClient.Groups.show
+      .mockResolvedValueOnce({ id: 2, full_path: 'foo' })
+      .mockRejectedValueOnce({ cause: { response: { status: 404 } } })
+      .mockRejectedValueOnce({ cause: { response: { status: 404 } } });
+
+    mockGitlabClient.Groups.create
+      .mockResolvedValueOnce({ id: 3, full_path: 'foo/bar' })
+      .mockResolvedValueOnce({ id: 4, full_path: 'foo/bar/baz' });
 
     await action.handler({
       ...mockContext,
@@ -121,24 +162,31 @@ describe('gitlab:group:ensureExists', () => {
       },
     });
 
-    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith('bar', 'bar', {
-      parentId: 2,
-    });
+    expect(mockGitlabClient.Groups.create).toHaveBeenNthCalledWith(
+      1,
+      'bar',
+      'bar',
+      {
+        parentId: 2,
+      },
+    );
 
-    expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
+    expect(mockGitlabClient.Groups.create).toHaveBeenNthCalledWith(
+      2,
+      'baz',
+      'baz',
+      {
+        parentId: 3,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 4);
   });
 
   it('should create a new group from object if it does not exists', async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'bar',
-      },
-      {
-        id: 2,
-        full_path: 'foo',
-      },
-    ]);
+    mockGitlabClient.Groups.show
+      .mockResolvedValueOnce({ id: 2, full_path: 'foo' })
+      .mockRejectedValueOnce({ cause: { response: { status: 404 } } });
 
     mockGitlabClient.Groups.create.mockResolvedValue({
       id: 3,
@@ -168,20 +216,9 @@ describe('gitlab:group:ensureExists', () => {
   });
 
   it('should return existing group if it does exists', async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'bar',
-      },
-      {
-        id: 2,
-        full_path: 'foo',
-      },
-      {
-        id: 42,
-        full_path: 'foo/bar',
-      },
-    ]);
+    mockGitlabClient.Groups.show
+      .mockResolvedValueOnce({ id: 2, full_path: 'foo' })
+      .mockResolvedValueOnce({ id: 42, full_path: 'foo/bar' });
 
     await action.handler({
       ...mockContext,
@@ -206,19 +243,17 @@ describe('gitlab:group:ensureExists', () => {
       },
     });
 
-    expect(mockGitlabClient.Groups.search).not.toHaveBeenCalled();
+    expect(mockGitlabClient.Groups.show).not.toHaveBeenCalled();
     expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
   });
 
   it('should use the token from the integration config when none is provided', async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'foobar',
-      },
-    ]);
+    mockGitlabClient.Groups.show.mockResolvedValue({
+      id: 1,
+      full_path: 'foobar',
+    });
 
     await action.handler({
       ...mockContext,
@@ -236,12 +271,10 @@ describe('gitlab:group:ensureExists', () => {
   });
 
   it('should use a provided token as bearer authentication', async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'foobar',
-      },
-    ]);
+    mockGitlabClient.Groups.show.mockResolvedValue({
+      id: 1,
+      full_path: 'foobar',
+    });
 
     await action.handler({
       ...mockContext,

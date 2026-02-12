@@ -1,5 +1,39 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.11.3-next.2
+
+### Patch Changes
+
+- 6b5e7d9: Allow setting optional description on group creation
+- f0f9403: Changed `gitlab:group:ensureExists` action to use `Groups.show` API instead of `Groups.search` for checking if a group path exists. This is more efficient as it directly retrieves the group by path rather than searching and filtering results.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.11.3-next.1
+
+### Patch Changes
+
+- 32c51c0: Added new `gitlab:user:info` scaffolder action that retrieves information about a GitLab user. The action can fetch either the current authenticated user or a specific user by ID.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.11.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
 ## 0.11.1
 
 ### Patch Changes

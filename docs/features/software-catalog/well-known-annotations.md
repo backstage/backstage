@@ -462,7 +462,7 @@ migrating away from them.
 ### backstage.io/github-actions-id
 
 This annotation was used for a while to enable the GitHub Actions feature. This
-is now instead using the [github.com/project-slug](#github-com-project-slug)
+is now instead using the [github.com/project-slug](#githubcomproject-slug)
 annotation, with the same value format.
 
 ### backstage.io/definition-at-location

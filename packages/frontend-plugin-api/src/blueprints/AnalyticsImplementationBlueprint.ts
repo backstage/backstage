@@ -41,7 +41,7 @@ const factoryDataRef =
  */
 export const AnalyticsImplementationBlueprint = createExtensionBlueprint({
   kind: 'analytics',
-  attachTo: [{ id: 'api:app/analytics', input: 'implementations' }],
+  attachTo: { id: 'api:app/analytics', input: 'implementations' },
   output: [factoryDataRef],
   dataRefs: {
     factory: factoryDataRef,

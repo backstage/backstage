@@ -7,10 +7,4 @@ description: The Kubernetes GPT Analyzer plug-in uses artificial intelligence wi
 documentation: https://platform.vee.codes/plugin/kubernetes-gpt-analyzer/
 iconUrl: https://veecode-platform.github.io/support/imgs/logo_4.svg
 npmPackageName: '@veecode-platform/backstage-plugin-kubernetes-gpt-analyzer'
-tags:
-  - monitor
-  - ai
-  - kubernetes
-  - k8soperator
-  - gpt
 addedDate: '2024-07-31'

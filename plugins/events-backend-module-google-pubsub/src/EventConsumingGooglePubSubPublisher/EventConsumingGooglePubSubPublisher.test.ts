@@ -52,8 +52,12 @@ describe('EventConsumingGooglePubSubPublisher', () => {
           id: 'my-id',
           sourceTopics: ['my-topic'],
           targetTopicPattern: 'projects/my-project/topics/my-topic',
+          filter: () => true,
           mapToTopic: () => ({ project: 'my-project', topic: 'my-topic' }),
-          mapToAttributes: m => ({ ...m.metadata, more: 'yes' }),
+          mapToAttributes: context => ({
+            ...context.event.metadata,
+            more: 'yes',
+          }),
         },
       ],
       pubSubFactory,

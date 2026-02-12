@@ -16,6 +16,7 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { readSubscriptionTasksFromConfig } from './config';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 describe('readSubscriptionTasksFromConfig', () => {
   it('reads with basic targetTopic', () => {
@@ -49,6 +50,7 @@ describe('readSubscriptionTasksFromConfig', () => {
         id: 'subKey1',
         sourceTopics: ['my-topic'],
         targetTopicPattern: 'projects/pid/topics/tid',
+        filter: expect.any(Function),
         mapToTopic: expect.any(Function),
         mapToAttributes: expect.any(Function),
       },
@@ -56,6 +58,7 @@ describe('readSubscriptionTasksFromConfig', () => {
         id: 'subKey2',
         sourceTopics: ['my-topic-1', 'my-topic-2'],
         targetTopicPattern: 'projects/pid/topics/tid.{{ event.topic }}',
+        filter: expect.any(Function),
         mapToTopic: expect.any(Function),
         mapToAttributes: expect.any(Function),
       },
@@ -63,16 +66,20 @@ describe('readSubscriptionTasksFromConfig', () => {
 
     expect(
       result[0].mapToTopic({
-        topic: 'a',
-        eventPayload: { foo: 'bar' },
-        metadata: { attr: 'yes' },
+        event: {
+          topic: 'a',
+          eventPayload: { foo: 'bar' },
+          metadata: { attr: 'yes' },
+        },
       }),
     ).toEqual({ project: 'pid', topic: 'tid' });
     expect(
       result[0].mapToAttributes({
-        topic: 'a',
-        eventPayload: { foo: 'bar' },
-        metadata: { attr: 'yes' },
+        event: {
+          topic: 'a',
+          eventPayload: { foo: 'bar' },
+          metadata: { attr: 'yes' },
+        },
       }),
     ).toEqual({ attr: 'yes' });
   });
@@ -116,6 +123,7 @@ describe('readSubscriptionTasksFromConfig', () => {
         id: 'sub1',
         sourceTopics: ['my-topic'],
         targetTopicPattern: 'projects/pid/topics/tid.{{ event.topic }}',
+        filter: expect.any(Function),
         mapToTopic: expect.any(Function),
         mapToAttributes: expect.any(Function),
       },
@@ -124,6 +132,7 @@ describe('readSubscriptionTasksFromConfig', () => {
         sourceTopics: ['my-topic'],
         targetTopicPattern:
           'projects/pid/topics/tid.{{ event.metadata.missing }}',
+        filter: expect.any(Function),
         mapToTopic: expect.any(Function),
         mapToAttributes: expect.any(Function),
       },
@@ -131,16 +140,28 @@ describe('readSubscriptionTasksFromConfig', () => {
 
     expect(
       result[0].mapToTopic({
-        topic: 'a',
-        eventPayload: { foo: 'bar' },
-        metadata: { exists: 'exists', attr1: 'original1', attr2: 'original2' },
+        event: {
+          topic: 'a',
+          eventPayload: { foo: 'bar' },
+          metadata: {
+            exists: 'exists',
+            attr1: 'original1',
+            attr2: 'original2',
+          },
+        },
       }),
     ).toEqual({ project: 'pid', topic: 'tid.a' }); // Message attribute existed, successfully routed
     expect(
       result[0].mapToAttributes({
-        topic: 'a',
-        eventPayload: { foo: 'bar' },
-        metadata: { exists: 'exists', attr1: 'original1', attr2: 'original2' },
+        event: {
+          topic: 'a',
+          eventPayload: { foo: 'bar' },
+          metadata: {
+            exists: 'exists',
+            attr1: 'original1',
+            attr2: 'original2',
+          },
+        },
       }),
     ).toEqual({
       exists: 'exists',
@@ -150,16 +171,28 @@ describe('readSubscriptionTasksFromConfig', () => {
 
     expect(
       result[1].mapToTopic({
-        topic: 'a',
-        eventPayload: { foo: 'bar' },
-        metadata: { exists: 'exists', attr1: 'original1', attr2: 'original2' },
+        event: {
+          topic: 'a',
+          eventPayload: { foo: 'bar' },
+          metadata: {
+            exists: 'exists',
+            attr1: 'original1',
+            attr2: 'original2',
+          },
+        },
       }),
     ).toBeUndefined(); // Message attribute did not exist, could not be routed
     expect(
       result[1].mapToAttributes({
-        topic: 'a',
-        eventPayload: { foo: 'bar' },
-        metadata: { exists: 'exists', attr1: 'original1', attr2: 'original2' },
+        event: {
+          topic: 'a',
+          eventPayload: { foo: 'bar' },
+          metadata: {
+            exists: 'exists',
+            attr1: 'original1',
+            attr2: 'original2',
+          },
+        },
       }),
     ).toEqual({
       exists: 'exists',
@@ -167,6 +200,71 @@ describe('readSubscriptionTasksFromConfig', () => {
       attr2: 'original2',
       attr3: 'new',
     });
+  });
+
+  it('reads with filter', () => {
+    const exampleFilter: FilterPredicate = {
+      'event.topic': 'push',
+    };
+
+    const data = {
+      events: {
+        modules: {
+          googlePubSub: {
+            eventConsumingGooglePubSubPublisher: {
+              subscriptions: {
+                subKey: {
+                  sourceTopic: 'my-topic',
+                  targetTopicName: 'projects/pid/topics/tid.{{ event.topic }}',
+                  filter: exampleFilter,
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const result = readSubscriptionTasksFromConfig(
+      mockServices.rootConfig({ data }),
+    );
+    expect(result).toEqual([
+      {
+        id: 'subKey',
+        sourceTopics: ['my-topic'],
+        targetTopicPattern: 'projects/pid/topics/tid.{{ event.topic }}',
+        filter: expect.any(Function),
+        mapToTopic: expect.any(Function),
+        mapToAttributes: expect.any(Function),
+      },
+    ]);
+
+    expect(
+      result[0].filter({
+        event: {
+          topic: 'push',
+          eventPayload: { foo: 'bar' },
+          metadata: {
+            exists: 'exists',
+            attr1: 'original1',
+            attr2: 'original2',
+          },
+        },
+      }),
+    ).toBe(true);
+    expect(
+      result[0].filter({
+        event: {
+          topic: 'pull_request',
+          eventPayload: { foo: 'bar' },
+          metadata: {
+            exists: 'exists',
+            attr1: 'original1',
+            attr2: 'original2',
+          },
+        },
+      }),
+    ).toBe(false);
   });
 
   it('rejects malformed subscription name', () => {

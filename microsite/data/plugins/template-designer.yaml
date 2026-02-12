@@ -7,4 +7,4 @@ description: Template Designer turns blank Backstage YAML into a storyboard-like
 documentation: https://github.com/tduniec/template-designer-plugin/blob/main/README.md
 iconUrl: https://raw.githubusercontent.com/tduniec/template-designer-plugin/main/img/logo/templateDesignerLogo.png
 npmPackageName: '@tduniec/plugin-template-designer'
-addedDate: 2025-11-19
+addedDate: '2025-11-19'

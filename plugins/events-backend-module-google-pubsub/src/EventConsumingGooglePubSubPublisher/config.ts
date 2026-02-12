@@ -17,9 +17,12 @@
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { EventParams } from '@backstage/plugin-events-node';
+import {
+  readOptionalFilterPredicateFromConfig,
+  filterPredicateToFilterFunction,
+} from '@backstage/filter-predicates';
 import { createPatternResolver } from '../util/createPatternResolver';
-import { SubscriptionTask } from './types';
+import { EventContext, SubscriptionTask } from './types';
 
 export function readSubscriptionTasksFromConfig(
   rootConfig: RootConfigService,
@@ -40,6 +43,7 @@ export function readSubscriptionTasksFromConfig(
 
     const config = subscriptionsConfig.getConfig(subscriptionId);
     const sourceTopics = readSourceTopics(config);
+    const filter = readFilter(config);
     const mapToTopic = readTopicMapper(config);
     const mapToAttributes = readAttributeMapper(config);
 
@@ -47,6 +51,7 @@ export function readSubscriptionTasksFromConfig(
       id: subscriptionId,
       sourceTopics: sourceTopics,
       targetTopicPattern: config.getString('targetTopicName'),
+      filter,
       mapToTopic,
       mapToAttributes,
     };
@@ -61,11 +66,25 @@ function readSourceTopics(config: Config): string[] {
 }
 
 /**
+ * Handles the `filter` configuration field.
+ */
+function readFilter(config: Config): (context: EventContext) => boolean {
+  const predicate = readOptionalFilterPredicateFromConfig(config, {
+    key: 'filter',
+  });
+  if (!predicate) {
+    return () => true;
+  }
+
+  return filterPredicateToFilterFunction(predicate);
+}
+
+/**
  * Handles the `targetTopicName` configuration field.
  */
 function readTopicMapper(
   config: Config,
-): (event: EventParams) => { project: string; topic: string } | undefined {
+): (context: EventContext) => { project: string; topic: string } | undefined {
   const regex = /^projects\/([^/]+)\/topics\/(.+)$/;
 
   const targetTopicPattern = config.getString('targetTopicName');
@@ -78,9 +97,9 @@ function readTopicMapper(
 
   const patternResolver = createPatternResolver(targetTopicPattern);
 
-  return event => {
+  return context => {
     try {
-      parts = patternResolver({ event }).match(regex);
+      parts = patternResolver(context).match(regex);
       if (!parts) {
         return undefined;
       }
@@ -100,10 +119,10 @@ function readTopicMapper(
  */
 function readAttributeMapper(
   config: Config,
-): (event: EventParams) => Record<string, string> {
+): (context: EventContext) => Record<string, string> {
   const setters = new Array<
     (options: {
-      event: EventParams;
+      context: EventContext;
       attributes: Record<string, string>;
     }) => void
   >();
@@ -113,9 +132,9 @@ function readAttributeMapper(
     for (const key of eventMetadata?.keys() ?? []) {
       const valuePattern = eventMetadata.getString(key);
       const patternResolver = createPatternResolver(valuePattern);
-      setters.push(({ event, attributes }) => {
+      setters.push(({ context, attributes }) => {
         try {
-          const value = patternResolver({ event });
+          const value = patternResolver(context);
           if (value) {
             attributes[key] = value;
           }
@@ -126,9 +145,9 @@ function readAttributeMapper(
     }
   }
 
-  return event => {
+  return context => {
     const result: Record<string, string> = {};
-    for (const [key, value] of Object.entries(event.metadata ?? {})) {
+    for (const [key, value] of Object.entries(context.event.metadata ?? {})) {
       if (value) {
         if (typeof value === 'string') {
           result[key] = value;
@@ -139,7 +158,7 @@ function readAttributeMapper(
       }
     }
     for (const setter of setters) {
-      setter({ event, attributes: result });
+      setter({ context, attributes: result });
     }
     return result;
   };

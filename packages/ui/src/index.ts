@@ -46,6 +46,7 @@ export * from './components/Tabs';
 export * from './components/TagGroup';
 export * from './components/Text';
 export * from './components/TextField';
+export * from './components/PasswordField';
 export * from './components/Tooltip';
 export * from './components/Menu';
 export * from './components/Popover';
@@ -63,3 +64,5 @@ export * from './types';
 
 // Hooks
 export { useBreakpoint } from './hooks/useBreakpoint';
+export { useBgProvider, useBgConsumer, BgProvider } from './hooks/useBg';
+export type { BgContextValue, BgProviderProps } from './hooks/useBg';

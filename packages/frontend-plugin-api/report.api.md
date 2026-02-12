@@ -1205,26 +1205,7 @@ export type ExtensionDefinitionAttachTo<
       input: string;
       id?: never;
     }
-  | ExtensionInput<UParentInputs>
-  /**
-   * @deprecated Multiple attachment points are deprecated and will be removed in a future release. Use a Utility API instead to share functionality across multiple locations. See https://backstage.io/docs/frontend-system/architecture/27-sharing-extensions for migration guidance.
-   */
-  | Array<
-      | {
-          id: string;
-          input: string;
-          relative?: never;
-        }
-      | {
-          relative: {
-            kind?: string;
-            name?: string;
-          };
-          input: string;
-          id?: never;
-        }
-      | ExtensionInput<UParentInputs>
-    >;
+  | ExtensionInput<UParentInputs>;
 
 // @public (undocumented)
 export type ExtensionDefinitionParameters = {

@@ -9,13 +9,6 @@ import { Chip } from '@/components/Chip';
 // PropsTable Column Configuration (Table docs use description instead of responsive)
 // =============================================================================
 
-export const tablePropsColumns = [
-  { key: 'prop' as const, width: '15%' },
-  { key: 'type' as const, width: '25%' },
-  { key: 'default' as const, width: '15%' },
-  { key: 'description' as const, width: '45%' },
-];
-
 // For return values (no default column)
 export const tableReturnColumns = [
   { key: 'prop' as const, width: '15%' },
@@ -43,7 +36,13 @@ export const useTableOptionsPropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: ['function'],
     description:
-      'Function that returns or fetches data (required). Signature varies by mode.',
+      'Function that returns or fetches data (required for "offset" and "cursor" modes). For the "complete" mode, either this or `data` must be provided. Signature varies by mode.',
+  },
+  data: {
+    type: 'enum',
+    values: ['T[]'],
+    description:
+      'The data for the table. Only applicable for "complete" mode, and either this or `getData` must be provided.',
   },
   paginationOptions: {
     type: 'enum',

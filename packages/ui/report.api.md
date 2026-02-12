@@ -144,7 +144,6 @@ export const AlertDefinition: {
     readonly spinner: 'bui-AlertSpinner';
     readonly actions: 'bui-AlertActions';
   };
-  readonly surface: 'container';
   readonly propDefs: {
     readonly status: {
       readonly dataAttribute: true;
@@ -157,7 +156,6 @@ export const AlertDefinition: {
     readonly customActions: {};
     readonly title: {};
     readonly description: {};
-    readonly surface: {};
     readonly className: {};
     readonly style: {};
   };
@@ -165,7 +163,7 @@ export const AlertDefinition: {
 };
 
 // @public (undocumented)
-export type AlertOwnProps = ContainerSurfaceProps & {
+export type AlertOwnProps = {
   status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
   icon?: boolean | ReactElement;
   loading?: boolean;
@@ -208,6 +206,23 @@ export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
 }
 
 // @public (undocumented)
+export interface BgContextValue {
+  // (undocumented)
+  bg: ContainerBg | undefined;
+}
+
+// @public
+export const BgProvider: ({ bg, children }: BgProviderProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface BgProviderProps {
+  // (undocumented)
+  bg: ContainerBg;
+  // (undocumented)
+  children: ReactNode;
+}
+
+// @public (undocumented)
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 // @public (undocumented)
@@ -234,12 +249,12 @@ export const BoxDefinition: {
   readonly classNames: {
     readonly root: 'bui-Box';
   };
-  readonly surface: 'container';
+  readonly bg: 'provider';
   readonly propDefs: {
     readonly as: {
       readonly default: 'div';
     };
-    readonly surface: {
+    readonly bg: {
       readonly dataAttribute: true;
     };
     readonly children: {};
@@ -275,7 +290,7 @@ export const BoxDefinition: {
 // @public (undocumented)
 export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
-  surface?: Responsive<Surface>;
+  bg?: Responsive<ProviderBg>;
   children?: ReactNode;
   className?: string;
   style?: CSSProperties;
@@ -320,7 +335,7 @@ export const ButtonDefinition: {
     readonly content: 'bui-ButtonContent';
     readonly spinner: 'bui-ButtonSpinner';
   };
-  readonly surface: 'leaf';
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -330,12 +345,14 @@ export const ButtonDefinition: {
       readonly dataAttribute: true;
       readonly default: 'primary';
     };
+    readonly destructive: {
+      readonly dataAttribute: true;
+    };
     readonly loading: {
       readonly dataAttribute: true;
     };
     readonly iconStart: {};
     readonly iconEnd: {};
-    readonly onSurface: {};
     readonly children: {};
     readonly className: {};
     readonly style: {};
@@ -357,7 +374,7 @@ export const ButtonIconDefinition: {
     readonly content: 'bui-ButtonIconContent';
     readonly spinner: 'bui-ButtonIconSpinner';
   };
-  readonly surface: 'leaf';
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -371,14 +388,13 @@ export const ButtonIconDefinition: {
       readonly dataAttribute: true;
     };
     readonly icon: {};
-    readonly onSurface: {};
     readonly className: {};
     readonly style: {};
   };
 };
 
 // @public (undocumented)
-export type ButtonIconOwnProps = LeafSurfaceProps & {
+export type ButtonIconOwnProps = {
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   icon?: ReactElement;
@@ -406,7 +422,7 @@ export const ButtonLinkDefinition: {
     readonly root: 'bui-ButtonLink';
     readonly content: 'bui-ButtonLinkContent';
   };
-  readonly surface: 'leaf';
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
@@ -418,7 +434,6 @@ export const ButtonLinkDefinition: {
     };
     readonly iconStart: {};
     readonly iconEnd: {};
-    readonly onSurface: {};
     readonly children: {};
     readonly className: {};
     readonly style: {};
@@ -426,7 +441,7 @@ export const ButtonLinkDefinition: {
 };
 
 // @public (undocumented)
-export type ButtonLinkOwnProps = LeafSurfaceProps & {
+export type ButtonLinkOwnProps = {
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   iconStart?: ReactElement;
@@ -442,9 +457,10 @@ export interface ButtonLinkProps
     ButtonLinkOwnProps {}
 
 // @public (undocumented)
-export type ButtonOwnProps = LeafSurfaceProps & {
-  size?: Responsive<'small' | 'medium' | 'large'>;
+export type ButtonOwnProps = {
+  size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
+  destructive?: boolean;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   loading?: boolean;
@@ -469,18 +485,41 @@ export const CardBody: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
-  // (undocumented)
-  children?: React.ReactNode;
-}
+export const CardBodyDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-CardBody';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type CardBodyOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
+// @public
+export interface CardBodyProps
+  extends CardBodyOwnProps,
+    React.HTMLAttributes<HTMLDivElement> {}
 
 // @public
 export const CardDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Card';
-    readonly header: 'bui-CardHeader';
-    readonly body: 'bui-CardBody';
-    readonly footer: 'bui-CardFooter';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
   };
 };
 
@@ -490,10 +529,29 @@ export const CardFooter: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
-  // (undocumented)
-  children?: React.ReactNode;
-}
+export const CardFooterDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-CardFooter';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type CardFooterOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
+// @public
+export interface CardFooterProps
+  extends CardFooterOwnProps,
+    React.HTMLAttributes<HTMLDivElement> {}
 
 // @public
 export const CardHeader: ForwardRefExoticComponent<
@@ -501,16 +559,40 @@ export const CardHeader: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  // (undocumented)
-  children?: React.ReactNode;
-}
+export const CardHeaderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-CardHeader';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type CardHeaderOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
 
 // @public
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  // (undocumented)
-  children?: React.ReactNode;
-}
+export interface CardHeaderProps
+  extends CardHeaderOwnProps,
+    React.HTMLAttributes<HTMLDivElement> {}
+
+// @public (undocumented)
+export type CardOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
+// @public
+export interface CardProps
+  extends CardOwnProps,
+    React.HTMLAttributes<HTMLDivElement> {}
 
 // @public (undocumented)
 export const Cell: {
@@ -651,6 +733,15 @@ export const Container: ForwardRefExoticComponent<
 >;
 
 // @public
+export type ContainerBg =
+  | 'neutral-1'
+  | 'neutral-2'
+  | 'neutral-3'
+  | 'danger'
+  | 'warning'
+  | 'success';
+
+// @public
 export const ContainerDefinition: {
   readonly classNames: {
     readonly root: 'bui-Container';
@@ -678,12 +769,6 @@ export interface ContainerProps {
   py?: SpaceProps['py'];
   // (undocumented)
   style?: React.CSSProperties;
-}
-
-// @public (undocumented)
-export interface ContainerSurfaceProps {
-  // (undocumented)
-  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
@@ -857,11 +942,10 @@ export const FlexDefinition: {
     'direction',
   ];
   readonly dataAttributes: {
-    readonly surface: readonly [
-      '0',
-      '1',
-      '2',
-      '3',
+    readonly bg: readonly [
+      'neutral-1',
+      'neutral-2',
+      'neutral-3',
       'danger',
       'warning',
       'success',
@@ -877,6 +961,8 @@ export interface FlexProps extends SpaceProps {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   // (undocumented)
+  bg?: Responsive<ProviderBg>;
+  // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
@@ -888,8 +974,6 @@ export interface FlexProps extends SpaceProps {
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
   // (undocumented)
   style?: React.CSSProperties;
-  // (undocumented)
-  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
@@ -927,11 +1011,10 @@ export const GridDefinition: {
     'py',
   ];
   readonly dataAttributes: {
-    readonly surface: readonly [
-      '0',
-      '1',
-      '2',
-      '3',
+    readonly bg: readonly [
+      'neutral-1',
+      'neutral-2',
+      'neutral-3',
       'danger',
       'warning',
       'success',
@@ -946,11 +1029,10 @@ export const GridItemDefinition: {
   };
   readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
   readonly dataAttributes: {
-    readonly surface: readonly [
-      '0',
-      '1',
-      '2',
-      '3',
+    readonly bg: readonly [
+      'neutral-1',
+      'neutral-2',
+      'neutral-3',
       'danger',
       'warning',
       'success',
@@ -960,6 +1042,8 @@ export const GridItemDefinition: {
 
 // @public (undocumented)
 export interface GridItemProps {
+  // (undocumented)
+  bg?: Responsive<ProviderBg>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
@@ -974,12 +1058,12 @@ export interface GridItemProps {
   rowSpan?: Responsive<Columns>;
   // (undocumented)
   style?: React.CSSProperties;
-  // (undocumented)
-  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
 export interface GridProps extends SpaceProps {
+  // (undocumented)
+  bg?: Responsive<ProviderBg>;
   // (undocumented)
   children?: React.ReactNode;
   // (undocumented)
@@ -990,8 +1074,6 @@ export interface GridProps extends SpaceProps {
   gap?: Responsive<Space>;
   // (undocumented)
   style?: React.CSSProperties;
-  // (undocumented)
-  surface?: Responsive<Surface>;
 }
 
 // @public
@@ -1085,12 +1167,6 @@ export type JustifyContent =
   | 'between';
 
 // @public (undocumented)
-export interface LeafSurfaceProps {
-  // (undocumented)
-  onSurface?: Responsive<Surface>;
-}
-
-// @public (undocumented)
 export const Link: ForwardRefExoticComponent<
   LinkProps & RefAttributes<HTMLAnchorElement>
 >;
@@ -1109,8 +1185,10 @@ export const LinkDefinition: {
       'danger',
       'warning',
       'success',
+      'info',
     ];
     readonly truncate: readonly [true, false];
+    readonly standalone: readonly [true, false];
   };
 };
 
@@ -1123,6 +1201,8 @@ export interface LinkProps extends LinkProps_2 {
     | TextColors
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
+  // (undocumented)
+  standalone?: boolean;
   // (undocumented)
   title?: string;
   // (undocumented)
@@ -1388,6 +1468,34 @@ export interface PaginationOptions
   initialOffset?: number;
 }
 
+// @public (undocumented)
+export const PasswordField: ForwardRefExoticComponent<
+  PasswordFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const PasswordFieldDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-PasswordField';
+    readonly inputWrapper: 'bui-PasswordFieldInputWrapper';
+    readonly input: 'bui-PasswordFieldInput';
+    readonly inputIcon: 'bui-PasswordFieldIcon';
+    readonly inputVisibility: 'bui-PasswordFieldVisibility';
+  };
+  readonly dataAttributes: {
+    readonly size: readonly ['small', 'medium'];
+  };
+};
+
+// @public (undocumented)
+export interface PasswordFieldProps
+  extends TextFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+  icon?: ReactNode;
+  placeholder?: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
+
 // @public
 export const Popover: ForwardRefExoticComponent<
   PopoverProps & RefAttributes<HTMLDivElement>
@@ -1407,6 +1515,9 @@ export interface PopoverProps extends Omit<PopoverProps_2, 'children'> {
   children: React.ReactNode;
   hideArrow?: boolean;
 }
+
+// @public
+export type ProviderBg = ContainerBg | 'neutral-auto';
 
 // @public (undocumented)
 export interface QueryOptions<TFilter> {
@@ -1618,17 +1729,6 @@ export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
-
-// @public
-export type Surface =
-  | '0'
-  | '1'
-  | '2'
-  | '3'
-  | 'danger'
-  | 'warning'
-  | 'success'
-  | 'auto';
 
 // @public (undocumented)
 export const Switch: ForwardRefExoticComponent<
@@ -1858,7 +1958,9 @@ export const TabsDefinition: {
 export interface TabsProps extends TabsProps_2 {}
 
 // @public
-export const Tag: (props: TagProps) => JSX_2.Element;
+export const Tag: ForwardRefExoticComponent<
+  TagProps & RefAttributes<HTMLDivElement>
+>;
 
 // @public
 export const TagGroup: <T extends object>(
@@ -1902,7 +2004,7 @@ export { Text_2 as Text };
 export type TextColors = 'primary' | 'secondary';
 
 // @public (undocumented)
-export type TextColorStatus = 'danger' | 'warning' | 'success';
+export type TextColorStatus = 'danger' | 'warning' | 'success' | 'info';
 
 // @public
 export const TextDefinition: {
@@ -1918,6 +2020,7 @@ export const TextDefinition: {
       'danger',
       'warning',
       'success',
+      'info',
     ];
     readonly truncate: readonly [true, false];
   };
@@ -2042,7 +2145,6 @@ export interface ToggleButtonProps extends ToggleButtonProps_2 {
   iconEnd?: ReactElement;
   // (undocumented)
   iconStart?: ReactElement;
-  onSurface?: Responsive<Surface>;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
@@ -2071,6 +2173,12 @@ export const TooltipTrigger: (
   props: TooltipTriggerComponentProps,
 ) => JSX_2.Element;
 
+// @public
+export function useBgConsumer(): BgContextValue;
+
+// @public
+export function useBgProvider(bg?: Responsive<ProviderBg>): BgContextValue;
+
 // @public (undocumented)
 export const useBreakpoint: () => {
   breakpoint: Breakpoint;
@@ -2084,21 +2192,25 @@ export function useTable<T extends TableItem, TFilter = unknown>(
 ): UseTableResult<T, TFilter>;
 
 // @public (undocumented)
-export interface UseTableCompleteOptions<T extends TableItem, TFilter = unknown>
-  extends QueryOptions<TFilter> {
-  // (undocumented)
-  filterFn?: (data: T[], filter: TFilter) => T[];
-  // (undocumented)
-  getData: () => T[] | Promise<T[]>;
-  // (undocumented)
+export type UseTableCompleteOptions<
+  T extends TableItem,
+  TFilter = unknown,
+> = QueryOptions<TFilter> & {
   mode: 'complete';
-  // (undocumented)
   paginationOptions?: PaginationOptions;
-  // (undocumented)
-  searchFn?: (data: T[], search: string) => T[];
-  // (undocumented)
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
-}
+  filterFn?: (data: T[], filter: TFilter) => T[];
+  searchFn?: (data: T[], search: string) => T[];
+} & (
+    | {
+        data: T[] | undefined;
+        getData?: never;
+      }
+    | {
+        data?: never;
+        getData: () => T[] | Promise<T[]>;
+      }
+  );
 
 // @public (undocumented)
 export interface UseTableCursorOptions<T extends TableItem, TFilter = unknown>

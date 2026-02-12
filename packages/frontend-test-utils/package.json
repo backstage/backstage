@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-test-utils",
-  "version": "0.4.3",
+  "version": "0.5.0-next.2",
   "backstage": {
     "role": "web-library"
   },
@@ -32,31 +32,44 @@
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-app": "workspace:^",
     "@backstage/plugin-app-react": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
+    "i18next": "^22.4.15",
+    "zen-observable": "^0.10.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
+    "@types/jest": "*",
     "@types/react": "^18.0.0",
+    "@types/zen-observable": "^0.8.0",
+    "msw": "^2.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
     "@testing-library/react": "^16.0.0",
+    "@types/jest": "*",
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
+    "@types/jest": {
+      "optional": true
+    },
     "@types/react": {
       "optional": true
     }

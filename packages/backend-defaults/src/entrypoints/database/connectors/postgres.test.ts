@@ -25,6 +25,7 @@ import {
 import { type Knex } from 'knex';
 
 jest.mock('@google-cloud/cloud-sql-connector');
+jest.mock('@azure/identity');
 
 describe('postgres', () => {
   const createMockConnection = () => ({
@@ -140,6 +141,271 @@ describe('postgres', () => {
       });
     });
 
+    it('should default to using default azure credentials when type is azure with no credentials', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'some-user@domain.com',
+            port: 5423,
+            database: 'other_db',
+          },
+        }),
+      );
+
+      expect(DefaultAzureCredential).toHaveBeenCalled();
+      expect(configResult).toMatchObject({
+        client: 'pg',
+        connection: expect.any(Function),
+        useNullAsDefault: true,
+      });
+
+      const connectionResult = await configResult.connection();
+
+      expect(connectionResult).toMatchObject({
+        user: 'some-user@domain.com',
+        password: 'afaketoken',
+        port: 5423,
+        expirationChecker: expect.any(Function),
+      });
+      expect(connectionResult).not.toHaveProperty('allowedClockSkewMs');
+      expect(connectionResult).not.toHaveProperty('type');
+      expect(connectionResult).not.toHaveProperty('tokenCredential');
+    });
+
+    it('uses the correct config when using azure managed identity', async () => {
+      const { ManagedIdentityCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+
+      ManagedIdentityCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'some-user@domain.com',
+            port: 5423,
+            database: 'other_db',
+            tokenCredential: {
+              clientId: 'my-client-id',
+            },
+          },
+        }),
+      );
+
+      expect(ManagedIdentityCredential).toHaveBeenCalledWith('my-client-id');
+      expect(configResult).toMatchObject({
+        client: 'pg',
+        connection: expect.any(Function),
+        useNullAsDefault: true,
+      });
+
+      const connectionResult = await configResult.connection();
+
+      expect(connectionResult).toMatchObject({
+        user: 'some-user@domain.com',
+        password: 'afaketoken',
+        port: 5423,
+        expirationChecker: expect.any(Function),
+      });
+      expect(connectionResult).not.toHaveProperty('type');
+      expect(connectionResult).not.toHaveProperty('tokenCredential');
+    });
+
+    it('uses the correct config when using azure client secret credentials', async () => {
+      const { ClientSecretCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+
+      ClientSecretCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'some-user@domain.com',
+            port: 5423,
+            database: 'other_db',
+            tokenCredential: {
+              clientId: 'my-client-id',
+              tenantId: 'my-tenant-id',
+              clientSecret: 'my-client-secret',
+            },
+          },
+        }),
+      );
+
+      expect(ClientSecretCredential).toHaveBeenCalledWith(
+        'my-tenant-id',
+        'my-client-id',
+        'my-client-secret',
+      );
+      expect(configResult).toMatchObject({
+        client: 'pg',
+        connection: expect.any(Function),
+        useNullAsDefault: true,
+      });
+
+      const connectionResult = await configResult.connection();
+
+      expect(connectionResult).toMatchObject({
+        user: 'some-user@domain.com',
+        password: 'afaketoken',
+        port: 5423,
+        expirationChecker: expect.any(Function),
+      });
+      expect(connectionResult).not.toHaveProperty('type');
+      expect(connectionResult).not.toHaveProperty('tokenCredential');
+    });
+
+    it('removes tokenCredential from the final connection', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue({
+        token: 't',
+        expiresOnTimestamp: Date.now() + 1000,
+      });
+
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: {
+          type: 'azure',
+          instance: 'unused',
+          tokenCredential: { clientId: 'x' },
+        },
+      });
+
+      const configResult = await buildPgDatabaseConfig(config);
+      const connection = await configResult.connection();
+
+      expect(connection).not.toHaveProperty('tokenCredential');
+    });
+
+    it('instructs knex to get a new connection object when the old azure token expires', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      let configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            tokenCredential: {
+              tokenRenewableOffsetTime: '1 minute',
+            },
+            user: 'some-user@domain.com',
+            database: 'other_db',
+            port: 5423,
+          },
+        }),
+      );
+
+      let connectionResult = await configResult.connection();
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 90_000 });
+      let expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(false);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 60_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+
+      // Check the default tokenRenewableOffsetTime of 5 minutes
+      configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'user@contoso.com',
+            database: 'other_db',
+            port: 5423,
+          },
+        }),
+      );
+
+      connectionResult = await configResult.connection();
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 450_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(false);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 300_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+    });
+
+    it('throws an error when Azure token acquisition fails', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue(null as any);
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'some-user@domain.com',
+            database: 'other_db',
+          },
+        }),
+      );
+
+      await expect(configResult.connection()).rejects.toThrow(
+        'Failed to acquire Azure access token for database authentication',
+      );
+    });
+
     it('uses the correct config when using cloudsql', async () => {
       expect(
         await buildPgDatabaseConfig(
@@ -249,6 +515,47 @@ describe('postgres', () => {
         instanceConnectionName: 'project:region:instance',
         ipType: 'PUBLIC',
       });
+    });
+
+    it('passes configured ipType to connector.getOptions', async () => {
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+
+      const mockStream = (): any => {};
+      Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
+
+      await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'cloudsql',
+            instance: 'proj:region:inst',
+            ipAddressType: 'PUBLIC',
+          },
+        }),
+      );
+
+      expect(Connector.prototype.getOptions).toHaveBeenCalledWith({
+        authType: 'IAM',
+        instanceConnectionName: 'proj:region:inst',
+        ipType: 'PUBLIC',
+      });
+    });
+
+    it('throws when connection.ipAddressType is invalid', async () => {
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'cloudsql',
+              instance: 'proj:region:inst',
+              ipAddressType: 'INVALID',
+            },
+          }),
+        ),
+      ).rejects.toThrow(/Invalid connection.ipAddressType/);
     });
 
     it('passes ip settings to cloud-sql-connector', async () => {

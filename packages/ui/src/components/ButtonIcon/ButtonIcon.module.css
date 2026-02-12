@@ -80,27 +80,27 @@
   }
 
   .bui-ButtonIcon[data-variant='secondary'] {
-    --bg: var(--bui-bg-neutral-on-surface-0);
-    --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
-    --bg-active: var(--bui-bg-neutral-on-surface-0-pressed);
+    --bg: var(--bui-bg-neutral-1);
+    --bg-hover: var(--bui-bg-neutral-1-hover);
+    --bg-active: var(--bui-bg-neutral-1-pressed);
     --fg: var(--bui-fg-primary);
 
-    &[data-on-surface='1'] {
-      --bg: var(--bui-bg-neutral-on-surface-1);
-      --bg-hover: var(--bui-bg-neutral-on-surface-1-hover);
-      --bg-active: var(--bui-bg-neutral-on-surface-1-pressed);
+    &[data-on-bg='neutral-1'] {
+      --bg: var(--bui-bg-neutral-2);
+      --bg-hover: var(--bui-bg-neutral-2-hover);
+      --bg-active: var(--bui-bg-neutral-2-pressed);
     }
 
-    &[data-on-surface='2'] {
-      --bg: var(--bui-bg-neutral-on-surface-2);
-      --bg-hover: var(--bui-bg-neutral-on-surface-2-hover);
-      --bg-active: var(--bui-bg-neutral-on-surface-2-pressed);
+    &[data-on-bg='neutral-2'] {
+      --bg: var(--bui-bg-neutral-3);
+      --bg-hover: var(--bui-bg-neutral-3-hover);
+      --bg-active: var(--bui-bg-neutral-3-pressed);
     }
 
-    &[data-on-surface='3'] {
-      --bg: var(--bui-bg-neutral-on-surface-3);
-      --bg-hover: var(--bui-bg-neutral-on-surface-3-hover);
-      --bg-active: var(--bui-bg-neutral-on-surface-3-pressed);
+    &[data-on-bg='neutral-3'] {
+      --bg: var(--bui-bg-neutral-4);
+      --bg-hover: var(--bui-bg-neutral-4-hover);
+      --bg-active: var(--bui-bg-neutral-4-pressed);
     }
 
     &[data-disabled='true'],
@@ -118,23 +118,23 @@
   }
 
   .bui-ButtonIcon[data-variant='tertiary'] {
-    --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
-    --bg-active: var(--bui-bg-neutral-on-surface-0-pressed);
+    --bg-hover: var(--bui-bg-neutral-1-hover);
+    --bg-active: var(--bui-bg-neutral-1-pressed);
     --fg: var(--bui-fg-primary);
 
-    &[data-on-surface='1'] {
-      --bg-hover: var(--bui-bg-neutral-on-surface-1-hover);
-      --bg-active: var(--bui-bg-neutral-on-surface-1-pressed);
+    &[data-on-bg='neutral-1'] {
+      --bg-hover: var(--bui-bg-neutral-2-hover);
+      --bg-active: var(--bui-bg-neutral-2-pressed);
     }
 
-    &[data-on-surface='2'] {
-      --bg-hover: var(--bui-bg-neutral-on-surface-2-hover);
-      --bg-active: var(--bui-bg-neutral-on-surface-2-pressed);
+    &[data-on-bg='neutral-2'] {
+      --bg-hover: var(--bui-bg-neutral-3-hover);
+      --bg-active: var(--bui-bg-neutral-3-pressed);
     }
 
-    &[data-on-surface='3'] {
-      --bg-hover: var(--bui-bg-neutral-on-surface-3-hover);
-      --bg-active: var(--bui-bg-neutral-on-surface-3-pressed);
+    &[data-on-bg='neutral-3'] {
+      --bg-hover: var(--bui-bg-neutral-4-hover);
+      --bg-active: var(--bui-bg-neutral-4-pressed);
     }
 
     &[data-disabled='true'],

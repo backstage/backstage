@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.16.2",
+  "version": "0.16.4-next.2",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
@@ -54,6 +54,7 @@
     "@microsoft/api-documenter": "^7.28.1",
     "@microsoft/api-extractor": "^7.55.1",
     "@openapitools/openapi-generator-cli": "^2.7.0",
+    "@prettier/sync": "^0.6.1",
     "@stoplight/spectral-core": "^1.18.0",
     "@stoplight/spectral-formatters": "^1.1.0",
     "@stoplight/spectral-functions": "^1.7.2",
@@ -99,7 +100,7 @@
     "@microsoft/tsdoc": "*",
     "@microsoft/tsdoc-config": "*",
     "@useoptic/optic": "^1.0.0",
-    "prettier": "^2.8.1",
+    "prettier": "^2.8.1 || ^3.8.1",
     "typedoc": "^0.28.0",
     "typescript": "> 3.0.0"
   },

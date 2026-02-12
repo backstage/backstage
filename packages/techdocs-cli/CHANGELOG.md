@@ -1,5 +1,26 @@
 # @techdocs/cli
 
+## 1.10.5-next.1
+
+### Patch Changes
+
+- 508d127: Updated dependency `find-process` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/plugin-techdocs-node@1.14.2-next.1
+
+## 1.10.5-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-techdocs-node@1.14.1-next.0
+  - @backstage/cli-common@0.1.18-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+
 ## 1.10.4
 
 ### Patch Changes

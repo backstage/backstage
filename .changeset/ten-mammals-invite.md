@@ -1,0 +1,56 @@
+---
+'@backstage/frontend-dynamic-feature-loader': patch
+'@backstage/plugin-api-docs-module-protoc-gen-doc': patch
+'@backstage/plugin-techdocs-module-addons-contrib': patch
+'@backstage/plugin-catalog-unprocessed-entities': patch
+'@backstage/plugin-scaffolder-node-test-utils': patch
+'@backstage/plugin-techdocs-addons-test-utils': patch
+'@backstage/frontend-plugin-api': patch
+'@backstage/frontend-test-utils': patch
+'@backstage/frontend-defaults': patch
+'@backstage/integration-react': patch
+'@backstage/plugin-kubernetes-cluster': patch
+'@backstage/frontend-app-api': patch
+'@backstage/core-compat-api': patch
+'@backstage/core-components': patch
+'@backstage/core-plugin-api': patch
+'@backstage/plugin-kubernetes-react': patch
+'@backstage/plugin-permission-react': patch
+'@backstage/plugin-scaffolder-react': patch
+'@backstage/version-bridge': patch
+'@backstage/plugin-app-visualizer': patch
+'@backstage/plugin-catalog-import': patch
+'@backstage/plugin-techdocs-react': patch
+'@backstage/app-defaults': patch
+'@backstage/core-app-api': patch
+'@backstage/plugin-catalog-graph': patch
+'@backstage/plugin-catalog-react': patch
+'@backstage/plugin-config-schema': patch
+'@backstage/plugin-notifications': patch
+'@backstage/plugin-signals-react': patch
+'@backstage/plugin-user-settings': patch
+'@backstage/plugin-search-react': patch
+'@backstage/repo-tools': patch
+'@backstage/test-utils': patch
+'@backstage/dev-utils': patch
+'@backstage/plugin-auth-react': patch
+'@backstage/plugin-home-react': patch
+'@backstage/plugin-kubernetes': patch
+'@backstage/plugin-mui-to-bui': patch
+'@backstage/plugin-scaffolder': patch
+'@backstage/plugin-org-react': patch
+'@backstage/plugin-api-docs': patch
+'@backstage/plugin-devtools': patch
+'@backstage/plugin-techdocs': patch
+'@backstage/plugin-catalog': patch
+'@backstage/plugin-signals': patch
+'@backstage/theme': patch
+'@backstage/plugin-search': patch
+'@backstage/plugin-auth': patch
+'@backstage/plugin-home': patch
+'@backstage/ui': patch
+'@backstage/plugin-app': patch
+'@backstage/plugin-org': patch
+---
+
+Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.

@@ -14,17 +14,71 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type {
+  CardOwnProps,
+  CardHeaderOwnProps,
+  CardBodyOwnProps,
+  CardFooterOwnProps,
+} from './types';
+import styles from './Card.module.css';
 
 /**
  * Component definition for Card
  * @public
  */
-export const CardDefinition = {
+export const CardDefinition = defineComponent<CardOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Card',
-    header: 'bui-CardHeader',
-    body: 'bui-CardBody',
-    footer: 'bui-CardFooter',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for CardHeader
+ * @public
+ */
+export const CardHeaderDefinition = defineComponent<CardHeaderOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-CardHeader',
+  },
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for CardBody
+ * @public
+ */
+export const CardBodyDefinition = defineComponent<CardBodyOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-CardBody',
+  },
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for CardFooter
+ * @public
+ */
+export const CardFooterDefinition = defineComponent<CardFooterOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-CardFooter',
+  },
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});

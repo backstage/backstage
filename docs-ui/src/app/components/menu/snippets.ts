@@ -9,12 +9,23 @@ export const usage = `import { MenuTrigger, Menu, MenuItem } from '@backstage/ui
 </MenuTrigger>`;
 
 export const preview = `<MenuTrigger>
-  <Button variant="secondary">Menu</Button>
+  <Button>Menu</Button>
   <Menu>
-    <MenuItem>New File</MenuItem>
-    <MenuItem>Open File</MenuItem>
-    <MenuItem>Save</MenuItem>
-    <MenuItem>Save As...</MenuItem>
+    <MenuItem>Edit</MenuItem>
+    <MenuItem>Duplicate</MenuItem>
+    <MenuItem>Rename</MenuItem>
+    <MenuSeparator />
+    <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>
+    <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+    <MenuSeparator />
+    <SubmenuTrigger>
+      <MenuItem iconStart={<RiSettingsLine />}>Settings</MenuItem>
+      <Menu placement="right top">
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <MenuItem>Rename</MenuItem>
+      </Menu>
+    </SubmenuTrigger>
   </Menu>
 </MenuTrigger>`;
 
@@ -24,7 +35,7 @@ export const submenu = `<MenuTrigger>
     <MenuItem>New File</MenuItem>
     <SubmenuTrigger>
       <MenuItem>Open Recent</MenuItem>
-      <Menu>
+      <Menu placement="right top">
         <MenuItem>File 1.txt</MenuItem>
         <MenuItem>File 2.txt</MenuItem>
       </Menu>
@@ -36,9 +47,9 @@ export const submenu = `<MenuTrigger>
 export const icons = `<MenuTrigger>
   <Button variant="secondary">Menu</Button>
   <Menu>
-    <MenuItem icon={<RiFileLine />}>New File</MenuItem>
-    <MenuItem icon={<RiFolderLine />}>New Folder</MenuItem>
-    <MenuItem icon={<RiImageLine />}>New Image</MenuItem>
+    <MenuItem iconStart={<RiFileLine />}>New File</MenuItem>
+    <MenuItem iconStart={<RiFolderLine />}>New Folder</MenuItem>
+    <MenuItem iconStart={<RiImageLine />}>New Image</MenuItem>
   </Menu>
 </MenuTrigger>`;
 
@@ -77,24 +88,32 @@ export const links = `<MenuTrigger>
   </Menu>
 </MenuTrigger>`;
 
-export const autocomplete = `<MenuAutocomplete label="Search" placeholder="Type to search...">
-  <MenuItem>Option 1</MenuItem>
-  <MenuItem>Option 2</MenuItem>
-  <MenuItem>Option 3</MenuItem>
-</MenuAutocomplete>`;
+export const autocomplete = `<MenuTrigger>
+  <Button variant="secondary">Search</Button>
+  <MenuAutocomplete placeholder="Type to search...">
+    <MenuItem>Option 1</MenuItem>
+    <MenuItem>Option 2</MenuItem>
+    <MenuItem>Option 3</MenuItem>
+  </MenuAutocomplete>
+</MenuTrigger>`;
 
-export const autocompleteListbox = `<MenuAutocomplete label="Select an option" placeholder="Type to filter...">
-  <MenuListBoxItem>Option 1</MenuListBoxItem>
-  <MenuListBoxItem>Option 2</MenuListBoxItem>
-  <MenuListBoxItem>Option 3</MenuListBoxItem>
-</MenuAutocomplete>`;
+export const autocompleteListbox = `<MenuTrigger>
+  <Button variant="secondary">Select</Button>
+  <MenuAutocompleteListbox placeholder="Type to filter...">
+    <MenuListBoxItem>Option 1</MenuListBoxItem>
+    <MenuListBoxItem>Option 2</MenuListBoxItem>
+    <MenuListBoxItem>Option 3</MenuListBoxItem>
+  </MenuAutocompleteListbox>
+</MenuTrigger>`;
 
-export const autocompleteListboxMultiple = `<MenuAutocomplete
-  label="Select multiple options"
-  placeholder="Type to filter..."
-  selectionMode="multiple"
->
-  <MenuListBoxItem>Option 1</MenuListBoxItem>
-  <MenuListBoxItem>Option 2</MenuListBoxItem>
-  <MenuListBoxItem>Option 3</MenuListBoxItem>
-</MenuAutocomplete>`;
+export const autocompleteListboxMultiple = `<MenuTrigger>
+  <Button variant="secondary">Multi-select</Button>
+  <MenuAutocompleteListbox
+    placeholder="Type to filter..."
+    selectionMode="multiple"
+  >
+    <MenuListBoxItem>Option 1</MenuListBoxItem>
+    <MenuListBoxItem>Option 2</MenuListBoxItem>
+    <MenuListBoxItem>Option 3</MenuListBoxItem>
+  </MenuAutocompleteListbox>
+</MenuTrigger>`;

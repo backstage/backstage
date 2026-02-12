@@ -128,6 +128,19 @@ export type ElasticSearchAuth =
     };
 
 // @public
+export interface ElasticSearchAuthExtensionPoint {
+  setAuthProvider(provider: ElasticSearchAuthProvider): void;
+}
+
+// @public
+export const elasticsearchAuthExtensionPoint: ExtensionPoint<ElasticSearchAuthExtensionPoint>;
+
+// @public
+export interface ElasticSearchAuthProvider {
+  getAuthHeaders(): Promise<Record<string, string>>;
+}
+
+// @public
 export type ElasticSearchClientOptions =
   | ElasticSearchElasticSearchClientOptions
   | OpenSearchElasticSearchClientOptions;
@@ -314,6 +327,7 @@ export type ElasticSearchOptions = {
   aliasPostfix?: string;
   indexPrefix?: string;
   translator?: ElasticSearchQueryTranslator;
+  authProvider?: ElasticSearchAuthProvider;
 };
 
 // @public (undocumented)

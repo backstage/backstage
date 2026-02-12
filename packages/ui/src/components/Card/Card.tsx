@@ -15,16 +15,20 @@
  */
 
 import { forwardRef } from 'react';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
-import { CardDefinition } from './definition';
+import { useDefinition } from '../../hooks/useDefinition';
+import {
+  CardDefinition,
+  CardHeaderDefinition,
+  CardBodyDefinition,
+  CardFooterDefinition,
+} from './definition';
 import type {
   CardProps,
   CardHeaderProps,
   CardBodyProps,
   CardFooterProps,
 } from './types';
-import styles from './Card.module.css';
+import { Box } from '../Box/Box';
 
 /**
  * Card component.
@@ -32,17 +36,26 @@ import styles from './Card.module.css';
  * @public
  */
 export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
-  const { classNames, cleanedProps } = useStyles(CardDefinition, props);
-  const { className, ...rest } = cleanedProps;
+  const { ownProps, restProps, dataAttributes } = useDefinition(
+    CardDefinition,
+    props,
+  );
+  const { classes, children } = ownProps;
 
   return (
-    <div
+    <Box
+      bg="neutral-auto"
       ref={ref}
-      className={clsx(classNames.root, styles[classNames.root], className)}
-      {...rest}
-    />
+      className={classes.root}
+      {...dataAttributes}
+      {...restProps}
+    >
+      {children}
+    </Box>
   );
 });
+
+Card.displayName = 'Card';
 
 /**
  * CardHeader component.
@@ -51,22 +64,18 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
  */
 export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles(CardDefinition, props);
-    const { className, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(CardHeaderDefinition, props);
+    const { classes, children } = ownProps;
 
     return (
-      <div
-        ref={ref}
-        className={clsx(
-          classNames.header,
-          styles[classNames.header],
-          className,
-        )}
-        {...rest}
-      />
+      <div ref={ref} className={classes.root} {...restProps}>
+        {children}
+      </div>
     );
   },
 );
+
+CardHeader.displayName = 'CardHeader';
 
 /**
  * CardBody component.
@@ -75,18 +84,18 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
  */
 export const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles(CardDefinition, props);
-    const { className, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(CardBodyDefinition, props);
+    const { classes, children } = ownProps;
 
     return (
-      <div
-        ref={ref}
-        className={clsx(classNames.body, styles[classNames.body], className)}
-        {...rest}
-      />
+      <div ref={ref} className={classes.root} {...restProps}>
+        {children}
+      </div>
     );
   },
 );
+
+CardBody.displayName = 'CardBody';
 
 /**
  * CardFooter component.
@@ -95,19 +104,15 @@ export const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(
  */
 export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles(CardDefinition, props);
-    const { className, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(CardFooterDefinition, props);
+    const { classes, children } = ownProps;
 
     return (
-      <div
-        ref={ref}
-        className={clsx(
-          classNames.footer,
-          styles[classNames.footer],
-          className,
-        )}
-        {...rest}
-      />
+      <div ref={ref} className={classes.root} {...restProps}>
+        {children}
+      </div>
     );
   },
 );
+
+CardFooter.displayName = 'CardFooter';

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-auth0-provider",
-  "version": "0.2.10",
+  "version": "0.3.0-next.1",
   "description": "The auth0-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "express": "^4.22.0",
     "passport": "^0.7.0",

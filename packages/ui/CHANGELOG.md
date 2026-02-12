@@ -1,5 +1,221 @@
 # @backstage/ui
 
+## 0.12.0-next.2
+
+### Minor Changes
+
+- b63c25b: **BREAKING**: Removed gray scale tokens and renamed background surface tokens to neutral tokens
+
+  The `--bui-gray-1` through `--bui-gray-8` tokens have been removed. The `--bui-bg-surface-*` and `--bui-bg-neutral-on-surface-*` tokens have been replaced by a unified `--bui-bg-neutral-*` scale.
+
+  **Migration:**
+
+  Replace surface tokens directly:
+
+  ```diff
+  - background: var(--bui-bg-surface-0);
+  + background: var(--bui-bg-neutral-0);
+  ```
+
+  Replace on-surface tokens shifted by +1:
+
+  ```diff
+  - background: var(--bui-bg-neutral-on-surface-0);
+  + background: var(--bui-bg-neutral-1);
+  ```
+
+  Replace gray tokens 1-4 with neutral equivalents (`--bui-gray-5` through `--bui-gray-8` have no direct replacement):
+
+  ```diff
+  - background: var(--bui-gray-1);
+  + background: var(--bui-bg-neutral-1);
+  ```
+
+### Patch Changes
+
+- c8ae765: Fixed nested Accordion icon state issue where the inner accordion's arrow icon would incorrectly show as expanded when only the outer accordion was expanded. The CSS selector now uses a direct parent selector to ensure the icon only responds to its own accordion's expanded state.
+
+  Affected components: Accordion
+
+- 5c76d13: Allow `ref` as a prop on the `Tag` component
+
+  Affected components: Tag
+
+- 741a98d: Allow data to be passed directly to the `useTable` hook using the property `data` instead of `getData()` for mode `"complete"`.
+
+  This simplifies usage as data changes, rather than having to perform a `useEffect` when data changes, and then reloading the data. It also happens immediately, so stale data won't remain until a rerender (with an internal async state change), so less flickering.
+
+  Affected components: Table
+
+- a0fe1b2: Fixed changing columns after first render from crashing. It now renders the table with the new column layout as columns change.
+
+  Affected components: Table
+
+- becf851: export PasswordField component
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- 8c39412: The Table component now wraps the react-aria-components `Table` with a `ResizableTableContainer` only if any column has a width property set. This means that column widths can adapt to the content otherwise (if no width is explicitly set).
+
+  Affected components: Table
+
+- 20131c5: Migrated to use the standard `backstage-cli package build` for CSS bundling instead of a custom build script.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12-next.0
+
+## 0.12.0-next.1
+
+### Minor Changes
+
+- 058ffd9: **BREAKING**: Removed `large` size variant from Button component as it was never implemented.
+
+  **Migration:**
+
+  ```diff
+  - <Button size="large">Click me</Button>
+  + <Button size="medium">Click me</Button>
+  ```
+
+  **Affected components:** Button
+
+- 110fec0: **BREAKING**: Removed link and tint color tokens, added new status foreground tokens, and improved Link component styling
+
+  The following color tokens have been removed:
+
+  - `--bui-fg-link` (and all related tokens: `-hover`, `-pressed`, `-disabled`)
+  - `--bui-fg-tint` (and all related tokens: `-hover`, `-pressed`, `-disabled`)
+  - `--bui-bg-tint` (and all related tokens: `-hover`, `-pressed`, `-disabled`)
+  - `--bui-border-tint` (and all related tokens)
+
+  **New Status Tokens:**
+
+  Added dedicated tokens for status colors that distinguish between usage on status backgrounds vs. standalone usage:
+
+  - `--bui-fg-danger-on-bg` / `--bui-fg-danger`
+  - `--bui-fg-warning-on-bg` / `--bui-fg-warning`
+  - `--bui-fg-success-on-bg` / `--bui-fg-success`
+  - `--bui-fg-info-on-bg` / `--bui-fg-info`
+
+  The `-on-bg` variants are designed for text on colored backgrounds, while the base variants are for standalone status indicators with improved visibility and contrast.
+
+  **Migration:**
+
+  For link colors, migrate to one of the following alternatives:
+
+  ```diff
+  .custom-link {
+  - color: var(--bui-fg-link);
+  + color: var(--bui-fg-info);  /* For informational links */
+  + /* or */
+  + color: var(--bui-fg-primary);  /* For standard text links */
+  }
+  ```
+
+  For tint colors (backgrounds, foregrounds, borders), migrate to appropriate status or neutral colors:
+
+  ```diff
+  .info-section {
+  - background: var(--bui-bg-tint);
+  + background: var(--bui-bg-info);  /* For informational sections */
+  + /* or */
+  + background: var(--bui-bg-neutral-on-surface-0);  /* For neutral emphasis */
+  }
+  ```
+
+  If you're using status foreground colors on colored backgrounds, update to the new `-on-bg` tokens:
+
+  ```diff
+  .error-badge {
+  - color: var(--bui-fg-danger);
+  + color: var(--bui-fg-danger-on-bg);
+    background: var(--bui-bg-danger);
+  }
+  ```
+
+  **Affected components:** Link
+
+### Patch Changes
+
+- 4d1b7f4: Fixed CSS Module syntax to comply with Next.js 16 Turbopack validation by flattening nested dark theme selectors.
+
+  **Affected components:** Popover, Tooltip
+
+- 2c219b9: Added `destructive` prop to Button for dangerous actions like delete or remove. Works with all variants (primary, secondary, tertiary).
+
+  **Affected components:** Button
+
+- 5af9e14: Fixed `useDefinition` hook adding literal "undefined" class name when no className prop was passed.
+- 74c5a76: Fixed Switch component disabled state styling to show `not-allowed` cursor and disabled text color.
+
+  **Affected components:** Switch
+
+## 0.12.0-next.0
+
+### Minor Changes
+
+- b1f723b: **BREAKING**: Changed CSS selectors for `ButtonIcon` and `ButtonLink` components. Custom styles targeting `.bui-Button` to style these components must be updated to use `.bui-ButtonIcon` or `.bui-ButtonLink` respectively.
+
+  ```diff
+  -/* This no longer styles ButtonIcon or ButtonLink */
+  -.bui-Button[data-variant="primary"] { ... }
+  +/* Use component-specific selectors */
+  +.bui-ButtonIcon[data-variant="primary"] { ... }
+  +.bui-ButtonLink[data-variant="primary"] { ... }
+  ```
+
+  Affected components: ButtonIcon, ButtonLink
+
+- caeb9ad: **BREAKING**: The `cell` and `header` properties in `ColumnConfig` now return `ReactElement` instead of `ReactNode`.
+
+  This fixes an issue where React Aria's Collection component would inject an `id` prop into Fragment wrappers, causing "Invalid prop `id` supplied to `React.Fragment`" errors on render.
+
+  Migration:
+
+  ```diff
+  const columns: ColumnConfig<MyItem>[] = [
+    {
+      id: 'name',
+      label: 'Name',
+  -   cell: (item) => item.name,
+  +   cell: (item) => <CellText title={item.name} />,
+  -   header: () => 'Name',
+  +   header: () => <Column>Name</Column>,
+    },
+  ];
+  ```
+
+### Patch Changes
+
+- 350c948: Fixed Box component to forward HTML attributes to the underlying div element.
+
+  **Affected components:** Box
+
+- 7455dae: Use node prefix on native imports
+- 508bd1a: Added new `Alert` component with support for status variants (info, success, warning, danger), icons, loading states, and custom actions.
+
+  Updated status color tokens for improved contrast and consistency across light and dark themes:
+
+  - Added new `--bui-bg-info` and `--bui-fg-info` tokens for info status
+  - Updated `--bui-bg-danger`, `--bui-fg-danger` tokens
+  - Updated `--bui-bg-warning`, `--bui-fg-warning` tokens
+  - Updated `--bui-bg-success`, `--bui-fg-success` tokens
+
+  **Affected components**: Alert
+
+- da30862: Fixed client-side navigation for container components by wrapping the container (not individual items) in RouterProvider. Components now conditionally provide routing context only when children have internal links, removing the Router context requirement when not needed. This also removes the need to wrap these components in MemoryRouter during tests when they are not using the `href` prop.
+
+  Additionally, when multiple tabs match the current URL via prefix matching, the tab with the most specific path (highest segment count) is now selected. For example, with URL `/catalog/users/john`, a tab with path `/catalog/users` is now selected over a tab with path `/catalog`.
+
+  Affected components: Tabs, Tab, TagGroup, Tag, Menu, MenuItem, MenuAutocomplete
+
+- 092c453: Fixed an infinite render loop in Tabs when navigating to a URL that doesn't match any tab `href`.
+- 5320aa8: Fixed components to not require a Router context when rendering without internal links.
+
+  Affected components: Link, ButtonLink, Row
+
+- cb090b4: Bump react-aria-components to v1.14.0
+- c429101: Fixed React 17 compatibility by using `useId` from `react-aria` instead of the built-in React hook which is only available in React 18+.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.11
+
 ## 0.11.0
 
 ### Minor Changes

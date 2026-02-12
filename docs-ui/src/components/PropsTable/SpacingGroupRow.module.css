@@ -1,0 +1,96 @@
+.expandButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  text-align: left;
+  gap: 0.5rem;
+}
+
+.expandButton:hover {
+  opacity: 0.8;
+}
+
+.propName {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.count {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: normal;
+}
+
+.icon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.expandedContent {
+  padding: 0.5rem 0;
+}
+
+.twoColumnLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.columnTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.propsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.propRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+.propRowName {
+  min-width: 80px;
+}
+
+.propRowDescription {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.propRowDefault {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}

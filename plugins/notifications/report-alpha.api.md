@@ -73,8 +73,8 @@ export const notificationsTranslationRef: TranslationRef<
   'plugin.notifications',
   {
     readonly 'table.errors.markAllReadFailed': 'Failed to mark all notifications as read';
-    readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
+    readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';

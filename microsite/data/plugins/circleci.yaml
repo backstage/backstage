@@ -7,7 +7,4 @@ description: Automate your development process with CI hosted in the cloud or on
 documentation: https://github.com/CircleCI-Public/backstage-plugin/tree/main/plugins/circleci
 iconUrl: /img/circleci.png
 npmPackageName: '@circleci/backstage-plugin'
-tags:
-  - ci
-  - cd
 addedDate: '2021-04-28'

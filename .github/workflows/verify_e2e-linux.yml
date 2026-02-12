@@ -43,9 +43,21 @@ jobs:
     name: E2E Linux ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
         with:
           egress-policy: audit
+
+      # Store the PR number for the Sync Pull Requests workflow
+      - name: Save PR context
+        if: matrix.node-version == '22.x' && github.event_name == 'pull_request'
+        run: |
+          mkdir -p ./context
+          echo "${{ github.event.pull_request.number }}" > ./context/pr-number
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: matrix.node-version == '22.x' && github.event_name == 'pull_request'
+        with:
+          name: pr-context
+          path: context/
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -60,7 +72,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        uses: backstage/actions/yarn-install@c3038aa5576b9cd845ccc518ef854d3660e8cb40 # v0.7.6
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

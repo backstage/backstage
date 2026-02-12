@@ -1,6 +1,7 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
 import {
   Default,
   WithLink,
@@ -24,9 +25,13 @@ import { Theming } from '@/components/Theming';
 import { TagGroupDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
+export const reactAriaUrls = {
+  tagGroup: 'https://react-aria.adobe.com/TagGroup',
+};
+
 <PageTitle
   title="TagGroup"
-  description="A tag group is a list of labels, categories, keywords, filters, or other items, that can be used to group and filter content."
+  description="A collection of tags for labeling, categorizing, or filtering content."
 />
 
 <Snippet align="center" py={4} preview={<Default />} code={preview} />
@@ -39,39 +44,35 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ### TagGroup
 
-A tag group is a list of tags.
+Container for a collection of tags.
 
 <PropsTable data={tagGroupPropDefs} />
 
+<ReactAriaLink component="TagGroup" href={reactAriaUrls.tagGroup} />
+
 ### Tag
 
-A tag is a single item in a tag group.
+Individual tag item within a group.
 
 <PropsTable data={tagPropDefs} />
 
+<ReactAriaLink component="Tag" href={reactAriaUrls.tagGroup} />
+
 ## Examples
 
-### With Links
-
-A tag can be a link by passing a `href` prop.
+### With links
 
 <Snippet align="center" py={4} open preview={<WithLink />} code={withLink} />
 
-### With Icons
-
-A tag can have an icon by passing a `icon` prop.
+### With icons
 
 <Snippet align="center" py={4} open preview={<WithIcon />} code={withIcons} />
 
 ### Sizes
 
-A tag can have a size by passing a `size` prop. It could be `small` or `medium`.
-
 <Snippet align="center" py={4} open preview={<Sizes />} code={sizes} />
 
-### Removing tags
-
-A tag can be removed by passing a `onRemove` prop.
+### Removable
 
 <Snippet
   align="center"
@@ -83,10 +84,8 @@ A tag can be removed by passing a `onRemove` prop.
 
 ### Disabled
 
-A switch can be disabled using the `isDisabled` prop.
-
 <Snippet align="center" py={4} open preview={<Disabled />} code={disabled} />
 
 <Theming definition={TagGroupDefinition} />
 
-<ChangelogComponent component="switch" />
+<ChangelogComponent component="tag-group" />

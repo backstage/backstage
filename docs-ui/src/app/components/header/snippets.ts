@@ -1,25 +1,14 @@
 export const usage = `import { Header } from '@backstage/ui';
 
-<Header />`;
+<Header title="My plugin" />`;
 
 export const defaultSnippet = `<Header
   title="My plugin"
   titleLink="/"
   tabs={[
-    { id: 'overview', label: 'Overview' },
-    { id: 'checks', label: 'Checks' },
-    { id: 'tracks', label: 'Tracks' },
-    { id: 'campaigns', label: 'Campaigns' },
-    { id: 'integrations', label: 'Integrations' },
-  ]}
-  breadcrumbs={[
-    { label: 'Home', href: '/' },
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Settings', href: '/settings' },
-  ]}
-  menuItems={[
-    { label: 'Settings', value: 'settings' },
-    { label: 'Invite new members', value: 'invite-new-members' },
+    { id: 'overview', label: 'Overview', href: '/overview' },
+    { id: 'checks', label: 'Checks', href: '/checks' },
+    { id: 'tracks', label: 'Tracks', href: '/tracks' },
   ]}
   customActions={
     <>
@@ -33,17 +22,6 @@ export const defaultSnippet = `<Header
 export const simple = `<Header
   title="My plugin"
   titleLink="/"
-  tabs={[
-    { id: 'overview', label: 'Overview' },
-    { id: 'checks', label: 'Checks' },
-    { id: 'tracks', label: 'Tracks' },
-    { id: 'campaigns', label: 'Campaigns' },
-    { id: 'integrations', label: 'Integrations' },
-  ]}
-  menuItems={[
-    { label: 'Settings', value: 'settings' },
-    { label: 'Invite new members', value: 'invite-new-members' },
-  ]}
   customActions={
     <>
       <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
@@ -53,64 +31,31 @@ export const simple = `<Header
   }
 />`;
 
-export const withTabs = `
-<Header
+export const withTabs = `<Header
   title="My plugin"
   titleLink="/"
   tabs={[
-    { id: 'overview', label: 'Overview' },
-    { id: 'checks', label: 'Checks' },
-    { id: 'tracks', label: 'Tracks' },
-    { id: 'campaigns', label: 'Campaigns' },
-    { id: 'integrations', label: 'Integrations' },
-  ]}
-  menuItems={[
-    { label: 'Settings', value: 'settings' },
-    { label: 'Invite new members', value: 'invite-new-members' },
-  ]}
-  customActions={
-    <>
-      <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-      <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-      <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
-    </>
-  }
-  tabs={[
-    { id: 'overview', label: 'Overview' },
-    { id: 'checks', label: 'Checks' },
-    { id: 'tracks', label: 'Tracks' },
-    { id: 'campaigns', label: 'Campaigns' },
-    { id: 'integrations', label: 'Integrations' },
-  ]}
-/>
-`;
-
-export const withBreadcrumbs = `<Header
-  title="My plugin"
-  titleLink="/"
-  breadcrumbs={[
-    { label: 'Home', href: '/' },
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Settings', href: '/settings' },
-  ]}
-  tabs={[
-    { id: 'overview', label: 'Overview' },
-    { id: 'checks', label: 'Checks' },
-    { id: 'tracks', label: 'Tracks' },
-    { id: 'campaigns', label: 'Campaigns' },
-    { id: 'integrations', label: 'Integrations' },
+    { id: 'overview', label: 'Overview', href: '/overview' },
+    { id: 'checks', label: 'Checks', href: '/checks' },
+    { id: 'tracks', label: 'Tracks', href: '/tracks' },
+    { id: 'campaigns', label: 'Campaigns', href: '/campaigns' },
+    { id: 'integrations', label: 'Integrations', href: '/integrations' },
   ]}
 />`;
 
 export const withHeaderPage = `<Header
   title="My plugin"
   titleLink="/"
-  breadcrumbs={...}
-  tabs={...}
+  tabs={[
+    { id: 'overview', label: 'Overview', href: '/overview' },
+    { id: 'checks', label: 'Checks', href: '/checks' },
+  ]}
 />
 <HeaderPage
   title="Page title"
-  menuItems={...}
-  tabs={...}
+  tabs={[
+    { id: 'banana', label: 'Banana', href: '/banana' },
+    { id: 'apple', label: 'Apple', href: '/apple' },
+  ]}
   customActions={<Button>Custom action</Button>}
 />`;

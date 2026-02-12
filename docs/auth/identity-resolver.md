@@ -287,7 +287,7 @@ async signInResolver(info, ctx) {
 If you throw an error in the sign in resolver function, the sign in attempt is
 immediately rejected, and the error details are presented in the user interface.
 
-The `ctx` context [has several useful functions](https://backstage.io/docs/reference/plugin-auth-node.authresolvercontext/)
+The `ctx` context [has several useful functions](https://backstage.io/api/stable/types/_backstage_plugin-auth-node.AuthResolverContext.html)
 for issuing tokens in various ways.
 
 ### Custom Ownership Resolution

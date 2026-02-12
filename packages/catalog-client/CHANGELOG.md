@@ -1,5 +1,11 @@
 # @backstage/catalog-client
 
+## 1.12.2-next.0
+
+### Patch Changes
+
+- 9cf6762: Improved the `InMemoryCatalogClient` test utility to support ordering, pagination, full-text search, and field projection for entity query methods. Also fixed `getEntityFacets` to correctly handle multi-valued fields.
+
 ## 1.12.1
 
 ### Patch Changes

@@ -12,16 +12,18 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react/alpha';
-import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { JSXElementConstructor } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
@@ -33,18 +35,24 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 export const catalogTranslationRef: TranslationRef<
   'catalog',
   {
-    readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.';
+    readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates.';
     readonly 'deleteEntity.cancelButtonTitle': 'Cancel';
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
     readonly 'deleteEntity.dialogTitle': 'Are you sure you want to delete this entity?';
+    readonly 'deleteEntity.actionButtonTitle': 'Delete entity';
     readonly 'indexPage.title': '{{orgName}} Catalog';
     readonly 'indexPage.createButtonTitle': 'Create';
     readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
+    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
+    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'aboutCard.title': 'About';
+    readonly 'aboutCard.unknown': 'unknown';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
+    readonly 'aboutCard.editButtonAriaLabel': 'Edit';
     readonly 'aboutCard.createSimilarButtonTitle': 'Create something similar';
     readonly 'aboutCard.refreshScheduledMessage': 'Refresh scheduled';
+    readonly 'aboutCard.refreshButtonAriaLabel': 'Refresh';
     readonly 'aboutCard.launchTemplate': 'Launch Template';
     readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.viewSource': 'View Source';
@@ -63,8 +71,11 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.tagsField.value': 'No Tags';
     readonly 'aboutCard.tagsField.label': 'Tags';
     readonly 'aboutCard.targetsField.label': 'Targets';
+    readonly 'searchResultItem.type': 'Type';
+    readonly 'searchResultItem.kind': 'Kind';
+    readonly 'searchResultItem.owner': 'Owner';
     readonly 'searchResultItem.lifecycle': 'Lifecycle';
-    readonly 'searchResultItem.Owner': 'Owner';
+    readonly 'catalogTable.allFilters': 'All';
     readonly 'catalogTable.warningPanelTitle': 'Could not fetch catalog entities.';
     readonly 'catalogTable.viewActionTitle': 'View';
     readonly 'catalogTable.editActionTitle': 'Edit';
@@ -81,18 +92,20 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.inspectMenuTitle': 'Inspect entity';
     readonly 'entityContextMenu.copyURLMenuTitle': 'Copy entity URL';
     readonly 'entityContextMenu.unregisterMenuTitle': 'Unregister entity';
+    readonly 'entityContextMenu.moreButtonAriaLabel': 'more';
     readonly 'entityLabelsCard.title': 'Labels';
-    readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
-    readonly 'entityLabels.warningPanelTitle': 'Entity not found';
+    readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLabels.ownerLabel': 'Owner';
+    readonly 'entityLabels.warningPanelTitle': 'Entity not found';
     readonly 'entityLabels.lifecycleLabel': 'Lifecycle';
     readonly 'entityLinksCard.title': 'Links';
-    readonly 'entityLinksCard.emptyDescription': 'No links defined for this entity. You can add links to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLinksCard.readMoreButtonTitle': 'Read more';
+    readonly 'entityLinksCard.emptyDescription': 'No links defined for this entity. You can add links to your entity YAML as shown in the highlighted example below:';
     readonly 'entityNotFound.title': 'Entity was not found';
     readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.docButtonTitle': 'DOCS';
+    readonly 'entityTabs.tabsAriaLabel': 'Tabs';
     readonly entityProcessingErrorsDescription: 'The error below originates from';
     readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
     readonly 'hasComponentsCard.title': 'Has components';
@@ -291,12 +304,12 @@ const _default: OverridableFrontendPlugin<
     }>;
     'entity-card:catalog/about': OverridableExtensionDefinition<{
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -353,7 +366,7 @@ const _default: OverridableFrontendPlugin<
       name: 'about';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -361,12 +374,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'depends-on-components';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -394,7 +407,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -402,12 +415,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'depends-on-resources';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -435,7 +448,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -443,12 +456,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-components';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -476,7 +489,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -484,12 +497,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-resources';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -517,7 +530,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -525,12 +538,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-subcomponents';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -558,7 +571,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -566,12 +579,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-subdomains';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -599,7 +612,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -607,12 +620,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'has-systems';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -640,7 +653,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -648,12 +661,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'labels';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -681,7 +694,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -689,12 +702,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'links';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -722,7 +735,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -730,14 +743,16 @@ const _default: OverridableFrontendPlugin<
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
         group: string | false | undefined;
+        icon: string | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         title?: string | undefined;
         path?: string | undefined;
         group?: string | false | undefined;
+        icon?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -767,6 +782,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             string,
             'catalog.entity-content-group',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string | ReactElement<any, string | JSXElementConstructor<any>>,
+            'catalog.entity-content-icon',
             {
               optional: true;
             }
@@ -837,19 +859,20 @@ const _default: OverridableFrontendPlugin<
         title: string;
         defaultGroup?: [Error: `Use the 'group' param instead`];
         group?: keyof defaultEntityContentGroups | (string & {});
+        icon?: string | ReactElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'entity-context-menu-item:catalog/copy-entity-url': OverridableExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'copy-entity-url';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -867,10 +890,10 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-context-menu-item';
       name: 'inspect-entity';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -888,10 +911,10 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-context-menu-item';
       name: 'unregister-entity';
       config: {
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -911,10 +934,10 @@ const _default: OverridableFrontendPlugin<
       config: {
         label: string | undefined;
         title: string | undefined;
-        filter: EntityPredicate | undefined;
+        filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
+        filter?: FilterPredicate | undefined;
         label?: string | undefined;
         title?: string | undefined;
       };
@@ -941,7 +964,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         useProps: () => Omit<IconLinkVerticalProps, 'color'>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean);
+        filter?: FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:catalog': OverridableExtensionDefinition<{
@@ -1023,9 +1046,11 @@ const _default: OverridableFrontendPlugin<
               string,
               {
                 title: string;
+                icon?: string | undefined;
               }
             >[]
           | undefined;
+        showNavItemIcons: boolean;
         path: string | undefined;
       };
       configInput: {
@@ -1034,9 +1059,11 @@ const _default: OverridableFrontendPlugin<
               string,
               {
                 title: string;
+                icon?: string | undefined;
               }
             >[]
           | undefined;
+        showNavItemIcons?: boolean | undefined;
         path?: string | undefined;
       };
       output:
@@ -1103,6 +1130,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               string,
               'catalog.entity-content-group',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string | ReactElement<any, string | JSXElementConstructor<any>>,
+              'catalog.entity-content-icon',
               {
                 optional: true;
               }

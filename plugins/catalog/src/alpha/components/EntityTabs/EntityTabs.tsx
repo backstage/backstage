@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
+import { matchRoutes, useParams, useRoutes, Outlet } from 'react-router-dom';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
+import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 type SubRoute = {
-  group: string;
+  group?: string;
   path: string;
   title: string;
+  icon?: string | ReactElement;
   children: JSX.Element;
 };
 
@@ -33,17 +35,25 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 } {
   const params = useParams();
 
+  // For v7_relativeSplatPath: convert splat paths to parent/child structure
   const routes = subRoutes.map(({ path, children }) => ({
     caseSensitive: false,
-    path: `${path}/*`,
-    element: children,
+    path: path,
+    element: <Outlet />,
+    children: [
+      {
+        index: true,
+        element: children,
+      },
+      {
+        path: '*',
+        element: children,
+      },
+    ],
   }));
 
-  // TODO: remove once react-router updated
-  const sortedRoutes = routes.sort((a, b) =>
-    // remove "/*" symbols from path end before comparing
-    b.path.replace(/\/\*$/, '').localeCompare(a.path.replace(/\/\*$/, '')),
-  );
+  // Sort routes by path length (longest first) for proper matching
+  const sortedRoutes = routes.sort((a, b) => b.path.localeCompare(a.path));
 
   const element = useRoutes(sortedRoutes) ?? subRoutes[0]?.children;
 
@@ -57,7 +67,7 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   const [matchedRoute] = matchRoutes(sortedRoutes, currentRoute) ?? [];
   const foundIndex = matchedRoute
-    ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
+    ? subRoutes.findIndex(t => t.path === matchedRoute.route.path)
     : 0;
 
   return {
@@ -69,17 +79,19 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
 type EntityTabsProps = {
   routes: SubRoute[];
+  groupDefinitions: EntityContentGroupDefinitions;
+  showIcons?: boolean;
 };
 
 export function EntityTabs(props: EntityTabsProps) {
-  const { routes } = props;
+  const { routes, groupDefinitions, showIcons } = props;
 
   const { index, route, element } = useSelectedSubRoute(routes);
 
   const tabs = useMemo(
     () =>
       routes.map(t => {
-        const { path, title, group } = t;
+        const { path, title, group, icon } = t;
         let to = path;
         // Remove trailing /*
         to = to.replace(/\/\*$/, '');
@@ -90,6 +102,7 @@ export function EntityTabs(props: EntityTabsProps) {
           id: path,
           path: to,
           label: title,
+          icon,
         };
       }),
     [routes],
@@ -97,7 +110,12 @@ export function EntityTabs(props: EntityTabsProps) {
 
   return (
     <>
-      <EntityTabsList tabs={tabs} selectedIndex={index} />
+      <EntityTabsList
+        tabs={tabs}
+        selectedIndex={index}
+        showIcons={showIcons}
+        groupDefinitions={groupDefinitions}
+      />
       <EntityTabsPanel>
         <Helmet title={route?.title} />
         {element}

@@ -2909,10 +2909,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage-community/plugin-explore-common@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "@backstage-community/plugin-explore-common@npm:0.9.0"
-  checksum: 10/ff0a81ab775a415fa3ec088cc47dd79836e50c653414ec7ff9ba4b7022eb3327ef9d47fb572aafeb4da6deaff86ac1cbd09a62caf84849e4027f30764be632d3
+"@backstage-community/plugin-explore-common@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "@backstage-community/plugin-explore-common@npm:0.12.0"
+  checksum: 10/744ffa86c794ed612a257b7eba018d8bd433e160db9c29e9d72cca791f58fbed1fbbcacf2b670b992b7f13eb0cd0a08014ba60108ac17196dbee4699b8b6f0f1
   languageName: node
   linkType: hard
 
@@ -2934,12 +2934,12 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -2969,6 +2969,7 @@ __metadata:
     "@aws-sdk/credential-providers": "npm:^3.350.0"
     "@aws-sdk/types": "npm:^3.347.0"
     "@aws-sdk/util-stream-node": "npm:^3.350.0"
+    "@azure/identity": "npm:^4.0.0"
     "@azure/storage-blob": "npm:^12.5.0"
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-dev-utils": "workspace:^"
@@ -3206,6 +3207,11 @@ __metadata:
     yn: "npm:^4.0.0"
     zod: "npm:^3.25.76"
     zod-to-json-schema: "npm:^3.25.1"
+  peerDependencies:
+    "@types/jest": "*"
+  peerDependenciesMeta:
+    "@types/jest":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3217,7 +3223,9 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
+    "@types/lodash": "npm:^4.14.151"
     cross-fetch: "npm:^4.0.0"
+    lodash: "npm:^4.17.21"
     msw: "npm:^1.0.0"
     uri-template: "npm:^2.0.0"
   languageName: unknown
@@ -3388,6 +3396,7 @@ __metadata:
     p-queue: "npm:^6.6.2"
     pirates: "npm:^4.0.6"
     postcss: "npm:^8.1.0"
+    postcss-import: "npm:^16.1.0"
     process: "npm:^0.11.10"
     raw-loader: "npm:^4.0.2"
     react-dev-utils: "npm:^12.0.0-next.60"
@@ -3409,7 +3418,7 @@ __metadata:
     ts-morph: "npm:^24.0.0"
     undici: "npm:^7.2.3"
     util: "npm:^0.12.3"
-    webpack: "npm:~5.103.0"
+    webpack: "npm:~5.104.0"
     webpack-dev-server: "npm:^5.0.0"
     yaml: "npm:^2.0.0"
     yargs: "npm:^16.2.0"
@@ -3429,7 +3438,7 @@ __metadata:
     jsdom: ^27.1.0
     mini-css-extract-plugin: ^2.4.2
     terser-webpack-plugin: ^5.1.3
-    webpack: ~5.103.0
+    webpack: ~5.104.0
     webpack-dev-server: ^5.0.0
   peerDependenciesMeta:
     "@jest/environment-jsdom-abstract":
@@ -3544,7 +3553,7 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-beta: "npm:react-router@6.0.0-beta.0"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-router-dom-beta: "npm:react-router-dom@6.0.0-beta.0"
     react-router-dom-stable: "npm:react-router-dom@^6.3.0"
     react-router-stable: "npm:react-router@^6.3.0"
@@ -3555,7 +3564,7 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3584,13 +3593,13 @@ __metadata:
     lodash: "npm:^4.17.21"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     zod: "npm:^3.25.76"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3658,7 +3667,7 @@ __metadata:
     react-hook-form: "npm:^7.12.2"
     react-idle-timer: "npm:5.7.2"
     react-markdown: "npm:^8.0.0"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-sparklines: "npm:^1.7.0"
     react-syntax-highlighter: "npm:^15.4.5"
     react-use: "npm:^17.3.2"
@@ -3673,7 +3682,7 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3700,13 +3709,13 @@ __metadata:
     history: "npm:^5.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     zod: "npm:^3.25.76"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3763,14 +3772,14 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     zen-observable: "npm:^0.10.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3816,6 +3825,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/filter-predicates@workspace:^, @backstage/filter-predicates@workspace:packages/filter-predicates":
+  version: 0.0.0-use.local
+  resolution: "@backstage/filter-predicates@workspace:packages/filter-predicates"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/types": "workspace:^"
+    zod: "npm:^3.25.76"
+    zod-validation-error: "npm:^4.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/frontend-app-api@workspace:^, @backstage/frontend-app-api@workspace:packages/frontend-app-api":
   version: 0.0.0-use.local
   resolution: "@backstage/frontend-app-api@workspace:packages/frontend-app-api"
@@ -3838,13 +3860,13 @@ __metadata:
     lodash: "npm:^4.17.21"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     zod: "npm:^3.25.76"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3871,12 +3893,12 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3902,13 +3924,13 @@ __metadata:
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     uri-template: "npm:^2.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3933,14 +3955,14 @@ __metadata:
     history: "npm:^5.3.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     zod: "npm:^3.25.76"
     zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3953,26 +3975,38 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-app": "workspace:^"
     "@backstage/plugin-app-react": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@testing-library/jest-dom": "npm:^6.0.0"
+    "@types/jest": "npm:*"
     "@types/react": "npm:^18.0.0"
+    "@types/zen-observable": "npm:^0.8.0"
+    i18next: "npm:^22.4.15"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
+    zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76"
   peerDependencies:
     "@testing-library/react": ^16.0.0
+    "@types/jest": "*"
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
+    "@types/jest":
+      optional: true
     "@types/react":
       optional: true
   languageName: unknown
@@ -4016,12 +4050,12 @@ __metadata:
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4088,12 +4122,12 @@ __metadata:
     grpc-docs: "npm:^1.1.2"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4112,6 +4146,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -4134,13 +4169,13 @@ __metadata:
     graphql-ws: "npm:^5.4.1"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     swagger-ui-react: "npm:^5.27.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4205,12 +4240,12 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4232,12 +4267,12 @@ __metadata:
     react: "npm:^18.0.2"
     react-aria-components: "npm:^1.14.0"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4273,14 +4308,14 @@ __metadata:
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     zod: "npm:^3.25.76"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4314,6 +4349,7 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -4733,6 +4769,8 @@ __metadata:
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
+    zod: "npm:^4.3.5"
+    zod-validation-error: "npm:^5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4784,12 +4822,12 @@ __metadata:
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4818,13 +4856,13 @@ __metadata:
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -5308,6 +5346,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
@@ -5326,13 +5365,13 @@ __metadata:
     qs: "npm:^6.9.4"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -5376,14 +5415,14 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-hook-form: "npm:^7.12.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     yaml: "npm:^2.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -5407,6 +5446,11 @@ __metadata:
     lodash: "npm:^4.17.21"
     msw: "npm:^1.0.0"
     yaml: "npm:^2.0.0"
+  peerDependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+  peerDependenciesMeta:
+    "@backstage/backend-test-utils":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -5422,6 +5466,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"
@@ -5431,6 +5476,7 @@ __metadata:
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
@@ -5448,18 +5494,21 @@ __metadata:
     qs: "npm:^6.9.4"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-test-renderer: "npm:^16.13.1"
     react-use: "npm:^17.2.4"
     yaml: "npm:^2.0.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76"
   peerDependencies:
+    "@backstage/frontend-test-utils": "workspace:^"
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
+    "@backstage/frontend-test-utils":
+      optional: true
     "@types/react":
       optional: true
   languageName: unknown
@@ -5498,13 +5547,13 @@ __metadata:
     luxon: "npm:^3.5.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -5538,6 +5587,7 @@ __metadata:
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
@@ -5557,7 +5607,7 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-helmet: "npm:6.1.0"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     swr: "npm:^2.2.5"
     zen-observable: "npm:^0.10.0"
@@ -5565,7 +5615,7 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -5592,14 +5642,14 @@ __metadata:
     jsonschema: "npm:^1.2.6"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     zen-observable: "npm:^0.10.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -5660,16 +5710,16 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": "npm:^4.9.13"
     "@testing-library/jest-dom": "npm:^6.0.0"
-    "@testing-library/react": "npm:^14.0.0"
+    "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -5700,13 +5750,13 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-json-view: "npm:^1.21.3"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -5821,6 +5871,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
     "@backstage/plugin-events-backend": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -5923,6 +5974,7 @@ __metadata:
   resolution: "@backstage/plugin-home-react@workspace:plugins/home-react"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
@@ -5933,12 +5985,12 @@ __metadata:
     "@types/react-grid-layout": "npm:^1.3.2"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -5954,10 +6006,13 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/frontend-defaults": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-home-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
@@ -5981,14 +6036,14 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-grid-layout: "npm:1.3.4"
     react-resizable: "npm:^3.0.4"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     zod: "npm:^3.25.76"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -6061,13 +6116,13 @@ __metadata:
     kubernetes-models: "npm:^4.1.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -6133,8 +6188,8 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
-    "@xterm/addon-attach": "npm:^0.11.0"
-    "@xterm/addon-fit": "npm:^0.10.0"
+    "@xterm/addon-attach": "npm:^0.12.0"
+    "@xterm/addon-fit": "npm:^0.11.0"
     "@xterm/xterm": "npm:^5.5.0"
     cronstrue: "npm:^2.32.0"
     jest-websocket-mock: "npm:^2.5.0"
@@ -6145,13 +6200,13 @@ __metadata:
     msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.4.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -6180,12 +6235,12 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -6231,12 +6286,12 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -6381,13 +6436,13 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-relative-time: "npm:^0.0.9"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -6416,13 +6471,13 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -6441,6 +6496,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -6462,13 +6518,13 @@ __metadata:
     qs: "npm:^6.10.1"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -6568,13 +6624,13 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     swr: "npm:^2.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7005,14 +7061,14 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.7.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7061,6 +7117,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -7099,7 +7156,7 @@ __metadata:
     qs: "npm:^6.9.4"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     swr: "npm:^2.0.0"
     use-immer: "npm:^0.11.0"
@@ -7110,7 +7167,7 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7130,6 +7187,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
@@ -7179,7 +7237,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-resizable: "npm:^3.0.5"
     react-resizable-panels: "npm:^3.0.4"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     react-window: "npm:^1.8.10"
     swr: "npm:^2.0.0"
@@ -7190,7 +7248,7 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7243,7 +7301,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-explore@workspace:plugins/search-backend-module-explore"
   dependencies:
-    "@backstage-community/plugin-explore-common": "npm:^0.9.0"
+    "@backstage-community/plugin-explore-common": "npm:^0.12.0"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -7395,14 +7453,14 @@ __metadata:
     qs: "npm:^6.9.4"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.3.2"
     uuid: "npm:^11.0.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7437,13 +7495,13 @@ __metadata:
     qs: "npm:^6.9.4"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7507,12 +7565,12 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7539,14 +7597,14 @@ __metadata:
     jest-websocket-mock: "npm:^2.5.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     uuid: "npm:^11.0.0"
     wait-for-expect: "npm:^3.0.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7572,14 +7630,14 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     shadow-dom-testing-library: "npm:^1.13.1"
   peerDependencies:
     "@testing-library/react": ^16.0.0
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7647,13 +7705,13 @@ __metadata:
     photoswipe: "npm:^5.3.7"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     shadow-dom-testing-library: "npm:^1.13.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7729,13 +7787,13 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-helmet: "npm:6.1.0"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7785,13 +7843,13 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-helmet: "npm:6.1.0"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7813,10 +7871,13 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/express": "npm:^4.17.6"
     "@types/supertest": "npm:^2.0.8"
+    already: "npm:^2.2.1"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     knex: "npm:^3.0.0"
+    p-limit: "npm:^3.1.0"
     supertest: "npm:^7.0.0"
+    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 
@@ -7825,6 +7886,7 @@ __metadata:
   resolution: "@backstage/plugin-user-settings-common@workspace:plugins/user-settings-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/types": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -7855,17 +7917,18 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
+    dataloader: "npm:^2.0.0"
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     zen-observable: "npm:^0.10.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7902,6 +7965,7 @@ __metadata:
     "@microsoft/api-documenter": "npm:^7.28.1"
     "@microsoft/api-extractor": "npm:^7.55.1"
     "@openapitools/openapi-generator-cli": "npm:^2.7.0"
+    "@prettier/sync": "npm:^0.6.1"
     "@stoplight/spectral-core": "npm:^1.18.0"
     "@stoplight/spectral-formatters": "npm:^1.1.0"
     "@stoplight/spectral-functions": "npm:^1.7.2"
@@ -7941,7 +8005,7 @@ __metadata:
     "@microsoft/tsdoc": "*"
     "@microsoft/tsdoc-config": "*"
     "@useoptic/optic": ^1.0.0
-    prettier: ^2.8.1
+    prettier: ^2.8.1 || ^3.8.1
     typedoc: ^0.28.0
     typescript: "> 3.0.0"
   peerDependenciesMeta:
@@ -7976,15 +8040,18 @@ __metadata:
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     zen-observable: "npm:^0.10.0"
   peerDependencies:
     "@testing-library/react": ^16.0.0
+    "@types/jest": "*"
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
+    "@types/jest":
+      optional: true
     "@types/react":
       optional: true
   languageName: unknown
@@ -8004,13 +8071,13 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@material-ui/core": ^4.12.2
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -8038,23 +8105,20 @@ __metadata:
     "@tanstack/react-table": "npm:^8.21.3"
     "@types/react": "npm:^18.0.0"
     "@types/react-dom": "npm:^18.0.0"
-    chalk: "npm:^5.4.1"
     clsx: "npm:^2.1.1"
-    eslint-plugin-storybook: "npm:^10.2.0-alpha.7"
+    eslint-plugin-storybook: "npm:^10.3.0-alpha.1"
     glob: "npm:^11.0.1"
     globals: "npm:^15.11.0"
-    lightningcss: "npm:^1.29.1"
-    mini-css-extract-plugin: "npm:^2.9.2"
     react: "npm:^18.0.2"
     react-aria-components: "npm:^1.14.0"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
-    storybook: "npm:^10.2.0-alpha.7"
+    react-router-dom: "npm:^6.30.2"
+    storybook: "npm:^10.3.0-alpha.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -8071,12 +8135,12 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -10028,13 +10092,13 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -12976,6 +13040,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/api-logs@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/api-logs@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/api": "npm:^1.3.0"
+  checksum: 10/d2e7ac9d9985bec924cbb5b2ef4bd66cb59a3b13e53133a0d975d847f579580ec0cd7612e8bc6b780268dae9b094b8c7571ef4354c150b0a54904442e4a8f456
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.4.0, @opentelemetry/api@npm:^1.9.0, @opentelemetry/api@npm:~1.9.0":
   version: 1.9.0
   resolution: "@opentelemetry/api@npm:1.9.0"
@@ -13043,12 +13116,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/configuration@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/configuration@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    yaml: "npm:^2.0.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.9.0
+  checksum: 10/b16885a96c68e679d337ff0f4a34a2dcee02570047511879e8ac9ccdb9785431eb90d2e82a07d7c8c17987bced43ccd97768fe1efca84c65f347203ccffa9dca
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/context-async-hooks@npm:2.2.0":
   version: 2.2.0
   resolution: "@opentelemetry/context-async-hooks@npm:2.2.0"
   peerDependencies:
     "@opentelemetry/api": ">=1.0.0 <1.10.0"
   checksum: 10/00ee1a35ce9f96632955830d54672025db6d4dc77d440c183cd9751efd5bdfeb8a078094d3d1caaf8b3c250def098990a98bfd8254b1ec04b759f1e3f2fc224e
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/context-async-hooks@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@opentelemetry/context-async-hooks@npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ">=1.0.0 <1.10.0"
+  checksum: 10/2c474fcd21781f85dff5001b25f522a8325a653bad4189ae121a8ed446661da84e641e489f912f4409b1642911072b5c923305d87821457452755e3d2d651319
   languageName: node
   linkType: hard
 
@@ -13101,6 +13195,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/exporter-logs-otlp-grpc@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-logs-otlp-grpc@npm:0.211.0"
+  dependencies:
+    "@grpc/grpc-js": "npm:^1.7.1"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-grpc-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+    "@opentelemetry/sdk-logs": "npm:0.211.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/5440ad82f64e421f3fa394f0fef2db8b0ad30e429bd958965c3bd58b48525c6a4b1fb787c8aaaa216e1e7e991fb9bbaf3317df7707cd1f6c39cfadd273b4c927
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/exporter-logs-otlp-http@npm:0.208.0":
   version: 0.208.0
   resolution: "@opentelemetry/exporter-logs-otlp-http@npm:0.208.0"
@@ -13113,6 +13223,21 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
   checksum: 10/b200e95bc71bc3c6591ef1f38a37ae27de5d2164a0e0df2b319369f026aaa6df080ed5d5fab02906b35f4c6e02a829ba0b09e041b506ade4b5c3240caafc420d
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/exporter-logs-otlp-http@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-logs-otlp-http@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/api-logs": "npm:0.211.0"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+    "@opentelemetry/sdk-logs": "npm:0.211.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/94f8c3ec45c2d1fbd7510360681c2bbc6c3d04f8087cb094e16ba538480a8b90b167ffee2aee7804f3f978a9adb28685a5bd4c5b5b344d9664f4c3d57bfe3396
   languageName: node
   linkType: hard
 
@@ -13130,6 +13255,23 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
   checksum: 10/71e11a3cb0fdca976ce644443846e4aaaad915848c99a212369e6b2b0cba664bf0cfbccc270f1d4210c6fc925b08a2dfb58f263d219fac39c5243993dcba7aa1
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/exporter-logs-otlp-proto@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-logs-otlp-proto@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/api-logs": "npm:0.211.0"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-logs": "npm:0.211.0"
+    "@opentelemetry/sdk-trace-base": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/0e8435b1011dd9e5aa165fce7ad024976838c61c2a8e4fb7d72ea1703de907d801d432fdf1d195e49b22fc09bc987da406d5b8b6c7a3ff5bd04a23d3136478fd
   languageName: node
   linkType: hard
 
@@ -13151,6 +13293,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/exporter-metrics-otlp-grpc@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-metrics-otlp-grpc@npm:0.211.0"
+  dependencies:
+    "@grpc/grpc-js": "npm:^1.7.1"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/exporter-metrics-otlp-http": "npm:0.211.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-grpc-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-metrics": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/ffd5c471cf771fcf3c33e6957790e258bc419a9f2cc76ffb7a211be8f9f1aca74fd62a0e107df99360851ea1d311789647436cadc6dd0c04d9e144dbe7a16228
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/exporter-metrics-otlp-http@npm:0.208.0":
   version: 0.208.0
   resolution: "@opentelemetry/exporter-metrics-otlp-http@npm:0.208.0"
@@ -13163,6 +13323,21 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
   checksum: 10/ea4e14481e3a7cd08574f811bf62527305a735972818cc4bb4b2232d19c65732200266de16ae0a59dafd8aa27b7acff77af6e3e300df457841b7e2f5f97ee43b
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/exporter-metrics-otlp-http@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-metrics-otlp-http@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-metrics": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/9411013cf47a29daebf95fdca20af033f08362e101a18bccbd74c7ab138b1358106ed5428f132731feb793cc2745ba8a9512b2364880e08477d7b6b997aaf8db
   languageName: node
   linkType: hard
 
@@ -13182,7 +13357,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/exporter-prometheus@npm:0.208.0, @opentelemetry/exporter-prometheus@npm:^0.208.0":
+"@opentelemetry/exporter-metrics-otlp-proto@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-metrics-otlp-proto@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/exporter-metrics-otlp-http": "npm:0.211.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-metrics": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/c145ff961033c426f5c98bc0fa4bae0138c7596eb219af75ec10c2f0458f116d367fe7343df5a8f42052dbb4326994ff4d68970c8c2b111b4cd5385dd89bb699
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/exporter-prometheus@npm:0.208.0":
   version: 0.208.0
   resolution: "@opentelemetry/exporter-prometheus@npm:0.208.0"
   dependencies:
@@ -13192,6 +13383,19 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
   checksum: 10/3aae6be7f694e8e7add17c76f7c37660003026fc1feb3f5e2d4b6ff171426a96fd595384b7ecca19a5b2a58d887a3fc87906d4524dd8fb8424a1022d595dabb6
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/exporter-prometheus@npm:0.211.0, @opentelemetry/exporter-prometheus@npm:^0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-prometheus@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-metrics": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/c7acc042bc6ad1713d1dbffe3517b94e31ad50404c1c3f345b46187d52c6dd20b7a8eca4594b6c107120b876af7e17a11704fb813da64bb760d250adf2c29973
   languageName: node
   linkType: hard
 
@@ -13212,6 +13416,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/exporter-trace-otlp-grpc@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-trace-otlp-grpc@npm:0.211.0"
+  dependencies:
+    "@grpc/grpc-js": "npm:^1.7.1"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-grpc-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-trace-base": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/623b84253f476a49383536e51903026f43a4348e069230ceee22f61cc18f98d417b75644db2324f763f7f4ac283a3f956e80da23ea0d3e6c91dc53da0a6715c1
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/exporter-trace-otlp-http@npm:0.208.0":
   version: 0.208.0
   resolution: "@opentelemetry/exporter-trace-otlp-http@npm:0.208.0"
@@ -13224,6 +13445,21 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
   checksum: 10/69cbd8a223ddd774db97fe3b8e55063ac02e78502a7378596c14101dc98256cef3a5ef0092808ab73d42d09393e000a9eb2041c0d3c087efeb3864bb57f49907
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/exporter-trace-otlp-http@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-trace-otlp-http@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-trace-base": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/2dbd3bbbbe6106ffd4821e906ca2581dad64e4aa65c6048a2ff1bb63bd2f285869a49874570a7cf854b6419008abcb9d92296a9f77e5896caecacf214009f684
   languageName: node
   linkType: hard
 
@@ -13242,6 +13478,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/exporter-trace-otlp-proto@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/exporter-trace-otlp-proto@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-trace-base": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/7fc4d0d432425a3f068ef30b47cbe536d13f029e4fda8c54797d3fab43e67c15d183737b5141ccc7273620d070bcc90db91b4c38f7acd93314afff9211204469
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/exporter-zipkin@npm:2.2.0":
   version: 2.2.0
   resolution: "@opentelemetry/exporter-zipkin@npm:2.2.0"
@@ -13253,6 +13504,20 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ^1.0.0
   checksum: 10/5e7b1464810ab2de77cee437dfc4436ade5c5391a9b80cdd5c1495f3aa32cf8e4cf458cae327dc477260876a8a9ef01bdb5bb3a41d37aaaaf392f2a00185d238
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/exporter-zipkin@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@opentelemetry/exporter-zipkin@npm:2.5.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-trace-base": "npm:2.5.0"
+    "@opentelemetry/semantic-conventions": "npm:^1.29.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.0.0
+  checksum: 10/6befd9a76c8f8786c754048b9cdbcfc99ca03fa0f1db00907c015f0b1828ed7feace1cae358220e46e5e9269fb726c385cd7593dbc1cb791e158cbf7f63fc4b4
   languageName: node
   linkType: hard
 
@@ -13779,6 +14044,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/instrumentation@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/instrumentation@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/api-logs": "npm:0.211.0"
+    import-in-the-middle: "npm:^2.0.0"
+    require-in-the-middle: "npm:^8.0.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/d9efa3bf9108fec3869194cb52b0761ca4d003629c7458ac006c04a81991744d7b836bf5ec2cb153142934d446e3d2304c2b5aa7248ba17f667a680839836e39
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/otlp-exporter-base@npm:0.208.0":
   version: 0.208.0
   resolution: "@opentelemetry/otlp-exporter-base@npm:0.208.0"
@@ -13788,6 +14066,18 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
   checksum: 10/d24e1e766a8059861232fd338be7d65bded5167176b4c7c1be9a1833167f73fd352392a1df28ca002734bdbe00a70d06d1e7daeb97d9d7f71f85dc310a831a42
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/otlp-exporter-base@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/otlp-exporter-base@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/c9c223bcd1cf64a27a74d30c7637679136e66717a9e42eaa217948df0230f9cd2cc7311b9201cd4717aa43c77fd92b867e91408c21aa3dd412be180573ae08b2
   languageName: node
   linkType: hard
 
@@ -13802,6 +14092,20 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
   checksum: 10/f88ee3d2377a27ee41077b5cb79b122ee8f8fa95cab9457ca53f8ef9b92b688b3c455b05c80b55ff3bf23d254eb596c361089fdf4a84b4f0317fc7e059fb4790
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/otlp-grpc-exporter-base@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/otlp-grpc-exporter-base@npm:0.211.0"
+  dependencies:
+    "@grpc/grpc-js": "npm:^1.7.1"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/otlp-exporter-base": "npm:0.211.0"
+    "@opentelemetry/otlp-transformer": "npm:0.211.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/6bea591414e3cbe4739d274c504431e9ba37af606579d24d3fb834ffab20334f80e8dc67c0ca29a38acf4c457af229ac4fea4b44ff1e200238ece125d16418d6
   languageName: node
   linkType: hard
 
@@ -13822,6 +14126,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/otlp-transformer@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/otlp-transformer@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/api-logs": "npm:0.211.0"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-logs": "npm:0.211.0"
+    "@opentelemetry/sdk-metrics": "npm:2.5.0"
+    "@opentelemetry/sdk-trace-base": "npm:2.5.0"
+    protobufjs: "npm:8.0.0"
+  peerDependencies:
+    "@opentelemetry/api": ^1.3.0
+  checksum: 10/65f98ac066bb627e420ebc6671f89180a2771b0be1b34effe9d83ea02906c125533b38a262084849f3a05317889e0ca60d17dc956c37f622e1175345e7c00ac5
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/propagator-b3@npm:2.2.0":
   version: 2.2.0
   resolution: "@opentelemetry/propagator-b3@npm:2.2.0"
@@ -13833,6 +14154,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/propagator-b3@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@opentelemetry/propagator-b3@npm:2.5.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ">=1.0.0 <1.10.0"
+  checksum: 10/42acdebafb37be3aa76cf4a18a68aad77131f2ccf28014850502e8767b0ef21ef9b3fb47c784223d55ca5d691f920e0ab24438a8c7ef13bd58fa9c3ab5d3e57b
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/propagator-jaeger@npm:2.2.0":
   version: 2.2.0
   resolution: "@opentelemetry/propagator-jaeger@npm:2.2.0"
@@ -13841,6 +14173,17 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ">=1.0.0 <1.10.0"
   checksum: 10/7da76cab4387cd52723865ccee055dafeed1763c784ea6e13152f1264ad3ccd5b0cace442dac00755eeb17d9af216d0e235aeb6c739a9703e1b1d14b3bf1f5f8
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/propagator-jaeger@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@opentelemetry/propagator-jaeger@npm:2.5.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ">=1.0.0 <1.10.0"
+  checksum: 10/bf0a345c0925b361e0352cd08d3daf4bd597b477ef5c2ef1780660078c8bda162bdfe2a2962ef1488f8fec0a2178572dbffa99c516919b13e2e388f5a24ac395
   languageName: node
   linkType: hard
 
@@ -13926,7 +14269,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/resources@npm:^2.0.0":
+"@opentelemetry/resources@npm:2.5.0, @opentelemetry/resources@npm:^2.0.0":
   version: 2.5.0
   resolution: "@opentelemetry/resources@npm:2.5.0"
   dependencies:
@@ -13951,6 +14294,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/sdk-logs@npm:0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/sdk-logs@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/api-logs": "npm:0.211.0"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ">=1.4.0 <1.10.0"
+  checksum: 10/fd7d4dcfaaee2a93751b2bc5ce504e27eafa66f93b903a7bc2ff9649b8804c1280ec488a51bf95814b0ff6bab827d156cdcd8c9633f0a51a8798710e3b95e825
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/sdk-metrics@npm:2.2.0":
   version: 2.2.0
   resolution: "@opentelemetry/sdk-metrics@npm:2.2.0"
@@ -13960,6 +14316,18 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ">=1.9.0 <1.10.0"
   checksum: 10/d6dacce73319e038d55a67f5b1a7a153531a703ef881b03df52f2d76685a4d53d0d840e02a0e0b24eddae4bd7d11c694e3c146f8db78e19d353316372d04c065
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/sdk-metrics@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@opentelemetry/sdk-metrics@npm:2.5.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ">=1.9.0 <1.10.0"
+  checksum: 10/911399e56d0d4045ceafb83422bdffe0bfa9e8d75e542d746f18f22fe12654ae52efa5a8dc7fdfe17a6df906a3cf3886191ef655830efc578d70821200d55914
   languageName: node
   linkType: hard
 
@@ -13995,6 +14363,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/sdk-node@npm:^0.211.0":
+  version: 0.211.0
+  resolution: "@opentelemetry/sdk-node@npm:0.211.0"
+  dependencies:
+    "@opentelemetry/api-logs": "npm:0.211.0"
+    "@opentelemetry/configuration": "npm:0.211.0"
+    "@opentelemetry/context-async-hooks": "npm:2.5.0"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/exporter-logs-otlp-grpc": "npm:0.211.0"
+    "@opentelemetry/exporter-logs-otlp-http": "npm:0.211.0"
+    "@opentelemetry/exporter-logs-otlp-proto": "npm:0.211.0"
+    "@opentelemetry/exporter-metrics-otlp-grpc": "npm:0.211.0"
+    "@opentelemetry/exporter-metrics-otlp-http": "npm:0.211.0"
+    "@opentelemetry/exporter-metrics-otlp-proto": "npm:0.211.0"
+    "@opentelemetry/exporter-prometheus": "npm:0.211.0"
+    "@opentelemetry/exporter-trace-otlp-grpc": "npm:0.211.0"
+    "@opentelemetry/exporter-trace-otlp-http": "npm:0.211.0"
+    "@opentelemetry/exporter-trace-otlp-proto": "npm:0.211.0"
+    "@opentelemetry/exporter-zipkin": "npm:2.5.0"
+    "@opentelemetry/instrumentation": "npm:0.211.0"
+    "@opentelemetry/propagator-b3": "npm:2.5.0"
+    "@opentelemetry/propagator-jaeger": "npm:2.5.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/sdk-logs": "npm:0.211.0"
+    "@opentelemetry/sdk-metrics": "npm:2.5.0"
+    "@opentelemetry/sdk-trace-base": "npm:2.5.0"
+    "@opentelemetry/sdk-trace-node": "npm:2.5.0"
+    "@opentelemetry/semantic-conventions": "npm:^1.29.0"
+  peerDependencies:
+    "@opentelemetry/api": ">=1.3.0 <1.10.0"
+  checksum: 10/895c5c6385a466db5e7d27f46263fa26ed57f152519fbdc9a4dbcbba20d241a89956ffd07d9be3c0b57900b7cb88f3116a3b69d0c7fabab997918cc4e30d31ba
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/sdk-trace-base@npm:2.2.0":
   version: 2.2.0
   resolution: "@opentelemetry/sdk-trace-base@npm:2.2.0"
@@ -14008,6 +14410,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/sdk-trace-base@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@opentelemetry/sdk-trace-base@npm:2.5.0"
+  dependencies:
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/resources": "npm:2.5.0"
+    "@opentelemetry/semantic-conventions": "npm:^1.29.0"
+  peerDependencies:
+    "@opentelemetry/api": ">=1.3.0 <1.10.0"
+  checksum: 10/5a1f72ed8063d452755d9bf834f5b1c83afcaabf3382e8dc4d9f2987768b32097c9307f0fac8efc9f9ce9f1525ac66e5a21d51ae85ed2a426bf91ae1d26c51ed
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/sdk-trace-node@npm:2.2.0":
   version: 2.2.0
   resolution: "@opentelemetry/sdk-trace-node@npm:2.2.0"
@@ -14018,6 +14433,19 @@ __metadata:
   peerDependencies:
     "@opentelemetry/api": ">=1.0.0 <1.10.0"
   checksum: 10/4918bc6a66649203d7165a8beca5a3ebaf05d91a2b4910aa195f582a6b50658e86303e00a4fc53172e48cac3cc79b50906d70a3b989895b423dc90dad5e9b5da
+  languageName: node
+  linkType: hard
+
+"@opentelemetry/sdk-trace-node@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@opentelemetry/sdk-trace-node@npm:2.5.0"
+  dependencies:
+    "@opentelemetry/context-async-hooks": "npm:2.5.0"
+    "@opentelemetry/core": "npm:2.5.0"
+    "@opentelemetry/sdk-trace-base": "npm:2.5.0"
+  peerDependencies:
+    "@opentelemetry/api": ">=1.0.0 <1.10.0"
+  checksum: 10/378380e9a5263259b9253538f110bd54c7f1343da02a449cfae3ca6610d69883ad3be33a1cd9e6330795e9a5aa6249af81e23cb9cd932310b37e5356ee0fb677
   languageName: node
   linkType: hard
 
@@ -14363,7 +14791,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.32.3":
+"@playwright/test@npm:^1.32.3, @playwright/test@npm:^1.58.2":
   version: 1.58.2
   resolution: "@playwright/test@npm:1.58.2"
   dependencies:
@@ -14430,6 +14858,17 @@ __metadata:
   version: 2.11.8
   resolution: "@popperjs/core@npm:2.11.8"
   checksum: 10/ddd16090cde777aaf102940f05d0274602079a95ad9805bd20bc55dcc7c3a2ba1b99dd5c73e5cc2753c3d31250ca52a67d58059459d7d27debb983a9f552936c
+  languageName: node
+  linkType: hard
+
+"@prettier/sync@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "@prettier/sync@npm:0.6.1"
+  dependencies:
+    make-synchronized: "npm:^0.8.0"
+  peerDependencies:
+    prettier: "*"
+  checksum: 10/2c53cd4ee718e2ebd2fb31aa5ec4773f743b9c29fcc6db6794dc3553bc87aa8fe7db47b51add6809cab655520b7550329d1cce2ca837f6f4643991eff44abad1
   languageName: node
   linkType: hard
 
@@ -19286,79 +19725,80 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-a11y@npm:^10.2.0-alpha.7":
-  version: 10.2.8
-  resolution: "@storybook/addon-a11y@npm:10.2.8"
+"@storybook/addon-a11y@npm:^10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/addon-a11y@npm:10.3.0-alpha.1"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     axe-core: "npm:^4.2.0"
   peerDependencies:
-    storybook: ^10.2.8
-  checksum: 10/92cf09e98e517e5e10139c85a5f006ec1a552d3b28934dba6e0bf60729500f81ea03af6858268e0415e0604b5ea30ad0952399e151b36b3e7868f6a6d00a4cea
+    storybook: ^10.3.0-alpha.1
+  checksum: 10/866033fb0caa993159f280e5bf5af29d642cab47e0c30db23f074a9ebaf937edf41a54da779e452399e7923d13e8a93b7f361b471f6c3e79d1e5ba07f4ee62f7
   languageName: node
   linkType: hard
 
-"@storybook/addon-docs@npm:^10.2.0-alpha.7":
-  version: 10.2.8
-  resolution: "@storybook/addon-docs@npm:10.2.8"
+"@storybook/addon-docs@npm:^10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/addon-docs@npm:10.3.0-alpha.1"
   dependencies:
     "@mdx-js/react": "npm:^3.0.0"
-    "@storybook/csf-plugin": "npm:10.2.8"
+    "@storybook/csf-plugin": "npm:10.3.0-alpha.1"
     "@storybook/icons": "npm:^2.0.1"
-    "@storybook/react-dom-shim": "npm:10.2.8"
+    "@storybook/react-dom-shim": "npm:10.3.0-alpha.1"
     react: "npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     react-dom: "npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^10.2.8
-  checksum: 10/e9fd99ba12e556126038a06430b6848006741111d0d12b8bde276227fbb2a97c6a4ec88c6bfa578911026f5944f0365efe9e546ca7c40974fbeed9361532fada
+    storybook: ^10.3.0-alpha.1
+  checksum: 10/2eccaeea3c725bba93442e6bdebe6c432bbc6219f41013ee679d87f3814d51bf1f7829a34587563797952dd9d741db3e39e91e92c303955188c9c42302f7c006
   languageName: node
   linkType: hard
 
-"@storybook/addon-links@npm:^10.2.0-alpha.7":
-  version: 10.2.8
-  resolution: "@storybook/addon-links@npm:10.2.8"
+"@storybook/addon-links@npm:^10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/addon-links@npm:10.3.0-alpha.1"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-    storybook: ^10.2.8
+    storybook: ^10.3.0-alpha.1
   peerDependenciesMeta:
     react:
       optional: true
-  checksum: 10/0619754455f5a98f072cdf3e8aa7a929475bb061d3c91f2b4daf4571136f7b1db59f29c5d09cdf82f89dc2b509adf35788d82b7f8c2345030f7def5a447819ce
+  checksum: 10/d50c997bc5edf6289fb7967c0dc19c370422b3b02289642efda0f7fe2977aef16c4f1b11e7a0245ab8a315df4d98196c6d194f178266a0ada76d47604aba98bc
   languageName: node
   linkType: hard
 
-"@storybook/addon-mcp@npm:0.1.8":
-  version: 0.1.8
-  resolution: "@storybook/addon-mcp@npm:0.1.8"
+"@storybook/addon-mcp@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@storybook/addon-mcp@npm:0.2.2"
   dependencies:
     "@storybook/mcp": "npm:0.2.1"
     "@tmcp/adapter-valibot": "npm:^0.1.4"
     "@tmcp/transport-http": "npm:^0.8.0"
+    picoquery: "npm:^2.5.0"
     tmcp: "npm:^1.16.0"
     valibot: "npm:1.2.0"
   peerDependencies:
     storybook: ^9.1.16 || ^10.0.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0
-  checksum: 10/7243a242eec5010d4d45727901244da8fc40102a757076929f665d04db12d02f38e2bc0c7b16dc23ea7eeb23340bf445eff0a5610dd24b3fc9c9104c901d802f
+  checksum: 10/dc6d8e97307f0f7720e5fe7876f9cc5a4d66cebe9259f55b713ce8386fb5a25874d6c0b011afb5a1ab45e3b9a3eb1f590996f49f85c3feaf1a791b80d1fc65c9
   languageName: node
   linkType: hard
 
-"@storybook/addon-themes@npm:^10.2.0-alpha.7":
-  version: 10.2.8
-  resolution: "@storybook/addon-themes@npm:10.2.8"
+"@storybook/addon-themes@npm:^10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/addon-themes@npm:10.3.0-alpha.1"
   dependencies:
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^10.2.8
-  checksum: 10/ebccf0e4a68573b8aa7d37ac68a935fd4f0a035bd1bb1a504849744b23557b9cbb58d707341bc64c7bc1b74b92a876d95c675af49546025f2514e29de172f07e
+    storybook: ^10.3.0-alpha.1
+  checksum: 10/801550d5a64075142d278985be22922fa93beee8bcba8b6c7c8b6927b78fe64f8c99f03109868712bb53df5419b8aeb89ec25d3bf1820ea6ef6cc4b1de32fde2
   languageName: node
   linkType: hard
 
-"@storybook/addon-vitest@npm:^10.2.0-alpha.7":
-  version: 10.2.8
-  resolution: "@storybook/addon-vitest@npm:10.2.8"
+"@storybook/addon-vitest@npm:^10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/addon-vitest@npm:10.3.0-alpha.1"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@storybook/icons": "npm:^2.0.1"
@@ -19366,7 +19806,7 @@ __metadata:
     "@vitest/browser": ^3.0.0 || ^4.0.0
     "@vitest/browser-playwright": ^4.0.0
     "@vitest/runner": ^3.0.0 || ^4.0.0
-    storybook: ^10.2.8
+    storybook: ^10.3.0-alpha.1
     vitest: ^3.0.0 || ^4.0.0
   peerDependenciesMeta:
     "@vitest/browser":
@@ -19377,32 +19817,32 @@ __metadata:
       optional: true
     vitest:
       optional: true
-  checksum: 10/3ddeb8927f96a625877bb75ab412eda2b923f836036dc5779205784b13404b645f5796109924090c7bfd2f8f3e6261feeeb07fa245a0bf78aeb3d81fbcdf6814
+  checksum: 10/2d8ed11531f7e3b520c56e61506a338291d2bace0f15233b151508569e7fa3922dd9ab1be05401a8866c8a309a8e0ba5df99b42876cf13137404d445a04cf88d
   languageName: node
   linkType: hard
 
-"@storybook/builder-vite@npm:10.2.8":
-  version: 10.2.8
-  resolution: "@storybook/builder-vite@npm:10.2.8"
+"@storybook/builder-vite@npm:10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/builder-vite@npm:10.3.0-alpha.1"
   dependencies:
-    "@storybook/csf-plugin": "npm:10.2.8"
+    "@storybook/csf-plugin": "npm:10.3.0-alpha.1"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^10.2.8
+    storybook: ^10.3.0-alpha.1
     vite: ^5.0.0 || ^6.0.0 || ^7.0.0
-  checksum: 10/9ddbb7f25eb8667b53e35e9982a300ca6f323f6cdd13067141327d285e2e967deb1214c0b4880998620a46e477f8fad4ccce1719282e11a6b757d5a368e38903
+  checksum: 10/fc3697c068fdd4375589b4de98e8c3f09e5fe4bb9c1b2bff12b19abbf04f08d62c1b2794aaf9f599acd4feecfe02bc9b92a315c5e52dc6372491e40818f4449a
   languageName: node
   linkType: hard
 
-"@storybook/csf-plugin@npm:10.2.8":
-  version: 10.2.8
-  resolution: "@storybook/csf-plugin@npm:10.2.8"
+"@storybook/csf-plugin@npm:10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/csf-plugin@npm:10.3.0-alpha.1"
   dependencies:
     unplugin: "npm:^2.3.5"
   peerDependencies:
     esbuild: "*"
     rollup: "*"
-    storybook: ^10.2.8
+    storybook: ^10.3.0-alpha.1
     vite: "*"
     webpack: "*"
   peerDependenciesMeta:
@@ -19414,7 +19854,7 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 10/e468ed2749b6f6a99784357727b73da57912e00d95bc9a95c96d664189f0e7f6b3660340fbec072eb2edd14d21007b47f9253712069703c2a28ec8c7e99251e0
+  checksum: 10/9ab9ddd3b8aeaf1301828b3e6e3c16a6c8b216e6e73ed0063520f59a2dd2f30cb1d492520d170aa3c064d5f8ad2a27557a858536c1039156799dcafd99123b0e
   languageName: node
   linkType: hard
 
@@ -19447,25 +19887,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react-dom-shim@npm:10.2.8":
-  version: 10.2.8
-  resolution: "@storybook/react-dom-shim@npm:10.2.8"
+"@storybook/react-dom-shim@npm:10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/react-dom-shim@npm:10.3.0-alpha.1"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-    storybook: ^10.2.8
-  checksum: 10/385b27a633f41c5923806502863b458bdc29c2948b306020a8598734edcc92bd95648b2d0e285f17a3e3d140b79dce5a871d6ddc786525eb1beac269a05a17b2
+    storybook: ^10.3.0-alpha.1
+  checksum: 10/74d5d7d1b43b35a02bbbf0c75cdb3becb0f9f17d511be1c79fd6ab1c0c0dc3d0f83b04a43e53ecb02e6c34a7734050649241f1b18cd037b9fe59f9088b182b35
   languageName: node
   linkType: hard
 
-"@storybook/react-vite@npm:^10.2.0-alpha.7":
-  version: 10.2.8
-  resolution: "@storybook/react-vite@npm:10.2.8"
+"@storybook/react-vite@npm:^10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/react-vite@npm:10.3.0-alpha.1"
   dependencies:
     "@joshwooding/vite-plugin-react-docgen-typescript": "npm:^0.6.3"
     "@rollup/pluginutils": "npm:^5.0.2"
-    "@storybook/builder-vite": "npm:10.2.8"
-    "@storybook/react": "npm:10.2.8"
+    "@storybook/builder-vite": "npm:10.3.0-alpha.1"
+    "@storybook/react": "npm:10.3.0-alpha.1"
     empathic: "npm:^2.0.0"
     magic-string: "npm:^0.30.0"
     react-docgen: "npm:^8.0.0"
@@ -19474,28 +19914,28 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-    storybook: ^10.2.8
+    storybook: ^10.3.0-alpha.1
     vite: ^5.0.0 || ^6.0.0 || ^7.0.0
-  checksum: 10/84e75f41f480147437f207ff153457d43d13b5b1cef07c13a355d88f3515e665a127158012f03988f5a4e33f1eeb3d1cd31e825eba13f6519697afa5fc924fc0
+  checksum: 10/dfab9b3259a1fc44e3ff62732fade697bf9dc17896f01baa8084a13492507b155d586606e7e213338cdc60107b669ff3542dfd6a44cb0574a8196cb892ece9e1
   languageName: node
   linkType: hard
 
-"@storybook/react@npm:10.2.8":
-  version: 10.2.8
-  resolution: "@storybook/react@npm:10.2.8"
+"@storybook/react@npm:10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "@storybook/react@npm:10.3.0-alpha.1"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
-    "@storybook/react-dom-shim": "npm:10.2.8"
+    "@storybook/react-dom-shim": "npm:10.3.0-alpha.1"
     react-docgen: "npm:^8.0.2"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-    storybook: ^10.2.8
+    storybook: ^10.3.0-alpha.1
     typescript: ">= 4.9.x"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/8365c47a3ab9b191c367aedfa2c2737d2e90d575c9ea096d70bc4f680d579b4687afdd6b0512558522b593aeb83a3b7cb535cc05dc4a140b0e8429ff6f9e4d8e
+  checksum: 10/be7682725f97b207cf43d06b5435de4501d9c7cd3174d3988775bdfa49a846f0eb73587780f84f8be9be6270798c423cc882c6d0e394513de777589f1bebd4c2
   languageName: node
   linkType: hard
 
@@ -20247,7 +20687,7 @@ __metadata:
     "@types/serve-handler": "npm:^6.1.0"
     "@types/webpack-env": "npm:^1.15.3"
     commander: "npm:^12.0.0"
-    find-process: "npm:^1.4.5"
+    find-process: "npm:^2.0.0"
     fs-extra: "npm:^11.0.0"
     global-agent: "npm:^3.0.0"
     http-proxy: "npm:^1.18.1"
@@ -20274,22 +20714,6 @@ __metadata:
     picocolors: "npm:1.1.1"
     pretty-format: "npm:^27.0.2"
   checksum: 10/7f93e09ea015f151f8b8f42cbab0b2b858999b5445f15239a72a612ef7716e672b14c40c421218194cf191cbecbde0afa6f3dc2cc83dda93ff6a4fb0237df6e6
-  languageName: node
-  linkType: hard
-
-"@testing-library/dom@npm:^9.0.0":
-  version: 9.3.4
-  resolution: "@testing-library/dom@npm:9.3.4"
-  dependencies:
-    "@babel/code-frame": "npm:^7.10.4"
-    "@babel/runtime": "npm:^7.12.5"
-    "@types/aria-query": "npm:^5.0.1"
-    aria-query: "npm:5.1.3"
-    chalk: "npm:^4.1.0"
-    dom-accessibility-api: "npm:^0.5.9"
-    lz-string: "npm:^1.5.0"
-    pretty-format: "npm:^27.0.2"
-  checksum: 10/510da752ea76f4a10a0a4e3a77917b0302cf03effe576cd3534cab7e796533ee2b0e9fb6fb11b911a1ebd7c70a0bb6f235bf4f816c9b82b95b8fe0cddfd10975
   languageName: node
   linkType: hard
 
@@ -20326,20 +20750,6 @@ __metadata:
     react-test-renderer:
       optional: true
   checksum: 10/f7b69373feebe99bc7d60595822cc5c00a1a5a4801bc4f99b597256a5c1d23c45a51f359051dd8a7bdffcc23b26f324c582e9433c25804934fd351a886812790
-  languageName: node
-  linkType: hard
-
-"@testing-library/react@npm:^14.0.0":
-  version: 14.3.1
-  resolution: "@testing-library/react@npm:14.3.1"
-  dependencies:
-    "@babel/runtime": "npm:^7.12.5"
-    "@testing-library/dom": "npm:^9.0.0"
-    "@types/react-dom": "npm:^18.0.0"
-  peerDependencies:
-    react: ^18.0.0
-    react-dom: ^18.0.0
-  checksum: 10/83359dcdf9eaf067839f34604e1a181cbc14fc09f3a07672403700fcc6a900c4b8054ad1114fc24b4b9f89d84e2a09e1b7c9afce2306b1d4b4c9e30eb1cb12de
   languageName: node
   linkType: hard
 
@@ -23384,21 +23794,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xterm/addon-attach@npm:^0.11.0":
-  version: 0.11.0
-  resolution: "@xterm/addon-attach@npm:0.11.0"
-  peerDependencies:
-    "@xterm/xterm": ^5.0.0
-  checksum: 10/f11e7ba68b8b1064ce545ecbf2beeaf3ebc94622fa3ca77e0ca0b8e8834964f634ee3897c031376abc7242ddfd305a40b10aa7b3e8056bfa59055967251523b5
+"@xterm/addon-attach@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "@xterm/addon-attach@npm:0.12.0"
+  checksum: 10/2a0107ac8a68ddf3ab39f1b7740796751b5a216cea0dd12d9fbb30bb1611f51f5ba99ec657efe94f267a803e68f5b31736a12d81c448a14d03f9393af614386b
   languageName: node
   linkType: hard
 
-"@xterm/addon-fit@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@xterm/addon-fit@npm:0.10.0"
-  peerDependencies:
-    "@xterm/xterm": ^5.0.0
-  checksum: 10/8edfad561c0d0316c5883cbe2ce56109f105a2b2bf53b71d5f8c788e656a3205c1093a659dddcf4025a459e4b7ff8e07b6c6a19815c8711deeded560de5f1893
+"@xterm/addon-fit@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@xterm/addon-fit@npm:0.11.0"
+  checksum: 10/daeb1cc2be794e0ee3b0f6b1cbec0ba70ac7c65f14093b405a2dfbf93bf267cd3f81490a72bb71364044ff7fd68ff0e8e124977dd812ff9914ad864c6a610c0b
   languageName: node
   linkType: hard
 
@@ -24470,6 +24876,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"already@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "already@npm:2.2.1"
+  checksum: 10/1c55b50667c3dbe9d40716454d4a870f5758143061a0e39c0a7077eab2c6dbec116edf081796afb6f441462096bf68ef72a4daad074843a0d970527f29037ffe
+  languageName: node
+  linkType: hard
+
 "anser@npm:^2.1.1":
   version: 2.3.3
   resolution: "anser@npm:2.3.3"
@@ -24597,16 +25010,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app-module-path@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "app-module-path@npm:2.2.0"
-  checksum: 10/9ed8c6ce6247a6b5d556039f29b4610869237bbb5b8f3d905b22bd2d314c30efcc0fb70c2626d7461ecc52ec7edec9908f660d0938d2bea5b8cfc6868a28806f
-  languageName: node
-  linkType: hard
-
-"app-next-example-plugin@workspace:packages/app-next-example-plugin":
+"app-example-plugin@workspace:packages/app-example-plugin":
   version: 0.0.0-use.local
-  resolution: "app-next-example-plugin@workspace:packages/app-next-example-plugin"
+  resolution: "app-example-plugin@workspace:packages/app-example-plugin"
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/core-components": "workspace:^"
@@ -24617,17 +25023,24 @@ __metadata:
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.3.0
+    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
   languageName: unknown
   linkType: soft
+
+"app-module-path@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "app-module-path@npm:2.2.0"
+  checksum: 10/9ed8c6ce6247a6b5d556039f29b4610869237bbb5b8f3d905b22bd2d314c30efcc0fb70c2626d7461ecc52ec7edec9908f660d0938d2bea5b8cfc6868a28806f
+  languageName: node
+  linkType: hard
 
 "append-field@npm:^1.0.0":
   version: 1.0.0
@@ -24737,15 +25150,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aria-query@npm:5.1.3":
-  version: 5.1.3
-  resolution: "aria-query@npm:5.1.3"
-  dependencies:
-    deep-equal: "npm:^2.0.5"
-  checksum: 10/e5da608a7c4954bfece2d879342b6c218b6b207e2d9e5af270b5e38ef8418f02d122afdc948b68e32649b849a38377785252059090d66fa8081da95d1609c0d2
-  languageName: node
-  linkType: hard
-
 "aria-query@npm:5.3.0":
   version: 5.3.0
   resolution: "aria-query@npm:5.3.0"
@@ -24762,7 +25166,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array-buffer-byte-length@npm:^1.0.0, array-buffer-byte-length@npm:^1.0.1, array-buffer-byte-length@npm:^1.0.2":
+"array-buffer-byte-length@npm:^1.0.1, array-buffer-byte-length@npm:^1.0.2":
   version: 1.0.2
   resolution: "array-buffer-byte-length@npm:1.0.2"
   dependencies:
@@ -25984,7 +26388,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.0.0, browserslist@npm:^4.16.0, browserslist@npm:^4.16.6, browserslist@npm:^4.18.1, browserslist@npm:^4.24.0, browserslist@npm:^4.26.3, browserslist@npm:^4.28.1":
+"browserslist@npm:^4.0.0, browserslist@npm:^4.16.0, browserslist@npm:^4.16.6, browserslist@npm:^4.18.1, browserslist@npm:^4.24.0, browserslist@npm:^4.28.1":
   version: 4.28.1
   resolution: "browserslist@npm:4.28.1"
   dependencies:
@@ -28557,32 +28961,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deep-equal@npm:^2.0.5":
-  version: 2.2.3
-  resolution: "deep-equal@npm:2.2.3"
-  dependencies:
-    array-buffer-byte-length: "npm:^1.0.0"
-    call-bind: "npm:^1.0.5"
-    es-get-iterator: "npm:^1.1.3"
-    get-intrinsic: "npm:^1.2.2"
-    is-arguments: "npm:^1.1.1"
-    is-array-buffer: "npm:^3.0.2"
-    is-date-object: "npm:^1.0.5"
-    is-regex: "npm:^1.1.4"
-    is-shared-array-buffer: "npm:^1.0.2"
-    isarray: "npm:^2.0.5"
-    object-is: "npm:^1.1.5"
-    object-keys: "npm:^1.1.1"
-    object.assign: "npm:^4.1.4"
-    regexp.prototype.flags: "npm:^1.5.1"
-    side-channel: "npm:^1.0.4"
-    which-boxed-primitive: "npm:^1.0.2"
-    which-collection: "npm:^1.0.1"
-    which-typed-array: "npm:^1.1.13"
-  checksum: 10/1ce49d0b71d0f14d8ef991a742665eccd488dfc9b3cada069d4d7a86291e591c92d2589c832811dea182b4015736b210acaaebce6184be356c1060d176f5a05f
-  languageName: node
-  linkType: hard
-
 "deep-equal@npm:~1.0.1":
   version: 1.0.1
   resolution: "deep-equal@npm:1.0.1"
@@ -28844,7 +29222,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detect-libc@npm:^2.0.0, detect-libc@npm:^2.0.3":
+"detect-libc@npm:^2.0.0":
   version: 2.1.2
   resolution: "detect-libc@npm:2.1.2"
   checksum: 10/b736c8d97d5d46164c0d1bed53eb4e6a3b1d8530d460211e2d52f1c552875e706c58a5376854e4e54f8b828c9cada58c855288c968522eb93ac7696d65970766
@@ -29586,7 +29964,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.17.3, enhanced-resolve@npm:^5.17.4, enhanced-resolve@npm:^5.18.0":
+"enhanced-resolve@npm:^5.17.4, enhanced-resolve@npm:^5.18.0":
   version: 5.19.0
   resolution: "enhanced-resolve@npm:5.19.0"
   dependencies:
@@ -29778,7 +30156,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-get-iterator@npm:^1.0.2, es-get-iterator@npm:^1.1.3":
+"es-get-iterator@npm:^1.0.2":
   version: 1.1.3
   resolution: "es-get-iterator@npm:1.1.3"
   dependencies:
@@ -29819,7 +30197,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-module-lexer@npm:^1.2.1, es-module-lexer@npm:^1.6.0":
+"es-module-lexer@npm:^1.6.0":
   version: 1.7.0
   resolution: "es-module-lexer@npm:1.7.0"
   checksum: 10/b6f3e576a3fed4d82b0d0ad4bbf6b3a5ad694d2e7ce8c4a069560da3db6399381eaba703616a182b16dde50ce998af64e07dcf49f2ae48153b9e07be3f107087
@@ -30316,15 +30694,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-storybook@npm:^10.2.0-alpha.7":
-  version: 10.2.8
-  resolution: "eslint-plugin-storybook@npm:10.2.8"
+"eslint-plugin-storybook@npm:^10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "eslint-plugin-storybook@npm:10.3.0-alpha.1"
   dependencies:
     "@typescript-eslint/utils": "npm:^8.48.0"
   peerDependencies:
     eslint: ">=8"
-    storybook: ^10.2.8
-  checksum: 10/c1d0c6b94a39a6deb1e23dc7ddb48614f7f7a6699600c751ac87b52c852fccb5d396f5937fbe22f72a5eb586bc454c50cbd9eea9e8813a57c5e1550dfa9d82be
+    storybook: ^10.3.0-alpha.1
+  checksum: 10/2b3b6c11709c536b9639f7ed91bfb0cb5035129f0cbb245abd59f208ce179a0f99b558e3f8e89987a83d80ab30395dfc0560f401295123edf221cafba7a05c1a
   languageName: node
   linkType: hard
 
@@ -30683,86 +31061,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"example-app-next@workspace:packages/app-next":
+"example-app-legacy@workspace:packages/app-legacy":
   version: 0.0.0-use.local
-  resolution: "example-app-next@workspace:packages/app-next"
-  dependencies:
-    "@backstage/app-defaults": "workspace:^"
-    "@backstage/catalog-model": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
-    "@backstage/core-compat-api": "workspace:^"
-    "@backstage/core-components": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/frontend-app-api": "workspace:^"
-    "@backstage/frontend-defaults": "workspace:^"
-    "@backstage/frontend-plugin-api": "workspace:^"
-    "@backstage/integration-react": "workspace:^"
-    "@backstage/plugin-api-docs": "workspace:^"
-    "@backstage/plugin-app": "workspace:^"
-    "@backstage/plugin-app-react": "workspace:^"
-    "@backstage/plugin-app-visualizer": "workspace:^"
-    "@backstage/plugin-auth": "workspace:^"
-    "@backstage/plugin-auth-react": "workspace:^"
-    "@backstage/plugin-catalog": "workspace:^"
-    "@backstage/plugin-catalog-common": "workspace:^"
-    "@backstage/plugin-catalog-graph": "workspace:^"
-    "@backstage/plugin-catalog-import": "workspace:^"
-    "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/plugin-catalog-unprocessed-entities": "workspace:^"
-    "@backstage/plugin-devtools": "workspace:^"
-    "@backstage/plugin-home": "workspace:^"
-    "@backstage/plugin-kubernetes": "workspace:^"
-    "@backstage/plugin-kubernetes-cluster": "workspace:^"
-    "@backstage/plugin-notifications": "workspace:^"
-    "@backstage/plugin-org": "workspace:^"
-    "@backstage/plugin-permission-react": "workspace:^"
-    "@backstage/plugin-scaffolder": "workspace:^"
-    "@backstage/plugin-scaffolder-react": "workspace:^"
-    "@backstage/plugin-search": "workspace:^"
-    "@backstage/plugin-search-common": "workspace:^"
-    "@backstage/plugin-search-react": "workspace:^"
-    "@backstage/plugin-signals": "workspace:^"
-    "@backstage/plugin-techdocs": "workspace:^"
-    "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^"
-    "@backstage/plugin-techdocs-react": "workspace:^"
-    "@backstage/plugin-user-settings": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
-    "@backstage/ui": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
-    "@material-ui/icons": "npm:^4.9.1"
-    "@material-ui/lab": "npm:4.0.0-alpha.61"
-    "@octokit/rest": "npm:^19.0.3"
-    "@testing-library/dom": "npm:^10.0.0"
-    "@testing-library/jest-dom": "npm:^6.0.0"
-    "@testing-library/react": "npm:^16.0.0"
-    "@testing-library/user-event": "npm:^14.0.0"
-    "@types/jquery": "npm:^3.3.34"
-    "@types/react": "npm:*"
-    "@types/react-dom": "npm:*"
-    "@types/zen-observable": "npm:^0.8.0"
-    cross-env: "npm:^10.0.0"
-    history: "npm:^5.0.0"
-    react: "npm:^18.0.2"
-    react-dom: "npm:^18.0.2"
-    react-router: "npm:^6.3.0"
-    react-router-dom: "npm:^6.3.0"
-    react-use: "npm:^17.2.4"
-    zen-observable: "npm:^0.10.0"
-  languageName: unknown
-  linkType: soft
-
-"example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend":
-  version: 0.0.0-use.local
-  resolution: "example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend"
-  languageName: node
-  linkType: soft
-
-"example-app@workspace:packages/app":
-  version: 0.0.0-use.local
-  resolution: "example-app@workspace:packages/app"
+  resolution: "example-app-legacy@workspace:packages/app-legacy"
   dependencies:
     "@backstage/app-defaults": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -30783,6 +31084,7 @@ __metadata:
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^"
     "@backstage/plugin-devtools": "workspace:^"
     "@backstage/plugin-home": "workspace:^"
+    "@backstage/plugin-home-react": "workspace:^"
     "@backstage/plugin-kubernetes": "workspace:^"
     "@backstage/plugin-kubernetes-cluster": "workspace:^"
     "@backstage/plugin-mui-to-bui": "workspace:^"
@@ -30821,8 +31123,87 @@ __metadata:
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router: "npm:^6.3.0"
-    react-router-dom: "npm:^6.3.0"
+    react-router: "npm:^6.30.2"
+    react-router-dom: "npm:^6.30.2"
+    react-use: "npm:^17.2.4"
+    zen-observable: "npm:^0.10.0"
+  languageName: unknown
+  linkType: soft
+
+"example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend":
+  version: 0.0.0-use.local
+  resolution: "example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend"
+  languageName: node
+  linkType: soft
+
+"example-app@workspace:packages/app":
+  version: 0.0.0-use.local
+  resolution: "example-app@workspace:packages/app"
+  dependencies:
+    "@backstage/app-defaults": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/frontend-app-api": "workspace:^"
+    "@backstage/frontend-defaults": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-api-docs": "workspace:^"
+    "@backstage/plugin-app": "workspace:^"
+    "@backstage/plugin-app-react": "workspace:^"
+    "@backstage/plugin-app-visualizer": "workspace:^"
+    "@backstage/plugin-auth": "workspace:^"
+    "@backstage/plugin-auth-react": "workspace:^"
+    "@backstage/plugin-catalog": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-catalog-graph": "workspace:^"
+    "@backstage/plugin-catalog-import": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/plugin-catalog-unprocessed-entities": "workspace:^"
+    "@backstage/plugin-devtools": "workspace:^"
+    "@backstage/plugin-home": "workspace:^"
+    "@backstage/plugin-home-react": "workspace:^"
+    "@backstage/plugin-kubernetes": "workspace:^"
+    "@backstage/plugin-kubernetes-cluster": "workspace:^"
+    "@backstage/plugin-notifications": "workspace:^"
+    "@backstage/plugin-org": "workspace:^"
+    "@backstage/plugin-permission-react": "workspace:^"
+    "@backstage/plugin-scaffolder": "workspace:^"
+    "@backstage/plugin-scaffolder-react": "workspace:^"
+    "@backstage/plugin-search": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/plugin-search-react": "workspace:^"
+    "@backstage/plugin-signals": "workspace:^"
+    "@backstage/plugin-techdocs": "workspace:^"
+    "@backstage/plugin-techdocs-module-addons-contrib": "workspace:^"
+    "@backstage/plugin-techdocs-react": "workspace:^"
+    "@backstage/plugin-user-settings": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@backstage/ui": "workspace:^"
+    "@material-ui/core": "npm:^4.12.2"
+    "@material-ui/icons": "npm:^4.9.1"
+    "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@octokit/rest": "npm:^19.0.3"
+    "@playwright/test": "npm:^1.58.2"
+    "@testing-library/dom": "npm:^10.0.0"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@testing-library/user-event": "npm:^14.0.0"
+    "@types/jquery": "npm:^3.3.34"
+    "@types/react": "npm:*"
+    "@types/react-dom": "npm:*"
+    "@types/zen-observable": "npm:^0.8.0"
+    cross-env: "npm:^10.0.0"
+    history: "npm:^5.0.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router: "npm:^6.30.2"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     zen-observable: "npm:^0.10.0"
   languageName: unknown
@@ -30870,8 +31251,8 @@ __metadata:
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
     "@opentelemetry/auto-instrumentations-node": "npm:^0.67.0"
-    "@opentelemetry/exporter-prometheus": "npm:^0.208.0"
-    "@opentelemetry/sdk-node": "npm:^0.208.0"
+    "@opentelemetry/exporter-prometheus": "npm:^0.211.0"
+    "@opentelemetry/sdk-node": "npm:^0.211.0"
     example-app: "link:../app"
   languageName: unknown
   linkType: soft
@@ -31636,16 +32017,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-process@npm:^1.4.5":
-  version: 1.4.11
-  resolution: "find-process@npm:1.4.11"
+"find-process@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "find-process@npm:2.0.0"
   dependencies:
     chalk: "npm:~4.1.2"
     commander: "npm:^12.1.0"
     loglevel: "npm:^1.9.2"
   bin:
-    find-process: bin/find-process.js
-  checksum: 10/95f7106877c86fc09804b29339cfac518a43228c1b5f4a4e9442e57ac5538369fbeafb746fa96390ecd7be6f5a9119b58c952b5c96a0cb9f2490ef19298dec1e
+    find-process: dist/bin/find-process.js
+  checksum: 10/a8f23b72e7b67c8f039c2234116f68439c067e8d0f90484b53814aac04f1891cf322c7cf4b4193a14b91a19ba9c68bd8bcfb8a556626e6667dcaaefbca3294f9
   languageName: node
   linkType: hard
 
@@ -32338,7 +32719,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-intrinsic@npm:^1.1.3, get-intrinsic@npm:^1.2.1, get-intrinsic@npm:^1.2.2, get-intrinsic@npm:^1.2.4, get-intrinsic@npm:^1.2.5, get-intrinsic@npm:^1.2.6, get-intrinsic@npm:^1.3.0":
+"get-intrinsic@npm:^1.1.3, get-intrinsic@npm:^1.2.1, get-intrinsic@npm:^1.2.4, get-intrinsic@npm:^1.2.5, get-intrinsic@npm:^1.2.6, get-intrinsic@npm:^1.3.0":
   version: 1.3.1
   resolution: "get-intrinsic@npm:1.3.1"
   dependencies:
@@ -34459,7 +34840,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-array-buffer@npm:^3.0.2, is-array-buffer@npm:^3.0.4, is-array-buffer@npm:^3.0.5":
+"is-array-buffer@npm:^3.0.4, is-array-buffer@npm:^3.0.5":
   version: 3.0.5
   resolution: "is-array-buffer@npm:3.0.5"
   dependencies:
@@ -34932,7 +35313,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-regex@npm:^1.1.4, is-regex@npm:^1.2.1":
+"is-regex@npm:^1.2.1":
   version: 1.2.1
   resolution: "is-regex@npm:1.2.1"
   dependencies:
@@ -34981,7 +35362,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-shared-array-buffer@npm:^1.0.2, is-shared-array-buffer@npm:^1.0.4":
+"is-shared-array-buffer@npm:^1.0.4":
   version: 1.0.4
   resolution: "is-shared-array-buffer@npm:1.0.4"
   dependencies:
@@ -37021,126 +37402,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lightningcss-android-arm64@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-android-arm64@npm:1.31.1"
-  conditions: os=android & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"lightningcss-darwin-arm64@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-darwin-arm64@npm:1.31.1"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"lightningcss-darwin-x64@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-darwin-x64@npm:1.31.1"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
-"lightningcss-freebsd-x64@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-freebsd-x64@npm:1.31.1"
-  conditions: os=freebsd & cpu=x64
-  languageName: node
-  linkType: hard
-
-"lightningcss-linux-arm-gnueabihf@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-linux-arm-gnueabihf@npm:1.31.1"
-  conditions: os=linux & cpu=arm
-  languageName: node
-  linkType: hard
-
-"lightningcss-linux-arm64-gnu@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-linux-arm64-gnu@npm:1.31.1"
-  conditions: os=linux & cpu=arm64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"lightningcss-linux-arm64-musl@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-linux-arm64-musl@npm:1.31.1"
-  conditions: os=linux & cpu=arm64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"lightningcss-linux-x64-gnu@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-linux-x64-gnu@npm:1.31.1"
-  conditions: os=linux & cpu=x64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"lightningcss-linux-x64-musl@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-linux-x64-musl@npm:1.31.1"
-  conditions: os=linux & cpu=x64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"lightningcss-win32-arm64-msvc@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-win32-arm64-msvc@npm:1.31.1"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"lightningcss-win32-x64-msvc@npm:1.31.1":
-  version: 1.31.1
-  resolution: "lightningcss-win32-x64-msvc@npm:1.31.1"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"lightningcss@npm:^1.29.1":
-  version: 1.31.1
-  resolution: "lightningcss@npm:1.31.1"
-  dependencies:
-    detect-libc: "npm:^2.0.3"
-    lightningcss-android-arm64: "npm:1.31.1"
-    lightningcss-darwin-arm64: "npm:1.31.1"
-    lightningcss-darwin-x64: "npm:1.31.1"
-    lightningcss-freebsd-x64: "npm:1.31.1"
-    lightningcss-linux-arm-gnueabihf: "npm:1.31.1"
-    lightningcss-linux-arm64-gnu: "npm:1.31.1"
-    lightningcss-linux-arm64-musl: "npm:1.31.1"
-    lightningcss-linux-x64-gnu: "npm:1.31.1"
-    lightningcss-linux-x64-musl: "npm:1.31.1"
-    lightningcss-win32-arm64-msvc: "npm:1.31.1"
-    lightningcss-win32-x64-msvc: "npm:1.31.1"
-  dependenciesMeta:
-    lightningcss-android-arm64:
-      optional: true
-    lightningcss-darwin-arm64:
-      optional: true
-    lightningcss-darwin-x64:
-      optional: true
-    lightningcss-freebsd-x64:
-      optional: true
-    lightningcss-linux-arm-gnueabihf:
-      optional: true
-    lightningcss-linux-arm64-gnu:
-      optional: true
-    lightningcss-linux-arm64-musl:
-      optional: true
-    lightningcss-linux-x64-gnu:
-      optional: true
-    lightningcss-linux-x64-musl:
-      optional: true
-    lightningcss-win32-arm64-msvc:
-      optional: true
-    lightningcss-win32-x64-msvc:
-      optional: true
-  checksum: 10/3c2b2c2f648b12d9cba623d2e558f74fcce35911077e3d33f97ed521e0ad7a84e2c814628f6e16f64095c4483f6b180dee7b2e441b3ff5f44d142a510785a0c6
-  languageName: node
-  linkType: hard
-
 "lilconfig@npm:^2.0.3":
   version: 2.1.0
   resolution: "lilconfig@npm:2.1.0"
@@ -38046,6 +38307,13 @@ __metadata:
     socks-proxy-agent: "npm:^6.0.0"
     ssri: "npm:^8.0.0"
   checksum: 10/a868e74fc223a78afb7a1f8115133befdffae84f07a5f5dd9317cbf9f784a8373f28829a73ae3f31060e1b0cb4944e73257733c3b10c314354060fab412b6028
+  languageName: node
+  linkType: hard
+
+"make-synchronized@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "make-synchronized@npm:0.8.0"
+  checksum: 10/e744bafcd61ee1ecabe6fb2c295ecb4b06a7bfe4e844222b80b7a5ae80a4d27ba657abc4892d1c702fa2f6ae568d8505e801c1498fe1379dd824ded5483d978c
   languageName: node
   linkType: hard
 
@@ -39029,7 +39297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mini-css-extract-plugin@npm:^2.4.2, mini-css-extract-plugin@npm:^2.9.2":
+"mini-css-extract-plugin@npm:^2.4.2":
   version: 2.10.0
   resolution: "mini-css-extract-plugin@npm:2.10.0"
   dependencies:
@@ -42041,6 +42309,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"picoquery@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "picoquery@npm:2.5.0"
+  checksum: 10/58e123cd497a5a1a5fd368f58c2825cd97814be5ddf85f59b7a11e87a836f95c9bacdd43b3be9d3e7aa4f16c43a5e7c0f5af4227d1a5616c69b3ab966fe0b3a6
+  languageName: node
+  linkType: hard
+
 "pidtree@npm:^0.6.0":
   version: 0.6.0
   resolution: "pidtree@npm:0.6.0"
@@ -42360,6 +42635,19 @@ __metadata:
   peerDependencies:
     postcss: ^8.2.15
   checksum: 10/56228c3ed0685f988c92ea5cf142a3a2f76b56b9ff84d2bc14c73e73b2f08041643cef9511abd9a78188860a84688f373c411e48a4a1a3603784645bb6c320d6
+  languageName: node
+  linkType: hard
+
+"postcss-import@npm:^16.1.0":
+  version: 16.1.1
+  resolution: "postcss-import@npm:16.1.1"
+  dependencies:
+    postcss-value-parser: "npm:^4.0.0"
+    read-cache: "npm:^1.0.0"
+    resolve: "npm:^1.1.7"
+  peerDependencies:
+    postcss: ^8.0.0
+  checksum: 10/2afac2b6e25f263f45ac2168c5f5e4b2e49e3d44c620338138fe89cf81bd83e6056784a26d54c58611d05dda18bc56069212484ec750bbf6d2e29b623460a7f9
   languageName: node
   linkType: hard
 
@@ -42684,7 +42972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.1.0, postcss-value-parser@npm:^4.2.0":
+"postcss-value-parser@npm:^4.0.0, postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.1.0, postcss-value-parser@npm:^4.2.0":
   version: 4.2.0
   resolution: "postcss-value-parser@npm:4.2.0"
   checksum: 10/e4e4486f33b3163a606a6ed94f9c196ab49a37a7a7163abfcd469e5f113210120d70b8dd5e33d64636f41ad52316a3725655421eb9a1094f1bcab1db2f555c62
@@ -43155,6 +43443,26 @@ __metadata:
   dependencies:
     protobufjs: "npm:^7.2.5"
   checksum: 10/d588337f9a24a94ac14a456261af48ea07e6d0a8a00faebb0b689e79e83925383b9d3ea713184d6336d0bb743dd803f188710e3e8fbfb316586cd1e3f7862a56
+  languageName: node
+  linkType: hard
+
+"protobufjs@npm:8.0.0":
+  version: 8.0.0
+  resolution: "protobufjs@npm:8.0.0"
+  dependencies:
+    "@protobufjs/aspromise": "npm:^1.1.2"
+    "@protobufjs/base64": "npm:^1.1.2"
+    "@protobufjs/codegen": "npm:^2.0.4"
+    "@protobufjs/eventemitter": "npm:^1.1.0"
+    "@protobufjs/fetch": "npm:^1.1.0"
+    "@protobufjs/float": "npm:^1.0.2"
+    "@protobufjs/inquire": "npm:^1.1.0"
+    "@protobufjs/path": "npm:^1.1.2"
+    "@protobufjs/pool": "npm:^1.1.0"
+    "@protobufjs/utf8": "npm:^1.1.0"
+    "@types/node": "npm:>=13.7.0"
+    long: "npm:^5.0.0"
+  checksum: 10/f9f2bc0acd37ca85ad4afb030fb3973cb93129e54623d7d36255a0406f852505afae4a94a88b305bca3a6384675bb34c7602dfa64cab6b67f95597234a94681d
   languageName: node
   linkType: hard
 
@@ -44215,7 +44523,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^6.3.0":
+"react-router-dom@npm:^6.3.0, react-router-dom@npm:^6.30.2":
   version: 6.30.3
   resolution: "react-router-dom@npm:6.30.3"
   dependencies:
@@ -44239,7 +44547,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:6.30.3, react-router@npm:^6.3.0":
+"react-router@npm:6.30.3, react-router@npm:^6.30.2":
   version: 6.30.3
   resolution: "react-router@npm:6.30.3"
   dependencies:
@@ -44479,6 +44787,15 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
+  languageName: node
+  linkType: hard
+
+"read-cache@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "read-cache@npm:1.0.0"
+  dependencies:
+    pify: "npm:^2.3.0"
+  checksum: 10/83a39149d9dfa38f0c482ea0d77b34773c92fef07fe7599cdd914d255b14d0453e0229ef6379d8d27d6947f42d7581635296d0cfa7708f05a9bd8e789d398b31
   languageName: node
   linkType: hard
 
@@ -44775,7 +45092,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regexp.prototype.flags@npm:^1.5.1, regexp.prototype.flags@npm:^1.5.3, regexp.prototype.flags@npm:^1.5.4":
+"regexp.prototype.flags@npm:^1.5.3, regexp.prototype.flags@npm:^1.5.4":
   version: 1.5.4
   resolution: "regexp.prototype.flags@npm:1.5.4"
   dependencies:
@@ -45062,7 +45379,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.6, resolve@npm:^1.17.0, resolve@npm:^1.19.0, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.10, resolve@npm:^1.22.4, resolve@npm:^1.22.8, resolve@npm:~1.22.1, resolve@npm:~1.22.2":
+"resolve@npm:^1.1.6, resolve@npm:^1.1.7, resolve@npm:^1.17.0, resolve@npm:^1.19.0, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.10, resolve@npm:^1.22.4, resolve@npm:^1.22.8, resolve@npm:~1.22.1, resolve@npm:~1.22.2":
   version: 1.22.11
   resolution: "resolve@npm:1.22.11"
   dependencies:
@@ -45101,7 +45418,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.1.6#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.17.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.19.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.10#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.4#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A~1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A~1.22.2#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.1.6#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.17.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.19.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.10#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.4#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A~1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A~1.22.2#optional!builtin<compat/resolve>":
   version: 1.22.11
   resolution: "resolve@patch:resolve@npm%3A1.22.11#optional!builtin<compat/resolve>::version=1.22.11&hash=c3c19d"
   dependencies:
@@ -45515,13 +45832,13 @@ __metadata:
     "@octokit/rest": "npm:^19.0.3"
     "@playwright/test": "npm:^1.32.3"
     "@spotify/eslint-plugin": "npm:^15.0.0"
-    "@storybook/addon-a11y": "npm:^10.2.0-alpha.7"
-    "@storybook/addon-docs": "npm:^10.2.0-alpha.7"
-    "@storybook/addon-links": "npm:^10.2.0-alpha.7"
-    "@storybook/addon-mcp": "npm:0.1.8"
-    "@storybook/addon-themes": "npm:^10.2.0-alpha.7"
-    "@storybook/addon-vitest": "npm:^10.2.0-alpha.7"
-    "@storybook/react-vite": "npm:^10.2.0-alpha.7"
+    "@storybook/addon-a11y": "npm:^10.3.0-alpha.1"
+    "@storybook/addon-docs": "npm:^10.3.0-alpha.1"
+    "@storybook/addon-links": "npm:^10.3.0-alpha.1"
+    "@storybook/addon-mcp": "npm:^0.2.2"
+    "@storybook/addon-themes": "npm:^10.3.0-alpha.1"
+    "@storybook/addon-vitest": "npm:^10.3.0-alpha.1"
+    "@storybook/react-vite": "npm:^10.3.0-alpha.1"
     "@techdocs/cli": "workspace:*"
     "@types/cacheable-request": "npm:^8.3.6"
     "@types/global-agent": "npm:^2.1.3"
@@ -45554,12 +45871,13 @@ __metadata:
     shx: "npm:^0.4.0"
     sloc: "npm:^0.3.1"
     sort-package-json: "npm:^2.8.0"
-    storybook: "npm:^10.2.0-alpha.7"
+    storybook: "npm:^10.3.0-alpha.1"
     ts-morph: "npm:^24.0.0"
     typedoc: "npm:^0.28.0"
     typescript: "npm:~5.7.0"
     vite: "npm:^7.1.5"
     yaml: "npm:^2.7.0"
+    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 
@@ -46354,7 +46672,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"side-channel@npm:^1.0.4, side-channel@npm:^1.1.0":
+"side-channel@npm:^1.1.0":
   version: 1.1.0
   resolution: "side-channel@npm:1.1.0"
   dependencies:
@@ -47038,9 +47356,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:^10.2.0-alpha.7":
-  version: 10.2.8
-  resolution: "storybook@npm:10.2.8"
+"storybook@npm:^10.3.0-alpha.1":
+  version: 10.3.0-alpha.1
+  resolution: "storybook@npm:10.3.0-alpha.1"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@storybook/icons": "npm:^2.0.1"
@@ -47061,7 +47379,7 @@ __metadata:
       optional: true
   bin:
     storybook: ./dist/bin/dispatcher.js
-  checksum: 10/2a401ee42c303f44199f0bb5be2983a22c0a3c8962cba31401bb6a3f75eefc909238c32d4a2bc2040df853f4f813432c9e6ac7223740cdc7d4e83b5f76c3c2cd
+  checksum: 10/9b76b96109cd9b2b9ff9e50d05dfc211ccf076c1bf1293e47a3f3b65fdc543a37b2ae4d3088edb9e10af5b7a320e9cadde7dc8945fe0ad5f9cd61b779b3e19b0
   languageName: node
   linkType: hard
 
@@ -48002,14 +48320,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "techdocs-cli-embedded-app@workspace:packages/techdocs-cli-embedded-app"
   dependencies:
-    "@backstage/app-defaults": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/frontend-defaults": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-app-react": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-techdocs": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
@@ -48025,10 +48344,9 @@ __metadata:
     "@types/react": "npm:*"
     "@types/react-dom": "npm:*"
     cross-env: "npm:^10.0.0"
-    history: "npm:^5.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-router-dom: "npm:^6.3.0"
+    react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
   languageName: unknown
   linkType: soft
@@ -48063,7 +48381,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:*, terser-webpack-plugin@npm:^5.1.3, terser-webpack-plugin@npm:^5.3.11, terser-webpack-plugin@npm:^5.3.16":
+"terser-webpack-plugin@npm:*, terser-webpack-plugin@npm:^5.1.3, terser-webpack-plugin@npm:^5.3.16":
   version: 5.3.16
   resolution: "terser-webpack-plugin@npm:5.3.16"
   dependencies:
@@ -50479,7 +50797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5":
+"webpack@npm:^5, webpack@npm:~5.104.0":
   version: 5.104.1
   resolution: "webpack@npm:5.104.1"
   dependencies:
@@ -50514,44 +50832,6 @@ __metadata:
   bin:
     webpack: bin/webpack.js
   checksum: 10/c22b58fdf41d993971516154cb621d13b7b61dd744b7e2c6be972e9afcc9942694a8aaa322c07fba46448c69d663023ff53d0aeeb00eb0b125d83ace5ca8fa3c
-  languageName: node
-  linkType: hard
-
-"webpack@npm:~5.103.0":
-  version: 5.103.0
-  resolution: "webpack@npm:5.103.0"
-  dependencies:
-    "@types/eslint-scope": "npm:^3.7.7"
-    "@types/estree": "npm:^1.0.8"
-    "@types/json-schema": "npm:^7.0.15"
-    "@webassemblyjs/ast": "npm:^1.14.1"
-    "@webassemblyjs/wasm-edit": "npm:^1.14.1"
-    "@webassemblyjs/wasm-parser": "npm:^1.14.1"
-    acorn: "npm:^8.15.0"
-    acorn-import-phases: "npm:^1.0.3"
-    browserslist: "npm:^4.26.3"
-    chrome-trace-event: "npm:^1.0.2"
-    enhanced-resolve: "npm:^5.17.3"
-    es-module-lexer: "npm:^1.2.1"
-    eslint-scope: "npm:5.1.1"
-    events: "npm:^3.2.0"
-    glob-to-regexp: "npm:^0.4.1"
-    graceful-fs: "npm:^4.2.11"
-    json-parse-even-better-errors: "npm:^2.3.1"
-    loader-runner: "npm:^4.3.1"
-    mime-types: "npm:^2.1.27"
-    neo-async: "npm:^2.6.2"
-    schema-utils: "npm:^4.3.3"
-    tapable: "npm:^2.3.0"
-    terser-webpack-plugin: "npm:^5.3.11"
-    watchpack: "npm:^2.4.4"
-    webpack-sources: "npm:^3.3.3"
-  peerDependenciesMeta:
-    webpack-cli:
-      optional: true
-  bin:
-    webpack: bin/webpack.js
-  checksum: 10/0018e77d159da412aa8cc1c3ac1d7c0b44228d0f5ce3939b4f424c04feba69747d8490541bcf8143b358a64afbbd69daad95e573ec9c4a90a99bef55d51dd43e
   languageName: node
   linkType: hard
 
@@ -50637,7 +50917,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"which-boxed-primitive@npm:^1.0.2, which-boxed-primitive@npm:^1.1.0, which-boxed-primitive@npm:^1.1.1":
+"which-boxed-primitive@npm:^1.1.0, which-boxed-primitive@npm:^1.1.1":
   version: 1.1.1
   resolution: "which-boxed-primitive@npm:1.1.1"
   dependencies:
@@ -50671,7 +50951,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"which-collection@npm:^1.0.1, which-collection@npm:^1.0.2":
+"which-collection@npm:^1.0.2":
   version: 1.0.2
   resolution: "which-collection@npm:1.0.2"
   dependencies:
@@ -50693,9 +50973,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"which-typed-array@npm:^1.1.13, which-typed-array@npm:^1.1.16, which-typed-array@npm:^1.1.19, which-typed-array@npm:^1.1.2":
-  version: 1.1.20
-  resolution: "which-typed-array@npm:1.1.20"
+"which-typed-array@npm:^1.1.16, which-typed-array@npm:^1.1.19, which-typed-array@npm:^1.1.2":
+  version: 1.1.19
+  resolution: "which-typed-array@npm:1.1.19"
   dependencies:
     available-typed-arrays: "npm:^1.0.7"
     call-bind: "npm:^1.0.8"
@@ -50704,7 +50984,7 @@ __metadata:
     get-proto: "npm:^1.0.1"
     gopd: "npm:^1.2.0"
     has-tostringtag: "npm:^1.0.2"
-  checksum: 10/e56da3fc995d330ff012f682476f7883c16b12d36c6717c87c7ca23eb5a5ef957fa89115dacb389b11a9b4e99d5dbe2d12689b4d5d08c050b5aed0eae385b840
+  checksum: 10/12be30fb88567f9863186bee1777f11bea09dd59ed8b3ce4afa7dd5cade75e2f4cc56191a2da165113cc7cf79987ba021dac1e22b5b62aa7e5c56949f2469a68
   languageName: node
   linkType: hard
 
@@ -51298,6 +51578,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"zod-validation-error@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "zod-validation-error@npm:5.0.0"
+  peerDependencies:
+    zod: ^3.25.0 || ^4.0.0
+  checksum: 10/d5713f6608f9b8fcb0d74c591cb5c5839fcab679adde5c668f8f95539a1b54fb6910ba577ec66ccda77645e9d2c1ae3fafca771a291f4648aaae8bdfed9b27a7
+  languageName: node
+  linkType: hard
+
 "zod@npm:^3.24.2, zod@npm:^3.25.76":
   version: 3.25.76
   resolution: "zod@npm:3.25.76"
@@ -51305,7 +51594,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.25 || ^4.0, zod@npm:^4.1.11":
+"zod@npm:^3.25 || ^4.0, zod@npm:^4.1.11, zod@npm:^4.3.5":
   version: 4.3.6
   resolution: "zod@npm:4.3.6"
   checksum: 10/25fc0f62e01b557b4644bf0b393bbaf47542ab30877c37837ea8caf314a8713d220c7d7fe51f68ffa72f0e1018ddfa34d96f1973d23033f5a2a5a9b6b9d9da01
