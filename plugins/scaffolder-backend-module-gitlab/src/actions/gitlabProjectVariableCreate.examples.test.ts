@@ -85,6 +85,7 @@ describe('gitlab:projectVariableAction: create examples', () => {
         variableType: 'env_var', // Correctly using variableType
         environmentScope: '*',
         masked: false,
+        masked_and_hidden: false,
         protected: false,
         raw: false,
       },
@@ -109,6 +110,7 @@ describe('gitlab:projectVariableAction: create examples', () => {
         variableType: 'file', // Correctly using variableType
         protected: false,
         masked: false,
+        masked_and_hidden: false,
         raw: false,
         environmentScope: '*',
       },
@@ -131,6 +133,7 @@ describe('gitlab:projectVariableAction: create examples', () => {
       'my_value',
       {
         masked: false,
+        masked_and_hidden: false,
         raw: false,
         environmentScope: '*',
         variableType: 'env_var', // Correctly using variableType
@@ -159,6 +162,7 @@ describe('gitlab:projectVariableAction: create examples', () => {
         environmentScope: '*',
         variableType: 'env_var', // Correctly using variableType
         masked: true,
+        masked_and_hidden: false,
       },
     );
   });
@@ -182,6 +186,7 @@ describe('gitlab:projectVariableAction: create examples', () => {
         environmentScope: '*',
         variableType: 'env_var', // Correctly using variableType
         masked: false,
+        masked_and_hidden: false,
         raw: true,
       },
     );
@@ -205,6 +210,7 @@ describe('gitlab:projectVariableAction: create examples', () => {
         protected: false,
         variableType: 'env_var', // Correctly using variableType
         masked: false,
+        masked_and_hidden: false,
         raw: false,
         environmentScope: 'production',
       },
@@ -229,6 +235,32 @@ describe('gitlab:projectVariableAction: create examples', () => {
         protected: false,
         variableType: 'env_var', // Correctly using variableType
         masked: false,
+        masked_and_hidden: false,
+        raw: false,
+        environmentScope: '*',
+      },
+    );
+  });
+
+  it(`Should ${examples[7].description}`, async () => {
+    mockGitlabClient.ProjectVariables.create.mockResolvedValue({
+      token: 'TOKEN',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[7].example).steps[0].input,
+    });
+
+    expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
+      '999',
+      'SECRET_TOKEN',
+      'super-secret-token',
+      {
+        protected: false,
+        variableType: 'env_var',
+        masked: false,
+        masked_and_hidden: true,
         raw: false,
         environmentScope: '*',
       },

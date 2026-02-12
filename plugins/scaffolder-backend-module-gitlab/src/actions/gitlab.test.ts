@@ -146,6 +146,19 @@ describe('publish:gitlab', () => {
       ],
     },
   });
+  const mockContextWithMaskedAndHiddenVariable = createMockActionContext({
+    input: {
+      repoUrl: 'gitlab.com?repo=repo&owner=owner',
+      repoVisibility: 'private' as const,
+      projectVariables: [
+        {
+          key: 'secret',
+          value: 'secret-value',
+          masked_and_hidden: true,
+        },
+      ],
+    },
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -441,6 +454,36 @@ describe('publish:gitlab', () => {
         variableType: 'env_var',
         protected: true,
         masked: true,
+        masked_and_hidden: false,
+        raw: false,
+        environmentScope: '*',
+      },
+    );
+  });
+
+  it('should call the correct Gitlab APIs for variables with masked_and_hidden option', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({
+      id: 1234,
+      kind: 'group',
+    });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      id: 123456,
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler(mockContextWithMaskedAndHiddenVariable);
+
+    expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
+      123456,
+      'secret',
+      'secret-value',
+      {
+        variableType: 'env_var',
+        protected: false,
+        masked: false,
+        masked_and_hidden: true,
         raw: false,
         environmentScope: '*',
       },
@@ -725,8 +768,8 @@ describe('publish:gitlab', () => {
     expect(mockGitlabClient.Users.showCurrentUser).toHaveBeenCalled();
     expect(mockGitlabClient.ProjectMembers.add).toHaveBeenCalledWith(
       123456,
-      12345,
       50,
+      { userId: 12345 },
     );
     expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
       namespaceId: 1234,

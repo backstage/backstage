@@ -78,6 +78,13 @@ export const createGitlabProjectVariableAction = (options: {
             })
             .default(false)
             .optional(),
+        maskedAndHidden: z =>
+          z
+            .boolean({
+              description: 'Whether the variable is masked and hidden',
+            })
+            .default(false)
+            .optional(),
         raw: z =>
           z
             .boolean({
@@ -103,6 +110,7 @@ export const createGitlabProjectVariableAction = (options: {
         variableType,
         variableProtected = false,
         masked = false,
+        maskedAndHidden = false,
         raw = false,
         environmentScope = '*',
         token,
@@ -119,6 +127,7 @@ export const createGitlabProjectVariableAction = (options: {
             variableType: variableType as VariableType,
             protected: variableProtected,
             masked,
+            masked_and_hidden: maskedAndHidden,
             raw,
             environmentScope,
           });
