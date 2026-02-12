@@ -70,7 +70,7 @@ import { resolveDefaultEnvironment } from '../../lib/defaultEnvironment';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
-  actionRegistry: TemplateActionRegistry;
+  templateActionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   logger: LoggerService;
   auditor?: AuditorService;
@@ -277,7 +277,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         return;
       }
       const action: TemplateAction<JsonObject> =
-        await this.options.actionRegistry.get(step.action, {
+        await this.options.templateActionRegistry.get(step.action, {
           credentials: await task.getInitiatorCredentials(),
         });
       const { taskLogger } = createStepLogger({
