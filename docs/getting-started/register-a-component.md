@@ -42,7 +42,7 @@ To manually register a component in the software catalog:
 
 3. Fill out the template.
 
-   The standalone Backstage application includes one template. For this example, enter the repository URL to the entity file, `https://github.com/backstage/backstage/blob/master/catalog-info.yaml.` This is used in the Backstage [demo site](https://demo.backstage.io) catalog.
+   The standalone Backstage application includes one template. For this example, enter the repository URL to the entity file, `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`. This is used in the Backstage [demo site](https://demo.backstage.io) catalog.
 
    ![enter url of component entity file.](../assets/uiguide/enter-url-of-component.png)
 
