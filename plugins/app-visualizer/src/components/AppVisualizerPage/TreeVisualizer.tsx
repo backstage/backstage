@@ -150,10 +150,8 @@ export function TreeVisualizer() {
   return (
     <Flex
       style={{
-        flex: '1 1 0',
+        height: '100%',
         overflow: 'hidden',
-        justifyContent: 'stretch',
-        alignItems: 'stretch',
       }}
     >
       <DependencyGraph
