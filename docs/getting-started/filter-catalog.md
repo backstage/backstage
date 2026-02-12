@@ -22,9 +22,9 @@ You can filter the Catalog using a combination of the following:
 
   Enter one or more consecutive letters into the `Filter` field. As you type the letters, the entities whose names do not contain that string will be filtered out of the displayed list.
 
-  ![FIlter catalog by name](../assets/uiguide/filter-by-name.png)
+  ![Filter catalog by name](../assets/uiguide/filter-by-name.png)
 
-- **FIlter by kind**
+- **Filter by kind**
 
   Use the `Kind` dropdown list to select which kind of entity to show in the list:
   - API
@@ -41,7 +41,7 @@ You can filter the Catalog using a combination of the following:
 
 - **Filter by Owner**
 
-  Use the`Owner` dropdown to filter the catalog list by who owns the entity.
+  Use the `Owner` dropdown to filter the catalog list by who owns the entity.
 
 - **Filter by Lifecycle**
 
@@ -54,3 +54,4 @@ You can filter the Catalog using a combination of the following:
 - **Filter by Namespace**
 
   Use the `Namespace` dropdown to filter the catalog list by namespace associated with the entity.
+
