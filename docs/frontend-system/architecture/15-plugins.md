@@ -52,12 +52,12 @@ export default createFrontendPlugin({
 
 ### `icon` option
 
-The display icon of the plugin, used in page headers and navigation. The type is `IconComponent` from `@backstage/frontend-plugin-api`, which is a React component that accepts an optional `fontSize` prop.
+The display icon of the plugin, used in page headers and navigation. The type is `IconElement` (`JSX.Element | null`) from `@backstage/frontend-plugin-api`.
 
 ```tsx
 export default createFrontendPlugin({
   pluginId: 'my-plugin',
-  icon: MyPluginIcon,
+  icon: <MyPluginIcon />,
   extensions: [...],
 });
 ```

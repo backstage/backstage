@@ -44,11 +44,11 @@ The `title` data reference can be used for defining the extension input/output o
 
 ### `icon`
 
-|     id      |      type       |
-| :---------: | :-------------: |
-| `core.icon` | `IconComponent` |
+|     id      |     type      |
+| :---------: | :-----------: |
+| `core.icon` | `IconElement` |
 
-The `icon` data reference can be used for defining the extension input/output of icon components. The type is `IconComponent` from `@backstage/frontend-plugin-api`.
+The `icon` data reference can be used for defining the extension input/output of icon elements. The type is `IconElement` (`JSX.Element | null`) from `@backstage/frontend-plugin-api`.
 
 ### `routePath`
 
