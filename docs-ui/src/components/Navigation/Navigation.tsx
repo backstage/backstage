@@ -18,19 +18,6 @@ interface NavigationProps {
   onLinkClick?: () => void;
 }
 
-const data = [
-  {
-    title: 'Components',
-    content: components,
-    url: '/components',
-  },
-  {
-    title: 'Hooks',
-    content: hooks,
-    url: '/hooks',
-  },
-];
-
 export const Navigation = ({ onLinkClick }: NavigationProps) => {
   const pathname = usePathname();
 
@@ -92,6 +79,29 @@ export const Navigation = ({ onLinkClick }: NavigationProps) => {
             className={clsx(styles.line, {
               [styles.active]: isActive,
             })}
+            onClick={onLinkClick}
+          >
+            <div className={styles.lineTitle}>{item.title}</div>
+            <div className={styles.lineStatus}>
+              {item.status === 'alpha' && 'Alpha'}
+              {item.status === 'beta' && 'Beta'}
+              {item.status === 'inProgress' && 'In Progress'}
+              {item.status === 'stable' && 'Stable'}
+              {item.status === 'deprecated' && 'Deprecated'}
+            </div>
+          </Link>
+        );
+      })}
+      <div className={styles.sectionTitle}>
+        <RiCollageLine size={20} /> <span>Hooks</span>
+      </div>
+      {hooks.map(item => {
+        const isActive = pathname === `/hooks/${item.slug}`;
+        return (
+          <Link
+            href={`/hooks/${item.slug}`}
+            key={item.slug}
+            className={clsx(styles.line, { [styles.active]: isActive })}
             onClick={onLinkClick}
           >
             <div className={styles.lineTitle}>{item.title}</div>

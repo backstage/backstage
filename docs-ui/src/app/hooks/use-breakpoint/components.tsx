@@ -1,20 +1,9 @@
 'use client';
 
 import { useBreakpoint } from '@backstage/ui';
-import { useEffect, useState } from 'react';
 
 export function UseBreakpointExample() {
   const { breakpoint, up, down } = useBreakpoint();
-  const [isMounted, setIsMounted] = useState(false);
-
-  // prevent hydration mismatch by rendering only on the client
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
 
   return (
     <div>
