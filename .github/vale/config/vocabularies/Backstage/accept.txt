@@ -547,6 +547,7 @@ validator
 validators
 Valkey
 varchar
+viewport
 vite
 VMware
 Vodafone
