@@ -339,6 +339,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
               for (const flag of plugin.getFeatureFlags()) {
                 featureFlagsApi.registerFlag({
                   name: flag.name,
+                  description: flag.description,
                   pluginId: plugin.getId(),
                 });
               }
