@@ -21,16 +21,12 @@ This guide explains how to configure and build both module federation hosts and 
 
 In module federation terminology:
 
-- **Host**: The main frontend application that loads and consumes remote modules. In Backstage, this is your app package (typically `packages/app-next`).
+- **Host**: The main frontend application that loads and consumes remote modules. In Backstage, this is your app package (typically `packages/app`).
 - **Remote**: A separately built module that can be loaded by the host at runtime. In Backstage, these are typically plugin packages built as module federation remotes.
 
 ### Shared Dependencies
 
-A critical aspect of module federation is **shared dependencies**. When a host loads remote modules, both need to share common dependencies (like React, React Router, Material-UI) to:
-
-- Avoid loading the same dependency multiple times
-- Ensure singleton dependencies (like React) only have one instance
-- Enable context sharing between host and remotes
+A critical aspect of module federation is **shared dependencies**. When a host loads remote modules, both need to share common dependencies (like React, React Router, Material-UI) in order to ensure singleton dependencies only have one instance.
 
 Backstage provides a list of default shared dependencies for common packages like React, React Router, and Material-UI. At build-time the `version` field is automatically resolved from your `package.json` files.
 
