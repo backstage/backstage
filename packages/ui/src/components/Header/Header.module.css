@@ -88,7 +88,6 @@
   }
 
   .bui-HeaderTabsWrapper {
-    margin-bottom: var(--bui-space-4);
     padding-inline: var(--bui-space-3);
     border-bottom: 1px solid var(--bui-border);
     background-color: var(--bui-bg-neutral-1);

@@ -979,6 +979,21 @@ export interface FlexProps extends SpaceProps {
 // @public (undocumented)
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
 
+// @public
+export const FullPage: ForwardRefExoticComponent<
+  FullPageProps & RefAttributes<HTMLElement>
+>;
+
+// @public
+export const FullPageDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-FullPage';
+  };
+};
+
+// @public
+export interface FullPageProps extends React.ComponentPropsWithoutRef<'main'> {}
+
 // @public (undocumented)
 export const Grid: {
   Root: ForwardRefExoticComponent<GridProps & RefAttributes<HTMLDivElement>>;
@@ -1082,6 +1097,7 @@ export const Header: (props: HeaderProps) => JSX_2.Element;
 // @public
 export const HeaderDefinition: {
   readonly classNames: {
+    readonly root: 'bui-Header';
     readonly toolbar: 'bui-HeaderToolbar';
     readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
     readonly toolbarContent: 'bui-HeaderToolbarContent';
