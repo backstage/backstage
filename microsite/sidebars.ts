@@ -72,7 +72,7 @@ export default {
         'getting-started/viewing-catalog',
         'getting-started/view-what-you-own',
         'getting-started/viewing-entity-relationships',
-        'getting-started/search-catalog',
+        'getting-started/filter-catalog',
         sidebarElementWithIndex({ label: 'Managing Components' }, [
           'getting-started/register-a-component',
           'getting-started/create-a-component',
