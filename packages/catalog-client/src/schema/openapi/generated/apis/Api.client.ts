@@ -36,7 +36,9 @@ import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model
 import { CreateLocation201Response } from '../models/CreateLocation201Response.model';
 import { CreateLocationRequest } from '../models/CreateLocationRequest.model';
 import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
+import { GetLocationsByQueryRequest } from '../models/GetLocationsByQueryRequest.model';
 import { Location } from '../models/Location.model';
+import { LocationsQueryResponse } from '../models/LocationsQueryResponse.model';
 
 /**
  * Wraps the Response type to convey a type on the json call.
@@ -194,6 +196,12 @@ export type GetLocationByEntity = {
  * @public
  */
 export type GetLocations = {};
+/**
+ * @public
+ */
+export type GetLocationsByQuery = {
+  body: GetLocationsByQueryRequest;
+};
 
 /**
  * @public
@@ -646,6 +654,31 @@ export class DefaultApiClient {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
+    });
+  }
+
+  /**
+   * Query for locations
+   * @param getLocationsByQueryRequest -
+   */
+  public async getLocationsByQuery(
+    // @ts-ignore
+    request: GetLocationsByQuery,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<LocationsQueryResponse>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/locations/by-query`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
     });
   }
 }

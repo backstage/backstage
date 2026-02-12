@@ -338,6 +338,90 @@ components:
       properties: {}
       description: A type representing all allowed JSON object values.
       additionalProperties: {}
+    EntityPredicate:
+      description: A predicate-based filter supporting logical operators.
+      oneOf:
+        - type: string
+        - type: number
+        - type: boolean
+        - $ref: '#/components/schemas/EntityPredicateAll'
+        - $ref: '#/components/schemas/EntityPredicateAny'
+        - $ref: '#/components/schemas/EntityPredicateNot'
+        - type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EntityPredicateValue'
+    EntityPredicateAll:
+      type: object
+      description: All conditions must match (AND logic)
+      additionalProperties: false
+      properties:
+        $all:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityPredicate'
+      required:
+        - $all
+    EntityPredicateAny:
+      type: object
+      description: At least one condition must match (OR logic)
+      additionalProperties: false
+      properties:
+        $any:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityPredicate'
+      required:
+        - $any
+    EntityPredicateNot:
+      type: object
+      description: Negates the condition
+      additionalProperties: false
+      properties:
+        $not:
+          $ref: '#/components/schemas/EntityPredicate'
+      required:
+        - $not
+    EntityPredicateValue:
+      description: Value for a field predicate
+      oneOf:
+        - type: string
+        - type: number
+        - type: boolean
+        - $ref: '#/components/schemas/EntityPredicateExists'
+        - $ref: '#/components/schemas/EntityPredicateIn'
+        - $ref: '#/components/schemas/EntityPredicateHasPrefix'
+    EntityPredicateExists:
+      type: object
+      description: Check if field exists
+      additionalProperties: false
+      properties:
+        $exists:
+          type: boolean
+      required:
+        - $exists
+    EntityPredicateIn:
+      type: object
+      description: Match any value in array
+      additionalProperties: false
+      properties:
+        $in:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
+      required:
+        - $in
+    EntityPredicateHasPrefix:
+      type: object
+      description: Match a string that starts with the given value
+      additionalProperties: false
+      properties:
+        $hasPrefix:
+          type: string
+      required:
+        - $hasPrefix
     MapStringString:
       type: object
       properties: {}
@@ -588,6 +672,27 @@ components:
         - target
         - type
       description: Holds the entity location information.
+      additionalProperties: false
+    LocationsQueryResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+          description: The list of locations paginated by a specific query.
+        totalItems:
+          type: number
+        pageInfo:
+          type: object
+          properties:
+            nextCursor:
+              type: string
+              description: The cursor for the next batch of locations.
+      required:
+        - items
+        - totalItems
+        - pageInfo
       additionalProperties: false
     AnalyzeLocationExistingEntity:
       type: object
@@ -1189,6 +1294,37 @@ paths:
         - {}
         - JWT: []
       parameters: []
+  /locations/by-query:
+    post:
+      operationId: GetLocationsByQuery
+      tags:
+        - Locations
+      description: Query for locations
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationsQueryResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cursor:
+                  type: string
+                limit:
+                  type: number
+                query:
+                  $ref: '#/components/schemas/EntityPredicate'
   /locations/{id}:
     get:
       operationId: GetLocation

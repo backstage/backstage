@@ -31,6 +31,9 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  QueryLocationsInitialRequest,
+  QueryLocationsRequest,
+  QueryLocationsResponse,
   StreamEntitiesRequest,
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
@@ -100,6 +103,16 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     request?: {},
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<GetLocationsResponse>;
+
+  queryLocations(
+    request?: QueryLocationsRequest,
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): Promise<QueryLocationsResponse>;
+
+  streamLocations(
+    request?: QueryLocationsInitialRequest,
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): AsyncIterable<Location[]>;
 
   getLocationById(
     id: string,

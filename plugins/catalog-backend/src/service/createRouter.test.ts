@@ -70,6 +70,7 @@ describe('createRouter readonly disabled', () => {
     locationService = {
       getLocation: jest.fn(),
       createLocation: jest.fn(),
+      queryLocations: jest.fn(),
       listLocations: jest.fn(),
       deleteLocation: jest.fn(),
       getLocationByEntity: jest.fn(),
@@ -748,6 +749,188 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
+  describe('POST /locations/by-query', () => {
+    beforeEach(async () => {
+      locationService = {
+        getLocation: jest.fn(),
+        createLocation: jest.fn(),
+        queryLocations: jest.fn(),
+        listLocations: jest.fn(),
+        deleteLocation: jest.fn(),
+        getLocationByEntity: jest.fn(),
+      };
+      const router = await createRouter({
+        locationService,
+        logger: mockServices.logger.mock(),
+        config: new ConfigReader(undefined),
+        auth: mockServices.auth(),
+        httpAuth: mockServices.httpAuth(),
+        orchestrator: { process: jest.fn() },
+        permissionsService: mockServices.permissions(),
+        auditor: mockServices.auditor.mock(),
+      });
+      router.use(middleware.error());
+      app = express().use(router);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('happy path: queries locations without pagination', async () => {
+      const locations: Location[] = [
+        { id: 'loc1', type: 'url', target: 'https://example.com/a' },
+        { id: 'loc2', type: 'url', target: 'https://example.com/b' },
+      ];
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: locations,
+        totalItems: 2,
+      });
+
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 10 });
+
+      expect(locationService.queryLocations).toHaveBeenCalledTimes(1);
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 11,
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: locations,
+        totalItems: 2,
+        pageInfo: {},
+      });
+    });
+
+    it('happy path: queries locations with filter', async () => {
+      const locations: Location[] = [
+        { id: 'loc1', type: 'url', target: 'https://example.com/a' },
+      ];
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: locations,
+        totalItems: 1,
+      });
+
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 10, query: { type: 'url' } });
+
+      expect(locationService.queryLocations).toHaveBeenCalledTimes(1);
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 11,
+        query: { type: 'url' },
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: locations,
+        totalItems: 1,
+        pageInfo: {},
+      });
+    });
+
+    it('returns nextCursor when more results exist', async () => {
+      const locations: Location[] = [
+        { id: 'loc1', type: 'url', target: 'https://example.com/a' },
+        { id: 'loc2', type: 'url', target: 'https://example.com/b' },
+        { id: 'loc3', type: 'url', target: 'https://example.com/c' },
+      ];
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: locations,
+        totalItems: 5,
+      });
+
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 2 });
+
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 3,
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body.items).toHaveLength(2);
+      expect(response.body.totalItems).toEqual(5);
+      expect(response.body.pageInfo.nextCursor).toBeDefined();
+
+      const cursor = JSON.parse(
+        Buffer.from(response.body.pageInfo.nextCursor, 'base64').toString(
+          'utf8',
+        ),
+      );
+      expect(cursor).toEqual({
+        limit: 2,
+        afterId: 'loc2',
+      });
+    });
+
+    it('uses cursor for pagination', async () => {
+      const locations: Location[] = [
+        { id: 'loc3', type: 'url', target: 'https://example.com/c' },
+      ];
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: locations,
+        totalItems: 3,
+      });
+
+      const cursor = Buffer.from(
+        JSON.stringify({ limit: 2, afterId: 'loc2', query: { type: 'url' } }),
+      ).toString('base64');
+
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ cursor });
+
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 3,
+        afterId: 'loc2',
+        query: { type: 'url' },
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: locations,
+        totalItems: 3,
+        pageInfo: {},
+      });
+    });
+
+    it('uses default limit when not specified', async () => {
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: [],
+        totalItems: 0,
+      });
+
+      const response = await request(app).post('/locations/by-query').send({});
+
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 1001,
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+    });
+
+    it('rejects invalid limit', async () => {
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 0 });
+
+      expect(locationService.queryLocations).not.toHaveBeenCalled();
+      expect(response.status).toEqual(400);
+    });
+
+    it('rejects malformed cursor', async () => {
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ cursor: 'not-valid-base64!!!' });
+
+      expect(locationService.queryLocations).not.toHaveBeenCalled();
+      expect(response.status).toEqual(400);
+    });
+  });
+
   describe('DELETE /locations', () => {
     it('deletes the location', async () => {
       locationService.deleteLocation.mockResolvedValueOnce(undefined);
@@ -936,6 +1119,7 @@ describe('createRouter readonly and raw json enabled', () => {
       getLocation: jest.fn(),
       createLocation: jest.fn(),
       listLocations: jest.fn(),
+      queryLocations: jest.fn(),
       deleteLocation: jest.fn(),
       getLocationByEntity: jest.fn(),
     };
@@ -1150,6 +1334,7 @@ describe('NextRouter permissioning', () => {
     locationService = {
       getLocation: jest.fn(),
       createLocation: jest.fn(),
+      queryLocations: jest.fn(),
       listLocations: jest.fn(),
       deleteLocation: jest.fn(),
       getLocationByEntity: jest.fn(),

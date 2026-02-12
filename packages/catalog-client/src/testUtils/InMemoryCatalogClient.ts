@@ -33,6 +33,9 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  QueryLocationsInitialRequest,
+  QueryLocationsRequest,
+  QueryLocationsResponse,
   StreamEntitiesRequest,
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
@@ -525,6 +528,18 @@ export class InMemoryCatalogClient implements CatalogApi {
   }
 
   async getLocations(_request?: {}): Promise<GetLocationsResponse> {
+    throw new NotImplementedError('Method not implemented.');
+  }
+
+  async queryLocations(
+    _request?: QueryLocationsRequest,
+  ): Promise<QueryLocationsResponse> {
+    throw new NotImplementedError('Method not implemented.');
+  }
+
+  async *streamLocations(
+    _request?: QueryLocationsInitialRequest,
+  ): AsyncIterable<Location[]> {
     throw new NotImplementedError('Method not implemented.');
   }
 

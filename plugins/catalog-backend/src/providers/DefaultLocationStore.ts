@@ -15,7 +15,7 @@
  */
 
 import { Location } from '@backstage/catalog-client';
-import { ConflictError, NotFoundError } from '@backstage/errors';
+import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
@@ -43,6 +43,7 @@ import {
 import { chunk, uniqBy } from 'lodash';
 import parseGitUrl, { type GitUrl } from 'git-url-parse';
 import { ScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
@@ -101,6 +102,43 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
   async listLocations(): Promise<Location[]> {
     return await this.locations();
+  }
+
+  async queryLocations(options: {
+    limit: number;
+    afterId?: string;
+    query?: FilterPredicate;
+  }): Promise<{ items: Location[]; totalItems: number }> {
+    let itemsQuery = this.db<DbLocationsRow>('locations');
+
+    if (options.query) {
+      itemsQuery = applyLocationFilterToQuery(
+        this.db.client.config.client,
+        itemsQuery,
+        options.query,
+      );
+    }
+
+    const countQuery = itemsQuery.clone().count('*', { as: 'count' });
+
+    itemsQuery = itemsQuery.orderBy('id', 'asc');
+    if (options.afterId !== undefined) {
+      itemsQuery = itemsQuery.where('id', '>', options.afterId);
+    }
+    if (options.limit !== undefined) {
+      itemsQuery = itemsQuery.limit(options.limit);
+    }
+
+    const [items, [{ count }]] = await Promise.all([itemsQuery, countQuery]);
+
+    return {
+      items: items.map(item => ({
+        id: item.id,
+        target: item.target,
+        type: item.type,
+      })),
+      totalItems: Number(count),
+    };
   }
 
   async getLocation(id: string): Promise<Location> {
@@ -490,4 +528,167 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
   }
 
   // #endregion
+}
+
+/**
+ * Recursively builds up the SQL expression corresponding to the given filter
+ * predicate.
+ *
+ * @remarks
+ *
+ * Design note: The code prefers to let the SQL engine achieve case
+ * insensitivitiy. We could attempt to use `.toUpperCase` etc on the client
+ * side, but that would only work for the values being passed in, not the column
+ * side of the expression. If we let the database perform UPPER on both, we know
+ * that they will always be locale consistent etc as well.
+ *
+ * This does come at a runtime cost. However, the data set is typically rather
+ * small in the grand scheme of things, and we can add the proper indices in the
+ * future if needed. At this point I considered it not worth the effort.
+ */
+function applyLocationFilterToQuery(
+  clientType: string,
+  inputQuery: Knex.QueryBuilder,
+  query: FilterPredicate,
+): Knex.QueryBuilder {
+  let result = inputQuery;
+
+  if (!query || typeof query !== 'object' || Array.isArray(query)) {
+    throw new InputError('Invalid filter predicate, expected an object');
+  }
+
+  if ('$all' in query) {
+    return result.where(outer => {
+      for (const subQuery of query.$all) {
+        outer.andWhere(inner => {
+          applyLocationFilterToQuery(clientType, inner, subQuery);
+        });
+      }
+    });
+  }
+
+  if ('$any' in query) {
+    return result.where(outer => {
+      for (const subQuery of query.$any) {
+        outer.orWhere(inner => {
+          applyLocationFilterToQuery(clientType, inner, subQuery);
+        });
+      }
+    });
+  }
+
+  if ('$not' in query) {
+    return result.whereNot(inner => {
+      applyLocationFilterToQuery(clientType, inner, query.$not);
+    });
+  }
+
+  const entries = Object.entries(query);
+  const keys = entries.map(e => e[0]);
+  if (keys.some(k => k.startsWith('$'))) {
+    throw new InputError(
+      `Invalid filter predicate, unknown logic operator '${keys.join(', ')}'`,
+    );
+  }
+
+  for (const [keyAnyCase, value] of entries) {
+    const key = keyAnyCase.toLocaleLowerCase('en-US');
+    if (!['id', 'type', 'target'].includes(key)) {
+      throw new InputError(
+        `Invalid filter predicate, expected key to be 'id', 'type', or 'target', got '${keyAnyCase}'`,
+      );
+    }
+
+    if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
+      if (key === 'id') {
+        result = result.where({ id: value });
+      } else if (clientType === 'pg') {
+        result = result.whereRaw(`UPPER(??::text) = UPPER(?::text)`, [
+          key,
+          value,
+        ]);
+      } else if (clientType.includes('mysql')) {
+        result = result.whereRaw(
+          `UPPER(CAST(?? AS CHAR)) = UPPER(CAST(? AS CHAR))`,
+          [key, value],
+        );
+      } else {
+        result = result.whereRaw(`UPPER(??) = UPPER(?)`, [key, value]);
+      }
+    } else if (typeof value === 'object') {
+      if (!value || Array.isArray(value)) {
+        throw new InputError(
+          `Invalid filter predicate, got unknown matcher object '${JSON.stringify(
+            value,
+          )}'`,
+        );
+      }
+
+      if ('$exists' in value) {
+        // Technically this matcher does not make much sense in the context of
+        // this table at the time of writing (values are always present), but
+        // there is nothing gained by prohibiting it.
+        result = value.$exists
+          ? result.whereNotNull(key)
+          : result.whereNull(key);
+      } else if ('$in' in value) {
+        if (key === 'id') {
+          result = result.whereIn(key, value.$in);
+        } else if (clientType === 'pg') {
+          result = result.whereRaw(
+            `UPPER(??::text) IN (${value.$in
+              .map(() => 'UPPER(?::text)')
+              .join(', ')})`,
+            [key, ...value.$in],
+          );
+        } else if (clientType.includes('mysql')) {
+          result = result.whereRaw(
+            `UPPER(CAST(?? AS CHAR)) IN (${value.$in
+              .map(() => 'UPPER(CAST(? AS CHAR))')
+              .join(', ')})`,
+            [key, ...value.$in],
+          );
+        } else {
+          result = result.whereRaw(
+            `UPPER(??) IN (${value.$in.map(() => 'UPPER(?)').join(', ')})`,
+            [key, ...value.$in],
+          );
+        }
+      } else if ('$hasPrefix' in value) {
+        const escaped = value.$hasPrefix.replace(/([\\%_])/g, '\\$1');
+        if (clientType === 'pg') {
+          result = result.whereRaw('?? ilike ?', [key, `${escaped}%`]);
+        } else {
+          result = result.whereRaw('UPPER(??) like UPPER(?)', [
+            key,
+            `${escaped}%`,
+          ]);
+        }
+      } else if ('$contains' in value) {
+        // There are no array shaped values for location queries, so we throw
+        // an error since it cannot possibly match. An alternative could be to
+        // make the query always fail (eg with 1 = 0) but this felt more
+        // immediately helpful to the end user.
+        throw new InputError(
+          `Invalid filter predicate, '$contains' is not supported for location queries`,
+        );
+      } else {
+        throw new InputError(
+          `Invalid filter predicate, got unknown matcher object '${JSON.stringify(
+            value,
+          )}'`,
+        );
+      }
+    } else {
+      throw new InputError(
+        `Invalid filter predicate, expected value to be a primitive value or a matcher object, got '${typeof value}'`,
+      );
+    }
+  }
+
+  return result;
 }
