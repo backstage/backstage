@@ -334,7 +334,7 @@ async function onPushEvent(
   for (const eventCommit of interestingShorthandCommits) {
     // As noted in the getCommit documentation, if there's a large number of
     // files in the commit then only at most 300 of them will be returned along
-    // with pagination link heasder, and then going up to a total of at most
+    // with pagination link header, and then going up to a total of at most
     // 3000 files. But we also want to use the convenient octokit API so we
     // paginate in this kind of clunky way and end whenever there's no more rel
     // next URL.

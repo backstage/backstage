@@ -22,9 +22,9 @@ describe('readScmEventHandlingConfig', () => {
     const config = new ConfigReader({});
 
     expect(readScmEventHandlingConfig(config)).toEqual({
-      refresh: true,
-      unregister: true,
-      move: true,
+      refresh: false,
+      unregister: false,
+      move: false,
     });
   });
 

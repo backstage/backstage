@@ -44,8 +44,15 @@ export interface CatalogScmEventsService {
   };
 
   /**
-   * Publish an event to all subscribers. Returns once all subscribers have
-   * acknowledged that they have received and handled the event.
+   * Publish an event to all subscribers.
+   *
+   * @remarks
+   *
+   * This call blocks until all subscribers have either acknowledged that they
+   * have received and handled the event, or thrown an error. There are no
+   * re-sends or dead letter queues; receivers must implement a suitable
+   * resilience model themselves internally if they want to have better delivery
+   * guarantees.
    */
   publish(events: CatalogScmEvent[]): Promise<void>;
 }
@@ -64,7 +71,7 @@ export type CatalogScmEventContext = {
 
 /**
  * Represents a high level change event that happened in a source control
- * management system. THese are usually produced as a distilled version of an
+ * management system. These are usually produced as a distilled version of an
  * incoming webhook event or similar.
  *
  * @alpha
@@ -102,7 +109,7 @@ export type CatalogScmEvent =
        *
        * @remarks
        *
-       * This typically means that an individual file was created in an existing
+       * This typically means that an individual file was deleted in an existing
        * repository, for example through a git push or merge.
        */
       type: 'location.deleted';
@@ -160,7 +167,7 @@ export type CatalogScmEvent =
        *
        * @remarks
        *
-       * This typically refres to a repository being renamed, or transferred to
+       * This typically refers to a repository being renamed, or transferred to
        * a different owner. It can also refer to a change of base branch, which
        * effectively changes the base URL for many repository URL patterns.
        *

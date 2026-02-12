@@ -15,7 +15,6 @@
  */
 
 import { Config } from '@backstage/config';
-import lodash from 'lodash';
 
 export interface ScmEventHandlingConfig {
   refresh: boolean;
@@ -40,17 +39,17 @@ export function readScmEventHandlingConfig(
 ): ScmEventHandlingConfig {
   const rootKey = 'catalog.scmEvents';
 
-  if (!config.has(rootKey) || config.get(rootKey) === true) {
-    return { ...defaults };
-  } else if (config.get(rootKey) === false) {
+  if (!config.has(rootKey) || config.get(rootKey) === false) {
     return { ...disabled };
+  } else if (config.get(rootKey) === true) {
+    return { ...defaults };
   }
 
-  const given = {
-    refresh: config.getOptionalBoolean(`${rootKey}.refresh`),
-    unregister: config.getOptionalBoolean(`${rootKey}.unregister`),
-    move: config.getOptionalBoolean(`${rootKey}.move`),
+  return {
+    refresh:
+      config.getOptionalBoolean(`${rootKey}.refresh`) ?? defaults.refresh,
+    unregister:
+      config.getOptionalBoolean(`${rootKey}.unregister`) ?? defaults.unregister,
+    move: config.getOptionalBoolean(`${rootKey}.move`) ?? defaults.move,
   };
-
-  return lodash.merge({}, defaults, given);
 }

@@ -71,7 +71,7 @@ export class GithubScmEventsBridge {
 
     if (this.#shuttingDown) {
       this.#logger.warn(
-        `Skipping GitHub webhook event of type "${params.topic}" because the bridge is shutting down`,
+        `Skipping GitHub webhook event of type "${eventType}" on topic "${params.topic}" because the bridge is shutting down`,
       );
       return;
     }
@@ -93,15 +93,15 @@ export class GithubScmEventsBridge {
           await this.#catalogScmEvents.publish(output.events);
         } else if (output.result === 'ignored') {
           this.#logger.debug(
-            `Skipping GitHub webhook event of type "${params.topic}" because it is ignored: ${output.reason}`,
+            `Skipping GitHub webhook event of type "${eventType}" on topic "${params.topic}" because it is ignored: ${output.reason}`,
           );
         } else if (output.result === 'aborted') {
           this.#logger.warn(
-            `Skipping GitHub webhook event of type "${params.topic}" because it is aborted: ${output.reason}`,
+            `Skipping GitHub webhook event of type "${eventType}" on topic "${params.topic}" because it is aborted: ${output.reason}`,
           );
         } else if (output.result === 'unsupported-event') {
           this.#logger.debug(
-            `Skipping GitHub webhook event of type "${params.topic}" because it is unsupported: ${output.event}`,
+            `Skipping GitHub webhook event of type "${eventType}" on topic "${params.topic}" because it is unsupported: ${output.event}`,
           );
         }
       } catch (error) {

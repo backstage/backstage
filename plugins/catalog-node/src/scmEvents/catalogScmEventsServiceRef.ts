@@ -29,7 +29,7 @@ import { DefaultCatalogScmEventsService } from './DefaultCatalogScmEventsService
  * @remarks
  *
  * The default implementation of this service acts in-memory, which requires the
- * produceers and consumer (the catalog backend) to be deployed together.
+ * producers and consumer (the catalog backend) to be deployed together.
  */
 export const catalogScmEventsServiceRef =
   createServiceRef<CatalogScmEventsService>({

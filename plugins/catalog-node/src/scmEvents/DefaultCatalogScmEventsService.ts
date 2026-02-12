@@ -26,7 +26,7 @@ import {
  * @internal
  * @remarks
  *
- * This implementation is in-memory, which requires the produceers and consumer
+ * This implementation is in-memory, which requires the producers and consumer
  * (the catalog backend) to be deployed together.
  */
 export class DefaultCatalogScmEventsService implements CatalogScmEventsService {

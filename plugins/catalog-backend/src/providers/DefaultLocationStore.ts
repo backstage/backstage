@@ -280,7 +280,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     for (const batch of chunk(Array.from(urls), 100)) {
       const existingUrls = await this.db<DbLocationsRow>('locations')
         .where('type', '=', 'url')
-        .where('target', 'in', batch)
+        .whereIn('target', batch)
         .select()
         .then(rows => new Set(rows.map(row => row.target)));
 
@@ -313,14 +313,13 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     for (const batch of chunk(Array.from(urls), 100)) {
       const rows = await this.db<DbLocationsRow>('locations')
         .where('type', '=', 'url')
-        .where('target', 'in', batch)
+        .whereIn('target', batch)
         .select();
 
       if (rows.length) {
         await this.db<DbLocationsRow>('locations')
-          .where(
+          .whereIn(
             'id',
-            'in',
             rows.map(row => row.id),
           )
           .delete();
