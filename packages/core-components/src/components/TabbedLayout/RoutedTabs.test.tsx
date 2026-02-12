@@ -15,9 +15,18 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import { act, fireEvent } from '@testing-library/react';
-import { Route, Routes } from 'react-router-dom';
-import { RoutedTabs } from './RoutedTabs';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import {
+  MemoryRouter,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
+import { RoutedTabs, useSelectedSubRoute } from './RoutedTabs';
+import { Link } from '../Link';
 
 const testRoute1 = {
   path: '',
@@ -171,5 +180,237 @@ describe('RoutedTabs', () => {
       expect(v.tagName).toBe('A');
       expect(v).toHaveAttribute('href', expectedHrefs[Number(k)]);
     }
+  });
+
+  describe('with v7_relativeSplatPath', () => {
+    const v7Flags = {
+      v7_relativeSplatPath: true,
+      v7_startTransition: true,
+    } as const;
+
+    const v7SubRoutes = [
+      {
+        path: 'info',
+        title: 'Info',
+        children: <div>Info Content</div>,
+      },
+      {
+        path: 'config',
+        title: 'Config',
+        children: <div>Config Content</div>,
+      },
+      {
+        path: 'tasks',
+        title: 'Tasks',
+        children: <div>Tasks Content</div>,
+      },
+    ];
+
+    function TestSubRouteHook(props: {
+      subRoutes: Array<{
+        path: string;
+        title: string;
+        children: JSX.Element;
+      }>;
+    }) {
+      const { index, route, element } = useSelectedSubRoute(props.subRoutes);
+      return (
+        <div>
+          <div data-testid="selected-index">{index}</div>
+          <div data-testid="selected-route-title">{route?.title}</div>
+          <div data-testid="element-container">{element}</div>
+        </div>
+      );
+    }
+
+    it('should select correct tab inside parent/child Outlet route', () => {
+      render(
+        <MemoryRouter initialEntries={['/devtools/config']} future={v7Flags}>
+          <Routes>
+            <Route path="/devtools" element={<Outlet />}>
+              <Route
+                path="*"
+                element={<TestSubRouteHook subRoutes={v7SubRoutes} />}
+              />
+            </Route>
+          </Routes>
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
+      expect(screen.getByTestId('selected-route-title')).toHaveTextContent(
+        'Config',
+      );
+      expect(screen.getByTestId('element-container')).toHaveTextContent(
+        'Config Content',
+      );
+    });
+
+    it('should select first tab at route root', () => {
+      render(
+        <MemoryRouter initialEntries={['/devtools']} future={v7Flags}>
+          <Routes>
+            <Route path="/devtools" element={<Outlet />}>
+              <Route
+                index
+                element={<TestSubRouteHook subRoutes={v7SubRoutes} />}
+              />
+              <Route
+                path="*"
+                element={<TestSubRouteHook subRoutes={v7SubRoutes} />}
+              />
+            </Route>
+          </Routes>
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('0');
+      expect(screen.getByTestId('selected-route-title')).toHaveTextContent(
+        'Info',
+      );
+    });
+
+    it('should generate tab link hrefs that do not duplicate URL segments', () => {
+      function LocationDisplay() {
+        const location = useLocation();
+        return <div data-testid="location">{location.pathname}</div>;
+      }
+
+      function TabLinkTest() {
+        const { index, element } = useSelectedSubRoute(v7SubRoutes);
+        const params = useParams();
+        const splatParam = params['*'] ?? '';
+        const hasSplatParam = splatParam.length > 0;
+        return (
+          <div>
+            <div data-testid="selected-index">{index}</div>
+            {v7SubRoutes.map(t => {
+              let to = t.path.replace(/\/\*$/, '').replace(/^\//, '');
+              if (hasSplatParam) {
+                to = to ? `../${to}` : '..';
+              } else {
+                to = to || '.';
+              }
+              return (
+                <Link key={t.path} to={to} data-testid={`tab-${t.title}`}>
+                  {t.title}
+                </Link>
+              );
+            })}
+            <div data-testid="element-container">{element}</div>
+          </div>
+        );
+      }
+
+      render(
+        <MemoryRouter initialEntries={['/devtools/config']} future={v7Flags}>
+          <Routes>
+            <Route path="/devtools" element={<Outlet />}>
+              <Route path="*" element={<TabLinkTest />} />
+            </Route>
+          </Routes>
+          <LocationDisplay />
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/devtools/config',
+      );
+
+      // Tab links should resolve to sibling paths, NOT duplicate segments
+      expect(screen.getByTestId('tab-Info')).toHaveAttribute(
+        'href',
+        '/devtools/info',
+      );
+      expect(screen.getByTestId('tab-Config')).toHaveAttribute(
+        'href',
+        '/devtools/config',
+      );
+      expect(screen.getByTestId('tab-Tasks')).toHaveAttribute(
+        'href',
+        '/devtools/tasks',
+      );
+    });
+
+    it('should navigate between tabs without URL duplication', async () => {
+      const user = userEvent.setup();
+
+      function LocationDisplay() {
+        const location = useLocation();
+        return <div data-testid="location">{location.pathname}</div>;
+      }
+
+      function TabLinkTest() {
+        const { index, element } = useSelectedSubRoute(v7SubRoutes);
+        const params = useParams();
+        const splatParam = params['*'] ?? '';
+        const hasSplatParam = splatParam.length > 0;
+        return (
+          <div>
+            <div data-testid="selected-index">{index}</div>
+            {v7SubRoutes.map(t => {
+              let to = t.path.replace(/\/\*$/, '').replace(/^\//, '');
+              if (hasSplatParam) {
+                to = to ? `../${to}` : '..';
+              } else {
+                to = to || '.';
+              }
+              return (
+                <Link key={t.path} to={to} data-testid={`tab-${t.title}`}>
+                  {t.title}
+                </Link>
+              );
+            })}
+            <div data-testid="element-container">{element}</div>
+          </div>
+        );
+      }
+
+      render(
+        <MemoryRouter initialEntries={['/devtools/info']} future={v7Flags}>
+          <Routes>
+            <Route path="/devtools" element={<Outlet />}>
+              <Route index element={<TabLinkTest />} />
+              <Route path="*" element={<TabLinkTest />} />
+            </Route>
+          </Routes>
+          <LocationDisplay />
+        </MemoryRouter>,
+      );
+
+      // Start on info tab
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/devtools/info',
+      );
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('0');
+
+      // Click Config tab
+      await user.click(screen.getByTestId('tab-Config'));
+
+      // Should navigate to config, NOT /devtools/info/config
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/devtools/config',
+      );
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
+
+      // Click Tasks tab
+      await user.click(screen.getByTestId('tab-Tasks'));
+
+      // Should navigate to tasks, NOT /devtools/config/tasks
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/devtools/tasks',
+      );
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('2');
+
+      // Click Info tab
+      await user.click(screen.getByTestId('tab-Info'));
+
+      // Should navigate back to info
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/devtools/info',
+      );
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('0');
+    });
   });
 });

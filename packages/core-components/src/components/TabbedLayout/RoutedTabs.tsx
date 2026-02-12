@@ -15,7 +15,12 @@
  */
 import { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
+import {
+  matchRoutes,
+  useParams,
+  useResolvedPath,
+  useRoutes,
+} from 'react-router-dom';
 import { Content } from '../../layout/Content';
 import { HeaderTabs } from '../../layout/HeaderTabs';
 import { SubRoute } from './types';
@@ -40,7 +45,10 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
     b.path.replace(/\/\*$/, '').localeCompare(a.path.replace(/\/\*$/, '')),
   );
 
-  const element = useRoutes(sortedRoutes) ?? subRoutes[0]?.children;
+  // useRoutes provides proper nested route context needed by child
+  // components that contain their own <Routes>. It returns null in NFS
+  // v7 contexts where the parent Outlet structure prevents matching.
+  const useRoutesElement = useRoutes(sortedRoutes);
 
   // TODO(Rugvip): Once we only support v6 stable we can always prefix
   // This avoids having a double / prefix for react-router v6 beta, which in turn breaks
@@ -55,15 +63,32 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
     ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
     : 0;
 
+  const idx = foundIndex === -1 ? 0 : foundIndex;
+
   return {
-    index: foundIndex === -1 ? 0 : foundIndex,
-    element,
-    route: subRoutes[foundIndex] ?? subRoutes[0],
+    index: idx,
+    // Prefer useRoutes result when available (provides nested route context
+    // for child components). Fall back to direct rendering for NFS/v7
+    // contexts where useRoutes returns null.
+    element:
+      useRoutesElement ?? subRoutes[idx]?.children ?? subRoutes[0]?.children,
+    route: subRoutes[idx] ?? subRoutes[0],
   };
 }
 
 export function RoutedTabs(props: { routes: SubRoute[] }) {
   const { routes } = props;
+  const params = useParams();
+  const resolvedDot = useResolvedPath('.');
+  const splatParam = params['*'] ?? '';
+  // Detect whether v7_relativeSplatPath is active. When enabled, resolving
+  // '.' inside a * child route includes the splat value in the path (e.g.
+  // '/devtools/info'). Without the flag, '.' resolves to the parent route
+  // path only (e.g. '/devtools'). We only need the ../ prefix when the v7
+  // behavior is active, so that the link navigates up from the splat child
+  // before appending the new tab path.
+  const hasSplatParam =
+    splatParam.length > 0 && resolvedDot.pathname.endsWith(`/${splatParam}`);
 
   const { index, route, element } = useSelectedSubRoute(routes);
   const headerTabs = useMemo(
@@ -75,6 +100,14 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
         to = to.replace(/\/\*$/, '');
         // And remove leading / for relative navigation
         to = to.replace(/^\//, '');
+        if (hasSplatParam) {
+          // Navigate up from the * child route to the parent before
+          // appending the tab path, so that relative links resolve
+          // correctly with v7_relativeSplatPath enabled.
+          to = to ? `../${to}` : '..';
+        } else {
+          to = to || '.';
+        }
         return {
           id: path,
           label: title,
@@ -85,7 +118,7 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
           },
         };
       }),
-    [routes],
+    [routes, hasSplatParam],
   );
 
   return (

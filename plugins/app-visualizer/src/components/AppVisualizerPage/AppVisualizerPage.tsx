@@ -22,13 +22,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { DetailedVisualizer } from './DetailedVisualizer';
 import { TextVisualizer } from './TextVisualizer';
 import { TreeVisualizer } from './TreeVisualizer';
-import {
-  matchRoutes,
-  useLocation,
-  useNavigate,
-  useParams,
-  useRoutes,
-} from 'react-router-dom';
+import { matchRoutes, useNavigate, useParams } from 'react-router-dom';
 
 export function AppVisualizerPage() {
   const appTreeApi = useApi(appTreeApiRef);
@@ -58,29 +52,38 @@ export function AppVisualizerPage() {
     [tree],
   );
 
-  const location = useLocation();
-  const element = useRoutes(tabs, location);
+  const params = useParams();
+  // When a splat (*) param exists, we're inside a * child route and need
+  // to navigate up one route level before appending the tab path. Without
+  // this, v7_relativeSplatPath causes relative links to resolve from the
+  // full matched URL, duplicating segments on each tab click.
+  const hasSplatParam = !!params['*'];
 
-  const currentPath = `/${useParams()['*']}`;
+  const currentPath = `/${params['*'] ?? ''}`;
   const [matchedRoute] = matchRoutes(tabs, currentPath) ?? [];
 
   const currentTabIndex = matchedRoute
     ? tabs.findIndex(t => t.path === matchedRoute.route.path)
     : 0;
 
+  const element = tabs[currentTabIndex]?.element ?? tabs[0]?.element;
+
   const navigate = useNavigate();
   const handleTabChange = useCallback(
     (index: number) => {
-      navigate(tabs[index].id);
+      const tabId = tabs[index].id;
+      navigate(hasSplatParam ? `../${tabId}` : tabId);
     },
-    [navigate, tabs],
+    [navigate, tabs, hasSplatParam],
   );
 
   useEffect(() => {
-    if (!element) {
-      navigate(tabs[0].path);
+    if (!matchedRoute) {
+      navigate(hasSplatParam ? `../${tabs[0].path}` : tabs[0].path, {
+        replace: true,
+      });
     }
-  }, [element, navigate, tabs]);
+  }, [matchedRoute, navigate, tabs, hasSplatParam]);
 
   return (
     <Page themeId="tool">
