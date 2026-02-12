@@ -130,7 +130,7 @@ export const kubernetesModuleCustomClusterDiscovery = createBackendModule({
         );
 
         // there's also the ability to get access to some of the default implementations of the extension points where
-        // neccessary:
+        // necessary:
         serviceLocator.addServiceLocator(
           async ({ getDefault, clusterSupplier }) => {
             // get access to the default service locator:
