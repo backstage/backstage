@@ -20,7 +20,8 @@ import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
 import { HeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
+import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
 import styles from './Header.module.css';
 import clsx from 'clsx';
 
@@ -50,7 +51,7 @@ export const Header = (props: HeaderProps) => {
   const hasTabs = tabs && tabs.length > 0;
   const headerRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const el = headerRef.current;
     if (!el) return undefined;
 
