@@ -15,13 +15,27 @@
  */
 
 import { renderWithEffects } from '@backstage/test-utils';
-import App from './App';
+import app from './App';
 
 jest.mock('./config', () => ({
   configLoader: async () => [
     {
       data: {
-        app: { title: 'Test' },
+        app: {
+          title: 'Test',
+          extensions: [
+            {
+              'sign-in-page:app': false,
+            },
+            {
+              'page:techdocs/reader': {
+                config: {
+                  withoutSearch: true,
+                },
+              },
+            },
+          ],
+        },
         backend: { baseUrl: 'http://localhost:7007' },
         techdocs: {
           storageUrl: 'http://localhost:7007/api/techdocs/static/docs',
@@ -34,7 +48,7 @@ jest.mock('./config', () => ({
 
 describe('App', () => {
   it('should render', async () => {
-    const rendered = await renderWithEffects(<App />);
+    const rendered = await renderWithEffects(app);
     expect(rendered.getByText('Docs Preview')).toBeInTheDocument();
   });
 });
