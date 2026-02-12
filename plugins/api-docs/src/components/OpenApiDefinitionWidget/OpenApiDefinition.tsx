@@ -173,6 +173,16 @@ const useStyles = makeStyles(theme => ({
         {
           color: theme.palette.warning.dark,
         },
+      [`& input[type=text],
+          & input[type=password],
+          & input[type=email],
+          & input[type=number],
+          & textarea,
+          & select`]: {
+        backgroundColor: theme.palette.background.paper,
+        color: theme.palette.text.primary,
+        borderColor: theme.palette.divider,
+      },
     },
   },
 }));
