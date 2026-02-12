@@ -57,8 +57,6 @@ export default definePreview({
   },
 
   parameters: {
-    layout: 'fullscreen',
-
     backgrounds: {
       disable: true,
     },
