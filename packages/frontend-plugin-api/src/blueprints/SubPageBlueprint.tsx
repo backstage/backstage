@@ -26,7 +26,7 @@ import { ExtensionBoundary } from '../components';
  * @example
  * ```tsx
  * const overviewRouteRef = createRouteRef();
- * 
+ *
  * const mySubPage = SubPageBlueprint.make({
  *   attachTo: { id: 'page:my-plugin', input: 'pages' },
  *   name: 'overview',
