@@ -1,0 +1,1 @@
+@layer tokens,base,components,utilities;@layer components{._bui-FullPage_1vdnu_20{height:calc(100dvh - var(--bui-header-height, 0px));overflow-y:auto}}
