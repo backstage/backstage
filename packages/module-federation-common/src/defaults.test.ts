@@ -38,6 +38,7 @@ describe('defaultRemoteSharedDependencies', () => {
     expect(result.react).toEqual({
       requiredVersion: '*',
       singleton: true,
+      eager: false,
       import: false,
     });
   });

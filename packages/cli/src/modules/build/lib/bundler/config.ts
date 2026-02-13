@@ -252,24 +252,7 @@ export async function createConfig(
         exposes,
         name: options.moduleFederationRemote.name,
         runtime: false,
-        shared: Object.fromEntries(
-          Object.entries(options.moduleFederationRemote.sharedDependencies).map(
-            ([name, p]) => [
-              name,
-              {
-                ...(p.version === undefined ? {} : { version: p.version }),
-                ...(p.requiredVersion === undefined
-                  ? {}
-                  : { requiredVersion: p.requiredVersion }),
-                ...(p.singleton === undefined
-                  ? {}
-                  : { singleton: p.singleton }),
-                ...(p.import === undefined ? {} : { import: p.import }),
-                eager: false,
-              },
-            ],
-          ),
-        ),
+        shared: options.moduleFederationRemote.sharedDependencies,
       }),
     );
   }

@@ -17,10 +17,7 @@
 import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
 import { ConfigSchema } from '@backstage/config-loader';
-import {
-  SharedDependencies,
-  Remote,
-} from '@backstage/module-federation-common';
+import { RemoteSharedDependencies } from '@backstage/module-federation-common';
 
 export type ModuleFederationRemoteOptions = {
   // Unique name for this module federation bundle
@@ -31,7 +28,7 @@ export type ModuleFederationRemoteOptions = {
      */
     [k: string]: string;
   };
-  sharedDependencies: SharedDependencies<Remote>;
+  sharedDependencies: RemoteSharedDependencies;
 };
 
 export type BundlingOptions = {

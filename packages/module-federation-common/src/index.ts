@@ -22,12 +22,15 @@
  * @packageDocumentation
  */
 
-export {
-  prepareRuntimeSharedDependenciesScript,
-  buildRuntimeSharedUserOption,
-} from './runtime';
+export { loadModuleFederationHostShared } from './loadModuleFederationHostShared';
 export {
   defaultHostSharedDependencies,
   defaultRemoteSharedDependencies,
 } from './defaults';
-export type { Host, Remote, SharedDependencies } from './types';
+export {
+  BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL,
+  type HostSharedDependencies,
+  type RemoteSharedDependencies,
+  type LoadedRuntimeSharedDependency,
+  type RuntimeSharedDependenciesGlobal,
+} from './types';

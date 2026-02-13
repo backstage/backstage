@@ -22,11 +22,11 @@ import {
   getEntryPointDefaultFeatureType,
 } from '../../../../lib/typeDistProject';
 import {
-  SharedDependencies,
-  Host,
-  prepareRuntimeSharedDependenciesScript,
+  BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL,
   defaultRemoteSharedDependencies,
   defaultHostSharedDependencies,
+  HostSharedDependencies,
+  RuntimeSharedDependenciesGlobal,
 } from '@backstage/module-federation-common';
 import { dirname, join as joinPath, resolve as resolvePath } from 'path';
 import fs from 'fs-extra';
@@ -82,6 +82,44 @@ export async function getModuleFederationRemoteOptions(
 
 // Module federation host management utilities
 
+/**
+ * Prepares the runtime shared dependencies script for the module federation host,
+ * which will be written by the CLI into a Javascript file added as an additional entry point for the frontend bundler.
+ * This script is used in the browser to build the list of shared dependencies provided to the module federation runtime.
+ *
+ * @internal
+ */
+export function prepareRuntimeSharedDependenciesScript(
+  hostSharedDependencies: HostSharedDependencies,
+) {
+  const items = Object.entries(hostSharedDependencies).map(
+    ([name, sharedDep]) => {
+      if (!sharedDep.version) {
+        throw new Error(`Version is required for shared dependency '${name}'`);
+      }
+      return {
+        name,
+        version: sharedDep.version,
+        lib: name as unknown as () => Promise<unknown>, // Coverted into import below
+        shareConfig: {
+          singleton: sharedDep.singleton,
+          requiredVersion: sharedDep.requiredVersion,
+          eager: sharedDep.eager,
+        },
+      };
+    },
+  );
+
+  return `window['${BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL}'] = ${JSON.stringify(
+    { items, version: 'v1' } satisfies RuntimeSharedDependenciesGlobal,
+    null,
+    2,
+  ).replace(
+    /"lib": ("[^"]+")/gm,
+    (_, name) => `"lib": () => import(${name})`,
+  )};`;
+}
+
 const RUNTIME_SHARED_DEPENDENCIES_MODULE_NAME =
   '__backstage-module-federation-runtime-shared-dependencies__';
 
@@ -90,7 +128,7 @@ const writeQueue = new PQueue({ concurrency: 1 });
 
 async function writeRuntimeSharedDependenciesModule(
   targetPath: string,
-  runtimeSharedDependencies: SharedDependencies<Host & { version: string }>,
+  runtimeSharedDependencies: HostSharedDependencies,
 ) {
   const script = prepareRuntimeSharedDependenciesScript(
     runtimeSharedDependencies,
@@ -110,41 +148,31 @@ async function writeRuntimeSharedDependenciesModule(
 
 function resolveSharedDependencyVersions(
   targetPath: string,
-  hostSharedDependencies: SharedDependencies<Host>,
-): SharedDependencies<Host & { version: string }> {
+  hostSharedDependencies: HostSharedDependencies,
+): HostSharedDependencies {
   return Object.fromEntries(
     Object.entries(hostSharedDependencies)
       .filter(([_, sharedDep]) => sharedDep !== undefined)
-      .map(([name, sharedDep]) => {
-        // Use require.resolve to find the package
-        // For scoped modules, keep the scope and the module name, but remove any sub-folder
-        const nameParts = name.split('/');
-        const moduleName =
-          nameParts[0].startsWith('@') && nameParts.length > 1
-            ? `${nameParts[0]}/${nameParts[1]}`
-            : nameParts[0];
-        let packagePath: string;
+      .flatMap(([importPath, sharedDep]) => {
+        // Remove any sub-path exports from the import path
+        const moduleName = importPath.startsWith('@')
+          ? importPath.split('/').slice(0, 2).join('/')
+          : importPath.split('/')[0];
+
+        let version: string;
         try {
-          packagePath = require.resolve(`${moduleName}/package.json`, {
+          const packagePath = require.resolve(`${moduleName}/package.json`, {
             paths: [targetPath],
           });
+          version = require(packagePath).version;
         } catch (e) {
-          throw new Error(
-            `Failed to resolve package.json for module federation shared dependency '${name}': ${e}`,
+          console.log(
+            `Skipping module federation shared dependency '${importPath}' because it could not be resolved.`,
           );
-        }
-        const packageJson = require(packagePath);
-
-        if (sharedDep.version && packageJson.version !== sharedDep.version) {
-          throw new Error(
-            `Version mismatch for module federation shared dependency '${name}': '${sharedDep.version}' vs '${packageJson.version}' found in '${packagePath}'.`,
-          );
+          return [];
         }
 
-        return [
-          name,
-          { ...sharedDep, version: sharedDep.version ?? packageJson.version },
-        ];
+        return [[importPath, { ...sharedDep, version }]];
       }),
   );
 }
