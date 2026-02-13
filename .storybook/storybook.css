@@ -5,10 +5,10 @@
   --sb-panel-left: 0;
   --sb-panel-right: 0;
   --sb-sidebar-border: none;
-  --sb-sidebar-border-right: 1px solid var(--bui-border);
+  --sb-sidebar-border-right: 1px solid var(--bui-border-2);
   --sb-sidebar-bg: #000;
   --sb-options-border: none;
-  --sb-options-border-left: 1px solid var(--bui-border);
+  --sb-options-border-left: 1px solid var(--bui-border-2);
   --sb-content-padding-inline: 250px;
 }
 
@@ -31,8 +31,8 @@
 }
 
 [data-theme-name='spotify'][data-theme-mode='light'] {
-  --sb-sidebar-border: 1px solid var(--bui-border);
-  --sb-sidebar-border-right: 1px solid var(--bui-border);
-  --sb-options-border: 1px solid var(--bui-border);
-  --sb-options-border-left: 1px solid var(--bui-border);
+  --sb-sidebar-border: 1px solid var(--bui-border-2);
+  --sb-sidebar-border-right: 1px solid var(--bui-border-2);
+  --sb-options-border: 1px solid var(--bui-border-2);
+  --sb-options-border-left: 1px solid var(--bui-border-2);
 }

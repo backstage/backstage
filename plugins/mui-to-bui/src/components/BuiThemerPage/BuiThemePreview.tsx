@@ -49,7 +49,7 @@ export function BuiThemePreview({ mode, styleObject }: IsolatedPreviewProps) {
         backgroundColor: 'var(--bui-bg-neutral-2)',
         padding: 'var(--bui-space-3)',
         borderRadius: 'var(--bui-radius-2)',
-        border: '1px solid var(--bui-border)',
+        border: '1px solid var(--bui-border-2)',
       }}
     >
       <Flex direction="column" gap="4">

@@ -35,7 +35,7 @@
   .bui-SelectTrigger {
     box-sizing: border-box;
     border-radius: var(--bui-radius-3);
-    border: 1px solid var(--bui-border);
+    border: 1px solid var(--bui-border-2);
     background-color: var(--bui-bg-neutral-1);
     display: flex;
     justify-content: space-between;
@@ -72,16 +72,6 @@
       color: var(--bui-fg-secondary);
     }
 
-    &:hover {
-      transition: border-color 0.2s ease-in-out;
-      border-color: var(--bui-border-hover);
-    }
-
-    &:focus-visible {
-      border-color: var(--bui-border-pressed);
-      outline: 0;
-    }
-
     .bui-Select[data-invalid] & {
       border-color: var(--bui-fg-danger);
 
@@ -93,7 +83,6 @@
 
     &[disabled] {
       cursor: not-allowed;
-      border-color: var(--bui-border-disabled);
       color: var(--bui-fg-disabled);
     }
   }
@@ -194,7 +183,7 @@
     display: flex;
     align-items: center;
     padding-inline: var(--bui-space-3) 0;
-    border-bottom: 1px solid var(--bui-border);
+    border-bottom: 1px solid var(--bui-border-2);
   }
 
   .bui-SelectSearch {
