@@ -45,14 +45,13 @@ function mockDefaultConfig(): Config {
   });
 }
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL } from '../../module-federation-common/src/types';
+
 const globalSpy = jest.fn();
-Object.defineProperty(
-  global,
-  '__backstage-module-federation-shared-dependencies__',
-  {
-    get: globalSpy,
-  },
-);
+Object.defineProperty(global, BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL, {
+  get: globalSpy,
+});
 
 describe('dynamicFrontendFeaturesLoader', () => {
   const server = setupServer();
@@ -128,67 +127,62 @@ describe('dynamicFrontendFeaturesLoader', () => {
     resetFederationGlobalInfo();
   });
 
-  const mockedDefaultSharedDependencies = {
-    react: {
+  const mockedDefaultSharedItems = [
+    {
+      name: 'react',
       version: '18.3.1',
-      requiredVersion: '*',
-      singleton: true,
-      eager: true,
-      module: () => ({ default: {} }),
+      lib: async () => ({ default: {} }),
+      shareConfig: { singleton: true, requiredVersion: '*', eager: true },
     },
-    'react-dom': {
+    {
+      name: 'react-dom',
       version: '18.3.1',
-      requiredVersion: '*',
-      singleton: true,
-      eager: true,
-      module: () => ({ default: {} }),
+      lib: async () => ({ default: {} }),
+      shareConfig: { singleton: true, requiredVersion: '*', eager: true },
     },
-    'react-router': {
+    {
+      name: 'react-router',
       version: '6.28.2',
-      requiredVersion: '*',
-      singleton: true,
-      eager: true,
-      module: () => ({ default: {} }),
+      lib: async () => ({ default: {} }),
+      shareConfig: { singleton: true, requiredVersion: '*', eager: true },
     },
-    'react-router-dom': {
+    {
+      name: 'react-router-dom',
       version: '6.28.2',
-      requiredVersion: '*',
-      singleton: true,
-      eager: true,
-      module: () => ({ default: {} }),
+      lib: async () => ({ default: {} }),
+      shareConfig: { singleton: true, requiredVersion: '*', eager: true },
     },
-    '@material-ui/core/styles': {
+    {
+      name: '@material-ui/core/styles',
       version: '4.12.4',
-      requiredVersion: '*',
-      singleton: true,
-      eager: true,
-      module: () => ({ default: {} }),
+      lib: async () => ({ default: {} }),
+      shareConfig: { singleton: true, requiredVersion: '*', eager: true },
     },
-    '@material-ui/styles': {
+    {
+      name: '@material-ui/styles',
       version: '4.11.5',
-      requiredVersion: '*',
-      singleton: true,
-      eager: true,
-      module: () => ({ default: {} }),
+      lib: async () => ({ default: {} }),
+      shareConfig: { singleton: true, requiredVersion: '*', eager: true },
     },
-    '@mui/material/styles/': {
+    {
+      name: '@mui/material/styles/',
       version: '5.16.14',
-      requiredVersion: '*',
-      singleton: true,
-      eager: true,
-      module: () => ({ default: {} }),
+      lib: async () => ({ default: {} }),
+      shareConfig: { singleton: true, requiredVersion: '*', eager: true },
     },
-    '@emotion/react': {
+    {
+      name: '@emotion/react',
       version: '11.13.5',
-      requiredVersion: '*',
-      singleton: true,
-      eager: true,
-      module: () => ({ default: {} }),
+      lib: async () => ({ default: {} }),
+      shareConfig: { singleton: true, requiredVersion: '*', eager: true },
     },
-  };
+  ];
 
   beforeEach(() => {
-    globalSpy.mockReturnValue(mockedDefaultSharedDependencies);
+    globalSpy.mockReturnValue({
+      items: mockedDefaultSharedItems,
+      version: 'v1',
+    });
   });
 
   it('should return immediately if dynamic plugins are not enabled in config', async () => {
@@ -1152,22 +1146,20 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(spyInit).toHaveBeenCalledTimes(1);
     expect(spyInit.mock.calls[0][0].options).toMatchObject({
       shared: Object.fromEntries(
-        Object.entries(mockedDefaultSharedDependencies).map(
-          ([name, shared]) => [
-            name,
-            [
-              {
-                version: shared.version,
-                shareConfig: {
-                  singleton: shared.singleton,
-                  requiredVersion: shared.requiredVersion,
-                  eager: shared.eager,
-                },
-                strategy: 'version-first',
+        mockedDefaultSharedItems.map(item => [
+          item.name,
+          [
+            {
+              version: item.version,
+              shareConfig: {
+                singleton: item.shareConfig.singleton,
+                requiredVersion: item.shareConfig.requiredVersion,
+                eager: item.shareConfig.eager,
               },
-            ],
+              strategy: 'version-first',
+            },
           ],
-        ),
+        ]),
       ),
     });
   });
