@@ -42,12 +42,12 @@ export interface AccordionTriggerProps extends RAHeadingProps {
    * Icon to display at the start of the trigger.
    * @defaultValue undefined
    */
-  iconStart?: React.ReactNode;
+  iconStart?: React.ReactElement;
   /**
    * Icon to display at the end of the trigger.
    * @defaultValue undefined
    */
-  iconEnd?: React.ReactNode;
+  iconEnd?: React.ReactElement;
 }
 
 /**

@@ -1,5 +1,5 @@
 ---
-'@backstage/ui': minor
+'@backstage/ui': patch
 ---
 
 Add new `iconStart` + `iconEnd` props to `Accordion` component in Backstage UI

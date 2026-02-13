@@ -119,8 +119,8 @@ export interface AccordionTriggerProps extends HeadingProps {
   children?: React.ReactNode;
   // (undocumented)
   className?: string;
-  iconEnd?: React.ReactNode;
-  iconStart?: React.ReactNode;
+  iconEnd?: React.ReactElement;
+  iconStart?: React.ReactElement;
   // (undocumented)
   subtitle?: string;
   // (undocumented)
