@@ -294,7 +294,7 @@ export async function createRouter(
               limit: req.query.limit,
               offset: req.query.offset,
               ...parsedParams,
-              ...(filter !== undefined && { filter }),
+              filter,
               credentials,
             });
 

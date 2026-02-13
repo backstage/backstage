@@ -213,8 +213,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
           return typeof option === 'string'
             ? option
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.entityRef!
-        }
+                ?.entityRef!;
+        }}
         autoSelect={autoSelect}
         freeSolo={allowArbitraryValues}
         renderInput={params => (
@@ -243,8 +243,9 @@ export const EntityPicker = (props: EntityPickerProps) => {
 const OWNED_BY_KEY = `relations.${RELATION_OWNED_BY}`;
 
 /**
- * Converts a especial `{exists: true}` value to the `CATALOG_FILTER_EXISTS` symbol.
+ * Converts a special `{exists: true}` value to the `CATALOG_FILTER_EXISTS` symbol.
  * For `{ currentUser: true }`, the key decides which constant is used: `relations.ownedBy` → ownership refs, anything else → single ref.
+ * @param key - The filter key used to determine which current user constant to apply.
  * @param value - The value to convert.
  * @returns The converted value.
  */

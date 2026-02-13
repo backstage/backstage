@@ -24,7 +24,7 @@ export type AddLocationResponse = {
   exists?: boolean;
 };
 
-// @public (undocumented)
+// @public
 export const CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS =
   '__catalog:current_user_ownership_refs__';
 

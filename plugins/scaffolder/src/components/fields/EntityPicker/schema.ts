@@ -68,7 +68,7 @@ export const EntityPickerFieldSchema = makeFieldSchema({
         .boolean()
         .optional()
         .describe(
-          'Whether to automatically select an option on blur. Defaults to true.'
+          'Whether to automatically select an option on blur. Defaults to true.',
         ),
     }),
 });

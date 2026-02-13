@@ -85,6 +85,9 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
           | {
               exists?: boolean | undefined;
             }
+          | {
+              currentUser?: boolean | undefined;
+            }
         >
       | Record<
           string,
@@ -92,6 +95,9 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
           | string[]
           | {
               exists?: boolean | undefined;
+            }
+          | {
+              currentUser?: boolean | undefined;
             }
         >[]
       | undefined;
@@ -115,6 +121,9 @@ export const EntityPickerFieldSchema: FieldSchema_2<
           | {
               exists?: boolean | undefined;
             }
+          | {
+              currentUser?: boolean | undefined;
+            }
         >
       | Record<
           string,
@@ -122,6 +131,9 @@ export const EntityPickerFieldSchema: FieldSchema_2<
           | string[]
           | {
               exists?: boolean | undefined;
+            }
+          | {
+              currentUser?: boolean | undefined;
             }
         >[]
       | undefined;
@@ -216,6 +228,9 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
           | {
               exists?: boolean | undefined;
             }
+          | {
+              currentUser?: boolean | undefined;
+            }
         >
       | Record<
           string,
@@ -223,6 +238,9 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
           | string[]
           | {
               exists?: boolean | undefined;
+            }
+          | {
+              currentUser?: boolean | undefined;
             }
         >[]
       | undefined;
@@ -262,6 +280,9 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
           | {
               exists?: boolean | undefined;
             }
+          | {
+              currentUser?: boolean | undefined;
+            }
         >
       | Record<
           string,
@@ -269,6 +290,9 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
           | string[]
           | {
               exists?: boolean | undefined;
+            }
+          | {
+              currentUser?: boolean | undefined;
             }
         >[]
       | undefined;
@@ -292,6 +316,9 @@ export const OwnedEntityPickerFieldSchema: FieldSchema_2<
           | {
               exists?: boolean | undefined;
             }
+          | {
+              currentUser?: boolean | undefined;
+            }
         >
       | Record<
           string,
@@ -299,6 +326,9 @@ export const OwnedEntityPickerFieldSchema: FieldSchema_2<
           | string[]
           | {
               exists?: boolean | undefined;
+            }
+          | {
+              currentUser?: boolean | undefined;
             }
         >[]
       | undefined;
@@ -325,6 +355,9 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
           | {
               exists?: boolean | undefined;
             }
+          | {
+              currentUser?: boolean | undefined;
+            }
         >
       | Record<
           string,
@@ -332,6 +365,9 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
           | string[]
           | {
               exists?: boolean | undefined;
+            }
+          | {
+              currentUser?: boolean | undefined;
             }
         >[]
       | undefined;
@@ -353,6 +389,9 @@ export const OwnerPickerFieldSchema: FieldSchema_2<
           | {
               exists?: boolean | undefined;
             }
+          | {
+              currentUser?: boolean | undefined;
+            }
         >
       | Record<
           string,
@@ -360,6 +399,9 @@ export const OwnerPickerFieldSchema: FieldSchema_2<
           | string[]
           | {
               exists?: boolean | undefined;
+            }
+          | {
+              currentUser?: boolean | undefined;
             }
         >[]
       | undefined;

@@ -249,9 +249,9 @@ const OWNED_BY_KEY = `relations.${RELATION_OWNED_BY}`;
  * Converts a special `{exists: true}` value to the `CATALOG_FILTER_EXISTS` symbol.
  *
  * For `{ currentUser: true }`, the key decides which constant is used: `relations.ownedBy` → ownership refs, anything else → single ref.
+ * @param key - The filter key used to determine which current user constant to apply.
  * @param value - The value to convert.
  * @returns The converted value.
- * the key decides which constant is used: relations.ownedBy → ownership refs, anything else → single ref.
  */
 function convertOpsValues(
   key: string,

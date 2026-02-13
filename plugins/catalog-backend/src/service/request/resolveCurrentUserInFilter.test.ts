@@ -173,7 +173,7 @@ describe('resolveCurrentUserInFilter', () => {
     });
   });
 
-  it('removes condition when getUserInfo throws and only magic value', async () => {
+  it('preserves magic value in filter when getUserInfo throws (matches no entities)', async () => {
     const userInfo = mockServices.userInfo.mock();
     userInfo.getUserInfo.mockRejectedValueOnce(new Error('User not found'));
     const credentials = mockCredentials.user();
@@ -188,6 +188,9 @@ describe('resolveCurrentUserInFilter', () => {
       userInfo,
     );
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual({
+      key: 'spec.owner',
+      values: [CATALOG_FILTER_CURRENT_USER_REF],
+    });
   });
 });
