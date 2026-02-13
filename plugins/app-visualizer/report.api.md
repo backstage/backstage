@@ -130,8 +130,9 @@ const visualizerPlugin: OverridableFrontendPlugin<
         path: string;
         title?: string;
         icon?: IconElement;
-        loader?: () => Promise<JSX.Element>;
+        loader?: () => Promise<JSX.Element /** @public */>;
         routeRef?: RouteRef;
+        noHeader?: boolean;
       };
     }>;
     'sub-page:app-visualizer/details': OverridableExtensionDefinition<{

@@ -1086,6 +1086,7 @@ const _default: OverridableFrontendPlugin<
         icon?: IconElement;
         loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
+        noHeader?: boolean;
       };
     }>;
     'page:catalog/entity': OverridableExtensionDefinition<{
@@ -1267,6 +1268,7 @@ const _default: OverridableFrontendPlugin<
         icon?: IconElement;
         loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
+        noHeader?: boolean;
       };
     }>;
     'search-result-list-item:catalog': OverridableExtensionDefinition<{
