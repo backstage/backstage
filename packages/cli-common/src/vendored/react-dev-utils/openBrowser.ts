@@ -43,6 +43,7 @@
  * - Inlined AppleScript: openChrome.applescript is embedded as a string and written to a temp file on macOS, then unlinked; no separate .applescript file.
  * - Process check on macOS: original uses "ps cax | grep <browser>"; we use "pgrep -f <browser>" for the same purpose (avoids separate grep process and argument escaping).
  * - open() options: original used url: true; removed in open v8, deprecated in v7.2
+ * - Make open an optional peer dependency
  * - Ported to TypeScript with basic types; same API openBrowser(url: string): boolean.
  *
  * -----------------------------------------------------------------------
@@ -54,7 +55,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { styleText } from 'node:util';
 import spawn from 'cross-spawn';
-import open from 'open';
+import { loadOpen } from './loadOpen';
 
 // https://github.com/sindresorhus/open#app
 const OSX_CHROME = 'google chrome';
@@ -295,10 +296,14 @@ function startBrowserProcess(
     };
   }
 
-  // Fallback to open
-  // (It will always open new tab)
+  // Fallback to open (ESM-only; load via dynamic import from CJS build)
+  // (It will always open new tab). Outer .catch handles optional peer not installed.
   try {
-    open(url, { app: appOption, wait: false }).catch(() => {}); // Prevent `unhandledRejection` error.
+    loadOpen()
+      .then(m =>
+        m.default(url, { app: appOption, wait: false }).catch(() => {}),
+      )
+      .catch(() => {});
     return true;
   } catch {
     return false;

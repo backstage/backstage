@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-jest.mock('open', () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock('./loadOpen', () => {
+  const openMock = jest.fn().mockResolvedValue(undefined);
+  return {
+    loadOpen: () => Promise.resolve({ default: openMock }),
+    __openMock: openMock,
+  };
+});
 
-import { openBrowser } from './vendored/react-dev-utils/openBrowser';
+import { openBrowser } from './openBrowser';
+import { __openMock } from './loadOpen';
 
 describe('openBrowser', () => {
   const originalBrowser = process.env.BROWSER;
@@ -37,12 +41,12 @@ describe('openBrowser', () => {
     expect(openBrowser('http://example.com')).toBe(false);
   });
 
-  it('returns true and uses open when BROWSER is set to a non-Chromium app', () => {
+  it('returns true and uses open when BROWSER is set to a non-Chromium app', async () => {
     process.env.BROWSER = 'firefox';
     const result = openBrowser('http://example.com');
     expect(result).toBe(true);
-    const open = require('open').default;
-    expect(open).toHaveBeenCalledWith(
+    await Promise.resolve();
+    expect(__openMock).toHaveBeenCalledWith(
       'http://example.com',
       expect.objectContaining({ wait: false }),
     );
