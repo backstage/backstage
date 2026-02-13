@@ -115,6 +115,7 @@ describe('DefaultRefreshService', () => {
     const stitcher = DefaultStitcher.fromConfig(new ConfigReader({}), {
       knex,
       logger: defaultLogger,
+      events: mockServices.events.mock(),
     });
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),

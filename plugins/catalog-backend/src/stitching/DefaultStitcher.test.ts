@@ -42,6 +42,7 @@ describe('Stitcher', () => {
         knex: db,
         logger,
         strategy: { mode: 'immediate' },
+        events: mockServices.events.mock(),
       });
       let entities: DbFinalEntitiesRow[];
       let entity: Entity;

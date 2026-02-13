@@ -166,6 +166,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -199,6 +200,7 @@ describe('DefaultEntitiesCatalog', () => {
         await createDatabase(databaseId);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -245,6 +247,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -304,6 +307,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity2);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -344,6 +348,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity2);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -398,6 +403,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity4);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -458,6 +464,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity2);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -506,6 +513,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity2);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -555,6 +563,7 @@ describe('DefaultEntitiesCatalog', () => {
         );
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
           enableRelationsCompatibility: true,
@@ -613,6 +622,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -679,6 +689,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -774,6 +785,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -830,6 +842,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -879,6 +892,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1056,6 +1070,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1234,6 +1249,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1294,6 +1310,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1348,6 +1365,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1447,6 +1465,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1527,6 +1546,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1563,6 +1583,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1614,6 +1635,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1738,6 +1760,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1802,6 +1825,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1897,6 +1921,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -1939,6 +1964,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -2034,6 +2060,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -2124,6 +2151,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -2174,6 +2202,7 @@ describe('DefaultEntitiesCatalog', () => {
         });
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -2248,6 +2277,7 @@ describe('DefaultEntitiesCatalog', () => {
         });
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -2297,6 +2327,7 @@ describe('DefaultEntitiesCatalog', () => {
         });
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -2341,6 +2372,7 @@ describe('DefaultEntitiesCatalog', () => {
         });
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });
@@ -2389,6 +2421,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
+          events: mockServices.events.mock(),
           logger: mockServices.logger.mock(),
           stitcher,
         });

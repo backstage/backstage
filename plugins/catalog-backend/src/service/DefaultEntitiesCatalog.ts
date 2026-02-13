@@ -16,6 +16,7 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
+import { EventsService } from '@backstage/plugin-events-node';
 import { Knex } from 'knex';
 import { chunk as lodashChunk, isEqual } from 'lodash';
 import { z } from 'zod';
@@ -53,6 +54,7 @@ import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
 import { processRawEntitiesResult } from './response';
+import { CATALOG_ENTITY_CHANGE_TOPIC } from '../constants';
 
 const DEFAULT_LIMIT = 200;
 
@@ -105,19 +107,27 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
   private readonly stitcher: Stitcher;
+  private readonly events: EventsService;
   private readonly enableRelationsCompatibility: boolean;
+  private readonly experimentalEntityChangeEvents: boolean;
 
   constructor(options: {
     database: Knex;
     logger: LoggerService;
     stitcher: Stitcher;
+    events: EventsService;
     enableRelationsCompatibility?: boolean;
+    experimentalEntityChangeEvents?: boolean;
   }) {
     this.database = options.database;
     this.logger = options.logger;
     this.stitcher = options.stitcher;
+    this.events = options.events;
     this.enableRelationsCompatibility = Boolean(
       options.enableRelationsCompatibility,
+    );
+    this.experimentalEntityChangeEvents = Boolean(
+      options.experimentalEntityChangeEvents,
     );
   }
 
@@ -606,9 +616,27 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           .select({ ref: 'relations.source_entity_ref' }),
       );
 
+    const [entityToDelete] = await this.database<DbFinalEntitiesRow>(
+      'final_entities',
+    )
+      .where('entity_id', uid)
+      .select('entity_ref');
+
     await this.database<DbRefreshStateRow>('refresh_state')
       .where('entity_id', uid)
       .delete();
+
+    // If the entity was never stitched (meaning there is no final_entities row), then we don't need to
+    // publish a deletion event, since the entity never fully existed in the catalog.
+    if (this.experimentalEntityChangeEvents && entityToDelete?.entity_ref) {
+      await this.events.publish({
+        topic: CATALOG_ENTITY_CHANGE_TOPIC,
+        eventPayload: {
+          entityRef: entityToDelete.entity_ref,
+          action: 'deleted',
+        },
+      });
+    }
 
     await this.stitcher.stitch({
       entityRefs: new Set(relationPeers.map(p => p.ref)),

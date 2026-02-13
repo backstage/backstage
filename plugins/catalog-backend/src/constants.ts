@@ -18,3 +18,5 @@
 export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
 /** @public */
 export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
+/** @public */
+export const CATALOG_ENTITY_CHANGE_TOPIC = 'experimental.catalog.changes';
