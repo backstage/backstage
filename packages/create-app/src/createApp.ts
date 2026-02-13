@@ -65,10 +65,10 @@ export default async (opts: OptionValues): Promise<void> => {
     },
   ]);
 
-  // Pick the built-in template based on the --next flag
-  const builtInTemplate = opts.next
-    ? paths.resolveOwn('templates/next-app')
-    : paths.resolveOwn('templates/default-app');
+  // Pick the built-in template based on the --legacy flag
+  const builtInTemplate = opts.legacy
+    ? paths.resolveOwn('templates/default-app')
+    : paths.resolveOwn('templates/next-app');
 
   // Use `--template-path` argument as template when specified. Otherwise, use the default template.
   const templateDir = opts.templatePath

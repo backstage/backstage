@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, dirname, isAbsolute } from 'node:path';
+import { resolve as resolvePath, dirname, isAbsolute, join } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { defaultTemplates } from '../defaultTemplates';
 import {
@@ -27,6 +27,60 @@ import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error/v3';
 import { ForwardedError } from '@backstage/errors';
+
+type FrontendSystem = 'new' | 'legacy' | 'unknown';
+
+async function detectFrontendSystem(basePath: string): Promise<FrontendSystem> {
+  const appPkgPath = join(basePath, 'packages', 'app', 'package.json');
+
+  try {
+    const appPkgJson = await fs.readJson(appPkgPath);
+    const deps = {
+      ...appPkgJson.dependencies,
+      ...appPkgJson.devDependencies,
+    };
+
+    if (
+      deps['@backstage/frontend-defaults'] ||
+      deps['@backstage/frontend-app-api']
+    ) {
+      return 'new';
+    }
+    if (deps['@backstage/app-defaults'] || deps['@backstage/core-app-api']) {
+      return 'legacy';
+    }
+  } catch {
+    // App package doesn't exist or can't be read
+  }
+
+  return 'unknown';
+}
+
+// Templates to exclude based on frontend system detection (by path, not name)
+const newFrontendTemplates = [
+  '@backstage/cli/templates/frontend-plugin',
+  '@backstage/cli/templates/frontend-plugin-module',
+];
+const legacyFrontendTemplates = [
+  '@backstage/cli/templates/legacy-frontend-plugin',
+];
+
+function filterTemplateEntriesForFrontendSystem(
+  entries: Array<{ pointer: PortableTemplatePointer; rawPointer: string }>,
+  frontendSystem: FrontendSystem,
+): Array<{ pointer: PortableTemplatePointer; rawPointer: string }> {
+  if (frontendSystem === 'unknown') {
+    return entries;
+  }
+
+  if (frontendSystem === 'new') {
+    // Filter out legacy frontend templates
+    return entries.filter(e => !legacyFrontendTemplates.includes(e.rawPointer));
+  }
+
+  // Legacy system - filter out new frontend templates
+  return entries.filter(e => !newFrontendTemplates.includes(e.rawPointer));
+}
 
 const defaults = {
   license: 'Apache-2.0',
@@ -104,7 +158,9 @@ export async function loadPortableTemplateConfig(
   const config = parsed.data.backstage?.cli?.new;
 
   const basePath = dirname(pkgPath);
-  const templatePointerEntries = await Promise.all(
+  const isUsingDefaultTemplates = !config?.templates;
+
+  let templatePointerEntries = await Promise.all(
     (config?.templates ?? defaultTemplates).map(async rawPointer => {
       try {
         const templatePath = resolveLocalTemplatePath(rawPointer, basePath);
@@ -119,6 +175,17 @@ export async function loadPortableTemplateConfig(
       }
     }),
   );
+
+  // Auto-filter frontend templates based on detected frontend system.
+  // This must happen before the conflict check since both the new and legacy
+  // frontend plugin templates have the same name, but only one will be shown.
+  if (isUsingDefaultTemplates) {
+    const frontendSystem = await detectFrontendSystem(basePath);
+    templatePointerEntries = filterTemplateEntriesForFrontendSystem(
+      templatePointerEntries,
+      frontendSystem,
+    );
+  }
 
   const templateNameConflicts = new Map<string, string>();
   for (const { pointer, rawPointer } of templatePointerEntries) {
@@ -142,7 +209,7 @@ export async function loadPortableTemplateConfig(
   );
 
   return {
-    isUsingDefaultTemplates: !config?.templates,
+    isUsingDefaultTemplates,
     templatePointers: templatePointerEntries.map(({ pointer }) => pointer),
     license: overrides.license ?? config?.globals?.license ?? defaults.license,
     version: overrides.version ?? config?.globals?.version ?? defaults.version,

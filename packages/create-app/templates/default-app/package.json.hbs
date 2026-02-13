@@ -22,6 +22,27 @@
     "prettier:check": "prettier --check .",
     "new": "backstage-cli new"
   },
+  "backstage": {
+    "cli": {
+      "new": {
+        "globals": {
+          "license": "UNLICENSED"
+        },
+        "templates": [
+          "@backstage/cli/templates/legacy-frontend-plugin",
+          "@backstage/cli/templates/backend-plugin",
+          "@backstage/cli/templates/backend-plugin-module",
+          "@backstage/cli/templates/plugin-web-library",
+          "@backstage/cli/templates/plugin-node-library",
+          "@backstage/cli/templates/plugin-common-library",
+          "@backstage/cli/templates/web-library",
+          "@backstage/cli/templates/node-library",
+          "@backstage/cli/templates/catalog-provider-module",
+          "@backstage/cli/templates/scaffolder-backend-module"
+        ]
+      }
+    }
+  },
   "workspaces": {
     "packages": [
       "packages/*",
