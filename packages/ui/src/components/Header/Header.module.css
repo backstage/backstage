@@ -43,7 +43,7 @@
     justify-content: space-between;
     background-color: var(--bui-bg-neutral-1);
     padding-inline: var(--bui-space-5);
-    border-bottom: 1px solid var(--bui-border-2);
+    border-bottom: 1px solid var(--bui-border-1);
     color: var(--bui-fg-primary);
     height: 52px;
   }
@@ -89,7 +89,7 @@
 
   .bui-HeaderTabsWrapper {
     padding-inline: var(--bui-space-3);
-    border-bottom: 1px solid var(--bui-border-2);
+    border-bottom: 1px solid var(--bui-border-1);
     background-color: var(--bui-bg-neutral-1);
   }
 }

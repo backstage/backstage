@@ -21,9 +21,9 @@
     display: flex;
     flex-direction: column;
     box-shadow: var(--bui-shadow);
-    border: 1px solid var(--bui-border-2);
+    border: 1px solid var(--bui-border-1);
     border-radius: var(--bui-radius-2);
-    background: var(--bui-bg-neutral-1);
+    background: var(--bui-bg-popover);
     color: var(--bui-fg-primary);
     outline: none;
     transition: transform 200ms, opacity 200ms;
@@ -183,7 +183,7 @@
 
   .bui-MenuSeparator {
     height: 1px;
-    background: var(--bui-border-2);
+    background: var(--bui-border-1);
     margin-inline: var(--bui-space-1_5);
     margin-block: var(--bui-space-1);
   }
@@ -194,7 +194,7 @@
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid var(--bui-border-2);
+    border-bottom: 1px solid var(--bui-border-1);
     background-color: var(--bui-bg-neutral-1);
     height: 2rem;
 
