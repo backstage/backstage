@@ -63,6 +63,7 @@ const homePage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { node, inputs }) {
     return originalFactory({
       path: '/home',
+      noHeader: true,
       routeRef: rootRouteRef,
       loader: async () => {
         const LazyDefaultLayout = reactLazy(() =>

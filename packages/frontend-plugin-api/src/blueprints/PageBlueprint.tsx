@@ -77,6 +77,10 @@ export const PageBlueprint = createExtensionBlueprint({
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
+      /**
+       * Hide the default plugin page header, making the page fill up all available space.
+       */
+      noHeader?: boolean;
     },
     { config, node, inputs },
   ) {
@@ -87,6 +91,7 @@ export const PageBlueprint = createExtensionBlueprint({
       node.spec.plugin.pluginId;
     const icon = params.icon ?? node.spec.plugin.icon;
     const pluginId = node.spec.plugin.pluginId;
+    const noHeader = params.noHeader ?? false;
 
     yield coreExtensionData.routePath(config.path ?? params.path);
     if (params.loader) {
@@ -94,7 +99,12 @@ export const PageBlueprint = createExtensionBlueprint({
       const PageContent = () => {
         const headerActions = useHeaderActions(pluginId);
         return (
-          <PageLayout title={title} icon={icon} headerActions={headerActions}>
+          <PageLayout
+            title={title}
+            icon={icon}
+            noHeader={noHeader}
+            headerActions={headerActions}
+          >
             {ExtensionBoundary.lazy(node, loader)}
           </PageLayout>
         );

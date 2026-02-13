@@ -1757,6 +1757,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     icon?: IconElement;
     loader?: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
+    noHeader?: boolean;
   };
   output:
     | ExtensionDataRef_2<string, 'core.routing.path', {}>
@@ -1839,6 +1840,8 @@ export interface PageLayoutProps {
   headerActions?: ReactNode;
   // (undocumented)
   icon?: IconElement;
+  // (undocumented)
+  noHeader?: boolean;
   // (undocumented)
   tabs?: PageTab[];
   // (undocumented)
