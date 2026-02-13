@@ -39,10 +39,6 @@ declare module 'react-dev-utils/formatWebpackMessages' {
   };
 }
 
-declare module 'react-dev-utils/openBrowser' {
-  export default function (url: string): boolean;
-}
-
 declare module 'react-dev-utils/ModuleScopePlugin' {
   import webpack = require('webpack');
 

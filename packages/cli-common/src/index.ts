@@ -33,3 +33,4 @@ export {
   type RunOnOutput,
 } from './run';
 export { ExitCodeError } from './errors';
+export { openBrowser } from './vendored/react-dev-utils/openBrowser';

@@ -27,6 +27,9 @@ export function findPaths(searchDir: string): Paths;
 export function isChildPath(base: string, path: string): boolean;
 
 // @public
+export function openBrowser(url: string): boolean;
+
+// @public
 export type Paths = {
   ownDir: string;
   ownRoot: string;

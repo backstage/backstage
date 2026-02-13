@@ -3256,6 +3256,7 @@ __metadata:
     "@types/node": "npm:^22.13.14"
     cross-spawn: "npm:^7.0.3"
     global-agent: "npm:^3.0.0"
+    open: "npm:^8.4.2"
     undici: "npm:^7.2.3"
   languageName: unknown
   linkType: soft
@@ -20702,7 +20703,6 @@ __metadata:
     global-agent: "npm:^3.0.0"
     http-proxy: "npm:^1.18.1"
     nodemon: "npm:^3.0.1"
-    react-dev-utils: "npm:^12.0.0-next.60"
     serve-handler: "npm:^6.1.3"
     techdocs-cli-embedded-app: "link:../techdocs-cli-embedded-app"
     winston: "npm:^3.2.1"
@@ -41082,7 +41082,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"open@npm:^8.0.0, open@npm:^8.4.0":
+"open@npm:^8.0.0, open@npm:^8.4.0, open@npm:^8.4.2":
   version: 8.4.2
   resolution: "open@npm:8.4.2"
   dependencies:
