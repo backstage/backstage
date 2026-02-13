@@ -8,13 +8,13 @@ Audience: Developers
 
 ## Overview
 
-Components in the software catalog are created using a software template. Templates load skeletons of code, which can include some variables, and incorporate your company's best practices. The templates are published to a location, such as GitHub or GitLab.
+Components in the Software Catalog are created using a software template. Templates load skeletons of code, which can include some variables, and incorporate your company's best practices. The templates are published to a location, such as GitHub or GitLab.
 
 The standalone Backstage application includes the `Example Node.js Template`, which is an example template for the scaffolder that creates and registers a simple Node.js service. You can also [create your own templates](../features/software-templates/adding-templates.md).
 
 ## Prerequisites
 
-For this example, the default Node.js template will be used. The template creates a repository in GitHub and adds the necessary files to it so that the component is integrated into the software catalog. Because you are creating a repository, you must first create an integration between Backstage and GitHub.
+For this example, the default Node.js template will be used. The template creates a repository in GitHub and adds the necessary files to it so that the component is integrated into the Software Catalog. Because you are creating a repository, you must first create an integration between Backstage and GitHub.
 
 - You should have already [installed a standalone app](../getting-started/index.md).
 
@@ -64,13 +64,13 @@ Perform the following steps:
 4. Enter `yarn start` to restart the Backstage application.
 5. Repeat steps to create the component.
 
-Otherwise, you can follow along with the progress, and as soon as every step is finished, you can take a look at your new service in either the repository or the catalog.
+Otherwise, you can follow along with the progress, and as soon as every step is finished, you can take a look at your new service in either the repository or the Catalog.
 
 ![run of example of create component](../assets/uiguide/successful-create-new-component.png)
 
 Selecting `REPOSITORY` displays the files in the main branch of the new `tutorial` repository. When you created the new `tutorial` component, three files were created in the repository
 
-- **catalog-info.yaml** - Describes the entity for the software catalog. [Descriptor Format of Catalog Entities](../features/software-catalog/descriptor-format.md) provides additional information.
+- **catalog-info.yaml** - Describes the entity for the Software Catalog. [Descriptor Format of Catalog Entities](../features/software-catalog/descriptor-format.md) provides additional information.
 
   ```
    apiVersion: backstage.io/v1alpha1
@@ -103,6 +103,6 @@ Selecting `OPEN IN CATALOG` displays details of the new component, such as its r
 
 ![select open in catalog](../assets/uiguide/tutorial-component-open-in-catalog.png)
 
-Selecting `Home` in the sidebar, displays the new `tutorial` component in the catalog.
+Selecting `Home` in the sidebar, displays the new `tutorial` component in the Catalog.
 
 ![new tutorial component in software catalog](../assets/uiguide/new-tutorial-component-in-software-catalog.png)
