@@ -1,25 +1,30 @@
 {
-  "name": "@backstage/frontend-dynamic-feature-loader",
-  "version": "0.1.9-next.1",
+  "name": "@backstage/module-federation-common",
+  "version": "0.0.0",
+  "description": "Helper library for module federation",
   "backstage": {
-    "role": "web-library"
+    "role": "common-library"
   },
   "publishConfig": {
     "access": "public",
-    "main": "dist/index.esm.js",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/frontend-dynamic-feature-loader"
+    "directory": "packages/module-federation-common"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "config.d.ts",
     "dist"
   ],
   "scripts": {
@@ -28,40 +33,36 @@
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "start": "backstage-cli package start",
     "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
-    "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/module-federation-common": "workspace:^",
-    "@module-federation/enhanced": "^0.21.6",
-    "@module-federation/runtime": "^0.21.6",
-    "@module-federation/sdk": "^0.21.6",
-    "cross-fetch": "^4.0.0",
-    "uri-template": "^2.0.0"
+    "@backstage/errors": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@module-federation/runtime": "^0.21.6"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",
-    "msw": "^1.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
+    "@emotion/react": "^11.10.5",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/styles": "^4.10.0",
+    "@mui/material": "^5.12.2",
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router": "^6.30.2",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
     "@types/react": {
       "optional": true
     }
-  },
-  "configSchema": "config.d.ts"
+  }
 }

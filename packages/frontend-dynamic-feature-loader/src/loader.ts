@@ -15,9 +15,9 @@
  */
 
 import {
-  FederationRuntimePlugin,
-  init,
-  loadRemote,
+  ModuleFederationRuntimePlugin,
+  createInstance,
+  ModuleFederation,
 } from '@module-federation/enhanced/runtime';
 import { Module } from '@module-federation/sdk';
 import { DefaultApiClient, Remote } from './schema/openapi';
@@ -27,6 +27,7 @@ import {
   createFrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
 import { ShareStrategy, UserOptions } from '@module-federation/runtime/types';
+import { buildRuntimeSharedUserOption } from '@backstage/module-federation-common';
 
 /**
  *
@@ -39,7 +40,8 @@ export type DynamicFrontendFeaturesLoaderOptions = {
   moduleFederation: {
     shared?: UserOptions['shared'];
     shareStrategy?: ShareStrategy;
-    plugins?: Array<FederationRuntimePlugin>;
+    plugins?: Array<ModuleFederationRuntimePlugin>;
+    instance?: ModuleFederation;
   };
 };
 
@@ -98,18 +100,50 @@ export function dynamicFrontendFeaturesLoader(
         return [];
       }
 
+      let instance: ModuleFederation;
       try {
-        init({
-          ...options?.moduleFederation,
-          name: appPackageName
-            .replaceAll('@', '')
-            .replaceAll('/', '__')
-            .replaceAll('-', '_'),
-          remotes: frontendPluginRemotes.map(remote => ({
-            alias: remote.packageName,
-            ...remote.remoteInfo,
-          })),
-        });
+        if (options?.moduleFederation?.instance) {
+          instance = options.moduleFederation.instance;
+        } else {
+          const { shared, errors } = await buildRuntimeSharedUserOption();
+          for (const err of errors) {
+            error(err.message, err.cause);
+          }
+
+          const createOptions: UserOptions = {
+            name: appPackageName
+              .replaceAll('@', '')
+              .replaceAll('/', '__')
+              .replaceAll('-', '_'),
+            shared,
+            remotes: [],
+          };
+          if (options?.moduleFederation?.shareStrategy) {
+            createOptions.shareStrategy =
+              options.moduleFederation.shareStrategy;
+          }
+          instance = createInstance(createOptions);
+        }
+
+        const userOptions: UserOptions = {
+          name: instance.name,
+          remotes: [],
+        };
+
+        if (options?.moduleFederation?.plugins) {
+          userOptions.plugins = options.moduleFederation.plugins;
+        }
+        if (options?.moduleFederation?.shareStrategy) {
+          userOptions.shareStrategy = options.moduleFederation.shareStrategy;
+        }
+        if (options?.moduleFederation?.shared) {
+          userOptions.shared = options.moduleFederation.shared;
+        }
+        userOptions.remotes = frontendPluginRemotes.map(remote => ({
+          alias: remote.packageName,
+          ...remote.remoteInfo,
+        }));
+        instance.initOptions(userOptions);
       } catch (err) {
         error(`Failed initializing module federation`, err);
         return [];
@@ -131,7 +165,7 @@ export function dynamicFrontendFeaturesLoader(
                     : `${remote.remoteInfo.name}/${exposedModuleName}`;
                 let module: Module;
                 try {
-                  module = await loadRemote<Module>(remoteModuleName);
+                  module = await instance.loadRemote<Module>(remoteModuleName);
                 } catch (err) {
                   error(
                     `Failed loading remote module '${remoteModuleName}' of dynamic plugin '${remote.packageName}'`,

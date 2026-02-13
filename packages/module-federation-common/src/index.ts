@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
-export { buildBundle } from './bundle';
-export { getModuleFederationRemoteOptions } from './moduleFederation';
-export { serveBundle } from './server';
+/**
+ * Helper library for module federation, enabling a consistent management of shared dependencies
+ * in both the module federation host (frontend application) at runtime,
+ * and remote modules at build time through the CLI.
+ *
+ * @packageDocumentation
+ */
+
+export {
+  prepareRuntimeSharedDependenciesScript,
+  buildRuntimeSharedUserOption,
+} from './runtime';
+export {
+  defaultHostSharedDependencies,
+  defaultRemoteSharedDependencies,
+} from './defaults';
+export type { Host, Remote, SharedDependencies } from './types';

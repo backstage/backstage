@@ -60,18 +60,26 @@ export async function command(opts: OptionValues): Promise<void> {
     });
   }
 
-  // experimental
+  let isModuleFederationRemote: boolean | undefined = undefined;
   if ((role as string) === 'frontend-dynamic-container') {
     console.log(
       chalk.yellow(
         `⚠️  WARNING: The 'frontend-dynamic-container' package role is experimental and will receive immediate breaking changes in the future.`,
       ),
     );
+    isModuleFederationRemote = true;
+  }
+  if (opts.moduleFederation) {
+    isModuleFederationRemote = true;
+  }
+
+  if (isModuleFederationRemote) {
+    console.log('Building package as a module federation remote');
     return buildFrontend({
       targetDir: paths.targetDir,
       configPaths: [],
       writeStats: Boolean(opts.stats),
-      isModuleFederationRemote: true,
+      isModuleFederationRemote,
       webpack,
     });
   }
