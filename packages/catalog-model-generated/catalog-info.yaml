@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: internal-catalog-model
+  title: '@internal/catalog-model'
+  description: Generated typed entity interfaces from catalog model registry
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: framework-maintainers

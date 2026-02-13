@@ -65,6 +65,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/catalog-model-extensions": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",

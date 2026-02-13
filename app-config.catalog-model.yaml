@@ -1,0 +1,38 @@
+catalog:
+  customKinds:
+    - apiVersion: 'my-org.io/v1alpha1'
+      names:
+        kind: Database
+        singular: database
+        plural: databases
+        shortNames:
+          - db
+      description: 'A managed database instance'
+      categories:
+        - infrastructure
+      schema:
+        spec:
+          engine:
+            type: enum
+            values:
+              - postgres
+              - mysql
+              - mongodb
+              - redis
+            description: 'Database engine type'
+          version:
+            type: string
+            description: 'Engine version'
+          owner:
+            type: entityRef
+            kind:
+              - Group
+              - User
+            description: 'Team responsible for this database'
+            relations:
+              forward: ownedBy
+              reverse: ownerOf
+          maxConnections:
+            type: string
+            optional: true
+            description: 'Maximum connection pool size'

@@ -42,6 +42,7 @@ import {
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
+import { CatalogModelRegistry } from '@backstage/catalog-model-extensions';
 import { merge } from 'lodash';
 import { CatalogBuilder } from './CatalogBuilder';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
@@ -91,6 +92,7 @@ class CatalogPermissionExtensionPointImpl
 
 class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
   #fieldValidators: Partial<Validators> = {};
+  #registry = new CatalogModelRegistry();
 
   setFieldValidators(validators: Partial<Validators>): void {
     merge(this.#fieldValidators, validators);
@@ -113,6 +115,10 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
 
   get entityDataParser() {
     return this.#entityDataParser;
+  }
+
+  getRegistry(): CatalogModelRegistry {
+    return this.#registry;
   }
 }
 

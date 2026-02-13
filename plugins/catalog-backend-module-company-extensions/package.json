@@ -1,0 +1,60 @@
+{
+  "name": "@backstage/plugin-catalog-backend-module-company-extensions",
+  "version": "0.1.0",
+  "description": "Example internal company catalog model extensions",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-company-extensions"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./catalog-model": "./src/catalog-model.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "catalog-model": [
+        "src/catalog-model.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-model-extensions": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

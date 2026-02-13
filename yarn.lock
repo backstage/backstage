@@ -3223,6 +3223,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/catalog-model-extensions@workspace:^, @backstage/catalog-model-extensions@workspace:packages/catalog-model-extensions":
+  version: 0.0.0-use.local
+  resolution: "@backstage/catalog-model-extensions@workspace:packages/catalog-model-extensions"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    zod: "npm:^3.25.76"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
@@ -3278,6 +3287,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
+    "@backstage/catalog-model-extensions": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -3415,6 +3425,7 @@ __metadata:
     yml-loader: "npm:^2.1.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.25.76"
+    zod-to-ts: "npm:^2.0.0"
     zod-validation-error: "npm:^4.0.2"
   peerDependencies:
     "@jest/environment-jsdom-abstract": ^30.0.0
@@ -4920,6 +4931,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-company-extensions@workspace:plugins/catalog-backend-module-company-extensions":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-company-extensions@workspace:plugins/catalog-backend-module-company-extensions"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-model-extensions": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-catalog-backend-module-config-kinds@workspace:plugins/catalog-backend-module-config-kinds":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-config-kinds@workspace:plugins/catalog-backend-module-config-kinds"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-model-extensions": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-gcp@workspace:plugins/catalog-backend-module-gcp":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-gcp@workspace:plugins/catalog-backend-module-gcp"
@@ -5210,6 +5244,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
+    "@backstage/catalog-model-extensions": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -5366,6 +5401,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
+    "@backstage/catalog-model-extensions": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
@@ -5975,6 +6011,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
+    "@backstage/catalog-model-extensions": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -9927,6 +9964,15 @@ __metadata:
   checksum: 10/fd4c265f0ed03e8da7ae2972c4e6b81932f535d9dd1e039e9e52b027cb8b72ae3c3309a3383ba513a8d3ae626de7dd3634387775cbdcbd100155ecbcaa65a657
   languageName: node
   linkType: hard
+
+"@internal/catalog-model@workspace:packages/catalog-model-generated":
+  version: 0.0.0-use.local
+  resolution: "@internal/catalog-model@workspace:packages/catalog-model-generated"
+  dependencies:
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
 
 "@internal/frontend@workspace:packages/frontend-internal":
   version: 0.0.0-use.local
@@ -51265,6 +51311,16 @@ __metadata:
   peerDependencies:
     zod: ^3.25 || ^4
   checksum: 10/744dd370f4452c8db120de1475ea4d484a11df884c4636111d630e5e1351b8a7590d99cf14a2b9f21e7906f8b78721d958663a7973a40994e7d28770876674cc
+  languageName: node
+  linkType: hard
+
+"zod-to-ts@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "zod-to-ts@npm:2.0.0"
+  peerDependencies:
+    typescript: ^5.0.0
+    zod: ^3.25.0 || ^4.0.0
+  checksum: 10/e684554efe2e90f99383a67b75476cf0e9ae4148d69f7d6b5ab80f03291a1b902e3a96f823cf65b17af3079521c15581aae62c6bf7c6839bbc247b8ec4037a77
   languageName: node
   linkType: hard
 

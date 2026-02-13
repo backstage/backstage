@@ -27,8 +27,23 @@
     "directory": "plugins/kubernetes-backend"
   },
   "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./catalog-model": "./src/catalog-model.ts",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "catalog-model": [
+        "src/catalog-model.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
     "dist",
     "config.d.ts"
@@ -49,6 +64,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/catalog-model-extensions": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration-aws-node": "workspace:^",

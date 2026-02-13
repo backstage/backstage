@@ -19,6 +19,7 @@ import { CliInitializer } from './wiring/CliInitializer';
 (async () => {
   const initializer = new CliInitializer();
   initializer.add(import('./modules/build'));
+  initializer.add(import('./modules/catalog-model'));
   initializer.add(import('./modules/config'));
   initializer.add(import('./modules/create-github-app'));
   initializer.add(import('./modules/info'));

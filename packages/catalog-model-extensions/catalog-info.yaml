@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-catalog-model-extensions
+  title: '@backstage/catalog-model-extensions'
+  description: Extensible catalog model registry with Zod 4 schemas and lazy resolution
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: framework-maintainers

@@ -113,6 +113,12 @@ export interface CatalogModelExtensionPoint {
    * @param parser - Parser which will used to extract entities from raw data
    */
   setEntityDataParser(parser: CatalogProcessorParser): void;
+
+  /**
+   * Returns the catalog model registry for registering kind schemas and extensions.
+   * Modules can use this to extend existing kinds or create new ones at runtime.
+   */
+  getRegistry(): import('@backstage/catalog-model-extensions').CatalogModelRegistry;
 }
 
 /**

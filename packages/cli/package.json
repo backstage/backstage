@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/catalog-model-extensions": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -143,6 +144,7 @@
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0",
     "zod": "^3.25.76",
+    "zod-to-ts": "^2.0.0",
     "zod-validation-error": "^4.0.2"
   },
   "devDependencies": {
