@@ -95,7 +95,7 @@
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "qs": "^6.9.4",
+    "qs": "^6.14.2",
     "react-resizable": "^3.0.5",
     "react-resizable-panels": "^3.0.4",
     "react-use": "^17.2.4",

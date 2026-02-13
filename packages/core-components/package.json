@@ -79,7 +79,7 @@
     "lodash": "^4.17.21",
     "parse5": "^6.0.0",
     "pluralize": "^8.0.0",
-    "qs": "^6.9.4",
+    "qs": "^6.14.2",
     "rc-progress": "3.5.1",
     "react-full-screen": "^1.1.1",
     "react-helmet": "6.1.0",
