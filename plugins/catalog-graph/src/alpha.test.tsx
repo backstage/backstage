@@ -15,7 +15,7 @@
  */
 
 import { screen } from '@testing-library/react';
-import { renderTestApp } from '@backstage/frontend-test-utils';
+import { renderTestApp, mockApis } from '@backstage/frontend-test-utils';
 import { ComponentEntity, Entity } from '@backstage/catalog-model';
 import {
   createTestEntityPage,
@@ -58,7 +58,14 @@ describe('catalog-graph alpha plugin', () => {
         },
         apis: [
           catalogApiMock({ entities: [entity] }),
-          [catalogGraphApiRef, new DefaultCatalogGraphApi()],
+          [
+            catalogGraphApiRef,
+            new DefaultCatalogGraphApi({
+              config: mockApis.config(),
+              discoveryApi: mockApis.discovery(),
+              fetchApi: {} as any,
+            }),
+          ],
         ],
       });
 
@@ -95,7 +102,14 @@ describe('catalog-graph alpha plugin', () => {
         },
         apis: [
           catalogApiMock({ entities: [entity] }),
-          [catalogGraphApiRef, new DefaultCatalogGraphApi()],
+          [
+            catalogGraphApiRef,
+            new DefaultCatalogGraphApi({
+              config: mockApis.config(),
+              discoveryApi: mockApis.discovery(),
+              fetchApi: {} as any,
+            }),
+          ],
         ],
       });
 
@@ -131,7 +145,14 @@ describe('catalog-graph alpha plugin', () => {
         },
         apis: [
           catalogApiMock({ entities: [entity] }),
-          [catalogGraphApiRef, new DefaultCatalogGraphApi()],
+          [
+            catalogGraphApiRef,
+            new DefaultCatalogGraphApi({
+              config: mockApis.config(),
+              discoveryApi: mockApis.discovery(),
+              fetchApi: {} as any,
+            }),
+          ],
         ],
       });
 

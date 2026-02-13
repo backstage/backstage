@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { useApi, useTranslationRef } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import FormControl from '@material-ui/core/FormControl';
 import IconButton from '@material-ui/core/IconButton';
@@ -24,6 +24,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { catalogGraphTranslationRef } from '../../translation';
+import { catalogGraphApiRef } from '../../api';
 
 export type Props = {
   value: number;
@@ -48,6 +49,7 @@ export const MaxDepthFilter = ({ value, onChange }: Props) => {
   const onChangeRef = useRef(onChange);
   const [currentValue, setCurrentValue] = useState(value);
   const { t } = useTranslationRef(catalogGraphTranslationRef);
+  const { maxDepth: systemMaxDepth } = useApi(catalogGraphApiRef);
 
   // Keep a fresh reference to the latest callback
   useEffect(() => {
@@ -60,15 +62,21 @@ export const MaxDepthFilter = ({ value, onChange }: Props) => {
   }, [value]);
 
   // When the entered text changes, update ourselves and communicate externally
-  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const newValueNumeric = Number(event.target.value);
-    const newValue =
-      Number.isFinite(newValueNumeric) && newValueNumeric > 0
-        ? newValueNumeric
-        : Number.POSITIVE_INFINITY;
-    setCurrentValue(newValue);
-    onChangeRef.current(newValue);
-  }, []);
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const newValueNumeric = Number(event.target.value);
+      const userValue =
+        Number.isFinite(newValueNumeric) && newValueNumeric > 0
+          ? newValueNumeric
+          : Number.POSITIVE_INFINITY;
+
+      const newValue = Math.min(userValue, systemMaxDepth);
+
+      setCurrentValue(newValue);
+      onChangeRef.current(newValue);
+    },
+    [systemMaxDepth],
+  );
 
   const reset = useCallback(() => {
     setCurrentValue(Number.POSITIVE_INFINITY);
