@@ -21,6 +21,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
+    "./filterConstants": "./src/filterConstants.ts",
     "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
@@ -28,6 +29,9 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "filterConstants": [
+        "src/filterConstants.ts"
+      ],
       "testUtils": [
         "src/testUtils.ts"
       ],

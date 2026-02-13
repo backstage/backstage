@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
+import {
+  CATALOG_FILTER_CURRENT_USER_REF,
+  CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -259,6 +263,66 @@ describe('<EntityPicker />', () => {
             {
               kind: ['User'],
               'metadata.annotation.some/anotation': CATALOG_FILTER_EXISTS,
+            },
+          ],
+        }),
+      );
+    });
+
+    it('converts relations.ownedBy: { currentUser: true } to ownership refs constant', async () => {
+      const uiSchemaWithCurrentUser = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['component'],
+              'relations.ownedBy': { currentUser: true },
+            },
+          ],
+        },
+      };
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} uiSchema={uiSchemaWithCurrentUser} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['component'],
+              'relations.ownedBy': CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS,
+            },
+          ],
+        }),
+      );
+    });
+
+    it('converts spec.owner: { currentUser: true } to current user ref constant', async () => {
+      const uiSchemaWithCurrentUser = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['component'],
+              'spec.owner': { currentUser: true },
+            },
+          ],
+        },
+      };
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} uiSchema={uiSchemaWithCurrentUser} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['component'],
+              'spec.owner': CATALOG_FILTER_CURRENT_USER_REF,
             },
           ],
         }),
