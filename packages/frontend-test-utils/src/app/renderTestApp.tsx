@@ -150,7 +150,13 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
         RouterBlueprint.make({
           params: {
             component: ({ children }) => (
-              <MemoryRouter initialEntries={options?.initialRouteEntries}>
+              <MemoryRouter
+                initialEntries={options?.initialRouteEntries}
+                future={{
+                  v7_relativeSplatPath: false,
+                  v7_startTransition: false,
+                }}
+              >
                 {children}
               </MemoryRouter>
             ),

@@ -53,4 +53,4 @@
 '@backstage/plugin-org': patch
 ---
 
-Updated `react-router-dom` peer dependency to `^6.30.2`.
+Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
