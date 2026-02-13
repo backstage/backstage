@@ -1054,6 +1054,13 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
@@ -1148,6 +1155,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               string,
               'core.title',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
               {
                 optional: true;
               }

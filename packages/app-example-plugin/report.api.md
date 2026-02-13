@@ -71,6 +71,13 @@ const examplePlugin: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;

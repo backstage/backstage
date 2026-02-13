@@ -1799,6 +1799,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
           {
             optional: true;
           }
+        >
+      | ConfigurableExtensionDataRef_2<
+          IconElement,
+          'core.icon',
+          {
+            optional: true;
+          }
         >,
       {
         singleton: false;
@@ -1842,6 +1849,8 @@ export interface PageLayoutProps {
 export interface PageTab {
   // (undocumented)
   href: string;
+  // (undocumented)
+  icon?: IconElement;
   // (undocumented)
   id: string;
   // (undocumented)
@@ -2023,6 +2032,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
   params: {
     path: string;
     title: string;
+    icon?: IconElement;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
   };
@@ -2036,7 +2046,14 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
         }
       >
     | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
-    | ExtensionDataRef_2<string, 'core.title', {}>;
+    | ExtensionDataRef_2<string, 'core.title', {}>
+    | ExtensionDataRef_2<
+        IconElement,
+        'core.icon',
+        {
+          optional: true;
+        }
+      >;
   inputs: {};
   config: {
     path: string | undefined;

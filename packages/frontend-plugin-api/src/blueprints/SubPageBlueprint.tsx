@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
@@ -47,6 +48,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.title,
     coreExtensionData.routeRef.optional(),
+    coreExtensionData.icon.optional(),
   ],
   config: {
     schema: {
@@ -67,6 +69,10 @@ export const SubPageBlueprint = createExtensionBlueprint({
        */
       title: string;
       /**
+       * Optional icon for this sub-page, displayed in the tab.
+       */
+      icon?: IconElement;
+      /**
        * A function that returns a promise resolving to the React element to render.
        * This enables lazy loading of the sub-page content.
        */
@@ -85,6 +91,9 @@ export const SubPageBlueprint = createExtensionBlueprint({
     );
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
+    }
+    if (params.icon) {
+      yield coreExtensionData.icon(params.icon);
     }
   },
 });
