@@ -569,6 +569,7 @@ const _default: OverridableFrontendPlugin<
         icon?: IconElement;
         loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
+        noHeader?: boolean;
       };
     }>;
   }

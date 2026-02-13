@@ -278,6 +278,7 @@ const _default: OverridableFrontendPlugin<
         icon?: IconElement;
         loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
+        noHeader?: boolean;
       };
     }>;
     'scaffolder-form-field:scaffolder/entity-name-picker': OverridableExtensionDefinition<{
