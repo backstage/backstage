@@ -110,6 +110,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
@@ -148,11 +155,19 @@ const visualizerPlugin: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<string, 'core.title', {}>;
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: {
         path: string;
         title: string;
+        icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
@@ -178,11 +193,19 @@ const visualizerPlugin: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<string, 'core.title', {}>;
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: {
         path: string;
         title: string;
+        icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
@@ -208,11 +231,19 @@ const visualizerPlugin: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<string, 'core.title', {}>;
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: {
         path: string;
         title: string;
+        icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };

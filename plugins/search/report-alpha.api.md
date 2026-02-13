@@ -117,6 +117,13 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
@@ -276,6 +283,13 @@ export const searchPage: OverridableExtensionDefinition<{
       | ConfigurableExtensionDataRef<
           string,
           'core.title',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          IconElement,
+          'core.icon',
           {
             optional: true;
           }
