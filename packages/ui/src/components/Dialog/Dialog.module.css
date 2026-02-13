@@ -45,7 +45,7 @@
   .bui-Dialog {
     background: var(--bui-bg-neutral-1);
     border-radius: 0.5rem;
-    border: 1px solid var(--bui-border);
+    border: 1px solid var(--bui-border-2);
     color: var(--bui-fg-primary);
     position: relative;
     width: min(var(--bui-dialog-min-width, 400px), calc(100vw - 3rem));
@@ -73,7 +73,7 @@
     align-items: center;
     padding-inline: var(--bui-space-3);
     padding-block: var(--bui-space-2);
-    border-bottom: 1px solid var(--bui-border);
+    border-bottom: 1px solid var(--bui-border-2);
   }
 
   .bui-DialogHeaderTitle {
@@ -89,7 +89,7 @@
     gap: var(--bui-space-2);
     padding-inline: var(--bui-space-3);
     padding-block: var(--bui-space-3);
-    border-top: 1px solid var(--bui-border);
+    border-top: 1px solid var(--bui-border-2);
   }
 
   .bui-DialogBody {

@@ -137,7 +137,7 @@ the value, you add an object with the value and the breakpoint prefix.
 ## Neutral background colors
 
 These colors form a layered neutral scale for your application backgrounds.
-`--bui-bg-neutral-0` is the base background color of your app. Each subsequent level
+`--bui-bg-app` is the base background color of your app. Each subsequent level
 (1 through 4) represents an elevated layer on top of the previous one, with hover,
 pressed, and disabled variants for interactive states.
 
@@ -151,7 +151,7 @@ pressed, and disabled variants for interactive states.
   <Table.Body>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-bg-neutral-0</Chip>
+        <Chip head>--bui-bg-app</Chip>
       </Table.Cell>
       <Table.Cell>
         The base background color of your Backstage instance.
@@ -462,13 +462,19 @@ low contrast to help as a separator with the different background colors.
   <Table.Body>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-border</Chip>
+        <Chip head>--bui-border-1</Chip>
+      </Table.Cell>
+      <Table.Cell>Subtle border for low-contrast separators.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border-2</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-neutral-1`.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-border-hover</Chip>
+        <Chip head>--bui-border-2-hover</Chip>
       </Table.Cell>
       <Table.Cell>
         Used when the component is interactive and hovered.
@@ -476,7 +482,7 @@ low contrast to help as a separator with the different background colors.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-border-pressed</Chip>
+        <Chip head>--bui-border-2-pressed</Chip>
       </Table.Cell>
       <Table.Cell>
         Used when the component is interactive and focused.
@@ -484,31 +490,31 @@ low contrast to help as a separator with the different background colors.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-border-disabled</Chip>
+        <Chip head>--bui-border-2-disabled</Chip>
       </Table.Cell>
       <Table.Cell>Used when the component is disabled.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-border-danger</Chip>
+        <Chip head>--bui-border-2-danger</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-danger`.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-border-warning</Chip>
+        <Chip head>--bui-border-2-warning</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-warning`.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-border-success</Chip>
+        <Chip head>--bui-border-2-success</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-success`.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-border-info</Chip>
+        <Chip head>--bui-border-2-info</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-info`.</Table.Cell>
     </Table.Row>

@@ -110,8 +110,8 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
   });
 
   // Generate neutral background colors
+  styleObject['--bui-bg-app'] = palette.background.default;
   Object.entries({
-    'neutral-0': palette.background.default,
     'neutral-1': palette.background.paper,
     'neutral-2': palette.background.default,
     'neutral-3': palette.background.default,
@@ -138,7 +138,7 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
   });
 
   // Base border color if available
-  styleObject['--bui-border'] = palette.border || palette.divider;
+  styleObject['--bui-border-2'] = palette.border || palette.divider;
   styleObject['--bui-border-danger'] = palette.error.main;
   styleObject['--bui-border-warning'] = palette.warning.main;
   styleObject['--bui-border-success'] = palette.success.main;

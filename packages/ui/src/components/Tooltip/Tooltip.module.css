@@ -21,7 +21,7 @@
     box-shadow: var(--bui-shadow);
     border-radius: 4px;
     background: var(--bui-bg-neutral-1);
-    border: 1px solid var(--bui-border);
+    border: 1px solid var(--bui-border-2);
     forced-color-adjust: none;
     outline: none;
     padding: var(--bui-space-2) var(--bui-space-3);
@@ -109,7 +109,7 @@
   [data-theme='dark'] .bui-Tooltip {
     background: var(--bui-bg-neutral-2);
     box-shadow: none;
-    border: 1px solid var(--bui-border);
+    border: 1px solid var(--bui-border-2);
   }
 
   [data-theme='dark'] .bui-TooltipArrow svg path:nth-child(1) {

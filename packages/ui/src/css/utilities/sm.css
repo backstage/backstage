@@ -21,7 +21,7 @@
     }
 
     .bui-sm-border-base {
-      border-color: var(--bui-border);
+      border-color: var(--bui-border-2);
       border-width: 1px;
       border-style: solid;
     }
@@ -38,7 +38,6 @@
     }
 
     .bui-sm-border-selected {
-      border-color: var(--bui-border-pressed);
       border-width: 1px;
       border-style: solid;
     }

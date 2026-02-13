@@ -20,8 +20,8 @@
   .bui-Popover {
     box-shadow: var(--bui-shadow);
     border-radius: var(--bui-radius-3);
-    background: var(--bui-bg-neutral-1);
-    border: 1px solid var(--bui-border);
+    background: var(--bui-bg-popover);
+    border: 1px solid var(--bui-border-1);
     forced-color-adjust: none;
     outline: none;
     max-height: inherit;
@@ -90,11 +90,11 @@
       elements in order to guarantee that the stroke is
       always overlaying a consistent color. */
       path:nth-child(1) {
-        fill: var(--bui-bg-neutral-1);
+        fill: var(--bui-bg-popover);
       }
 
       path:nth-child(2) {
-        fill: var(--bui-fg-secondary);
+        fill: var(--bui-border-1);
       }
 
       /* The arrow svg overlaps the popover by 2px, so we
@@ -122,16 +122,16 @@
     }
   }
 
-  [data-theme='dark'] .bui-Popover {
-    background: var(--bui-bg-neutral-2);
-    border: 1px solid var(--bui-border);
+  /* [data-theme='dark'] .bui-Popover {
+    background: var(--bui-bg-popover);
+    border: 1px solid var(--bui-border-1);
   }
 
   [data-theme='dark'] .bui-PopoverArrow svg path:nth-child(1) {
-    fill: var(--bui-bg-neutral-2);
+    fill: var(--bui-bg-popover);
   }
 
   [data-theme='dark'] .bui-PopoverArrow svg path:nth-child(2) {
     fill: var(--bui-fg-secondary);
-  }
+  } */
 }

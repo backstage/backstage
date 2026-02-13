@@ -132,11 +132,11 @@ export default definePreview({
         };
       }, [selectedTheme, selectedThemeName]);
 
-      document.body.style.backgroundColor = 'var(--bui-bg-neutral-0)';
+      document.body.style.backgroundColor = 'var(--bui-bg-app)';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
         (element as HTMLElement).style.backgroundColor =
-          'var(--bui-bg-neutral-0)';
+          'var(--bui-bg-app)';
       });
 
       return (

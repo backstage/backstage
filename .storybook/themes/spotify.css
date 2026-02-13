@@ -174,7 +174,7 @@
   }
 
   .bui-TableHeader .bui-TableRow {
-    border-bottom: 1px solid var(--bui-border);
+    border-bottom: 1px solid var(--bui-border-2);
   }
 
   .bui-TableHead {
@@ -226,10 +226,7 @@
   --bui-fg-solid: var(--bui-black);
   --bui-fg-solid-disabled: #62ab7c;
 
-  --bui-border: #d9d9d9;
-  --bui-border-hover: rgba(0, 0, 0, 0.3);
-  --bui-border-pressed: rgba(0, 0, 0, 0.5);
-  --bui-border-disabled: rgba(0, 0, 0, 0.1);
+  --bui-border-2: #d9d9d9;
   --bui-border-danger: #f87a7a;
   --bui-border-warning: #e36d05;
   --bui-border-success: #53db83;
@@ -237,16 +234,16 @@
   --bui-ring: rgba(0, 0, 0, 0.2);
 
   .bui-HeaderToolbarWrapper {
-    border: 1px solid var(--bui-border);
+    border: 1px solid var(--bui-border-2);
   }
 
   .bui-HeaderTabsWrapper {
-    border: 1px solid var(--bui-border);
+    border: 1px solid var(--bui-border-2);
   }
 }
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {
-  --bui-bg-neutral-0: var(--bui-black);
+  --bui-bg-app: var(--bui-black);
 
   --bui-bg-solid: #1ed760;
   --bui-bg-solid-hover: #3be477;
@@ -266,10 +263,7 @@
   --bui-fg-warning: #e36d05;
   --bui-fg-success: #1db954;
 
-  --bui-border: #373737;
-  --bui-border-hover: rgba(255, 255, 255, 0.4);
-  --bui-border-pressed: rgba(255, 255, 255, 0.5);
-  --bui-border-disabled: rgba(255, 255, 255, 0.2);
+  --bui-border-2: #373737;
   --bui-border-danger: #f87a7a;
   --bui-border-warning: #e36d05;
   --bui-border-success: #53db83;

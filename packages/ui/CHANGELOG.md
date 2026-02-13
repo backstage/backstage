@@ -14,7 +14,7 @@
 
   ```diff
   - background: var(--bui-bg-surface-0);
-  + background: var(--bui-bg-neutral-0);
+  + background: var(--bui-bg-app);
   ```
 
   Replace on-surface tokens shifted by +1:
