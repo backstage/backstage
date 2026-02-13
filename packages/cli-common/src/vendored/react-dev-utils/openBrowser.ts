@@ -38,15 +38,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * This Backstage package is distributed under the Apache-2.0 license.
- *
  * Changes from upstream:
  * - Replaced chalk with Node built-in styleText (node:util)
  * - Inlined AppleScript: openChrome.applescript is embedded as a string and written to a temp file on macOS, then unlinked; no separate .applescript file.
  * - Process check on macOS: original uses "ps cax | grep <browser>"; we use "pgrep -f <browser>" for the same purpose (avoids separate grep process and argument escaping).
- * - open() options: original used url: true; omitted for open v10 API compatibility.
+ * - open() options: original used url: true; removed in open v8, deprecated in v7.2
  * - Ported to TypeScript with basic types; same API openBrowser(url: string): boolean.
- *
  *
  * -----------------------------------------------------------------------
  */
