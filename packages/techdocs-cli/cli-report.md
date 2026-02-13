@@ -26,6 +26,7 @@ Commands:
 Usage: techdocs-cli generate|build [options]
 
 Options:
+  --catalog-file <PATH>
   --defaultPlugin [defaultPlugins...]
   --docker-image <DOCKER_IMAGE>
   --etag <ETAG>
@@ -108,6 +109,7 @@ Options:
   --no-docker
   --preview-app-bundle-path <PATH_TO_BUNDLE>
   --preview-app-port <PORT>
+  --site-dir <PATH>
   --site-name
   -c, --mkdocs-config-file-name <FILENAME>
   -h, --help

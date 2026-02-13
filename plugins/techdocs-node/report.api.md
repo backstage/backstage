@@ -55,6 +55,7 @@ export type GeneratorOptions = {
 export type GeneratorRunOptions = {
   inputDir: string;
   outputDir: string;
+  catalogFilePath?: string;
   parsedLocationAnnotation?: ParsedLocationAnnotation;
   etag?: string;
   logger: Logger;
