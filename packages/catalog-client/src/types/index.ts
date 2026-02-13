@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export { CATALOG_FILTER_EXISTS } from './api';
+export {
+  CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS,
+  CATALOG_FILTER_CURRENT_USER_REF,
+  CATALOG_FILTER_EXISTS,
+} from './api';
 export type {
   AddLocationRequest,
   AddLocationResponse,

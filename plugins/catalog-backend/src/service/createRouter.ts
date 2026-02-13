@@ -20,6 +20,7 @@ import {
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
@@ -30,7 +31,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, serializeError } from '@backstage/errors';
-import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
+import { EntityFilter, LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
@@ -42,6 +43,7 @@ import { AuthorizedValidationService } from './AuthorizedValidationService';
 import {
   basicEntityFilter,
   entitiesBatchRequest,
+  resolveCurrentUserInFilter,
   parseEntityFilterParams,
   parseEntityTransformParams,
   parseQueryEntitiesParams,
@@ -83,6 +85,7 @@ export interface RouterOptions {
   permissionsService: PermissionsService;
   auditor: AuditorService;
   enableRelationsCompatibility?: boolean;
+  userInfo?: UserInfoService;
 }
 
 /**
@@ -112,6 +115,7 @@ export async function createRouter(
     httpAuth,
     auditor,
     enableRelationsCompatibility = false,
+    userInfo,
   } = options;
 
   const readonlyEnabled =
@@ -171,11 +175,16 @@ export async function createRouter(
         });
 
         try {
-          const filter = parseEntityFilterParams(req.query);
+          const credentials = await httpAuth.credentials(req);
+          const parsedFilter = parseEntityFilterParams(req.query);
+          const filter = await resolveCurrentUserInFilter(
+            parsedFilter,
+            credentials,
+            userInfo,
+          );
           const fields = parseEntityTransformParams(req.query);
           const order = parseEntityOrderParams(req.query);
           const pagination = parseEntityPaginationParams(req.query);
-          const credentials = await httpAuth.credentials(req);
 
           // When pagination parameters are passed in, use the legacy slow path
           // that loads all entities into memory
@@ -268,12 +277,25 @@ export async function createRouter(
         });
 
         try {
+          const credentials = await httpAuth.credentials(req);
+          const parsedParams = parseQueryEntitiesParams(req.query);
+          const parsedFilter =
+            'filter' in parsedParams
+              ? (parsedParams.filter as EntityFilter)
+              : undefined;
+          const filter = await resolveCurrentUserInFilter(
+            parsedFilter,
+            credentials,
+            userInfo,
+          );
+
           const { items, pageInfo, totalItems } =
             await entitiesCatalog.queryEntities({
               limit: req.query.limit,
               offset: req.query.offset,
-              ...parseQueryEntitiesParams(req.query),
-              credentials: await httpAuth.credentials(req),
+              ...parsedParams,
+              ...(filter !== undefined && { filter }),
+              credentials,
             });
 
           const meta = {
@@ -466,12 +488,19 @@ export async function createRouter(
         });
 
         try {
+          const credentials = await httpAuth.credentials(req);
           const request = entitiesBatchRequest(req);
+          const parsedFilter = parseEntityFilterParams(req.query);
+          const filter = await resolveCurrentUserInFilter(
+            parsedFilter,
+            credentials,
+            userInfo,
+          );
           const { items } = await entitiesCatalog.entitiesBatch({
             entityRefs: request.entityRefs,
-            filter: parseEntityFilterParams(req.query),
+            filter,
             fields: parseEntityTransformParams(req.query, request.fields),
-            credentials: await httpAuth.credentials(req),
+            credentials,
           });
 
           await auditorEvent?.success({
@@ -502,10 +531,17 @@ export async function createRouter(
         });
 
         try {
+          const credentials = await httpAuth.credentials(req);
+          const parsedFilter = parseEntityFilterParams(req.query);
+          const filter = await resolveCurrentUserInFilter(
+            parsedFilter,
+            credentials,
+            userInfo,
+          );
           const response = await entitiesCatalog.facets({
-            filter: parseEntityFilterParams(req.query),
+            filter,
             facets: parseEntityFacetParams(req.query),
-            credentials: await httpAuth.credentials(req),
+            credentials,
           });
 
           await auditorEvent?.success();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-export { entitiesBatchRequest } from './entitiesBatchRequest';
-export { basicEntityFilter } from './basicEntityFilter';
-export { parseEntityFilterParams } from './parseEntityFilterParams';
-export { parseEntityTransformParams } from './parseEntityTransformParams';
-export { parseQueryEntitiesParams } from './parseQueryEntitiesParams';
-export { resolveCurrentUserInFilter } from './resolveCurrentUserInFilter';
+/**
+ * Magic filter values for catalog entity filters. Re-exported from the main
+ * package; this entry point exists so backends can import without loading the
+ * full catalog client.
+ *
+ * @public
+ */
+export const CATALOG_FILTER_CURRENT_USER_REF = '__catalog:current_user_ref__';
+
+/** @public */
+export const CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS =
+  '__catalog:current_user_ownership_refs__';

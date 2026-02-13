@@ -41,6 +41,7 @@ import {
   RootConfigService,
   SchedulerService,
   UrlReaderService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import {
@@ -131,6 +132,7 @@ export type CatalogEnvironment = {
   auditor: AuditorService;
   events: EventsService;
   catalogScmEvents: CatalogScmEventsService;
+  userInfo?: UserInfoService;
 };
 
 /**
@@ -610,6 +612,7 @@ export class CatalogBuilder {
       permissionsService,
       auditor,
       enableRelationsCompatibility,
+      userInfo: this.env.userInfo,
     });
 
     await connectEntityProviders(providerDatabase, enabledProviderEntries);

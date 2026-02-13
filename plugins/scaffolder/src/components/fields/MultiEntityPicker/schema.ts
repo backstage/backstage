@@ -20,6 +20,7 @@ export const entityQueryFilterExpressionSchema = zod.record(
   zod
     .string()
     .or(zod.object({ exists: zod.boolean().optional() }))
+    .or(zod.object({ currentUser: zod.boolean().optional() }))
     .or(zod.array(zod.string())),
 );
 
@@ -47,7 +48,9 @@ export const MultiEntityPickerFieldSchema = makeFieldSchema({
         .array(entityQueryFilterExpressionSchema)
         .or(entityQueryFilterExpressionSchema)
         .optional()
-        .describe('List of key-value filter expression for entities'),
+        .describe(
+          'Filter expression for entities. Use { exists: true } for "field exists", { currentUser: true } for the current user (key decides: relations.ownedBy → ownership refs, e.g. spec.owner → single ref).',
+        ),
     }),
 });
 
