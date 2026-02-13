@@ -73,6 +73,76 @@ export type CatalogProcessingExtensionPoint = CatalogProcessingExtensionPoint_2;
 // @alpha @deprecated (undocumented)
 export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingExtensionPoint_2>;
 
+// @alpha
+export type CatalogScmEvent =
+  | {
+      type: 'location.created';
+      url: string;
+      context?: CatalogScmEventContext;
+    }
+  | {
+      type: 'location.updated';
+      url: string;
+      context?: CatalogScmEventContext;
+    }
+  | {
+      type: 'location.deleted';
+      url: string;
+      context?: CatalogScmEventContext;
+    }
+  | {
+      type: 'location.moved';
+      fromUrl: string;
+      toUrl: string;
+      context?: CatalogScmEventContext;
+    }
+  | {
+      type: 'repository.created';
+      url: string;
+      context?: CatalogScmEventContext;
+    }
+  | {
+      type: 'repository.updated';
+      url: string;
+      context?: CatalogScmEventContext;
+    }
+  | {
+      type: 'repository.deleted';
+      url: string;
+      context?: CatalogScmEventContext;
+    }
+  | {
+      type: 'repository.moved';
+      fromUrl: string;
+      toUrl: string;
+      context?: CatalogScmEventContext;
+    };
+
+// @alpha
+export type CatalogScmEventContext = {
+  commitUrl?: string;
+};
+
+// @alpha
+export interface CatalogScmEventsService {
+  publish(events: CatalogScmEvent[]): Promise<void>;
+  subscribe(subscriber: CatalogScmEventsServiceSubscriber): {
+    unsubscribe: () => void;
+  };
+}
+
+// @alpha
+export const catalogScmEventsServiceRef: ServiceRef<
+  CatalogScmEventsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export interface CatalogScmEventsServiceSubscriber {
+  onEvents: (events: CatalogScmEvent[]) => Promise<void>;
+}
+
 // @alpha @deprecated (undocumented)
 export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin', 'singleton'>;
 

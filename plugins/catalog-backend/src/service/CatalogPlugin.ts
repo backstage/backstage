@@ -39,6 +39,7 @@ import {
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
   CatalogPermissionRuleInput,
+  catalogScmEventsServiceRef,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
@@ -217,6 +218,7 @@ export const catalogPlugin = createBackendPlugin({
         events: eventsServiceRef,
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
+        catalogScmEvents: catalogScmEventsServiceRef,
       },
       async init({
         logger,
@@ -234,6 +236,7 @@ export const catalogPlugin = createBackendPlugin({
         actionsRegistry,
         auditor,
         events,
+        catalogScmEvents,
       }) {
         const builder = await CatalogBuilder.create({
           config,
@@ -247,6 +250,7 @@ export const catalogPlugin = createBackendPlugin({
           httpAuth,
           auditor,
           events,
+          catalogScmEvents,
         });
 
         if (onProcessingError) {
