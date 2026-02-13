@@ -50,7 +50,7 @@
       width: 1rem;
       height: 1rem;
       box-sizing: border-box;
-      border: 0.125rem solid var(--bui-border);
+      border: 0.125rem solid var(--bui-border-2);
       background: var(--bui-bg-neutral-1);
       border-radius: var(--bui-radius-full);
       transition: all 200ms;
@@ -59,7 +59,7 @@
     }
 
     &[data-pressed]:before {
-      border-color: var(--bui-border);
+      border-color: var(--bui-border-2);
     }
 
     &[data-selected] {
@@ -83,12 +83,7 @@
       color: var(--bui-fg-disabled);
 
       &:before {
-        border-color: var(--bui-border-disabled);
         background: var(--bui-bg-disabled);
-      }
-
-      &[data-selected]:before {
-        border-color: var(--bui-border-disabled);
       }
     }
 
@@ -105,12 +100,7 @@
       color: var(--bui-fg-disabled);
 
       &:before {
-        border-color: var(--bui-border-disabled);
         background: var(--bui-bg-disabled);
-      }
-
-      &[data-selected]:before {
-        border-color: var(--bui-border-disabled);
       }
     }
   }

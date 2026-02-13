@@ -144,6 +144,12 @@ To fix this, you should install the **OpenAPI Catalog Backend Module**. This mod
 
 For installation instructions and usage, see the [catalog-backend-module-openapi README](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-openapi).
 
+## Unprocessed Entities
+
+Sometimes entities fail to process correctly. The **Unprocessed Entities** feature helps Backstage admins find and diagnose these entities to understand the state of the catalog.
+
+To use this feature, check out the documentation for the [catalog-unprocessed-entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) and its [backend module](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-unprocessed).
+
 ## Links
 
 - [[Blog post] Backstage Service Catalog released in alpha](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)

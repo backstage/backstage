@@ -1,10 +1,5 @@
 ---
-'@backstage/backend-dynamic-feature-service': patch
-'@backstage/frontend-dynamic-feature-loader': patch
-'@backstage/module-federation-common': patch
-'@backstage/cli': patch
+'@backstage/module-federation-common': minor
 ---
 
-Enable Module Federation support in the frontend application (Module Federation host) through API only, without using the ModuleFederationPlugin at build time, nor producing specific generated bundled assets.
-Module federation remotes still use ModuleFederationPlugin at build time to provide module-federation enabled remote modules, like plugin bundles or dynamic frontend plugins.
-Default shared dependencies are provided for both the frontend application (Module Federation host), and Module Federation remotes, maintaining consistency between both sides.
+Added new `@backstage/module-federation-common` package that provides shared types, default configurations, and runtime utilities for module federation. It includes `loadModuleFederationHostShared` for loading shared dependencies in parallel at runtime, `defaultHostSharedDependencies` and `defaultRemoteSharedDependencies` for consistent dependency configuration, and types such as `HostSharedDependencies`, `RemoteSharedDependencies`, and `RuntimeSharedDependenciesGlobal`.

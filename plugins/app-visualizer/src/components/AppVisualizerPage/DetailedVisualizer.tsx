@@ -363,7 +363,7 @@ export function DetailedVisualizer({ tree }: { tree: AppTree }) {
         style={{
           flex: '0 0 auto',
           background: 'var(--bui-bg-neutral-1)',
-          border: '1px solid var(--bui-border)',
+          border: '1px solid var(--bui-border-2)',
           borderRadius: 'var(--bui-radius-2)',
         }}
       >

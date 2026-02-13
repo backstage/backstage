@@ -74,29 +74,18 @@ import {
   createInstance,
   ModuleFederation,
 } from '@module-federation/enhanced/runtime';
-import { buildRuntimeSharedUserOption } from '@backstage/module-federation-common';
+import { loadModuleFederationHostShared } from '@backstage/module-federation-common';
 
 export async function initializeModuleFederation(): Promise<ModuleFederation> {
-  // Build the shared dependencies configuration
-  const { shared, errors } = await buildRuntimeSharedUserOption();
-
-  // Log any errors loading shared dependencies
-  if (errors.length > 0) {
-    for (const err of errors) {
-      console.error(err.message, err.cause);
-    }
-  }
-
-  // Initialize Module Federation Runtime
   return createInstance({
-    name: 'app-next',
+    name: 'app',
     remotes: [
       {
         name: 'my_plugin',
         entry: 'http://localhost:3001/mf-manifest.json',
       },
     ],
-    shared,
+    shared: await loadModuleFederationHostShared(),
   });
 }
 
@@ -108,26 +97,31 @@ export async function loadRemote(
 }
 ```
 
+The `loadModuleFederationHostShared` function loads all shared dependencies in parallel and returns them in the format expected by the Module Federation Runtime. By default it will throw if any shared dependency fails to load. You can pass an `onError` callback to handle errors gracefully instead:
+
+```typescript
+const shared = await loadModuleFederationHostShared({
+  onError: error => console.error(error.message, error.cause),
+});
+```
+
 ### Integration with Feature Loaders
 
 Standard Module Federation runtime API integrates very well with frontend feature loaders,
 as shown in the example below:
 
-```typescript title="packages/app/src/App.tsx"
+```typescript title="packages/app/src/loader.tsx"
 import { createInstance } from '@module-federation/enhanced/runtime';
-import { buildRuntimeSharedUserOption } from '@backstage/module-federation-common';
+import { loadModuleFederationHostShared } from '@backstage/module-federation-common';
 import { createFrontendFeatureLoader } from '@backstage/frontend-plugin-api';
 
-const moduleFederationInstance = createInstance({
-  name: 'app-next',
-  remotes: [],
-});
-
-const moduleFederationLoader = createFrontendFeatureLoader({
+export const moduleFederationLoader = createFrontendFeatureLoader({
   async loader() {
-    moduleFederationInstance.registerShared(
-      (await buildRuntimeSharedUserOption()).shared,
-    );
+    const moduleFederationInstance = createInstance({
+      name: 'app',
+      remotes: [],
+      shared: await loadModuleFederationHostShared(),
+    });
     moduleFederationInstance.registerRemotes([
       {
         name: 'myFirstRemoteWith2ExposedModules',

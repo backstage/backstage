@@ -55,7 +55,7 @@ export const ColorFamily = () => {
       <div className={styles.visual}>
         <div
           className={styles.base}
-          style={{ backgroundColor: 'var(--bui-bg-neutral-0)' }}
+          style={{ backgroundColor: 'var(--bui-bg-app)' }}
         >
           <span className={styles.baseLabel}>Neutral 0</span>
           <NeutralLevel level={1}>
