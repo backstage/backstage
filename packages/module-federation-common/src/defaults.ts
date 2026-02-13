@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Host, Remote, SharedDependencies } from './types';
+import { RemoteSharedDependencies, HostSharedDependencies } from './types';
 
 /**
  * The list of default shared dependencies, expected to be the same
@@ -22,115 +22,62 @@ import { Host, Remote, SharedDependencies } from './types';
  *
  * @internal
  */
-const defaultSharedDependencies: SharedDependencies<{
-  host: Host;
-  remote: Remote;
-}> = {
+const defaultSharedDependencies = {
   // React
   react: {
-    singleton: true,
-    host: {
-      eager: true,
-      requiredVersion: '*',
-    },
-    remote: {
-      import: false,
-      requiredVersion: '*',
-    },
+    host: {},
+    remote: { import: false },
   },
   'react-dom': {
-    singleton: true,
-    host: {
-      eager: true,
-      requiredVersion: '*',
-    },
-    remote: {
-      import: false,
-      requiredVersion: '*',
-    },
+    host: {},
+    remote: { import: false },
   },
   // React Router
   'react-router': {
-    singleton: true,
-    host: {
-      eager: true,
-      requiredVersion: '*',
-    },
-    remote: {
-      import: false,
-      requiredVersion: '*',
-    },
+    host: {},
+    remote: { import: false },
   },
   'react-router-dom': {
-    singleton: true,
-    host: {
-      eager: true,
-      requiredVersion: '*',
-    },
-    remote: {
-      import: false,
-      requiredVersion: '*',
-    },
+    host: {},
+    remote: { import: false },
   },
   // MUI v4
   // not setting import: false for MUI packages as this
   // will break once Backstage moves to BUI
   '@material-ui/core/styles': {
-    singleton: true,
-    host: {
-      eager: true,
-      requiredVersion: '*',
-    },
-    remote: {
-      requiredVersion: '*',
-    },
+    host: {},
+    remote: {},
   },
   '@material-ui/styles': {
-    singleton: true,
-    host: {
-      eager: true,
-      requiredVersion: '*',
-    },
-    remote: {
-      requiredVersion: '*',
-    },
+    host: {},
+    remote: {},
   },
   // MUI v5
   // not setting import: false for MUI packages as this
   // will break once Backstage moves to BUI
   '@mui/material/styles/': {
-    singleton: true,
-    host: {
-      eager: true,
-      requiredVersion: '*',
-    },
-    remote: {
-      requiredVersion: '*',
-    },
+    host: {},
+    remote: {},
   },
   '@emotion/react': {
-    singleton: true,
-    host: {
-      eager: true,
-      requiredVersion: '*',
-    },
-    remote: {
-      requiredVersion: '*',
-    },
+    host: {},
+    remote: {},
   },
-};
+} as const;
 
 /**
  * Returns the list of default shared dependencies for the host, with host-only properties.
  *
  * @public
  */
-export function defaultHostSharedDependencies(): SharedDependencies<Host> {
+export function defaultHostSharedDependencies(): HostSharedDependencies {
   return Object.fromEntries(
     Object.entries(defaultSharedDependencies).map(([name, p]) => [
       name,
       {
-        singleton: p.singleton,
+        eager: true,
+        singleton: true,
+        requiredVersion: '*',
         ...p.host,
       },
     ]),
@@ -142,12 +89,14 @@ export function defaultHostSharedDependencies(): SharedDependencies<Host> {
  *
  * @public
  */
-export function defaultRemoteSharedDependencies(): SharedDependencies<Remote> {
+export function defaultRemoteSharedDependencies(): RemoteSharedDependencies {
   return Object.fromEntries(
     Object.entries(defaultSharedDependencies).map(([name, p]) => [
       name,
       {
-        singleton: p.singleton,
+        eager: false,
+        singleton: true,
+        requiredVersion: '*',
         ...p.remote,
       },
     ]),

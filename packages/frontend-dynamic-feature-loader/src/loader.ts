@@ -27,7 +27,7 @@ import {
   createFrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
 import { ShareStrategy, UserOptions } from '@module-federation/runtime/types';
-import { buildRuntimeSharedUserOption } from '@backstage/module-federation-common';
+import { loadModuleFederationHostShared } from '@backstage/module-federation-common';
 
 /**
  *
@@ -105,10 +105,9 @@ export function dynamicFrontendFeaturesLoader(
         if (options?.moduleFederation?.instance) {
           instance = options.moduleFederation.instance;
         } else {
-          const { shared, errors } = await buildRuntimeSharedUserOption();
-          for (const err of errors) {
-            error(err.message, err.cause);
-          }
+          const shared = await loadModuleFederationHostShared({
+            onError: err => error(err.message, err.cause),
+          });
 
           const createOptions: UserOptions = {
             name: appPackageName
