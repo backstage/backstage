@@ -55,7 +55,7 @@ backend:
         - 'catalog.*'
 ```
 
-#### Exclude specific actionspwd
+#### Exclude specific actions
 
 ```yaml
 backend:
