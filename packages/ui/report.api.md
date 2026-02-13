@@ -66,15 +66,15 @@ export const Accordion: ForwardRefExoticComponent<
 
 // @public
 export const AccordionDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Accordion';
-    readonly trigger: 'bui-AccordionTrigger';
-    readonly triggerButton: 'bui-AccordionTriggerButton';
-    readonly triggerTitle: 'bui-AccordionTriggerTitle';
-    readonly triggerSubtitle: 'bui-AccordionTriggerSubtitle';
-    readonly triggerIcon: 'bui-AccordionTriggerIcon';
-    readonly panel: 'bui-AccordionPanel';
-    readonly group: 'bui-AccordionGroup';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly className: {};
   };
 };
 
@@ -84,11 +84,36 @@ export const AccordionGroup: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface AccordionGroupProps extends DisclosureGroupProps {
-  allowsMultiple?: boolean;
-  // (undocumented)
+export const AccordionGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-AccordionGroup';
+  };
+  readonly propDefs: {
+    readonly className: {};
+    readonly allowsMultiple: {
+      readonly default: false;
+    };
+  };
+};
+
+// @public
+export type AccordionGroupOwnProps = {
   className?: string;
-}
+  allowsMultiple?: boolean;
+};
+
+// @public
+export interface AccordionGroupProps
+  extends Omit<DisclosureGroupProps, 'className'>,
+    AccordionGroupOwnProps {}
+
+// @public
+export type AccordionOwnProps = {
+  className?: string;
+};
 
 // @public (undocumented)
 export const AccordionPanel: ForwardRefExoticComponent<
@@ -96,16 +121,32 @@ export const AccordionPanel: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface AccordionPanelProps extends DisclosurePanelProps {
-  // (undocumented)
-  className?: string;
-}
+export const AccordionPanelDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-AccordionPanel';
+  };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
 
 // @public
-export interface AccordionProps extends DisclosureProps {
-  // (undocumented)
+export type AccordionPanelOwnProps = {
   className?: string;
-}
+};
+
+// @public
+export interface AccordionPanelProps
+  extends Omit<DisclosurePanelProps, 'className'>,
+    AccordionPanelOwnProps {}
+
+// @public
+export interface AccordionProps
+  extends Omit<DisclosureProps, 'className'>,
+    AccordionOwnProps {}
 
 // @public (undocumented)
 export const AccordionTrigger: ForwardRefExoticComponent<
@@ -113,16 +154,37 @@ export const AccordionTrigger: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface AccordionTriggerProps extends HeadingProps {
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export const AccordionTriggerDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-AccordionTrigger';
+    readonly button: 'bui-AccordionTriggerButton';
+    readonly title: 'bui-AccordionTriggerTitle';
+    readonly subtitle: 'bui-AccordionTriggerSubtitle';
+    readonly icon: 'bui-AccordionTriggerIcon';
+  };
+  readonly propDefs: {
+    readonly className: {};
+    readonly title: {};
+    readonly subtitle: {};
+    readonly children: {};
+  };
+};
+
+// @public
+export type AccordionTriggerOwnProps = {
   className?: string;
-  // (undocumented)
-  subtitle?: string;
-  // (undocumented)
   title?: string;
-}
+  subtitle?: string;
+  children?: ReactNode;
+};
+
+// @public
+export interface AccordionTriggerProps
+  extends Omit<HeadingProps, 'children' | 'className'>,
+    AccordionTriggerOwnProps {}
 
 // @public
 export const Alert: ForwardRefExoticComponent<
