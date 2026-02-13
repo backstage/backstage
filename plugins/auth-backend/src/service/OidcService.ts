@@ -28,6 +28,7 @@ import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
 import { readDcrTokenExpiration } from './readTokenExpiration';
+import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 
 export class OidcService {
   private readonly auth: AuthService;
@@ -80,6 +81,7 @@ export class OidcService {
     const dcrEnabled = this.config.getOptionalBoolean(
       'auth.experimentalDynamicClientRegistration.enabled',
     );
+    const { enabled: cimdEnabled } = this.getCimdConfig();
 
     return {
       issuer: this.baseUrl,
@@ -107,6 +109,7 @@ export class OidcService {
       token_endpoint_auth_methods_supported: [
         'client_secret_basic',
         'client_secret_post',
+        ...(cimdEnabled ? ['none'] : []),
       ],
       claims_supported: ['sub', 'ent'],
       grant_types_supported: [
@@ -119,6 +122,7 @@ export class OidcService {
         registration_endpoint: `${this.baseUrl}/v1/register`,
         revocation_endpoint: `${this.baseUrl}/v1/revoke`,
       }),
+      ...(cimdEnabled && { client_id_metadata_document_supported: true }),
     };
   }
 
@@ -204,7 +208,13 @@ export class OidcService {
       throw new InputError('Only authorization code flow is supported');
     }
 
-    const client = await this.resolveClient(clientId, redirectUri);
+    const client = await this.resolveClient({ clientId, redirectUri });
+
+    if (client.requiresPkce && !codeChallenge) {
+      throw new InputError(
+        'PKCE is required for public clients. Provide a code_challenge parameter.',
+      );
+    }
 
     if (codeChallenge) {
       if (
@@ -239,42 +249,105 @@ export class OidcService {
     };
   }
 
-  private async getClientName(clientId: string): Promise<string> {
-    const client = await this.oidc.getClient({ clientId });
-    if (!client) {
-      throw new InputError('Invalid client_id');
-    }
-    return client.clientName;
+  private getCimdConfig() {
+    return {
+      enabled:
+        this.config.getOptionalBoolean(
+          'auth.experimentalClientIdMetadataDocuments.enabled',
+        ) ?? false,
+      allowedClientIdPatterns: this.config.getOptionalStringArray(
+        'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
+      ) ?? ['*'],
+      allowedRedirectUriPatterns: this.config.getOptionalStringArray(
+        'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns',
+      ) ?? ['*'],
+    };
   }
 
-  private async resolveClient(
-    clientId: string,
-    redirectUri: string,
-  ): Promise<{ clientName: string; redirectUris: string[] }> {
-    const client = await this.oidc.getClient({ clientId });
+  private async resolveClient(opts: {
+    clientId: string;
+    redirectUri?: string;
+  }) {
+    let cimdUrl: URL | undefined;
+    try {
+      cimdUrl = validateCimdUrl(opts.clientId);
+    } catch {
+      // Not a valid CIMD URL, fall through to DCR
+    }
+
+    if (cimdUrl) {
+      return this.resolveCimdClient({ ...opts, cimdUrl });
+    }
+    return this.resolveDcrClient(opts);
+  }
+
+  private async resolveCimdClient(opts: {
+    clientId: string;
+    cimdUrl: URL;
+    redirectUri?: string;
+  }) {
+    const cimd = this.getCimdConfig();
+
+    if (!cimd.enabled) {
+      throw new InputError('Client ID metadata documents not enabled');
+    }
+
+    if (
+      !cimd.allowedClientIdPatterns.some(pattern =>
+        matcher.isMatch(opts.clientId, pattern),
+      )
+    ) {
+      throw new InputError('Invalid client_id');
+    }
+
+    const cimdClient = await fetchCimdMetadata({
+      clientId: opts.clientId,
+      validatedUrl: opts.cimdUrl,
+    });
+
+    if (opts.redirectUri) {
+      if (
+        !cimd.allowedRedirectUriPatterns.some(pattern =>
+          matcher.isMatch(opts.redirectUri!, pattern),
+        )
+      ) {
+        throw new InputError('Invalid redirect_uri');
+      }
+
+      if (!cimdClient.redirectUris.includes(opts.redirectUri)) {
+        throw new InputError('Redirect URI not registered');
+      }
+    }
+
+    return {
+      clientName: cimdClient.clientName,
+      redirectUris: cimdClient.redirectUris,
+      requiresPkce: true,
+    };
+  }
+
+  private async resolveDcrClient(opts: {
+    clientId: string;
+    redirectUri?: string;
+  }) {
+    const client = await this.oidc.getClient({ clientId: opts.clientId });
     if (!client) {
       throw new InputError('Invalid client_id');
     }
 
-    if (!client.redirectUris.includes(redirectUri)) {
+    if (opts.redirectUri && !client.redirectUris.includes(opts.redirectUri)) {
       throw new InputError('Invalid redirect_uri');
     }
 
     return {
       clientName: client.clientName,
       redirectUris: client.redirectUris,
+      requiresPkce: false,
     };
   }
 
-  public async approveAuthorizationSession(opts: {
-    sessionId: string;
-    userEntityRef: string;
-  }) {
-    const { sessionId, userEntityRef } = opts;
-
-    const session = await this.oidc.getAuthorizationSession({
-      id: sessionId,
-    });
+  private async getValidPendingSession(sessionId: string) {
+    const session = await this.oidc.getAuthorizationSession({ id: sessionId });
 
     if (!session) {
       throw new NotFoundError('Invalid authorization session');
@@ -287,6 +360,16 @@ export class OidcService {
     if (session.status !== 'pending') {
       throw new NotFoundError('Authorization session not found or expired');
     }
+
+    return session;
+  }
+
+  public async approveAuthorizationSession(opts: {
+    sessionId: string;
+    userEntityRef: string;
+  }) {
+    const { sessionId, userEntityRef } = opts;
+    const session = await this.getValidPendingSession(sessionId);
 
     await this.oidc.updateAuthorizationSession({
       id: session.id,
@@ -316,23 +399,10 @@ export class OidcService {
   }
 
   public async getAuthorizationSession(opts: { sessionId: string }) {
-    const session = await this.oidc.getAuthorizationSession({
-      id: opts.sessionId,
+    const session = await this.getValidPendingSession(opts.sessionId);
+    const { clientName } = await this.resolveClient({
+      clientId: session.clientId,
     });
-
-    if (!session) {
-      throw new NotFoundError('Invalid authorization session');
-    }
-
-    if (DateTime.fromJSDate(session.expiresAt) < DateTime.now()) {
-      throw new InputError('Authorization session expired');
-    }
-
-    if (session.status !== 'pending') {
-      throw new NotFoundError('Authorization session not found or expired');
-    }
-
-    const clientName = await this.getClientName(session.clientId);
 
     return {
       id: session.id,
@@ -355,22 +425,7 @@ export class OidcService {
     userEntityRef: string;
   }) {
     const { sessionId, userEntityRef } = opts;
-
-    const session = await this.oidc.getAuthorizationSession({
-      id: sessionId,
-    });
-
-    if (!session) {
-      throw new NotFoundError('Invalid authorization session');
-    }
-
-    if (DateTime.fromJSDate(session.expiresAt) < DateTime.now()) {
-      throw new InputError('Authorization session expired');
-    }
-
-    if (session.status !== 'pending') {
-      throw new NotFoundError('Authorization session not found or expired');
-    }
+    const session = await this.getValidPendingSession(sessionId);
 
     await this.oidc.updateAuthorizationSession({
       id: session.id,
@@ -431,11 +486,11 @@ export class OidcService {
       }
 
       if (
-        !this.verifyPkce(
-          session.codeChallenge,
+        !this.verifyPkce({
+          codeChallenge: session.codeChallenge,
           codeVerifier,
-          session.codeChallengeMethod,
-        )
+          method: session.codeChallengeMethod,
+        })
       ) {
         throw new AuthenticationError('Invalid code verifier');
       }
@@ -532,19 +587,21 @@ export class OidcService {
     await this.offlineAccess.revokeRefreshToken(token);
   }
 
-  private verifyPkce(
-    codeChallenge: string,
-    codeVerifier: string,
-    method?: string,
-  ): boolean {
-    if (!method || method === 'plain') {
-      return codeChallenge === codeVerifier;
+  private verifyPkce(opts: {
+    codeChallenge: string;
+    codeVerifier: string;
+    method?: string;
+  }): boolean {
+    if (!opts.method || opts.method === 'plain') {
+      return opts.codeChallenge === opts.codeVerifier;
     }
 
-    if (method === 'S256') {
-      const hash = crypto.createHash('sha256').update(codeVerifier).digest();
-      const base64urlHash = hash.toString('base64url');
-      return codeChallenge === base64urlHash;
+    if (opts.method === 'S256') {
+      const hash = crypto
+        .createHash('sha256')
+        .update(opts.codeVerifier)
+        .digest('base64url');
+      return opts.codeChallenge === hash;
     }
 
     return false;

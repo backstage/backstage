@@ -32,6 +32,10 @@ import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { OidcError } from './OidcError';
 
+function ensureTrailingSlash(url: string): string {
+  return url.endsWith('/') ? url : `${url}/`;
+}
+
 const authorizeQuerySchema = z.object({
   client_id: z.string().min(1),
   redirect_uri: z.string().url(),
@@ -81,12 +85,13 @@ function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
   return parseResult.data;
 }
 
-async function authenticateClient(
-  req: { headers: { authorization?: string } },
-  oidc: OidcService,
-  bodyClientId?: string,
-  bodyClientSecret?: string,
-): Promise<{ clientId: string; clientSecret: string }> {
+async function authenticateClient(opts: {
+  req: { headers: { authorization?: string } };
+  oidc: OidcService;
+  bodyClientId?: string;
+  bodyClientSecret?: string;
+}): Promise<{ clientId: string; clientSecret: string }> {
+  const { req, oidc, bodyClientId, bodyClientSecret } = opts;
   let clientId: string | undefined;
   let clientSecret: string | undefined;
 
@@ -223,8 +228,11 @@ export class OidcRouter {
     const dcrEnabled = this.config.getOptionalBoolean(
       'auth.experimentalDynamicClientRegistration.enabled',
     );
+    const cimdEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalClientIdMetadataDocuments.enabled',
+    );
 
-    if (dcrEnabled) {
+    if (dcrEnabled || cimdEnabled) {
       // Authorization endpoint
       // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
       // Handles the initial authorization request from the client, validates parameters,
@@ -439,12 +447,12 @@ export class OidcRouter {
 
             let authenticatedClientId: string | undefined;
             if (hasCredentials) {
-              const { clientId: authedId } = await authenticateClient(
+              const { clientId: authedId } = await authenticateClient({
                 req,
-                this.oidc,
+                oidc: this.oidc,
                 bodyClientId,
                 bodyClientSecret,
-              );
+              });
               authenticatedClientId = authedId;
             }
 
@@ -520,12 +528,12 @@ export class OidcRouter {
             client_secret: bodyClientSecret,
           } = validateRequest(revokeRequestBodySchema, req.body ?? {});
 
-          await authenticateClient(
+          await authenticateClient({
             req,
-            this.oidc,
+            oidc: this.oidc,
             bodyClientId,
             bodyClientSecret,
-          );
+          });
 
           try {
             await this.oidc.revokeRefreshToken(token);
@@ -545,10 +553,4 @@ export class OidcRouter {
 
     return router;
   }
-}
-function ensureTrailingSlash(appUrl: string): string {
-  if (appUrl.endsWith('/')) {
-    return appUrl;
-  }
-  return `${appUrl}/`;
 }
