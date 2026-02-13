@@ -36,8 +36,8 @@ export async function resolveCurrentUserInFilter(
 ): Promise<EntityFilter | undefined> {
   if (!filter || !userInfo) return filter;
 
-  const principal = credentials.principal as { type: string };
-  if (principal.type !== 'user') return filter;
+  const principalType = (credentials.principal as any)?.type;
+  if (principalType !== 'user') return filter;
 
   let userEntityRef: string | undefined;
   let ownershipEntityRefs: string[] | undefined;
@@ -58,8 +58,11 @@ export async function resolveCurrentUserInFilter(
       ownershipEntityRefs = info.ownershipEntityRefs;
       return { userEntityRef, ownershipEntityRefs };
     } catch {
-      userEntityRef = '';
-      ownershipEntityRefs = [];
+      // Preserve the current-user magic values on failure so the resulting
+      // filter remains restrictive (typically matching nothing) instead of
+      // being dropped and unintentionally broadening the query.
+      userEntityRef = CATALOG_FILTER_CURRENT_USER_REF;
+      ownershipEntityRefs = [CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS];
       return { userEntityRef, ownershipEntityRefs };
     }
   };
@@ -90,7 +93,6 @@ export async function resolveCurrentUserInFilter(
         return [v];
       });
 
-      if (expandedValues.length === 0) return undefined;
       return { key: f.key, values: expandedValues };
     }
 

@@ -23,6 +23,16 @@
  */
 export const CATALOG_FILTER_CURRENT_USER_REF = '__catalog:current_user_ref__';
 
-/** @public */
+/** @public
+ *
+ * Magic filter value for catalog entity filters that targets entities owned by
+ * the current user.
+ *
+ * When used as the value of an ownership-related filter field (for example
+ * `spec.owner` or `relations.ownedBy`), the backend expands this marker into
+ * the list of entity refs that the current user is considered to own.
+ *
+ */
+
 export const CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS =
   '__catalog:current_user_ownership_refs__';
