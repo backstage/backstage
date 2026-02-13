@@ -23,6 +23,14 @@ export const skeletonPropDefs: Record<string, PropDef> = {
     description:
       'Whether to apply fully rounded corners (for circular shapes).',
   },
+  children: {
+    type: 'enum',
+    values: ['ReactNode'],
+    required: false,
+    responsive: false,
+    description:
+      'Children elements. When provided, the skeleton will infer its dimensions from the children, preventing layout shift.',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };

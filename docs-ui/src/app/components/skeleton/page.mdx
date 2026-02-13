@@ -3,16 +3,30 @@ import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
 import { skeletonPropDefs } from './props-definition';
 import {
-  skeletonUsageSnippet,
-  cardPlaceholderSnippet,
-  avatarWithTextSnippet,
-  roundedSnippet,
-} from './snippets';
-import { CardPlaceholder, AvatarWithText, Rounded } from './components';
+  Demo1,
+  AvatarWithText,
+  Rounded,
+  CardPlaceholder,
+  InheritingTypography,
+  InferringDimensions,
+  RealWorldExample,
+  OnSurface,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { SkeletonDefinition } from '../../../utils/definitions';
+import {
+  avatarWithTextSnippet,
+  skeletonUsageSnippet,
+  skeletonDemo1Snippet,
+  skeletonCardPlaceholderSnippet,
+  skeletonInheritingSnippet,
+  skeletonInferringSnippet,
+  skeletonRealWorldSnippet,
+  skeletonOnSurfaceSnippet,
+  roundedSnippet,
+} from './snippets';
 
 <PageTitle
   title="Skeleton"
@@ -23,10 +37,18 @@ import { SkeletonDefinition } from '../../../utils/definitions';
   align="center"
   py={4}
   preview={<CardPlaceholder />}
-  code={cardPlaceholderSnippet}
+  code={skeletonCardPlaceholderSnippet}
 />
 
 ## Usage
+
+The Skeleton component automatically inherits typography from its parent context, preventing layout shift. It supports three usage patterns:
+
+1. **Inside Text components** (recommended): Skeleton automatically inherits font-size and line-height
+2. **Wrapping children**: Automatically matches dimensions of wrapped components
+3. **Explicit dimensions**: Set custom width and height for non-text content
+
+> **Note**: When using Skeleton inside Text components, it works best for **single-line text** where you expect the content to fit on one line. For multi-line text, consider using multiple Skeleton components or wrapping children to infer dimensions.
 
 <CodeBlock code={skeletonUsageSnippet} />
 
@@ -54,6 +76,79 @@ Skeleton extends standard HTML div attributes.
   open
   preview={<AvatarWithText />}
   code={avatarWithTextSnippet}
+/>
+
+### Inheriting typography
+
+Place Skeleton inside a [Text](./text) component and it automatically inherits the typography. No explicit sizing needed as the skeleton respects the theme's font-size and line-height!
+
+This pattern works best when you expect the content to be a **single line of text**. The skeleton will match the exact height of one line of text.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<InheritingTypography />}
+  code={skeletonInheritingSnippet}
+  open
+/>
+
+### Inferring dimensions
+
+When you wrap children in a Skeleton, it automatically infers the correct dimensions, preventing layout shift. The children are hidden but maintain their layout space.
+
+This pattern is ideal for **multi-line content** where you want the skeleton to match the exact dimensions of the loaded content, including line breaks and wrapping.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<InferringDimensions />}
+  code={skeletonInferringSnippet}
+/>
+
+### Real-world example
+
+This example shows how to use Skeleton with Text components to prevent layout shift when loading content. The fixed-width card demonstrates that there's no layout shift when toggling between loading and loaded states.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<RealWorldExample />}
+  code={skeletonRealWorldSnippet}
+  open
+/>
+
+### Demo 1
+
+A complex skeleton layout with avatar and multiple text lines.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Demo1 />}
+  code={skeletonDemo1Snippet}
+/>
+
+### Demo 2
+
+A simple skeleton layout with image and text placeholders.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CardPlaceholder />}
+  code={skeletonCardPlaceholderSnippet}
+/>
+
+### Surfaces
+
+Skeleton supports the `onSurface` prop to adapt its styling based on the surface it's placed on. By default (or when `onSurface="auto"` is specified), the skeleton automatically inherits the container's surface level, making skeletons reusable across different surfaces without explicit configuration.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<OnSurface />}
+  code={skeletonOnSurfaceSnippet}
+  open
 />
 
 <Theming definition={SkeletonDefinition} />

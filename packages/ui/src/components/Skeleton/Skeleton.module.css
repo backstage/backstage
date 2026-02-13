@@ -23,7 +23,49 @@
     border-radius: var(--bui-radius-2);
   }
 
+  /* Hide children visually but maintain their dimensions */
+  .bui-Skeleton > * {
+    visibility: hidden;
+  }
+
+  /* Surface-specific background colors */
+  .bui-Skeleton[data-on-surface='0'] {
+    background-color: var(--bui-bg-neutral-0);
+  }
+
+  .bui-Skeleton[data-on-surface='1'] {
+    background-color: var(--bui-bg-neutral-1);
+  }
+
+  .bui-Skeleton[data-on-surface='2'] {
+    background-color: var(--bui-bg-neutral-2);
+  }
+
+  .bui-Skeleton[data-on-surface='3'] {
+    background-color: var(--bui-bg-neutral-3);
+  }
+
   .bui-Skeleton[data-rounded='true'] {
     border-radius: var(--bui-radius-full);
+  }
+
+  /* When children are present, fit to their size */
+  .bui-Skeleton[data-fit-content='true'] {
+    width: fit-content;
+    height: auto;
+  }
+
+  /* Inherit typography context for empty skeletons to prevent layout shift */
+  .bui-Skeleton:empty::before {
+    /* Content needed to ensure the pseudo-element has height */
+    content: '\00a0';
+    font-size: inherit;
+    line-height: inherit;
+    font-family: inherit;
+  }
+
+  /* Default width when empty (can be overridden with inline styles) */
+  .bui-Skeleton:empty {
+    width: 100%;
   }
 }
