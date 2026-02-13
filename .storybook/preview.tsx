@@ -135,8 +135,7 @@ export default definePreview({
       document.body.style.backgroundColor = 'var(--bui-bg-app)';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor =
-          'var(--bui-bg-app)';
+        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg-app)';
       });
 
       return (

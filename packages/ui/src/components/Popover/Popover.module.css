@@ -121,17 +121,4 @@
       transform: rotate(-90deg);
     }
   }
-
-  /* [data-theme='dark'] .bui-Popover {
-    background: var(--bui-bg-popover);
-    border: 1px solid var(--bui-border-1);
-  }
-
-  [data-theme='dark'] .bui-PopoverArrow svg path:nth-child(1) {
-    fill: var(--bui-bg-popover);
-  }
-
-  [data-theme='dark'] .bui-PopoverArrow svg path:nth-child(2) {
-    fill: var(--bui-fg-secondary);
-  } */
 }

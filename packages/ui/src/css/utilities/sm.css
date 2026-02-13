@@ -37,11 +37,6 @@
       border-width: 0;
     }
 
-    .bui-sm-border-selected {
-      border-width: 1px;
-      border-style: solid;
-    }
-
     .bui-sm-border-warning {
       border-color: var(--bui-border-warning);
       border-width: 1px;
