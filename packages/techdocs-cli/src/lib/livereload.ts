@@ -145,7 +145,9 @@ export function proxyHtmlWithLivereloadInjection(options: {
   });
 
   const forwardPath =
-    request.url?.replace(new RegExp(`^${proxyEndpoint}`, 'i'), '') || '';
+    (
+      request.url?.replace(new RegExp(`^${proxyEndpoint}`, 'i'), '') || ''
+    ).replace(/^static\/docs\/default\/component\/local\//, '/') || '/';
   request.url = forwardPath;
   htmlProxy.web(request, response);
 }

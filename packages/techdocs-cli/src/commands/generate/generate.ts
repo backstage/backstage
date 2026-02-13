@@ -41,6 +41,9 @@ export default async function generate(opts: OptionValues) {
   const omitTechdocsCorePlugin = opts.omitTechdocsCoreMkdocsPlugin;
   const dockerImage = opts.dockerImage;
   const pullImage = opts.pull;
+  const catalogFilePath = opts.catalogFile
+    ? resolve(opts.catalogFile)
+    : undefined;
   const legacyCopyReadmeMdToIndexMd = opts.legacyCopyReadmeMdToIndexMd;
   const defaultPlugins = opts.defaultPlugin;
 
@@ -96,6 +99,7 @@ export default async function generate(opts: OptionValues) {
           parsedLocationAnnotation,
         }
       : {}),
+    catalogFilePath: catalogFilePath,
     logger,
     etag: opts.etag,
     logStream: getLogStream(logger),

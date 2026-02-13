@@ -468,6 +468,30 @@ export const createOrUpdateMetadata = async (
 };
 
 /**
+ * Create or update the entity_metadata.json file.
+ * The contents of it will be the contents of catalogFilePath converted to JSON
+ * @param catalogFilePath - File path to the catalog info file
+ * @param entityMetadataPath - File path to entity_metadata.json
+ */
+export const createOrUpdateEntityMetadata = async (
+  catalogFilePath: string,
+  entityMetadataPath: string,
+  logger: LoggerService,
+): Promise<void> => {
+  let catalogYaml;
+  try {
+    catalogYaml = yaml.load(await fs.readFile(catalogFilePath, 'utf8'));
+  } catch (err) {
+    assertError(err);
+    const message = `Invalid YAML at ${catalogFilePath} with error ${err.message}`;
+    logger.error(message);
+    throw new Error(message);
+  }
+
+  await fs.writeJson(entityMetadataPath, catalogYaml);
+};
+
+/**
  * Update the techdocs_metadata.json to add etag of the prepared tree (e.g. commit SHA or actual Etag of the resource).
  * This is helpful to check if a TechDocs site in storage has gone outdated, without maintaining an in-memory build info
  * per Backstage instance.
