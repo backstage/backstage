@@ -9,29 +9,16 @@ Audience: All
 
 ## Overview
 
-When you first log into your standalone Backstage App, `Home` is selected in the sidebar, which displays the Catalog in the main panel.
+Initially, when you log into your standalone Backstage App, `Home` is selected in the sidebar, which displays the Catalog in the main panel.
 
-The [Technical Overview](../overview/technical-overview.md#software-catalog-system-model) provides greater detail, but the catalog displays two main kinds of registered entities:
-
-- **Core Entities**
+There are four main entities that you should become familiar with:
 
   - `Components` - Individual pieces of software that can be tracked in source control and can implement APIs for other components to consume.
-  - `APIs` - Implemented by components and form the boundaries between different components. The API can be either public, restricted, or private.
   - `Resources` - The physical or virtual infrastructure needed to operate a component.
-  - `Location` - A marker that references other places to look for catalog data.
-  - `Template` - Describes both the parameters that are rendered in the frontend part of the scaffolding wizard, and the steps that are executed when scaffolding that component.
   - `Systems` - A collection of resources and components that cooperate to perform a function by exposing one or several public APIs. It hides the resources and private APIs between the components from the consumer.
   - `Domains` - A collection of systems that share terminology, domain models, metrics, KPIs, business purpose, or documentation.
 
-- **Organizational Entities**
-
-  - `User` - A person, such as an employee, contractor, or similar.
-  - `Group` - An organizational entity, such as a team, business unit, and so on.
-
-There is an additional item that can be part of the system model:
-
-- `Type` - It has no set meaning. You can assign your own types and use them as desired.
-
+The [Technical Overview](../overview/technical-overview.md#software-catalog-system-model) provides a description of all of the types of entities displayed in the Catalog.
 
 It should be noted that you can also [create your own kinds of entities](../features/software-catalog/extending-the-model.md#adding-a-new-kind), if you need to model something in your organization that does not map to one of the existing entity types.
 
