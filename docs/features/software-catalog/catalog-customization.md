@@ -14,6 +14,204 @@ Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of
 <Route path="/catalog" element={<CatalogIndexPage pagination />} />
 ```
 
+## Export
+
+The `CatalogIndexPage` export feature was added in v1.48.0 of Backstage. To enable export you need to pass in the `exportSettings` prop with `enableExport: true`:
+
+```tsx title="packages/app/src/App.tsx"
+<Route
+  path="/catalog"
+  element={<CatalogIndexPage exportSettings={{ enableExport: true }} />}
+/>
+```
+
+This will enable CSV and JSON export of the catalog table, including the enabled catalog backend filters in the current user's view. The `CatalogExportButton` can also be embedded directly on your custom `CatalogIndexPage`, which will allow you to for instance put a [RequirePermission](https://backstage.io/docs/permissions/plugin-authors/05-frontend-authorization/#using-requirepermission) to limit which users can export from the catalog.
+
+:::info New Frontend System
+
+If you're using the [new frontend system](../../frontend-system/index.md), see [Configuring Catalog Export](#configuring-catalog-export) for configuration via `app-config.yaml`.
+
+:::
+
+### Customizing Export
+
+You can customize the export behavior by configuring the `exportSettings` prop with various options via the `CatalogExportSettings` interface:
+
+```tsx
+export interface CatalogExportSettings {
+  enableExport?: boolean;
+  /**
+   * Array of custom columns to include in the export.
+   * Each column specifies an entity field path and display title. Defaults to Name, Type, Owner and Description columns.
+   **/
+  columns?: ExportColumn[];
+  /**
+   * Map of custom export format handlers.
+   * Each handler is an async function that receives the catalog API, columns config and stream request and returns a Blob.
+   * Custom formats appear in the export dialog alongside built-in CSV and JSON options.
+   **/
+  customExporters?: Record<string, CustomExporter>;
+  /** Callback function invoked after successful export completion. Useful for displaying notifications or triggering post-export actions. */
+  onSuccess?: () => void;
+  /** Callback function invoked if export fails. Receives an Error object containing failure details for error handling and user notification. */
+  onError?: (error: Error) => void;
+  /** Material-UI Button component props for customizing the export button's appearance and behavior (e.g., variant, size, color). */
+  buttonProps?: ButtonProps;
+}
+```
+
+#### Custom Export Columns
+
+By default, the export includes Name, Type, Owner and Description columns. You can customize this:
+
+```tsx title="packages/app/src/App.tsx"
+import { CatalogIndexPage } from '@backstage/plugin-catalog';
+
+const customColumns = [
+  { entityFilterKey: 'metadata.name', title: 'Name' },
+  { entityFilterKey: 'metadata.namespace', title: 'Namespace' },
+  { entityFilterKey: 'spec.owner', title: 'Owner' },
+];
+
+<CatalogIndexPage
+  exportSettings={{
+    enableExport: true,
+    columns: customColumns,
+  }}
+/>;
+```
+
+When using `CatalogExportButton` directly:
+
+```tsx title="packages/app/src/App.tsx"
+import { CatalogExportButton } from '@backstage/plugin-catalog';
+
+<CatalogExportButton settings={{ columns: customColumns }} />;
+```
+
+#### Custom Export Formats
+
+You can add custom export format types beyond CSV and JSON by providing custom exporter functions. Custom exporters use **async generators** to enable true streaming downloads. Tje data is written to disk as it's generated, without buffering the entire export in memory in supported browsers.
+
+```tsx title="packages/app/src/App.tsx"
+import {
+  CatalogIndexPage,
+  StreamingCustomExporter,
+} from '@backstage/plugin-catalog';
+
+// Custom exporter using async generator for streaming
+const xmlExporter: StreamingCustomExporter = (
+  catalogApi,
+  columns,
+  streamRequest,
+) => {
+  // Return an async generator that yields XML chunks
+  async function* generateXml() {
+    yield '<?xml version="1.0" encoding="UTF-8"?>\n<entities>\n';
+
+    for await (const page of catalogApi.streamEntities(streamRequest)) {
+      for (const entity of page) {
+        // Serialize each entity to XML and yield immediately
+        yield serializeEntityToXml(entity, columns);
+      }
+    }
+
+    yield '</entities>';
+  }
+
+  return {
+    generator: generateXml(),
+    contentType: 'application/xml',
+  };
+};
+
+const yamlExporter: StreamingCustomExporter = (
+  catalogApi,
+  columns,
+  streamRequest,
+) => {
+  async function* generateYaml() {
+    for await (const page of catalogApi.streamEntities(streamRequest)) {
+      for (const entity of page) {
+        yield serializeEntityToYaml(entity, columns);
+        yield '---\n'; // YAML document separator
+      }
+    }
+  }
+
+  return {
+    generator: generateYaml(),
+    contentType: 'application/x-yaml',
+  };
+};
+
+const customExporters: Record<string, StreamingCustomExporter> = {
+  xml: xmlExporter,
+  yaml: yamlExporter,
+};
+
+<CatalogIndexPage
+  exportSettings={{
+    enableExport: true,
+    customExporters,
+  }}
+/>;
+```
+
+When custom export formats are provided, they will appear in the export dialog alongside the built-in CSV and JSON options.
+
+#### Success/Error Callbacks
+
+You can also provide callbacks to handle successful or failed exports:
+
+```tsx title="packages/app/src/App.tsx"
+<CatalogIndexPage
+  exportSettings={{
+    enableExport: true,
+    onSuccess: () => {
+      // Handle successful export
+      notificationApi.success({ message: 'Export completed!' });
+    },
+    onError: error => {
+      // Handle export error
+      notificationApi.error({
+        message: `Export failed: ${error.message}`,
+      });
+    },
+  }}
+/>
+```
+
+#### Combined Example
+
+Here's an example combining all customization options:
+
+```tsx title="packages/app/src/App.tsx"
+<CatalogIndexPage
+  exportSettings={{
+    enableExport: true,
+    columns: [
+      { entityFilterKey: 'metadata.name', title: 'Name' },
+      { entityFilterKey: 'spec.type', title: 'Type' },
+      { entityFilterKey: 'spec.owner', title: 'Owner' },
+      { entityFilterKey: 'metadata.namespace', title: 'Namespace' },
+    ],
+    customExporters: {
+      xml: xmlExporter,
+      yaml: yamlExporter,
+    },
+    onSuccess: () => {
+      notificationApi.success({ message: 'Export completed!' });
+    },
+    onError: error => {
+      notificationApi.error({
+        message: `Export failed: ${error.message}`,
+      });
+    },
+  }}
+/>
+```
+
 ## Initially Selected Filter
 
 By default, the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
@@ -508,6 +706,121 @@ This section of the documentation explains how to create and configure catalog e
 :::warning Warning
 
 This section is a work in progress.
+
+:::
+
+### Configuring Catalog Export
+
+The catalog export feature is available in the new frontend system and can be configured via `app-config.yaml` for basic settings, or via custom extensions for advanced customization.
+
+#### Basic Configuration (via app-config.yaml)
+
+To enable catalog export, add the following configuration:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:catalog:
+        config:
+          exportSettings:
+            enableExport: true
+```
+
+This will display an "Export selection" button on the catalog index page that allows users to export the currently filtered catalog entities in CSV or JSON format.
+
+#### Advanced Configuration
+
+For advanced export customization like custom export formats, callbacks, or button styling, create a frontend module that provides a catalog export customizer extension:
+
+```tsx title="src/catalogExportCustomization.tsx"
+import {
+  createExtension,
+  createFrontendModule,
+} from '@backstage/frontend-plugin-api';
+import { catalogExportCustomizationDataRef } from '@backstage/plugin-catalog/alpha';
+import type { StreamingCustomExporter } from '@backstage/plugin-catalog';
+
+// Define custom export formats using streaming async generators
+const yamlExporter: StreamingCustomExporter = (
+  catalogApi,
+  columns,
+  streamRequest,
+) => {
+  // Return an async generator that yields YAML chunks
+  async function* generateYaml() {
+    for await (const page of catalogApi.streamEntities(streamRequest)) {
+      for (const entity of page) {
+        // Serialize each entity to YAML and yield immediately
+        yield serializeEntityToYaml(entity, columns);
+        yield '---\n'; // YAML document separator
+      }
+    }
+  }
+
+  return {
+    generator: generateYaml(),
+    contentType: 'application/x-yaml',
+  };
+};
+
+// Create the customizer extension
+const catalogExportCustomizer = createExtension({
+  name: 'catalog-export-customizer',
+  attachTo: { id: 'page:catalog', input: 'exportCustomizers' },
+  output: [catalogExportCustomizationDataRef],
+  factory() {
+    return [
+      catalogExportCustomizationDataRef({
+        customExporters: {
+          yaml: yamlExporter,
+        },
+        onSuccess: () => {
+          console.log('Export successful!');
+        },
+        onError: error => {
+          console.error('Export failed:', error);
+        },
+        buttonProps: {
+          variant: 'outlined',
+          color: 'secondary',
+        },
+      }),
+    ];
+  },
+});
+
+// Create the module that provides this extension
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [catalogExportCustomizer],
+});
+```
+
+Then register this module in your app features:
+
+```tsx title="packages/app-next/src/App.tsx"
+import catalogExportCustomization from './catalogExportCustomization';
+
+const app = createApp({
+  features: [
+    // ... other features
+    catalogExportCustomization,
+  ],
+});
+```
+
+#### Available Customization Options
+
+The `catalogExportCustomizationDataRef` supports the following properties:
+
+- **`customExporters`** - Record of custom export format functions (e.g., XML, YAML)
+- **`onSuccess`** - Callback function invoked on successful export
+- **`onError`** - Callback function invoked if export fails
+- **`buttonProps`** - Material-UI button props for styling the export button
+
+:::note Note
+
+Multiple extensions can provide export customizers, and they will be merged together. Custom exporters from different extensions are combined into a single exporter map.
 
 :::
 

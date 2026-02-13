@@ -18,6 +18,7 @@ import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   coreExtensionData,
   createExtensionInput,
+  createExtensionDataRef,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -34,10 +35,28 @@ import {
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
+import type { CatalogExportSettings } from '../components/CatalogExportButton';
+
+/**
+ * Data ref for catalog export customization extensions.
+ * Allows apps to provide custom exporters, callbacks, and button props.
+ * @alpha
+ */
+export const catalogExportCustomizationDataRef = createExtensionDataRef<{
+  customExporters?: CatalogExportSettings['customExporters'];
+  onSuccess?: CatalogExportSettings['onSuccess'];
+  onError?: CatalogExportSettings['onError'];
+  buttonProps?: CatalogExportSettings['buttonProps'];
+}>().with({
+  id: 'catalog.export-customization',
+});
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
+    exportCustomizers: createExtensionInput([
+      catalogExportCustomizationDataRef.optional(),
+    ]),
   },
   config: {
     schema: {
@@ -52,6 +71,12 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
             }),
           ])
           .default(true),
+      exportSettings: z =>
+        z
+          .object({
+            enableExport: z.boolean().optional(),
+          })
+          .optional(),
     },
   },
   factory(originalFactory, { inputs, config }) {
@@ -63,10 +88,42 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
         const filters = inputs.filters.map(filter =>
           filter.get(coreExtensionData.reactElement),
         );
+
+        // Merge export customizers from all attached extensions
+        const mergedExportSettings: CatalogExportSettings = {
+          ...config.exportSettings,
+        };
+
+        for (const customizer of inputs.exportCustomizers) {
+          const data = customizer.get(catalogExportCustomizationDataRef);
+          if (data) {
+            if (data.customExporters) {
+              mergedExportSettings.customExporters = {
+                ...mergedExportSettings.customExporters,
+                ...data.customExporters,
+              };
+            }
+            if (data.onSuccess && !mergedExportSettings.onSuccess) {
+              mergedExportSettings.onSuccess = data.onSuccess;
+            }
+            if (data.onError && !mergedExportSettings.onError) {
+              mergedExportSettings.onError = data.onError;
+            }
+            if (data.buttonProps && !mergedExportSettings.buttonProps) {
+              mergedExportSettings.buttonProps = data.buttonProps;
+            }
+          }
+        }
+
         return (
           <BaseCatalogPage
             filters={<>{filters}</>}
             pagination={config.pagination}
+            exportSettings={
+              mergedExportSettings.enableExport
+                ? mergedExportSettings
+                : undefined
+            }
           />
         );
       },
