@@ -63,6 +63,7 @@ export function createZodV3FilterPredicateSchema(
     z.object({ $exists: z.boolean() }),
     z.object({ $in: z.array(primitiveSchema) }),
     z.object({ $contains: predicateSchema }),
+    z.object({ $hasPrefix: z.string() }),
   ]) as zodV3.ZodType<FilterPredicateValue>;
 
   return predicateSchema;
