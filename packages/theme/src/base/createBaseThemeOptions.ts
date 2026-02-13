@@ -17,6 +17,7 @@
 import { BackstageTypography, PageTheme, PageThemeSelector } from './types';
 import { pageTheme as defaultPageThemes } from './pageTheme';
 
+const DEFAULT_BORDER_RADIUS = 4;
 const DEFAULT_HTML_FONT_SIZE = 16;
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
@@ -69,6 +70,7 @@ export const defaultTypography: BackstageTypography = {
  */
 export interface BaseThemeOptionsInput<PaletteOptions> {
   palette: PaletteOptions;
+  borderRadius?: number;
   defaultPageTheme?: string;
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
@@ -86,6 +88,7 @@ export function createBaseThemeOptions<PaletteOptions>(
 ) {
   const {
     palette,
+    borderRadius = DEFAULT_BORDER_RADIUS,
     htmlFontSize = DEFAULT_HTML_FONT_SIZE,
     fontFamily = DEFAULT_FONT_FAMILY,
     defaultPageTheme = DEFAULT_PAGE_THEME,
@@ -102,6 +105,7 @@ export function createBaseThemeOptions<PaletteOptions>(
 
   return {
     palette,
+    shape: { borderRadius },
     typography: typography ?? defaultTypography,
     page: pageTheme[defaultPageTheme],
     getPageTheme: ({ themeId }: PageThemeSelector) =>

@@ -59,6 +59,7 @@ export class UnifiedThemeHolder implements UnifiedTheme {
  */
 export interface UnifiedThemeOptions {
   palette: PaletteOptionsV4 & PaletteOptionsV5;
+  borderRadius?: number;
   defaultPageTheme?: string;
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
