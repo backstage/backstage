@@ -136,6 +136,14 @@ Your Backstage developer portal can be customized by incorporating
 [existing open source plugins](https://github.com/backstage/backstage/tree/master/plugins),
 or by [building your own](../../plugins/index.md).
 
+## OpenAPI and $ref Support
+
+If you are using OpenAPI specifications that are split into multiple files using `$ref`, standard processing might not resolve them correctly.
+
+To fix this, you should install the **OpenAPI Catalog Backend Module**. This module helps resolve `$ref` pointers in your YAML documents, bundling them into a single specification for the catalog.
+
+For installation instructions and usage, see the [catalog-backend-module-openapi README](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-openapi).
+
 ## Links
 
 - [[Blog post] Backstage Service Catalog released in alpha](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)
