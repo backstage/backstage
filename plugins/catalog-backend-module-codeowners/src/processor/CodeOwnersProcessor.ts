@@ -22,16 +22,13 @@ import {
 } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
-import { findCodeOwnerByTarget } from './codeowners';
+import { findCodeOwnerByTarget } from '../codeowners';
 import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 
 const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 const ALLOWED_LOCATION_TYPES = ['url'];
 
-/**
- * @public
- * @deprecated Use the `@backstage/plugin-catalog-backend-module-codeowners` module instead
- */
+/** @public */
 export class CodeOwnersProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: LoggerService;
