@@ -25,6 +25,7 @@ import { createSwappableComponent } from './createSwappableComponent';
 export interface PageTab {
   id: string;
   label: string;
+  icon?: IconElement;
   href: string;
   matchStrategy?: 'prefix' | 'exact';
 }
@@ -96,12 +97,16 @@ function DefaultPageLayout(props: PageLayoutProps): JSX.Element {
                   key={tab.id}
                   href={tab.href}
                   style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
                     padding: '8px 12px',
                     textDecoration: 'none',
                     color: '#333',
                     borderBottom: '2px solid transparent',
                   }}
                 >
+                  {tab.icon}
                   {tab.label}
                 </a>
               ))}

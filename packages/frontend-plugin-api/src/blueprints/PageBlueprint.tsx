@@ -50,6 +50,7 @@ export const PageBlueprint = createExtensionBlueprint({
       coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
       coreExtensionData.title.optional(),
+      coreExtensionData.icon.optional(),
     ]),
   },
   output: [
@@ -104,9 +105,11 @@ export const PageBlueprint = createExtensionBlueprint({
       const tabs: PageTab[] = inputs.pages.map(page => {
         const path = page.get(coreExtensionData.routePath);
         const tabTitle = page.get(coreExtensionData.title);
+        const tabIcon = page.get(coreExtensionData.icon);
         return {
           id: path,
           label: tabTitle || path,
+          icon: tabIcon,
           href: path,
           matchStrategy: 'prefix' as const,
         };
