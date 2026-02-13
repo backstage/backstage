@@ -24,7 +24,7 @@ import {
   useApi,
   appTreeApiRef,
 } from '@backstage/frontend-plugin-api';
-import { Flex } from '@backstage/ui';
+import { Flex, FullPage } from '@backstage/ui';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 type NodeType =
@@ -148,22 +148,19 @@ export function TreeVisualizer() {
   const graphData = useMemo(() => resolveGraphData(tree), [tree]);
 
   return (
-    <Flex
-      style={{
-        height: '100%',
-        overflow: 'hidden',
-      }}
-    >
-      <DependencyGraph
-        fit="contain"
-        {...graphData}
-        nodeMargin={10}
-        rankMargin={50}
-        paddingX={50}
-        renderNode={Node}
-        ranker={DependencyGraphTypes.Ranker.TIGHT_TREE}
-        direction={DependencyGraphTypes.Direction.LEFT_RIGHT}
-      />
-    </Flex>
+    <FullPage>
+      <Flex style={{ height: '100%' }}>
+        <DependencyGraph
+          fit="contain"
+          {...graphData}
+          nodeMargin={10}
+          rankMargin={50}
+          paddingX={50}
+          renderNode={Node}
+          ranker={DependencyGraphTypes.Ranker.TIGHT_TREE}
+          direction={DependencyGraphTypes.Direction.LEFT_RIGHT}
+        />
+      </Flex>
+    </FullPage>
   );
 }

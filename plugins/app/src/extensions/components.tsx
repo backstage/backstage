@@ -26,7 +26,7 @@ import {
   ErrorPanel,
   Progress as ProgressComponent,
 } from '@backstage/core-components';
-import { Header, Flex } from '@backstage/ui';
+import { Header } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 
 export const Progress = SwappableComponentBlueprint.make({
@@ -76,10 +76,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
         const { title, icon, noHeader, headerActions, tabs, children } = props;
         if (tabs) {
           return (
-            <Flex
-              direction="column"
-              style={{ flexGrow: 1, minHeight: 0, gap: 0 }}
-            >
+            <>
               {!noHeader && (
                 <Header
                   title={title}
@@ -88,38 +85,11 @@ export const PageLayout = SwappableComponentBlueprint.make({
                   customActions={headerActions}
                 />
               )}
-              <main
-                style={{
-                  flex: '1 1 0',
-                  minHeight: 0,
-                  overflow: 'auto',
-                  padding: 0,
-                  margin: 0,
-                }}
-              >
-                {children}
-              </main>
-            </Flex>
+              {children}
+            </>
           );
         }
-        return (
-          <Flex
-            direction="column"
-            style={{ flexGrow: 1, minHeight: 0, gap: 0 }}
-          >
-            <main
-              style={{
-                flex: '1 1 0',
-                minHeight: 0,
-                overflow: 'auto',
-                padding: 0,
-                margin: 0,
-              }}
-            >
-              {children}
-            </main>
-          </Flex>
-        );
+        return <>{children}</>;
       },
     }),
 });
