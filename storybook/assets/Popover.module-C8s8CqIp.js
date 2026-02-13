@@ -1,1 +1,0 @@
-const o={classNames:{root:"bui-Popover",arrow:"bui-PopoverArrow",content:"bui-PopoverContent"}},r={"bui-Popover":"_bui-Popover_kwph9_20","bui-PopoverArrow":"_bui-PopoverArrow_kwph9_43","bui-PopoverContent":"_bui-PopoverContent_kwph9_73"};export{o as P,r as s};

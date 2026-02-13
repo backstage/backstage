@@ -1,0 +1,1 @@
+const o={classNames:{root:"bui-Popover",arrow:"bui-PopoverArrow",content:"bui-PopoverContent"}},r={"bui-Popover":"_bui-Popover_qv5oz_20","bui-PopoverArrow":"_bui-PopoverArrow_qv5oz_43","bui-PopoverContent":"_bui-PopoverContent_qv5oz_73"};export{o as P,r as s};

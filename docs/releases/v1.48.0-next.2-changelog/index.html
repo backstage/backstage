@@ -27,7 +27,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.a6a6a0a6.css">
-<script src="/assets/js/runtime~main.f746ca45.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.8d5897a2.js" defer="defer"></script>
 <script src="/assets/js/main.a34ce60b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -109,7 +109,7 @@
 <p>The <code>--bui-gray-1</code> through <code>--bui-gray-8</code> tokens have been removed. The <code>--bui-bg-surface-*</code> and <code>--bui-bg-neutral-on-surface-*</code> tokens have been replaced by a unified <code>--bui-bg-neutral-*</code> scale.</p>
 <p><strong>Migration:</strong></p>
 <p>Replace surface tokens directly:</p>
-<div class="language-diff codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-diff codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">- background: var(--bui-bg-surface-0);</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">+ background: var(--bui-bg-neutral-0);</span><br></span></code></pre></div></div>
+<div class="language-diff codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-diff codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">- background: var(--bui-bg-surface-0);</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">+ background: var(--bui-bg-app);</span><br></span></code></pre></div></div>
 <p>Replace on-surface tokens shifted by +1:</p>
 <div class="language-diff codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-diff codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">- background: var(--bui-bg-neutral-on-surface-0);</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">+ background: var(--bui-bg-neutral-1);</span><br></span></code></pre></div></div>
 <p>Replace gray tokens 1-4 with neutral equivalents (<code>--bui-gray-5</code> through <code>--bui-gray-8</code> have no direct replacement):</p>
@@ -905,7 +905,7 @@
 </li>
 </ul>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="backstageplugin-catalog-import01310-next2">@backstage/plugin-catalog-import@0.13.10-next.2<a href="#backstageplugin-catalog-import01310-next2" class="hash-link" aria-label="Direct link to @backstage/plugin-catalog-import@0.13.10-next.2" title="Direct link to @backstage/plugin-catalog-import@0.13.10-next.2" translate="no">​</a></h2>
-<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="patch-changes-61">Patch Changes<a href="#patch-changes-61" class="hash-link" aria-label="Direct link to Patch Changes" title="Direct link to Patch Changes" translate="no"> ​</a></h3>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="patch-changes-61">Patch Changes<a href="#patch-changes-61" class="hash-link" aria-label="Direct link to Patch Changes" title="Direct link to Patch Changes" translate="no">​</a></h3>
 <ul>
 <li class="">a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.</li>
 <li class="">Updated dependencies
