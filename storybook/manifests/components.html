@@ -576,7 +576,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/42 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/42 infos</a><span class="filter-pill ok" aria-disabled="true">373 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/42 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/42 infos</a><span class="filter-pill ok" aria-disabled="true">374 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -598,7 +598,7 @@
       <div class="badges">
         <label for="c-0-backstage-ui-accordion-props" class="badge ok as-toggle">1 prop type</label>
         <label for="c-0-backstage-ui-accordion-info" class="badge info as-toggle">1 info</label>
-        <label for="c-0-backstage-ui-accordion-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-0-backstage-ui-accordion-stories" class="badge ok as-toggle">7 stories</label>
         
       </div>
     </div>
@@ -646,7 +646,15 @@
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Accordion, AccordionGroup, AccordionPanel, AccordionTrigger, Box, Text } from "@backstage/ui";</code></pre>
+                <pre><code>import {
+    Accordion,
+    AccordionGroup,
+    AccordionPanel,
+    AccordionTrigger,
+    Box,
+    Flex,
+    Text,
+} from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -810,6 +818,65 @@
       &lt;/AccordionPanel&gt;
     &lt;/Accordion&gt;
   &lt;/AccordionGroup&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">AutoBg</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AutoBg = () =&gt; (
+  &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+    &lt;div style={{ maxWidth: &#39;600px&#39; }}&gt;
+      Accordions automatically detect their parent bg context and increment
+      the neutral level by 1. No prop is needed on the accordion -- it&#39;s fully
+      automatic.
+    &lt;/div&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;Default (no container)&lt;/Text&gt;
+      &lt;Accordion defaultExpanded&gt;
+        &lt;AccordionTrigger title=&quot;Toggle Panel&quot; /&gt;
+        &lt;AccordionPanel&gt;
+          &lt;Content /&gt;
+        &lt;/AccordionPanel&gt;
+      &lt;/Accordion&gt;
+    &lt;/Flex&gt;
+    &lt;Box bg=&quot;neutral-1&quot; p=&quot;4&quot;&gt;
+      &lt;Text&gt;Neutral 1 container&lt;/Text&gt;
+      &lt;Flex mt=&quot;2&quot;&gt;
+        &lt;Accordion defaultExpanded&gt;
+          &lt;AccordionTrigger title=&quot;Auto (neutral-2)&quot; /&gt;
+          &lt;AccordionPanel&gt;
+            &lt;Content /&gt;
+          &lt;/AccordionPanel&gt;
+        &lt;/Accordion&gt;
+      &lt;/Flex&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral-2&quot; p=&quot;4&quot;&gt;
+      &lt;Text&gt;Neutral 2 container&lt;/Text&gt;
+      &lt;Flex mt=&quot;2&quot;&gt;
+        &lt;Accordion defaultExpanded&gt;
+          &lt;AccordionTrigger title=&quot;Auto (neutral-3)&quot; /&gt;
+          &lt;AccordionPanel&gt;
+            &lt;Content /&gt;
+          &lt;/AccordionPanel&gt;
+        &lt;/Accordion&gt;
+      &lt;/Flex&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral-3&quot; p=&quot;4&quot;&gt;
+      &lt;Text&gt;Neutral 3 container&lt;/Text&gt;
+      &lt;Flex mt=&quot;2&quot;&gt;
+        &lt;Accordion defaultExpanded&gt;
+          &lt;AccordionTrigger title=&quot;Auto (neutral-4)&quot; /&gt;
+          &lt;AccordionPanel&gt;
+            &lt;Content /&gt;
+          &lt;/AccordionPanel&gt;
+        &lt;/Accordion&gt;
+      &lt;/Flex&gt;
+    &lt;/Box&gt;
+  &lt;/Flex&gt;
 );</code></pre>
             </div>
         </div>
