@@ -39,7 +39,6 @@ const detailedRouteRef = createRouteRef();
 const textRouteRef = createRouteRef();
 
 const appVisualizerTreePage = SubPageBlueprint.make({
-  attachTo: { id: 'page:app-visualizer', input: 'pages' },
   name: 'tree',
   params: {
     path: 'tree',
@@ -52,7 +51,6 @@ const appVisualizerTreePage = SubPageBlueprint.make({
   },
 });
 const appVisualizerDetailedPage = SubPageBlueprint.make({
-  attachTo: { id: 'page:app-visualizer', input: 'pages' },
   name: 'details',
   params: {
     path: 'details',
@@ -65,7 +63,6 @@ const appVisualizerDetailedPage = SubPageBlueprint.make({
   },
 });
 const appVisualizerTextPage = SubPageBlueprint.make({
-  attachTo: { id: 'page:app-visualizer', input: 'pages' },
   name: 'text',
   params: {
     path: 'text',
