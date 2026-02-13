@@ -83,7 +83,7 @@
     "classnames": "^2.2.6",
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^5.3.6",
-    "qs": "^6.9.4",
+    "qs": "^6.14.2",
     "react-use": "^17.2.4",
     "yaml": "^2.0.0",
     "zen-observable": "^0.10.0"

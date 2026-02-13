@@ -63,7 +63,7 @@
     "lodash": "^4.17.21",
     "p-limit": "^3.1.0",
     "pluralize": "^8.0.0",
-    "qs": "^6.10.1",
+    "qs": "^6.14.2",
     "react-use": "^17.2.4"
   },
   "devDependencies": {

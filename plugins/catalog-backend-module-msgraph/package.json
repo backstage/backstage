@@ -60,7 +60,7 @@
     "@microsoft/microsoft-graph-types": "^2.6.0",
     "lodash": "^4.17.21",
     "p-limit": "^3.0.2",
-    "qs": "^6.9.4",
+    "qs": "^6.14.2",
     "uuid": "^11.0.0"
   },
   "devDependencies": {

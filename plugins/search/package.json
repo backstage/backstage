@@ -69,7 +69,7 @@
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "qs": "^6.9.4",
+    "qs": "^6.14.2",
     "react-use": "^17.2.4"
   },
   "devDependencies": {
