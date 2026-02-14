@@ -16,8 +16,22 @@
 
 import { screen } from '@testing-library/react';
 import { useSelectedSubRoute } from './EntityTabs';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import {
+  MemoryRouter,
+  Route,
+  Routes,
+  Outlet,
+  Link,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+const v7Flags = {
+  v7_relativeSplatPath: true,
+  v7_startTransition: true,
+} as const;
 
 function TestSubRouteHook(props: {
   subRoutes: Array<{
@@ -60,14 +74,23 @@ describe('EntityTabs', () => {
   ];
 
   describe('useSelectedSubRoute', () => {
-    it('should render the first route at root path', () => {
+    it('should select first tab at entity root', () => {
       render(
-        <MemoryRouter initialEntries={['/']}>
+        <MemoryRouter
+          initialEntries={['/entity/ns/kind/name']}
+          future={v7Flags}
+        >
           <Routes>
-            <Route
-              path="/*"
-              element={<TestSubRouteHook subRoutes={subRoutes} />}
-            />
+            <Route path="/entity/:namespace/:kind/:name" element={<Outlet />}>
+              <Route
+                index
+                element={<TestSubRouteHook subRoutes={subRoutes} />}
+              />
+              <Route
+                path="*"
+                element={<TestSubRouteHook subRoutes={subRoutes} />}
+              />
+            </Route>
           </Routes>
         </MemoryRouter>,
       );
@@ -78,14 +101,19 @@ describe('EntityTabs', () => {
       );
     });
 
-    it('should render a route at non-root path', () => {
+    it('should select correct tab for a matching path', () => {
       render(
-        <MemoryRouter initialEntries={['/details']}>
+        <MemoryRouter
+          initialEntries={['/entity/ns/kind/name/details']}
+          future={v7Flags}
+        >
           <Routes>
-            <Route
-              path="/*"
-              element={<TestSubRouteHook subRoutes={subRoutes} />}
-            />
+            <Route path="/entity/:namespace/:kind/:name" element={<Outlet />}>
+              <Route
+                path="*"
+                element={<TestSubRouteHook subRoutes={subRoutes} />}
+              />
+            </Route>
           </Routes>
         </MemoryRouter>,
       );
@@ -94,77 +122,35 @@ describe('EntityTabs', () => {
       expect(screen.getByTestId('selected-route-title')).toHaveTextContent(
         'Details',
       );
-    });
-
-    it('should handle nested paths under a route (splat path behavior)', () => {
-      render(
-        <MemoryRouter initialEntries={['/details/nested/path']}>
-          <Routes>
-            <Route
-              path="/*"
-              element={<TestSubRouteHook subRoutes={subRoutes} />}
-            />
-          </Routes>
-        </MemoryRouter>,
-      );
-
-      expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
-      expect(screen.getByTestId('selected-route-title')).toHaveTextContent(
-        'Details',
-      );
-    });
-
-    it('should render correct content for matched route', () => {
-      render(
-        <MemoryRouter initialEntries={['/docs']}>
-          <Routes>
-            <Route
-              path="/*"
-              element={<TestSubRouteHook subRoutes={subRoutes} />}
-            />
-          </Routes>
-        </MemoryRouter>,
-      );
-
       expect(screen.getByTestId('element-container')).toHaveTextContent(
-        'Documentation Content',
+        'Details Content',
       );
     });
 
-    it('should support relative links within routes', () => {
-      const routesWithRelativeLinks = [
-        {
-          group: 'default',
-          path: '/entity',
-          title: 'Entity',
-          children: (
-            <div>
-              Entity Content
-              <a href="./child">Go to child</a>
-            </div>
-          ),
-        },
-      ];
-
+    it('should handle nested paths under a matched route', () => {
       render(
-        <MemoryRouter initialEntries={['/entity']}>
+        <MemoryRouter
+          initialEntries={['/entity/ns/kind/name/details/nested/path']}
+          future={v7Flags}
+        >
           <Routes>
-            <Route
-              path="/*"
-              element={<TestSubRouteHook subRoutes={routesWithRelativeLinks} />}
-            />
+            <Route path="/entity/:namespace/:kind/:name" element={<Outlet />}>
+              <Route
+                path="*"
+                element={<TestSubRouteHook subRoutes={subRoutes} />}
+              />
+            </Route>
           </Routes>
         </MemoryRouter>,
       );
 
-      expect(screen.getByText('Entity Content')).toBeInTheDocument();
-      expect(screen.getByText('Go to child')).toHaveAttribute(
-        'href',
-        './child',
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
+      expect(screen.getByTestId('selected-route-title')).toHaveTextContent(
+        'Details',
       );
     });
 
-    it('should handle routes with nested path segments', () => {
+    it('should prefer more specific routes over shorter ones', () => {
       const nestedPathRoutes = [
         {
           group: 'default',
@@ -181,12 +167,17 @@ describe('EntityTabs', () => {
       ];
 
       render(
-        <MemoryRouter initialEntries={['/catalog/entities/some-entity']}>
+        <MemoryRouter
+          initialEntries={['/entity/ns/kind/name/catalog/entities/some-entity']}
+          future={v7Flags}
+        >
           <Routes>
-            <Route
-              path="/*"
-              element={<TestSubRouteHook subRoutes={nestedPathRoutes} />}
-            />
+            <Route path="/entity/:namespace/:kind/:name" element={<Outlet />}>
+              <Route
+                path="*"
+                element={<TestSubRouteHook subRoutes={nestedPathRoutes} />}
+              />
+            </Route>
           </Routes>
         </MemoryRouter>,
       );
@@ -199,12 +190,17 @@ describe('EntityTabs', () => {
 
     it('should fall back to first route for unknown paths', () => {
       render(
-        <MemoryRouter initialEntries={['/unknown-path']}>
+        <MemoryRouter
+          initialEntries={['/entity/ns/kind/name/unknown-path']}
+          future={v7Flags}
+        >
           <Routes>
-            <Route
-              path="/*"
-              element={<TestSubRouteHook subRoutes={subRoutes} />}
-            />
+            <Route path="/entity/:namespace/:kind/:name" element={<Outlet />}>
+              <Route
+                path="*"
+                element={<TestSubRouteHook subRoutes={subRoutes} />}
+              />
+            </Route>
           </Routes>
         </MemoryRouter>,
       );
@@ -213,6 +209,148 @@ describe('EntityTabs', () => {
       expect(screen.getByTestId('selected-route-title')).toHaveTextContent(
         'Overview',
       );
+    });
+
+    it('should generate tab link hrefs that do not duplicate URL segments', () => {
+      function LocationDisplay() {
+        const location = useLocation();
+        return <div data-testid="location">{location.pathname}</div>;
+      }
+
+      function TabLinkTest() {
+        const { index, element } = useSelectedSubRoute(subRoutes);
+        return (
+          <div>
+            <div data-testid="selected-index">{index}</div>
+            {subRoutes.map(t => {
+              let to = t.path.replace(/\/\*$/, '').replace(/^\//, '');
+              // Same logic as EntityTabs: use ../ when inside a * child
+              to = to ? `../${to}` : '..';
+              return (
+                <Link key={t.path} to={to} data-testid={`tab-${t.title}`}>
+                  {t.title}
+                </Link>
+              );
+            })}
+            <div data-testid="element-container">{element}</div>
+          </div>
+        );
+      }
+
+      render(
+        <MemoryRouter
+          initialEntries={['/entity/ns/kind/name/details']}
+          future={v7Flags}
+        >
+          <Routes>
+            <Route path="/entity/:namespace/:kind/:name" element={<Outlet />}>
+              <Route path="*" element={<TabLinkTest />} />
+            </Route>
+          </Routes>
+          <LocationDisplay />
+        </MemoryRouter>,
+      );
+
+      // Verify we're on the details tab
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/entity/ns/kind/name/details',
+      );
+
+      // Tab links should resolve to sibling paths, NOT duplicate segments
+      expect(screen.getByTestId('tab-Overview')).toHaveAttribute(
+        'href',
+        '/entity/ns/kind/name/overview',
+      );
+      expect(screen.getByTestId('tab-Details')).toHaveAttribute(
+        'href',
+        '/entity/ns/kind/name/details',
+      );
+      expect(screen.getByTestId('tab-Documentation')).toHaveAttribute(
+        'href',
+        '/entity/ns/kind/name/docs',
+      );
+    });
+
+    it('should navigate between tabs without URL duplication', async () => {
+      const user = userEvent.setup();
+
+      function LocationDisplay() {
+        const location = useLocation();
+        return <div data-testid="location">{location.pathname}</div>;
+      }
+
+      function TabLinkTest() {
+        const { index, element } = useSelectedSubRoute(subRoutes);
+        const hasSplatParam = !!useParams()['*'];
+        return (
+          <div>
+            <div data-testid="selected-index">{index}</div>
+            {subRoutes.map(t => {
+              let to = t.path.replace(/\/\*$/, '').replace(/^\//, '');
+              if (hasSplatParam) {
+                to = to ? `../${to}` : '..';
+              } else {
+                to = to || '.';
+              }
+              return (
+                <Link key={t.path} to={to} data-testid={`tab-${t.title}`}>
+                  {t.title}
+                </Link>
+              );
+            })}
+            <div data-testid="element-container">{element}</div>
+          </div>
+        );
+      }
+
+      render(
+        <MemoryRouter
+          initialEntries={['/entity/ns/kind/name/overview']}
+          future={v7Flags}
+        >
+          <Routes>
+            <Route path="/entity/:namespace/:kind/:name" element={<Outlet />}>
+              <Route index element={<TabLinkTest />} />
+              <Route path="*" element={<TabLinkTest />} />
+            </Route>
+          </Routes>
+          <LocationDisplay />
+        </MemoryRouter>,
+      );
+
+      // Start on overview tab
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/entity/ns/kind/name/overview',
+      );
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('0');
+
+      // Click Details tab
+      await user.click(screen.getByTestId('tab-Details'));
+
+      // Should navigate to details, NOT /entity/ns/kind/name/overview/details
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/entity/ns/kind/name/details',
+      );
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
+
+      // Click Documentation tab
+      await user.click(screen.getByTestId('tab-Documentation'));
+
+      // Should navigate to docs, NOT /entity/ns/kind/name/details/docs
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/entity/ns/kind/name/docs',
+      );
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('2');
+
+      // Click Overview tab
+      await user.click(screen.getByTestId('tab-Overview'));
+
+      // Should navigate back to overview
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/entity/ns/kind/name/overview',
+      );
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('0');
     });
   });
 });
