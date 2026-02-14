@@ -543,7 +543,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
  * @remarks
  *
  * Design note: The code prefers to let the SQL engine achieve case
- * insensitivitiy. We could attempt to use `.toUpperCase` etc on the client
+ * insensitivity. We could attempt to use `.toUpperCase` etc on the client
  * side, but that would only work for the values being passed in, not the column
  * side of the expression. If we let the database perform UPPER on both, we know
  * that they will always be locale consistent etc as well.
@@ -628,17 +628,7 @@ function applyFilterValueToQuery(
   value: FilterPredicateValue,
 ): Knex.QueryBuilder {
   // Is it a primitive value?
-  if (
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'boolean'
-  ) {
-    // The id is matched with plain equality; it's of UUID type and case
-    // insensitivity does not apply.
-    if (key === 'id') {
-      return result.where({ id: value });
-    }
-
+  if (['string', 'number', 'boolean'].includes(typeof value)) {
     if (clientType === 'pg') {
       return result.whereRaw(`UPPER(??::text) = UPPER(?::text)`, [key, value]);
     }

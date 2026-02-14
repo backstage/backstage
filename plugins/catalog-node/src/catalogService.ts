@@ -111,7 +111,7 @@ export interface CatalogService {
   ): Promise<GetLocationsResponse>;
 
   queryLocations(
-    request: QueryLocationsRequest,
+    request: QueryLocationsRequest | undefined,
     options: CatalogServiceRequestOptions,
   ): Promise<QueryLocationsResponse>;
 

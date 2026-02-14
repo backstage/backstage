@@ -238,7 +238,7 @@ export interface CatalogService {
   ): Promise<QueryEntitiesResponse>;
   // (undocumented)
   queryLocations(
-    request: QueryLocationsRequest,
+    request: QueryLocationsRequest | undefined,
     options: CatalogServiceRequestOptions,
   ): Promise<QueryLocationsResponse>;
   // (undocumented)

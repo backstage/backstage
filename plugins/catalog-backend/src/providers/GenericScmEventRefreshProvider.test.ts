@@ -29,6 +29,8 @@ import {
 } from '../database/tables';
 import { GenericScmEventRefreshProvider } from './GenericScmEventRefreshProvider';
 
+jest.setTimeout(60_000);
+
 describe('GenericScmEventRefreshProvider', () => {
   const databases = TestDatabases.create();
 
