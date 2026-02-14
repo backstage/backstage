@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityPredicate } from '../../schema/openapi/generated/models/EntityPredicate.model';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import {
   encodeLocationQueryCursor,
   parseLocationQuery,
@@ -45,7 +45,7 @@ describe('parseLocationQuery', () => {
     });
 
     it('should parse a complex query with $all', () => {
-      const query: EntityPredicate = {
+      const query: FilterPredicate = {
         $all: [{ type: 'url' }, { target: { $in: ['a', 'b'] } }],
       };
       const result = parseLocationQuery({ query });
