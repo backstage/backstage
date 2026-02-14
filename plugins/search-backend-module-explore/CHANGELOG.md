@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.3.11
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- df27350: Updated dependency `@backstage-community/plugin-explore-common` to `^0.12.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-backend-node@1.4.1
+  - @backstage/plugin-search-common@1.2.22
+
 ## 0.3.11-next.1
 
 ### Patch Changes

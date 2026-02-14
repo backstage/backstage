@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.18.7
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- cebfea7: Removed link styles from LinkButton to avoid styling inconsistencies related to import order.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/theme@0.7.2
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/version-bridge@1.0.12
+
 ## 0.18.7-next.2
 
 ### Patch Changes

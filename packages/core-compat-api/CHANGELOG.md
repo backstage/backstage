@@ -1,5 +1,20 @@
 # @backstage/core-compat-api
 
+## 0.5.8
+
+### Patch Changes
+
+- c38b74d: Internal updates for blueprint moves to `@backstage/plugin-app-react`.
+- 53b6549: Plugins in the new frontend system now have a `pluginId` field rather than `id` to better align with naming conventions used throughout the frontend and backend systems. The old field is still present but marked as deprecated. All internal code has been updated to prefer `pluginId` while maintaining backward compatibility by falling back to `id` when needed.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-app-react@0.1.1
+
 ## 0.5.8-next.2
 
 ### Patch Changes

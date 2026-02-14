@@ -1,5 +1,24 @@
 # @backstage/plugin-user-settings
 
+## 0.9.0
+
+### Minor Changes
+
+- 104ca74: User-settings will now use DataLoader to batch consecutive calls into one API call to improve performance
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/core-app-api@1.19.5
+  - @backstage/theme@0.7.2
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-user-settings-common@0.1.0
+  - @backstage/plugin-signals-react@0.0.19
+
 ## 0.9.0-next.2
 
 ### Minor Changes

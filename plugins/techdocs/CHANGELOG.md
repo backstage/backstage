@@ -1,5 +1,43 @@
 # @backstage/plugin-techdocs
 
+## 1.17.0
+
+### Minor Changes
+
+- 27798df: Add two config values to the `page:techdocs/reader` extension that configure default layout, `withoutSearch` and `withoutHeader`. Default are unchanged to `false`.
+
+  E.g. to disable the search and header on the Techdocs Reader Page:
+
+  ```yaml
+  app:
+    extensions:
+      - page:techdocs/reader:
+          config:
+            withoutSearch: true
+            withoutHeader: true
+  ```
+
+### Patch Changes
+
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 491a06c: Add the ability to show icons for the tabs on the entity page (new frontend)
+- 9e29545: Improve sidebars (nav/TOC) layout and scrolling
+- 22dce2b: TechDocs addons in the new frontend system now use a Utility API pattern instead of multiple attachment points. The `AddonBlueprint` now uses this new approach, and while addons created with older versions still work, they will produce a deprecation warning and will stop working in a future release.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/integration@1.20.0
+  - @backstage/core-components@0.18.7
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/theme@0.7.2
+  - @backstage/catalog-client@1.12.2
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-techdocs-react@1.3.8
+  - @backstage/integration-react@1.2.15
+  - @backstage/plugin-search-react@1.10.3
+  - @backstage/plugin-auth-react@0.1.24
+
 ## 1.16.3-next.2
 
 ### Patch Changes

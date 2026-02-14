@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-node
 
+## 1.14.2
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 3c455d4: Some security fixes
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-common@1.2.22
+
 ## 1.14.2-next.1
 
 ### Patch Changes
