@@ -16,7 +16,12 @@
 
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  TestDatabaseId,
+  TestDatabases,
+} from '@backstage/backend-test-utils';
 import type { Location } from '@backstage/catalog-client';
 import {
   ANNOTATION_LOCATION,
@@ -38,11 +43,17 @@ import { Server } from 'node:http';
 import request from 'supertest';
 import { z } from 'zod';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
+import { applyDatabaseMigrations } from '../database/migrations';
+import { DbLocationsRow } from '../database/tables';
 import { CatalogProcessingOrchestrator } from '../processing/types';
+import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { createRouter } from './createRouter';
+import { DefaultLocationService } from './DefaultLocationService';
 import { basicEntityFilter } from './request';
 import { LocationInput, LocationService, RefreshService } from './types';
 import { decodeCursor, encodeCursor } from './util';
+
+jest.setTimeout(60_000);
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -1406,6 +1417,174 @@ describe('NextRouter permissioning', () => {
       items: [{ id: '123', result: AuthorizeResult.ALLOW }],
     });
   });
+});
+
+describe('POST /locations/by-query works end to end', () => {
+  const databases = TestDatabases.create();
+
+  async function createTestRouter(databaseId: TestDatabaseId) {
+    const knex = await databases.init(databaseId);
+    await applyDatabaseMigrations(knex);
+
+    const mockScmEvents = {
+      subscribe: jest.fn(),
+      publish: jest.fn(),
+    };
+
+    const store = new DefaultLocationStore(knex, mockScmEvents, {
+      refresh: false,
+      unregister: false,
+      move: false,
+    });
+    await store.connect({ applyMutation: jest.fn(), refresh: jest.fn() });
+
+    const locationService = new DefaultLocationService(
+      store,
+      { process: jest.fn() },
+      { allowedLocationTypes: ['url'] },
+    );
+
+    const router = await createRouter({
+      locationService,
+      logger: mockServices.logger.mock(),
+      config: new ConfigReader(undefined),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
+      orchestrator: { process: jest.fn() },
+      permissionsService: mockServices.permissions(),
+      auditor: mockServices.auditor.mock(),
+    });
+
+    const errorMiddleware = MiddlewareFactory.create({
+      logger: mockServices.logger.mock(),
+      config: mockServices.rootConfig(),
+    });
+    router.use(errorMiddleware.error());
+
+    return { knex, app: express().use(router) };
+  }
+
+  it.each(databases.eachSupportedId())(
+    'paginates through locations correctly, %p',
+    async databaseId => {
+      const { knex, app } = await createTestRouter(databaseId);
+
+      // Insert 5 locations directly into the database
+      const locations = [
+        {
+          id: '00000000-0000-0000-0000-000000000001',
+          type: 'url',
+          target: 'https://example.com/a.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000002',
+          type: 'url',
+          target: 'https://example.com/b.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000003',
+          type: 'url',
+          target: 'https://example.com/c.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000004',
+          type: 'url',
+          target: 'https://example.com/d.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000005',
+          type: 'url',
+          target: 'https://example.com/e.yaml',
+        },
+      ];
+
+      // Clear the table and insert our test data
+      await knex<DbLocationsRow>('locations').delete();
+      for (const location of locations) {
+        await knex<DbLocationsRow>('locations').insert(location);
+      }
+
+      // First request: get first 2 locations
+      const response1 = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 2 });
+
+      expect(response1.status).toEqual(200);
+      expect(response1.body).toEqual({
+        items: [locations[0], locations[1]],
+        totalItems: 5,
+        pageInfo: { nextCursor: expect.any(String) },
+      });
+
+      // Second request: use the cursor to get the next batch
+      const response2 = await request(app)
+        .post('/locations/by-query')
+        .send({ cursor: response1.body.pageInfo.nextCursor });
+
+      expect(response2.status).toEqual(200);
+      expect(response2.body).toEqual({
+        items: [locations[2], locations[3]],
+        totalItems: 5,
+        pageInfo: { nextCursor: expect.any(String) },
+      });
+
+      // Third request: get the last location (no more pages)
+      const response3 = await request(app)
+        .post('/locations/by-query')
+        .send({ cursor: response2.body.pageInfo.nextCursor });
+
+      expect(response3.status).toEqual(200);
+      expect(response3.body).toEqual({
+        items: [locations[4]],
+        totalItems: 5,
+        pageInfo: {},
+      });
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'filters locations with query parameter, %p',
+    async databaseId => {
+      const { knex, app } = await createTestRouter(databaseId);
+
+      // Insert locations with different types
+      const locations = [
+        {
+          id: '00000000-0000-0000-0000-000000000001',
+          type: 'url',
+          target: 'https://example.com/a.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000002',
+          type: 'file',
+          target: '/tmp/b.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000003',
+          type: 'url',
+          target: 'https://example.com/c.yaml',
+        },
+      ];
+
+      // Clear the table and insert our test data
+      await knex<DbLocationsRow>('locations').delete();
+      for (const location of locations) {
+        await knex<DbLocationsRow>('locations').insert(location);
+      }
+
+      // Query only url type locations
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 10, query: { type: 'url' } });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: [locations[0], locations[2]],
+        totalItems: 2,
+        pageInfo: {},
+      });
+    },
+  );
 });
 
 function mockCursor(partialCursor?: Partial<Cursor>): Cursor {
