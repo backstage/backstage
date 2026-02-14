@@ -76,7 +76,7 @@ export class DefaultLocationService implements LocationService {
 
   async queryLocations(options: {
     limit: number;
-    afterId: string;
+    afterId?: string;
     query?: FilterPredicate;
     credentials: BackstageCredentials;
   }): Promise<{ items: Location[]; totalItems: number }> {

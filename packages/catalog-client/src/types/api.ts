@@ -697,7 +697,7 @@ export interface CatalogApi {
    *
    * ```
    * const secondBatchResponse = await catalogClient
-   *  .queryLocations({ cursor: response.nextCursor });
+   *  .queryLocations({ cursor: response.pageInfo.nextCursor });
    * ```
    *
    * `secondBatchResponse` will contain the next batch of (maximum) 20 locations,
