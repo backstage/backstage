@@ -65,7 +65,6 @@ export type DefaultApiExplorerPageProps = {
   actions?: TableProps<CatalogTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   pagination?: EntityListPagination;
-  noHeader?: boolean;
 };
 
 /**
@@ -97,7 +96,6 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
       title={t('defaultApiExplorerPage.title')}
       subtitle={generatedSubtitle}
       pageTitleOverride={t('defaultApiExplorerPage.pageTitleOverride')}
-      noHeader={props.noHeader}
     >
       <Content>
         <ContentHeader title="">
