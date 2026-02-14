@@ -44,7 +44,8 @@ export const InfoDependenciesTable = ({
         pageSize: 15,
         pageSizeOptions: [15, 30, 100],
         loadingType: 'linear',
-        padding: 'dense',
+        padding: 'default',
+        search: true,
       }}
       columns={columns}
       data={infoDependencies || []}
