@@ -35,9 +35,9 @@
     "@backstage/config": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/module-federation-common": "workspace:^",
-    "@module-federation/enhanced": "^0.21.6",
-    "@module-federation/runtime": "^0.21.6",
-    "@module-federation/sdk": "^0.21.6",
+    "@module-federation/enhanced": "^0.24.0",
+    "@module-federation/runtime": "^0.24.0",
+    "@module-federation/sdk": "^0.24.0",
     "cross-fetch": "^4.0.0",
     "uri-template": "^2.0.0"
   },
