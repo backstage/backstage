@@ -43,7 +43,10 @@ import {
 import { chunk, uniqBy } from 'lodash';
 import parseGitUrl, { type GitUrl } from 'git-url-parse';
 import { ScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
-import { FilterPredicate } from '@backstage/filter-predicates';
+import {
+  FilterPredicate,
+  FilterPredicateValue,
+} from '@backstage/filter-predicates';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
@@ -561,9 +564,11 @@ function applyLocationFilterToQuery(
   }
 
   if ('$all' in query) {
+    // Explicitly handle the empty case to avoid malformed SQL
     if (query.$all.length === 0) {
       return result.whereRaw('1 = 0');
     }
+
     return result.where(outer => {
       for (const subQuery of query.$all) {
         outer.andWhere(inner => {
@@ -574,9 +579,11 @@ function applyLocationFilterToQuery(
   }
 
   if ('$any' in query) {
+    // Explicitly handle the empty case to avoid malformed SQL
     if (query.$any.length === 0) {
       return result.whereRaw('1 = 0');
     }
+
     return result.where(outer => {
       for (const subQuery of query.$any) {
         outer.orWhere(inner => {
@@ -608,101 +615,127 @@ function applyLocationFilterToQuery(
       );
     }
 
-    if (
-      typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'boolean'
-    ) {
-      if (key === 'id') {
-        result = result.where({ id: value });
-      } else if (clientType === 'pg') {
-        result = result.whereRaw(`UPPER(??::text) = UPPER(?::text)`, [
-          key,
-          value,
-        ]);
-      } else if (clientType.includes('mysql')) {
-        result = result.whereRaw(
-          `UPPER(CAST(?? AS CHAR)) = UPPER(CAST(? AS CHAR))`,
-          [key, value],
-        );
-      } else {
-        result = result.whereRaw(`UPPER(??) = UPPER(?)`, [key, value]);
-      }
-    } else if (typeof value === 'object') {
-      if (!value || Array.isArray(value)) {
-        throw new InputError(
-          `Invalid filter predicate, got unknown matcher object '${JSON.stringify(
-            value,
-          )}'`,
-        );
-      }
-
-      if ('$exists' in value) {
-        // Technically this matcher does not make much sense in the context of
-        // this table at the time of writing (values are always present), but
-        // there is nothing gained by prohibiting it.
-        result = value.$exists
-          ? result.whereNotNull(key)
-          : result.whereNull(key);
-      } else if ('$in' in value) {
-        if (value.$in.length === 0) {
-          result = result.whereRaw('1 = 0');
-        } else if (key === 'id') {
-          result = result.whereIn(key, value.$in);
-        } else if (clientType === 'pg') {
-          const rhs = value.$in.map(() => 'UPPER(?::text)').join(', ');
-          result = result.whereRaw(`UPPER(??::text) IN (${rhs})`, [
-            key,
-            ...value.$in,
-          ]);
-        } else if (clientType.includes('mysql')) {
-          const rhs = value.$in.map(() => 'UPPER(CAST(? AS CHAR))').join(', ');
-          result = result.whereRaw(`UPPER(CAST(?? AS CHAR)) IN (${rhs})`, [
-            key,
-            ...value.$in,
-          ]);
-        } else {
-          const rhs = value.$in.map(() => 'UPPER(?)').join(', ');
-          result = result.whereRaw(`UPPER(??) IN (${rhs})`, [
-            key,
-            ...value.$in,
-          ]);
-        }
-      } else if ('$hasPrefix' in value) {
-        const escaped = value.$hasPrefix.replace(/([\\%_])/g, '\\$1');
-        if (clientType === 'pg') {
-          result = result.whereRaw("?? ilike ? escape '\\'", [
-            key,
-            `${escaped}%`,
-          ]);
-        } else if (clientType.includes('mysql')) {
-          result = result.whereRaw("UPPER(??) like UPPER(?) escape '\\\\'", [
-            key,
-            `${escaped}%`,
-          ]);
-        } else {
-          result = result.whereRaw("UPPER(??) like UPPER(?) escape '\\'", [
-            key,
-            `${escaped}%`,
-          ]);
-        }
-      } else if ('$contains' in value) {
-        // There are no array shaped values for location queries, so we just
-        // always fail here
-        result = result.whereRaw('1 = 0');
-      } else {
-        throw new InputError(
-          `Invalid filter predicate, got unknown matcher object '${JSON.stringify(
-            value,
-          )}'`,
-        );
-      }
-    } else {
-      throw new InputError(
-        `Invalid filter predicate, expected value to be a primitive value or a matcher object, got '${typeof value}'`,
-      );
-    }
+    result = applyFilterValueToQuery(clientType, result, key, value);
   }
 
   return result;
+}
+
+function applyFilterValueToQuery(
+  clientType: string,
+  result: Knex.QueryBuilder,
+  key: string,
+  value: FilterPredicateValue,
+): Knex.QueryBuilder {
+  // Is it a primitive value?
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    // The id is matched with plain equality; it's of UUID type and case
+    // insensitivity does not apply.
+    if (key === 'id') {
+      return result.where({ id: value });
+    }
+
+    if (clientType === 'pg') {
+      return result.whereRaw(`UPPER(??::text) = UPPER(?::text)`, [key, value]);
+    }
+
+    if (clientType.includes('mysql')) {
+      return result.whereRaw(
+        `UPPER(CAST(?? AS CHAR)) = UPPER(CAST(? AS CHAR))`,
+        [key, value],
+      );
+    }
+
+    return result.whereRaw(`UPPER(??) = UPPER(?)`, [key, value]);
+  }
+
+  // Is it a matcher object?
+  if (typeof value === 'object') {
+    if (!value || Array.isArray(value)) {
+      throw new InputError(
+        `Invalid filter predicate, got unknown matcher object '${JSON.stringify(
+          value,
+        )}'`,
+      );
+    }
+
+    // Technically existence checks do not make much sense in the context of
+    // this table at the time of writing (values are always present), but
+    // there's nothing gained by prohibiting it.
+    if ('$exists' in value) {
+      return value.$exists ? result.whereNotNull(key) : result.whereNull(key);
+    }
+
+    if ('$in' in value) {
+      // Explicitly handle the empty case to avoid malformed SQL
+      if (value.$in.length === 0) {
+        return result.whereRaw('1 = 0');
+      }
+
+      // The id is matched with plain equality; it's of UUID type and case
+      // insensitivity does not apply.
+      if (key === 'id') {
+        return result.whereIn(key, value.$in);
+      }
+
+      if (clientType === 'pg') {
+        const rhs = value.$in.map(() => 'UPPER(?::text)').join(', ');
+        return result.whereRaw(`UPPER(??::text) IN (${rhs})`, [
+          key,
+          ...value.$in,
+        ]);
+      }
+
+      if (clientType.includes('mysql')) {
+        const rhs = value.$in.map(() => 'UPPER(CAST(? AS CHAR))').join(', ');
+        return result.whereRaw(`UPPER(CAST(?? AS CHAR)) IN (${rhs})`, [
+          key,
+          ...value.$in,
+        ]);
+      }
+
+      const rhs = value.$in.map(() => 'UPPER(?)').join(', ');
+      return result.whereRaw(`UPPER(??) IN (${rhs})`, [key, ...value.$in]);
+    }
+
+    if ('$hasPrefix' in value) {
+      const escaped = value.$hasPrefix.replace(/([\\%_])/g, '\\$1');
+
+      if (clientType === 'pg') {
+        return result.whereRaw("?? ilike ? escape '\\'", [key, `${escaped}%`]);
+      }
+
+      if (clientType.includes('mysql')) {
+        return result.whereRaw("UPPER(??) like UPPER(?) escape '\\\\'", [
+          key,
+          `${escaped}%`,
+        ]);
+      }
+
+      return result.whereRaw("UPPER(??) like UPPER(?) escape '\\'", [
+        key,
+        `${escaped}%`,
+      ]);
+    }
+
+    // There are no array shaped values for location queries, so we just always
+    // fail here
+    if ('$contains' in value) {
+      return result.whereRaw('1 = 0');
+    }
+
+    throw new InputError(
+      `Invalid filter predicate, got unknown matcher object '${JSON.stringify(
+        value,
+      )}'`,
+    );
+  }
+
+  throw new InputError(
+    `Invalid filter predicate, expected value to be a primitive value or a matcher object, got '${typeof value}'`,
+  );
 }
