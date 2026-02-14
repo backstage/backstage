@@ -20,6 +20,8 @@ export { NavContentBlueprint } from './NavContentBlueprint';
 export type {
   NavContentComponent,
   NavContentComponentProps,
+  NavItem,
+  NavItems,
 } from './NavContentBlueprint';
 export { RouterBlueprint } from './RouterBlueprint';
 export { SignInPageBlueprint } from './SignInPageBlueprint';
