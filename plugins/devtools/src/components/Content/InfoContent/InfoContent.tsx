@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { Progress } from '@backstage/core-components';
-import Avatar from '@material-ui/core/Avatar';
+import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import Avatar from '@material-ui/core/Avatar';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -34,24 +32,6 @@ import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paperStyle: {
-      display: 'flex',
-      marginBottom: theme.spacing(2),
-    },
-    flexContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      padding: 0,
-    },
-    copyButton: {
-      float: 'left',
-      margin: theme.spacing(2),
-    },
-  }),
-);
 
 const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
   if (about) {
@@ -68,74 +48,87 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 
 /** @public */
 export const InfoContent = () => {
-  const classes = useStyles();
   const { about, loading, error } = useInfo();
 
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
+
   return (
     <Box>
-      <Paper className={classes.paperStyle}>
-        <List className={classes.flexContainer}>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <DeveloperBoardIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="Operating System"
-              secondary={about?.operatingSystem}
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <MemoryIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="Resource utilization"
-              secondary={about?.resourceUtilization}
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <DescriptionIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="NodeJS Version"
-              secondary={about?.nodeJsVersion}
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <BackstageLogoIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary="Backstage Version"
-              secondary={about?.backstageVersion}
-            />
-          </ListItem>
-        </List>
-        <Divider orientation="vertical" variant="middle" flexItem />
-        <Button
-          onClick={() => {
-            copyToClipboard({ about });
-          }}
-          className={classes.copyButton}
-          startIcon={<FileCopyIcon />}
-        >
-          Copy Info to Clipboard
-        </Button>
-      </Paper>
+      <Box sx={{ mb: 2 }}>
+        <Paper variant="outlined">
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+            <Box sx={{ flex: 1 }}>
+              {/* List doesn't support sx, so we put the styling on this Box wrapper */}
+              <Box sx={{ display: 'flex', flexDirection: 'row', p: 0 }}>
+                <List
+                  style={{ display: 'flex', flexDirection: 'row', padding: 0 }}
+                >
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <DeveloperBoardIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary="Operating System"
+                      secondary={about?.operatingSystem}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <MemoryIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary="Resource utilization"
+                      secondary={about?.resourceUtilization}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <DescriptionIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary="NodeJS Version"
+                      secondary={about?.nodeJsVersion}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <BackstageLogoIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary="Backstage Version"
+                      secondary={about?.backstageVersion}
+                    />
+                  </ListItem>
+                </List>
+              </Box>
+            </Box>
+
+            <Divider orientation="vertical" variant="middle" flexItem />
+
+            <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
+              <Button
+                onClick={() => copyToClipboard({ about })}
+                startIcon={<FileCopyIcon />}
+                variant="outlined"
+              >
+                Copy Info to Clipboard
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
       <InfoDependenciesTable infoDependencies={about?.dependencies} />
     </Box>
   );
