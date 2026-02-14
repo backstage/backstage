@@ -15,7 +15,7 @@
  */
 
 import { OptionValues } from 'commander';
-import openBrowser from 'react-dev-utils/openBrowser';
+import { openBrowser } from '@backstage/cli-common';
 import { createLogger } from '../../lib/utility';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { RunOnOutput } from '@backstage/cli-common';

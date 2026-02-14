@@ -18,7 +18,7 @@ import { AppConfig } from '@backstage/config';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
-import openBrowser from 'react-dev-utils/openBrowser';
+import { openBrowser } from '@backstage/cli-common';
 import { rspack } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
 

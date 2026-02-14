@@ -547,6 +547,7 @@ validator
 validators
 Valkey
 varchar
+vendored
 viewport
 vite
 VMware
