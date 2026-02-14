@@ -23,8 +23,12 @@ import {
   useUnregisterEntityDialogState,
 } from './useUnregisterEntityDialogState';
 
-import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  Progress,
+  ResponseErrorPanel,
+  useAppTitle,
+} from '@backstage/core-components';
 import { assertError } from '@backstage/errors';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -330,8 +334,7 @@ function DialogContents({
 }) {
   const classes = useStyles();
   const { t } = useTranslationRef(catalogReactTranslationRef);
-  const configApi = useApi(configApiRef);
-  const appTitle = configApi.getOptionalString('app.title') ?? 'Backstage';
+  const appTitle = useAppTitle();
 
   const handlers = useUnregisterDialogHandlers(entity, onConfirm, onClose);
   const { body, actionButton } = useDialogContent(handlers, appTitle);
