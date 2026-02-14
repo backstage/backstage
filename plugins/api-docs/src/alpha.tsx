@@ -79,7 +79,6 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
       loader: () =>
         import('./components/ApiExplorerPage').then(m => (
           <m.ApiExplorerIndexPage
-            noHeader
             initiallySelectedFilter={config.initiallySelectedFilter}
           />
         )),
