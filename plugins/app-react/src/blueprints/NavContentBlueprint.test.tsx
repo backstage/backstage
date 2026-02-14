@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/frontend-plugin-api';
-import { NavContentBlueprint } from './NavContentBlueprint';
+import { AppNode, createRouteRef } from '@backstage/frontend-plugin-api';
+import { NavContentBlueprint, NavItem, NavItems } from './NavContentBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 const routeRef = createRouteRef();
+
+function mockNode(id: string): AppNode {
+  return { spec: { id } } as AppNode;
+}
+
+function mockNavItems(items: NavItem[]): NavItems {
+  return {
+    take: () => undefined,
+    rest: () => items,
+    clone() {
+      return mockNavItems(items);
+    },
+  };
+}
 
 describe('NavContentBlueprint', () => {
   it('should create an extension with sensible defaults', () => {
@@ -52,22 +66,7 @@ describe('NavContentBlueprint', () => {
     `);
   });
 
-  it('should return a valid component', () => {
-    const extension = NavContentBlueprint.make({
-      name: 'test',
-      params: {
-        component: () => <div>Nav content</div>,
-      },
-    });
-
-    const tester = createExtensionTester(extension);
-
-    expect(
-      tester.get(NavContentBlueprint.dataRefs.component)({ items: [] }),
-    ).toEqual(<div>Nav content</div>);
-  });
-
-  it('should return a valid component with items', () => {
+  it('should return a valid component with legacy items', () => {
     const extension = NavContentBlueprint.make({
       name: 'test',
       params: {
@@ -88,6 +87,7 @@ describe('NavContentBlueprint', () => {
 
     expect(
       tester.get(NavContentBlueprint.dataRefs.component)({
+        navItems: mockNavItems([]),
         items: [
           {
             to: '/',
@@ -104,6 +104,70 @@ describe('NavContentBlueprint', () => {
         {[
           <a key={0} href="/">
             Home
+          </a>,
+        ]}
+      </div>,
+    );
+  });
+
+  it('should return a valid component with navItems', () => {
+    const items: NavItem[] = [
+      {
+        node: mockNode('page:home'),
+        href: '/',
+        title: 'Home',
+        icon: <span>home</span>,
+        routeRef,
+      },
+      {
+        node: mockNode('page:catalog'),
+        href: '/catalog',
+        title: 'Catalog',
+        icon: <span>catalog</span>,
+        routeRef,
+      },
+      {
+        node: mockNode('page:docs'),
+        href: '/docs',
+        title: 'Docs',
+        icon: <span>docs</span>,
+        routeRef,
+      },
+    ];
+
+    const extension = NavContentBlueprint.make({
+      name: 'test',
+      params: {
+        component: ({ navItems }) => (
+          <div>
+            {navItems.rest().map(item => (
+              <a key={item.node.spec.id} href={item.href}>
+                {item.title}
+              </a>
+            ))}
+          </div>
+        ),
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+
+    expect(
+      tester.get(NavContentBlueprint.dataRefs.component)({
+        navItems: mockNavItems(items),
+        items: [],
+      }),
+    ).toEqual(
+      <div>
+        {[
+          <a key="page:home" href="/">
+            Home
+          </a>,
+          <a key="page:catalog" href="/catalog">
+            Catalog
+          </a>,
+          <a key="page:docs" href="/docs">
+            Docs
           </a>,
         ]}
       </div>,
