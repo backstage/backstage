@@ -32,6 +32,20 @@ const locationCursorParser = z.object({
   query: filterPredicateSchema.optional(),
 });
 
+function isSupportedFilterPredicateRoot(
+  value: FilterPredicate | undefined,
+): boolean {
+  if (value === undefined) {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  return true;
+}
+
 export function parseLocationQuery(
   request: Readonly<GetLocationsByQueryRequest>,
 ): {
@@ -39,7 +53,11 @@ export function parseLocationQuery(
   afterId?: string;
   query?: FilterPredicate;
 } {
-  if (request.cursor) {
+  if (request.cursor !== undefined) {
+    if (!request.cursor) {
+      throw new InputError('Cursor cannot be empty');
+    }
+
     let parsed: JsonValue;
     try {
       const data = Buffer.from(request.cursor, 'base64').toString('utf8');
@@ -52,10 +70,16 @@ export function parseLocationQuery(
     if (!result.success) {
       throw new InputError(`Malformed cursor: ${fromZodError(result.error)}`);
     }
+
+    const { query, limit, afterId } = result.data;
+    if (!isSupportedFilterPredicateRoot(query)) {
+      throw new InputError('Query must be an object');
+    }
+
     return {
-      limit: result.data.limit,
-      afterId: result.data.afterId,
-      query: result.data.query,
+      limit,
+      afterId,
+      query,
     };
   }
 
@@ -70,6 +94,11 @@ export function parseLocationQuery(
     if (!result.success) {
       throw new InputError(`Invalid query: ${fromZodError(result.error)}`);
     }
+
+    if (!isSupportedFilterPredicateRoot(result.data)) {
+      throw new InputError('Query must be an object');
+    }
+
     query = result.data;
   }
 

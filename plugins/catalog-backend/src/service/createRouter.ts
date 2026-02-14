@@ -605,7 +605,7 @@ export async function createRouter(
         });
 
         try {
-          const request = parseLocationQuery(req.body);
+          const request = parseLocationQuery(req.body ?? {});
           const result = await locationService.queryLocations({
             ...request,
             limit: request.limit + 1,

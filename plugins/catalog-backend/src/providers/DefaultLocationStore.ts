@@ -109,7 +109,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     afterId?: string;
     query?: FilterPredicate;
   }): Promise<{ items: Location[]; totalItems: number }> {
-    let itemsQuery = this.db<DbLocationsRow>('locations');
+    let itemsQuery = this.db<DbLocationsRow>('locations').whereNot(
+      'type',
+      'bootstrap',
+    );
 
     if (options.query) {
       itemsQuery = applyLocationFilterToQuery(
@@ -558,6 +561,9 @@ function applyLocationFilterToQuery(
   }
 
   if ('$all' in query) {
+    if (query.$all.length === 0) {
+      return result.whereRaw('1 = 0');
+    }
     return result.where(outer => {
       for (const subQuery of query.$all) {
         outer.andWhere(inner => {
@@ -568,6 +574,9 @@ function applyLocationFilterToQuery(
   }
 
   if ('$any' in query) {
+    if (query.$any.length === 0) {
+      return result.whereRaw('1 = 0');
+    }
     return result.where(outer => {
       for (const subQuery of query.$any) {
         outer.orWhere(inner => {
@@ -636,46 +645,51 @@ function applyLocationFilterToQuery(
           ? result.whereNotNull(key)
           : result.whereNull(key);
       } else if ('$in' in value) {
-        if (key === 'id') {
+        if (value.$in.length === 0) {
+          result = result.whereRaw('1 = 0');
+        } else if (key === 'id') {
           result = result.whereIn(key, value.$in);
         } else if (clientType === 'pg') {
-          result = result.whereRaw(
-            `UPPER(??::text) IN (${value.$in
-              .map(() => 'UPPER(?::text)')
-              .join(', ')})`,
-            [key, ...value.$in],
-          );
+          const rhs = value.$in.map(() => 'UPPER(?::text)').join(', ');
+          result = result.whereRaw(`UPPER(??::text) IN (${rhs})`, [
+            key,
+            ...value.$in,
+          ]);
         } else if (clientType.includes('mysql')) {
-          result = result.whereRaw(
-            `UPPER(CAST(?? AS CHAR)) IN (${value.$in
-              .map(() => 'UPPER(CAST(? AS CHAR))')
-              .join(', ')})`,
-            [key, ...value.$in],
-          );
+          const rhs = value.$in.map(() => 'UPPER(CAST(? AS CHAR))').join(', ');
+          result = result.whereRaw(`UPPER(CAST(?? AS CHAR)) IN (${rhs})`, [
+            key,
+            ...value.$in,
+          ]);
         } else {
-          result = result.whereRaw(
-            `UPPER(??) IN (${value.$in.map(() => 'UPPER(?)').join(', ')})`,
-            [key, ...value.$in],
-          );
+          const rhs = value.$in.map(() => 'UPPER(?)').join(', ');
+          result = result.whereRaw(`UPPER(??) IN (${rhs})`, [
+            key,
+            ...value.$in,
+          ]);
         }
       } else if ('$hasPrefix' in value) {
         const escaped = value.$hasPrefix.replace(/([\\%_])/g, '\\$1');
         if (clientType === 'pg') {
-          result = result.whereRaw('?? ilike ?', [key, `${escaped}%`]);
+          result = result.whereRaw("?? ilike ? escape '\\'", [
+            key,
+            `${escaped}%`,
+          ]);
+        } else if (clientType.includes('mysql')) {
+          result = result.whereRaw("UPPER(??) like UPPER(?) escape '\\\\'", [
+            key,
+            `${escaped}%`,
+          ]);
         } else {
-          result = result.whereRaw('UPPER(??) like UPPER(?)', [
+          result = result.whereRaw("UPPER(??) like UPPER(?) escape '\\'", [
             key,
             `${escaped}%`,
           ]);
         }
       } else if ('$contains' in value) {
-        // There are no array shaped values for location queries, so we throw
-        // an error since it cannot possibly match. An alternative could be to
-        // make the query always fail (eg with 1 = 0) but this felt more
-        // immediately helpful to the end user.
-        throw new InputError(
-          `Invalid filter predicate, '$contains' is not supported for location queries`,
-        );
+        // There are no array shaped values for location queries, so we just
+        // always fail here
+        result = result.whereRaw('1 = 0');
       } else {
         throw new InputError(
           `Invalid filter predicate, got unknown matcher object '${JSON.stringify(

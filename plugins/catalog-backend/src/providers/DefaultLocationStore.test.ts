@@ -951,6 +951,27 @@ describe('DefaultLocationStore', () => {
           items: [l1, l2, l3, l4],
           totalItems: 4,
         });
+
+        await expect(
+          store.queryLocations({ limit: 10, query: { $all: [] } }),
+        ).resolves.toEqual({
+          items: [],
+          totalItems: 0,
+        });
+
+        await expect(
+          store.queryLocations({ limit: 10, query: { $any: [] } }),
+        ).resolves.toEqual({
+          items: [],
+          totalItems: 0,
+        });
+
+        await expect(
+          store.queryLocations({ limit: 10, query: { type: { $in: [] } } }),
+        ).resolves.toEqual({
+          items: [],
+          totalItems: 0,
+        });
       },
     );
   });
