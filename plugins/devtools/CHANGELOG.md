@@ -1,5 +1,20 @@
 # @backstage/plugin-devtools
 
+## 0.1.36
+
+### Patch Changes
+
+- f2612c2: Fixes an issue where a user lacking permission to schedule tasks can now easily see the issue through a custom icon + tooltip.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-components@0.18.7
+  - @backstage/core-compat-api@0.5.8
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/plugin-devtools-react@0.1.1
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/plugin-devtools-common@0.1.22
+
 ## 0.1.36-next.1
 
 ### Patch Changes

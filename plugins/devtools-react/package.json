@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-devtools-react",
-  "version": "0.1.1-next.1",
+  "version": "0.1.1",
   "description": "Web library for the devtools plugin",
   "backstage": {
     "role": "web-library",

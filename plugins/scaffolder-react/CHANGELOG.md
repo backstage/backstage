@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.7
+
+### Patch Changes
+
+- 2eeca03: Scaffolder form fields in the new frontend system now use a Utility API pattern instead of multiple attachment points. The `FormFieldBlueprint` now uses this new approach, and while form fields created with older versions still work, they will produce a deprecation warning and will stop working in a future release.
+
+  As part of this change, the following alpha exports were removed:
+
+  - `formFieldsApi`
+  - `formFieldsApiRef`
+  - `ScaffolderFormFieldsApi`
+
+- b9d90a7: Added `@backstage/frontend-test-utils` as a dev dependency for mock API usage in tests.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/theme@0.7.2
+  - @backstage/catalog-client@1.12.2
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-scaffolder-common@1.7.6
+
 ## 1.19.7-next.2
 
 ### Patch Changes

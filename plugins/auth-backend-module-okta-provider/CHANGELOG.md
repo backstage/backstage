@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-okta-provider
 
+## 0.2.12
+
+### Patch Changes
+
+- 08aea95: Added a validation check that rejects `audience` configuration values that are not absolute URLs (i.e. missing `https://` or `http://` prefix).
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-auth-node@0.6.13
+
 ## 0.2.11-next.0
 
 ### Patch Changes

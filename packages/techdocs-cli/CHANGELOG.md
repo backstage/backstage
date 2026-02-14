@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.10.5
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 27798df: Migrate the Techdocs CLI embedded app to the New Frontend System (NFS)
+- 508d127: Updated dependency `find-process` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.2
+  - @backstage/plugin-techdocs-node@1.14.2
+  - @backstage/cli-common@0.1.18
+
 ## 1.10.5-next.1
 
 ### Patch Changes

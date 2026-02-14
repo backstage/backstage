@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-backend
 
+## 0.27.0
+
+### Minor Changes
+
+- d0786b9: Added experimental support for refresh tokens via the `auth.experimentalRefreshToken.enabled` configuration option. When enabled, clients can request the `offline_access` scope to receive refresh tokens that can be used to obtain new access tokens without re-authentication.
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-auth-node@0.6.13
+
 ## 0.27.0-next.1
 
 ### Minor Changes

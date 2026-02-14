@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.9.0
+
+### Minor Changes
+
+- 8694561: Log group/user count, tenant ID, execution time as separate fields
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-catalog-common@1.1.8
+
 ## 0.9.0-next.2
 
 ### Patch Changes

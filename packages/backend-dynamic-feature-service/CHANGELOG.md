@@ -1,5 +1,30 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.9
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- fdbd404: Updated `@module-federation/enhanced`, `@module-federation/runtime`, and `@module-federation/sdk` dependencies from `^0.9.0` to `^0.21.6`.
+- 9b4c414: Updated README for backend-dynamic-feature-service
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.4.0
+  - @backstage/backend-openapi-utils@0.6.6
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-backend-node@1.4.1
+  - @backstage/backend-defaults@0.15.2
+  - @backstage/plugin-scaffolder-node@0.12.5
+  - @backstage/config-loader@1.10.8
+  - @backstage/plugin-events-backend@0.5.11
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/cli-common@0.1.18
+  - @backstage/cli-node@0.2.18
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-app-node@0.1.42
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-events-node@0.4.19
+
 ## 0.7.9-next.1
 
 ### Patch Changes
