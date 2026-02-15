@@ -18,7 +18,7 @@ import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
 import { timestampToDateTime } from '../../conversion';
-import { DbRefreshStateRow } from '../../tables';
+import { DbFinalEntitiesRow } from '../../tables';
 
 // TODO(freben): There is no retry counter or similar. If items start
 // perpetually crashing during stitching, they'll just get silently retried over
@@ -31,7 +31,7 @@ import { DbRefreshStateRow } from '../../tables';
  *
  * This assumes that the stitching strategy is set to deferred.
  *
- * They are expected to already have the next_stitch_ticket set (by
+ * They are expected to already have the stitch_ticket set (by
  * markForStitching) so that their tickets can be returned with each item.
  *
  * All returned items have their next_stitch_at updated to be moved forward by
@@ -52,10 +52,10 @@ export async function getDeferredStitchableEntities(options: {
 > {
   const { knex, batchSize, stitchTimeout } = options;
 
-  let itemsQuery = knex<DbRefreshStateRow>('refresh_state').select(
+  let itemsQuery = knex<DbFinalEntitiesRow>('final_entities').select(
     'entity_ref',
     'next_stitch_at',
-    'next_stitch_ticket',
+    'stitch_ticket',
   );
 
   // This avoids duplication of work because of race conditions and is
@@ -67,7 +67,7 @@ export async function getDeferredStitchableEntities(options: {
 
   const items = await itemsQuery
     .whereNotNull('next_stitch_at')
-    .whereNotNull('next_stitch_ticket')
+    .whereNotNull('stitch_ticket')
     .where('next_stitch_at', '<=', knex.fn.now())
     .orderBy('next_stitch_at', 'asc')
     .limit(batchSize);
@@ -76,20 +76,20 @@ export async function getDeferredStitchableEntities(options: {
     return [];
   }
 
-  await knex<DbRefreshStateRow>('refresh_state')
+  await knex<DbFinalEntitiesRow>('final_entities')
     .whereIn(
       'entity_ref',
       items.map(i => i.entity_ref),
     )
     // avoid race condition where someone completes a stitch right between these statements
-    .whereNotNull('next_stitch_ticket')
+    .whereNotNull('stitch_ticket')
     .update({
       next_stitch_at: nowPlus(knex, stitchTimeout),
     });
 
   return items.map(i => ({
     entityRef: i.entity_ref,
-    stitchTicket: i.next_stitch_ticket!,
+    stitchTicket: i.stitch_ticket!,
     stitchRequestedAt: timestampToDateTime(i.next_stitch_at!),
   }));
 }
