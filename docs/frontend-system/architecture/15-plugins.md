@@ -52,7 +52,7 @@ export default createFrontendPlugin({
 
 ### `icon` option
 
-The display icon of the plugin, used in page headers and navigation. The type is `IconElement` (`JSX.Element | null`) from `@backstage/frontend-plugin-api`.
+The display icon of the plugin, used in page headers and navigation. The type is `IconElement` (`JSX.Element | null`) from `@backstage/frontend-plugin-api`. Icons should be exactly 24x24 pixels in size.
 
 ```tsx
 export default createFrontendPlugin({

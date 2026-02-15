@@ -40,6 +40,10 @@ export type IconComponent = ComponentType<{
 /**
  * The type used for icon elements throughout Backstage.
  *
+ * @remarks
+ *
+ * Icons should be exactly 24x24 pixels in size.
+ *
  * @public
  */
 export type IconElement = JSX.Element | null;
