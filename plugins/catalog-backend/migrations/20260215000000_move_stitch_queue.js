@@ -52,87 +52,35 @@ exports.up = async function up(knex) {
     });
   }
 
-  // Step 2: Migrate existing stitch requests from refresh_state to final_entities.
-  // We need to handle this differently for SQLite vs other databases since
-  // SQLite doesn't support UPDATE FROM syntax.
-  if (isSQLite) {
-    // For SQLite, we need to select the data first, then update in batches
-    const pendingStitches = await knex
-      .select({
-        entityRef: 'refresh_state.entity_ref',
-        nextStitchAt: 'refresh_state.next_stitch_at',
-        nextStitchTicket: 'refresh_state.next_stitch_ticket',
-      })
-      .from('refresh_state')
-      .whereNotNull('refresh_state.next_stitch_at');
-
-    for (const row of pendingStitches) {
-      await knex('final_entities')
-        .update({
-          next_stitch_at: row.nextStitchAt,
-          stitch_ticket: row.nextStitchTicket,
-        })
-        .where('entity_ref', row.entityRef);
-    }
-  } else {
-    // For PostgreSQL and MySQL, use subquery-based update
-    await knex('final_entities')
-      .update({
-        next_stitch_at: knex
-          .select('refresh_state.next_stitch_at')
-          .from('refresh_state')
-          .whereRaw('refresh_state.entity_ref = final_entities.entity_ref')
-          .whereNotNull('refresh_state.next_stitch_at'),
-        stitch_ticket: knex
-          .select('refresh_state.next_stitch_ticket')
-          .from('refresh_state')
-          .whereRaw('refresh_state.entity_ref = final_entities.entity_ref')
-          .whereNotNull('refresh_state.next_stitch_at'),
-      })
-      .whereIn(
-        'entity_ref',
-        knex
-          .select('entity_ref')
-          .from('refresh_state')
-          .whereNotNull('next_stitch_at'),
-      );
-  }
-
-  // Step 3: Create final_entities rows for orphaned stitch requests
-  // (entities with pending stitch in refresh_state but no final_entities row).
-  // These need to be created so the stitch queue can be processed.
-  const orphanedStitchRequests = await knex
+  // Step 2: Migrate existing stitch requests from refresh_state to final_entities
+  // using upsert - insert new rows or update existing ones in a single operation.
+  const pendingStitches = await knex
     .select({
-      entityId: 'refresh_state.entity_id',
-      entityRef: 'refresh_state.entity_ref',
-      nextStitchAt: 'refresh_state.next_stitch_at',
-      nextStitchTicket: 'refresh_state.next_stitch_ticket',
+      entity_id: 'refresh_state.entity_id',
+      entity_ref: 'refresh_state.entity_ref',
+      next_stitch_at: 'refresh_state.next_stitch_at',
+      next_stitch_ticket: 'refresh_state.next_stitch_ticket',
     })
     .from('refresh_state')
-    .leftOuterJoin(
-      'final_entities',
-      'final_entities.entity_ref',
-      'refresh_state.entity_ref',
-    )
-    .whereNull('final_entities.entity_id')
     .whereNotNull('refresh_state.next_stitch_at');
 
-  if (orphanedStitchRequests.length > 0) {
-    // Insert in batches to avoid issues with large datasets
-    for (let i = 0; i < orphanedStitchRequests.length; i += 1000) {
-      const batch = orphanedStitchRequests.slice(i, i + 1000);
-      await knex('final_entities').insert(
+  // Process in batches to avoid issues with large datasets
+  for (let i = 0; i < pendingStitches.length; i += 1000) {
+    const batch = pendingStitches.slice(i, i + 1000);
+    await knex('final_entities')
+      .insert(
         batch.map(row => ({
-          entity_id: row.entityId,
-          entity_ref: row.entityRef,
+          entity_id: row.entity_id,
+          entity_ref: row.entity_ref,
           hash: '', // Empty hash indicates needs stitching
-          stitch_ticket: row.nextStitchTicket || '',
+          stitch_ticket: row.next_stitch_ticket || '',
           final_entity: null,
           last_updated_at: null,
-          next_stitch_at: row.nextStitchAt,
+          next_stitch_at: row.next_stitch_at,
         })),
-      );
-    }
+      )
+      .onConflict('entity_ref')
+      .merge(['next_stitch_at', 'stitch_ticket']);
   }
 
   // Step 4: Remove next_stitch_at and next_stitch_ticket columns from refresh_state
