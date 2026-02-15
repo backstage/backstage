@@ -15,8 +15,7 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
@@ -103,20 +102,22 @@ export function CopyTextButton(props: CopyTextButtonProps) {
     copyToClipboard(text);
   };
 
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => setOpen(false), tooltipDelay);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [open, tooltipDelay]);
+
   return (
-    <>
-      <Tooltip
-        id="copy-test-tooltip"
-        title={tooltipText}
-        placement="top"
-        leaveDelay={tooltipDelay}
-        onClose={() => setOpen(false)}
-        open={open}
-      >
-        <IconButton onClick={handleCopyClick} aria-label={ariaLabel}>
-          <CopyIcon />
-        </IconButton>
-      </Tooltip>
-    </>
+    <TooltipTrigger isOpen={open} onOpenChange={setOpen}>
+      <ButtonIcon
+        icon={<CopyIcon />}
+        onPress={handleCopyClick}
+        aria-label={ariaLabel}
+      />
+      <Tooltip>{tooltipText}</Tooltip>
+    </TooltipTrigger>
   );
 }
