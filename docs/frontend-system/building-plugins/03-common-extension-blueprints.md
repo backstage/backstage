@@ -15,9 +15,9 @@ These are the [extension blueprints](../architecture/23-extension-blueprints.md)
 
 An API extension is used to add or override [Utility API factories](../utility-apis/01-index.md) in the app. They are commonly used by plugins for both internal and shared APIs. There are also many built-in Api extensions provided by the framework that you are able to override.
 
-### NavItem - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.NavItemBlueprint.html)
+### NavItem (deprecated) - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.NavItemBlueprint.html)
 
-Navigation item extensions are used to provide menu items that link to different parts of the app. By default nav items are attached to the app nav extension, which by default is rendered as the left sidebar in the app.
+The `NavItemBlueprint` is deprecated. The app now auto-discovers navigation items from page extensions, so explicit nav item extensions are no longer needed. To migrate, ensure your plugin and/or page extensions have a `title` and `icon` set — these are used to populate the sidebar automatically.
 
 ### Page - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PageBlueprint.html)
 
@@ -51,9 +51,11 @@ Icon bundle extensions provide the ability to replace or provide new icons to th
 
 Translation extension provide custom translation messages for the app. They can be used both to override the default english messages to custom ones, as well as provide translations for additional languages.
 
-### NavContent - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.NavContentBlueprint.html)
+### NavContent - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavContentBlueprint.html)
 
 Nav content extensions allow you to replace the entire navbar with your own component. They are always attached to the app nav extension.
+
+Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items. The deprecated `items` prop (a flat list) remains supported for backward compatibility.
 
 ### Router - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.RouterBlueprint.html)
 
