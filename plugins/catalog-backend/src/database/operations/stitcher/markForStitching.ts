@@ -104,30 +104,100 @@ export async function markForStitching(options: {
       }, knex);
     }
   } else if (mode === 'deferred') {
-    // It's OK that this is shared across refresh state rows; it just needs to
+    // It's OK that this is shared across final_entities rows; it just needs to
     // be uniquely generated for every new stitch request.
     const ticket = uuid();
 
-    // Update by primary key in deterministic order to avoid deadlocks
+    // Update final_entities by primary key in deterministic order to avoid deadlocks
     for (const chunk of entityRefs) {
       await retryOnDeadlock(async () => {
-        await knex<DbRefreshStateRow>('refresh_state')
+        // First, try to update existing final_entities rows
+        const updated = await knex<DbFinalEntitiesRow>('final_entities')
           .update({
             next_stitch_at: knex.fn.now(),
-            next_stitch_ticket: ticket,
+            stitch_ticket: ticket,
           })
           .whereIn('entity_ref', chunk);
+
+        // If we updated fewer rows than expected, some final_entities rows may not exist yet.
+        // Look up the missing ones from refresh_state and insert them.
+        if (updated < chunk.length) {
+          const existingRefs = await knex<DbFinalEntitiesRow>('final_entities')
+            .select('entity_ref')
+            .whereIn('entity_ref', chunk);
+          const existingRefSet = new Set(existingRefs.map(r => r.entity_ref));
+          const missingRefs = chunk.filter(ref => !existingRefSet.has(ref));
+
+          if (missingRefs.length > 0) {
+            // Look up entity_id from refresh_state for the missing refs
+            const refreshStateRows = await knex<DbRefreshStateRow>(
+              'refresh_state',
+            )
+              .select('entity_id', 'entity_ref')
+              .whereIn('entity_ref', missingRefs);
+
+            if (refreshStateRows.length > 0) {
+              const rowsToInsert = refreshStateRows.map(row => ({
+                entity_id: row.entity_id,
+                entity_ref: row.entity_ref,
+                hash: '',
+                stitch_ticket: ticket,
+                next_stitch_at: knex.fn.now(),
+              }));
+
+              await knex<DbFinalEntitiesRow>('final_entities')
+                .insert(rowsToInsert)
+                .onConflict('entity_id')
+                .merge(['next_stitch_at', 'stitch_ticket']);
+            }
+          }
+        }
       }, knex);
     }
 
     for (const chunk of entityIds) {
       await retryOnDeadlock(async () => {
-        await knex<DbRefreshStateRow>('refresh_state')
+        // First, try to update existing final_entities rows
+        const updated = await knex<DbFinalEntitiesRow>('final_entities')
           .update({
             next_stitch_at: knex.fn.now(),
-            next_stitch_ticket: ticket,
+            stitch_ticket: ticket,
           })
           .whereIn('entity_id', chunk);
+
+        // If we updated fewer rows than expected, some final_entities rows may not exist yet.
+        // Look up the missing ones from refresh_state and insert them.
+        if (updated < chunk.length) {
+          const existingIds = await knex<DbFinalEntitiesRow>('final_entities')
+            .select('entity_id')
+            .whereIn('entity_id', chunk);
+          const existingIdSet = new Set(existingIds.map(r => r.entity_id));
+          const missingIds = chunk.filter(id => !existingIdSet.has(id));
+
+          if (missingIds.length > 0) {
+            // Look up entity_ref from refresh_state for the missing ids
+            const refreshStateRows = await knex<DbRefreshStateRow>(
+              'refresh_state',
+            )
+              .select('entity_id', 'entity_ref')
+              .whereIn('entity_id', missingIds);
+
+            if (refreshStateRows.length > 0) {
+              const rowsToInsert = refreshStateRows.map(row => ({
+                entity_id: row.entity_id,
+                entity_ref: row.entity_ref,
+                hash: '',
+                stitch_ticket: ticket,
+                next_stitch_at: knex.fn.now(),
+              }));
+
+              await knex<DbFinalEntitiesRow>('final_entities')
+                .insert(rowsToInsert)
+                .onConflict('entity_id')
+                .merge(['next_stitch_at', 'stitch_ticket']);
+            }
+          }
+        }
       }, knex);
     }
   } else {
