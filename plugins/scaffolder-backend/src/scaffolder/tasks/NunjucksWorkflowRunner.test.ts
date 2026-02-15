@@ -1728,4 +1728,205 @@ describe('NunjucksWorkflowRunner', () => {
       expect(mockedPermissionApi.authorizeConditional).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('step status check functions (always/failure)', () => {
+    let failingHandler: jest.Mock;
+    let cleanupHandler: jest.Mock;
+
+    beforeEach(() => {
+      failingHandler = jest.fn().mockRejectedValue(new Error('step failed'));
+      cleanupHandler = jest.fn();
+
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'failing-action',
+          description: 'Action that always fails',
+          handler: failingHandler,
+        }),
+      );
+
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'cleanup-action',
+          description: 'Cleanup action',
+          handler: cleanupHandler,
+        }),
+      );
+    });
+
+    it('should skip subsequent steps when a step fails', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'Failing step',
+            action: 'failing-action',
+          },
+          {
+            id: 'step2',
+            name: 'Should be skipped',
+            action: 'jest-mock-action',
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it('should run step with bare if: always() even when a previous step failed', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'Failing step',
+            action: 'failing-action',
+          },
+          {
+            id: 'step2',
+            name: 'Always runs',
+            action: 'cleanup-action',
+            if: 'always()',
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      expect(cleanupHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should run step with bare if: failure() only when a previous step failed', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'Failing step',
+            action: 'failing-action',
+          },
+          {
+            id: 'step2',
+            name: 'Runs on failure',
+            action: 'cleanup-action',
+            if: 'failure()',
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      expect(cleanupHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not run step with bare if: failure() when no step has failed', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'Succeeding step',
+            action: 'jest-mock-action',
+          },
+          {
+            id: 'step2',
+            name: 'Only on failure',
+            action: 'cleanup-action',
+            if: 'failure()',
+          },
+        ],
+      });
+
+      await runner.execute(task);
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+      expect(cleanupHandler).not.toHaveBeenCalled();
+    });
+
+    it('should still throw the original error after running always() steps', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'Failing step',
+            action: 'failing-action',
+          },
+          {
+            id: 'step2',
+            name: 'Always step',
+            action: 'cleanup-action',
+            if: 'always()',
+          },
+          {
+            id: 'step3',
+            name: 'Should be skipped',
+            action: 'jest-mock-action',
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      expect(cleanupHandler).toHaveBeenCalledTimes(1);
+      // step3 should not run because it has no status check function
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it('should continue running always() steps even if a cleanup step also fails', async () => {
+      const failingCleanup = jest
+        .fn()
+        .mockRejectedValue(new Error('cleanup failed'));
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'failing-cleanup',
+          description: 'Failing cleanup',
+          handler: failingCleanup,
+        }),
+      );
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'Failing step',
+            action: 'failing-action',
+          },
+          {
+            id: 'step2',
+            name: 'Failing cleanup',
+            action: 'failing-cleanup',
+            if: 'always()',
+          },
+          {
+            id: 'step3',
+            name: 'Another cleanup',
+            action: 'cleanup-action',
+            if: 'always()',
+          },
+        ],
+      });
+
+      // Should throw the first error (from step1)
+      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      expect(failingCleanup).toHaveBeenCalledTimes(1);
+      expect(cleanupHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should run all steps normally when no step fails', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'First step',
+            action: 'jest-mock-action',
+          },
+          {
+            id: 'step2',
+            name: 'Always step',
+            action: 'cleanup-action',
+            if: 'always()',
+          },
+        ],
+      });
+
+      const result = await runner.execute(task);
+      expect(result.output).toEqual({});
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+      expect(cleanupHandler).toHaveBeenCalledTimes(1);
+    });
+  });
 });
