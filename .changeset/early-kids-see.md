@@ -8,7 +8,6 @@
 '@backstage/plugin-scaffolder-backend-module-cookiecutter': patch
 '@backstage/plugin-auth-backend-module-pinniped-provider': patch
 '@backstage/plugin-auth-backend-module-aws-alb-provider': patch
-'@backstage/plugin-scaffolder-backend-module-bitbucket': patch
 '@backstage/plugin-search-backend-module-elasticsearch': patch
 '@backstage/plugin-auth-backend-module-oidc-provider': patch
 '@backstage/backend-dynamic-feature-service': patch

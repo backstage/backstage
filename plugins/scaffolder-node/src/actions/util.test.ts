@@ -54,11 +54,11 @@ describe('scaffolder action utils', () => {
         /No matching integration configuration for host/,
       );
     });
-    describe('bitbucket', () => {
-      beforeEach(() => byHost.mockReturnValue({ type: 'bitbucket' }));
+    describe('bitbucketCloud', () => {
+      beforeEach(() => byHost.mockReturnValue({ type: 'bitbucketCloud' }));
       describe('cloud', () => {
         const [host, workspace, project, repo] = [
-          'www.bitbucket.org',
+          'bitbucket.org',
           'foo',
           'bar',
           'baz',
@@ -97,6 +97,9 @@ describe('scaffolder action utils', () => {
             repo,
           }));
       });
+    });
+    describe('bitbucketServer', () => {
+      beforeEach(() => byHost.mockReturnValue({ type: 'bitbucketServer' }));
       describe('other', () => {
         const [host, project, repo] = ['bitbucket.other', 'foo', 'bar'];
         it('requires project', () =>

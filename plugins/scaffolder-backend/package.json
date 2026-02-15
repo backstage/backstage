@@ -79,7 +79,6 @@
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-azure": "workspace:^",
-    "@backstage/plugin-scaffolder-backend-module-bitbucket": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-gerrit": "workspace:^",

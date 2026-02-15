@@ -20,7 +20,6 @@ import fetch from 'cross-fetch';
 import { registerMswTestHooks } from '../helpers';
 import { GerritIntegrationConfig } from './config';
 import {
-  buildGerritGitilesArchiveUrl,
   buildGerritGitilesArchiveUrlFromLocation,
   buildGerritGitilesUrl,
   getGerritBranchApiUrl,
@@ -28,93 +27,12 @@ import {
   getGerritRequestOptions,
   parseGerritJsonResponse,
   parseGitilesUrlRef,
-  parseGerritGitilesUrl,
   getGerritFileContentsApiUrl,
 } from './core';
 
 describe('gerrit core', () => {
   const worker = setupServer();
   registerMswTestHooks(worker);
-
-  describe('buildGerritGitilesArchiveUrl', () => {
-    const config: GerritIntegrationConfig = {
-      host: 'gerrit.com',
-      baseUrl: 'https://gerrit.com',
-      gitilesBaseUrl: 'https://gerrit.com/gitiles',
-    };
-    const configWithPath: GerritIntegrationConfig = {
-      host: 'gerrit.com',
-      baseUrl: 'https://gerrit.com/gerrit',
-      gitilesBaseUrl: 'https://gerrit.com/gerrit/plugins/gitiles',
-    };
-    const configWithDedicatedGitiles: GerritIntegrationConfig = {
-      host: 'gerrit.com',
-      baseUrl: 'https://gerrit.com/gerrit',
-      gitilesBaseUrl: 'https://dedicated-gitiles-server.com/gerrit/gitiles',
-    };
-    it('can create an archive url for a branch', () => {
-      expect(buildGerritGitilesArchiveUrl(config, 'repo', 'dev', '')).toEqual(
-        'https://gerrit.com/gitiles/repo/+archive/refs/heads/dev.tar.gz',
-      );
-
-      expect(buildGerritGitilesArchiveUrl(config, 'repo', 'dev', '/')).toEqual(
-        'https://gerrit.com/gitiles/repo/+archive/refs/heads/dev.tar.gz',
-      );
-    });
-    it('can create an archive url for a specific directory', () => {
-      expect(
-        buildGerritGitilesArchiveUrl(config, 'repo', 'dev', 'docs'),
-      ).toEqual(
-        'https://gerrit.com/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
-      );
-    });
-    it('can create an authenticated url when auth is enabled', () => {
-      const authConfig = {
-        ...config,
-        username: 'username',
-        password: 'password',
-      };
-      expect(
-        buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
-      ).toEqual(
-        'https://gerrit.com/a/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
-      );
-    });
-    it('can create an authenticated url when auth is enabled and an url-path is used', () => {
-      const authConfig = {
-        ...configWithPath,
-        username: 'username',
-        password: 'password',
-      };
-      expect(
-        buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
-      ).toEqual(
-        'https://gerrit.com/gerrit/a/plugins/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
-      );
-    });
-    it('Cannot build an authenticated url when a dedicated Gitiles server is used', () => {
-      const authConfig = {
-        ...configWithDedicatedGitiles,
-        username: 'username',
-        password: 'password',
-      };
-      expect(() =>
-        buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
-      ).toThrow(
-        'Since the baseUrl (Gerrit) is not part of the gitilesBaseUrl, an authentication URL could not be constructed.',
-      );
-    });
-    it('Build a non-authenticated url when a dedicated Gitiles server is used', () => {
-      const authConfig = {
-        ...configWithDedicatedGitiles,
-      };
-      expect(
-        buildGerritGitilesArchiveUrl(authConfig, 'repo', 'dev', 'docs'),
-      ).toEqual(
-        'https://dedicated-gitiles-server.com/gerrit/gitiles/repo/+archive/refs/heads/dev/docs.tar.gz',
-      );
-    });
-  });
 
   describe('buildGerritGitilesArchiveUrlFromLocation', () => {
     const config: GerritIntegrationConfig = {
@@ -238,6 +156,7 @@ describe('gerrit core', () => {
       ).toBeUndefined();
     });
   });
+
   describe('parseGitilesUrlRef', () => {
     const config: GerritIntegrationConfig = {
       host: 'gerrit.com',
@@ -358,64 +277,6 @@ describe('gerrit core', () => {
         ref: 'master',
         refType: 'branch',
       });
-    });
-  });
-  describe('parseGerritGitilesUrl', () => {
-    it('can parse a valid gitiles urls.', () => {
-      const config: GerritIntegrationConfig = {
-        host: 'gerrit.com',
-        gitilesBaseUrl: 'https://gerrit.com/gitiles',
-      };
-      const { branch, filePath, project } = parseGerritGitilesUrl(
-        config,
-        'https://gerrit.com/gitiles/web/project/+/refs/heads/master/README.md',
-      );
-      expect(project).toEqual('web/project');
-      expect(branch).toEqual('master');
-      expect(filePath).toEqual('README.md');
-
-      const { filePath: rootPath } = parseGerritGitilesUrl(
-        config,
-        'https://gerrit.com/gitiles/web/project/+/refs/heads/master',
-      );
-      expect(rootPath).toEqual('/');
-    });
-    it('can parse a valid authenticated gitiles url.', () => {
-      const config: GerritIntegrationConfig = {
-        host: 'gerrit.com',
-        gitilesBaseUrl: 'https://gerrit.com/gitiles',
-      };
-      const { branch, filePath, project } = parseGerritGitilesUrl(
-        config,
-        'https://gerrit.com/a/gitiles/web/project/+/refs/heads/master/README.md',
-      );
-      expect(project).toEqual('web/project');
-      expect(branch).toEqual('master');
-      expect(filePath).toEqual('README.md');
-
-      const { filePath: rootPath } = parseGerritGitilesUrl(
-        config,
-        'https://gerrit.com/gitiles/web/project/+/refs/heads/master',
-      );
-      expect(rootPath).toEqual('/');
-    });
-    it('throws on incorrect gitiles urls.', () => {
-      const config: GerritIntegrationConfig = {
-        host: 'gerrit.com',
-        gitilesBaseUrl: 'https://gerrit.com',
-      };
-      expect(() =>
-        parseGerritGitilesUrl(
-          config,
-          'https://gerrit.com/+/refs/heads/master/README.md',
-        ),
-      ).toThrow(/project/);
-      expect(() =>
-        parseGerritGitilesUrl(
-          config,
-          'https://gerrit.com/web/project/+/refs/changes/1/11/master/README.md',
-        ),
-      ).toThrow(/branch/);
     });
   });
 

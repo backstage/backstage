@@ -6737,26 +6737,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket"
-  dependencies:
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
-    "@backstage/errors": "workspace:^"
-    "@backstage/integration": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^"
-    "@backstage/plugin-scaffolder-node": "workspace:^"
-    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    fs-extra: "npm:^11.2.0"
-    msw: "npm:^1.0.0"
-    yaml: "npm:^2.0.0"
-  languageName: unknown
-  linkType: soft
-
 "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown"
@@ -6989,7 +6969,6 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-azure": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-gerrit": "workspace:^"

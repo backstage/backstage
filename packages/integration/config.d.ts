@@ -27,27 +27,6 @@ export interface Config {
        * @visibility frontend
        */
       host: string;
-      /**
-       * Token used to authenticate requests.
-       * @visibility secret
-       * @deprecated Use `credentials` instead.
-       */
-      token?: string;
-
-      /**
-       * The credential to use for requests.
-       *
-       * If no credential is specified anonymous access is used.
-       *
-       * @deepVisibility secret
-       * @deprecated Use `credentials` instead.
-       */
-      credential?: {
-        clientId?: string;
-        clientSecret?: string;
-        tenantId?: string;
-        personalAccessToken?: string;
-      };
 
       /**
        * The credentials to use for requests. If multiple credentials are specified the first one that matches the organization is used.
@@ -129,43 +108,6 @@ export interface Config {
          */
         clientSecret: string;
       };
-    }>;
-
-    /**
-     * Integration configuration for Bitbucket
-     * @deprecated replaced by bitbucketCloud and bitbucketServer
-     */
-    bitbucket?: Array<{
-      /**
-       * The hostname of the given Bitbucket instance
-       * @visibility frontend
-       */
-      host: string;
-      /**
-       * Token used to authenticate requests.
-       * @visibility secret
-       */
-      token?: string;
-      /**
-       * The base url for the Bitbucket API, for example https://api.bitbucket.org/2.0
-       * @visibility frontend
-       */
-      apiBaseUrl?: string;
-      /**
-       * The username to use for authenticated requests.
-       * @visibility secret
-       */
-      username?: string;
-      /**
-       * Bitbucket app password used to authenticate requests.
-       * @visibility secret
-       */
-      appPassword?: string;
-      /**
-       * PGP signing key for signing commits.
-       * @visibility secret
-       */
-      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Bitbucket Cloud */
