@@ -67,7 +67,6 @@ export async function getDeferredStitchableEntities(options: {
 
   const items = await itemsQuery
     .whereNotNull('next_stitch_at')
-    .whereNotNull('stitch_ticket')
     .where('next_stitch_at', '<=', knex.fn.now())
     .orderBy('next_stitch_at', 'asc')
     .limit(batchSize);

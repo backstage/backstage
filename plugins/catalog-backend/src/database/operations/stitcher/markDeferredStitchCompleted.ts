@@ -39,6 +39,9 @@ export async function markDeferredStitchCompleted(option: {
   await knex<DbFinalEntitiesRow>('final_entities')
     .update({
       next_stitch_at: null,
+      // Intentionally leave stitch_ticket at its old value; we are supposed to
+      // only ever call this function when we had a complete stitch run and the
+      // next one should set this string to a new random value.
     })
     .where('entity_ref', '=', entityRef)
     .andWhere('stitch_ticket', '=', stitchTicket);
