@@ -13,6 +13,7 @@ plugins:
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
+      - Technical overview: 'overview/technical-overview.md'
       - Architecture overview: 'overview/architecture-overview.md'
       - Project Roadmap: 'overview/roadmap.md'
       - Vision: 'overview/vision.md'
@@ -37,8 +38,15 @@ nav:
           - Kubernetes: 'deployment/k8s.md'
       - Using Backstage:
           - Logging in: 'getting-started/logging-in.md'
-          - Register a component: 'getting-started/register-a-component.md'
-          - Create a component: 'getting-started/create-a-component.md'
+          - Viewing the Catalog: 'getting-started/viewing-catalog.md'
+          - Viewing what you own: 'getting-started/view-what-you-own.md'
+          - Viewing entity relationships: 'getting-started/viewing-entity-relationships.md'
+          - Filtering the Catalog: 'getting-started/filter-catalog.md'
+          - Managing Components:
+              - Register a component: 'getting-started/register-a-component.md'
+              - Create a component: 'getting-started/create-a-component.md'
+              - Update a component: 'getting-started/update-a-component.md'
+              - Unregister/delete a component: 'getting-started/unregister-delete-component.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
   - Core Features:
       - Software Catalog:
