@@ -32,7 +32,7 @@ Creating the plugin...
 ### Reading entities from within your plugin
 
 You can access the currently selected entity using the backstage api
-[`useEntity`](../reference/plugin-catalog-react.useentity.md). For example,
+[`useEntity`](https://backstage.io/api/stable/functions/_backstage_plugin-catalog-react.index.useEntity.html). For example,
 
 ```tsx
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -45,7 +45,7 @@ export const MyPluginEntityContent = () => {
 ```
 
 Internally `useEntity` makes use of
-[react `Context`s](https://reactjs.org/docs/context.html). The entity context is
+[react `Contexts`](https://18.react.dev/learn/passing-data-deeply-with-context). The entity context is
 provided by the entity page into which your plugin will be embedded.
 
 ### Import your plugin and embed in the entities page
@@ -63,7 +63,7 @@ To add your component to the Entity view, you will need to modify the
 your plugin, you may only care about certain kinds of
 [entities](https://backstage.io/docs/features/software-catalog/descriptor-format),
 each of which has its own
-[element](https://reactjs.org/docs/rendering-elements.html) for rendering. This
+element for rendering. This
 functionality is handled by the `EntitySwitch` component:
 
 ```tsx

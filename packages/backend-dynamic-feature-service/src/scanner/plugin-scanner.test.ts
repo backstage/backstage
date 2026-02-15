@@ -18,8 +18,8 @@ import { PluginScanner } from './plugin-scanner';
 import { JsonObject } from '@backstage/types';
 import { Logs, MockedLogger } from '../__testUtils__/testUtils';
 import { ConfigReader } from '@backstage/config';
-import path from 'path';
-import * as url from 'url';
+import path from 'node:path';
+import * as url from 'node:url';
 import { ScannedPluginPackage } from './types';
 import {
   MockDirectoryContent,

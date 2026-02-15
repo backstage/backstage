@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { Link } from './Link';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { MemoryRouter } from 'react-router-dom';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Link',
   component: Link,
   args: {
@@ -33,29 +34,26 @@ const meta = {
       </MemoryRouter>
     ),
   ],
-} satisfies Meta<typeof Link>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     href: '/',
     children: 'Sign up for Backstage',
   },
-};
+});
 
-export const ExternalLink: Story = {
+export const ExternalLink = meta.story({
   args: {
     href: 'https://backstage.io',
     children: 'Sign up for Backstage',
     target: '_blank',
   },
-};
+});
 
-export const AllVariants: Story = {
+export const AllVariants = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="4" direction="column">
@@ -69,9 +67,9 @@ export const AllVariants: Story = {
       <Link href="https://ui.backstage.io" variant="body-x-small" {...args} />
     </Flex>
   ),
-};
+});
 
-export const AllColors: Story = {
+export const AllColors = meta.story({
   render: () => (
     <Flex gap="4" direction="column">
       <Link
@@ -104,11 +102,17 @@ export const AllColors: Story = {
         color="success"
         children="I am success"
       />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        color="info"
+        children="I am info"
+      />
     </Flex>
   ),
-};
+});
 
-export const AllWeights: Story = {
+export const AllWeights = meta.story({
   render: () => (
     <Flex gap="4" direction="column">
       <Flex>
@@ -225,9 +229,9 @@ export const AllWeights: Story = {
       </Flex>
     </Flex>
   ),
-};
+});
 
-export const Truncate: Story = {
+export const Truncate = meta.story({
   args: {
     children:
       "A man looks at a painting in a museum and says, “Brothers and sisters I have none, but that man's father is my father's son.” Who is in the painting?",
@@ -235,38 +239,33 @@ export const Truncate: Story = {
     truncate: true,
     style: { width: '480px' },
   },
-};
+});
 
-export const Responsive: Story = {
+export const Standalone = meta.story({
   args: {
-    ...Default.args,
+    href: '/',
+    children: 'Standalone link (no underline by default)',
+    standalone: true,
+  },
+});
+
+export const StandaloneComparison = meta.story({
+  render: () => (
+    <Flex gap="4" direction="column">
+      <Text>Default link (underline by default):</Text>
+      <Link href="/" children="Sign up for Backstage" />
+      <Text>Standalone link (underline on hover only):</Text>
+      <Link href="/" standalone children="Sign up for Backstage" />
+    </Flex>
+  ),
+});
+
+export const Responsive = meta.story({
+  args: {
+    ...Default.input.args,
     variant: {
       xs: 'title-x-small',
       md: 'body-x-small',
     },
   },
-};
-
-export const Playground: Story = {
-  args: {
-    ...Default.args,
-  },
-  render: args => (
-    <Flex gap="4" direction="column">
-      <Text>Title X Small</Text>
-      <Link variant="title-x-small" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Body X Small</Text>
-      <Link variant="body-x-small" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Body Small</Text>
-      <Link variant="body-small" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Body Medium</Text>
-      <Link variant="body-medium" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Body Large</Text>
-      <Link variant="body-large" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Title Small</Text>
-      <Link variant="title-small" style={{ maxWidth: '600px' }} {...args} />
-      <Text>Title Medium</Text>
-      <Link variant="title-medium" style={{ maxWidth: '600px' }} {...args} />
-    </Flex>
-  ),
-};
+});

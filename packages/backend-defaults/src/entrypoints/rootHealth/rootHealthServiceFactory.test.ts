@@ -69,7 +69,7 @@ describe('DefaultRootHealthService', () => {
       await expect(service.getReadiness()).resolves.toEqual({
         status: 503,
         payload: {
-          message: 'Backend is shuttting down',
+          message: 'Backend is shutting down',
           status: 'error',
         },
       });

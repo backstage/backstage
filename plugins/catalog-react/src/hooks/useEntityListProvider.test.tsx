@@ -25,7 +25,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { useMountEffect } from '@react-hookz/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
@@ -111,7 +112,7 @@ const createWrapper =
             [identityApiRef, mockIdentityApi],
             [storageApiRef, mockApis.storage()],
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-            [alertApiRef, { post: jest.fn() }],
+            [alertApiRef, mockApis.alert()],
             [translationApiRef, mockApis.translation()],
             [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
           ]}
@@ -219,6 +220,27 @@ describe('<EntityListProvider />', () => {
     expect(result.current.queryParameters).toEqual({
       kind: 'component',
       type: 'service',
+    });
+  });
+
+  it('resolves query param filter values with large arrays', async () => {
+    const largeArray = Array.from({ length: 50 }, (_, i) => `owner-${i}`);
+    const query = qs.stringify({
+      filters: { kind: 'component', owners: largeArray },
+    });
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({
+        location: `/catalog?${query}`,
+        pagination,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.queryParameters).toBeTruthy();
+    });
+    expect(result.current.queryParameters).toEqual({
+      kind: 'component',
+      owners: largeArray,
     });
   });
 

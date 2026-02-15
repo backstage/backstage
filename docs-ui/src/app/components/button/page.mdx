@@ -1,0 +1,147 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { buttonPropDefs } from './props-definition';
+import {
+  variantsSnippet,
+  sizesSnippet,
+  withIconsSnippet,
+  disabledSnippet,
+  destructiveSnippet,
+  loadingSnippet,
+  asLinkSnippet,
+  buttonSnippetUsage,
+  buttonResponsiveSnippet,
+} from './snippets';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ButtonDefinition } from '../../../utils/definitions';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import {
+  Variants,
+  Sizes,
+  WithIcons,
+  Disabled,
+  Destructive,
+  Loading,
+  AsLink,
+} from './components';
+
+export const reactAriaUrls = {
+  button: 'https://react-spectrum.adobe.com/react-aria/Button.html',
+};
+
+<PageTitle
+  title="Button"
+  description="A button with primary, secondary, and tertiary variants, destructive styling, and loading state."
+/>
+
+<Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
+
+## Usage
+
+<CodeBlock code={buttonSnippetUsage} />
+
+## API reference
+
+<PropsTable data={buttonPropDefs} />
+
+<ReactAriaLink component="Button" href={reactAriaUrls.button} />
+
+## Examples
+
+### Variants
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Variants />}
+  code={variantsSnippet}
+  layout="side-by-side"
+/>
+
+### Sizes
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Sizes />}
+  code={sizesSnippet}
+  layout="side-by-side"
+/>
+
+### With Icons
+
+Icons can appear before or after the label.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithIcons />}
+  code={withIconsSnippet}
+  layout="side-by-side"
+/>
+
+### Disabled
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Disabled />}
+  code={disabledSnippet}
+  layout="side-by-side"
+/>
+
+### Destructive
+
+Use the `destructive` prop for dangerous actions like delete or remove.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Destructive />}
+  code={destructiveSnippet}
+  layout="side-by-side"
+/>
+
+### Loading
+
+Shows a spinner and disables interaction during async operations.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Loading />}
+  code={loadingSnippet}
+  layout="side-by-side"
+/>
+
+### Responsive
+
+Button props accept responsive breakpoint objects.
+
+<CodeBlock code={buttonResponsiveSnippet} />
+
+### As Link
+
+If you want to use a button as a link, please use the `ButtonLink` component.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<AsLink />}
+  code={asLinkSnippet}
+  layout="side-by-side"
+/>
+
+<Theming definition={ButtonDefinition} />
+
+<ChangelogComponent component="button" />

@@ -211,6 +211,8 @@ to get the existing session, which is exactly what the `ProxiedSignInPage` does.
 thing you need to do to configure the `ProxiedSignInPage` is to pass the ID of the provider like this:
 
 ```tsx title="packages/app/src/App.tsx"
+import { ProxiedSignInPage } from '@backstage/core-components';
+
 const app = createApp({
   components: {
     SignInPage: props => <ProxiedSignInPage {...props} provider="awsalb" />,
@@ -285,7 +287,7 @@ sign-in resolvers so that they resolve to the same identity regardless of the me
 
 ## Scaffolder Configuration (Software Templates)
 
-If you want to use the authentication capabilities of the [Repository Picker](../features/software-templates/writing-templates.md#the-repository-picker) inside your software templates, you will need to configure the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi) alongside your authentication provider. It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed.
+If you want to use the authentication capabilities of the [Repository Picker](../features/software-templates/writing-templates.md#the-repository-picker) inside your software templates, you will need to configure the [`ScmAuthApi`](https://backstage.io/api/stable/interfaces/_backstage_integration-react.ScmAuthApi.html) alongside your authentication provider. It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed.
 
 To set it up, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The example below sets up the `ScmAuthApi` for an already configured GitLab authentication provider:
 
@@ -340,7 +342,7 @@ The method with which frontend plugins request access to third-party services is
 through [Utility APIs](../api/utility-apis.md) for each service provider. These
 are all suffixed with `*AuthApiRef`, for example `githubAuthApiRef`. For a
 full list of providers, see the
-[@backstage/core-plugin-api](../reference/core-plugin-api.md#variables) reference.
+[@backstage/core-plugin-api](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.index.html#alertapiref) reference.
 
 ## Custom Authentication Provider
 
@@ -361,7 +363,7 @@ The default `ScmAuthApi` provides integrations for `github`, `gitlab`, `azure` a
 ScmAuth.createDefaultApiFactory();
 ```
 
-If you require only a subset of these integrations, then you will need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate different SCM systems generically, based on what resource is being accessed, and is used for example, by the Scaffolder (Software Templates) and Catalog Import plugins.
+If you require only a subset of these integrations, then you will need a custom implementation of the [`ScmAuthApi`](https://backstage.io/api/stable/interfaces/_backstage_integration-react.ScmAuthApi.html). It is an API used to authenticate different SCM systems generically, based on what resource is being accessed, and is used for example, by the Scaffolder (Software Templates) and Catalog Import plugins.
 
 The first step is to remove the code that creates the default providers.
 

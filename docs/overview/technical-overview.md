@@ -10,7 +10,7 @@ Backstage is an open source framework for building developer portals that was cr
 
 Backstage is powered by a centralized [software catalog](#software-catalog-system-model) and utilizes an abstraction layer that sits on top of all of your infrastructure and developer tooling, allowing you to manage all of your software, services, tooling, and testing in one place.
 
-Backstage uses a [plugin-architecture](#plugin-architecture-overview) which allows you customize the functionality of your Backstage application using a wide variety of available plugins or you can write your own. It also includes automated templates that your teams can use to create new microservices, helping to ensure consistency and adherence to your best practices. Backstage also provides the ability to create, maintain, and find the documentation for all of your software.
+Backstage uses a [plugin-architecture](#plugin-architecture-overview) which allows you to customize the functionality of your Backstage application using a wide variety of available plugins or you can write your own. It also includes automated templates that your teams can use to create new microservices, helping to ensure consistency and adherence to your best practices. Backstage also provides the ability to create, maintain, and find the documentation for all of your software.
 
 Backstage is now a [CNCF incubation project](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
 

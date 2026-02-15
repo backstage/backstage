@@ -92,8 +92,8 @@ export function TextVisualizer({ tree }: { tree: AppTree }) {
         py="2"
         px="4"
         style={{
-          background: 'var(--bui-bg-surface-1)',
-          borderTop: '1px solid var(--bui-border)',
+          background: 'var(--bui-bg-neutral-1)',
+          borderTop: '1px solid var(--bui-border-2)',
         }}
       >
         <Checkbox isSelected={showOutputs} onChange={setShowOutputs}>

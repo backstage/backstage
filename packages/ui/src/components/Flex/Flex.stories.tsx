@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Flex } from './Flex';
 import { Text } from '../Text';
 import { Box } from '../Box';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Flex',
   component: Flex,
   argTypes: {
@@ -36,10 +35,7 @@ const meta = {
       options: ['row', 'column', 'row-reverse', 'column-reverse'],
     },
   },
-} satisfies Meta<typeof Flex>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const DecorativeBox = ({
   width = '48px',
@@ -78,7 +74,7 @@ const DecorativeBox = ({
   );
 };
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: (
       <>
@@ -88,23 +84,23 @@ export const Default: Story = {
       </>
     ),
   },
-};
+});
 
-export const ColumnDirection: Story = {
+export const ColumnDirection = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     direction: 'column',
   },
-};
+});
 
-export const RowDirection: Story = {
+export const RowDirection = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     direction: 'row',
   },
-};
+});
 
-export const AlignStartInColumn: Story = {
+export const AlignStartInColumn = meta.story({
   args: {
     align: 'start',
     direction: 'column',
@@ -116,9 +112,9 @@ export const AlignStartInColumn: Story = {
       <DecorativeBox height="48px" />
     </Flex>
   ),
-};
+});
 
-export const AlignStartInRow: Story = {
+export const AlignStartInRow = meta.story({
   args: {
     align: 'start',
     direction: 'row',
@@ -130,9 +126,9 @@ export const AlignStartInRow: Story = {
       <DecorativeBox height="48px" />
     </Flex>
   ),
-};
+});
 
-export const AlignCenterInColumn: Story = {
+export const AlignCenterInColumn = meta.story({
   args: {
     align: 'center',
     direction: 'column',
@@ -144,9 +140,9 @@ export const AlignCenterInColumn: Story = {
       <DecorativeBox height="48px" />
     </Flex>
   ),
-};
+});
 
-export const AlignCenterInRow: Story = {
+export const AlignCenterInRow = meta.story({
   args: {
     align: 'center',
     direction: 'row',
@@ -158,9 +154,9 @@ export const AlignCenterInRow: Story = {
       <DecorativeBox height="48px" />
     </Flex>
   ),
-};
+});
 
-export const AlignEndInColumn: Story = {
+export const AlignEndInColumn = meta.story({
   args: {
     align: 'end',
     direction: 'column',
@@ -172,9 +168,9 @@ export const AlignEndInColumn: Story = {
       <DecorativeBox height="48px" />
     </Flex>
   ),
-};
+});
 
-export const AlignEndInRow: Story = {
+export const AlignEndInRow = meta.story({
   args: {
     align: 'end',
     direction: 'row',
@@ -186,9 +182,9 @@ export const AlignEndInRow: Story = {
       <DecorativeBox height="48px" />
     </Flex>
   ),
-};
+});
 
-export const ResponsiveAlign: Story = {
+export const ResponsiveAlign = meta.story({
   args: {
     align: { xs: 'start', md: 'center', lg: 'end' },
   },
@@ -199,9 +195,9 @@ export const ResponsiveAlign: Story = {
       <DecorativeBox height="48px" />
     </Flex>
   ),
-};
+});
 
-export const ResponsiveGap: Story = {
+export const ResponsiveGap = meta.story({
   args: {
     gap: { xs: '4', md: '8', lg: '12' },
   },
@@ -212,9 +208,9 @@ export const ResponsiveGap: Story = {
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const LargeGap: Story = {
+export const LargeGap = meta.story({
   args: {
     gap: '8',
   },
@@ -225,9 +221,9 @@ export const LargeGap: Story = {
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const WithTextTruncate: Story = {
+export const WithTextTruncate = meta.story({
   render: () => (
     <Flex direction="row" gap="8">
       <Flex>
@@ -246,4 +242,59 @@ export const WithTextTruncate: Story = {
       </Flex>
     </Flex>
   ),
-};
+});
+
+export const Backgrounds = meta.story({
+  args: {
+    px: '6',
+    py: '4',
+  },
+  render: args => (
+    <Flex align="center" style={{ flexWrap: 'wrap' }}>
+      <Flex {...args}>Default</Flex>
+      <Flex bg="neutral-1" {...args}>
+        Neutral 1
+      </Flex>
+      <Flex bg="neutral-2" {...args}>
+        Neutral 2
+      </Flex>
+      <Flex bg="neutral-3" {...args}>
+        Neutral 3
+      </Flex>
+      <Flex bg={{ initial: 'neutral-1', sm: 'neutral-2' }} {...args}>
+        Responsive Bg
+      </Flex>
+      <Flex bg="danger" {...args}>
+        Danger
+      </Flex>
+      <Flex bg="warning" {...args}>
+        Warning
+      </Flex>
+      <Flex bg="success" {...args}>
+        Success
+      </Flex>
+    </Flex>
+  ),
+});
+
+export const BgNeutralAuto = meta.story({
+  args: { px: '6', py: '4', gap: '4' },
+  render: args => (
+    <Flex direction="column">
+      <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
+        Using bg="neutral-auto" on Flex auto-increments from the parent context.
+        The first Flex defaults to neutral-1 (no parent), then each nested Flex
+        increments by one, capping at neutral-3.
+      </div>
+      <Flex {...args} bg="neutral-auto" direction="column">
+        <div>Neutral 1 (auto, no parent)</div>
+        <Flex {...args} bg="neutral-auto" direction="column">
+          <div>Neutral 2 (auto-incremented)</div>
+          <Flex {...args} bg="neutral-auto" direction="column">
+            <div>Neutral 3 (auto-incremented, capped)</div>
+          </Flex>
+        </Flex>
+      </Flex>
+    </Flex>
+  ),
+});

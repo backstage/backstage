@@ -99,9 +99,9 @@ This [entity card](https://github.com/backstage/backstage/blob/master/plugins/ca
 
 Currently, this entity card extension has only one configuration:
 
-| Config key | Default value | Description                                                                                                                                 |
-| ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `kind:group`  | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key | Default value       | Description                                                                                                                                 |
+| ---------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filter`   | `{ kind: 'group' }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
 
 This is how to configure the `group-profile` extension in the `app-config.yaml` file:
 
@@ -119,19 +119,23 @@ Use extension overrides for completely re-implementing the group-profile entity 
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'group-profile' entity card extension provided by the 'org' plugin
       name: 'group-profile',
-      // By default, this card will show up only for groups
-      filter: 'kind:group'
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomGroupProfileEntityCard />),
+      params: {
+        // By default, this card will show up only for groups
+        filter: { kind: 'group' },
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => (
+            <m.MyCustomGroupProfileEntityCard />
+          )),
+      },
     }),
   ],
 });
@@ -151,9 +155,9 @@ An [entity card](https://github.com/backstage/backstage/blob/master/plugins/cata
 
 Currently, this entity card extension has only one configuration:
 
-| Config key | Default value | Description                                                                                                                                 |
-| ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `kind:group`  | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key | Default value       | Description                                                                                                                                 |
+| ---------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filter`   | `{ kind: 'group' }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
 
 This is how to configure the `members-list` extension in the `app-config.yaml` file:
 
@@ -171,19 +175,21 @@ Use extension overrides for completely re-implementing the members-list entity c
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
       name: 'members-list',
-      // By default, this card will show up only for groups
-      filter: 'kind:group'
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomMembersListEntityCard />),
+      params: {
+        // By default, this card will show up only for groups
+        filter: { kind: 'group' },
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => <m.MyCustomMembersListEntityCard />),
+      },
     }),
   ],
 });
@@ -203,9 +209,9 @@ An [entity card](https://github.com/backstage/backstage/blob/master/plugins/cata
 
 Currently, this entity card extension has only one configuration:
 
-| Config key | Default value     | Description                                                                                                                                 |
-| ---------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `kind:group,user` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key | Default value                          | Description                                                                                                                                 |
+| ---------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filter`   | `{ kind: { $in: ['group', 'user'] } }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
 
 This is how to configure the `ownership` extension in the `app-config.yaml` file:
 
@@ -223,19 +229,21 @@ Use extension overrides for completely re-implementing the ownership entity card
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'ownership' entity card extension provided by the 'org' plugin
       name: 'ownership',
-      // By default, this card will show up only for groups or users
-      filter: 'kind:group,user'
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
+      params: {
+        // By default, this card will show up only for groups or users
+        filter: { kind: { $in: ['group', 'user'] } },
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
+      },
     }),
   ],
 });
@@ -255,9 +263,9 @@ This [entity card](https://github.com/backstage/backstage/blob/master/plugins/ca
 
 Currently, this entity card extension has only one configuration:
 
-| Config key | Default value | Description                                                                                                                                 |
-| ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `kind:user`   | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key | Default value      | Description                                                                                                                                 |
+| ---------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `filter`   | `{ kind: 'user' }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
 
 This is how to configure the `user-profile` extension in the `app-config.yaml` file:
 
@@ -275,19 +283,21 @@ Use extension overrides for completely re-implementing the user-profile entity c
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'user-profile' entity card extension provided by the 'org' plugin
       name: 'user-profile',
-      // By default, this card will show up only for groups or users
-      filter: 'kind:user'
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
+      params: {
+        // By default, this card will show up only for groups or users
+        filter: { kind: 'user' },
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => <m.MyCustomOwnershipEntityCard />),
+      },
     }),
   ],
 });

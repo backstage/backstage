@@ -1,5 +1,5 @@
 ---
-id: 001-first-steps
+id: first-steps
 sidebar_label: 001 - Scaffolding the plugin
 title: How to scaffold a new plugin?
 ---

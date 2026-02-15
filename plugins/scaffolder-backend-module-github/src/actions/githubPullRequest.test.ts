@@ -606,28 +606,13 @@ describe('createPublishGithubPullRequestAction', () => {
 
       ctx = createMockActionContext({ input, workspacePath });
     });
-    it('creates a pull request', async () => {
-      await instance.handler(ctx);
 
-      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
-        owner: 'myorg',
-        repo: 'myrepo',
-        title: 'Create my new app',
-        head: 'new-app',
-        body: 'This PR is really good',
-        changes: [
-          {
-            commit: 'Create my new app',
-            files: {
-              Makefile: {
-                content: Buffer.from('../../nothing/yet').toString('utf-8'),
-                encoding: 'utf-8',
-                mode: '120000',
-              },
-            },
-          },
-        ],
-      });
+    it('throws an error', async () => {
+      await expect(
+        instance.handler(ctx),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"Relative path is not allowed to refer to a directory outside its parent"`,
+      );
     });
   });
 

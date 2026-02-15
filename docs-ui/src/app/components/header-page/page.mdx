@@ -1,0 +1,66 @@
+import { PropsTable } from '@/components/PropsTable';
+import { CodeBlock } from '@/components/CodeBlock';
+import { Snippet } from '@/components/Snippet';
+import {
+  WithEverything,
+  WithLongBreadcrumbs,
+  WithTabs,
+  WithCustomActions,
+  WithMenu,
+} from './components';
+import { headerPagePropDefs } from './props-definition';
+import {
+  usage,
+  defaultSnippet,
+  withTabs,
+  withBreadcrumbs,
+  withCustomActions,
+  withMenu,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { HeaderPageDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="HeaderPage"
+  description="A secondary header with title, breadcrumbs, tabs, and actions."
+/>
+
+<Snippet py={4} preview={<WithEverything />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={usage} />
+
+## API reference
+
+<PropsTable data={headerPagePropDefs} />
+
+## Examples
+
+### Breadcrumbs
+
+Labels are truncated at 240px.
+
+<Snippet open preview={<WithLongBreadcrumbs />} code={withBreadcrumbs} />
+
+### Tabs
+
+Tabs use React Router and highlight based on the current route.
+
+<Snippet open preview={<WithTabs />} code={withTabs} />
+
+### Custom actions
+
+<Snippet open preview={<WithCustomActions />} code={withCustomActions} />
+
+### With menu
+
+Use `customActions` to add a dropdown menu.
+
+<Snippet open preview={<WithMenu />} code={withMenu} />
+
+<Theming definition={HeaderPageDefinition} />
+
+<ChangelogComponent component="header-page" />

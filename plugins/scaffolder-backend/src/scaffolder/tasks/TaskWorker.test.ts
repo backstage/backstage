@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import os from 'os';
+import os from 'node:os';
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';

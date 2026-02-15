@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { spawn } from 'child_process';
-import os from 'os';
+import { spawn } from 'node:child_process';
+import os from 'node:os';
 import pLimit from 'p-limit';
 
 // Some commands launch full node processes doing heavy work, which at high

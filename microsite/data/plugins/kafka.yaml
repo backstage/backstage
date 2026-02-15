@@ -7,6 +7,4 @@ description: Observability for Apache Kafka clusters and async API of components
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/kafka/plugins/kafka
 iconUrl: https://kafka.apache.org/images/apache-kafka.png
 npmPackageName: '@backstage-community/plugin-kafka'
-tags:
-  - monitoring
 addedDate: '2021-01-21'

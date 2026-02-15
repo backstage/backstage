@@ -15,7 +15,7 @@
  */
 
 import { stringifyError } from '@backstage/errors';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import yn from 'yn';

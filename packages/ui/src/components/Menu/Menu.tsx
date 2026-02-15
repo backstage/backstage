@@ -30,10 +30,8 @@ import {
   ListBox as RAListBox,
   ListBoxItem as RAListBoxItem,
   useFilter,
-  RouterProvider,
   Virtualizer,
   ListLayout,
-  OverlayTriggerStateContext,
 } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { MenuDefinition } from './definition';
@@ -54,11 +52,15 @@ import {
   RiCheckLine,
   RiCloseCircleLine,
 } from '@remixicon/react';
-import { useNavigate, useHref } from 'react-router-dom';
-import { isExternalLink } from '../../utils/isExternalLink';
-import { useRef, useEffect, useContext } from 'react';
+import {
+  isInternalLink,
+  createRoutingRegistration,
+} from '../InternalLinkProvider';
 import styles from './Menu.module.css';
 import clsx from 'clsx';
+
+const { RoutingProvider, useRoutingRegistrationEffect } =
+  createRoutingRegistration();
 
 // The height will be used for virtualized menus. It should match the size set in CSS for each menu item.
 const rowHeight = 32;
@@ -96,35 +98,7 @@ export const Menu = (props: MenuProps<object>) => {
     ...rest
   } = cleanedProps;
 
-  const navigate = useNavigate();
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const state = useContext(OverlayTriggerStateContext);
-
-  // Custom click-outside handler for non-modal popovers
-  useEffect(() => {
-    if (!state?.isOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      // Check if click is outside the popover
-      if (popoverRef.current && !popoverRef.current.contains(target)) {
-        // Check if click is on a trigger button or submenu
-        const isOnTrigger = (target as Element).closest('[data-trigger]');
-        const isOnSubmenu = (target as Element).closest('[role="menu"]');
-
-        if (!isOnTrigger && !isOnSubmenu) {
-          state.close();
-        }
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [state]);
 
   const menuContent = (
     <RAMenu
@@ -136,18 +110,15 @@ export const Menu = (props: MenuProps<object>) => {
   );
 
   return (
-    <RAPopover
-      ref={popoverRef}
-      className={clsx(
-        classNames.popover,
-        styles[classNames.popover],
-        className,
-      )}
-      placement={placement}
-      isNonModal={true}
-      isKeyboardDismissDisabled={false}
-    >
-      <RouterProvider navigate={navigate} useHref={useHref}>
+    <RoutingProvider>
+      <RAPopover
+        className={clsx(
+          classNames.popover,
+          styles[classNames.popover],
+          className,
+        )}
+        placement={placement}
+      >
         {virtualized ? (
           <Virtualizer
             layout={ListLayout}
@@ -160,8 +131,8 @@ export const Menu = (props: MenuProps<object>) => {
         ) : (
           menuContent
         )}
-      </RouterProvider>
-    </RAPopover>
+      </RAPopover>
+    </RoutingProvider>
   );
 };
 
@@ -228,7 +199,6 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
   } = cleanedProps;
   const { contains } = useFilter({ sensitivity: 'base' });
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
-  const navigate = useNavigate();
 
   const menuContent = (
     <RAMenu
@@ -240,28 +210,28 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
   );
 
   return (
-    <RAPopover
-      className={clsx(
-        classNames.popover,
-        styles[classNames.popover],
-        className,
-      )}
-      placement={placement}
-    >
-      <RouterProvider navigate={navigate} useHref={useHref}>
+    <RoutingProvider>
+      <RAPopover
+        className={clsx(
+          classNames.popover,
+          styles[classNames.popover],
+          className,
+        )}
+        placement={placement}
+      >
         <RAAutocomplete filter={contains}>
           <RASearchField
             className={clsx(
               classNames.searchField,
               styles[classNames.searchField],
             )}
+            aria-label={props.placeholder || 'Search'}
           >
             <RAInput
               className={clsx(
                 classNames.searchFieldInput,
                 styles[classNames.searchFieldInput],
               )}
-              aria-label="Search"
               placeholder={props.placeholder || 'Search...'}
             />
             <RAButton
@@ -286,8 +256,8 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
             menuContent
           )}
         </RAAutocomplete>
-      </RouterProvider>
-    </RAPopover>
+      </RAPopover>
+    </RoutingProvider>
   );
 };
 
@@ -334,13 +304,13 @@ export const MenuAutocompleteListbox = (
             classNames.searchField,
             styles[classNames.searchField],
           )}
+          aria-label={props.placeholder || 'Search'}
         >
           <RAInput
             className={clsx(
               classNames.searchFieldInput,
               styles[classNames.searchFieldInput],
             )}
-            aria-label="Search"
             placeholder={props.placeholder || 'Search...'}
           />
           <RAButton
@@ -381,10 +351,10 @@ export const MenuItem = (props: MenuItemProps) => {
     ...rest
   } = cleanedProps;
 
-  const isLink = href !== undefined;
-  const isExternal = isExternalLink(href);
+  useRoutingRegistrationEffect(href);
 
-  if (isLink && isExternal) {
+  // External links open in new tab via window.open instead of client-side routing
+  if (href && !isInternalLink(href)) {
     return (
       <RAMenuItem
         className={clsx(classNames.item, styles[classNames.item], className)}

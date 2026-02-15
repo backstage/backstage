@@ -36,6 +36,7 @@ export default {
       </Grid>
     ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

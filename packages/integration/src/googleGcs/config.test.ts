@@ -33,13 +33,16 @@ describe('readGoogleGcsIntegrationConfig', () => {
       }),
     );
     expect(output).toEqual({
+      host: 'storage.cloud.google.com',
       privateKey: 'fake-key',
       clientEmail: 'someone@example.com',
     });
   });
 
-  it('does not fail when config is not set', () => {
+  it('returns default config when config is not set', () => {
     const output = readGoogleGcsIntegrationConfig(buildConfig({}));
-    expect(output).toEqual({});
+    expect(output).toEqual({
+      host: 'storage.cloud.google.com',
+    });
   });
 });

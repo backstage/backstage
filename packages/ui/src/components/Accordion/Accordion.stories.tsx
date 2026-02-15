@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import {
   Accordion,
   AccordionTrigger,
@@ -22,6 +21,7 @@ import {
   AccordionGroup,
 } from './Accordion';
 import { Box } from '../Box';
+import { Flex } from '../Flex';
 import { Text } from '../Text';
 
 const Content = () => (
@@ -36,15 +36,12 @@ const Content = () => (
   </Box>
 );
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Accordion',
   component: Accordion,
-} satisfies Meta<typeof Accordion>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   render: () => (
     <Accordion>
       <AccordionTrigger title="Toggle Panel" />
@@ -53,9 +50,9 @@ export const Default: Story = {
       </AccordionPanel>
     </Accordion>
   ),
-};
+});
 
-export const WithSubtitle: Story = {
+export const WithSubtitle = meta.story({
   render: () => (
     <Accordion>
       <AccordionTrigger
@@ -67,9 +64,9 @@ export const WithSubtitle: Story = {
       </AccordionPanel>
     </Accordion>
   ),
-};
+});
 
-export const CustomTrigger: Story = {
+export const CustomTrigger = meta.story({
   render: () => (
     <Accordion>
       <AccordionTrigger>
@@ -87,9 +84,9 @@ export const CustomTrigger: Story = {
       </AccordionPanel>
     </Accordion>
   ),
-};
+});
 
-export const DefaultExpanded: Story = {
+export const DefaultExpanded = meta.story({
   render: () => (
     <Accordion defaultExpanded>
       <AccordionTrigger title="Toggle Panel" />
@@ -98,9 +95,9 @@ export const DefaultExpanded: Story = {
       </AccordionPanel>
     </Accordion>
   ),
-};
+});
 
-export const GroupSingleOpen: Story = {
+export const GroupSingleOpen = meta.story({
   render: () => (
     <AccordionGroup>
       <Accordion>
@@ -136,9 +133,9 @@ export const GroupSingleOpen: Story = {
       </Accordion>
     </AccordionGroup>
   ),
-};
+});
 
-export const GroupMultipleOpen: Story = {
+export const GroupMultipleOpen = meta.story({
   render: () => (
     <AccordionGroup allowsMultiple>
       <Accordion>
@@ -174,4 +171,58 @@ export const GroupMultipleOpen: Story = {
       </Accordion>
     </AccordionGroup>
   ),
-};
+});
+
+export const AutoBg = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div style={{ maxWidth: '600px' }}>
+        Accordions automatically detect their parent bg context and increment
+        the neutral level by 1. No prop is needed on the accordion -- it's fully
+        automatic.
+      </div>
+      <Flex direction="column" gap="4">
+        <Text>Default (no container)</Text>
+        <Accordion defaultExpanded>
+          <AccordionTrigger title="Toggle Panel" />
+          <AccordionPanel>
+            <Content />
+          </AccordionPanel>
+        </Accordion>
+      </Flex>
+      <Box bg="neutral-1" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex mt="2">
+          <Accordion defaultExpanded>
+            <AccordionTrigger title="Auto (neutral-2)" />
+            <AccordionPanel>
+              <Content />
+            </AccordionPanel>
+          </Accordion>
+        </Flex>
+      </Box>
+      <Box bg="neutral-2" p="4">
+        <Text>Neutral 2 container</Text>
+        <Flex mt="2">
+          <Accordion defaultExpanded>
+            <AccordionTrigger title="Auto (neutral-3)" />
+            <AccordionPanel>
+              <Content />
+            </AccordionPanel>
+          </Accordion>
+        </Flex>
+      </Box>
+      <Box bg="neutral-3" p="4">
+        <Text>Neutral 3 container</Text>
+        <Flex mt="2">
+          <Accordion defaultExpanded>
+            <AccordionTrigger title="Auto (neutral-4)" />
+            <AccordionPanel>
+              <Content />
+            </AccordionPanel>
+          </Accordion>
+        </Flex>
+      </Box>
+    </Flex>
+  ),
+});

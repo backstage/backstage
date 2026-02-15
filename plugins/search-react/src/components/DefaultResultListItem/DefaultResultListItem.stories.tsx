@@ -38,6 +38,7 @@ export default {
       </MemoryRouter>
     ),
   ],
+  tags: ['!manifest'],
 };
 
 const mockSearchResult = {

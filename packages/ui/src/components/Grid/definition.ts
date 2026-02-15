@@ -42,6 +42,16 @@ export const GridDefinition = {
     'px',
     'py',
   ],
+  dataAttributes: {
+    bg: [
+      'neutral-1',
+      'neutral-2',
+      'neutral-3',
+      'danger',
+      'warning',
+      'success',
+    ] as const,
+  },
 } as const satisfies ComponentDefinition;
 
 /**
@@ -53,4 +63,14 @@ export const GridItemDefinition = {
     root: 'bui-GridItem',
   },
   utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'],
+  dataAttributes: {
+    bg: [
+      'neutral-1',
+      'neutral-2',
+      'neutral-3',
+      'danger',
+      'warning',
+      'success',
+    ] as const,
+  },
 } as const satisfies ComponentDefinition;

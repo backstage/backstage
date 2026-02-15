@@ -38,7 +38,7 @@ import {
 } from '@backstage/plugin-kubernetes-node';
 
 import type { Request } from 'express';
-import { IncomingHttpHeaders } from 'http';
+import { IncomingHttpHeaders } from 'node:http';
 import {
   DiscoveryService,
   HttpAuthService,

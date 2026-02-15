@@ -18,6 +18,7 @@ import { HeaderTabs } from './HeaderTabs';
 export default {
   title: 'Layout/HeaderTabs',
   component: HeaderTabs,
+  tags: ['!manifest'],
 };
 
 export const SingleTab = (args: any) => <HeaderTabs {...args} />;

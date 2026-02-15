@@ -29,6 +29,7 @@ describe('KafkaConsumingEventPublisher', () => {
     disconnect: jest.fn(),
     subscribe: jest.fn(),
     run: jest.fn(),
+    commitOffsets: jest.fn(),
   };
 
   const mockKafkaClient = {
@@ -159,5 +160,345 @@ describe('KafkaConsumingEventPublisher', () => {
 
     expect(consumers).toHaveLength(1);
     expect(mockKafkaClient.consumer).toHaveBeenCalledTimes(2);
+  });
+
+  describe('Offset Management', () => {
+    it('should commit offset after successful message processing when autoCommit is false', async () => {
+      const configWithManualCommit = new ConfigReader({
+        events: {
+          modules: {
+            kafka: {
+              kafkaConsumingEventPublisher: {
+                dev: {
+                  clientId: 'backstage-events',
+                  brokers: ['kafka1:9092'],
+                  topics: [
+                    {
+                      topic: 'backstage-topic',
+                      kafka: {
+                        topics: ['test-topic'],
+                        groupId: 'test-group',
+                        autoCommit: false,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const consumers = KafkaConsumingEventPublisher.fromConfig({
+        config: configWithManualCommit,
+        events: mockEvents,
+        logger: mockLogger,
+      });
+
+      mockConsumer.run.mockImplementation(async ({ eachMessage }: any) => {
+        await eachMessage({
+          topic: 'test-kafka-topic',
+          partition: 2,
+          message: {
+            key: Buffer.from('test-key'),
+            value: Buffer.from(JSON.stringify({ data: 'test-data' })),
+            offset: '12345',
+            timestamp: '1234567890',
+            headers: {
+              'custom-header': Buffer.from('header-value'),
+            },
+          },
+          heartbeat: jest.fn(),
+          pause: jest.fn(),
+        });
+      });
+
+      await consumers[0].start();
+
+      expect(mockEvents.publish).toHaveBeenCalledWith({
+        topic: 'backstage-topic',
+        eventPayload: { data: 'test-data' },
+        metadata: {
+          'custom-header': 'header-value',
+        },
+      });
+
+      // Verify offset + 1
+      expect(mockConsumer.commitOffsets).toHaveBeenCalledWith([
+        { topic: 'test-kafka-topic', partition: 2, offset: '12346' },
+      ]);
+    });
+
+    it('should not commit offset when autoCommit is true (default)', async () => {
+      const configWithAutoCommit = new ConfigReader({
+        events: {
+          modules: {
+            kafka: {
+              kafkaConsumingEventPublisher: {
+                dev: {
+                  clientId: 'backstage-events',
+                  brokers: ['kafka1:9092'],
+                  topics: [
+                    {
+                      topic: 'backstage-topic',
+                      kafka: {
+                        topics: ['test-topic'],
+                        groupId: 'test-group',
+                        autoCommit: true,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const consumers = KafkaConsumingEventPublisher.fromConfig({
+        config: configWithAutoCommit,
+        events: mockEvents,
+        logger: mockLogger,
+      });
+
+      mockConsumer.run.mockImplementation(async ({ eachMessage }: any) => {
+        await eachMessage({
+          topic: 'test-kafka-topic',
+          partition: 2,
+          message: {
+            value: Buffer.from(JSON.stringify({ data: 'test-data' })),
+            offset: '12345',
+          },
+          heartbeat: jest.fn(),
+          pause: jest.fn(),
+        });
+      });
+
+      await consumers[0].start();
+
+      expect(mockEvents.publish).toHaveBeenCalled();
+      expect(mockConsumer.commitOffsets).not.toHaveBeenCalled();
+    });
+
+    it('should not commit offset when message processing fails and pauseOnError is true', async () => {
+      const pauseMock = jest.fn();
+      const failingEvents = {
+        ...mockEvents,
+        publish: jest.fn().mockRejectedValue(new Error('Processing failed')),
+      };
+
+      const configWithPauseOnError = new ConfigReader({
+        events: {
+          modules: {
+            kafka: {
+              kafkaConsumingEventPublisher: {
+                dev: {
+                  clientId: 'backstage-events',
+                  brokers: ['kafka1:9092'],
+                  topics: [
+                    {
+                      topic: 'backstage-topic',
+                      kafka: {
+                        topics: ['test-topic'],
+                        groupId: 'test-group',
+                        autoCommit: false,
+                        pauseOnError: true,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const consumers = KafkaConsumingEventPublisher.fromConfig({
+        config: configWithPauseOnError,
+        events: failingEvents,
+        logger: mockLogger,
+      });
+
+      mockConsumer.run.mockImplementation(async ({ eachMessage }: any) => {
+        await expect(
+          eachMessage({
+            topic: 'test-kafka-topic',
+            partition: 2,
+            message: {
+              value: Buffer.from(JSON.stringify({ data: 'test-data' })),
+              offset: '12345',
+            },
+            heartbeat: jest.fn(),
+            pause: pauseMock,
+          }),
+        ).rejects.toThrow('Processing failed');
+      });
+
+      await consumers[0].start();
+
+      expect(mockConsumer.commitOffsets).not.toHaveBeenCalled();
+      expect(pauseMock).toHaveBeenCalled();
+    });
+
+    it('should skip failed message and commit offset when pauseOnError is false and autoCommit is false', async () => {
+      const pauseMock = jest.fn();
+      const failingEvents = {
+        ...mockEvents,
+        publish: jest.fn().mockRejectedValue(new Error('Processing failed')),
+      };
+
+      const configWithSkipOnError = new ConfigReader({
+        events: {
+          modules: {
+            kafka: {
+              kafkaConsumingEventPublisher: {
+                dev: {
+                  clientId: 'backstage-events',
+                  brokers: ['kafka1:9092'],
+                  topics: [
+                    {
+                      topic: 'backstage-topic',
+                      kafka: {
+                        topics: ['test-topic'],
+                        groupId: 'test-group',
+                        autoCommit: false,
+                        pauseOnError: false,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const consumers = KafkaConsumingEventPublisher.fromConfig({
+        config: configWithSkipOnError,
+        events: failingEvents,
+        logger: mockLogger,
+      });
+
+      mockConsumer.run.mockImplementation(async ({ eachMessage }: any) => {
+        await eachMessage({
+          topic: 'test-kafka-topic',
+          partition: 2,
+          message: {
+            value: Buffer.from(JSON.stringify({ data: 'test-data' })),
+            offset: '12345',
+          },
+          heartbeat: jest.fn(),
+          pause: pauseMock,
+        });
+      });
+
+      await consumers[0].start();
+
+      // Should commit offset to skip the failed message
+      expect(mockConsumer.commitOffsets).toHaveBeenCalledWith([
+        { topic: 'test-kafka-topic', partition: 2, offset: '12346' },
+      ]);
+      expect(pauseMock).not.toHaveBeenCalled();
+    });
+
+    it('should skip failed message without committing when pauseOnError is false and autoCommit is true', async () => {
+      const pauseMock = jest.fn();
+      const failingEvents = {
+        ...mockEvents,
+        publish: jest.fn().mockRejectedValue(new Error('Processing failed')),
+      };
+
+      const configWithAutoCommitSkipOnError = new ConfigReader({
+        events: {
+          modules: {
+            kafka: {
+              kafkaConsumingEventPublisher: {
+                dev: {
+                  clientId: 'backstage-events',
+                  brokers: ['kafka1:9092'],
+                  topics: [
+                    {
+                      topic: 'backstage-topic',
+                      kafka: {
+                        topics: ['test-topic'],
+                        groupId: 'test-group',
+                        autoCommit: true,
+                        pauseOnError: false,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const consumers = KafkaConsumingEventPublisher.fromConfig({
+        config: configWithAutoCommitSkipOnError,
+        events: failingEvents,
+        logger: mockLogger,
+      });
+
+      mockConsumer.run.mockImplementation(async ({ eachMessage }: any) => {
+        await eachMessage({
+          topic: 'test-kafka-topic',
+          partition: 2,
+          message: {
+            value: Buffer.from(JSON.stringify({ data: 'test-data' })),
+            offset: '12345',
+          },
+          heartbeat: jest.fn(),
+          pause: pauseMock,
+        });
+      });
+
+      await consumers[0].start();
+
+      // Should not commit offset (autoCommit handles it)
+      expect(mockConsumer.commitOffsets).not.toHaveBeenCalled();
+      expect(pauseMock).not.toHaveBeenCalled();
+    });
+
+    it('should pass autoCommit setting to consumer.run()', async () => {
+      const configWithManualCommit = new ConfigReader({
+        events: {
+          modules: {
+            kafka: {
+              kafkaConsumingEventPublisher: {
+                dev: {
+                  clientId: 'backstage-events',
+                  brokers: ['kafka1:9092'],
+                  topics: [
+                    {
+                      topic: 'backstage-topic',
+                      kafka: {
+                        topics: ['test-topic'],
+                        groupId: 'test-group',
+                        autoCommit: false,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const consumers = KafkaConsumingEventPublisher.fromConfig({
+        config: configWithManualCommit,
+        events: mockEvents,
+        logger: mockLogger,
+      });
+
+      await consumers[0].start();
+
+      expect(mockConsumer.run).toHaveBeenCalledWith(
+        expect.objectContaining({
+          autoCommit: false,
+        }),
+      );
+    });
   });
 });

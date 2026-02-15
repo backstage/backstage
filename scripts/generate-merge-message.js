@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-const { execFile: execFileCb } = require('child_process');
-const { promisify } = require('util');
-const { resolve: resolvePath } = require('path');
+const { execFile: execFileCb } = require('node:child_process');
+const { promisify } = require('node:util');
+const { resolve: resolvePath } = require('node:path');
 
 const execFile = promisify(execFileCb);
 

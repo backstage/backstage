@@ -20,16 +20,22 @@ import type { GridItemProps, GridProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { GridDefinition, GridItemDefinition } from './definition';
 import styles from './Grid.module.css';
+import { BgProvider, useBgProvider } from '../../hooks/useBg';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    GridDefinition,
-    { columns: 'auto', gap: '4', ...props },
-  );
+  const { bg: resolvedBg } = useBgProvider(props.bg);
 
-  const { className, ...rest } = cleanedProps;
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles(GridDefinition, {
+      columns: 'auto',
+      gap: '4',
+      ...props,
+      bg: resolvedBg, // Use resolved bg for data attribute
+    });
 
-  return (
+  const { className, bg, ...rest } = cleanedProps;
+
+  const content = (
     <div
       ref={ref}
       className={clsx(
@@ -39,20 +45,30 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
         className,
       )}
       style={style}
+      {...dataAttributes}
       {...rest}
     />
+  );
+
+  return resolvedBg ? (
+    <BgProvider bg={resolvedBg}>{content}</BgProvider>
+  ) : (
+    content
   );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    GridItemDefinition,
-    props,
-  );
+  const { bg: resolvedBg } = useBgProvider(props.bg);
 
-  const { className, ...rest } = cleanedProps;
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles(GridItemDefinition, {
+      ...props,
+      bg: resolvedBg, // Use resolved bg for data attribute
+    });
 
-  return (
+  const { className, bg, ...rest } = cleanedProps;
+
+  const content = (
     <div
       ref={ref}
       className={clsx(
@@ -62,8 +78,15 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
         className,
       )}
       style={style}
+      {...dataAttributes}
       {...rest}
     />
+  );
+
+  return resolvedBg ? (
+    <BgProvider bg={resolvedBg}>{content}</BgProvider>
+  ) : (
+    content
   );
 });
 

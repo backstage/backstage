@@ -22,6 +22,7 @@ export const createGitlabGroupEnsureExistsAction: (options: {
         }
     )[];
     token?: string | undefined;
+    description?: string | undefined;
   },
   {
     groupId?: number | undefined;
@@ -136,6 +137,28 @@ export const createGitlabRepoPushAction: (options: {
     projectid: string;
     projectPath: string;
     commitHash: string;
+  },
+  'v2'
+>;
+
+// @public
+export const createGitlabUserInfoAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    token?: string | undefined;
+    userId?: number | undefined;
+  },
+  {
+    id: number;
+    username: string;
+    name: string;
+    state: string;
+    webUrl: string;
+    email?: string | undefined;
+    createdAt?: string | undefined;
+    publicEmail?: string | undefined;
   },
   'v2'
 >;

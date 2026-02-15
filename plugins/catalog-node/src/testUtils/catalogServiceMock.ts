@@ -17,40 +17,12 @@
 import {
   createServiceFactory,
   ServiceFactory,
-  ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { InMemoryCatalogClient } from '@backstage/catalog-client/testUtils';
 import { Entity } from '@backstage/catalog-model';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
-// eslint-disable-next-line @backstage/no-undeclared-imports
-import { ServiceMock } from '@backstage/backend-test-utils';
+import { createServiceMock } from '@backstage/backend-test-utils';
 import { CatalogServiceMock } from './types';
-
-/** @internal */
-function simpleMock<TService>(
-  ref: ServiceRef<TService, any>,
-  mockFactory: () => jest.Mocked<TService>,
-): (partialImpl?: Partial<TService>) => ServiceMock<TService> {
-  return partialImpl => {
-    const mock = mockFactory();
-    if (partialImpl) {
-      for (const [key, impl] of Object.entries(partialImpl)) {
-        if (typeof impl === 'function') {
-          (mock as any)[key].mockImplementation(impl);
-        } else {
-          (mock as any)[key] = impl;
-        }
-      }
-    }
-    return Object.assign(mock, {
-      factory: createServiceFactory({
-        service: ref,
-        deps: {},
-        factory: () => mock,
-      }),
-    }) as ServiceMock<TService>;
-  };
-}
 
 /**
  * Creates a fake catalog client that handles entities in memory storage. Note
@@ -86,23 +58,26 @@ export namespace catalogServiceMock {
    * Creates a catalog client whose methods are mock functions, possibly with
    * some of them overloaded by the caller.
    */
-  export const mock = simpleMock<CatalogServiceMock>(catalogServiceRef, () => ({
-    getEntities: jest.fn(),
-    getEntitiesByRefs: jest.fn(),
-    queryEntities: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityFacets: jest.fn(),
-    getLocations: jest.fn(),
-    getLocationById: jest.fn(),
-    getLocationByRef: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    getLocationByEntity: jest.fn(),
-    validateEntity: jest.fn(),
-    analyzeLocation: jest.fn(),
-    streamEntities: jest.fn(),
-  }));
+  export const mock = createServiceMock<CatalogServiceMock>(
+    catalogServiceRef,
+    () => ({
+      getEntities: jest.fn(),
+      getEntitiesByRefs: jest.fn(),
+      queryEntities: jest.fn(),
+      getEntityAncestors: jest.fn(),
+      getEntityByRef: jest.fn(),
+      removeEntityByUid: jest.fn(),
+      refreshEntity: jest.fn(),
+      getEntityFacets: jest.fn(),
+      getLocations: jest.fn(),
+      getLocationById: jest.fn(),
+      getLocationByRef: jest.fn(),
+      addLocation: jest.fn(),
+      removeLocationById: jest.fn(),
+      getLocationByEntity: jest.fn(),
+      validateEntity: jest.fn(),
+      analyzeLocation: jest.fn(),
+      streamEntities: jest.fn(),
+    }),
+  );
 }

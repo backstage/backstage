@@ -42,4 +42,7 @@ export const TableDefinition = {
     headSelection: 'bui-TableHeadSelection',
     cellSelection: 'bui-TableCellSelection',
   },
+  dataAttributes: {
+    stale: [true, false] as const,
+  },
 } as const satisfies ComponentDefinition;

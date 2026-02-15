@@ -40,11 +40,6 @@ describe('createPatternResolver', () => {
         a: { b: ['first', 'second'] },
       }),
     ).toEqual('-second-');
-    expect(
-      createPatternResolver('-{{ a.b.0 }}-')({
-        a: { b: ['first', 'second'] },
-      }),
-    ).toEqual('-first-');
   });
 
   it('throws on bad / missing context values', () => {

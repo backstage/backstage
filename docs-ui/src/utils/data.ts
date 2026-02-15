@@ -4,33 +4,22 @@ interface Page {
   status?: 'alpha' | 'beta' | 'stable' | 'deprecated' | 'inProgress' | 'new';
 }
 
-export const layoutComponents: Page[] = [
-  {
-    title: 'Box',
-    slug: 'box',
-  },
-  {
-    title: 'Container',
-    slug: 'container',
-  },
-  {
-    title: 'Grid',
-    slug: 'grid',
-  },
-  {
-    title: 'Flex',
-    slug: 'flex',
-  },
-];
-
 export const components: Page[] = [
   {
     title: 'Accordion',
     slug: 'accordion',
   },
   {
+    title: 'Alert',
+    slug: 'alert',
+  },
+  {
     title: 'Avatar',
     slug: 'avatar',
+  },
+  {
+    title: 'Box',
+    slug: 'box',
   },
   {
     title: 'Button',
@@ -53,8 +42,20 @@ export const components: Page[] = [
     slug: 'checkbox',
   },
   {
+    title: 'Container',
+    slug: 'container',
+  },
+  {
     title: 'Dialog',
     slug: 'dialog',
+  },
+  {
+    title: 'Flex',
+    slug: 'flex',
+  },
+  {
+    title: 'Grid',
+    slug: 'grid',
   },
   {
     title: 'Header',
@@ -75,6 +76,10 @@ export const components: Page[] = [
   {
     title: 'PasswordField',
     slug: 'password-field',
+  },
+  {
+    title: 'Popover',
+    slug: 'popover',
   },
   {
     title: 'RadioGroup',
@@ -115,6 +120,14 @@ export const components: Page[] = [
   {
     title: 'TextField',
     slug: 'text-field',
+  },
+  {
+    title: 'ToggleButton',
+    slug: 'toggle-button',
+  },
+  {
+    title: 'ToggleButtonGroup',
+    slug: 'toggle-button-group',
   },
   {
     title: 'Tooltip',

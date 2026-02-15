@@ -2,7 +2,7 @@
 
 # [Backstage](https://backstage.io)
 
-[English](README.md) \| 한국어
+한국어 \| [English](README.md) \| [中文版](README-zh_Hans.md) \| [Français](README-fr_FR.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-incubation-blue.svg)](https://www.cncf.io/projects)
@@ -65,7 +65,7 @@ Backstage의 문서는 다음을 포함합니다:
 
 ## License
 
-Copyright 2020-2025 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
+Copyright 2020-2026 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
 
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
 

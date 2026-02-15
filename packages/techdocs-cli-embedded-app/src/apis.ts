@@ -13,6 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  ApiBlueprint,
+  configApiRef,
+  DiscoveryApi,
+  discoveryApiRef,
+  IdentityApi,
+  identityApiRef,
+} from '@backstage/frontend-plugin-api';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -20,15 +28,6 @@ import {
   scmIntegrationsApiRef,
   ScmIntegrationsApi,
 } from '@backstage/integration-react';
-import {
-  AnyApiFactory,
-  configApiRef,
-  createApiFactory,
-  DiscoveryApi,
-  discoveryApiRef,
-  IdentityApi,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
 import {
   SyncResult,
   TechDocsApi,
@@ -158,38 +157,53 @@ class TechDocsDevApi implements TechDocsApi {
   }
 }
 
-export const apis: AnyApiFactory[] = [
-  createApiFactory({
-    api: techdocsStorageApiRef,
-    deps: {
-      configApi: configApiRef,
-      discoveryApi: discoveryApiRef,
-      identityApi: identityApiRef,
-    },
-    factory: ({ configApi, discoveryApi, identityApi }) =>
-      new TechDocsDevStorageApi({
-        configApi,
-        discoveryApi,
-        identityApi,
+export const techdocsPluginApis = [
+  ApiBlueprint.make({
+    name: 'techdocs-dev-storage',
+    params: defineParams =>
+      defineParams({
+        api: techdocsStorageApiRef,
+        deps: {
+          configApi: configApiRef,
+          discoveryApi: discoveryApiRef,
+          identityApi: identityApiRef,
+        },
+        factory: ({ configApi, discoveryApi, identityApi }) =>
+          new TechDocsDevStorageApi({
+            configApi,
+            discoveryApi,
+            identityApi,
+          }),
       }),
   }),
-  createApiFactory({
-    api: techdocsApiRef,
-    deps: {
-      configApi: configApiRef,
-      discoveryApi: discoveryApiRef,
-      identityApi: identityApiRef,
-    },
-    factory: ({ configApi, discoveryApi, identityApi }) =>
-      new TechDocsDevApi({
-        configApi,
-        discoveryApi,
-        identityApi,
+  ApiBlueprint.make({
+    name: 'techdocs-dev',
+    params: defineParams =>
+      defineParams({
+        api: techdocsApiRef,
+        deps: {
+          configApi: configApiRef,
+          discoveryApi: discoveryApiRef,
+          identityApi: identityApiRef,
+        },
+        factory: ({ configApi, discoveryApi, identityApi }) =>
+          new TechDocsDevApi({
+            configApi,
+            discoveryApi,
+            identityApi,
+          }),
       }),
   }),
-  createApiFactory({
-    api: scmIntegrationsApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+];
+
+export const appApis = [
+  ApiBlueprint.make({
+    name: 'scm-integrations',
+    params: defineParams =>
+      defineParams({
+        api: scmIntegrationsApiRef,
+        deps: { configApi: configApiRef },
+        factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+      }),
   }),
 ];

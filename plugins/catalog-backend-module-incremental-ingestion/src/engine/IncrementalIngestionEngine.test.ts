@@ -16,7 +16,7 @@
 
 import { IncrementalIngestionEngine } from './IncrementalIngestionEngine';
 import { IterationEngineOptions } from '../types';
-import { performance } from 'perf_hooks';
+import { performance } from 'node:perf_hooks';
 
 jest.setTimeout(60_000);
 

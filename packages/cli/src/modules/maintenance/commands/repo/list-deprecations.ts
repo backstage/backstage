@@ -17,7 +17,7 @@
 import chalk from 'chalk';
 import { ESLint } from 'eslint';
 import { OptionValues } from 'commander';
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../../../lib/paths';
 

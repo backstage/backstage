@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Button } from './Button';
 import { Flex } from '../Flex';
+import { Box } from '../Box';
 import { Text } from '../Text';
 import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
 import { useState } from 'react';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Button',
   component: Button,
   argTypes: {
@@ -31,21 +31,21 @@ const meta = {
     },
     variant: {
       control: 'select',
-      options: ['primary', 'secondary'],
+      options: ['primary', 'secondary', 'tertiary'],
+    },
+    destructive: {
+      control: 'boolean',
     },
   },
-} satisfies Meta<typeof Button>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: 'Button',
   },
-};
+});
 
-export const Variants: Story = {
+export const Variants = meta.story({
   args: {
     children: 'Button',
   },
@@ -57,21 +57,187 @@ export const Variants: Story = {
     },
   },
   render: () => (
-    <Flex align="center">
-      <Button iconStart={<RiCloudLine />} variant="primary">
-        Button
-      </Button>
-      <Button iconStart={<RiCloudLine />} variant="secondary">
-        Button
-      </Button>
-      <Button iconStart={<RiCloudLine />} variant="tertiary">
-        Button
-      </Button>
+    <Flex direction="column" gap="4">
+      <Flex direction="column" gap="4">
+        <Text>Default</Text>
+        <Flex align="center" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>Neutral 1</Text>
+        <Flex align="center" bg="neutral-1" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>Neutral 2</Text>
+        <Flex align="center" bg="neutral-2" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>Neutral 3</Text>
+        <Flex align="center" bg="neutral-3" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="primary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
+            Button
+          </Button>
+        </Flex>
+      </Flex>
     </Flex>
   ),
-};
+});
 
-export const Sizes: Story = {
+export const Destructive = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <Flex direction="column" gap="4">
+        <Text>Primary Destructive</Text>
+        <Flex align="center" p="4" gap="4">
+          <Button variant="primary" destructive>
+            Delete
+          </Button>
+          <Button variant="primary" destructive iconStart={<RiCloudLine />}>
+            Delete
+          </Button>
+          <Button variant="primary" destructive isDisabled>
+            Disabled
+          </Button>
+          <Button variant="primary" destructive loading>
+            Loading
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>Secondary Destructive</Text>
+        <Flex align="center" p="4" gap="4">
+          <Button variant="secondary" destructive>
+            Delete
+          </Button>
+          <Button variant="secondary" destructive iconStart={<RiCloudLine />}>
+            Delete
+          </Button>
+          <Button variant="secondary" destructive isDisabled>
+            Disabled
+          </Button>
+          <Button variant="secondary" destructive loading>
+            Loading
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>Tertiary Destructive</Text>
+        <Flex align="center" p="4" gap="4">
+          <Button variant="tertiary" destructive>
+            Delete
+          </Button>
+          <Button variant="tertiary" destructive iconStart={<RiCloudLine />}>
+            Delete
+          </Button>
+          <Button variant="tertiary" destructive isDisabled>
+            Disabled
+          </Button>
+          <Button variant="tertiary" destructive loading>
+            Loading
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Neutral 1</Text>
+        <Flex align="center" bg="neutral-1" p="4" gap="4">
+          <Button variant="primary" destructive>
+            Primary
+          </Button>
+          <Button variant="secondary" destructive>
+            Secondary
+          </Button>
+          <Button variant="tertiary" destructive>
+            Tertiary
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>Sizes</Text>
+        <Flex align="center" p="4" gap="4">
+          <Button variant="primary" destructive size="small">
+            Small
+          </Button>
+          <Button variant="primary" destructive size="medium">
+            Medium
+          </Button>
+        </Flex>
+      </Flex>
+    </Flex>
+  ),
+});
+
+export const Sizes = meta.story({
   args: {
     children: 'Button',
   },
@@ -85,9 +251,9 @@ export const Sizes: Story = {
       </Button>
     </Flex>
   ),
-};
+});
 
-export const WithIcons: Story = {
+export const WithIcons = meta.story({
   args: {
     children: 'Button',
   },
@@ -102,9 +268,9 @@ export const WithIcons: Story = {
       />
     </Flex>
   ),
-};
+});
 
-export const FullWidth: Story = {
+export const FullWidth = meta.story({
   args: {
     children: 'Button',
   },
@@ -119,25 +285,38 @@ export const FullWidth: Story = {
       />
     </Flex>
   ),
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   render: () => (
-    <Flex direction="row" gap="4">
-      <Button variant="primary" isDisabled>
-        Primary
-      </Button>
-      <Button variant="secondary" isDisabled>
-        Secondary
-      </Button>
-      <Button variant="tertiary" isDisabled>
-        Tertiary
-      </Button>
+    <Flex direction="column" gap="4">
+      <Flex direction="row" gap="4">
+        <Button variant="primary" isDisabled>
+          Primary
+        </Button>
+        <Button variant="secondary" isDisabled>
+          Secondary
+        </Button>
+        <Button variant="tertiary" isDisabled>
+          Tertiary
+        </Button>
+      </Flex>
+      <Flex direction="row" gap="4">
+        <Button variant="primary" destructive isDisabled>
+          Primary Destructive
+        </Button>
+        <Button variant="secondary" destructive isDisabled>
+          Secondary Destructive
+        </Button>
+        <Button variant="tertiary" destructive isDisabled>
+          Tertiary Destructive
+        </Button>
+      </Flex>
     </Flex>
   ),
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
     children: 'Button',
     variant: {
@@ -149,72 +328,9 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
-};
+});
 
-const variants = ['primary', 'secondary'] as const;
-const sizes = ['small', 'medium'] as const;
-
-export const Playground: Story = {
-  args: {
-    children: 'Button',
-  },
-  render: () => (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {sizes.map(size => (
-            <Flex align="center" key={size}>
-              <Button variant={variant} size={size}>
-                Button
-              </Button>
-              <Button iconStart={<RiCloudLine />} variant={variant} size={size}>
-                Button
-              </Button>
-              <Button
-                iconEnd={<RiArrowRightSLine />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                iconEnd={<RiArrowRightSLine />}
-                style={{ width: '200px' }}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button variant={variant} size={size} isDisabled>
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </Button>
-              <Button
-                iconEnd={<RiArrowRightSLine />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </Button>
-            </Flex>
-          ))}
-        </Flex>
-      ))}
-    </Flex>
-  ),
-};
-
-export const Loading: Story = {
+export const Loading = meta.story({
   render: () => {
     const [isLoading, setIsLoading] = useState(false);
 
@@ -231,9 +347,9 @@ export const Loading: Story = {
       </Button>
     );
   },
-};
+});
 
-export const LoadingVariants: Story = {
+export const LoadingVariants = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Text>Primary</Text>
@@ -275,6 +391,24 @@ export const LoadingVariants: Story = {
         </Button>
       </Flex>
 
+      <Text>Primary Destructive</Text>
+      <Flex align="center" gap="4">
+        <Button variant="primary" destructive size="small" loading>
+          Small Loading
+        </Button>
+        <Button variant="primary" destructive size="medium" loading>
+          Medium Loading
+        </Button>
+        <Button
+          variant="primary"
+          destructive
+          loading
+          iconStart={<RiCloudLine />}
+        >
+          With Icon
+        </Button>
+      </Flex>
+
       <Text>Loading vs Disabled</Text>
       <Flex align="center" gap="4">
         <Button variant="primary" loading>
@@ -289,4 +423,37 @@ export const LoadingVariants: Story = {
       </Flex>
     </Flex>
   ),
-};
+});
+
+export const AutoBg = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div style={{ maxWidth: '600px' }}>
+        Buttons automatically detect their parent bg context and increment the
+        neutral level by 1. No prop is needed on the button -- it's fully
+        automatic.
+      </div>
+      <Box bg="neutral-1" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex gap="2" mt="2">
+          <Button variant="secondary">Auto (neutral-2)</Button>
+          <Button variant="tertiary">Auto (neutral-2)</Button>
+        </Flex>
+      </Box>
+      <Box bg="neutral-2" p="4">
+        <Text>Neutral 2 container</Text>
+        <Flex gap="2" mt="2">
+          <Button variant="secondary">Auto (neutral-3)</Button>
+          <Button variant="tertiary">Auto (neutral-3)</Button>
+        </Flex>
+      </Box>
+      <Box bg="neutral-3" p="4">
+        <Text>Neutral 3 container</Text>
+        <Flex gap="2" mt="2">
+          <Button variant="secondary">Auto (neutral-4)</Button>
+          <Button variant="tertiary">Auto (neutral-4)</Button>
+        </Flex>
+      </Box>
+    </Flex>
+  ),
+});

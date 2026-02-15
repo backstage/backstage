@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IncomingMessage } from 'http';
+import { IncomingMessage } from 'node:http';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
