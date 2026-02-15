@@ -16,13 +16,13 @@
 
 import {
   AppNode,
-  AppTree,
   ExtensionDataRef,
   coreExtensionData,
   ApiBlueprint,
   NavItemBlueprint,
   useApi,
   routeResolutionApiRef,
+  appTreeApiRef,
 } from '@backstage/frontend-plugin-api';
 import { Box, Flex, Link, Text, Tooltip, TooltipTrigger } from '@backstage/ui';
 import {
@@ -351,7 +351,10 @@ function Legend() {
   );
 }
 
-export function DetailedVisualizer({ tree }: { tree: AppTree }) {
+export function DetailedVisualizer() {
+  const appTreeApi = useApi(appTreeApiRef);
+  const { tree } = appTreeApi.getTree();
+
   return (
     <Flex direction="column" style={{ height: '100%', flex: '1 1 100%' }}>
       <Box ml="4" mt="4" style={{ flex: '1 1 0', overflow: 'auto' }}>

@@ -15,7 +15,6 @@
  */
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 import {
@@ -39,7 +38,9 @@ import contextMenuItems from './contextMenuItems';
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog',
-  info: { packageJson: () => import('../../package.json') },
+  info: {
+    packageJson: () => import('../../package.json'),
+  },
   routes: {
     catalogIndex: rootRouteRef,
     catalogEntity: entityRouteRef,

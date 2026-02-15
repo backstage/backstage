@@ -21,13 +21,14 @@ import { Page } from './Page';
 
 type PageWithHeaderProps = ComponentProps<typeof Header> & {
   themeId: string;
+  noHeader?: boolean;
 };
 
 export function PageWithHeader(props: PropsWithChildren<PageWithHeaderProps>) {
-  const { themeId, children, ...restProps } = props;
+  const { themeId, children, noHeader, ...restProps } = props;
   return (
     <Page themeId={themeId}>
-      <Header {...restProps} />
+      {noHeader ? <div /> : <Header {...restProps} />}
       {children}
     </Page>
   );
