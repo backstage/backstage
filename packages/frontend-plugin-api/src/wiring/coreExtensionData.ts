@@ -22,6 +22,7 @@ import { createExtensionDataRef } from './createExtensionDataRef';
 /** @public */
 export const coreExtensionData = {
   title: createExtensionDataRef<string>().with({ id: 'core.title' }),
+  /** An icon element for the extension. Should be exactly 24x24 pixels. */
   icon: createExtensionDataRef<IconElement>().with({ id: 'core.icon' }),
   reactElement: createExtensionDataRef<JSX.Element>().with({
     id: 'core.reactElement',

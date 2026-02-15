@@ -48,7 +48,7 @@ The `title` data reference can be used for defining the extension input/output o
 | :---------: | :-----------: |
 | `core.icon` | `IconElement` |
 
-The `icon` data reference can be used for defining the extension input/output of icon elements. The type is `IconElement` (`JSX.Element | null`) from `@backstage/frontend-plugin-api`.
+The `icon` data reference can be used for defining the extension input/output of icon elements. The type is `IconElement` (`JSX.Element | null`) from `@backstage/frontend-plugin-api`. Icons should be exactly 24x24 pixels in size.
 
 ### `routePath`
 
