@@ -17,7 +17,7 @@
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
 import CopyIcon from '@material-ui/icons/FileCopy';
-import { MouseEventHandler, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -89,6 +89,7 @@ export function CopyTextButton(props: CopyTextButtonProps) {
   const errorApi = useApi(errorApiRef);
   const [open, setOpen] = useState(false);
   const [{ error }, copyToClipboard] = useCopyToClipboard();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (error) {
@@ -96,22 +97,32 @@ export function CopyTextButton(props: CopyTextButtonProps) {
     }
   }, [error, errorApi]);
 
-  const handleCopyClick: MouseEventHandler = e => {
-    e.stopPropagation();
+  const handleCopyClick = () => {
+    // Clear any existing timeout to reset the timer on repeated clicks
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
     setOpen(true);
     copyToClipboard(text);
+
+    // Set new timeout to close tooltip
+    timeoutRef.current = setTimeout(() => {
+      setOpen(false);
+    }, tooltipDelay);
   };
 
+  // Cleanup timeout on unmount
   useEffect(() => {
-    if (open) {
-      const timer = setTimeout(() => setOpen(false), tooltipDelay);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [open, tooltipDelay]);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
-    <TooltipTrigger isOpen={open} onOpenChange={setOpen}>
+    <TooltipTrigger isOpen={open}>
       <ButtonIcon
         icon={<CopyIcon />}
         onPress={handleCopyClick}
