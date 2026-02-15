@@ -19,11 +19,13 @@
 | `final_entity`    | `text`                     | true     | -          | -       |
 | `hash`            | `character varying`        | false    | 255        | -       |
 | `last_updated_at` | `timestamp with time zone` | true     | -          | -       |
+| `next_stitch_at`  | `timestamp with time zone` | true     | -          | -       |
 | `stitch_ticket`   | `text`                     | false    | -          | -       |
 
 ### Indices
 
 - `final_entities_entity_ref_uniq` (`entity_ref`) unique
+- `final_entities_next_stitch_at_idx` (`next_stitch_at`)
 - `final_entities_pkey` (`entity_id`) unique primary
 
 ## Table `location_update_log`
@@ -76,8 +78,6 @@
 | `errors`             | `text`                     | false    | -          | -       |
 | `last_discovery_at`  | `timestamp with time zone` | false    | -          | -       |
 | `location_key`       | `text`                     | true     | -          | -       |
-| `next_stitch_at`     | `timestamp with time zone` | true     | -          | -       |
-| `next_stitch_ticket` | `character varying`        | true     | 255        | -       |
 | `next_update_at`     | `timestamp with time zone` | false    | -          | -       |
 | `processed_entity`   | `text`                     | true     | -          | -       |
 | `result_hash`        | `text`                     | true     | -          | -       |
@@ -87,7 +87,6 @@
 ### Indices
 
 - `refresh_state_entity_ref_uniq` (`entity_ref`) unique
-- `refresh_state_next_stitch_at_idx` (`next_stitch_at`)
 - `refresh_state_next_update_at_idx` (`next_update_at`)
 - `refresh_state_pkey` (`entity_id`) unique primary
 
