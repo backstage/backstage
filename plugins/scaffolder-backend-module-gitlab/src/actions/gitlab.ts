@@ -206,6 +206,7 @@ export function createPublishGitlabAction(options: {
                 variable_type: z.enum(['env_var', 'file']).optional(),
                 protected: z.boolean().optional(),
                 masked: z.boolean().optional(),
+                masked_and_hidden: z.boolean().optional(),
                 raw: z.boolean().optional(),
                 environment_scope: z.string().optional(),
               }),
@@ -339,7 +340,7 @@ export function createPublishGitlabAction(options: {
             token: integrationConfig.config.token,
           });
 
-          await adminClient.ProjectMembers.add(projectId, userId, 50);
+          await adminClient.ProjectMembers.add(projectId, 50, { userId });
         }
 
         const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');
@@ -435,6 +436,7 @@ export function createPublishGitlabAction(options: {
                 'env_var') as VariableType,
               protected: variable.protected ?? false,
               masked: variable.masked ?? false,
+              masked_and_hidden: variable.masked_and_hidden ?? false,
               raw: variable.raw ?? false,
               environment_scope: variable.environment_scope ?? '*',
             });
@@ -448,6 +450,7 @@ export function createPublishGitlabAction(options: {
                   variableType: variableWithDefaults.variable_type,
                   protected: variableWithDefaults.protected,
                   masked: variableWithDefaults.masked,
+                  masked_and_hidden: variableWithDefaults.masked_and_hidden,
                   environmentScope: variableWithDefaults.environment_scope,
                   description: variableWithDefaults.description,
                   raw: variableWithDefaults.raw,

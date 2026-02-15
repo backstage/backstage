@@ -50,8 +50,8 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@gitbeaker/requester-utils": "^41.2.0",
-    "@gitbeaker/rest": "^41.2.0",
+    "@gitbeaker/requester-utils": "^43.8.0",
+    "@gitbeaker/rest": "^43.8.0",
     "luxon": "^3.0.0",
     "yaml": "^2.0.0",
     "zod": "^3.25.76"
