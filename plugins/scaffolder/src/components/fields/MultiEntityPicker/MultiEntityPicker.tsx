@@ -15,11 +15,14 @@
  */
 import {
   type EntityFilterQuery,
+  CATALOG_FILTER_CURRENT_USER_REF,
+  CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
 import {
   Entity,
   parseEntityRef,
+  RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
@@ -86,8 +89,9 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const { value: entities, loading } = useAsync(async () => {
+    const filter = catalogFilter ?? undefined;
     const { items } = await catalogApi.getEntities(
-      catalogFilter ? { filter: catalogFilter } : undefined,
+      filter !== undefined ? { filter } : undefined,
     );
     const entityRefToPresentation = new Map<
       string,
@@ -239,17 +243,29 @@ export const validateMultiEntityPickerValidation = (
   });
 };
 
+const OWNED_BY_KEY = `relations.${RELATION_OWNED_BY}`;
+
 /**
  * Converts a special `{exists: true}` value to the `CATALOG_FILTER_EXISTS` symbol.
  *
+ * For `{ currentUser: true }`, the key decides which constant is used: `relations.ownedBy` → ownership refs, anything else → single ref.
+ * @param key - The filter key used to determine which current user constant to apply.
  * @param value - The value to convert.
  * @returns The converted value.
  */
 function convertOpsValues(
+  key: string,
   value: Exclude<MultiEntityPickerFilterQueryValue, Array<any>>,
 ): string | symbol {
-  if (typeof value === 'object' && value.exists) {
-    return CATALOG_FILTER_EXISTS;
+  if (typeof value === 'object' && value !== null) {
+    if ('exists' in value && value.exists) {
+      return CATALOG_FILTER_EXISTS;
+    }
+    if ('currentUser' in value && value.currentUser) {
+      return key === OWNED_BY_KEY
+        ? CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS
+        : CATALOG_FILTER_CURRENT_USER_REF;
+    }
   }
   return value?.toString();
 }
@@ -257,11 +273,11 @@ function convertOpsValues(
 /**
  * Converts schema filters to entity filter query, replacing `{exists:true}` values
  * with the constant `CATALOG_FILTER_EXISTS`.
+ * For `{ currentUser: true }`, the key decides which constant is used: `relations.ownedBy` → ownership refs, anything else → single ref.
  *
  * @param schemaFilters - An object containing schema filters with keys as filter names
  * and values as filter values.
- * @returns An object with the same keys as the input object, but with `{exists:true}` values
- * transformed to `CATALOG_FILTER_EXISTS` symbol.
+ * @returns An object with the same keys as the input object, with special values transformed.
  */
 function convertSchemaFiltersToQuery(
   schemaFilters: MultiEntityPickerFilterQuery,
@@ -272,7 +288,7 @@ function convertSchemaFiltersToQuery(
     if (Array.isArray(value)) {
       query[key] = value;
     } else {
-      query[key] = convertOpsValues(value);
+      query[key] = convertOpsValues(key, value);
     }
   }
 
