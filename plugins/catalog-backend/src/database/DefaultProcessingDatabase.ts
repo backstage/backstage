@@ -385,12 +385,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       }
     }
 
-    // Lastly, replace refresh state references for the originating entity and any successfully added entities
+    // Replace refresh state references for the originating entity
     await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-      // Remove all existing references from the originating entity
       .where({ source_entity_ref: options.sourceEntityRef })
-      // And remove any existing references to entities that we're inserting new references for
-      .orWhereIn('target_entity_ref', stateReferences)
       .delete();
     await tx.batchInsert(
       'refresh_state_references',
