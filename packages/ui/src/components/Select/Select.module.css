@@ -19,6 +19,9 @@
 @layer components {
   .bui-Select,
   .bui-SelectPopover {
+    /* added this to manage popover max-height */
+    --select-popover-max-height: 400px;
+
     &[data-size='small'] {
       --select-item-height: 2rem;
     }
@@ -30,6 +33,12 @@
 
   .bui-SelectPopover {
     min-width: var(--trigger-width);
+    /* Constrain height against both a fixed max and the viewport height */
+    max-height: min(var(--select-popover-max-height), calc(100vh - 2rem));
+    display: flex;
+    flex-direction: column;
+    /* Prevent popover itself from scrolling to avoid double scrollbars */
+    overflow: hidden;
   }
 
   .bui-SelectTrigger {
@@ -116,12 +125,21 @@
     }
   }
 
-  .bui-SelectList:focus-visible {
-    /* Remove default focus-visible outline because React Aria
-     * triggers it on mouse click open of the list for some reason.
-     * On keyboard use, the top item receives the focus style,
-     * so it's not needed anyway. */
-    outline: none;
+  .bui-SelectList {
+    /* Allow list to fill the popover space */
+    flex: 1 1 auto;
+    /* Ensure flex child can shrink below content size to enable scrolling */
+    min-height: 0;
+    /* Enable vertical scrolling for the list items */
+    overflow-y: auto;
+
+    &:focus-visible {
+      /* Remove default focus-visible outline because React Aria
+       * triggers it on mouse click open of the list for some reason.
+       * On keyboard use, the top item receives the focus style,
+       * so it's not needed anyway. */
+      outline: none;
+    }
   }
 
   .bui-SelectItem {
