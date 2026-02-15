@@ -136,6 +136,14 @@ Your Backstage developer portal can be customized by incorporating
 [existing open source plugins](https://github.com/backstage/backstage/tree/master/plugins),
 or by [building your own](../../plugins/index.md).
 
+## OpenAPI and $ref Support
+
+If you are using OpenAPI specifications that are split into multiple files using `$ref`, standard processing might not resolve them correctly.
+
+To fix this, you should install the **OpenAPI Catalog Backend Module**. This module helps resolve `$ref` pointers in your YAML documents, bundling them into a single specification for the catalog.
+
+For installation instructions and usage, see the [catalog-backend-module-openapi README](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-openapi).
+
 ## Unprocessed Entities
 
 Sometimes entities fail to process correctly. The **Unprocessed Entities** feature helps Backstage admins find and diagnose these entities to understand the state of the catalog.
