@@ -1,0 +1,199 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// @ts-check
+
+/**
+ * Moves the stitch queue columns from refresh_state to final_entities.
+ * The stitch queue semantically belongs to final_entities since stitching
+ * operates on a per-entity-ref basis and produces one output entity.
+ *
+ * @param {import('knex').Knex} knex
+ */
+exports.up = async function up(knex) {
+  // Step 1: Add next_stitch_at column to final_entities with partial index
+  await knex.schema.alterTable('final_entities', table => {
+    table
+      .dateTime('next_stitch_at')
+      .nullable()
+      .comment('Timestamp of when entity should be stitched');
+    table.index('next_stitch_at', 'final_entities_next_stitch_at_idx', {
+      predicate: knex.whereNotNull('next_stitch_at'),
+    });
+  });
+
+  // Step 2: Migrate existing stitch requests from refresh_state to final_entities.
+  // We need to handle this differently for SQLite vs other databases since
+  // SQLite doesn't support UPDATE FROM syntax.
+  const isSQLite = knex.client.config.client === 'better-sqlite3';
+
+  if (isSQLite) {
+    // For SQLite, we need to select the data first, then update in batches
+    const pendingStitches = await knex
+      .select({
+        entityRef: 'refresh_state.entity_ref',
+        nextStitchAt: 'refresh_state.next_stitch_at',
+        nextStitchTicket: 'refresh_state.next_stitch_ticket',
+      })
+      .from('refresh_state')
+      .whereNotNull('refresh_state.next_stitch_at');
+
+    for (const row of pendingStitches) {
+      await knex('final_entities')
+        .update({
+          next_stitch_at: row.nextStitchAt,
+          stitch_ticket: row.nextStitchTicket,
+        })
+        .where('entity_ref', row.entityRef);
+    }
+  } else {
+    // For PostgreSQL and MySQL, use subquery-based update
+    await knex('final_entities')
+      .update({
+        next_stitch_at: knex
+          .select('refresh_state.next_stitch_at')
+          .from('refresh_state')
+          .whereRaw('refresh_state.entity_ref = final_entities.entity_ref')
+          .whereNotNull('refresh_state.next_stitch_at'),
+        stitch_ticket: knex
+          .select('refresh_state.next_stitch_ticket')
+          .from('refresh_state')
+          .whereRaw('refresh_state.entity_ref = final_entities.entity_ref')
+          .whereNotNull('refresh_state.next_stitch_at'),
+      })
+      .whereIn(
+        'entity_ref',
+        knex
+          .select('entity_ref')
+          .from('refresh_state')
+          .whereNotNull('next_stitch_at'),
+      );
+  }
+
+  // Step 3: Create final_entities rows for orphaned stitch requests
+  // (entities with pending stitch in refresh_state but no final_entities row).
+  // These need to be created so the stitch queue can be processed.
+  const orphanedStitchRequests = await knex
+    .select({
+      entityId: 'refresh_state.entity_id',
+      entityRef: 'refresh_state.entity_ref',
+      nextStitchAt: 'refresh_state.next_stitch_at',
+      nextStitchTicket: 'refresh_state.next_stitch_ticket',
+    })
+    .from('refresh_state')
+    .leftOuterJoin(
+      'final_entities',
+      'final_entities.entity_ref',
+      'refresh_state.entity_ref',
+    )
+    .whereNull('final_entities.entity_id')
+    .whereNotNull('refresh_state.next_stitch_at');
+
+  if (orphanedStitchRequests.length > 0) {
+    // Insert in batches to avoid issues with large datasets
+    for (let i = 0; i < orphanedStitchRequests.length; i += 1000) {
+      const batch = orphanedStitchRequests.slice(i, i + 1000);
+      await knex('final_entities').insert(
+        batch.map(row => ({
+          entity_id: row.entityId,
+          entity_ref: row.entityRef,
+          hash: '', // Empty hash indicates needs stitching
+          stitch_ticket: row.nextStitchTicket || '',
+          final_entity: null,
+          last_updated_at: null,
+          next_stitch_at: row.nextStitchAt,
+        })),
+      );
+    }
+  }
+
+  // Step 4: Remove next_stitch_at and next_stitch_ticket columns from refresh_state
+  await knex.schema.alterTable('refresh_state', table => {
+    table.dropIndex([], 'refresh_state_next_stitch_at_idx');
+    table.dropColumn('next_stitch_at');
+    table.dropColumn('next_stitch_ticket');
+  });
+};
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.down = async function down(knex) {
+  // Step 1: Add back the columns to refresh_state
+  await knex.schema.alterTable('refresh_state', table => {
+    table
+      .dateTime('next_stitch_at')
+      .nullable()
+      .comment('Timestamp of when entity should be stitched');
+    table
+      .string('next_stitch_ticket')
+      .nullable()
+      .comment('Random value distinguishing stitch requests');
+    table.index('next_stitch_at', 'refresh_state_next_stitch_at_idx', {
+      predicate: knex.whereNotNull('next_stitch_at'),
+    });
+  });
+
+  // Step 2: Migrate stitch requests back from final_entities to refresh_state
+  const isSQLite = knex.client.config.client === 'better-sqlite3';
+
+  if (isSQLite) {
+    const pendingStitches = await knex
+      .select({
+        entityRef: 'final_entities.entity_ref',
+        nextStitchAt: 'final_entities.next_stitch_at',
+        stitchTicket: 'final_entities.stitch_ticket',
+      })
+      .from('final_entities')
+      .whereNotNull('final_entities.next_stitch_at');
+
+    for (const row of pendingStitches) {
+      await knex('refresh_state')
+        .update({
+          next_stitch_at: row.nextStitchAt,
+          next_stitch_ticket: row.stitchTicket,
+        })
+        .where('entity_ref', row.entityRef);
+    }
+  } else {
+    await knex('refresh_state')
+      .update({
+        next_stitch_at: knex
+          .select('final_entities.next_stitch_at')
+          .from('final_entities')
+          .whereRaw('final_entities.entity_ref = refresh_state.entity_ref')
+          .whereNotNull('final_entities.next_stitch_at'),
+        next_stitch_ticket: knex
+          .select('final_entities.stitch_ticket')
+          .from('final_entities')
+          .whereRaw('final_entities.entity_ref = refresh_state.entity_ref')
+          .whereNotNull('final_entities.next_stitch_at'),
+      })
+      .whereIn(
+        'entity_ref',
+        knex
+          .select('entity_ref')
+          .from('final_entities')
+          .whereNotNull('next_stitch_at'),
+      );
+  }
+
+  // Step 3: Remove next_stitch_at column from final_entities
+  await knex.schema.alterTable('final_entities', table => {
+    table.dropIndex([], 'final_entities_next_stitch_at_idx');
+    table.dropColumn('next_stitch_at');
+  });
+};
