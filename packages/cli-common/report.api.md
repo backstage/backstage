@@ -24,6 +24,9 @@ export class ExitCodeError extends CustomErrorBase {
 export function findPaths(searchDir: string): Paths;
 
 // @public
+export function getWorkspacesPatterns(pkgJson: unknown): string[];
+
+// @public
 export function isChildPath(base: string, path: string): boolean;
 
 // @public

@@ -30,13 +30,22 @@ const allYarnVersions = [yarnClassic, yarnBerry];
 
 describe('Yarn', () => {
   describe.each(allYarnVersions)('%s.getMonorepoPackages', yarn => {
-    it('should detect a monorepo', async () => {
+    it('should detect a monorepo with workspaces.packages field', async () => {
       mockDir.setContent({
         'package.json': JSON.stringify({
           name: 'foo',
           workspaces: {
             packages: ['packages/*'],
           },
+        }),
+      });
+      await expect(yarn.getMonorepoPackages()).resolves.toEqual(['packages/*']);
+    });
+    it('should detect a monorepo', async () => {
+      mockDir.setContent({
+        'package.json': JSON.stringify({
+          name: 'foo',
+          workspaces: ['packages/*'],
         }),
       });
       await expect(yarn.getMonorepoPackages()).resolves.toEqual(['packages/*']);

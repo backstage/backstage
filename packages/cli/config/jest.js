@@ -20,6 +20,7 @@ const crypto = require('node:crypto');
 const glob = require('node:util').promisify(require('glob'));
 const { version } = require('../package.json');
 const paths = require('@backstage/cli-common').findPaths(process.cwd());
+const { getWorkspacesPatterns } = require('@backstage/cli-common');
 const {
   getJestEnvironment,
   getJestMajorVersion,
@@ -336,11 +337,10 @@ async function getRootConfig() {
     rejectFrontendNetworkRequests,
   };
 
-  const workspacePatterns =
-    rootPkgJson.workspaces && rootPkgJson.workspaces.packages;
+  const workspacePatterns = getWorkspacesPatterns(rootPkgJson);
 
   // Check if we're running within a specific monorepo package. In that case just get the single project config.
-  if (!workspacePatterns || paths.targetRoot !== paths.targetDir) {
+  if (workspacePatterns.length === 0 || paths.targetRoot !== paths.targetDir) {
     return getProjectConfig(
       paths.targetDir,
       {
