@@ -23,6 +23,16 @@ The `NavItemBlueprint` is deprecated. The app now auto-discovers navigation item
 
 Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes. Pages automatically inherit the plugin's `title` and `icon` as defaults, which can be overridden per-page via `PageBlueprint` params.
 
+To enable sub-pages on a page, you can either omit the `loader` param to use the built-in default implementation that renders sub-pages as tabs, or provide a custom `loader` that explicitly handles the sub-page inputs.
+
+### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.SubPageBlueprint.html)
+
+Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.
+
+### HeaderAction - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.HeaderActionBlueprint.html)
+
+Header action extensions provide plugin-scoped actions that appear in the page header. They are automatically scoped to the plugin that provides them and will appear in the header of all pages belonging to that plugin. Actions are lazy-loaded via a `loader` function that returns a React element.
+
 ## Extension blueprints in `@backstage/frontend-plugin-api/alpha`
 
 ### Plugin Wrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.packages-frontend-plugin-api_src_alpha.PluginWrapperBlueprint.html)
