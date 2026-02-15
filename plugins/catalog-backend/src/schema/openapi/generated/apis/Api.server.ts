@@ -139,7 +139,9 @@ import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model
 import { CreateLocation201Response } from '../models/CreateLocation201Response.model';
 import { CreateLocationRequest } from '../models/CreateLocationRequest.model';
 import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
+import { GetLocationsByQueryRequest } from '../models/GetLocationsByQueryRequest.model';
 import { Location } from '../models/Location.model';
+import { LocationsQueryResponse } from '../models/LocationsQueryResponse.model';
 
 /**
  * @public
@@ -193,6 +195,13 @@ export type GetLocationByEntity = {
 export type GetLocations = {
   response: Array<GetLocations200ResponseInner> | Error;
 };
+/**
+ * @public
+ */
+export type GetLocationsByQuery = {
+  body: GetLocationsByQueryRequest;
+  response: LocationsQueryResponse | Error;
+};
 
 export type EndpointMap = {
   '#_delete|/entities/by-uid/{uid}': DeleteEntityByUid;
@@ -226,4 +235,6 @@ export type EndpointMap = {
   '#get|/locations/by-entity/{kind}/{namespace}/{name}': GetLocationByEntity;
 
   '#get|/locations': GetLocations;
+
+  '#post|/locations/by-query': GetLocationsByQuery;
 };

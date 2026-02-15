@@ -23,6 +23,7 @@ describe('AuthorizedLocationService', () => {
   const fakeLocationService = {
     createLocation: jest.fn(),
     listLocations: jest.fn(),
+    queryLocations: jest.fn(),
     getLocation: jest.fn(),
     deleteLocation: jest.fn(),
     getLocationByEntity: jest.fn(),

@@ -72,6 +72,8 @@ export namespace catalogApiMock {
     refreshEntity: jest.fn(),
     getEntityFacets: jest.fn(),
     getLocations: jest.fn(),
+    queryLocations: jest.fn(),
+    streamLocations: jest.fn(),
     getLocationById: jest.fn(),
     getLocationByRef: jest.fn(),
     addLocation: jest.fn(),

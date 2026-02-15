@@ -39,5 +39,9 @@ export type {
   QueryEntitiesRequest,
   QueryEntitiesResponse,
   StreamEntitiesRequest,
+  QueryLocationsRequest,
+  QueryLocationsCursorRequest,
+  QueryLocationsInitialRequest,
+  QueryLocationsResponse,
 } from './api';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

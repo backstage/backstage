@@ -40,16 +40,26 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  QueryLocationsInitialRequest,
+  QueryLocationsRequest,
+  QueryLocationsResponse,
   StreamEntitiesRequest,
   ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest, splitRefsIntoChunks } from './utils';
-import { DefaultApiClient, TypedResponse } from './schema/openapi';
+import {
+  DefaultApiClient,
+  GetLocationsByQueryRequest,
+  TypedResponse,
+} from './schema/openapi';
 import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
-import { DEFAULT_STREAM_ENTITIES_LIMIT } from './constants.ts';
+import {
+  DEFAULT_STREAM_ENTITIES_LIMIT,
+  DEFAULT_STREAM_LOCATIONS_LIMIT,
+} from './constants';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -95,6 +105,52 @@ export class CatalogClient implements CatalogApi {
     return {
       items: res.map(item => item.data),
     };
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.queryLocations}
+   */
+  async queryLocations(
+    request?: QueryLocationsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryLocationsResponse> {
+    const res = await this.requestRequired(
+      await this.apiClient.getLocationsByQuery(
+        { body: (request ?? {}) as unknown as GetLocationsByQueryRequest },
+        options,
+      ),
+    );
+    return {
+      items: res.items,
+      totalItems: res.totalItems,
+      pageInfo: res.pageInfo,
+    };
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.streamLocations}
+   */
+  async *streamLocations(
+    request?: QueryLocationsInitialRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Location[]> {
+    let response = await this.queryLocations(
+      { limit: DEFAULT_STREAM_LOCATIONS_LIMIT, ...request },
+      options,
+    );
+    if (response.items.length) {
+      yield response.items;
+    }
+
+    while (response.pageInfo.nextCursor) {
+      response = await this.queryLocations(
+        { cursor: response.pageInfo.nextCursor },
+        options,
+      );
+      if (response.items.length) {
+        yield response.items;
+      }
+    }
   }
 
   /**
