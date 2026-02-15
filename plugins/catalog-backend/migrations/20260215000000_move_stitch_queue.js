@@ -38,7 +38,7 @@ exports.up = async function up(knex) {
   // Step 2: Migrate existing stitch requests from refresh_state to final_entities.
   // We need to handle this differently for SQLite vs other databases since
   // SQLite doesn't support UPDATE FROM syntax.
-  const isSQLite = knex.client.config.client === 'better-sqlite3';
+  const isSQLite = knex.client.config.client.includes('sqlite');
 
   if (isSQLite) {
     // For SQLite, we need to select the data first, then update in batches
@@ -148,7 +148,7 @@ exports.down = async function down(knex) {
   });
 
   // Step 2: Migrate stitch requests back from final_entities to refresh_state
-  const isSQLite = knex.client.config.client === 'better-sqlite3';
+  const isSQLite = knex.client.config.client.includes('sqlite');
 
   if (isSQLite) {
     const pendingStitches = await knex
