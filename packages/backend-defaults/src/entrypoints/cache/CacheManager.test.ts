@@ -210,127 +210,387 @@ describe('CacheManager integration', () => {
   });
 });
 
+type CacheManagerOptions = Parameters<typeof CacheManager.fromConfig>[1];
+
+const redisConnection = 'redis://localhost:6379';
+
+const createCacheManager = (
+  cacheConfig: object,
+  options?: CacheManagerOptions,
+) =>
+  CacheManager.fromConfig(
+    mockServices.rootConfig({
+      data: { backend: { cache: cacheConfig } },
+    }),
+    options,
+  );
+
+const createRedisManager = (
+  redis?: object,
+  options?: CacheManagerOptions,
+  cacheOverrides: object = {},
+) =>
+  createCacheManager(
+    {
+      store: 'redis',
+      connection: redisConnection,
+      ...(redis ? { redis } : {}),
+      ...cacheOverrides,
+    },
+    options,
+  );
+
+const createValkeyManager = (valkey?: object, options?: CacheManagerOptions) =>
+  createCacheManager(
+    {
+      store: 'valkey',
+      connection: redisConnection,
+      ...(valkey ? { valkey } : {}),
+    },
+    options,
+  );
+
 describe('CacheManager store options', () => {
+  afterEach(jest.clearAllMocks);
+
   it('uses default options when no store-specific config exists', () => {
-    const manager = CacheManager.fromConfig(
-      mockServices.rootConfig({
-        data: {
-          backend: {
-            cache: {
-              store: 'redis',
-              connection: 'redis://localhost:6379',
-            },
-          },
-        },
-      }),
-    );
+    const manager = createRedisManager();
 
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+    expect(KeyvRedis).toHaveBeenCalledWith(redisConnection, {
       keyPrefixSeparator: ':',
     });
   });
 
   it('defaults to non-clustered mode when cluster config is missing root nodes', () => {
-    const manager = CacheManager.fromConfig(
-      mockServices.rootConfig({
-        data: {
-          backend: {
-            cache: {
-              store: 'redis',
-              connection: 'redis://localhost:6379',
-              redis: {
-                cluster: {},
-              },
-            },
-          },
-        },
-      }),
-    );
+    const manager = createRedisManager({ cluster: {} });
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+    expect(KeyvRedis).toHaveBeenCalledWith(redisConnection, {
       keyPrefixSeparator: ':',
     });
   });
 
   it('uses cluster config when present', () => {
-    const manager = CacheManager.fromConfig(
-      mockServices.rootConfig({
-        data: {
-          backend: {
-            cache: {
-              store: 'redis',
-              connection: 'redis://localhost:6379',
-              redis: {
-                cluster: {
-                  rootNodes: [{ url: 'redis://localhost:6379' }],
-                },
-              },
-            },
-          },
-        },
-      }),
-    );
+    const manager = createRedisManager({
+      cluster: {
+        rootNodes: [{ url: redisConnection }],
+      },
+    });
     manager.forPlugin('p1');
 
     expect(createCluster).toHaveBeenCalledWith({
-      rootNodes: [{ url: 'redis://localhost:6379' }],
+      rootNodes: [{ url: redisConnection }],
       defaults: undefined,
     });
   });
 
   it('respects client config for non-clustered mode', () => {
-    const manager = CacheManager.fromConfig(
-      mockServices.rootConfig({
-        data: {
-          backend: {
-            cache: {
-              store: 'redis',
-              connection: 'redis://localhost:6379',
-              redis: {
-                client: {
-                  keyPrefixSeparator: '!',
-                },
-              },
-            },
-          },
-        },
-      }),
-    );
+    const manager = createRedisManager({
+      client: {
+        keyPrefixSeparator: '!',
+      },
+    });
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+    expect(KeyvRedis).toHaveBeenCalledWith(redisConnection, {
       keyPrefixSeparator: '!',
     });
   });
 
   it('accepts client config for clustered mode', () => {
-    const manager = CacheManager.fromConfig(
-      mockServices.rootConfig({
-        data: {
-          backend: {
-            cache: {
-              store: 'redis',
-              connection: 'redis://localhost:6379',
-              redis: {
-                client: {
-                  keyPrefixSeparator: '!',
-                },
-                cluster: {
-                  rootNodes: [{ url: 'redis://localhost:6379' }],
-                },
-              },
-            },
+    (createCluster as jest.Mock).mockReturnValue({
+      url: redisConnection,
+    });
+    const manager = createRedisManager({
+      client: {
+        keyPrefixSeparator: '!',
+      },
+      cluster: {
+        rootNodes: [{ url: redisConnection }],
+      },
+    });
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: redisConnection,
+      }),
+      {
+        keyPrefixSeparator: '!',
+      },
+    );
+  });
+
+  it('passes socket keepalive options to the redis client', () => {
+    const logger = mockServices.logger.mock();
+    const manager = createRedisManager(
+      {
+        client: {
+          socket: {
+            keepAliveInitialDelay: 1234,
+          },
+        },
+      },
+      { logger },
+    );
+
+    manager.forPlugin('p1');
+
+    const childLogger = (logger.child as jest.Mock).mock.results[0]?.value;
+    expect(childLogger?.warn).toHaveBeenCalledWith(
+      'Socket keepalive initial delay is set without keepalive enabled. Enabling keepalive.',
+    );
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: redisConnection,
+        socket: expect.objectContaining({
+          keepAlive: true,
+          keepAliveInitialDelay: 1234,
+        }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('passes boolean keepAlive to the redis client', () => {
+    const manager = createRedisManager({
+      client: {
+        socket: {
+          keepAlive: true,
+        },
+      },
+    });
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: redisConnection,
+        socket: expect.objectContaining({ keepAlive: true }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('throws on numeric keepAlive values', () => {
+    expect(() =>
+      createRedisManager({
+        client: {
+          socket: {
+            keepAlive: 7000,
           },
         },
       }),
+    ).toThrow(
+      "Unable to convert config value for key 'backend.cache.redis.client.socket.keepAlive' in 'mock-config' to a boolean",
     );
+  });
+
+  it('ignores keepAliveInitialDelay when keepAlive is false', () => {
+    const manager = createRedisManager({
+      client: {
+        socket: {
+          keepAlive: false,
+          keepAliveInitialDelay: 5000,
+        },
+      },
+    });
+
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith(expect.anything(), {
-      keyPrefixSeparator: '!',
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: redisConnection,
+        socket: expect.objectContaining({ keepAlive: false }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('passes ping interval and socket timeout to the redis client', () => {
+    const manager = createRedisManager({
+      client: {
+        pingInterval: 15000,
+        socket: {
+          socketTimeout: 20000,
+        },
+      },
+    });
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: redisConnection,
+        pingInterval: 15000,
+        socket: expect.objectContaining({
+          socketTimeout: 20000,
+        }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+
+    const connection = (KeyvRedis as jest.Mock).mock.calls[0][0];
+    expect(connection.socket.reconnectStrategy).toBeUndefined();
+  });
+
+  it('passes reconnect strategy options to the redis client', () => {
+    const manager = createRedisManager({
+      client: {
+        pingInterval: 15000,
+        socket: {
+          socketTimeout: 20000,
+          reconnectStrategy: {
+            baseDelayMs: 100,
+            maxDelayMs: 2000,
+            jitterMs: 0,
+            maxRetries: 20,
+            stopOnSocketTimeout: true,
+          },
+        },
+      },
+    });
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: redisConnection,
+        pingInterval: 15000,
+        socket: expect.objectContaining({
+          socketTimeout: 20000,
+          reconnectStrategy: expect.any(Function),
+        }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+
+    const connection = (KeyvRedis as jest.Mock).mock.calls[0][0];
+    const strategy = connection.socket.reconnectStrategy;
+    const socketTimeoutError = new Error('timeout');
+    socketTimeoutError.name = 'SocketTimeoutError';
+
+    expect(strategy(1, new Error('boom'))).toBe(200);
+    expect(strategy(10, new Error('boom'))).toBe(2000);
+    expect(strategy(21, new Error('boom'))).toBe(false);
+    expect(strategy(1, socketTimeoutError)).toBe(false);
+  });
+
+  it('recreates redis store after socket timeout error', () => {
+    const manager = createRedisManager();
+
+    manager.forPlugin('p1');
+
+    const store = (KeyvRedis as jest.Mock).mock.results[0]?.value as {
+      emit?: (event: string, error: Error) => void;
+    };
+    const socketTimeoutError = new Error('timeout');
+    socketTimeoutError.name = 'SocketTimeoutError';
+    store.emit?.('error', socketTimeoutError);
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledTimes(2);
+  });
+
+  it('reconnects on socket timeout when stopOnSocketTimeout is false', () => {
+    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.5);
+    const manager = createRedisManager({
+      client: {
+        socket: {
+          reconnectStrategy: {
+            stopOnSocketTimeout: false,
+          },
+        },
+      },
+    });
+
+    manager.forPlugin('p1');
+
+    const connection = (KeyvRedis as jest.Mock).mock.calls[0][0];
+    const strategy = connection.socket.reconnectStrategy;
+    const socketTimeoutError = new Error('timeout');
+    socketTimeoutError.name = 'SocketTimeoutError';
+
+    expect(strategy(1, socketTimeoutError)).toBe(200);
+    randomSpy.mockRestore();
+  });
+
+  it('merges socket options into redis cluster defaults', () => {
+    const manager = createRedisManager({
+      client: {
+        socket: {
+          keepAliveInitialDelay: 4242,
+        },
+      },
+      cluster: {
+        rootNodes: [{ url: redisConnection }],
+      },
+    });
+
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: redisConnection }],
+      defaults: { socket: { keepAlive: true, keepAliveInitialDelay: 4242 } },
+    });
+  });
+
+  it('merges ping interval and socket timeout into redis cluster defaults', () => {
+    const manager = createRedisManager({
+      client: {
+        pingInterval: 10000,
+        socket: {
+          socketTimeout: 12000,
+        },
+      },
+      cluster: {
+        rootNodes: [{ url: redisConnection }],
+      },
+    });
+
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: redisConnection }],
+      defaults: {
+        pingInterval: 10000,
+        socket: {
+          socketTimeout: 12000,
+        },
+      },
+    });
+  });
+
+  it('merges reconnect strategy into redis cluster defaults', () => {
+    const manager = createRedisManager({
+      client: {
+        pingInterval: 10000,
+        socket: {
+          socketTimeout: 12000,
+          reconnectStrategy: {
+            baseDelayMs: 100,
+          },
+        },
+      },
+      cluster: {
+        rootNodes: [{ url: redisConnection }],
+      },
+    });
+
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: redisConnection }],
+      defaults: {
+        pingInterval: 10000,
+        socket: {
+          socketTimeout: 12000,
+          reconnectStrategy: expect.any(Function),
+        },
+      },
     });
   });
 
@@ -347,57 +607,29 @@ describe('CacheManager store options', () => {
     ];
 
     testCases.forEach(({ store, client }) => {
-      const manager = CacheManager.fromConfig(
-        mockServices.rootConfig({
-          data: {
-            backend: {
-              cache: {
-                store,
-                connection: 'redis://localhost:6379',
-                [store]: {
-                  client,
-                },
-              },
-            },
-          },
-        }),
-      );
+      const manager =
+        store === 'redis'
+          ? createRedisManager({ client })
+          : createValkeyManager({ client });
 
       manager.forPlugin('testPlugin');
 
       if (store === 'redis') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvRedis).toHaveBeenCalledWith(
-          'redis://localhost:6379',
-          client,
-        );
+        expect(KeyvRedis).toHaveBeenCalledWith(redisConnection, client);
       } else if (store === 'valkey') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvValkey).toHaveBeenCalledWith(
-          'redis://localhost:6379',
-          client,
-        );
+        expect(KeyvValkey).toHaveBeenCalledWith(redisConnection, client);
       }
     });
   });
 
   it('falls back to pluginId when no namespace is configured', () => {
-    const manager = CacheManager.fromConfig(
-      mockServices.rootConfig({
-        data: {
-          backend: {
-            cache: {
-              store: 'redis',
-              connection: 'redis://localhost:6379',
-            },
-          },
-        },
-      }),
-    );
+    const manager = createRedisManager();
 
     manager.forPlugin('testPlugin');
 
-    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+    expect(KeyvRedis).toHaveBeenCalledWith(redisConnection, {
       keyPrefixSeparator: ':',
     });
   });
