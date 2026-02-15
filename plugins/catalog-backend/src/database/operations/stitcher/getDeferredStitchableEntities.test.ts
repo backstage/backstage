@@ -129,8 +129,8 @@ describe('getDeferredStitchableEntities', () => {
       const missRowAfter = rowsAfter.filter(r => r.entity_id === '4')[0]
         .next_stitch_at;
 
-      expect(+new Date(hitRowAfter)).toBeGreaterThan(+new Date(hitRowBefore));
-      expect(+new Date(missRowAfter)).toEqual(+new Date(missRowBefore));
+      expect(+new Date(hitRowAfter!)).toBeGreaterThan(+new Date(hitRowBefore!));
+      expect(+new Date(missRowAfter!)).toEqual(+new Date(missRowBefore!));
     },
   );
 });
