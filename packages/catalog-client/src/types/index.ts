@@ -40,4 +40,13 @@ export type {
   QueryEntitiesResponse,
   StreamEntitiesRequest,
 } from './api';
+export type {
+  EntityPredicate,
+  EntityPredicateAll,
+  EntityPredicateAny,
+  EntityPredicateNot,
+  EntityPredicateValue,
+  EntityPredicateExists,
+  EntityPredicateIn,
+} from './predicate';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

@@ -17,6 +17,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * A pagination rule for entities.
@@ -47,6 +48,13 @@ export type PageInfo =
 export type EntitiesRequest = {
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
+  order?: EntityOrder[];
+  pagination?: EntityPagination;
+  credentials: BackstageCredentials;
+};
+
+export type EntityPredicateRequest = {
+  query?: FilterPredicate;
   order?: EntityOrder[];
   pagination?: EntityPagination;
   credentials: BackstageCredentials;
@@ -166,6 +174,15 @@ export interface EntitiesCatalog {
   queryEntities(request: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
 
   /**
+   * Fetch entities using predicate-based filters.
+   *
+   * @param request - Request options with predicate filter
+   */
+  queryEntitiesByPredicate(
+    request?: EntityPredicateRequest,
+  ): Promise<EntitiesResponse>;
+
+  /**
    * Removes a single entity.
    *
    * @param uid - The metadata.uid of the entity
@@ -212,6 +229,11 @@ export interface QueryEntitiesInitialRequest {
   limit?: number;
   offset?: number;
   filter?: EntityFilter;
+  /**
+   * Predicate-based query for filtering entities.
+   * Mutually exclusive with filter.
+   */
+  query?: FilterPredicate;
   orderFields?: EntityOrder[];
   fullTextFilter?: {
     term: string;
@@ -273,6 +295,11 @@ export type Cursor = {
    * A filter to be applied to the full list of entities.
    */
   filter?: EntityFilter;
+  /**
+   * A predicate-based query to be applied to the full list of entities.
+   * Mutually exclusive with filter.
+   */
+  query?: FilterPredicate;
   /**
    * true if the cursor is a previous cursor.
    */

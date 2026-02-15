@@ -30,6 +30,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, serializeError } from '@backstage/errors';
+import { parseFilterPredicate } from '@backstage/filter-predicates';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
@@ -61,6 +62,7 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
+import { parseEntityOrderFieldParams } from './request/parseEntityOrderFieldParams';
 
 /**
  * Options used by {@link createRouter}.
@@ -251,6 +253,56 @@ export async function createRouter(
           await auditorEvent?.fail({
             error: err,
           });
+          throw err;
+        }
+      })
+      .post('/entities/by-query', async (req, res) => {
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-query-predicate',
+          },
+        });
+
+        try {
+          // Validate the query using the Zod schema from @backstage/filter-predicates
+          const query = req.body.query
+            ? parseFilterPredicate(req.body.query)
+            : undefined;
+          const order = parseEntityOrderFieldParams(req.query);
+          const pagination = parseEntityPaginationParams(req.query);
+          const credentials = await httpAuth.credentials(req);
+
+          const { entities, pageInfo } =
+            await entitiesCatalog.queryEntitiesByPredicate({
+              query,
+              order,
+              pagination,
+              credentials,
+            });
+
+          const meta = {
+            pageInfo: {
+              ...(pageInfo.hasNextPage && {
+                nextCursor: pageInfo.endCursor,
+              }),
+            },
+          };
+
+          await auditorEvent?.success({ meta });
+
+          await writeEntitiesResponse({
+            res,
+            items: entities,
+            alwaysUseObjectMode: enableRelationsCompatibility,
+            responseWrapper: items => ({
+              items,
+              ...meta,
+            }),
+          });
+        } catch (err) {
+          await auditorEvent?.fail({ error: err });
           throw err;
         }
       })
