@@ -46,10 +46,9 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
-import { TranslationApi } from '@backstage/core-plugin-api/alpha';
-import { TranslationApi as TranslationApi_2 } from '@backstage/frontend-plugin-api';
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
-import { TranslationSnapshot } from '@backstage/core-plugin-api/alpha';
+import { TranslationApi } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationSnapshot } from '@backstage/frontend-plugin-api';
 import { withLogCollector } from '@backstage/test-utils';
 
 // @public
@@ -265,11 +264,11 @@ export namespace mockApis {
       ) => ApiMock<StorageApi_2>;
   }
   export function translation(): MockTranslationApi &
-    MockWithApiFactory<TranslationApi_2>;
+    MockWithApiFactory<TranslationApi>;
   export namespace translation {
     const mock: (
-      partialImpl?: Partial<TranslationApi_2> | undefined,
-    ) => ApiMock<TranslationApi_2>;
+      partialImpl?: Partial<TranslationApi> | undefined,
+    ) => ApiMock<TranslationApi>;
   }
 }
 

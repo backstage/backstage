@@ -18,7 +18,7 @@ import {
   TranslationApi,
   TranslationRef,
   TranslationSnapshot,
-} from '@backstage/core-plugin-api/alpha';
+} from '@backstage/frontend-plugin-api';
 import { createInstance as createI18n, type i18n as I18n } from 'i18next';
 import ObservableImpl from 'zen-observable';
 
@@ -32,7 +32,7 @@ import { JsxInterpolator } from '../../../../core-app-api/src/apis/implementatio
 const DEFAULT_LANGUAGE = 'en';
 
 /**
- * Mock implementation of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+ * Mock implementation of {@link @backstage/frontend-plugin-api#TranslationApi}.
  *
  * @public
  */
