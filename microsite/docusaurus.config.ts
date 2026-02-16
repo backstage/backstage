@@ -86,7 +86,6 @@ const config: Config = {
     repoUrl: 'https://github.com/backstage/backstage',
   },
   onBrokenLinks: 'log',
-  onBrokenMarkdownLinks: 'log',
   future: {
     v4: {
       removeLegacyPostBuildHeadAttribute: true,
@@ -169,6 +168,9 @@ const config: Config = {
       return removeHtmlComments(fileContent);
     },
     format: 'detect',
+    hooks: {
+      onBrokenMarkdownLinks: 'log',
+    },
   },
   plugins: [
     'docusaurus-plugin-sass',
