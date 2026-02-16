@@ -15,8 +15,13 @@
  */
 
 import { AppNode, createRouteRef } from '@backstage/frontend-plugin-api';
-import { NavContentBlueprint, NavItem, NavItems } from './NavContentBlueprint';
+import {
+  NavContentBlueprint,
+  NavContentNavItem,
+  NavContentNavItems,
+} from './NavContentBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { render, screen } from '@testing-library/react';
 
 const routeRef = createRouteRef();
 
@@ -24,12 +29,40 @@ function mockNode(id: string): AppNode {
   return { spec: { id } } as AppNode;
 }
 
-function mockNavItems(items: NavItem[]): NavItems {
+function mockNavItems(items: NavContentNavItem[]): NavContentNavItems {
+  const taken = new Set<string>();
   return {
-    take: () => undefined,
-    rest: () => items,
+    take(id: string) {
+      const item = items.find(i => i.node.spec.id === id);
+      if (item) {
+        taken.add(id);
+      }
+      return item;
+    },
+    rest: () => items.filter(i => !taken.has(i.node.spec.id)),
     clone() {
       return mockNavItems(items);
+    },
+    withComponent(Component: (props: NavContentNavItem) => JSX.Element) {
+      return {
+        take: (id: string) => {
+          const item = items.find(i => i.node.spec.id === id);
+          if (item) {
+            taken.add(id);
+            return <Component {...item} />;
+          }
+          return null;
+        },
+        rest: (options?: { sortBy?: 'title' }) => {
+          const remaining = items.filter(i => !taken.has(i.node.spec.id));
+          if (options?.sortBy === 'title') {
+            remaining.sort((a, b) => a.title.localeCompare(b.title));
+          }
+          return remaining.map(item => (
+            <Component key={item.node.spec.id} {...item} />
+          ));
+        },
+      };
     },
   };
 }
@@ -111,7 +144,7 @@ describe('NavContentBlueprint', () => {
   });
 
   it('should return a valid component with navItems', () => {
-    const items: NavItem[] = [
+    const items: NavContentNavItem[] = [
       {
         node: mockNode('page:home'),
         href: '/',
@@ -172,5 +205,65 @@ describe('NavContentBlueprint', () => {
         ]}
       </div>,
     );
+  });
+
+  it('should support withComponent for take and rest', () => {
+    const items: NavContentNavItem[] = [
+      {
+        node: mockNode('page:home'),
+        href: '/',
+        title: 'Home',
+        icon: <span>home</span>,
+        routeRef,
+      },
+      {
+        node: mockNode('page:catalog'),
+        href: '/catalog',
+        title: 'Catalog',
+        icon: <span>catalog</span>,
+        routeRef,
+      },
+      {
+        node: mockNode('page:docs'),
+        href: '/docs',
+        title: 'Docs',
+        icon: <span>docs</span>,
+        routeRef,
+      },
+    ];
+
+    const extension = NavContentBlueprint.make({
+      name: 'test',
+      params: {
+        component: ({ navItems }) => {
+          const nav = navItems.withComponent(item => (
+            <a href={item.href}>{item.title}</a>
+          ));
+          return (
+            <div>
+              <header>{nav.take('page:home')}</header>
+              <nav>{nav.rest()}</nav>
+            </div>
+          );
+        },
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+    const Component = tester.get(NavContentBlueprint.dataRefs.component);
+
+    render(<Component navItems={mockNavItems(items)} items={[]} />);
+
+    const homeLink = screen.getByText('Home');
+    expect(homeLink).toBeInTheDocument();
+    expect(homeLink.closest('header')).toBeTruthy();
+
+    const catalogLink = screen.getByText('Catalog');
+    expect(catalogLink).toBeInTheDocument();
+    expect(catalogLink.closest('nav')).toBeTruthy();
+
+    const docsLink = screen.getByText('Docs');
+    expect(docsLink).toBeInTheDocument();
+    expect(docsLink.closest('nav')).toBeTruthy();
   });
 });

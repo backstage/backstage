@@ -702,7 +702,7 @@ export const navModule = createFrontendModule({
 
 Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where you implement the entire `Sidebar` component.
 
-The component receives a `navItems` prop with `take(id)` and `rest()` methods for placing specific items in custom positions. Use `navItems.take('page:home')` to take a specific item by extension ID (e.g. for a header slot), and `navItems.rest()` to get all remaining items.
+The component receives a `navItems` prop with `take(id)` and `rest()` methods for placing specific items in custom positions. The recommended approach is to use `navItems.withComponent(...)` to define a component for rendering each nav item, and then use the returned `take(id)` and `rest()` methods to get pre-rendered elements directly. Items taken from the renderer are also taken from the main list. Keys are automatically assigned when rendering via `rest()`.
 
 ```tsx title="in packages/app/src/modules/nav/Sidebar.tsx"
 import { NavContentBlueprint } from '@backstage/plugin-app-react';
@@ -710,34 +710,23 @@ import { NavContentBlueprint } from '@backstage/plugin-app-react';
 export const SidebarContent = NavContentBlueprint.make({
   params: {
     component: ({ navItems }) => {
-      // Take specific items for custom placement
-      const home = navItems.take('page:home');
-      // Get all remaining items
-      const rest = navItems.rest();
+      const nav = navItems.withComponent(item => (
+        <SidebarItem icon={() => item.icon} to={item.href} text={item.title} />
+      ));
 
       return (
         <Sidebar>
           <SidebarLogo />
-          {home && (
-            <SidebarItem to={home.href} text={home.title} icon={home.icon} />
-          )}
           <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
             <SidebarSearchModal />
           </SidebarGroup>
           <SidebarDivider />
           <SidebarGroup label="Menu" icon={<MenuIcon />}>
-            ...
-          </SidebarGroup>
-          <SidebarGroup label="Plugins">
+            {nav.take('page:catalog')}
+            {nav.take('page:scaffolder')}
+            <SidebarDivider />
             <SidebarScrollWrapper>
-              {rest.map(item => (
-                <SidebarItem
-                  key={item.node.spec.id}
-                  to={item.href}
-                  text={item.title}
-                  icon={item.icon}
-                />
-              ))}
+              {nav.rest({ sortBy: 'title' })}
             </SidebarScrollWrapper>
           </SidebarGroup>
         </Sidebar>
@@ -749,7 +738,7 @@ export const SidebarContent = NavContentBlueprint.make({
 
 The deprecated `items` prop (a flat list compatible with `<SidebarItem {...item} />`) remains supported for backward compatibility. If you don't want to auto-populate the list, simply remove the rendering of that `SidebarGroup`.
 
-You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `navItems.rest()`. To exclude an item from the remaining list, use `navItems.take('page:search')` before calling `navItems.rest()`. Items that have been taken will not appear in `rest()`.
+You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `nav.rest()`. To exclude an item from the remaining list, call `nav.take('page:search')` before calling `nav.rest()` — you can discard the return value. Items that have been taken will not appear in `rest()`.
 
 You can also use the old `NavItemBlueprint`-based nav item extensions to disable items from the nav bar, these can be disabled in config without affecting the page itself:
 

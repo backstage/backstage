@@ -108,11 +108,11 @@ export interface NavContentComponentProps {
     to: string;
     text: string;
   }>;
-  navItems: NavItems;
+  navItems: NavContentNavItems;
 }
 
 // @public
-export interface NavItem {
+export interface NavContentNavItem {
   href: string;
   icon: IconElement;
   node: AppNode;
@@ -121,10 +121,19 @@ export interface NavItem {
 }
 
 // @public
-export interface NavItems {
-  clone(): NavItems;
-  rest(): NavItem[];
-  take(id: string): NavItem | undefined;
+export interface NavContentNavItems {
+  clone(): NavContentNavItems;
+  rest(): NavContentNavItem[];
+  take(id: string): NavContentNavItem | undefined;
+  withComponent(
+    Component: ComponentType<NavContentNavItem>,
+  ): NavContentNavItemsWithComponent;
+}
+
+// @public
+export interface NavContentNavItemsWithComponent {
+  rest(options?: { sortBy?: 'title' }): JSX.Element[];
+  take(id: string): JSX.Element | null;
 }
 
 // @public

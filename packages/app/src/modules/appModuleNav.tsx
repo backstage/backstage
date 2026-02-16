@@ -29,7 +29,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
 import BuildIcon from '@material-ui/icons/Build';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
-import { NavContentBlueprint, NavItem } from '@backstage/plugin-app-react';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
 import {
@@ -98,22 +98,20 @@ const SidebarLogo = () => {
   );
 };
 
-function item(props?: NavItem) {
-  if (!props) {
-    return null;
-  }
-  return (
-    <SidebarItem icon={() => props.icon} to={props.href} text={props.title} />
-  );
-}
-
 export const appModuleNav = createFrontendModule({
   pluginId: 'app',
   extensions: [
     NavContentBlueprint.make({
       params: {
         component: ({ navItems }) => {
-          navItems.take('page:home'); // Skip home
+          const nav = navItems.withComponent(item => (
+            <SidebarItem
+              icon={() => item.icon}
+              to={item.href}
+              text={item.title}
+            />
+          ));
+          nav.take('page:home'); // Skip home
           return (
             <Sidebar>
               <SidebarLogo />
@@ -122,15 +120,11 @@ export const appModuleNav = createFrontendModule({
               </SidebarGroup>
               <SidebarDivider />
               <SidebarGroup label="Menu" icon={<MenuIcon />}>
-                {item(navItems.take('page:home'))}
-                {item(navItems.take('page:catalog'))}
-                {item(navItems.take('page:scaffolder'))}
+                {nav.take('page:catalog')}
+                {nav.take('page:scaffolder')}
                 <SidebarDivider />
                 <SidebarScrollWrapper>
-                  {navItems
-                    .rest()
-                    .sort((a, b) => a.title.localeCompare(b.title))
-                    .map(item)}
+                  {nav.rest({ sortBy: 'title' })}
                 </SidebarScrollWrapper>
               </SidebarGroup>
               <SidebarDivider />

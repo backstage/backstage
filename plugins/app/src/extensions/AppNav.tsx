@@ -31,24 +31,24 @@ import {
   NavContentBlueprint,
   NavContentComponent,
   NavContentComponentProps,
-  NavItem,
-  NavItems,
+  NavContentNavItem,
+  NavContentNavItems,
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
 
-class NavItemBag implements NavItems {
-  readonly #items: NavItem[];
-  readonly #index: Map<string, NavItem>;
+class NavItemBag implements NavContentNavItems {
+  readonly #items: NavContentNavItem[];
+  readonly #index: Map<string, NavContentNavItem>;
   readonly #taken: Set<string>;
 
-  constructor(items: NavItem[], taken?: Iterable<string>) {
+  constructor(items: NavContentNavItem[], taken?: Iterable<string>) {
     this.#items = items;
     this.#index = new Map(items.map(item => [item.node.spec.id, item]));
     this.#taken = new Set(taken);
   }
 
-  take(id: string): NavItem | undefined {
+  take(id: string): NavContentNavItem | undefined {
     const item = this.#index.get(id);
     if (item) {
       this.#taken.add(id);
@@ -56,12 +56,30 @@ class NavItemBag implements NavItems {
     return item;
   }
 
-  rest(): NavItem[] {
+  rest(): NavContentNavItem[] {
     return this.#items.filter(item => !this.#taken.has(item.node.spec.id));
   }
 
-  clone(): NavItems {
+  clone(): NavContentNavItems {
     return new NavItemBag(this.#items, this.#taken);
+  }
+
+  withComponent(Component: (props: NavContentNavItem) => JSX.Element) {
+    return {
+      take: (id: string) => {
+        const item = this.take(id);
+        return item ? <Component {...item} /> : null;
+      },
+      rest: (options?: { sortBy?: 'title' }) => {
+        const items = this.rest();
+        if (options?.sortBy === 'title') {
+          items.sort((a, b) => a.title.localeCompare(b.title));
+        }
+        return items.map(item => (
+          <Component key={item.node.spec.id} {...item} />
+        ));
+      },
+    };
   }
 }
 
@@ -138,7 +156,7 @@ function NavContentRenderer(props: {
     >(props.legacyNavItems.map(item => [item.routeRef, item]));
 
     const pageNodes = routesNode.edges.attachments.get('routes') ?? [];
-    const items = pageNodes.flatMap((node): NavItem[] => {
+    const items = pageNodes.flatMap((node): NavContentNavItem[] => {
       if (!node.instance || node.spec.disabled) {
         return [];
       }
