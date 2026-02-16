@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ComponentType } from 'react';
 import {
   AppNode,
   IconComponent,
@@ -30,7 +31,7 @@ import {
  *
  * @public
  */
-export interface NavItem {
+export interface NavContentNavItem {
   /** The app node of the page extension that this nav item points to */
   node: AppNode;
   /** The resolved route path */
@@ -44,18 +45,35 @@ export interface NavItem {
 }
 
 /**
+ * A pre-bound renderer that wraps {@link NavContentNavItems} with a component,
+ * so that `take` and `rest` return rendered elements directly.
+ *
+ * @public
+ */
+export interface NavContentNavItemsWithComponent {
+  /** Render and take a specific item by extension ID. Returns null if not found. */
+  take(id: string): JSX.Element | null;
+  /** Render all remaining items not yet taken, optionally sorted. */
+  rest(options?: { sortBy?: 'title' }): JSX.Element[];
+}
+
+/**
  * A collection of nav items that supports picking specific items by ID
  * and retrieving whatever remains. Created fresh for each render.
  *
  * @public
  */
-export interface NavItems {
+export interface NavContentNavItems {
   /** Take an item by extension ID, removing it from the collection. */
-  take(id: string): NavItem | undefined;
+  take(id: string): NavContentNavItem | undefined;
   /** All items not yet taken. */
-  rest(): NavItem[];
+  rest(): NavContentNavItem[];
   /** Create a copy of the collection preserving the current taken state. */
-  clone(): NavItems;
+  clone(): NavContentNavItems;
+  /** Create a renderer that wraps take/rest to return pre-rendered elements. */
+  withComponent(
+    Component: ComponentType<NavContentNavItem>,
+  ): NavContentNavItemsWithComponent;
 }
 
 /**
@@ -68,7 +86,7 @@ export interface NavContentComponentProps {
    * Nav items auto-discovered from page extensions, with take/rest semantics
    * for placing specific items in specific positions.
    */
-  navItems: NavItems;
+  navItems: NavContentNavItems;
 
   /**
    * Flat list of nav items for simple rendering. Use `navItems` for more
