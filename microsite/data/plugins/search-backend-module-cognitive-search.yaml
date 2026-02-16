@@ -8,3 +8,4 @@ documentation: https://github.com/ap-communications/platt-backstage-plugin/tree/
 iconUrl: '/img/logo-gradient-on-dark.svg'
 npmPackageName: '@platt/plugin-search-backend-module-cognitive-search'
 addedDate: '2023-09-13'
+status: active

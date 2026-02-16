@@ -8,3 +8,4 @@ documentation: https://github.com/DataDog/datadog-backstage-plugins/tree/main/pl
 iconUrl: https://imgix.datadoghq.com/img/about/presskit/logo-v/dd_vertical_purple.png?auto=format&fit=max&w=847&dpr=2
 npmPackageName: '@datadog/backstage-plugin-datadog-entity-sync-backend'
 addedDate: '2025-09-19'
+status: active

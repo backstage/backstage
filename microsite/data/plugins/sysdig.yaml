@@ -8,3 +8,4 @@ documentation: https://github.com/sysdiglabs/backstage-plugin-sysdig/blob/main/R
 iconUrl: https://sysdig.com/wp-content/uploads/sysdig-logo-new-white.svg
 npmPackageName: '@sysdig/backstage-plugin-sysdig'
 addedDate: '2024-03-06'
+status: active

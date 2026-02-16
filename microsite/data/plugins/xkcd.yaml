@@ -8,3 +8,4 @@ documentation: https://github.com/Vity01/backstage-xkcd/
 iconUrl: https://raw.githubusercontent.com/Vity01/backstage-xkcd/main/docs/xkcd.svg
 npmPackageName: 'backstage-plugin-xkcd'
 addedDate: '2023-05-05'
+status: active

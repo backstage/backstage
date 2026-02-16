@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://www.mulesoft.com/sites/default/files/2018-10/New_relic.png
 npmPackageName: '@backstage-community/plugin-newrelic'
 addedDate: '2020-11-03'
+status: active

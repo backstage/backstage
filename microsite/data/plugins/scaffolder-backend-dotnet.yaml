@@ -8,3 +8,4 @@ documentation: https://github.com/alefcarlos/plusultra-dotnet-backstage-plugins/
 iconUrl: /img/scaffolder-backend-dotnet-icon.png
 npmPackageName: '@plusultra/plugin-scaffolder-dotnet-backend'
 addedDate: '2022-01-24'
+status: active

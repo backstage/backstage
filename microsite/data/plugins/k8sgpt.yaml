@@ -8,3 +8,4 @@ documentation: https://github.com/suxess-it/backstage-plugin-k8sgpt/blob/main/RE
 iconUrl: https://raw.githubusercontent.com/k8sgpt-ai/k8sgpt/1a81227d6148be59b7b9ae4e9ae5e2d9a5b7a9ae/images/banner-white.png
 npmPackageName: '@suxess-it/backstage-plugin-k8sgpt'
 addedDate: '2023-06-05'
+status: active

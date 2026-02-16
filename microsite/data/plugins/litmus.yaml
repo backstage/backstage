@@ -8,3 +8,4 @@ documentation: https://github.com/litmuschaos/backstage-plugin/blob/master/READM
 iconUrl: https://raw.githubusercontent.com/cncf/artwork/master/projects/litmus/icon/color/litmus-icon-color.svg
 npmPackageName: 'backstage-plugin-litmus'
 addedDate: '2023-10-06'
+status: active

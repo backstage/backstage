@@ -8,3 +8,4 @@ documentation: https://github.com/vippsas/backstage-azure-resource-frontend
 iconUrl: '/img/logo-gradient-on-dark.svg'
 npmPackageName: '@vippsno/plugin-azure-resources'
 addedDate: '2022-09-05'
+status: active

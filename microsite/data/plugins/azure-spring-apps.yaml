@@ -8,3 +8,4 @@ documentation: https://github.com/enfuse/asae-backstage-plugin/blob/main/README.
 iconUrl: /img/enfuse.png
 npmPackageName: '@enfuse/plugin-azure-spring-apps'
 addedDate: '2022-11-21'
+status: active

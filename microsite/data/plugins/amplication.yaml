@@ -8,3 +8,4 @@ documentation: https://docs.amplication.com/day-zero/integrate-with-backstage
 iconUrl: /img/amplication_logo.png
 npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-amplication'
 addedDate: '2025-03-07'
+status: active

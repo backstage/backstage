@@ -8,3 +8,4 @@ documentation: https://github.com/cloud-carbon-footprint/ccf-backstage-plugin/bl
 iconUrl: https://www.cloudcarbonfootprint.org/img/logo.png
 npmPackageName: '@cloud-carbon-footprint/backstage-plugin-frontend'
 addedDate: '2022-05-03'
+status: active

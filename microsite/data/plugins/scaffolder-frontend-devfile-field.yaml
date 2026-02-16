@@ -8,3 +8,4 @@ documentation: https://github.com/redhat-developer/backstage-odo-devfile-plugin/
 iconUrl: https://landscape.cncf.io/logos/devfile.svg
 npmPackageName: '@redhat-developer/plugin-scaffolder-frontend-module-devfile-field'
 addedDate: '2023-12-08'
+status: active

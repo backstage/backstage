@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://cdn.rollbar.com/wp-content/themes/rollbar/assets/img/logo-white-rollbar.svg
 npmPackageName: '@backstage-community/plugin-rollbar'
 addedDate: '2020-11-03'
+status: active

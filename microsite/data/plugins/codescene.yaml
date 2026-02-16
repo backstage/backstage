@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/codescene_logo.svg
 npmPackageName: '@backstage-community/plugin-codescene'
 addedDate: '2022-04-12'
+status: active

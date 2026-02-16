@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://avatars1.githubusercontent.com/u/2810941?s=280&v=4
 npmPackageName: '@backstage-community/plugin-gcp-projects'
 addedDate: '2021-01-20'
+status: active

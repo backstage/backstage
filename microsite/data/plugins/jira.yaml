@@ -8,3 +8,4 @@ documentation: https://roadie.io/backstage/plugins/jira/?utm_source=backstage.io
 iconUrl: https://roadie.io/images/logos/jira.png
 npmPackageName: '@roadiehq/backstage-plugin-jira'
 addedDate: '2021-04-20'
+status: active

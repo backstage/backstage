@@ -8,3 +8,4 @@ documentation: 'https://github.com/Work-m8/backstage-docker-plugin/blob/main/REA
 iconUrl: 'https://raw.githubusercontent.com/Work-m8/.github/main/profile/wm_logo.png'
 npmPackageName: '@workm8/backstage-docker-tags'
 addedDate: '2023-10-24'
+status: active

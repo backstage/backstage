@@ -8,3 +8,4 @@ documentation: https://github.com/kubevela-contrib/backstage-plugin-kubevela
 iconUrl: https://kubevela.io/img/logo.svg
 npmPackageName: '@oamdev/plugin-kubevela-backend'
 addedDate: '2023-02-12'
+status: active

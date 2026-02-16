@@ -8,3 +8,4 @@ documentation: https://github.com/jiteshy/backstage-plugin-synergy/blob/main/REA
 iconUrl: /img/synergy-logo.png
 npmPackageName: '@jiteshy/backstage-plugin-synergy'
 addedDate: '2024-12-03'
+status: active

@@ -8,3 +8,4 @@ documentation: https://github.com/benwilcock/backstage-plugin-backchat
 iconUrl: /img/backchat-logo.png
 npmPackageName: '@benbravo73/backstage-plugin-backchat'
 addedDate: '2024-01-12'
+status: active

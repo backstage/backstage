@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/matomo.png
 npmPackageName: '@backstage-community/plugin-analytics-module-matomo'
 addedDate: '2023-10-17'
+status: active

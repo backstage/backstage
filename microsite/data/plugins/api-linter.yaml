@@ -8,3 +8,4 @@ documentation: https://github.com/zalando/backstage-plugin-api-linter
 iconUrl: https://raw.githubusercontent.com/zalando/zally/main/logo.png
 npmPackageName: backstage-plugin-api-linter
 addedDate: '2022-07-22'
+status: active

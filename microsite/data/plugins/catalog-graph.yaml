@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/backstage/blob/master/plugins/catalo
 iconUrl: /img/catalog-graph.svg
 npmPackageName: '@backstage/plugin-catalog-graph'
 addedDate: '2021-09-15'
+status: active

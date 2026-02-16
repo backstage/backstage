@@ -8,3 +8,4 @@ documentation: https://github.com/Dynatrace/backstage-plugin
 iconUrl: /img/dynatrace.svg
 npmPackageName: '@dynatrace/backstage-plugin-dql'
 addedDate: '2024-03-22'
+status: active

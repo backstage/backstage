@@ -8,3 +8,4 @@ documentation: https://github.com/backtostage/backstage-plugins/blob/main/plugin
 iconUrl: https://avatars1.githubusercontent.com/u/2810941?s=280&v=4
 npmPackageName: '@backtostage/plugin-catalog-backend-module-gcp'
 addedDate: '2024-08-01'
+status: active

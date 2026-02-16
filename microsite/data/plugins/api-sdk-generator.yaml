@@ -8,3 +8,4 @@ documentation: https://github.com/konfig-dev/backstage-plugin-konfig/tree/main/p
 iconUrl: https://raw.githubusercontent.com/konfig-dev/backstage-plugin-konfig/main/plugins/backstage-plugin-konfig/docs/logo.png
 npmPackageName: 'backstage-plugin-konfig'
 addedDate: '2023-08-07'
+status: active

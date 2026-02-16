@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/puppet.png
 npmPackageName: '@backstage-community/plugin-puppetdb'
 addedDate: '2023-04-06'
+status: active

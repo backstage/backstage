@@ -8,3 +8,4 @@ documentation: https://github.com/spreadshirt/backstage-plugin-s3/
 iconUrl: /img/s3-bucket.svg
 npmPackageName: '@spreadshirt/backstage-plugin-s3-viewer'
 addedDate: '2023-01-18'
+status: active

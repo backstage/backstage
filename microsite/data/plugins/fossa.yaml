@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: https://avatars0.githubusercontent.com/u/9543448?s=400&v=4
 npmPackageName: '@backstage-community/plugin-fossa'
 addedDate: '2020-12-10'
+status: active

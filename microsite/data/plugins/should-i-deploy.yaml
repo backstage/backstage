@@ -8,3 +8,4 @@ documentation: https://github.com/NandoRFS/backstage-plugin-should-i-deploy/
 iconUrl: /img/should-i-deploy-logo.png
 npmPackageName: 'backstage-plugin-should-i-deploy'
 addedDate: '2023-11-05'
+status: active

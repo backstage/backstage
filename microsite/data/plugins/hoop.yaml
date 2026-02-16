@@ -8,3 +8,4 @@ documentation: https://github.com/hoophq/backstage-plugin
 iconUrl: https://avatars.githubusercontent.com/u/113131551?s=200&v=4
 npmPackageName: '@hoophq/backstage-plugin'
 addedDate: '2022-12-20'
+status: active

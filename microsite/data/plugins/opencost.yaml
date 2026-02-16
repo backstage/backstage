@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/opencost.png
 npmPackageName: '@backstage-community/plugin-opencost'
 addedDate: '2023-10-26'
+status: active

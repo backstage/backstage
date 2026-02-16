@@ -8,3 +8,4 @@ documentation: https://github.com/v-ngu/backstage-plugin-bulletin-board
 iconUrl: /img/bulletin-board.png
 npmPackageName: 'backstage-plugin-bulletin-board'
 addedDate: '2023-04-01'
+status: active

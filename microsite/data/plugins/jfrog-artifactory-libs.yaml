@@ -11,3 +11,4 @@ documentation: https://github.com/Vity01/backstage-jfrog-artifactory-libs
 iconUrl: https://raw.githubusercontent.com/Vity01/backstage-jfrog-artifactory-libs/main/doc/artifactory.svg
 npmPackageName: 'backstage-plugin-jfrog-artifactory-libs'
 addedDate: '2023-08-14'
+status: active

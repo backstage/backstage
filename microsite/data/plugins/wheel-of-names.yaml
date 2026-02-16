@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/wheel-of-names.svg
 npmPackageName: '@backstage-community/plugin-wheel-of-names'
 addedDate: '2025-05-21'
+status: active

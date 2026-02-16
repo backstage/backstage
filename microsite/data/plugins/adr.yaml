@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/adr-logo.png
 npmPackageName: '@backstage-community/plugin-adr'
 addedDate: '2022-04-13'
+status: active

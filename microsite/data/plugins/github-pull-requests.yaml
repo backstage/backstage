@@ -8,3 +8,4 @@ documentation: https://roadie.io/backstage/plugins/github-pull-requests/?utm_sou
 iconUrl: https://roadie.io/images/logos/github.png
 npmPackageName: '@roadiehq/backstage-plugin-github-pull-requests'
 addedDate: '2021-04-20'
+status: active

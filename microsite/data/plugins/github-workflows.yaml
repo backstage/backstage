@@ -8,3 +8,4 @@ documentation: https://platform.vee.codes/plugin/github-workflows/
 iconUrl: https://veecode-platform.github.io/support/imgs/logo_2.svg
 npmPackageName: '@veecode-platform/backstage-plugin-github-workflows'
 addedDate: '2023-09-12'
+status: active

@@ -8,3 +8,4 @@ documentation: https://platform.vee.codes/plugin/gitlab-pipelines/
 iconUrl: https://veecode-platform.github.io/support/imgs/logo_1.svg
 npmPackageName: '@veecode-platform/backstage-plugin-gitlab-pipelines'
 addedDate: '2023-09-27'
+status: active

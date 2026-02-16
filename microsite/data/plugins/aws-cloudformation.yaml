@@ -8,3 +8,4 @@ documentation: https://github.com/purple-technology/backstage-aws-cloudformation
 iconUrl: https://raw.githubusercontent.com/purple-technology/backstage-aws-cloudformation-plugin/master/docs/cloudformation-logo.png
 npmPackageName: 'backstage-aws-cloudformation-plugin'
 addedDate: '2021-08-30'
+status: active

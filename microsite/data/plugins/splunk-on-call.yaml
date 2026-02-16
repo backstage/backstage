@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/splunk-black-white-bg.png
 npmPackageName: '@backstage-community/plugin-splunk-on-call'
 addedDate: '2021-11-17'
+status: active

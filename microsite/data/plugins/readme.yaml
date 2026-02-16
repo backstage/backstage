@@ -8,3 +8,4 @@ documentation: https://github.com/AxisCommunications/backstage-plugins/blob/main
 iconUrl: https://raw.githubusercontent.com/AxisCommunications/backstage-plugins/main/plugins/readme/media/readme.png
 npmPackageName: '@axis-backstage/plugin-readme'
 addedDate: '2023-12-07'
+status: active
