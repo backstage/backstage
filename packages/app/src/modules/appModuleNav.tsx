@@ -29,7 +29,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
 import BuildIcon from '@material-ui/icons/Build';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
-import { NavContentBlueprint } from '@backstage/plugin-app-react';
+import { NavContentBlueprint, NavItem } from '@backstage/plugin-app-react';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
 import {
@@ -98,39 +98,56 @@ const SidebarLogo = () => {
   );
 };
 
+function item(props?: NavItem) {
+  if (!props) {
+    return null;
+  }
+  return (
+    <SidebarItem icon={() => props.icon} to={props.href} text={props.title} />
+  );
+}
+
 export const appModuleNav = createFrontendModule({
   pluginId: 'app',
   extensions: [
     NavContentBlueprint.make({
       params: {
-        component: ({ items }) => (
-          <Sidebar>
-            <SidebarLogo />
-            <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-              <SidebarSearchModal />
-            </SidebarGroup>
-            <SidebarDivider />
-            <SidebarGroup label="Menu" icon={<MenuIcon />}>
-              <SidebarScrollWrapper>
-                {items.map((item, index) => (
-                  <SidebarItem {...item} key={index} />
-                ))}
-              </SidebarScrollWrapper>
-            </SidebarGroup>
-            <SidebarDivider />
-            <SidebarSpace />
-            <SidebarDivider />
-            <SidebarGroup
-              label="Settings"
-              icon={<UserSettingsSignInAvatar />}
-              to="/settings"
-            >
-              <NotificationsSidebarItem />
-              <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
-              <Settings />
-            </SidebarGroup>
-          </Sidebar>
-        ),
+        component: ({ navItems }) => {
+          navItems.take('page:home'); // Skip home
+          return (
+            <Sidebar>
+              <SidebarLogo />
+              <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+                <SidebarSearchModal />
+              </SidebarGroup>
+              <SidebarDivider />
+              <SidebarGroup label="Menu" icon={<MenuIcon />}>
+                {item(navItems.take('page:home'))}
+                {item(navItems.take('page:catalog'))}
+                {item(navItems.take('page:scaffolder'))}
+                <SidebarDivider />
+                <SidebarScrollWrapper>
+                  {navItems
+                    .rest()
+                    .sort((a, b) => a.title.localeCompare(b.title))
+                    .map(item)}
+                </SidebarScrollWrapper>
+              </SidebarGroup>
+              <SidebarDivider />
+              <SidebarSpace />
+              <SidebarDivider />
+              <SidebarGroup
+                label="Settings"
+                icon={<UserSettingsSignInAvatar />}
+                to="/settings"
+              >
+                <NotificationsSidebarItem />
+                <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
+                <Settings />
+              </SidebarGroup>
+            </Sidebar>
+          );
+        },
       },
     }),
   ],
