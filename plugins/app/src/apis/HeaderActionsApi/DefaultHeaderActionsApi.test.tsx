@@ -18,17 +18,15 @@ import { render, screen } from '@testing-library/react';
 import { DefaultHeaderActionsApi } from './DefaultHeaderActionsApi';
 
 describe('DefaultHeaderActionsApi', () => {
-  it('should return actions for a specific plugin', async () => {
+  it('should return actions for a specific plugin', () => {
     const api = DefaultHeaderActionsApi.fromActions([
       {
-        loader: async () => <button>Action A</button>,
+        element: <button>Action A</button>,
         pluginId: 'plugin-a',
-        nodeId: 'plugin-header-action:plugin-a/action-a',
       },
       {
-        loader: async () => <button>Action B</button>,
+        element: <button>Action B</button>,
         pluginId: 'plugin-b',
-        nodeId: 'plugin-header-action:plugin-b/action-b',
       },
     ]);
 
@@ -36,34 +34,31 @@ describe('DefaultHeaderActionsApi', () => {
     expect(api.getHeaderActions('plugin-b')).toHaveLength(1);
 
     render(<>{api.getHeaderActions('plugin-a')}</>);
-    await expect(
-      screen.findByRole('button', { name: 'Action A' }),
-    ).resolves.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Action A' }),
+    ).toBeInTheDocument();
   });
 
   it('should return an empty array for unknown plugins', () => {
     const api = DefaultHeaderActionsApi.fromActions([
       {
-        loader: async () => <span>Action</span>,
+        element: <span>Action</span>,
         pluginId: 'plugin-a',
-        nodeId: 'plugin-header-action:plugin-a/action',
       },
     ]);
 
     expect(api.getHeaderActions('unknown-plugin')).toEqual([]);
   });
 
-  it('should group multiple actions by plugin', async () => {
+  it('should group multiple actions by plugin', () => {
     const api = DefaultHeaderActionsApi.fromActions([
       {
-        loader: async () => <button>First</button>,
+        element: <button>First</button>,
         pluginId: 'plugin-a',
-        nodeId: 'plugin-header-action:plugin-a/first',
       },
       {
-        loader: async () => <button>Second</button>,
+        element: <button>Second</button>,
         pluginId: 'plugin-a',
-        nodeId: 'plugin-header-action:plugin-a/second',
       },
     ]);
 
@@ -71,11 +66,7 @@ describe('DefaultHeaderActionsApi', () => {
     expect(actions).toHaveLength(2);
 
     render(<>{actions}</>);
-    await expect(
-      screen.findByRole('button', { name: 'First' }),
-    ).resolves.toBeInTheDocument();
-    await expect(
-      screen.findByRole('button', { name: 'Second' }),
-    ).resolves.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'First' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Second' })).toBeInTheDocument();
   });
 });
