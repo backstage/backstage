@@ -123,6 +123,14 @@ const Plugins = () => {
 
   const otherPlugins = useMemo(() => {
     return plugins.otherPlugins
+      .filter(pluginData => pluginData.status !== 'inactive')
+      .filter(pluginData => matchesCategory(pluginData, selectedCategories))
+      .filter(pluginData => matchesSearch(pluginData, searchTerm));
+  }, [selectedCategories, searchTerm]);
+
+  const inactivePlugins = useMemo(() => {
+    return plugins.otherPlugins
+      .filter(pluginData => pluginData.status === 'inactive')
       .filter(pluginData => matchesCategory(pluginData, selectedCategories))
       .filter(pluginData => matchesSearch(pluginData, searchTerm));
   }, [selectedCategories, searchTerm]);
@@ -162,7 +170,7 @@ const Plugins = () => {
           />
         </div>
 
-        {corePlugins.length === 0 && otherPlugins.length === 0 && (
+        {corePlugins.length === 0 && otherPlugins.length === 0 && inactivePlugins.length === 0 && (
           <div className="margin-vert--lg">
             <h3>No plugins found</h3>
             <p>
@@ -194,6 +202,30 @@ const Plugins = () => {
             </p>
             <div className="pluginsContainer margin-bottom--lg">
               {otherPlugins.map(pluginData => (
+                <PluginCard key={pluginData.title} {...pluginData}></PluginCard>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showOtherPlugins && otherPlugins.length === 0 && inactivePlugins.length > 0 && (
+          <div>
+            <h2>Active Plugins (0)</h2>
+            <p>
+              We couldn't find any active plugins matching your criteria.
+            </p>
+          </div>
+        )}
+
+        {inactivePlugins.length > 0 && (
+          <div>
+            <h2>Inactive Plugins ({inactivePlugins.length})</h2>
+            <p>
+              These plugins are no longer actively maintained as their NPM package has not seen an update in more than 365 days. They are kept here for reference but may not work with
+              current versions of Backstage.
+            </p>
+            <div className="pluginsContainer margin-bottom--lg">
+              {inactivePlugins.map(pluginData => (
                 <PluginCard key={pluginData.title} {...pluginData}></PluginCard>
               ))}
             </div>
