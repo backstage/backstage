@@ -8,7 +8,7 @@ Audience: Developers
 
 ## Overview
 
-Components in the software catalog are created using a software template. The template generates a `catalog-info.yaml` file in either GitHub or GitLab that defines the entity. To update the component, you must edit its corresponding `catalog-info.yaml` entity definition file.
+Components in the Software Catalog are created using a software template. The template generates a `catalog-info.yaml` file in either GitHub or GitLab that defines the entity. To update the component, you must edit its corresponding `catalog-info.yaml` entity definition file.
 
 ## Updating the component
 
@@ -28,6 +28,6 @@ To update a component using the Backstage UI:
 
 3. Select `Commit changes` to commit your changes to the appropriate branch and go through your normal PR review procedure.
 
-4. Once the updated `catalog-info.yaml` file has been merged into the branch associated with the component, then you will see the updated information in the software catalog.
+4. Once the updated `catalog-info.yaml` file has been merged into the branch associated with the component, then you will see the updated information in the Software Catalog.
 
    ![updated component name in ui](../assets/uiguide/updated-component-name-in-ui.png)
