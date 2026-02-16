@@ -15,6 +15,7 @@
  */
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -59,6 +60,8 @@ const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'scaffolder',
+  title: 'Create',
+  icon: <CreateComponentIcon />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
     root: rootRouteRef,
