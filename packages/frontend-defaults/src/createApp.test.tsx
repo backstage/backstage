@@ -388,11 +388,13 @@ describe('createApp', () => {
               <component:app/core-progress out=[core.swappableComponent] />
               <component:app/core-not-found-error-page out=[core.swappableComponent] />
               <component:app/core-error-display out=[core.swappableComponent] />
+              <component:app/core-page-layout out=[core.swappableComponent] />
             ]
           </api:app/swappable-components>
           <api:app/icons out=[core.api.factory] />
           <api:app/feature-flags out=[core.api.factory] />
           <api:app/plugin-wrapper out=[core.api.factory] />
+          <api:app/header-actions out=[core.api.factory] />
           <api:app/translations out=[core.api.factory] />
           <api:app/components out=[core.api.factory] />
         ]
@@ -408,7 +410,7 @@ describe('createApp', () => {
                     content [
                       <app/routes out=[core.reactElement]>
                         routes [
-                          <page:my-plugin out=[core.routing.path, core.reactElement] />
+                          <page:my-plugin out=[core.routing.path, core.reactElement, core.title] />
                         ]
                       </app/routes>
                     ]
