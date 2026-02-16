@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
+import { lazy as reactLazy } from 'react';
+import { ExtensionBoundary } from '../components';
 import {
+  coreExtensionData,
   createExtensionBlueprint,
   createExtensionBlueprintParams,
-  createExtensionDataRef,
 } from '../wiring';
-
-const actionDataRef = createExtensionDataRef<() => Promise<JSX.Element>>().with(
-  { id: 'core.header-action.loader' },
-);
 
 /**
  * Creates extensions that provide plugin-scoped header actions.
@@ -37,14 +35,18 @@ const actionDataRef = createExtensionDataRef<() => Promise<JSX.Element>>().with(
 export const HeaderActionBlueprint = createExtensionBlueprint({
   kind: 'header-action',
   attachTo: { id: 'api:app/header-actions', input: 'actions' },
-  output: [actionDataRef],
-  dataRefs: {
-    action: actionDataRef,
-  },
+  output: [coreExtensionData.reactElement],
   defineParams(params: { loader: () => Promise<JSX.Element> }) {
     return createExtensionBlueprintParams(params);
   },
-  *factory(params) {
-    yield actionDataRef(params.loader);
+  *factory(params, { node }) {
+    const LazyAction = reactLazy(() =>
+      params.loader().then(element => ({ default: () => element })),
+    );
+    yield coreExtensionData.reactElement(
+      <ExtensionBoundary node={node} errorPresentation="error-api">
+        <LazyAction />
+      </ExtensionBoundary>,
+    );
   },
 });

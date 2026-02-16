@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { Suspense, ReactNode, lazy } from 'react';
+import { ReactNode } from 'react';
 import { type HeaderActionsApi } from '@backstage/frontend-plugin-api';
 
 type ActionInput = {
-  loader: () => Promise<JSX.Element>;
+  element: JSX.Element;
   pluginId: string;
-  nodeId: string;
 };
 
 /**
@@ -45,16 +44,7 @@ export class DefaultHeaderActionsApi implements HeaderActionsApi {
         actionsByPlugin.set(action.pluginId, pluginActions);
       }
 
-      const LazyAction = lazy(async () => {
-        const element = await action.loader();
-        return { default: () => element };
-      });
-
-      pluginActions.push(
-        <Suspense key={action.nodeId} fallback={null}>
-          <LazyAction />
-        </Suspense>,
-      );
+      pluginActions.push(action.element);
     }
 
     return new DefaultHeaderActionsApi(actionsByPlugin);
