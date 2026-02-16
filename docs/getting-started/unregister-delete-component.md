@@ -12,7 +12,7 @@ URLs to YAML files that you registered either using the `Create` button or by ad
 
 [Implicit deletion](../features/software-catalog/life-of-an-entity.md#implicit-deletion) occurs when an entity provider issues a deletion of an entity. That entity, as well as the entire tree of entities processed out of it are considered for immediate deletion.
 
-However, you are also able to manually unregister an entity from the catalog or perform a direct, [explicit deletion](../features/software-catalog/life-of-an-entity.md#explicit-deletion) of individual entities. 
+However, you are also able to manually unregister an entity from the Catalog or perform a direct, [explicit deletion](../features/software-catalog/life-of-an-entity.md#explicit-deletion) of individual entities. 
 
 ## Unregistering an entity
 
@@ -34,7 +34,7 @@ To unregister an entity:
 
 ## Deleting an entity
 
-You can also delete an entity from the catalog. However, this requires that you also delete the `catalog-info.yaml` entity definition file associated with the entity.
+You can also delete an entity from the Catalog. However, this requires that you also delete the `catalog-info.yaml` entity definition file associated with the entity.
 
 To delete an entity:
 
