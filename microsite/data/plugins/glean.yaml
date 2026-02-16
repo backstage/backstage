@@ -8,4 +8,5 @@ documentation: https://github.com/beejiujitsu/wealthsimple-backstage-plugins/tre
 iconUrl: /img/glean-logo-circular-white.png
 npmPackageName: '@beejiujitsu/backstage-plugin-glean-backend'
 addedDate: '2024-12-30'
-status: active
+status: inactive
+age: 413

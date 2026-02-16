@@ -8,4 +8,5 @@ documentation: https://janus-idp.io/plugins/kiali
 iconUrl: /img/kiali.svg
 npmPackageName: '@janus-idp/backstage-plugin-kiali'
 addedDate: '2023-07-25'
-status: active
+status: inactive
+age: 439

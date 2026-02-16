@@ -34,15 +34,22 @@ function getAge(npmModified) {
   return Math.round(ageDif / (1000 * 60 * 60 * 24));
 }
 
-async function main() {
+async function main(args) {
   const rootPath = resolve(__dirname, '..');
   const pluginDataPath = resolve(rootPath, 'microsite/data/plugins');
 
+  const auditMode = args.includes('--audit');
+
   console.log(__dirname, rootPath, pluginDataPath);
+  if (auditMode) {
+    console.log('Running in AUDIT mode - will update plugin YAML files');
+  }
 
   const pluginDataFiles = fs.readdirSync(pluginDataPath);
 
   const pluginsData = [];
+  const updatedPlugins = [];
+
   for (const pluginDataFile of pluginDataFiles) {
     const pluginDataFilePath = resolve(pluginDataPath, pluginDataFile);
     const pluginDataYaml = yaml.load(
@@ -54,18 +61,72 @@ async function main() {
     );
 
     const npmPackage = await getNpmPackage(pluginDataYaml.npmPackageName);
+    const age = getAge(npmPackage.time?.modified);
 
     const pluginData = {
       npmPackageName: pluginDataYaml.npmPackageName,
       npmCreated: npmPackage.time?.created,
       npmModified: npmPackage.time?.modified,
-      age: getAge(npmPackage.time?.modified),
+      age: age,
+      currentStatus: pluginDataYaml.status,
     };
+
+    // Update plugin YAML if in audit mode
+    if (auditMode) {
+      let newStatus = pluginDataYaml.status;
+      let statusChanged = false;
+
+      // If status is inactive, change to archived
+      if (pluginDataYaml.status === 'inactive') {
+        newStatus = 'archived';
+        statusChanged = true;
+      }
+      // If age > 365 and status is active, change to inactive
+      else if (age > 365 && pluginDataYaml.status === 'active') {
+        newStatus = 'inactive';
+        statusChanged = true;
+      }
+
+      if (statusChanged) {
+        pluginDataYaml.status = newStatus;
+        pluginDataYaml.age = age;
+
+        // Write updated YAML back to file
+        const yamlContent = yaml.dump(pluginDataYaml, {
+          lineWidth: -1,
+          quotingType: "'",
+          forceQuotes: false,
+        });
+        fs.writeFileSync(pluginDataFilePath, `---\n${yamlContent}`);
+
+        updatedPlugins.push({
+          file: pluginDataFile,
+          plugin: pluginDataYaml.title,
+          oldStatus: pluginData.currentStatus,
+          newStatus: newStatus,
+          age: age,
+        });
+
+        console.log(
+          `  ✓ Updated ${pluginDataFile}: ${pluginData.currentStatus} → ${newStatus} (age: ${age} days)`,
+        );
+      }
+
+      pluginData.newStatus = newStatus;
+    }
 
     pluginsData.push(pluginData);
   }
 
   console.table(pluginsData);
+
+  if (auditMode && updatedPlugins.length > 0) {
+    console.log('\n=== Summary of Updates ===');
+    console.table(updatedPlugins);
+    console.log(`\nTotal plugins updated: ${updatedPlugins.length}`);
+  } else if (auditMode) {
+    console.log('\nNo plugins required updates.');
+  }
 }
 
 main(process.argv.slice(2)).catch(error => {

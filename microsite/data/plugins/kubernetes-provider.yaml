@@ -8,4 +8,5 @@ documentation: https://github.com/AntoineDao/backstage-provider-kubernetes#readm
 iconUrl: https://avatars.githubusercontent.com/u/13629408
 npmPackageName: '@antoinedao/backstage-provider-kubernetes'
 addedDate: '2023-04-10'
-status: active
+status: inactive
+age: 1043

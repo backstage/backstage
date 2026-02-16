@@ -8,4 +8,5 @@ documentation: https://github.com/tduniec/backstage-timesaver-plugin/blob/main/R
 iconUrl: https://raw.githubusercontent.com/tduniec/backstage-timesaver-plugin/main/img/tsLogo.png
 npmPackageName: '@tduniec/backstage-plugin-time-saver'
 addedDate: '2024-01-30'
-status: active
+status: inactive
+age: 410

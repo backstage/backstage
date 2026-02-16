@@ -8,4 +8,5 @@ documentation: https://github.com/BESTSELLER/backstage-plugin-harbor/blob/master
 iconUrl: https://raw.githubusercontent.com/cncf/artwork/master/projects/harbor/icon/color/harbor-icon-color.svg
 npmPackageName: '@bestsellerit/backstage-plugin-harbor'
 addedDate: '2022-06-23'
-status: active
+status: inactive
+age: 1134

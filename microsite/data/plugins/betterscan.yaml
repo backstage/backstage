@@ -8,4 +8,5 @@ documentation: https://www.npmjs.com/package/@marcinguy/backstage-plugin-betters
 iconUrl: https://uploads-ssl.webflow.com/6339e3b81867539b5fe2498d/633a1643dcb06d3029867161_g4.svg
 npmPackageName: '@marcinguy/backstage-plugin-betterscan'
 addedDate: '2022-12-08'
-status: active
+status: inactive
+age: 1165

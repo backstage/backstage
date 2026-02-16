@@ -8,4 +8,5 @@ documentation: https://roadie.io/backstage/plugins/firebase-functions/?utm_sourc
 iconUrl: https://roadie.io/images/logos/firebase.png
 npmPackageName: '@roadiehq/backstage-plugin-firebase-functions'
 addedDate: '2021-04-20'
-status: active
+status: inactive
+age: 598

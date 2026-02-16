@@ -8,4 +8,5 @@ documentation: https://github.com/jquad-group/backstage-jquad#readme
 iconUrl: https://raw.githubusercontent.com/jquad-group/backstage-jquad/main/img/tekton-horizontal-color.png
 npmPackageName: '@jquad-group/plugin-tekton-pipelines'
 addedDate: '2022-08-08'
-status: active
+status: inactive
+age: 1016
