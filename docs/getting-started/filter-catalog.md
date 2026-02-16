@@ -12,7 +12,7 @@ The Catalog can be filtered by any combination of owner, kind, type, lifecycle, 
 
 ![Catalog filter options](../assets/uiguide/catalog-filter-options.png)
 
-The [Technical Overview](../overview/technical-overview.md#software-catalog-system-model) provides a description of the types of entities displayed in the catalog.
+The [Technical Overview](../overview/technical-overview.md#software-catalog-system-model) provides a description of the types of entities displayed in the Catalog.
 
 ## Filtering the Catalog
 
@@ -47,11 +47,11 @@ You can filter the Catalog using a combination of the following:
 
 - **Filter by Owner**
 
-  Use the `Owner` dropdown to filter the catalog list by who owns the entity.
+  Use the `Owner` dropdown to filter the Catalog list by who owns the entity.
 
 - **Filter by Lifecycle**
 
-  Use the `Lifecycle` dropdown to filter the catalog list by lifecycle.
+  Use the `Lifecycle` dropdown to filter the Catalog list by lifecycle.
 
 - **Filter by Processing Status**
 
@@ -60,3 +60,4 @@ You can filter the Catalog using a combination of the following:
 - **Filter by Namespace**
 
   Use the `Namespace` dropdown to filter the catalog list by namespace associated with the entity.
+
