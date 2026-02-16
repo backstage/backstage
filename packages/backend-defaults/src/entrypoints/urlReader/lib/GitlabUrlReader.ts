@@ -90,8 +90,8 @@ export class GitlabUrlReader implements UrlReaderService {
           ...(etag && !isArtifact && { 'If-None-Match': etag }),
           ...(lastModifiedAfter &&
             !isArtifact && {
-            'If-Modified-Since': lastModifiedAfter.toUTCString(),
-          }),
+              'If-Modified-Since': lastModifiedAfter.toUTCString(),
+            }),
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
@@ -208,10 +208,11 @@ export class GitlabUrlReader implements UrlReaderService {
       archiveReqParams.set('path', filepath);
     }
     // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
-    const reqUrl = `${this.integration.config.apiBaseUrl
-      }/projects/${encodeURIComponent(
-        repoFullName,
-      )}/repository/archive?${archiveReqParams.toString()}`;
+    const reqUrl = `${
+      this.integration.config.apiBaseUrl
+    }/projects/${encodeURIComponent(
+      repoFullName,
+    )}/repository/archive?${archiveReqParams.toString()}`;
     const archiveGitLabResponse = await this.integration.fetch(reqUrl, {
       ...getGitLabRequestOptions(this.integration.config, token),
       // TODO(freben): The signal cast is there because pre-3.x versions of

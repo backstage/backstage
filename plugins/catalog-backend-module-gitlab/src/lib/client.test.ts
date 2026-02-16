@@ -312,8 +312,10 @@ describe('GitLabClient', () => {
   describe('listFiles', () => {
     it('should call group search API with correct scope parameter', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -341,8 +343,10 @@ describe('GitLabClient', () => {
 
     it('should return empty items when group is missing', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -356,8 +360,10 @@ describe('GitLabClient', () => {
 
     it('should return empty items when search is missing', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
