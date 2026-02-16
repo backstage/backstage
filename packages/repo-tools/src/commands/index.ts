@@ -205,7 +205,6 @@ export function registerCommands(program: Command) {
   program
     .command('type-deps')
     .description('Find inconsistencies in types of all packages and plugins')
-    .allowExcessArguments(true)
     .action(lazy(() => import('./type-deps/type-deps'), 'default'));
 
   program
@@ -214,7 +213,6 @@ export function registerCommands(program: Command) {
       'Ensure your packages are using the correct peer dependency format.',
     )
     .option('--fix', 'Fix the issues found')
-    .allowExcessArguments(true)
     .action(lazy(() => import('./peer-deps/peer-deps'), 'default'));
 
   program
@@ -228,7 +226,6 @@ export function registerCommands(program: Command) {
       'CI run checks that there are no changes to catalog-info.yaml files',
     )
     .description('Create or fix info yaml files for all backstage packages')
-    .allowExcessArguments(true)
     .action(
       lazy(
         () => import('./generate-catalog-info/generate-catalog-info'),
