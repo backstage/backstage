@@ -18,12 +18,12 @@ This guide will walk you through how to pull Backstage data from other locations
 
 When registering a component, you can:
 
-- Link to an existing entity file: The file is analyzed to determine which entities are defined, and the entities are added to the Scaffolded Backstage App catalog. For example, `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`.
+- Link to an existing entity file: The file is analyzed to determine which entities are defined, and the entities are added to the Scaffolded Backstage App Catalog. For example, `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`.
 
-- Link to a repository: All `catalog-info.yaml` files are discovered in the repository and their defined entities are added to the Scaffolded Backstage App catalog. For example, `https://github.com/backstage/backstage`.
+- Link to a repository: All `catalog-info.yaml` files are discovered in the repository and their defined entities are added to the Scaffolded Backstage App Catalog. For example, `https://github.com/backstage/backstage`.
 
   :::note Note
-  If no entities are found, a Pull Request is created that adds an example `catalog-info.yaml` file to the repository. When the Pull Request is merged, the Scaffolded Backstage App catalog loads all of the defined entities.
+  If no entities are found, a Pull Request is created that adds an example `catalog-info.yaml` file to the repository. When the Pull Request is merged, the Scaffolded Backstage App Catalog loads all of the defined entities.
 
   :::
 
@@ -33,7 +33,7 @@ When registering a component, you can:
 
 ## Registering a component
 
-To manually register a component in the software catalog:
+To manually register a component in the Software Catalog:
 
 1. Select `Create`.
 2. Select `REGISTER EXISTING COMPONENT`.
@@ -55,6 +55,6 @@ If your entity was successfully imported, the details will be displayed.
 
 ![details of registered component.](../assets/uiguide/details-for-registered-backstage-website.png)
 
-Select `Home` to view your new entity in the software catalog.
+Select `Home` to view your new entity in the Software Catalog.
 
 ![Backstage website component in software catalog.](../assets/uiguide/backstage-website-registered-catalog-view.png)
