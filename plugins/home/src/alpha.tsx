@@ -208,6 +208,8 @@ const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
  */
 export default createFrontendPlugin({
   pluginId: 'home',
+  title: 'Home',
+  icon: <HomeIcon />,
   info: { packageJson: () => import('../package.json') },
   extensions: [
     homePage,
