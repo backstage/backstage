@@ -20,23 +20,6 @@ const visualizerPlugin: OverridableFrontendPlugin<
   {},
   {},
   {
-    'header-action:app-visualizer': OverridableExtensionDefinition<{
-      kind: 'header-action';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<JSX.Element>,
-        'core.header-action.loader',
-        {}
-      >;
-      inputs: {};
-      params: (params: {
-        loader: () => Promise<JSX.Element>;
-      }) => ExtensionBlueprintParams<{
-        loader: () => Promise<JSX.Element>;
-      }>;
-    }>;
     'nav-item:app-visualizer': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -130,10 +113,23 @@ const visualizerPlugin: OverridableFrontendPlugin<
         path: string;
         title?: string;
         icon?: IconElement;
-        loader?: () => Promise<JSX.Element /** @public */>;
+        loader?: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
         noHeader?: boolean;
       };
+    }>;
+    'plugin-header-action:app-visualizer': OverridableExtensionDefinition<{
+      kind: 'plugin-header-action';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: (params: {
+        loader: () => Promise<JSX.Element>;
+      }) => ExtensionBlueprintParams<{
+        loader: () => Promise<JSX.Element>;
+      }>;
     }>;
     'sub-page:app-visualizer/details': OverridableExtensionDefinition<{
       kind: 'sub-page';

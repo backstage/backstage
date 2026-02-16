@@ -29,9 +29,9 @@ To enable sub-pages on a page, you can either omit the `loader` param to use the
 
 Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.
 
-### HeaderAction - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.HeaderActionBlueprint.html)
+### PluginHeaderAction - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PluginHeaderActionBlueprint.html)
 
-Header action extensions provide plugin-scoped actions that appear in the page header. They are automatically scoped to the plugin that provides them and will appear in the header of all pages belonging to that plugin. Actions are lazy-loaded via a `loader` function that returns a React element.
+Plugin header action extensions provide plugin-scoped actions that appear in the page header. They are automatically scoped to the plugin that provides them and will appear in the header of all pages belonging to that plugin. Actions are lazy-loaded via a `loader` function that returns a React element.
 
 ## Extension blueprints in `@backstage/frontend-plugin-api/alpha`
 

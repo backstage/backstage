@@ -38,4 +38,4 @@ export {
   PageLayout,
 } from './components';
 export { PluginWrapperApi } from './PluginWrapperApi';
-export { HeaderActionsApi } from './HeaderActionsApi';
+export { PluginHeaderActionsApi } from './PluginHeaderActionsApi';

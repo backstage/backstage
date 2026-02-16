@@ -25,11 +25,11 @@ import {
 } from '../wiring';
 import { ExtensionBoundary, PageLayout, PageTab } from '../components';
 import { useApi } from '../apis/system';
-import { headerActionsApiRef } from '../apis/definitions/HeaderActionsApi';
+import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
 
-function useHeaderActions(pluginId: string): ReactNode {
-  const headerActionsApi = useApi(headerActionsApiRef);
-  const actions = headerActionsApi.getHeaderActions(pluginId);
+function usePluginHeaderActions(pluginId: string): ReactNode {
+  const pluginHeaderActionsApi = useApi(pluginHeaderActionsApiRef);
+  const actions = pluginHeaderActionsApi.getPluginHeaderActions(pluginId);
   if (actions.length === 0) {
     return undefined;
   }
@@ -97,7 +97,7 @@ export const PageBlueprint = createExtensionBlueprint({
     if (params.loader) {
       const loader = params.loader;
       const PageContent = () => {
-        const headerActions = useHeaderActions(pluginId);
+        const headerActions = usePluginHeaderActions(pluginId);
         return (
           <PageLayout
             title={title}
@@ -127,7 +127,7 @@ export const PageBlueprint = createExtensionBlueprint({
 
       const PageContent = () => {
         const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
-        const headerActions = useHeaderActions(pluginId);
+        const headerActions = usePluginHeaderActions(pluginId);
 
         return (
           <PageLayout
@@ -158,7 +158,7 @@ export const PageBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(<PageContent />);
     } else {
       const PageContent = () => {
-        const headerActions = useHeaderActions(pluginId);
+        const headerActions = usePluginHeaderActions(pluginId);
         return (
           <PageLayout title={title} icon={icon} headerActions={headerActions} />
         );
