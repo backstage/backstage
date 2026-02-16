@@ -336,14 +336,14 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.34.4, @codemirror/view@npm:^6.35.0":
-  version: 6.39.12
-  resolution: "@codemirror/view@npm:6.39.12"
+  version: 6.39.14
+  resolution: "@codemirror/view@npm:6.39.14"
   dependencies:
     "@codemirror/state": "npm:^6.5.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/acd476d485914095fe38009bb29c7a6ac4cf3de2d3921172e27fc40639eb5bce0534766fd6e093c94aa60f076f263ce90a670a8052e220244bf4065f95c064bb
+  checksum: 10/956e79758d97e9fc6f6fd9a21575148cb0126712e0a3f78dc03031ebed1a5787eae581eda140f1af6686a5822b3c9c3a67547d2421a16003d45a2c0b6f83ca5e
   languageName: node
   linkType: hard
 
