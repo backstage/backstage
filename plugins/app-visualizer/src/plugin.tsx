@@ -19,7 +19,7 @@ import {
   createRouteRef,
   NavItemBlueprint,
   PageBlueprint,
-  HeaderActionBlueprint,
+  PluginHeaderActionBlueprint,
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { RiEyeLine } from '@remixicon/react';
@@ -75,7 +75,7 @@ const appVisualizerTextPage = SubPageBlueprint.make({
   },
 });
 
-const copyTreeAsJson = HeaderActionBlueprint.make({
+const copyTreeAsJson = PluginHeaderActionBlueprint.make({
   params: defineParams =>
     defineParams({
       loader: () =>

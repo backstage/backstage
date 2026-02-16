@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { type HeaderActionsApi } from '@backstage/frontend-plugin-api';
+import { type PluginHeaderActionsApi } from '@backstage/frontend-plugin-api';
 
 type ActionInput = {
   element: JSX.Element;
@@ -23,18 +23,20 @@ type ActionInput = {
 };
 
 /**
- * Default implementation of HeaderActionsApi.
+ * Default implementation of PluginHeaderActionsApi.
  *
  * @internal
  */
-export class DefaultHeaderActionsApi implements HeaderActionsApi {
+export class DefaultPluginHeaderActionsApi implements PluginHeaderActionsApi {
   constructor(private readonly actionsByPlugin: Map<string, ReactNode[]>) {}
 
-  getHeaderActions(pluginId: string): ReactNode[] {
+  getPluginHeaderActions(pluginId: string): ReactNode[] {
     return this.actionsByPlugin.get(pluginId) ?? [];
   }
 
-  static fromActions(actions: Array<ActionInput>): DefaultHeaderActionsApi {
+  static fromActions(
+    actions: Array<ActionInput>,
+  ): DefaultPluginHeaderActionsApi {
     const actionsByPlugin = new Map<string, ReactNode[]>();
 
     for (const action of actions) {
@@ -47,6 +49,6 @@ export class DefaultHeaderActionsApi implements HeaderActionsApi {
       pluginActions.push(action.element);
     }
 
-    return new DefaultHeaderActionsApi(actionsByPlugin);
+    return new DefaultPluginHeaderActionsApi(actionsByPlugin);
   }
 }

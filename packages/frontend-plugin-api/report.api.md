@@ -1424,39 +1424,6 @@ export const googleAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
-export const HeaderActionBlueprint: ExtensionBlueprint_2<{
-  kind: 'header-action';
-  params: (params: {
-    loader: () => Promise<JSX.Element>;
-  }) => ExtensionBlueprintParams_2<{
-    loader: () => Promise<JSX.Element>;
-  }>;
-  output: ExtensionDataRef_2<
-    () => Promise<JSX.Element>,
-    'core.header-action.loader',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    action: ConfigurableExtensionDataRef_2<
-      () => Promise<JSX.Element>,
-      'core.header-action.loader',
-      {}
-    >;
-  };
-}>;
-
-// @public
-export type HeaderActionsApi = {
-  getHeaderActions(pluginId: string): ReactNode[];
-};
-
-// @public
-export const headerActionsApiRef: ApiRef_2<HeaderActionsApi>;
-
 // @public @deprecated
 export type IconComponent = ComponentType<{
   fontSize?: 'medium' | 'large' | 'small' | 'inherit';
@@ -1868,6 +1835,29 @@ export type PendingOAuthRequest = {
   reject(): void;
   trigger(): Promise<void>;
 };
+
+// @public
+export const PluginHeaderActionBlueprint: ExtensionBlueprint_2<{
+  kind: 'plugin-header-action';
+  params: (params: {
+    loader: () => Promise<JSX.Element>;
+  }) => ExtensionBlueprintParams_2<{
+    loader: () => Promise<JSX.Element>;
+  }>;
+  output: ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
+
+// @public
+export type PluginHeaderActionsApi = {
+  getPluginHeaderActions(pluginId: string): ReactNode[];
+};
+
+// @public
+export const pluginHeaderActionsApiRef: ApiRef_2<PluginHeaderActionsApi>;
 
 // @public (undocumented)
 export interface PluginOptions<

@@ -16,27 +16,27 @@
 
 import {
   coreExtensionData,
-  headerActionsApiRef,
+  pluginHeaderActionsApiRef,
   createExtensionInput,
   ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { DefaultHeaderActionsApi } from '../apis/HeaderActionsApi';
+import { DefaultPluginHeaderActionsApi } from '../apis/PluginHeaderActionsApi';
 
 /**
  * Contains the plugin-scoped header actions installed into the app.
  */
-export const HeaderActionsApi = ApiBlueprint.makeWithOverrides({
-  name: 'header-actions',
+export const PluginHeaderActionsApi = ApiBlueprint.makeWithOverrides({
+  name: 'plugin-header-actions',
   inputs: {
     actions: createExtensionInput([coreExtensionData.reactElement]),
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory(defineParams =>
       defineParams({
-        api: headerActionsApiRef,
+        api: pluginHeaderActionsApiRef,
         deps: {},
         factory: () => {
-          return DefaultHeaderActionsApi.fromActions(
+          return DefaultPluginHeaderActionsApi.fromActions(
             inputs.actions.map(actionInput => ({
               element: actionInput.get(coreExtensionData.reactElement),
               pluginId: actionInput.node.spec.plugin.pluginId,

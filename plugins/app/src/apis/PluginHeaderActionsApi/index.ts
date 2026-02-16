@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { DefaultHeaderActionsApi } from './DefaultHeaderActionsApi';
+export { DefaultPluginHeaderActionsApi } from './DefaultPluginHeaderActionsApi';

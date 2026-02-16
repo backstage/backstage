@@ -32,9 +32,9 @@ import {
  *
  * @public
  */
-export const HeaderActionBlueprint = createExtensionBlueprint({
-  kind: 'header-action',
-  attachTo: { id: 'api:app/header-actions', input: 'actions' },
+export const PluginHeaderActionBlueprint = createExtensionBlueprint({
+  kind: 'plugin-header-action',
+  attachTo: { id: 'api:app/plugin-header-actions', input: 'actions' },
   output: [coreExtensionData.reactElement],
   defineParams(params: { loader: () => Promise<JSX.Element> }) {
     return createExtensionBlueprintParams(params);

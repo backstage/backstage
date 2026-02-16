@@ -394,7 +394,7 @@ describe('createApp', () => {
           <api:app/icons out=[core.api.factory] />
           <api:app/feature-flags out=[core.api.factory] />
           <api:app/plugin-wrapper out=[core.api.factory] />
-          <api:app/header-actions out=[core.api.factory] />
+          <api:app/plugin-header-actions out=[core.api.factory] />
           <api:app/translations out=[core.api.factory] />
           <api:app/components out=[core.api.factory] />
         ]

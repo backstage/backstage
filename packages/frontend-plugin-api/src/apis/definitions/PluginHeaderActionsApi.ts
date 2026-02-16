@@ -23,23 +23,23 @@ import { createApiRef } from '../system';
  * @remarks
  *
  * Header actions are provided via
- * {@link @backstage/frontend-plugin-api#HeaderActionBlueprint}
+ * {@link @backstage/frontend-plugin-api#PluginHeaderActionBlueprint}
  * and automatically scoped to the providing plugin.
  *
  * @public
  */
-export type HeaderActionsApi = {
+export type PluginHeaderActionsApi = {
   /**
    * Returns the header actions for a given plugin.
    */
-  getHeaderActions(pluginId: string): ReactNode[];
+  getPluginHeaderActions(pluginId: string): ReactNode[];
 };
 
 /**
- * The `ApiRef` of {@link HeaderActionsApi}.
+ * The `ApiRef` of {@link PluginHeaderActionsApi}.
  *
  * @public
  */
-export const headerActionsApiRef = createApiRef<HeaderActionsApi>({
-  id: 'core.header-actions',
+export const pluginHeaderActionsApiRef = createApiRef<PluginHeaderActionsApi>({
+  id: 'core.plugin-header-actions',
 });
