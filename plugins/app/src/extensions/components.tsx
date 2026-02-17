@@ -26,7 +26,7 @@ import {
   ErrorPanel,
   Progress as ProgressComponent,
 } from '@backstage/core-components';
-import { Header } from '@backstage/ui';
+import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 
 export const Progress = SwappableComponentBlueprint.make({
@@ -78,7 +78,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
           return (
             <>
               {!noHeader && (
-                <Header
+                <PluginHeader
                   title={title}
                   icon={icon}
                   tabs={tabs}
