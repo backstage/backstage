@@ -142,6 +142,7 @@ nav:
       - Composability System: 'plugins/composability.md'
       - Plugin Analytics: 'plugins/analytics.md'
       - Feature Flags: 'plugins/feature-flags.md'
+      - Internationalization (i18n): 'plugins/internationalization.md'
       - OpenAPI:
           - Schema-first plugins with OpenAPI (Experimental): 'openapi/01-getting-started.md'
           - Generate a client from your OpenAPI spec: 'openapi/generate-client.md'
