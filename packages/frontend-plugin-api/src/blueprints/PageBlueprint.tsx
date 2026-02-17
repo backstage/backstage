@@ -89,8 +89,8 @@ export const PageBlueprint = createExtensionBlueprint({
 
         return (
           <PageLayout
-            title={title}
-            icon={icon}
+            title={title ?? node.spec.plugin.title ?? node.spec.plugin.pluginId}
+            icon={icon ?? node.spec.plugin.icon}
             noHeader={noHeader}
             headerActions={headerActions}
           >
