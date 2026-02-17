@@ -17,10 +17,11 @@
 import {
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
+  QueryEntitiesRequest,
 } from './types/api';
 
 export function isQueryEntitiesInitialRequest(
-  request: QueryEntitiesInitialRequest,
+  request: QueryEntitiesRequest,
 ): request is QueryEntitiesInitialRequest {
   return !(request as QueryEntitiesCursorRequest).cursor;
 }

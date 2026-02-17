@@ -713,4 +713,266 @@ describe('DefaultLocationStore', () => {
       });
     });
   });
+
+  describe('queryLocations', () => {
+    const l1 = {
+      id: '00000000-0000-0000-0000-000000000001',
+      type: 'url',
+      target:
+        'https://github.com/backstage/backstage/blob/master/packages/catalog-model/catalog-info.yaml',
+    };
+    const l2 = {
+      id: '00000000-0000-0000-0000-000000000002',
+      type: 'url',
+      target:
+        'https://github.com/backstage/backstage/blob/master/plugins/catalog/catalog-info.yaml',
+    };
+    const l3 = {
+      id: '00000000-0000-0000-0000-000000000003',
+      type: 'url',
+      target:
+        'https://github.com/backstage/backstage/blob/master/plugins/scaffolder/catalog-info.yaml',
+    };
+    const l4 = {
+      id: '00000000-0000-0000-0000-000000000004',
+      type: 'file',
+      target: '/tmp/catalog-info.yaml',
+    };
+
+    it.each(databases.eachSupportedId())(
+      'queries locations correctly, %p',
+      async databaseId => {
+        const { store, knex } = await createLocationStore(databaseId);
+
+        // Insert locations in a random order to test the sorting
+        const locations = [l1, l2, l3, l4];
+        locations.sort(() => Math.random() - 0.5);
+        await knex<DbLocationsRow>('locations').delete();
+        for (const location of locations) {
+          await knex<DbLocationsRow>('locations').insert(location);
+        }
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+          }),
+        ).resolves.toEqual({
+          items: [l1, l2, l3, l4],
+          totalItems: 4,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: { type: 'url' },
+          }),
+        ).resolves.toEqual({
+          items: [l1, l2, l3],
+          totalItems: 3,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              type: 'url',
+              target:
+                'https://github.com/backstage/backstage/blob/master/plugins/catalog/catalog-info.yaml',
+            },
+          }),
+        ).resolves.toEqual({
+          items: [l2],
+          totalItems: 1,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: { Type: 'urL' },
+          }),
+        ).resolves.toEqual({
+          items: [l1, l2, l3],
+          totalItems: 3,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 2,
+            query: { type: 'url' },
+          }),
+        ).resolves.toEqual({
+          items: [l1, l2],
+          totalItems: 3,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: { type: 'file' },
+          }),
+        ).resolves.toEqual({
+          items: [l4],
+          totalItems: 1,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              $all: [
+                { type: 'url' },
+                {
+                  target: {
+                    $hasPrefix:
+                      'https://github.com/backstage/backstage/blob/master/pa',
+                  },
+                },
+              ],
+            },
+          }),
+        ).resolves.toEqual({
+          items: [l1],
+          totalItems: 1,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              $all: [
+                { type: 'file' },
+                {
+                  target: {
+                    $hasPrefix:
+                      'https://github.com/backstage/backstage/blob/master/pa',
+                  },
+                },
+              ],
+            },
+          }),
+        ).resolves.toEqual({
+          items: [],
+          totalItems: 0,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              $any: [
+                { type: 'file' },
+                {
+                  target: {
+                    $hasPrefix:
+                      'https://github.com/backstage/backstage/blob/master/pa',
+                  },
+                },
+              ],
+            },
+          }),
+        ).resolves.toEqual({
+          items: [l1, l4],
+          totalItems: 2,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              $not: { type: 'FILE' },
+            },
+          }),
+        ).resolves.toEqual({
+          items: [l1, l2, l3],
+          totalItems: 3,
+        });
+
+        // Multiple fields in a single query object should be ANDed together
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              type: 'url',
+              target: {
+                $hasPrefix:
+                  'https://github.com/backstage/backstage/blob/master/plugins/catalog',
+              },
+            },
+          }),
+        ).resolves.toEqual({
+          items: [l2],
+          totalItems: 1,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 1,
+            query: {
+              $not: { type: 'FILE' },
+            },
+          }),
+        ).resolves.toEqual({
+          items: [l1],
+          totalItems: 3,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              $not: { id: '00000000-0000-0000-0000-000000000004' },
+            },
+          }),
+        ).resolves.toEqual({
+          items: [l1, l2, l3],
+          totalItems: 3,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              id: { $exists: false },
+            },
+          }),
+        ).resolves.toEqual({
+          items: [],
+          totalItems: 0,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              $not: { id: { $exists: false } },
+            },
+          }),
+        ).resolves.toEqual({
+          items: [l1, l2, l3, l4],
+          totalItems: 4,
+        });
+
+        await expect(
+          store.queryLocations({ limit: 10, query: { $all: [] } }),
+        ).resolves.toEqual({
+          items: [],
+          totalItems: 0,
+        });
+
+        await expect(
+          store.queryLocations({ limit: 10, query: { $any: [] } }),
+        ).resolves.toEqual({
+          items: [],
+          totalItems: 0,
+        });
+
+        await expect(
+          store.queryLocations({ limit: 10, query: { type: { $in: [] } } }),
+        ).resolves.toEqual({
+          items: [],
+          totalItems: 0,
+        });
+      },
+    );
+  });
 });

@@ -25,6 +25,9 @@ import { GetLocationsResponse } from '@backstage/catalog-client';
 import { Location as Location_2 } from '@backstage/catalog-client';
 import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
+import { QueryLocationsInitialRequest } from '@backstage/catalog-client';
+import { QueryLocationsRequest } from '@backstage/catalog-client';
+import { QueryLocationsResponse } from '@backstage/catalog-client';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceMock } from '@backstage/backend-test-utils';
 import { StreamEntitiesRequest } from '@backstage/catalog-client';
@@ -93,6 +96,11 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<QueryEntitiesResponse>;
   // (undocumented)
+  queryLocations(
+    request?: QueryLocationsRequest,
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): Promise<QueryLocationsResponse>;
+  // (undocumented)
   refreshEntity(
     entityRef: string,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
@@ -112,6 +120,11 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     request?: StreamEntitiesRequest,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): AsyncIterable<Entity[]>;
+  // (undocumented)
+  streamLocations(
+    request?: QueryLocationsInitialRequest,
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): AsyncIterable<Location_2[]>;
   // (undocumented)
   validateEntity(
     entity: Entity,

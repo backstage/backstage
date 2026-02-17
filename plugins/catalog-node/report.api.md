@@ -31,6 +31,9 @@ import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common
 import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-catalog-node';
 import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
+import { QueryLocationsInitialRequest } from '@backstage/catalog-client';
+import { QueryLocationsRequest } from '@backstage/catalog-client';
+import { QueryLocationsResponse } from '@backstage/catalog-client';
 import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { StreamEntitiesRequest } from '@backstage/catalog-client';
@@ -234,6 +237,11 @@ export interface CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<QueryEntitiesResponse>;
   // (undocumented)
+  queryLocations(
+    request: QueryLocationsRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): Promise<QueryLocationsResponse>;
+  // (undocumented)
   refreshEntity(
     entityRef: string,
     options: CatalogServiceRequestOptions,
@@ -253,6 +261,11 @@ export interface CatalogService {
     request: StreamEntitiesRequest | undefined,
     options: CatalogServiceRequestOptions,
   ): AsyncIterable<Entity[]>;
+  // (undocumented)
+  streamLocations(
+    request: QueryLocationsInitialRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): AsyncIterable<Location_2[]>;
   // (undocumented)
   validateEntity(
     entity: Entity,
