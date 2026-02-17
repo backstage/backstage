@@ -165,7 +165,7 @@ export type NotificationsSideBarItemProps = {
   text?: string;
   disableHighlight?: boolean;
   noTrack?: boolean;
-  renderItem?: (props: NotificationsRenderItemProps) => React_2.ReactNode;
+  renderItem?: (props: NotificationsRenderItemProps) => React.ReactNode;
 };
 
 // @public (undocumented)
