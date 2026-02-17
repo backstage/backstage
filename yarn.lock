@@ -6870,10 +6870,10 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@octokit/webhooks": "npm:^10.9.2"
-    "@types/libsodium-wrappers": "npm:^0.7.10"
+    "@types/libsodium-wrappers": "npm:^0.8.0"
     fs-extra: "npm:^11.2.0"
     jsonschema: "npm:^1.2.6"
-    libsodium-wrappers: "npm:^0.7.11"
+    libsodium-wrappers: "npm:^0.8.0"
     octokit: "npm:^3.0.0"
     octokit-plugin-create-pull-request: "npm:^5.0.0"
     yaml: "npm:^2.0.0"
@@ -21853,10 +21853,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/libsodium-wrappers@npm:^0.7.10":
-  version: 0.7.14
-  resolution: "@types/libsodium-wrappers@npm:0.7.14"
-  checksum: 10/f29e4d2159c26ab00d7f0cc7a45bdccd086d9ece4c723f6d59f6d7e1dc35a7baf2b11de418b09dd69b94900bcfda621ef4f1ed9ffae51523978e432da67d911e
+"@types/libsodium-wrappers@npm:^0.8.0":
+  version: 0.8.2
+  resolution: "@types/libsodium-wrappers@npm:0.8.2"
+  dependencies:
+    libsodium-wrappers: "npm:*"
+  checksum: 10/c1603cc33465cf0d1e56c29ccbbdf4d0e1357324c29bf77e121277b91edaa0eaeab8c9263f8129f11036a5eab7a552028238b31746a7b5cf3ec2ad8001030377
   languageName: node
   linkType: hard
 
@@ -37392,19 +37394,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libsodium-wrappers@npm:^0.7.11":
-  version: 0.7.15
-  resolution: "libsodium-wrappers@npm:0.7.15"
+"libsodium-wrappers@npm:*, libsodium-wrappers@npm:^0.8.0":
+  version: 0.8.2
+  resolution: "libsodium-wrappers@npm:0.8.2"
   dependencies:
-    libsodium: "npm:^0.7.15"
-  checksum: 10/a97e72da2de9b9294df35aaa053c7943b7eab0e805e5c4cbdc37bd7190221875b57d485f41595b217e80cbe44f96033a756ea12bc6214d3710b2be3d16ac1f9b
+    libsodium: "npm:^0.8.0"
+  checksum: 10/0116b4deeea9ec21f1e4dcbf665ccaa41e6143161f16b5345c10ea995bd1f930155d4aca1783bee99d42854dda3265a22f48e5edb7ddfe1159bf460416e11117
   languageName: node
   linkType: hard
 
-"libsodium@npm:^0.7.15":
-  version: 0.7.15
-  resolution: "libsodium@npm:0.7.15"
-  checksum: 10/e91af900277c850359706e2dc05aca0b82d259244f5dfdbfc1aaa8a0d373d41cc62232545f7da10f8b3b85f1ae46782265891dd4f5671bc65d0287acdcfe1b56
+"libsodium@npm:^0.8.0":
+  version: 0.8.2
+  resolution: "libsodium@npm:0.8.2"
+  checksum: 10/ce129d552ceaf8c4cfcd96fce8a25b9a1118445e72a46b08237d9ac0c3bf7ba6e586fba2285837deaeb05f342e3fb9fa58be153e0c616ce298798c7b170d494c
   languageName: node
   linkType: hard
 
