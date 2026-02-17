@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.4.19-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.8-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/types@1.2.2
+
 ## 0.4.18
 
 ### Patch Changes

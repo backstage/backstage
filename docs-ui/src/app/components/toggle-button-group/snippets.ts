@@ -1,3 +1,9 @@
+export const toggleButtonGroupHeroSnippet = `<ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['dogs']}>
+  <ToggleButton id="dogs">Dogs</ToggleButton>
+  <ToggleButton id="cats">Cats</ToggleButton>
+  <ToggleButton id="birds">Birds</ToggleButton>
+</ToggleButtonGroup>`;
+
 export const toggleButtonGroupUsageSnippet = `import { ToggleButtonGroup, ToggleButton } from '@backstage/ui';
 
 <ToggleButtonGroup selectionMode="single">
@@ -56,9 +62,9 @@ export const toggleButtonGroupIconsSnippet = `import { RiCloudLine, RiStarFill, 
 export const toggleButtonGroupIconsOnlySnippet = `import { RiCloudLine, RiStarLine, RiArrowRightSLine } from '@remixicon/react';
 
 <ToggleButtonGroup selectionMode="multiple" defaultSelectedKeys={['cloud']}>
-  <ToggleButton id="cloud" iconStart={<RiCloudLine />} />
-  <ToggleButton id="star" iconStart={<RiStarLine />} />
-  <ToggleButton id="next" iconEnd={<RiArrowRightSLine />} />
+  <ToggleButton id="cloud" aria-label="Cloud" iconStart={<RiCloudLine />} />
+  <ToggleButton id="star" aria-label="Star" iconStart={<RiStarLine />} />
+  <ToggleButton id="next" aria-label="Next" iconEnd={<RiArrowRightSLine />} />
 </ToggleButtonGroup>`;
 
 export const toggleButtonGroupSurfacesSnippet = `<Flex direction="column" gap="4">

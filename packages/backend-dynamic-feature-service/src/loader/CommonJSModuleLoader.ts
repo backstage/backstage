@@ -15,7 +15,7 @@
  */
 import { ModuleLoader } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import path from 'path';
+import path from 'node:path';
 import { ScannedPluginManifest } from '../scanner';
 
 /**

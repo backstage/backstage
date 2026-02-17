@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
 
 export function generateStableHash(entity: Entity) {

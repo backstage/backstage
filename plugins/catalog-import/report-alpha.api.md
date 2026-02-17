@@ -6,8 +6,11 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -34,8 +37,11 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'importInfoCard.githubIntegration.label': 'GitHub only';
     readonly 'importInfoCard.githubIntegration.title': 'Link to a repository';
     readonly 'importStepper.finish.title': 'Finish';
+    readonly 'importStepper.singleLocation.title': 'Select Locations';
+    readonly 'importStepper.singleLocation.description': 'Discovered Locations: 1';
+    readonly 'importStepper.multipleLocations.title': 'Select Locations';
+    readonly 'importStepper.multipleLocations.description': 'Discovered Locations: {{length, number}}';
     readonly 'importStepper.noLocation.title': 'Create Pull Request';
-    readonly 'importStepper.noLocation.createPr.ownerLabel': 'Entity Owner';
     readonly 'importStepper.noLocation.createPr.detailsTitle': 'Pull Request Details';
     readonly 'importStepper.noLocation.createPr.titleLabel': 'Pull Request Title';
     readonly 'importStepper.noLocation.createPr.titlePlaceholder': 'Add Backstage catalog entity descriptor files';
@@ -47,23 +53,20 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'importStepper.noLocation.createPr.ownerLoadingText': 'Loading groups…';
     readonly 'importStepper.noLocation.createPr.ownerHelperText': 'Select an owner from the list or enter a reference to a Group or a User';
     readonly 'importStepper.noLocation.createPr.ownerErrorHelperText': 'required value';
+    readonly 'importStepper.noLocation.createPr.ownerLabel': 'Entity Owner';
     readonly 'importStepper.noLocation.createPr.ownerPlaceholder': 'my-group';
     readonly 'importStepper.noLocation.createPr.codeownersHelperText': 'WARNING: This may fail if no CODEOWNERS file is found at the target location.';
-    readonly 'importStepper.singleLocation.title': 'Select Locations';
-    readonly 'importStepper.singleLocation.description': 'Discovered Locations: 1';
-    readonly 'importStepper.multipleLocations.title': 'Select Locations';
-    readonly 'importStepper.multipleLocations.description': 'Discovered Locations: {{length, number}}';
     readonly 'importStepper.analyze.title': 'Select URL';
     readonly 'importStepper.prepare.title': 'Import Actions';
     readonly 'importStepper.prepare.description': 'Optional';
     readonly 'importStepper.review.title': 'Review';
     readonly 'stepFinishImportLocation.repository.title': 'The following Pull Request has been opened: ';
     readonly 'stepFinishImportLocation.repository.description': 'Your entities will be imported as soon as the Pull Request is merged.';
-    readonly 'stepFinishImportLocation.backButtonText': 'Register another';
     readonly 'stepFinishImportLocation.locations.new': 'The following entities have been added to the catalog:';
     readonly 'stepFinishImportLocation.locations.backButtonText': 'Register another';
     readonly 'stepFinishImportLocation.locations.existing': 'A refresh was triggered for the following locations:';
     readonly 'stepFinishImportLocation.locations.viewButtonText': 'View Component';
+    readonly 'stepFinishImportLocation.backButtonText': 'Register another';
     readonly 'stepInitAnalyzeUrl.error.default': 'Received unknown analysis result of type {{type}}. Please contact the support team.';
     readonly 'stepInitAnalyzeUrl.error.url': 'Must start with http:// or https://.';
     readonly 'stepInitAnalyzeUrl.error.repository': "Couldn't generate entities for your repository";
@@ -115,26 +118,76 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       config: {
         path: string | undefined;
+        title: string | undefined;
       };
       configInput: {
+        title?: string | undefined;
         path?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            string,
+            'core.title',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
           >;
-      inputs: {};
+      inputs: {
+        pages: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef_2<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'core.title',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              IconElement,
+              'core.icon',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
       params: {
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        loader: () => Promise<JSX.Element>;
+        title?: string;
+        icon?: IconElement;
+        loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
+        noHeader?: boolean;
       };
     }>;
   }

@@ -20,10 +20,19 @@ export {
   AccordionPanel,
   AccordionGroup,
 } from './Accordion';
-export { AccordionDefinition } from './definition';
+export {
+  AccordionDefinition,
+  AccordionTriggerDefinition,
+  AccordionPanelDefinition,
+  AccordionGroupDefinition,
+} from './definition';
 export type {
+  AccordionOwnProps,
   AccordionProps,
+  AccordionTriggerOwnProps,
   AccordionTriggerProps,
+  AccordionPanelOwnProps,
   AccordionPanelProps,
+  AccordionGroupOwnProps,
   AccordionGroupProps,
 } from './types';

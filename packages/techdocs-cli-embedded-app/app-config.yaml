@@ -1,6 +1,11 @@
 app:
   title: Techdocs Preview App
   baseUrl: http://localhost:3000
+  extensions:
+    - sign-in-page:app: false
+    - page:techdocs/reader:
+        config:
+          withoutSearch: true
 
 backend:
   baseUrl: http://localhost:3000

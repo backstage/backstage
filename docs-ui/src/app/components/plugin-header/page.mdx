@@ -1,0 +1,57 @@
+import { PropsTable } from '@/components/PropsTable';
+import { CodeBlock } from '@/components/CodeBlock';
+import { Snippet } from '@/components/Snippet';
+import {
+  WithAllOptionsAndTabs,
+  WithAllOptions,
+  WithHeaderPage,
+} from './components';
+import { headerPropDefs } from './props-definition';
+import {
+  usage,
+  simple,
+  defaultSnippet,
+  withTabs,
+  withHeaderPage,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { PluginHeaderDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="PluginHeader"
+  description="A plugin header with icon, title, custom actions, and navigation tabs."
+/>
+
+<Snippet py={4} preview={<WithAllOptionsAndTabs />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={usage} />
+
+## API reference
+
+<PropsTable data={headerPropDefs} />
+
+## Examples
+
+### Simple plugin header
+
+<Snippet py={4} preview={<WithAllOptions />} code={simple} open />
+
+### Plugin header with tabs
+
+Tabs use React Router and highlight automatically based on the current route.
+
+<Snippet preview={<WithAllOptionsAndTabs />} code={withTabs} open />
+
+### Plugin header with HeaderPage
+
+Combine with [HeaderPage](/components/header-page) for multi-level navigation.
+
+<Snippet preview={<WithHeaderPage />} code={withHeaderPage} open />
+
+<Theming definition={PluginHeaderDefinition} />
+
+<ChangelogComponent component="plugin-header" />

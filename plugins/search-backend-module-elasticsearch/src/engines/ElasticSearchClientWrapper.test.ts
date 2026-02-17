@@ -17,7 +17,7 @@
 import { Client as ElasticSearchClient } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 import Mock from '@short.io/opensearch-mock';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchClientOptions } from './ElasticSearchSearchEngine';

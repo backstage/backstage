@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-const path = require('path');
+const path = require('node:path');
 
 // Figure out whether we're running inside the backstage repo or as an installed dependency
 /* eslint-disable-next-line no-restricted-syntax */
-const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
+const isLocal = require('node:fs').existsSync(
+  path.resolve(__dirname, '../src'),
+);
 
 if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
   require('..');

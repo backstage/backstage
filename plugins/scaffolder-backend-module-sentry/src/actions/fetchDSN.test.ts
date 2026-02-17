@@ -20,7 +20,7 @@ import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { setupServer } from 'msw/node';
 import { HttpResponse, http } from 'msw';
 import { createSentryFetchDSNAction } from './fetchDSN';

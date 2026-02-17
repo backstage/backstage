@@ -365,6 +365,15 @@ export async function createRouter(
             continue;
           }
         }
+
+        if (filters.includedTopics) {
+          if (
+            !payload.topic ||
+            !filters.includedTopics.includes(payload.topic)
+          ) {
+            continue;
+          }
+        }
       }
       result.push(processor);
     }
@@ -418,14 +427,16 @@ export async function createRouter(
   ) => {
     const filtered = await filterProcessors(notification);
     for (const processor of filtered) {
-      if (processor.postProcess) {
-        try {
-          await processor.postProcess(notification, opts);
-        } catch (e) {
-          logger.error(
-            `Error while post processing notification with ${processor.getName()}: ${e}`,
-          );
-        }
+      if (!processor.postProcess) {
+        continue;
+      }
+
+      try {
+        await processor.postProcess(notification, opts);
+      } catch (e) {
+        logger.error(
+          `Error while post processing notification with ${processor.getName()}: ${e}`,
+        );
       }
     }
   };

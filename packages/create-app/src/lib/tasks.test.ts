@@ -15,9 +15,9 @@
  */
 
 import fs from 'fs-extra';
-import child_process from 'child_process';
-import { resolve as resolvePath } from 'path';
-import os from 'os';
+import child_process from 'node:child_process';
+import { resolve as resolvePath } from 'node:path';
+import os from 'node:os';
 import {
   Task,
   buildAppTask,

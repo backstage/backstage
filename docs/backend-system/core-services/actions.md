@@ -30,13 +30,39 @@ This naming convention ensures that action names are globally unique across all 
 
 ## Configuration
 
-The Actions Service can be configured to control which plugins' actions are available:
+### Restricting action sources by plugin
+
+The `pluginSources` configuration limits which plugins are allowed to register actions.
 
 ```yaml
 backend:
   actions:
     pluginSources:
       - catalog
+```
+
+### Filtering actions
+
+In addition to plugin-level restrictions, the Actions Service supports filtering actions using include and exclude rules. This allows fine-grained control over which actions are exposed or runnable in a Backstage instance.
+
+#### Include specific actions
+
+```yaml
+backend:
+  actions:
+    filter:
+      include:
+        - 'catalog.*'
+```
+
+#### Exclude specific actions
+
+```yaml
+backend:
+  actions:
+    filter:
+      exclude:
+        - 'scaffolder.internal.*'
 ```
 
 ## Using the Service

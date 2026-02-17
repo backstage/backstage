@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { extname } from 'path';
+import { extname } from 'node:path';
 import { BackstagePackageJson } from '@backstage/cli-node';
 
 export interface EntryPoint {
@@ -33,18 +33,25 @@ const defaultIndex = {
   ext: '.ts',
 };
 
+const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
+
 function parseEntryPoint(mount: string, path: string): EntryPoint {
+  const ext = extname(path);
+
   let name = mount;
   if (name === '.') {
     name = 'index';
   } else if (name.startsWith('./')) {
     name = name.slice(2);
   }
-  if (name.includes('/')) {
+
+  // Script entry points can't have slashes because we create backward-compat
+  // directories for them. Non-script files (like CSS) can have nested paths.
+  if (name.includes('/') && SCRIPT_EXTS.includes(ext)) {
     throw new Error(`Mount point '${mount}' may not contain multiple slashes`);
   }
 
-  return { mount, path, name, ext: extname(path) };
+  return { mount, path, name, ext };
 }
 
 export function readEntryPoints(pkg: BackstagePackageJson): Array<EntryPoint> {

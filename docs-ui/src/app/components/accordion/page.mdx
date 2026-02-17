@@ -30,10 +30,16 @@ import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { AccordionDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  disclosure: 'https://react-aria.adobe.com/Disclosure',
+  disclosureGroup: 'https://react-aria.adobe.com/DisclosureGroup',
+};
 
 <PageTitle
   title="Accordion"
-  description="A component for showing and hiding content with animation."
+  description="A collapsible panel with title and subtitle for organizing content into expandable sections."
 />
 
 <Snippet
@@ -56,6 +62,8 @@ Root container for the accordion. Renders a `<div>` element.
 
 <PropsTable data={accordionPropDefs} />
 
+<ReactAriaLink component="Disclosure" href={reactAriaUrls.disclosure} />
+
 ### AccordionTrigger
 
 Trigger component with built-in animated chevron icon. Renders a heading element (defaults to `<h3>`, configurable via `level` prop) wrapping a `<button>`.
@@ -74,18 +82,23 @@ Container for managing multiple accordions. Renders a `<div>` element.
 
 <PropsTable data={accordionGroupPropDefs} />
 
+<ReactAriaLink
+  component="DisclosureGroup"
+  href={reactAriaUrls.disclosureGroup}
+/>
+
 ## Examples
 
 ### With Subtitle
 
-Here's a view when using both title and subtitle props.
+Accordions can display a subtitle below the title.
 
 <Snippet
   align="center"
   py={4}
-  height={240}
   preview={<WithSubtitle />}
   code={withSubtitleSnippet}
+  layout="side-by-side"
 />
 
 ### With Icon
@@ -102,19 +115,16 @@ Add an icon to improve visual hierarchy and scanability. Icons can be positioned
 
 ### Custom Trigger
 
-Here's a view when providing custom multi-line content as children.
+Pass custom content as children instead of using the title prop.
 
 <Snippet
   align="center"
   py={4}
-  height={280}
   preview={<CustomTrigger />}
   code={customTriggerSnippet}
 />
 
 ### Default Expanded
-
-Here's a view when the panel is expanded by default.
 
 <Snippet
   align="center"
@@ -122,11 +132,12 @@ Here's a view when the panel is expanded by default.
   height={280}
   preview={<DefaultExpanded />}
   code={defaultExpandedSnippet}
+  layout="side-by-side"
 />
 
 ### Group Single Open
 
-Here's a view when only one accordion can be open at a time.
+Use `AccordionGroup` to allow only one accordion open at a time.
 
 <Snippet
   align="center"
@@ -138,7 +149,7 @@ Here's a view when only one accordion can be open at a time.
 
 ### Group Multiple Open
 
-Here's a view when multiple accordions can be open simultaneously.
+Allows multiple panels to be open simultaneously.
 
 <Snippet
   align="center"

@@ -29,8 +29,7 @@ import {
 /** @alpha */
 export type { TechDocsAddonOptions, TechDocsAddonLocations } from './types';
 
-/** @alpha */
-export const techDocsAddonDataRef =
+const techDocsAddonDataRef =
   createExtensionDataRef<TechDocsAddonOptions>().with({
     id: 'techdocs.addon',
   });
@@ -41,10 +40,7 @@ export const techDocsAddonDataRef =
  */
 export const AddonBlueprint = createExtensionBlueprint({
   kind: 'addon',
-  attachTo: [
-    { id: 'page:techdocs/reader', input: 'addons' },
-    { id: 'entity-content:techdocs', input: 'addons' },
-  ],
+  attachTo: { id: 'api:techdocs/addons', input: 'addons' },
   output: [techDocsAddonDataRef],
   factory: (params: TechDocsAddonOptions) => [techDocsAddonDataRef(params)],
   dataRefs: {

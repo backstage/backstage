@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ReactNode } from 'react';
 import type {
   DisclosureProps as RADisclosureProps,
   HeadingProps as RAHeadingProps,
@@ -22,18 +23,26 @@ import type {
 } from 'react-aria-components';
 
 /**
+ * Own props for the Accordion component.
+ * @public
+ */
+export type AccordionOwnProps = {
+  className?: string;
+};
+
+/**
  * Props for the Accordion component.
  * @public
  */
-export interface AccordionProps extends RADisclosureProps {
-  className?: string;
-}
+export interface AccordionProps
+  extends Omit<RADisclosureProps, 'className'>,
+    AccordionOwnProps {}
 
 /**
- * Props for the AccordionTrigger component.
+ * Own props for the AccordionTrigger component.
  * @public
  */
-export interface AccordionTriggerProps extends RAHeadingProps {
+export type AccordionTriggerOwnProps = {
   className?: string;
   title?: string;
   subtitle?: string;
@@ -49,24 +58,50 @@ export interface AccordionTriggerProps extends RAHeadingProps {
    */
   iconEnd?: React.ReactElement;
 }
+  children?: ReactNode;
+};
+
+/**
+ * Props for the AccordionTrigger component.
+ * @public
+ */
+export interface AccordionTriggerProps
+  extends Omit<RAHeadingProps, 'children' | 'className'>,
+    AccordionTriggerOwnProps {}
+
+/**
+ * Own props for the AccordionPanel component.
+ * @public
+ */
+export type AccordionPanelOwnProps = {
+  className?: string;
+};
 
 /**
  * Props for the AccordionPanel component.
  * @public
  */
-export interface AccordionPanelProps extends RADisclosurePanelProps {
-  className?: string;
-}
+export interface AccordionPanelProps
+  extends Omit<RADisclosurePanelProps, 'className'>,
+    AccordionPanelOwnProps {}
 
 /**
- * Props for the AccordionGroup component.
+ * Own props for the AccordionGroup component.
  * @public
  */
-export interface AccordionGroupProps extends RADisclosureGroupProps {
+export type AccordionGroupOwnProps = {
   className?: string;
   /**
    * Whether multiple accordions can be expanded at the same time.
    * @defaultValue false
    */
   allowsMultiple?: boolean;
-}
+};
+
+/**
+ * Props for the AccordionGroup component.
+ * @public
+ */
+export interface AccordionGroupProps
+  extends Omit<RADisclosureGroupProps, 'className'>,
+    AccordionGroupOwnProps {}

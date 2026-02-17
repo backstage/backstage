@@ -17,8 +17,8 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { Command, OptionValues } from 'commander';
-import { createHash } from 'crypto';
-import { relative as relativePath } from 'path';
+import { createHash } from 'node:crypto';
+import { relative as relativePath } from 'node:path';
 import {
   PackageGraph,
   BackstagePackageJson,
@@ -124,11 +124,11 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       maxWarnings,
     }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');
-      const crypto = require('crypto') as typeof import('crypto');
+      const crypto = require('node:crypto') as typeof import('crypto');
       const globby = require('globby') as typeof import('globby');
       const { readFile } =
-        require('fs/promises') as typeof import('fs/promises');
-      const workerPath = require('path') as typeof import('path');
+        require('node:fs/promises') as typeof import('fs/promises');
+      const workerPath = require('node:path') as typeof import('path');
 
       return async ({
         fullDir,

@@ -1,5 +1,119 @@
 # @backstage/frontend-test-utils
 
+## 0.5.0-next.2
+
+### Minor Changes
+
+- 09a6aad: **BREAKING**: Removed the `TestApiRegistry` class, use `TestApiProvider` directly instead, storing reused APIs in a variable, e.g. `const apis = [...] as const`.
+- d2ac2ec: Added `MockAlertApi` and `MockFeatureFlagsApi` implementations to the `mockApis` namespace. The mock implementations include useful testing methods like `clearAlerts()`, `waitForAlert()`, `getState()`, `setState()`, and `clearState()` for better test ergonomics.
+- 09a6aad: **BREAKING**: The `mockApis` namespace is no longer a re-export from `@backstage/test-utils`. It's now a standalone namespace with mock implementations of most core APIs. Mock API instances can be passed directly to `TestApiProvider`, `renderInTestApp`, and `renderTestApp` without needing `[apiRef, impl]` tuples. As part of this change, the `.factory()` method on some mocks has been removed, since it's now redundant.
+
+  ```tsx
+  // Before
+  import { mockApis } from '@backstage/frontend-test-utils';
+
+  renderInTestApp(<MyComponent />, {
+    apis: [[identityApiRef, mockApis.identity()]],
+  });
+
+  // After - mock APIs can be passed directly
+  renderInTestApp(<MyComponent />, {
+    apis: [mockApis.identity()],
+  });
+  ```
+
+  This change also adds `createApiMock`, a public utility for creating mock API factories, intended for plugin authors to create their own `.mock()` variants.
+
+### Patch Changes
+
+- 15ed3f9: Added `snapshot()` method to `ExtensionTester`, which returns a tree-shaped representation of the resolved extension hierarchy. Convenient to use with `toMatchInlineSnapshot()`.
+- 013ec22: Added `mountedRoutes` option to `renderTestApp` for binding route refs to paths, matching the existing option in `renderInTestApp`:
+
+  ```typescript
+  renderTestApp({
+    extensions: [...],
+    mountedRoutes: {
+      '/my-path': myRouteRef,
+    },
+  });
+  ```
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.5-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/frontend-app-api@0.15.0-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/plugin-permission-react@0.4.40-next.1
+  - @backstage/version-bridge@1.0.12-next.0
+  - @backstage/test-utils@1.7.15-next.2
+  - @backstage/plugin-app@0.4.0-next.2
+  - @backstage/plugin-app-react@0.1.1-next.0
+
+## 0.4.6-next.1
+
+### Patch Changes
+
+- 22864b7: Added an `apis` option to `createExtensionTester`, `renderInTestApp`, and `renderTestApp` to override APIs when testing extensions. Use the `mockApis` helpers to create mock implementations:
+
+  ```typescript
+  import { identityApiRef } from '@backstage/frontend-plugin-api';
+  import { mockApis } from '@backstage/frontend-test-utils';
+
+  // Override APIs in createExtensionTester
+  const tester = createExtensionTester(myExtension, {
+    apis: [
+      [
+        identityApiRef,
+        mockApis.identity({ userEntityRef: 'user:default/guest' }),
+      ],
+    ],
+  });
+
+  // Override APIs in renderInTestApp
+  renderInTestApp(<MyComponent />, {
+    apis: [
+      [
+        identityApiRef,
+        mockApis.identity({ userEntityRef: 'user:default/guest' }),
+      ],
+    ],
+  });
+
+  // Override APIs in renderTestApp
+  renderTestApp({
+    extensions: [myExtension],
+    apis: [
+      [
+        identityApiRef,
+        mockApis.identity({ userEntityRef: 'user:default/guest' }),
+      ],
+    ],
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/plugin-app@0.4.0-next.1
+  - @backstage/test-utils@1.7.15-next.1
+
+## 0.4.5-next.0
+
+### Patch Changes
+
+- d7dd5bd: Fixed Router deprecation warning and switched to using new `RouterBlueprint` from `@backstage/plugin-app-api`.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/frontend-app-api@0.14.1-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/plugin-app@0.4.0-next.0
+  - @backstage/plugin-app-react@0.1.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/test-utils@1.7.15-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 0.4.3
 
 ### Patch Changes

@@ -69,20 +69,25 @@ export class AppLanguageSelector implements AppLanguageApi {
       selector.setLanguage(storedLanguage);
     }
 
-    selector.language$().subscribe(({ language }) => {
+    const subscription = selector.language$().subscribe(({ language }) => {
       if (language !== window.localStorage.getItem(STORAGE_KEY)) {
         window.localStorage.setItem(STORAGE_KEY, language);
       }
     });
 
-    window.addEventListener('storage', event => {
+    const storageListener = (event: StorageEvent) => {
       if (event.key === STORAGE_KEY) {
         const language = localStorage.getItem(STORAGE_KEY) ?? undefined;
         if (language) {
           selector.setLanguage(language);
         }
       }
-    });
+    };
+    window.addEventListener('storage', storageListener);
+
+    // Store cleanup references for potential disposal
+    selector.#storageSubscription = subscription;
+    selector.#storageListener = storageListener;
 
     return selector;
   }
@@ -90,6 +95,10 @@ export class AppLanguageSelector implements AppLanguageApi {
   #languages: string[];
   #language: string;
   #subject: BehaviorSubject<{ language: string }>;
+
+  // References for cleanup when using createWithStorage
+  #storageSubscription?: { unsubscribe(): void };
+  #storageListener?: (event: StorageEvent) => void;
 
   private constructor(languages: string[], initialLanguage: string) {
     this.#languages = languages;
@@ -125,5 +134,21 @@ export class AppLanguageSelector implements AppLanguageApi {
 
   language$(): Observable<{ language: string }> {
     return this.#subject;
+  }
+
+  /**
+   * Cleans up resources created by createWithStorage().
+   * Call this method when the selector is no longer needed to prevent memory leaks.
+   * This is particularly useful in testing scenarios or when the app is unmounted.
+   */
+  dispose(): void {
+    if (this.#storageSubscription) {
+      this.#storageSubscription.unsubscribe();
+      this.#storageSubscription = undefined;
+    }
+    if (this.#storageListener) {
+      window.removeEventListener('storage', this.#storageListener);
+      this.#storageListener = undefined;
+    }
   }
 }

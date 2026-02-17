@@ -16,6 +16,9 @@
 import preview from '../../../../../.storybook/preview';
 import { Card, CardHeader, CardBody, CardFooter } from './Card';
 import { Text } from '../..';
+import { Flex } from '../Flex';
+import { Box } from '../Box';
+import { Button } from '../Button';
 
 const meta = preview.meta({
   title: 'Backstage UI/Card',
@@ -80,7 +83,7 @@ const ListRow = ({ children }: { children: React.ReactNode }) => {
       style={{
         height: 40,
         width: '100%',
-        backgroundColor: 'var(--bui-gray-3)',
+        backgroundColor: 'var(--bui-bg-neutral-3)',
         display: 'flex',
         alignItems: 'center',
         paddingInline: 'var(--bui-space-3)',
@@ -122,5 +125,121 @@ export const WithListRow = meta.story({
         <Text>Footer</Text>
       </CardFooter>
     </Card>
+  ),
+});
+
+export const Backgrounds = meta.story({
+  render: args => (
+    <Flex align="start" style={{ flexWrap: 'wrap' }} gap="4">
+      <Card {...args} style={{ width: '200px' }}>
+        <CardHeader>No parent</CardHeader>
+        <CardBody>Defaults to neutral-1</CardBody>
+      </Card>
+      <Box bg="neutral-1" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-1</CardHeader>
+          <CardBody>Auto-increments to neutral-2</CardBody>
+        </Card>
+      </Box>
+      <Box bg="neutral-2" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-2</CardHeader>
+          <CardBody>Auto-increments to neutral-3</CardBody>
+        </Card>
+      </Box>
+      <Box bg="neutral-3" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-3</CardHeader>
+          <CardBody>Steps up to neutral-4</CardBody>
+        </Card>
+      </Box>
+    </Flex>
+  ),
+});
+
+export const BgNested = meta.story({
+  render: args => (
+    <Flex direction="column">
+      <Box style={{ maxWidth: '600px' }} mb="4">
+        Nested cards auto-increment their neutral level. Buttons inherit the
+        parent card's bg via data-on-bg.
+      </Box>
+      <Card {...args} style={{ width: '500px' }}>
+        <CardHeader>Card (visual: neutral-1, provides: neutral-1)</CardHeader>
+        <CardBody>
+          <Button variant="secondary">Button (on neutral-1)</Button>
+          <Card {...args} style={{ marginTop: '16px' }}>
+            <CardHeader>
+              Card (visual: neutral-2, provides: neutral-2)
+            </CardHeader>
+            <CardBody>
+              <Button variant="secondary">Button (on neutral-2)</Button>
+              <Card {...args} style={{ marginTop: '16px' }}>
+                <CardHeader>
+                  Card (visual: neutral-4, provides: neutral-3)
+                </CardHeader>
+                <CardBody>
+                  <Button variant="secondary">Button (on neutral-3)</Button>
+                </CardBody>
+              </Card>
+            </CardBody>
+          </Card>
+        </CardBody>
+      </Card>
+    </Flex>
+  ),
+});
+
+export const BgOnProviders = meta.story({
+  render: args => (
+    <Flex align="start" style={{ flexWrap: 'wrap' }} gap="4">
+      <Card {...args} style={{ width: '200px' }}>
+        <CardHeader>No provider</CardHeader>
+        <CardBody>Card defaults to neutral-1</CardBody>
+      </Card>
+      <Box bg="neutral-1" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-1</CardHeader>
+          <CardBody>Card auto-increments to neutral-2</CardBody>
+        </Card>
+      </Box>
+      <Box bg="neutral-2" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-2</CardHeader>
+          <CardBody>Card auto-increments to neutral-3</CardBody>
+        </Card>
+      </Box>
+      <Box bg="neutral-3" p="4" style={{ borderRadius: '8px' }}>
+        <Card {...args} style={{ width: '200px' }}>
+          <CardHeader>On neutral-3</CardHeader>
+          <CardBody>Card visually at neutral-4</CardBody>
+        </Card>
+      </Box>
+    </Flex>
+  ),
+});
+
+export const CustomCardWithBox = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <Box style={{ maxWidth: '600px' }}>
+        A custom card built with Box. Use Box with an explicit bg prop to create
+        a card-like container that participates in the bg system as a provider.
+      </Box>
+      <Box
+        bg="neutral-auto"
+        p="4"
+        style={{ borderRadius: '8px', width: '300px' }}
+      >
+        <Button variant="secondary" style={{ marginTop: '8px' }}>
+          Button (on neutral-1)
+        </Button>
+      </Box>
+      <Card style={{ width: '300px' }}>
+        <CardHeader>Header</CardHeader>
+        <CardBody>Body</CardBody>
+        <CardFooter>Footer</CardFooter>
+      </Card>
+    </Flex>
   ),
 });

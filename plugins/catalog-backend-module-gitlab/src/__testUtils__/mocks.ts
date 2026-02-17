@@ -57,6 +57,18 @@ export const config_saas: MockObject = {
   baseUrl: 'https://gitlab.com',
 };
 
+export const config_partial_add_search: MockObject = {
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          useSearch: true,
+        },
+      },
+    },
+  },
+};
+
 export const config_no_org_integration: MockObject = {
   integrations: {
     gitlab: [
@@ -156,6 +168,47 @@ export const config_github_host: MockObject = {
           host: 'example.com',
           groupPattern: '^group.*',
           orgEnabled: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_partial_test_id_use_search: MockObject = {
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          useSearch: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_single_integration_with_search: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          entityFilename: 'catalog-info.yaml',
+          useSearch: true,
+          skipForkedRepos: true,
+          schedule: {
+            frequency: 'PT30M',
+            timeout: 'PT3M',
+          },
         },
       },
     },
@@ -1378,6 +1431,16 @@ export const expectedSaasGroup: MockObject[] = [
 ];
 
 /**
+ * Subset of projects for which we consider they will have a catalog-info.yaml in their default branch.
+ * Used for search tests.
+ */
+export const projects_with_catalog_info_yaml: MockObject[] =
+  all_projects_response
+    .filter(project => !project.archived)
+    .filter(project => project.path_with_namespace?.startsWith('group1/'))
+    .filter(project => project.default_branch === 'main');
+
+/**
  * GitLab Events
  */
 
@@ -1841,6 +1904,35 @@ export const push_modif_event: EventParams = {
 /**
  * Expected Backstage entities
  */
+
+export const expected_location_from_search_on_group_1: MockObject[] =
+  projects_with_catalog_info_yaml
+    .filter(project => !project.forked_from_project)
+    .map(project => {
+      const targetUrl = `https://example.com/${project.path_with_namespace}/-/blob/${project.default_branch}/catalog-info.yaml`;
+      return {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${targetUrl}`,
+              'backstage.io/managed-by-origin-location': `url:${targetUrl}`,
+            },
+            name: locationSpecToMetadataName({
+              target: targetUrl,
+              type: 'url',
+            }),
+          },
+          spec: {
+            presence: 'optional',
+            target: targetUrl,
+            type: 'url',
+          },
+        },
+        locationKey: 'GitlabDiscoveryEntityProvider:test-id',
+      };
+    });
 
 // includes only projects that have a default branch (for when the branch and fallback branch were not set in the config)
 export const expected_location_entities_default_branch: MockObject[] =
@@ -2956,5 +3048,81 @@ export const all_self_hosted_group1_members: MockObject[] = [
     email: 'mario.mario-company.com',
     avatar_url: 'https://secure.gravatar.com/',
     web_url: 'https://gitlab.example/mario_mario',
+  },
+];
+
+export const expected_projects_with_catalog_info_yaml_entities: MockObject[] = [
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/JohnDoe',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/JohnDoe',
+          'example.com/user-login': 'https://gitlab.example/john_doe',
+        },
+        name: 'JohnDoe',
+      },
+      spec: {
+        memberOf: ['subgroup1', 'group1'],
+        profile: {
+          displayName: 'John Doe',
+          email: 'john.doe@company.com',
+          picture: 'https://secure.gravatar.com/',
+        },
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location':
+            'url:https://example.com/group1/subgroup1',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/group1/subgroup1',
+          'example.com/team-path': 'group1/subgroup1',
+        },
+        name: 'subgroup1',
+        description: 'description1',
+      },
+      spec: {
+        children: [],
+        profile: {
+          displayName: 'subgroup1',
+        },
+        type: 'team',
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/group1',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/group1',
+          'example.com/team-path': 'group1',
+        },
+        name: 'group1',
+        description: 'description1',
+      },
+      spec: {
+        children: [],
+        profile: {
+          displayName: 'group1',
+        },
+        type: 'team',
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
   },
 ];

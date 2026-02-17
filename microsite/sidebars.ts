@@ -247,6 +247,7 @@ export default {
             'features/software-catalog/extending-the-model',
             'features/software-catalog/external-integrations',
             'features/software-catalog/catalog-customization',
+            'features/software-catalog/audit-events',
             {
               type: 'category',
               label: 'API',
@@ -278,6 +279,7 @@ export default {
             'features/software-templates/adding-templates',
             'features/software-templates/writing-templates',
             'features/software-templates/input-examples',
+            'features/software-templates/ui-options-examples',
             'features/software-templates/builtin-actions',
             'features/software-templates/writing-custom-actions',
             'features/software-templates/writing-tests-for-actions',
@@ -289,6 +291,7 @@ export default {
             'features/software-templates/dry-run-testing',
             'features/software-templates/experimental',
             'features/software-templates/templating-extensions',
+            'features/software-templates/audit-events',
             {
               type: 'category',
               label: 'API',
@@ -464,6 +467,7 @@ export default {
               {
                 label: 'Architecture',
                 description: 'Architecture of the backend system.',
+                differentiator: 'backend-system/',
               },
               [
                 'backend-system/architecture/index',
@@ -543,6 +547,7 @@ export default {
               {
                 label: 'Architecture',
                 description: 'Architecture of the new frontend system.',
+                differentiator: 'frontend-system/',
               },
               [
                 'frontend-system/architecture/index',
@@ -581,6 +586,7 @@ export default {
                 'frontend-system/building-apps/configuring-extensions',
                 'frontend-system/building-apps/built-in-extensions',
                 'frontend-system/building-apps/plugin-conversion',
+                'frontend-system/building-apps/module-federation',
                 'frontend-system/building-apps/migrating',
               ],
             ),
@@ -594,6 +600,7 @@ export default {
                 'frontend-system/utility-apis/creating',
                 'frontend-system/utility-apis/consuming',
                 'frontend-system/utility-apis/configuring',
+                'frontend-system/utility-apis/testing',
               ],
             ),
           ],
@@ -750,7 +757,7 @@ export default {
         'api/deprecations',
         'references/glossary',
         'api/utility-apis',
-        'reference/index',
+        'references/index',
       ],
     ),
   ],

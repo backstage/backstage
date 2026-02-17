@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { createTemporaryTsConfig } from './utils';
-import { readFile, rm, writeFile } from 'fs/promises';
+import { readFile, rm, writeFile } from 'node:fs/promises';
 import pLimit from 'p-limit';
 import { mkdirp } from 'fs-extra';
 import { PackageDocsCache } from './Cache';
 import { Lockfile } from '@backstage/cli-node';
 import { glob } from 'glob';
-import { existsSync } from 'fs';
+import { existsSync } from 'node:fs';
 
 const limit = pLimit(8);
 
@@ -31,8 +31,8 @@ const execAsync = promisify(exec);
 
 const EXCLUDE = [
   'packages/app',
-  'packages/app-next',
-  'packages/app-next-example-plugin',
+  'packages/app-legacy',
+  'packages/app-example-plugin',
   'packages/cli',
   'packages/cli-common',
   'packages/cli-node',

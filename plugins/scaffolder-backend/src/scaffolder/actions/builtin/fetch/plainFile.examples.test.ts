@@ -22,7 +22,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import yaml from 'yaml';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createFetchPlainFileAction } from './plainFile';

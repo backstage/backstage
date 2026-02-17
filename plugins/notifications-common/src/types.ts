@@ -130,6 +130,7 @@ export type NotificationProcessorFilters = {
   minSeverity?: NotificationSeverity;
   maxSeverity?: NotificationSeverity;
   excludedTopics?: string[];
+  includedTopics?: string[];
 };
 
 /**

@@ -35,6 +35,16 @@ export interface UserSettingsStore {
     key: string;
   }): Promise<UserSetting>;
 
+  /**
+   * Get multiple user settings at once. The result is an array corresponding
+   * index by index to the elements of the input, where the elements are either
+   * `null` (not found), or an object `{ value: JsonValue }`.
+   */
+  multiget(options: {
+    userEntityRef: string;
+    items: Array<{ bucket: string; key: string }>;
+  }): Promise<({ value: JsonValue } | null)[]>;
+
   set(options: {
     userEntityRef: string;
     bucket: string;

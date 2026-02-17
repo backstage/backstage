@@ -70,7 +70,7 @@ export class MockActionsRegistry
   >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void;
 }
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type ServiceMock<TService> = {
   factory: ServiceFactory<TService>;
 } & {

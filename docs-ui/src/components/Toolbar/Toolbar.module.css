@@ -10,12 +10,10 @@
   }
 }
 
-.breadcrumb {
+.left {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
 }
 
 .logoMobile {
@@ -24,39 +22,6 @@
   @media (min-width: 768px) {
     display: none;
   }
-}
-
-.breadcrumbDesktop {
-  display: none;
-
-  @media (min-width: 768px) {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-}
-
-.breadcrumbLink {
-  color: var(--secondary);
-  text-decoration: none;
-  cursor: pointer;
-
-  &:hover {
-    color: var(--primary);
-    text-decoration: underline;
-    transition: color 0.2s ease-in-out;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 4px;
-  }
-}
-
-.breadcrumbSeparator {
-  color: var(--secondary);
-  flex-shrink: 0;
-}
-
-.breadcrumbCurrent {
-  color: var(--primary);
 }
 
 .actions {
@@ -117,6 +82,51 @@
       display: flex;
     }
   }
+}
+
+.searchButton {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  padding-inline: 16px 12px;
+  min-width: 180px;
+  color: var(--secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  height: 32px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: var(--action);
+    color: var(--primary);
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  }
+
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+.searchLabel {
+  display: inline;
+  flex: 1;
+  text-align: left;
+}
+
+.searchKbd {
+  display: inline;
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  background-color: var(--action);
+  border-radius: 4px;
+  padding: 2px 5px;
+  color: var(--secondary);
 }
 
 .buttonGroup {

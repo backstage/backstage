@@ -39,6 +39,9 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  QueryLocationsInitialRequest,
+  QueryLocationsRequest,
+  QueryLocationsResponse,
   StreamEntitiesRequest,
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
@@ -106,6 +109,16 @@ export interface CatalogService {
     request: {} | undefined,
     options: CatalogServiceRequestOptions,
   ): Promise<GetLocationsResponse>;
+
+  queryLocations(
+    request: QueryLocationsRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): Promise<QueryLocationsResponse>;
+
+  streamLocations(
+    request: QueryLocationsInitialRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): AsyncIterable<Location[]>;
 
   getLocationById(
     id: string,
@@ -249,6 +262,26 @@ class DefaultCatalogService implements CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<GetLocationsResponse> {
     return this.#catalogApi.getLocations(
+      request,
+      await this.#getOptions(options),
+    );
+  }
+
+  async queryLocations(
+    request: QueryLocationsRequest,
+    options: CatalogServiceRequestOptions,
+  ): Promise<QueryLocationsResponse> {
+    return this.#catalogApi.queryLocations(
+      request,
+      await this.#getOptions(options),
+    );
+  }
+
+  async *streamLocations(
+    request: QueryLocationsInitialRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): AsyncIterable<Location[]> {
+    yield* this.#catalogApi.streamLocations(
       request,
       await this.#getOptions(options),
     );

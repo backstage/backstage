@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
+import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 type SubRoute = {
-  group: string;
+  group?: string;
   path: string;
   title: string;
+  icon?: string | ReactElement;
   children: JSX.Element;
 };
 
@@ -69,17 +71,19 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
 type EntityTabsProps = {
   routes: SubRoute[];
+  groupDefinitions: EntityContentGroupDefinitions;
+  showIcons?: boolean;
 };
 
 export function EntityTabs(props: EntityTabsProps) {
-  const { routes } = props;
+  const { routes, groupDefinitions, showIcons } = props;
 
   const { index, route, element } = useSelectedSubRoute(routes);
 
   const tabs = useMemo(
     () =>
       routes.map(t => {
-        const { path, title, group } = t;
+        const { path, title, group, icon } = t;
         let to = path;
         // Remove trailing /*
         to = to.replace(/\/\*$/, '');
@@ -90,6 +94,7 @@ export function EntityTabs(props: EntityTabsProps) {
           id: path,
           path: to,
           label: title,
+          icon,
         };
       }),
     [routes],
@@ -97,7 +102,12 @@ export function EntityTabs(props: EntityTabsProps) {
 
   return (
     <>
-      <EntityTabsList tabs={tabs} selectedIndex={index} />
+      <EntityTabsList
+        tabs={tabs}
+        selectedIndex={index}
+        showIcons={showIcons}
+        groupDefinitions={groupDefinitions}
+      />
       <EntityTabsPanel>
         <Helmet title={route?.title} />
         {element}

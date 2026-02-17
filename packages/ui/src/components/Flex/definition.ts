@@ -45,6 +45,13 @@ export const FlexDefinition = {
     'direction',
   ],
   dataAttributes: {
-    surface: ['0', '1', '2', '3', 'danger', 'warning', 'success'] as const,
+    bg: [
+      'neutral-1',
+      'neutral-2',
+      'neutral-3',
+      'danger',
+      'warning',
+      'success',
+    ] as const,
   },
 } as const satisfies ComponentDefinition;

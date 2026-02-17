@@ -15,9 +15,9 @@
  */
 
 import { ForwardedError } from '@backstage/errors';
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 import { Client, Entry, SearchOptions, SearchResult } from 'ldapts';
-import tlsLib from 'tls';
+import tlsLib from 'node:tls';
 import { BindConfig, TLSConfig } from './config';
 import {
   AEDirVendor,

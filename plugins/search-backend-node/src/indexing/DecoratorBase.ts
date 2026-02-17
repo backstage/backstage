@@ -16,7 +16,7 @@
 
 import { assertError } from '@backstage/errors';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Transform } from 'stream';
+import { Transform } from 'node:stream';
 
 /**
  * Base class encapsulating simple async transformations. Useful as a base

@@ -27,7 +27,7 @@ import {
  * @internal
  */
 export function OffsetPaginatedDocsTable(props: TableProps<DocsTableRow>) {
-  const { actions, columns, data, isLoading, options } = props;
+  const { actions, columns, data, isLoading, options, title } = props;
   const { updateFilters, setLimit, setOffset, limit, totalItems, offset } =
     useEntityList();
   const [page, setPage] = useState(
@@ -44,6 +44,7 @@ export function OffsetPaginatedDocsTable(props: TableProps<DocsTableRow>) {
 
   return (
     <Table<DocsTableRow>
+      title={title}
       columns={columns}
       data={data}
       options={{

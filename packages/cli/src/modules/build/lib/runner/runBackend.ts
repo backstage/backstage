@@ -15,12 +15,12 @@
  */
 
 import { FSWatcher, watch } from 'chokidar';
-import type { ChildProcess } from 'child_process';
+import type { ChildProcess } from 'node:child_process';
 import { ctrlc } from 'ctrlc-windows';
 import { IpcServer, ServerDataStore } from '../ipc';
 import debounce from 'lodash/debounce';
-import { fileURLToPath } from 'url';
-import { isAbsolute as isAbsolutePath } from 'path';
+import { fileURLToPath } from 'node:url';
+import { isAbsolute as isAbsolutePath } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import spawn from 'cross-spawn';
 

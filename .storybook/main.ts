@@ -26,16 +26,14 @@ const allStories = isChromatic
     ];
 
 const rootPath = '../';
-const storiesSrcMdx = 'src/**/*.mdx';
 const storiesSrcGlob = 'src/**/*.stories.@(js|jsx|mjs|ts|tsx)';
 
 const getStoriesPath = (element: string, pattern: string) =>
   posix.join(rootPath, element, pattern);
 
-const stories = allStories.flatMap(element => [
-  getStoriesPath(element, storiesSrcMdx),
+const stories = allStories.map(element =>
   getStoriesPath(element, storiesSrcGlob),
-]);
+);
 
 // Resolve absolute path of a package. Needed in monorepos.
 function getAbsolutePath(value: string): any {

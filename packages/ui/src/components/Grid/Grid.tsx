@@ -20,24 +20,20 @@ import type { GridItemProps, GridProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { GridDefinition, GridItemDefinition } from './definition';
 import styles from './Grid.module.css';
-import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
+import { BgProvider, useBgProvider } from '../../hooks/useBg';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  // Resolve the surface this Grid creates for its children
-  // Using 'surface' parameter = container behavior (auto increments)
-  const { surface: resolvedSurface } = useSurface({
-    surface: props.surface,
-  });
+  const { bg: resolvedBg } = useBgProvider(props.bg);
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(GridDefinition, {
       columns: 'auto',
       gap: '4',
       ...props,
-      surface: resolvedSurface, // Use resolved surface for data attribute
+      bg: resolvedBg, // Use resolved bg for data attribute
     });
 
-  const { className, surface, ...rest } = cleanedProps;
+  const { className, bg, ...rest } = cleanedProps;
 
   const content = (
     <div
@@ -54,27 +50,23 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
     />
   );
 
-  return resolvedSurface ? (
-    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
+  return resolvedBg ? (
+    <BgProvider bg={resolvedBg}>{content}</BgProvider>
   ) : (
     content
   );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  // Resolve the surface this GridItem creates for its children
-  // Using 'surface' parameter = container behavior (auto increments)
-  const { surface: resolvedSurface } = useSurface({
-    surface: props.surface,
-  });
+  const { bg: resolvedBg } = useBgProvider(props.bg);
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(GridItemDefinition, {
       ...props,
-      surface: resolvedSurface, // Use resolved surface for data attribute
+      bg: resolvedBg, // Use resolved bg for data attribute
     });
 
-  const { className, surface, ...rest } = cleanedProps;
+  const { className, bg, ...rest } = cleanedProps;
 
   const content = (
     <div
@@ -91,8 +83,8 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
     />
   );
 
-  return resolvedSurface ? (
-    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
+  return resolvedBg ? (
+    <BgProvider bg={resolvedBg}>{content}</BgProvider>
   ) : (
     content
   );

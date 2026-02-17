@@ -1,0 +1,61 @@
+{
+  "name": "Backstage",
+  "forwardPorts": [3000, 7007],
+  "build": { "dockerfile": "Dockerfile" },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2.5.6": {},
+    "ghcr.io/devcontainers-contrib/features/mkdocs:2": {}
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "32gb"
+  },
+  "runArgs": [
+    "--env-file",
+    ".devcontainer/devcontainer.env",
+    "--sysctl",
+    "net.ipv6.conf.all.disable_ipv6=1"
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Frontend port",
+      "onAutoForward": "silent",
+      "requireLocalPort": true
+    },
+    "7007": {
+      "label": "Backend port",
+      "onAutoForward": "silent",
+      "requireLocalPort": true
+    },
+    "9464": {
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "Intility.vscode-backstage"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
+        "files.eol": "\n",
+        "prettier.endOfLine": "lf",
+        "editor.codeActionsOnSave": {
+          "source.fixAll": "explicit",
+          "source.sortMembers": "explicit"
+        }
+      }
+    }
+  }
+}

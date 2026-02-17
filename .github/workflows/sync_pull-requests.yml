@@ -1,0 +1,70 @@
+name: Sync Pull Requests
+
+on:
+  workflow_run:
+    workflows: ['Sync Pull Requests Trigger', 'CI', 'E2E Linux']
+    types:
+      - completed
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    # Only run on the trigger workflow, or if the source workflow was triggered by a pull request
+    if: >
+      github.event.workflow_run.name == 'Sync Pull Requests Trigger' ||
+      github.event.workflow_run.event == 'pull_request'
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - name: Download PR context
+        id: download
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        continue-on-error: true
+        with:
+          name: pr-context
+          path: ./context
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Read context
+        if: steps.download.outcome == 'success'
+        id: context
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            function read(path, fallback) {
+              try { return fs.readFileSync(path, 'utf8').trim(); }
+              catch { return fallback; }
+            }
+            core.setOutput('pr-number', read('./context/pr-number', ''));
+            core.setOutput('label-added', read('./context/label-added', ''));
+            core.setOutput('review-state', read('./context/review-state', ''));
+            core.setOutput('actor', read('./context/actor', ''));
+            core.setOutput('action', read('./context/action', 'synchronize'));
+
+      - name: Backstage PR automation
+        if: steps.context.outputs.pr-number
+        uses: backstage/actions/pr-automation@c3038aa5576b9cd845ccc518ef854d3660e8cb40 # v0.7.6
+        with:
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-owner: backstage
+          project-number: '14'
+          pr-number: ${{ steps.context.outputs.pr-number }}
+          label-added: ${{ steps.context.outputs.label-added }}
+          review-state: ${{ steps.context.outputs.review-state }}
+          actor: ${{ steps.context.outputs.actor }}
+          action: ${{ steps.context.outputs.action }}
+          required-checks: |
+            DCO
+            E2E Linux 22.x
+            E2E Linux 24.x
+            Test 22.x
+            Test 24.x
+            Verify 22.x
+            Verify 24.x

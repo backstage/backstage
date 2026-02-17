@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type {
+  AccordionOwnProps,
+  AccordionTriggerOwnProps,
+  AccordionPanelOwnProps,
+  AccordionGroupOwnProps,
+} from './types';
+import styles from './Accordion.module.css';
 
 /**
  * Component definition for Accordion
  * @public
  */
-export const AccordionDefinition = {
+export const AccordionDefinition = defineComponent<AccordionOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Accordion',
     trigger: 'bui-AccordionTrigger',
@@ -33,4 +41,61 @@ export const AccordionDefinition = {
     panel: 'bui-AccordionPanel',
     group: 'bui-AccordionGroup',
   },
-} as const satisfies ComponentDefinition;
+  bg: 'consumer',
+  propDefs: {
+    className: {},
+  },
+});
+
+/**
+ * Component definition for AccordionTrigger
+ * @public
+ */
+export const AccordionTriggerDefinition =
+  defineComponent<AccordionTriggerOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-AccordionTrigger',
+      button: 'bui-AccordionTriggerButton',
+      title: 'bui-AccordionTriggerTitle',
+      subtitle: 'bui-AccordionTriggerSubtitle',
+      icon: 'bui-AccordionTriggerIcon',
+    },
+    propDefs: {
+      className: {},
+      title: {},
+      subtitle: {},
+      children: {},
+    },
+  });
+
+/**
+ * Component definition for AccordionPanel
+ * @public
+ */
+export const AccordionPanelDefinition =
+  defineComponent<AccordionPanelOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-AccordionPanel',
+    },
+    propDefs: {
+      className: {},
+    },
+  });
+
+/**
+ * Component definition for AccordionGroup
+ * @public
+ */
+export const AccordionGroupDefinition =
+  defineComponent<AccordionGroupOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-AccordionGroup',
+    },
+    propDefs: {
+      className: {},
+      allowsMultiple: { default: false },
+    },
+  });

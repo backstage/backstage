@@ -149,11 +149,11 @@ function resolveExtensionId(
 }
 
 function resolveAttachTo(
-  attachTo: ExtensionDefinitionAttachTo,
+  attachTo: ExtensionDefinitionAttachTo | ExtensionDefinitionAttachTo[],
   namespace?: string,
 ): ExtensionAttachToSpec {
   const resolveSpec = (
-    spec: Exclude<ExtensionDefinitionAttachTo, Array<any>>,
+    spec: ExtensionDefinitionAttachTo,
   ): { id: string; input: string } => {
     if (OpaqueExtensionInput.isType(spec)) {
       const { context } = OpaqueExtensionInput.toInternal(spec);

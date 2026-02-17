@@ -1,6 +1,7 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
 import {
   Preview,
   WithLabelAndDescription,
@@ -31,9 +32,13 @@ import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { SelectDefinition } from '../../../utils/definitions';
 
+export const reactAriaUrls = {
+  select: 'https://react-aria.adobe.com/Select',
+};
+
 <PageTitle
   title="Select"
-  description="A common form component for choosing a predefined value in a dropdown menu."
+  description="A dropdown for selecting from predefined options with search support."
 />
 
 <Snippet
@@ -51,15 +56,14 @@ import { SelectDefinition } from '../../../utils/definitions';
 
 <PropsTable data={selectPropDefs} />
 
+<ReactAriaLink component="Select" href={reactAriaUrls.select} />
+
 ## Examples
 
-### With Label and description
-
-Select component with label and description.
+### Label and description
 
 <Snippet
-  align="center"
-  py={4}
+  layout="side-by-side"
   open
   preview={<WithLabelAndDescription />}
   code={selectDescriptionSnippet}
@@ -67,36 +71,26 @@ Select component with label and description.
 
 ### Sizes
 
-Here's a view when the selects have different sizes.
-
 <Snippet
-  align="center"
-  py={4}
+  layout="side-by-side"
   open
   preview={<Sizes />}
   code={selectSizesSnippet}
 />
 
-### With Icon
-
-Here's a view when the select has an icon.
+### With icon
 
 <Snippet
-
-align="center"
-py={4}
-open
-preview={<WithIcon />}
-code={selectIconSnippet}
+  layout="side-by-side"
+  open
+  preview={<WithIcon />}
+  code={selectIconSnippet}
 />
 
 ### Disabled
 
-Here's a view when the select is disabled.
-
 <Snippet
-  align="center"
-  py={4}
+  layout="side-by-side"
   open
   preview={<Disabled />}
   code={selectDisabledSnippet}
@@ -104,11 +98,8 @@ Here's a view when the select is disabled.
 
 ### Disabled options
 
-You can disable specific options within the Select component using `disabledKeys`.
-
 <Snippet
-  align="center"
-  py={4}
+  layout="side-by-side"
   open
   preview={<DisabledOption />}
   code={selectDisabledOptionsSnippet}
@@ -116,35 +107,30 @@ You can disable specific options within the Select component using `disabledKeys
 
 ### Searchable
 
-Here's a view when the select has searchable filtering.
+Enable filtering with the `searchable` prop.
 
 <Snippet
-  align="center"
-  py={4}
+  layout="side-by-side"
   open
   preview={<Searchable />}
   code={selectSearchableSnippet}
 />
 
-### Multiple Selection
-
-Here's a view when the select allows multiple selections.
+### Multiple selection
 
 <Snippet
-  align="center"
-  py={4}
+  layout="side-by-side"
   open
   preview={<MultipleSelection />}
   code={selectMultipleSnippet}
 />
 
-### Searchable with Multiple Selection
+### Searchable multiple
 
-Here's a view when the select combines search and multiple selection.
+Combine search and multiple selection.
 
 <Snippet
-  align="center"
-  py={4}
+  layout="side-by-side"
   open
   preview={<SearchableMultiple />}
   code={selectSearchableMultipleSnippet}
@@ -152,7 +138,7 @@ Here's a view when the select combines search and multiple selection.
 
 ### Responsive
 
-Here's a view when the select is responsive.
+Size can change at different breakpoints.
 
 <CodeBlock code={selectResponsiveSnippet} />
 

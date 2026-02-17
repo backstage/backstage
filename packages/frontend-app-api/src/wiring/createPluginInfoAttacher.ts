@@ -77,7 +77,10 @@ export function createPluginInfoAttacher(
           }),
         });
 
-        const infoWithOverrides = applyInfoOverrides(plugin.id, resolvedInfo);
+        const infoWithOverrides = applyInfoOverrides(
+          plugin.pluginId,
+          resolvedInfo,
+        );
         return normalizePluginInfo(infoWithOverrides);
       }),
     };

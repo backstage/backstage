@@ -8,6 +8,7 @@ import {
   MenuSeparator,
   SubmenuTrigger,
   MenuAutocomplete,
+  MenuAutocompleteListbox,
   MenuListBoxItem,
 } from '../../../../../packages/ui/src/components/Menu/Menu';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
@@ -54,10 +55,9 @@ export const PreviewSubmenu = () => (
         <MenuItem>New File</MenuItem>
         <SubmenuTrigger>
           <MenuItem>Open Recent</MenuItem>
-          <Menu>
+          <Menu placement="right top">
             <MenuItem>File 1.txt</MenuItem>
             <MenuItem>File 2.txt</MenuItem>
-            <MenuItem>File 3.txt</MenuItem>
           </Menu>
         </SubmenuTrigger>
         <MenuItem>Save</MenuItem>
@@ -128,30 +128,42 @@ export const PreviewSeparators = () => (
 
 export const PreviewAutocompleteMenu = () => (
   <MemoryRouter>
-    <MenuAutocomplete placeholder="Type to search...">
-      <MenuItem>Option 1</MenuItem>
-      <MenuItem>Option 2</MenuItem>
-      <MenuItem>Option 3</MenuItem>
-    </MenuAutocomplete>
+    <MenuTrigger>
+      <Button variant="secondary">Search</Button>
+      <MenuAutocomplete placeholder="Type to search...">
+        <MenuItem>Option 1</MenuItem>
+        <MenuItem>Option 2</MenuItem>
+        <MenuItem>Option 3</MenuItem>
+      </MenuAutocomplete>
+    </MenuTrigger>
   </MemoryRouter>
 );
 
 export const PreviewAutocompleteListbox = () => (
   <MemoryRouter>
-    <MenuAutocomplete placeholder="Type to filter...">
-      <MenuListBoxItem>Option 1</MenuListBoxItem>
-      <MenuListBoxItem>Option 2</MenuListBoxItem>
-      <MenuListBoxItem>Option 3</MenuListBoxItem>
-    </MenuAutocomplete>
+    <MenuTrigger>
+      <Button variant="secondary">Select</Button>
+      <MenuAutocompleteListbox placeholder="Type to filter...">
+        <MenuListBoxItem>Option 1</MenuListBoxItem>
+        <MenuListBoxItem>Option 2</MenuListBoxItem>
+        <MenuListBoxItem>Option 3</MenuListBoxItem>
+      </MenuAutocompleteListbox>
+    </MenuTrigger>
   </MemoryRouter>
 );
 
 export const PreviewAutocompleteListboxMultiple = () => (
   <MemoryRouter>
-    <MenuAutocomplete placeholder="Type to filter..." selectionMode="multiple">
-      <MenuListBoxItem>Option 1</MenuListBoxItem>
-      <MenuListBoxItem>Option 2</MenuListBoxItem>
-      <MenuListBoxItem>Option 3</MenuListBoxItem>
-    </MenuAutocomplete>
+    <MenuTrigger>
+      <Button variant="secondary">Multi-select</Button>
+      <MenuAutocompleteListbox
+        placeholder="Type to filter..."
+        selectionMode="multiple"
+      >
+        <MenuListBoxItem>Option 1</MenuListBoxItem>
+        <MenuListBoxItem>Option 2</MenuListBoxItem>
+        <MenuListBoxItem>Option 3</MenuListBoxItem>
+      </MenuAutocompleteListbox>
+    </MenuTrigger>
   </MemoryRouter>
 );

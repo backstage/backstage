@@ -22,11 +22,11 @@ import {
   PageBlueprint,
   createFrontendPlugin,
   createFrontendFeatureLoader,
-  ThemeBlueprint,
   createFrontendModule,
   useAppNode,
   FrontendPluginInfo,
 } from '@backstage/frontend-plugin-api';
+import { ThemeBlueprint } from '@backstage/plugin-app-react';
 import { screen, waitFor } from '@testing-library/react';
 import { createApp } from './createApp';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
@@ -60,8 +60,8 @@ describe('createApp', () => {
         }),
       },
       features: [
-        createFrontendPlugin({
-          pluginId: 'test',
+        createFrontendModule({
+          pluginId: 'app',
           extensions: [
             ThemeBlueprint.make({
               name: 'derp',
@@ -388,11 +388,13 @@ describe('createApp', () => {
               <component:app/core-progress out=[core.swappableComponent] />
               <component:app/core-not-found-error-page out=[core.swappableComponent] />
               <component:app/core-error-display out=[core.swappableComponent] />
+              <component:app/core-page-layout out=[core.swappableComponent] />
             ]
           </api:app/swappable-components>
           <api:app/icons out=[core.api.factory] />
           <api:app/feature-flags out=[core.api.factory] />
           <api:app/plugin-wrapper out=[core.api.factory] />
+          <api:app/plugin-header-actions out=[core.api.factory] />
           <api:app/translations out=[core.api.factory] />
           <api:app/components out=[core.api.factory] />
         ]

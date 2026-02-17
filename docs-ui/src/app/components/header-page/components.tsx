@@ -19,22 +19,6 @@ const tabs = [
   { id: 'integrations', label: 'Integrations', href: '/integrations' },
 ];
 
-const menuItems = [
-  { label: 'Settings', value: 'settings', href: '/settings' },
-  {
-    label: 'Invite new members',
-    value: 'invite-new-members',
-    href: '/invite-new-members',
-  },
-  {
-    label: 'Logout',
-    value: 'logout',
-    onClick: () => {
-      alert('logout');
-    },
-  },
-];
-
 const breadcrumbs = [
   { label: 'Home', href: '/' },
   { label: 'Long Breadcrumb Name', href: '/long-breadcrumb' },
@@ -49,8 +33,8 @@ export const WithEverything = () => (
   <MemoryRouter>
     <HeaderPage
       title="Page Title"
-      tabs={tabs}
-      breadcrumbs={breadcrumbs}
+      tabs={tabs.slice(0, 2)}
+      breadcrumbs={breadcrumbs.slice(0, 2)}
       customActions={
         <>
           <Button variant="secondary">Secondary</Button>
@@ -63,13 +47,13 @@ export const WithEverything = () => (
 
 export const WithLongBreadcrumbs = () => (
   <MemoryRouter>
-    <HeaderPage title="Page Title" breadcrumbs={breadcrumbs} />
+    <HeaderPage title="Page Title" breadcrumbs={breadcrumbs.slice(0, 2)} />
   </MemoryRouter>
 );
 
 export const WithTabs = () => (
   <MemoryRouter>
-    <HeaderPage title="Page Title" tabs={tabs} />
+    <HeaderPage title="Page Title" tabs={tabs.slice(0, 3)} />
   </MemoryRouter>
 );
 
@@ -82,7 +66,7 @@ export const WithCustomActions = () => (
   </MemoryRouter>
 );
 
-export const WithMenuItems = () => (
+export const WithMenu = () => (
   <MemoryRouter>
     <HeaderPage
       title="Page Title"
@@ -90,15 +74,8 @@ export const WithMenuItems = () => (
         <MenuTrigger>
           <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
           <Menu placement="bottom end">
-            {menuItems.map(option => (
-              <MenuItem
-                key={option.value}
-                onAction={option.onClick}
-                href={option.href}
-              >
-                {option.label}
-              </MenuItem>
-            ))}
+            <MenuItem href="/settings">Settings</MenuItem>
+            <MenuItem onAction={() => alert('logout')}>Logout</MenuItem>
           </Menu>
         </MenuTrigger>
       }

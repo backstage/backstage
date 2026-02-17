@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import { Readable } from 'stream';
+import os from 'node:os';
+import { Readable } from 'node:stream';
 import { Config } from '@backstage/config';
 import {
   ReadTreeResponseFactoryOptions,

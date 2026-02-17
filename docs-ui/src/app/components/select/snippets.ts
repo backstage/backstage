@@ -45,7 +45,7 @@ export const selectSizesSnippet = `<Flex>
 </Flex>`;
 
 export const selectDisabledSnippet = `<Select
-  disabled
+  isDisabled
   label="Font family"
   options={[ ... ]}
 />`;

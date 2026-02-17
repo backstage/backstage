@@ -29,7 +29,7 @@ import type {
   RowRenderFn,
   TablePaginationType,
 } from '../types';
-import { Fragment, useMemo } from 'react';
+import { useMemo } from 'react';
 import { VisuallyHidden } from '../../VisuallyHidden';
 import { Flex } from '../../Flex';
 
@@ -137,13 +137,26 @@ export function Table<T extends TableItem>({
     data !== undefined,
   );
 
+  const manualColumnSizing = columnConfig.some(
+    col =>
+      col.width != null ||
+      col.minWidth != null ||
+      col.maxWidth != null ||
+      col.defaultWidth != null,
+  );
+
+  const wrapResizable = manualColumnSizing
+    ? (elem: React.ReactNode) => (
+        <ResizableTableContainer>{elem}</ResizableTableContainer>
+      )
+    : (elem: React.ReactNode) => <>{elem}</>;
+
   return (
     <div className={className} style={style}>
       <VisuallyHidden aria-live="polite" id={liveRegionId}>
         {liveRegionLabel}
       </VisuallyHidden>
-
-      <ResizableTableContainer>
+      {wrapResizable(
         <TableRoot
           selectionMode={selectionMode}
           selectionBehavior={selectionBehavior}
@@ -158,7 +171,7 @@ export function Table<T extends TableItem>({
           <TableHeader columns={visibleColumns}>
             {column =>
               column.header ? (
-                <>{column.header()}</>
+                column.header()
               ) : (
                 <Column
                   id={column.id}
@@ -176,6 +189,7 @@ export function Table<T extends TableItem>({
           </TableHeader>
           <TableBody
             items={data}
+            dependencies={[visibleColumns]}
             renderEmptyState={
               emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
             }
@@ -201,15 +215,13 @@ export function Table<T extends TableItem>({
                       : undefined
                   }
                 >
-                  {column => (
-                    <Fragment key={column.id}>{column.cell(item)}</Fragment>
-                  )}
+                  {column => column.cell(item)}
                 </Row>
               );
             }}
           </TableBody>
-        </TableRoot>
-      </ResizableTableContainer>
+        </TableRoot>,
+      )}
       {pagination.type === 'page' && (
         <TablePagination
           pageSize={pagination.pageSize}
