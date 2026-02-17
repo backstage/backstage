@@ -76,8 +76,17 @@ async function main(args) {
       let newStatus = pluginDataYaml.status;
       let statusChanged = false;
 
+      // If age < 365 and status is inactive or archived, change to active
+      if (
+        age < 365 &&
+        (pluginDataYaml.status === 'inactive' ||
+          pluginDataYaml.status === 'archived')
+      ) {
+        newStatus = 'active';
+        statusChanged = true;
+      }
       // If status is inactive, change to archived
-      if (pluginDataYaml.status === 'inactive') {
+      else if (pluginDataYaml.status === 'inactive') {
         newStatus = 'archived';
         statusChanged = true;
       }
