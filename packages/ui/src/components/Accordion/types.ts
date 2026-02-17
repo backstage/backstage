@@ -57,8 +57,6 @@ export type AccordionTriggerOwnProps = {
    * @defaultValue undefined
    */
   iconEnd?: React.ReactElement;
-}
-  children?: ReactNode;
 };
 
 /**

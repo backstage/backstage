@@ -243,6 +243,9 @@ export const MultipleWithIcons = meta.story({
         </AccordionPanel>
       </Accordion>
     </AccordionGroup>
+  ),
+});
+
 export const AutoBg = meta.story({
   render: () => (
     <Flex direction="column" gap="4">

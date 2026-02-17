@@ -61,15 +61,6 @@ export const Accordion = forwardRef(
 Accordion.displayName = 'Accordion';
 
 /** @public */
-export const AccordionTrigger = forwardRef<
-  React.ElementRef<typeof RAHeading>,
-  AccordionTriggerProps
->(
-  (
-    { className, title, subtitle, children, iconStart, iconEnd, ...props },
-    ref,
-  ) => {
-    const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
 export const AccordionTrigger = forwardRef(
   (
     props: AccordionTriggerProps,
@@ -84,20 +75,6 @@ export const AccordionTrigger = forwardRef(
     return (
       <RAHeading
         ref={ref}
-        className={clsx(
-          classNames.trigger,
-          styles[classNames.trigger],
-          className,
-        )}
-        {...cleanedProps}
-      >
-        <RAButton
-          slot="trigger"
-          className={clsx(
-            classNames.triggerButton,
-            styles[classNames.triggerButton],
-          )}
-        >
         className={classes.root}
         {...dataAttributes}
         {...restProps}
@@ -107,54 +84,6 @@ export const AccordionTrigger = forwardRef(
             children
           ) : (
             <Flex gap="2" align="center">
-              {iconStart && (
-                <span
-                  className={clsx(
-                    classNames.triggerIconStart,
-                    styles[classNames.triggerIconStart],
-                  )}
-                >
-                  {iconStart}
-                </span>
-              )}
-              <span
-                className={clsx(
-                  classNames.triggerTitle,
-                  styles[classNames.triggerTitle],
-                )}
-              >
-                {title}
-              </span>
-              {subtitle && (
-                <span
-                  className={clsx(
-                    classNames.triggerSubtitle,
-                    styles[classNames.triggerSubtitle],
-                  )}
-                >
-                  {subtitle}
-                </span>
-              )}
-              {iconEnd && (
-                <span
-                  className={clsx(
-                    classNames.triggerIconEnd,
-                    styles[classNames.triggerIconEnd],
-                  )}
-                >
-                  {iconEnd}
-                </span>
-              )}
-            </Flex>
-          )}
-
-          <RiArrowDownSLine
-            className={clsx(
-              classNames.triggerIcon,
-              styles[classNames.triggerIcon],
-            )}
-            size={16}
-          />
               <span className={classes.title}>{title}</span>
               {subtitle && <span className={classes.subtitle}>{subtitle}</span>}
             </Flex>
