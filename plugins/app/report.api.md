@@ -15,7 +15,6 @@ import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { NavContentComponent } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -1034,19 +1033,6 @@ const appPlugin: OverridableFrontendPlugin<
   }
 >;
 export default appPlugin;
-
-// @public
-export interface ToastApiMessageDisplayProps {
-  // @deprecated
-  anchorOrigin?: {
-    vertical: 'top' | 'bottom';
-    horizontal: 'left' | 'center' | 'right';
-  };
-  transientTimeoutMs?: number;
-}
-
-// @public
-export function ToastDisplay(props: ToastApiMessageDisplayProps): JSX_3.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

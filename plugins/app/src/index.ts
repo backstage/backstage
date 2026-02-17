@@ -15,7 +15,3 @@
  */
 
 export { appPlugin as default } from './plugin';
-
-// Toast components for alert display
-export { ToastDisplay } from './components/Toast';
-export type { ToastApiMessageDisplayProps } from './components/Toast';
