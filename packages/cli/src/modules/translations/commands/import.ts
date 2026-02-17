@@ -16,12 +16,22 @@
 
 import { paths } from '../../../lib/paths';
 import fs from 'fs-extra';
-import { resolve as resolvePath, relative as relativePath } from 'node:path';
+import {
+  resolve as resolvePath,
+  relative as relativePath,
+  posix as posixPath,
+} from 'node:path';
 import { readTargetPackage } from '../lib/discoverPackages';
+import {
+  DEFAULT_LANGUAGE,
+  createMessagePathParser,
+  formatMessagePath,
+} from '../lib/messageFilePath';
 
 interface ImportOptions {
   input: string;
   output: string;
+  pattern: string;
 }
 
 interface ManifestRefEntry {
@@ -31,6 +41,7 @@ interface ManifestRefEntry {
 }
 
 interface Manifest {
+  pattern?: string;
   refs: Record<string, ManifestRefEntry>;
 }
 
@@ -58,45 +69,56 @@ export default async (options: ImportOptions) => {
 
   const manifest: Manifest = await fs.readJson(manifestPath);
 
-  // Find all translated (non-English) message files
-  const files = await fs.readdir(messagesDir);
-  const translatedFiles = files.filter(
-    f => f.endsWith('.json') && !f.endsWith('.en.json'),
-  );
+  // Use the pattern from manifest if available, falling back to the CLI default
+  const pattern = manifest.pattern ?? options.pattern;
 
-  if (translatedFiles.length === 0) {
-    console.log('No translated message files found.');
-    console.log(
-      'Add translated files as <ref-id>.<language>.json in the messages/ directory.',
-    );
-    return;
-  }
+  const parsePath = createMessagePathParser(pattern);
 
-  // Group translations by ref ID
-  const translationsByRef = new Map<string, string[]>();
-  for (const file of translatedFiles) {
-    // Expected format: <ref-id>.<language>.json
-    const match = file.match(/^(.+)\.([a-z]{2}(?:-[A-Z]{2})?)\.json$/);
-    if (!match) {
-      console.warn(`  Warning: skipping file with unexpected name: ${file}`);
+  // Discover all JSON files under the messages directory
+  const allFiles = await collectJsonFiles(messagesDir);
+
+  // Parse each file to extract id + lang, filtering out default language files
+  const translationsByRef = new Map<
+    string,
+    Array<{ lang: string; relPath: string }>
+  >();
+  let skipped = 0;
+
+  for (const relPath of allFiles) {
+    const parsed = parsePath(relPath);
+    if (!parsed) {
+      skipped++;
       continue;
     }
 
-    const [, refId, language] = match;
-    if (!manifest.refs[refId]) {
+    if (parsed.lang === DEFAULT_LANGUAGE) {
+      continue;
+    }
+
+    if (!manifest.refs[parsed.id]) {
       console.warn(
-        `  Warning: skipping ${file} - ref '${refId}' not found in manifest`,
+        `  Warning: skipping ${relPath} - ref '${parsed.id}' not found in manifest`,
       );
       continue;
     }
 
-    const existing = translationsByRef.get(refId) ?? [];
-    existing.push(language);
-    translationsByRef.set(refId, existing);
+    const existing = translationsByRef.get(parsed.id) ?? [];
+    existing.push({ lang: parsed.lang, relPath });
+    translationsByRef.set(parsed.id, existing);
+  }
+
+  if (skipped > 0) {
+    console.warn(
+      `  Warning: ${skipped} file(s) did not match the pattern '${pattern}'`,
+    );
   }
 
   if (translationsByRef.size === 0) {
-    console.log('No valid translation files found for known refs.');
+    console.log('No translated message files found.');
+    const example = formatMessagePath(pattern, '<ref-id>', 'sv');
+    console.log(
+      `Add translated files as messages/${example} in the translations directory.`,
+    );
     return;
   }
 
@@ -108,7 +130,7 @@ export default async (options: ImportOptions) => {
     "import { createTranslationResource } from '@backstage/frontend-plugin-api';",
   );
 
-  for (const [refId, languages] of [...translationsByRef.entries()].sort(
+  for (const [refId, entries] of [...translationsByRef.entries()].sort(
     ([a], [b]) => a.localeCompare(b),
   )) {
     const refEntry = manifest.refs[refId];
@@ -119,19 +141,17 @@ export default async (options: ImportOptions) => {
 
     importLines.push(`import { ${refEntry.exportName} } from '${importPath}';`);
 
-    const messagesRelPath = relativePath(
-      resolvePath(outputPath, '..'),
-      messagesDir,
-    );
-
-    const translationEntries = languages
-      .sort()
-      .map(
-        lang =>
-          `    ${JSON.stringify(
-            lang,
-          )}: () => import('./${messagesRelPath}/${refId}.${lang}.json'),`,
-      )
+    const translationEntries = entries
+      .sort((a, b) => a.lang.localeCompare(b.lang))
+      .map(({ lang, relPath }) => {
+        const jsonRelPath = posixPath.normalize(
+          relativePath(
+            resolvePath(outputPath, '..'),
+            resolvePath(messagesDir, relPath),
+          ),
+        );
+        return `    ${JSON.stringify(lang)}: () => import('./${jsonRelPath}'),`;
+      })
       .join('\n');
 
     resourceLines.push(
@@ -161,11 +181,37 @@ export default async (options: ImportOptions) => {
   await fs.ensureDir(resolvePath(outputPath, '..'));
   await fs.writeFile(outputPath, fileContent, 'utf8');
 
+  const totalFiles = [...translationsByRef.values()].reduce(
+    (sum, e) => sum + e.length,
+    0,
+  );
   console.log(`Generated translation resources at ${options.output}`);
   console.log(
-    `  ${translationsByRef.size} ref(s), ${translatedFiles.length} translation file(s)`,
+    `  ${translationsByRef.size} ref(s), ${totalFiles} translation file(s)`,
   );
   console.log(
     '\nImport this file in your app and pass the resources to your translation API setup.',
   );
 };
+
+/**
+ * Recursively collects all .json files under a directory, returning paths
+ * relative to that directory using forward slashes.
+ */
+async function collectJsonFiles(dir: string, prefix = ''): Promise<string[]> {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const results: string[] = [];
+
+  for (const entry of entries) {
+    const relPath = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      results.push(
+        ...(await collectJsonFiles(resolvePath(dir, entry.name), relPath)),
+      );
+    } else if (entry.isFile() && entry.name.endsWith('.json')) {
+      results.push(relPath);
+    }
+  }
+
+  return results;
+}

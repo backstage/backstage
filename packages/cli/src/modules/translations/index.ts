@@ -16,6 +16,7 @@
 import yargs from 'yargs';
 import { createCliPlugin } from '../../wiring/factory';
 import { lazy } from '../../lib/lazy';
+import { DEFAULT_MESSAGE_PATTERN } from './lib/messageFilePath';
 
 export default createCliPlugin({
   pluginId: 'translations',
@@ -32,6 +33,12 @@ export default createCliPlugin({
               default: 'translations',
               description:
                 'Output directory for exported messages and manifest',
+            },
+            pattern: {
+              type: 'string',
+              default: DEFAULT_MESSAGE_PATTERN,
+              description:
+                'File path pattern for message files, with {id} and {lang} placeholders',
             },
           })
           .help()
@@ -57,6 +64,12 @@ export default createCliPlugin({
               type: 'string',
               default: 'src/translations/resources.ts',
               description: 'Output path for the generated wiring module',
+            },
+            pattern: {
+              type: 'string',
+              default: DEFAULT_MESSAGE_PATTERN,
+              description:
+                'File path pattern for message files, with {id} and {lang} placeholders',
             },
           })
           .help()

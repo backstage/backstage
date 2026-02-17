@@ -16,7 +16,7 @@
 
 import { paths } from '../../../lib/paths';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'node:path';
+import { dirname, resolve as resolvePath } from 'node:path';
 import {
   discoverFrontendPackages,
   readTargetPackage,
@@ -26,9 +26,11 @@ import {
   extractTranslationRefsFromSourceFile,
   TranslationRefInfo,
 } from '../lib/extractTranslations';
+import { DEFAULT_LANGUAGE, formatMessagePath } from '../lib/messageFilePath';
 
 interface ExportOptions {
   output: string;
+  pattern: string;
 }
 
 export default async (options: ExportOptions) => {
@@ -37,7 +39,7 @@ export default async (options: ExportOptions) => {
     paths.targetRoot,
   );
 
-  const outputDir = resolvePath(paths.targetDir, options.output, 'messages');
+  const messagesDir = resolvePath(paths.targetDir, options.output, 'messages');
   const manifestPath = resolvePath(
     paths.targetDir,
     options.output,
@@ -95,11 +97,15 @@ export default async (options: ExportOptions) => {
     console.log(`  ${ref.id} (${ref.packageName}, ${messageCount} messages)`);
   }
 
-  // Write message files
-  await fs.ensureDir(outputDir);
-
+  // Write message files using the configured pattern
   for (const ref of allRefs) {
-    const filePath = resolvePath(outputDir, `${ref.id}.en.json`);
+    const relPath = formatMessagePath(
+      options.pattern,
+      ref.id,
+      DEFAULT_LANGUAGE,
+    );
+    const filePath = resolvePath(messagesDir, relPath);
+    await fs.ensureDir(dirname(filePath));
     await fs.writeJson(filePath, ref.messages, { spaces: 2 });
   }
 
@@ -112,11 +118,20 @@ export default async (options: ExportOptions) => {
       exportName: ref.exportName,
     };
   }
-  await fs.writeJson(manifestPath, { refs: manifest }, { spaces: 2 });
+  await fs.writeJson(
+    manifestPath,
+    { pattern: options.pattern, refs: manifest },
+    { spaces: 2 },
+  );
 
+  const examplePath = formatMessagePath(
+    options.pattern,
+    '<ref-id>',
+    DEFAULT_LANGUAGE,
+  );
   console.log(
     `\nExported ${allRefs.length} translation ref(s) to ${options.output}/`,
   );
-  console.log(`  Messages: ${options.output}/messages/<ref-id>.en.json`);
+  console.log(`  Messages: ${options.output}/messages/${examplePath}`);
   console.log(`  Manifest: ${options.output}/manifest.json`);
 };
