@@ -110,7 +110,6 @@ export const PageBlueprint = createExtensionBlueprint({
           label: tabTitle || path,
           icon: tabIcon,
           href: path,
-          matchStrategy: 'prefix' as const,
         };
       });
 

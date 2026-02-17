@@ -27,7 +27,6 @@ export interface PageTab {
   label: string;
   icon?: IconElement;
   href: string;
-  matchStrategy?: 'prefix' | 'exact';
 }
 
 /**

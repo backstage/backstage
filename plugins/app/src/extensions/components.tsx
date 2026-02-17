@@ -28,6 +28,7 @@ import {
 } from '@backstage/core-components';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
+import { useMemo } from 'react';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -74,14 +75,23 @@ export const PageLayout = SwappableComponentBlueprint.make({
       component: SwappablePageLayout,
       loader: () => (props: PageLayoutProps) => {
         const { title, icon, noHeader, headerActions, tabs, children } = props;
-        if (tabs) {
+        const tabsWithMatchStrategy = useMemo(
+          () =>
+            tabs?.map(tab => ({
+              ...tab,
+              matchStrategy: 'prefix' as const,
+            })),
+          [tabs],
+        );
+
+        if (tabsWithMatchStrategy) {
           return (
             <>
               {!noHeader && (
                 <PluginHeader
                   title={title}
                   icon={icon}
-                  tabs={tabs}
+                  tabs={tabsWithMatchStrategy}
                   customActions={headerActions}
                 />
               )}

@@ -1825,8 +1825,6 @@ export interface PageTab {
   id: string;
   // (undocumented)
   label: string;
-  // (undocumented)
-  matchStrategy?: 'prefix' | 'exact';
 }
 
 // @public
