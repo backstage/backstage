@@ -31,7 +31,7 @@ const configSchema = z.object({
   npmPackageName: z.string(),
   addedDate: z.coerce.date(),
   order: z.number().optional(),
-  state: z.enum('active', 'inactive', 'archived'),
+  state: z.enum(['active', 'inactive', 'archived']),
   age: z.number().optional(),
 });
 

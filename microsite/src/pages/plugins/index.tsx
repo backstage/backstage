@@ -117,13 +117,14 @@ const Plugins = () => {
 
   const corePlugins = useMemo(() => {
     return plugins.corePlugins
+      .filter(pluginData => pluginData.status !== 'archived')
       .filter(pluginData => matchesCategory(pluginData, selectedCategories))
       .filter(pluginData => matchesSearch(pluginData, searchTerm));
   }, [selectedCategories, searchTerm]);
 
   const otherPlugins = useMemo(() => {
     return plugins.otherPlugins
-      .filter(pluginData => pluginData.status !== 'inactive')
+      .filter(pluginData => pluginData.status !== 'inactive' && pluginData.status !== 'archived')
       .filter(pluginData => matchesCategory(pluginData, selectedCategories))
       .filter(pluginData => matchesSearch(pluginData, searchTerm));
   }, [selectedCategories, searchTerm]);
@@ -193,7 +194,7 @@ const Plugins = () => {
 
         {showOtherPlugins && otherPlugins.length > 0 && (
           <div>
-            <h2>All Plugins ({otherPlugins.length})</h2>
+            <h2>Active Plugins ({otherPlugins.length})</h2>
             <p>
               Friendly reminder: While we love the variety and contributions of
               our open source plugins, they haven't been fully vetted by the
