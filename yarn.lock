@@ -30664,11 +30664,13 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-node-import@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "eslint-plugin-node-import@npm:1.0.5"
+  version: 1.2.0
+  resolution: "eslint-plugin-node-import@npm:1.2.0"
+  dependencies:
+    globals: "npm:^17.3.0"
   peerDependencies:
     eslint: ">=7"
-  checksum: 10/d77c03871c3397d09db18d5242030b8490769077a488d4267c6c3f38ceffb9b86d162b32c8d5fbafe92ff4bc7668a1a5971f2020e6edab38c37b0a2e6155a591
+  checksum: 10/bfd36ad4e8d74cc0da900151c19cb40328e62218e730055327d7c35b53af103e37d414701b7de2269b1eabcc8fafab0972e98a48489ac9f367e39618138aeecd
   languageName: node
   linkType: hard
 
@@ -33136,6 +33138,13 @@ __metadata:
   version: 15.15.0
   resolution: "globals@npm:15.15.0"
   checksum: 10/7f561c87b2fd381b27fc2db7df8a4ea7a9bb378667b8a7193e61fd2ca3a876479174e2a303a74345fbea6e1242e16db48915c1fd3bf35adcf4060a795b425e18
+  languageName: node
+  linkType: hard
+
+"globals@npm:^17.3.0":
+  version: 17.3.0
+  resolution: "globals@npm:17.3.0"
+  checksum: 10/44ba2b7db93eb6a2531dfba09219845e21f2e724a4f400eb59518b180b7d5bcf7f65580530e3d3023d7dc2bdbacf5d265fd87c393f567deb9a2b0472b51c9d5e
   languageName: node
   linkType: hard
 
