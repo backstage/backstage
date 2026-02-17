@@ -125,6 +125,7 @@ export function applyEntityFilterToQuery(options: {
   targetQuery: Knex.QueryBuilder;
   onEntityIdField: string;
   knex: Knex;
+  strategy?: 'in' | 'join';
 }): Knex.QueryBuilder {
   const { filter, query, targetQuery, onEntityIdField, knex } = options;
 

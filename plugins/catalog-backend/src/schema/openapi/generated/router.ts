@@ -1231,8 +1231,7 @@ export const spec = {
       post: {
         operationId: 'QueryEntitiesByPredicate',
         tags: ['Entity'],
-        description:
-          'Query entities using predicate-based filters. This endpoint provides an\nalternative filtering method with a more expressive filter syntax supporting\nlogical operators ($all, $any, $not) and value operators ($exists, $in).\n\nExample query:\n```json\n{\n  "query": {\n    "$all": [\n      {"kind": "component"},\n      {"$any": [\n        {"spec.type": "service"},\n        {"spec.type": "website"}\n      ]},\n      {"$not": {"spec.lifecycle": "experimental"}}\n    ]\n  }\n}\n```\n',
+        description: 'Query entities using predicate-based filters.',
         responses: {
           '200': {
             description: 'Ok',
