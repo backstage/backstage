@@ -548,15 +548,7 @@ export async function createRouter(
 
           if (!secretsResult.valid) {
             res.status(400).json({
-              errors: secretsResult.errors.map(err => {
-                const property = err.property.replace(/^instance/, 'secrets');
-                const secretName = err.argument;
-                const message =
-                  err.name === 'required'
-                    ? `secrets.${secretName} is required`
-                    : `${property} ${err.message}`;
-                return { ...err, property, message };
-              }),
+              errors: formatSecretsValidationErrors(secretsResult),
             });
             return;
           }
