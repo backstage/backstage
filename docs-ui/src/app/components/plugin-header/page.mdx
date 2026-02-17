@@ -16,11 +16,11 @@ import {
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
-import { HeaderDefinition } from '../../../utils/definitions';
+import { PluginHeaderDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
-  title="Header"
+  title="PluginHeader"
   description="A plugin header with icon, title, custom actions, and navigation tabs."
 />
 
@@ -36,22 +36,22 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ## Examples
 
-### Simple header
+### Simple plugin header
 
 <Snippet py={4} preview={<WithAllOptions />} code={simple} open />
 
-### Header with tabs
+### Plugin header with tabs
 
 Tabs use React Router and highlight automatically based on the current route.
 
 <Snippet preview={<WithAllOptionsAndTabs />} code={withTabs} open />
 
-### Header with HeaderPage
+### Plugin header with HeaderPage
 
 Combine with [HeaderPage](/components/header-page) for multi-level navigation.
 
 <Snippet preview={<WithHeaderPage />} code={withHeaderPage} open />
 
-<Theming definition={HeaderDefinition} />
+<Theming definition={PluginHeaderDefinition} />
 
-<ChangelogComponent component="header" />
+<ChangelogComponent component="plugin-header" />

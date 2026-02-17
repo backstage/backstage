@@ -1,8 +1,8 @@
-export const usage = `import { Header } from '@backstage/ui';
+export const usage = `import { PluginHeader } from '@backstage/ui';
 
-<Header title="My plugin" />`;
+<PluginHeader title="My plugin" />`;
 
-export const defaultSnippet = `<Header
+export const defaultSnippet = `<PluginHeader
   title="My plugin"
   titleLink="/"
   tabs={[
@@ -19,7 +19,7 @@ export const defaultSnippet = `<Header
   }
 />`;
 
-export const simple = `<Header
+export const simple = `<PluginHeader
   title="My plugin"
   titleLink="/"
   customActions={
@@ -31,7 +31,7 @@ export const simple = `<Header
   }
 />`;
 
-export const withTabs = `<Header
+export const withTabs = `<PluginHeader
   title="My plugin"
   titleLink="/"
   tabs={[
@@ -43,7 +43,7 @@ export const withTabs = `<Header
   ]}
 />`;
 
-export const withHeaderPage = `<Header
+export const withHeaderPage = `<PluginHeader
   title="My plugin"
   titleLink="/"
   tabs={[

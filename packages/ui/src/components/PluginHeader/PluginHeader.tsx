@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { HeaderProps } from './types';
-import { HeaderToolbar } from './HeaderToolbar';
+import type { PluginHeaderProps } from './types';
+import { PluginHeaderToolbar } from './PluginHeaderToolbar';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
-import { HeaderDefinition } from './definition';
+import { PluginHeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
 import { useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
-import styles from './Header.module.css';
+import styles from './PluginHeader.module.css';
 import clsx from 'clsx';
 
 declare module 'react-aria-components' {
@@ -32,12 +32,13 @@ declare module 'react-aria-components' {
 }
 
 /**
- * A component that renders a toolbar.
+ * A component that renders a plugin header with icon, title, custom actions,
+ * and navigation tabs.
  *
  * @public
  */
-export const Header = (props: HeaderProps) => {
-  const { classNames, cleanedProps } = useStyles(HeaderDefinition, props);
+export const PluginHeader = (props: PluginHeaderProps) => {
+  const { classNames, cleanedProps } = useStyles(PluginHeaderDefinition, props);
   const {
     className,
     tabs,
@@ -88,7 +89,7 @@ export const Header = (props: HeaderProps) => {
       ref={headerRef}
       className={clsx(classNames.root, styles[classNames.root], className)}
     >
-      <HeaderToolbar
+      <PluginHeaderToolbar
         icon={icon}
         title={title}
         titleLink={titleLink}

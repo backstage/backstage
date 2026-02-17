@@ -58,8 +58,8 @@ export const components: Page[] = [
     slug: 'grid',
   },
   {
-    title: 'Header',
-    slug: 'header',
+    title: 'PluginHeader',
+    slug: 'plugin-header',
   },
   {
     title: 'HeaderPage',

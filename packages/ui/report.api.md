@@ -1154,23 +1154,6 @@ export interface GridProps extends SpaceProps {
 }
 
 // @public
-export const Header: (props: HeaderProps) => JSX_2.Element;
-
-// @public
-export const HeaderDefinition: {
-  readonly classNames: {
-    readonly root: 'bui-Header';
-    readonly toolbar: 'bui-HeaderToolbar';
-    readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
-    readonly toolbarContent: 'bui-HeaderToolbarContent';
-    readonly toolbarControls: 'bui-HeaderToolbarControls';
-    readonly toolbarIcon: 'bui-HeaderToolbarIcon';
-    readonly toolbarName: 'bui-HeaderToolbarName';
-    readonly tabsWrapper: 'bui-HeaderTabsWrapper';
-  };
-};
-
-// @public
 export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
 
 // @public
@@ -1204,24 +1187,6 @@ export interface HeaderPageProps {
   tabs?: HeaderTab[];
   // (undocumented)
   title?: string;
-}
-
-// @public
-export interface HeaderProps {
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  customActions?: React.ReactNode;
-  // (undocumented)
-  icon?: React.ReactNode;
-  // (undocumented)
-  onTabSelectionChange?: TabsProps_2['onSelectionChange'];
-  // (undocumented)
-  tabs?: HeaderTab[];
-  // (undocumented)
-  title?: string;
-  // (undocumented)
-  titleLink?: string;
 }
 
 // @public
@@ -1572,6 +1537,41 @@ export interface PasswordFieldProps
   icon?: ReactNode;
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
+
+// @public
+export const PluginHeader: (props: PluginHeaderProps) => JSX_2.Element;
+
+// @public
+export const PluginHeaderDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-PluginHeader';
+    readonly toolbar: 'bui-PluginHeaderToolbar';
+    readonly toolbarWrapper: 'bui-PluginHeaderToolbarWrapper';
+    readonly toolbarContent: 'bui-PluginHeaderToolbarContent';
+    readonly toolbarControls: 'bui-PluginHeaderToolbarControls';
+    readonly toolbarIcon: 'bui-PluginHeaderToolbarIcon';
+    readonly toolbarName: 'bui-PluginHeaderToolbarName';
+    readonly tabsWrapper: 'bui-PluginHeaderTabsWrapper';
+  };
+};
+
+// @public
+export interface PluginHeaderProps {
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  customActions?: React.ReactNode;
+  // (undocumented)
+  icon?: React.ReactNode;
+  // (undocumented)
+  onTabSelectionChange?: TabsProps_2['onSelectionChange'];
+  // (undocumented)
+  tabs?: HeaderTab[];
+  // (undocumented)
+  title?: string;
+  // (undocumented)
+  titleLink?: string;
 }
 
 // @public

@@ -18,11 +18,11 @@ import { TabsProps } from 'react-aria-components';
 import { TabMatchStrategy } from '../Tabs';
 
 /**
- * Props for the main Header component.
+ * Props for the {@link PluginHeader} component.
  *
  * @public
  */
-export interface HeaderProps {
+export interface PluginHeaderProps {
   icon?: React.ReactNode;
   title?: string;
   titleLink?: string;
@@ -50,15 +50,15 @@ export interface HeaderTab {
 }
 
 /**
- * Props for the HeaderToolbar component.
+ * Props for the PluginHeaderToolbar component.
  *
  * @internal
  */
-export interface HeaderToolbarProps {
-  icon?: HeaderProps['icon'];
-  title?: HeaderProps['title'];
-  titleLink?: HeaderProps['titleLink'];
-  customActions?: HeaderProps['customActions'];
+export interface PluginHeaderToolbarProps {
+  icon?: PluginHeaderProps['icon'];
+  title?: PluginHeaderProps['title'];
+  titleLink?: PluginHeaderProps['titleLink'];
+  customActions?: PluginHeaderProps['customActions'];
   hasTabs?: boolean;
   className?: string;
 }

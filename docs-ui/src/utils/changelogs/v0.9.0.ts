@@ -109,7 +109,14 @@ After:
     commitSha: 'a67670d',
   },
   {
-    components: ['menu', 'switch', 'skeleton', 'header', 'header-page', 'tabs'],
+    components: [
+      'menu',
+      'switch',
+      'skeleton',
+      'plugin-header',
+      'header-page',
+      'tabs',
+    ],
     version: '0.9.0',
     prs: ['31496'],
     description: `**BREAKING**: Changed className prop behavior to augment default styles instead of being ignored or overriding them.
@@ -171,10 +178,10 @@ import { Disclosure, Button, DisclosurePanel } from 'react-aria-components';
     commitSha: '816af0f',
   },
   {
-    components: ['header'],
+    components: ['plugin-header'],
     version: '0.9.0',
     prs: ['31525'],
-    description: `Fix broken external links in Backstage UI Header component.`,
+    description: `Fix broken external links in Backstage UI PluginHeader component.`,
 
     commitSha: 'd01de00',
   },
