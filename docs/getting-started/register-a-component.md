@@ -49,12 +49,12 @@ To manually register a component in the Software Catalog:
 4. Select `ANALYZE`.
 5. If the changes from `ANALYZE` are correct, select `IMPORT`.
 
-   ![review and select import.](../assets/uiguide/review-select-import.png)
+    ![review and select import.](../assets/uiguide/review-select-import.png)
 
-If your entity was successfully imported, the details will be displayed.
+   If your entity was successfully imported, the details will be displayed.
 
-![details of registered component.](../assets/uiguide/details-for-registered-backstage-website.png)
+    ![details of registered component.](../assets/uiguide/details-for-registered-backstage-website.png)
 
-Select `Home` to view your new entity in the Software Catalog.
+6. Select `Home` to view your new entity in the Software Catalog.
 
-![Backstage website component in software catalog.](../assets/uiguide/backstage-website-registered-catalog-view.png)
+    ![Backstage website component in software catalog.](../assets/uiguide/backstage-website-registered-catalog-view.png)
