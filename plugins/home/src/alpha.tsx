@@ -63,6 +63,7 @@ const homePage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { node, inputs }) {
     return originalFactory({
       path: '/home',
+      noHeader: true,
       routeRef: rootRouteRef,
       loader: async () => {
         const LazyDefaultLayout = reactLazy(() =>
@@ -207,6 +208,8 @@ const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
  */
 export default createFrontendPlugin({
   pluginId: 'home',
+  title: 'Home',
+  icon: <HomeIcon />,
   info: { packageJson: () => import('../package.json') },
   extensions: [
     homePage,

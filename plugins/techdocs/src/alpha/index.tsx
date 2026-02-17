@@ -278,6 +278,8 @@ const techDocsNavItem = NavItemBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'techdocs',
+  title: 'Docs',
+  icon: <LibraryBooks />,
   info: { packageJson: () => import('../../package.json') },
   extensions: [
     techDocsClientApi,

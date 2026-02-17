@@ -103,34 +103,45 @@ export const appModuleNav = createFrontendModule({
   extensions: [
     NavContentBlueprint.make({
       params: {
-        component: ({ items }) => (
-          <Sidebar>
-            <SidebarLogo />
-            <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-              <SidebarSearchModal />
-            </SidebarGroup>
-            <SidebarDivider />
-            <SidebarGroup label="Menu" icon={<MenuIcon />}>
-              <SidebarScrollWrapper>
-                {items.map((item, index) => (
-                  <SidebarItem {...item} key={index} />
-                ))}
-              </SidebarScrollWrapper>
-            </SidebarGroup>
-            <SidebarDivider />
-            <SidebarSpace />
-            <SidebarDivider />
-            <SidebarGroup
-              label="Settings"
-              icon={<UserSettingsSignInAvatar />}
-              to="/settings"
-            >
-              <NotificationsSidebarItem />
-              <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
-              <Settings />
-            </SidebarGroup>
-          </Sidebar>
-        ),
+        component: ({ navItems }) => {
+          const nav = navItems.withComponent(item => (
+            <SidebarItem
+              icon={() => item.icon}
+              to={item.href}
+              text={item.title}
+            />
+          ));
+          nav.take('page:home'); // Skip home
+          return (
+            <Sidebar>
+              <SidebarLogo />
+              <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+                <SidebarSearchModal />
+              </SidebarGroup>
+              <SidebarDivider />
+              <SidebarGroup label="Menu" icon={<MenuIcon />}>
+                {nav.take('page:catalog')}
+                {nav.take('page:scaffolder')}
+                <SidebarDivider />
+                <SidebarScrollWrapper>
+                  {nav.rest({ sortBy: 'title' })}
+                </SidebarScrollWrapper>
+              </SidebarGroup>
+              <SidebarDivider />
+              <SidebarSpace />
+              <SidebarDivider />
+              <SidebarGroup
+                label="Settings"
+                icon={<UserSettingsSignInAvatar />}
+                to="/settings"
+              >
+                <NotificationsSidebarItem />
+                <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
+                <Settings />
+              </SidebarGroup>
+            </Sidebar>
+          );
+        },
       },
     }),
   ],
