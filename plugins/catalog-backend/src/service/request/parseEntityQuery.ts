@@ -20,7 +20,7 @@ import {
   FilterPredicate,
 } from '@backstage/filter-predicates';
 import { z } from 'zod/v3';
-import { fromZodError } from 'zod-validation-error';
+import { fromZodError } from 'zod-validation-error/v3';
 import { QueryEntitiesByPredicateRequest } from '../../schema/openapi/generated/models/QueryEntitiesByPredicateRequest.model';
 import { EntityOrder } from '../../catalog/types';
 import { Cursor } from '../../catalog/types';
