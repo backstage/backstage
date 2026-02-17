@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import fs from 'fs-extra';
 import recursiveReaddir from 'recursive-readdir';
 import { resolve as resolvePath, relative as relativePath } from 'node:path';

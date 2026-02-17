@@ -24,7 +24,7 @@ import {
   TEMPLATE_FILE_NAME,
 } from '../types';
 import { parse as parseYaml } from 'yaml';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { fromZodError } from 'zod-validation-error/v3';
 import { ForwardedError } from '@backstage/errors';
 

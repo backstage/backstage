@@ -16,7 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import { Request } from 'express';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 const schema = z.object({
   entityRefs: z.array(z.string()),

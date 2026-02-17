@@ -45,7 +45,7 @@
     "@backstage/version-bridge": "workspace:^",
     "i18next": "^22.4.15",
     "zen-observable": "^0.10.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
 import { InputError } from '@backstage/errors';

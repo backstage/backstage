@@ -19,7 +19,7 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AwsAlbResult } from './types';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 /**
  * Available sign-in resolvers for the AWS ALB auth provider.

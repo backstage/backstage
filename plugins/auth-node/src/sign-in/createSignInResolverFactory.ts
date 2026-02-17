@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ZodSchema, ZodTypeDef } from 'zod';
+import { ZodSchema, ZodTypeDef } from 'zod/v3';
 import { SignInResolver } from '../types';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { JsonObject } from '@backstage/types';

@@ -39,7 +39,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "passport-oauth2": "^1.8.0",
-    "zod": "^3.24.2"
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

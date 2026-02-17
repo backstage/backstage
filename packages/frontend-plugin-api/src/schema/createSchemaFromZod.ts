@@ -15,7 +15,7 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { z, type ZodSchema, type ZodTypeDef } from 'zod';
+import { z, type ZodSchema, type ZodTypeDef } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { PortableSchema } from './types';
 
