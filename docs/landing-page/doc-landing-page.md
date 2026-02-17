@@ -52,8 +52,7 @@ description: Documentation landing page.
         <li><a href='https://backstage.io/docs/features/software-templates/configuration'>Configuring a Software Template</a></li>
         <li><a href='https://backstage.io/docs/features/software-templates/adding-templates'>Creating a Software Template</a></li>
         <li><a href='https://backstage.io/docs/features/kubernetes/'>Check health of services with Kubernetes</a></li>
-        <li><a href='https://backstage.io/docs/tooling/cli/overview/'>Backstage CLI</a></li>
-        <li><a href='https://backstage.io/docs/features/techdocs/'>TechDocs - a docs-like-code solution</a></li>
+        <li><a href='https://backstage.io/docs/tooling/cli/overview/'>Backstage CLI</a></li>    
       </ul>           
     </td> 
     <td valign='top'><i>Configure, Deploy, & Upgrade.</i><br><br>
@@ -74,6 +73,7 @@ description: Documentation landing page.
         <li><a href='https://backstage.io/docs/features/search/'>Search</a></li>
         <li><a href='https://backstage.io/docs/features/software-catalog/'>Software Catalog</a></li>
         <li><a href='https://backstage.io/docs/features/software-templates/'>Software Templates (aka Scaffolder)</a></li>
+        <li><a href='https://backstage.io/docs/features/techdocs/'>TechDocs - a docs-like-code solution</a></li>
       </ul>
     </td>
   </tr>
