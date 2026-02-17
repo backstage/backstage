@@ -20,7 +20,7 @@ import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
-import { FilterPredicate } from '@backstage/filter-predicates';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.

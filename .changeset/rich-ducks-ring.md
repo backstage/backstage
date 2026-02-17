@@ -3,13 +3,8 @@
 '@backstage/plugin-catalog-backend': minor
 ---
 
-New POST /entities/by-query endpoint
+Added predicate-based entity filtering via POST /entities/by-query endpoint.
 
-- Supports predicate-based entity filtering using advanced query operators ($all, $any, $in, $not, $exists)
-- Enables complex nested queries for more powerful entity searches
-- Provides cursor-based pagination for efficient result traversal
+Supports `$all`, `$any`, `$not`, `$exists`, and `$in` operators for expressive entity queries. Integrated into the existing `queryEntities` flow with full cursor-based pagination, permission enforcement, and `totalItems` support.
 
-Updated Catalog Client
-
-- Enhanced queryEntities() method to automatically route requests to POST endpoint when query predicate is provided
-- Validates mutual exclusivity between filter (legacy) and query (predicate-based) parameters
+The catalog client's `queryEntities()` method automatically routes to the POST endpoint when a `query` predicate is provided.

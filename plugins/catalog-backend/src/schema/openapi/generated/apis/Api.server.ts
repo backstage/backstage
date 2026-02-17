@@ -26,7 +26,6 @@ import { Entity } from '../models/Entity.model';
 import { EntityAncestryResponse } from '../models/EntityAncestryResponse.model';
 import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
-import { QueryEntitiesByPredicate200Response } from '../models/QueryEntitiesByPredicate200Response.model';
 import { QueryEntitiesByPredicateRequest } from '../models/QueryEntitiesByPredicateRequest.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
 import { ValidateEntity400Response } from '../models/ValidateEntity400Response.model';
@@ -127,13 +126,7 @@ export type GetEntityFacets = {
  */
 export type QueryEntitiesByPredicate = {
   body: QueryEntitiesByPredicateRequest;
-  query: {
-    limit?: number;
-    offset?: number;
-    orderField?: Array<string>;
-    after?: string;
-  };
-  response: QueryEntitiesByPredicate200Response | Error | Error;
+  response: EntitiesQueryResponse | Error | Error;
 };
 /**
  * @public

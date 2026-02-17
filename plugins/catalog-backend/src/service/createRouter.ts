@@ -30,7 +30,6 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, serializeError } from '@backstage/errors';
-import { parseFilterPredicate } from '@backstage/filter-predicates';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
@@ -66,7 +65,7 @@ import {
   encodeLocationQueryCursor,
   parseLocationQuery,
 } from './request/parseLocationQuery';
-import { parseEntityOrderFieldParams } from './request/parseEntityOrderFieldParams';
+import { parseEntityQuery } from './request/parseEntityQuery';
 
 /**
  * Options used by {@link createRouter}.
@@ -265,31 +264,34 @@ export async function createRouter(
           eventId: 'entity-fetch',
           request: req,
           meta: {
-            queryType: 'by-query-predicate',
+            queryType: 'by-query',
           },
         });
 
         try {
-          // Validate the query using the Zod schema from @backstage/filter-predicates
-          const query = req.body.query
-            ? parseFilterPredicate(req.body.query)
-            : undefined;
-          const order = parseEntityOrderFieldParams(req.query);
-          const pagination = parseEntityPaginationParams(req.query);
           const credentials = await httpAuth.credentials(req);
+          const { fields: rawFields, ...parsed } = parseEntityQuery(
+            req.body ?? {},
+          );
+          const fields = rawFields?.length
+            ? parseEntityTransformParams({ fields: rawFields })
+            : undefined;
 
-          const { entities, pageInfo } =
-            await entitiesCatalog.queryEntitiesByPredicate({
-              query,
-              order,
-              pagination,
+          const { items, pageInfo, totalItems } =
+            await entitiesCatalog.queryEntities({
               credentials,
+              fields,
+              ...parsed,
             });
 
           const meta = {
+            totalItems,
             pageInfo: {
-              ...(pageInfo.hasNextPage && {
-                nextCursor: pageInfo.endCursor,
+              ...(pageInfo.nextCursor && {
+                nextCursor: encodeCursor(pageInfo.nextCursor),
+              }),
+              ...(pageInfo.prevCursor && {
+                prevCursor: encodeCursor(pageInfo.prevCursor),
               }),
             },
           };
@@ -298,10 +300,10 @@ export async function createRouter(
 
           await writeEntitiesResponse({
             res,
-            items: entities,
+            items,
             alwaysUseObjectMode: enableRelationsCompatibility,
-            responseWrapper: items => ({
-              items,
+            responseWrapper: entities => ({
+              items: entities,
               ...meta,
             }),
           });

@@ -165,15 +165,14 @@ function applyPredicateInStrategy(
     );
   }
 
-  // Handle primitive value at top level (e.g., "component" shorthand)
+  // Reject primitives at the top level. Matching by value without specifying
+  // a field key is ambiguous and should not be allowed.
   if (isPrimitive(filter)) {
-    const matchQuery = knex<DbSearchRow>('search')
-      .select('search.entity_id')
-      .where({ value: String(filter).toLowerCase() });
-    return targetQuery.andWhere(
-      onEntityIdField,
-      negate ? 'not in' : 'in',
-      matchQuery,
+    throw new InputError(
+      `Invalid filter predicate: top-level primitive values are not supported. ` +
+        `Wrap the value in a field expression, e.g. { "kind": ${JSON.stringify(
+          filter,
+        )} }`,
     );
   }
 
@@ -233,7 +232,6 @@ export function applyPredicateEntityFilterToQuery(options: {
   targetQuery: Knex.QueryBuilder;
   onEntityIdField: string;
   knex: Knex;
-  strategy?: 'in' | 'join';
 }): Knex.QueryBuilder {
   const { filter, targetQuery, onEntityIdField, knex } = options;
 

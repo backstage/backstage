@@ -53,13 +53,6 @@ export type EntitiesRequest = {
   credentials: BackstageCredentials;
 };
 
-export type EntityPredicateRequest = {
-  query?: FilterPredicate;
-  order?: EntityOrder[];
-  pagination?: EntityPagination;
-  credentials: BackstageCredentials;
-};
-
 /**
  * Encapsulates either a deserialized or serialized entities to be sent in a response.
  * @internal
@@ -172,15 +165,6 @@ export interface EntitiesCatalog {
    * @param request
    */
   queryEntities(request: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
-
-  /**
-   * Fetch entities using predicate-based filters.
-   *
-   * @param request - Request options with predicate filter
-   */
-  queryEntitiesByPredicate(
-    request?: EntityPredicateRequest,
-  ): Promise<EntitiesResponse>;
 
   /**
    * Removes a single entity.
