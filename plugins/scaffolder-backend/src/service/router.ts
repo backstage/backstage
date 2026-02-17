@@ -87,7 +87,6 @@ import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import {
   DatabaseTaskStore,
-  DefaultTemplateActionRegistry,
   TaskWorker,
   TemplateActionRegistry,
 } from '../scaffolder';
@@ -131,7 +130,6 @@ import {
   scaffolderTaskRules,
   scaffolderTemplateRules,
 } from './rules';
-import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * RouterOptions
@@ -164,8 +162,7 @@ export interface RouterOptions {
   events?: EventsService;
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
-  actionsRegistry: ActionsService;
-  templateActionRegistry?: TemplateActionRegistry;
+  templateActionRegistry: TemplateActionRegistry;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -213,7 +210,7 @@ export async function createRouter(
     auth,
     httpAuth,
     auditor,
-    actionsRegistry,
+    templateActionRegistry,
   } = options;
 
   const concurrentTasksLimit =
@@ -270,9 +267,6 @@ export async function createRouter(
   } else {
     taskBroker = options.taskBroker;
   }
-  const templateActionRegistry =
-    options.templateActionRegistry ??
-    new DefaultTemplateActionRegistry(actionsRegistry, logger);
 
   const templateExtensions = {
     additionalTemplateFilters: convertFiltersToRecord(

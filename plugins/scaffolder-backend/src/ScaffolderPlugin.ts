@@ -242,7 +242,6 @@ export const scaffolderPlugin = createBackendPlugin({
           additionalWorkspaceProviders,
           events,
           auditor,
-          actionsRegistry,
           templateActionRegistry, // Pass the pre-created TemplateActionRegistry
         });
         httpRouter.use(router);
