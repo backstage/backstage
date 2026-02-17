@@ -154,11 +154,12 @@ catalog:
         fallbackBranch: master # Optional. Fallback to be used if there is no default branch configured at the Gitlab repository. It is only used, if `branch` is undefined. Uses `master` as default
         skipForkedRepos: false # Optional. If the project is a fork, skip repository
         includeArchivedRepos: false # Optional. If project is archived, include repository
-        group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
+        group: example-group # Optional (unless useSearch is true). Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
         groupPattern: # Optional. Filters for groups based on a list of RegEx. Default, no filters.
           - '^somegroup$'
           - 'anothergroup'
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
+        useSearch: false # Optional. Whether to use the GitLab group search API to find files. Requires Gitlab 'Premium' or 'Ultimate' licenses.  Defaults to `false`
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
         schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System

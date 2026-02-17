@@ -92,7 +92,7 @@ export type Columns =
   | 'auto';
 
 /** @public */
-export interface SpaceProps {
+export interface MarginProps {
   m?: Responsive<Space>;
   mb?: Responsive<Space>;
   ml?: Responsive<Space>;
@@ -100,6 +100,10 @@ export interface SpaceProps {
   mt?: Responsive<Space>;
   mx?: Responsive<Space>;
   my?: Responsive<Space>;
+}
+
+/** @public */
+export interface PaddingProps {
   p?: Responsive<Space>;
   pb?: Responsive<Space>;
   pl?: Responsive<Space>;
@@ -108,6 +112,9 @@ export interface SpaceProps {
   px?: Responsive<Space>;
   py?: Responsive<Space>;
 }
+
+/** @public */
+export interface SpaceProps extends MarginProps, PaddingProps {}
 
 /** @public */
 export type TextVariants =
@@ -124,7 +131,7 @@ export type TextVariants =
 export type TextColors = 'primary' | 'secondary';
 
 /** @public */
-export type TextColorStatus = 'danger' | 'warning' | 'success';
+export type TextColorStatus = 'danger' | 'warning' | 'success' | 'info';
 
 /** @public */
 export type TextWeights = 'regular' | 'bold';
@@ -175,19 +182,30 @@ export interface ComponentDefinition {
 }
 
 /**
- * Surface type
+ * Background type for the neutral bg system.
  *
- * Supports absolute levels ('0'-'3'), intent surfaces ('danger', 'warning', 'success'),
- * and 'auto' which increments from the parent surface context.
+ * Supports neutral levels ('neutral-1' through 'neutral-3') and
+ * intent backgrounds ('danger', 'warning', 'success').
+ *
+ * The 'neutral-4' level is not exposed as a prop value -- it is reserved
+ * for leaf component CSS (e.g. Button on a 'neutral-3' surface).
  *
  * @public
  */
-export type Surface =
-  | '0'
-  | '1'
-  | '2'
-  | '3'
+export type ContainerBg =
+  | 'neutral-1'
+  | 'neutral-2'
+  | 'neutral-3'
   | 'danger'
   | 'warning'
-  | 'success'
-  | 'auto';
+  | 'success';
+
+/**
+ * Background values accepted by provider components.
+ *
+ * Includes all `ContainerBg` values plus `'neutral-auto'` which
+ * automatically increments the neutral level from the parent context.
+ *
+ * @public
+ */
+export type ProviderBg = ContainerBg | 'neutral-auto';

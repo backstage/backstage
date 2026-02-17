@@ -2,30 +2,43 @@
 
 import { Skeleton } from '../../../../../packages/ui/src/components/Skeleton/Skeleton';
 import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
+import { Box } from '../../../../../packages/ui/src/components/Box/Box';
 
-export const Demo1 = () => {
+export const CardPlaceholder = () => {
   return (
-    <Flex gap="4">
-      <Skeleton rounded width={48} height={48} />
+    <Box surface="3" p="4">
       <Flex direction="column" gap="4">
-        <Skeleton width={200} height={8} />
-        <Skeleton width={200} height={8} />
-        <Skeleton width={200} height={8} />
-        <Flex gap="4">
-          <Skeleton width="100%" height={8} />
-          <Skeleton width="100%" height={8} />
-        </Flex>
+        <Skeleton width={400} height={160} />
+        <Skeleton width={400} height={12} />
+        <Skeleton width={240} height={12} />
       </Flex>
-    </Flex>
+    </Box>
   );
 };
 
-export const Demo2 = () => {
+export const AvatarWithText = () => {
   return (
-    <Flex direction="column" gap="4">
-      <Skeleton width={400} height={160} />
-      <Skeleton width={400} height={12} />
-      <Skeleton width={240} height={12} />
-    </Flex>
+    <Box surface="3" p="4">
+      <Flex direction="column" gap="4">
+        <Skeleton rounded width={48} height={48} />
+        <Flex direction="column" gap="4">
+          <Skeleton width={200} height={8} />
+          <Skeleton width={200} height={8} />
+          <Skeleton width={200} height={8} />
+        </Flex>
+      </Flex>
+    </Box>
+  );
+};
+
+export const Rounded = () => {
+  return (
+    <Box surface="3" p="4">
+      <Flex direction="column" gap="4">
+        <Skeleton rounded width={32} height={32} />
+        <Skeleton rounded width={48} height={48} />
+        <Skeleton rounded width={64} height={64} />
+      </Flex>
+    </Box>
   );
 };

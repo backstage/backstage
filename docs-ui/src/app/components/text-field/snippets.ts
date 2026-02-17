@@ -1,6 +1,6 @@
 export const textFieldUsageSnippet = `import { TextField } from '@backstage/ui';
 
-<TextField />`;
+<TextField label="Email" type="email" />`;
 
 export const withLabelSnippet = `<TextField
   name="url"
@@ -8,17 +8,17 @@ export const withLabelSnippet = `<TextField
   label="Label"
 />`;
 
-export const sizesSnippet = `<Flex direction="row" gap="4">
+export const sizesSnippet = `<Flex direction="column" gap="4">
   <TextField
+    size="small"
     name="url"
     placeholder="Enter a URL"
-    size="small"
     icon={<RiSparklingLine />}
   />
   <TextField
+    size="medium"
     name="url"
     placeholder="Enter a URL"
-    size="medium"
     icon={<RiSparklingLine />}
   />
 </Flex>`;

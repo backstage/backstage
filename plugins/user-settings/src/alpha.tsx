@@ -62,6 +62,8 @@ export const settingsNavItem = NavItemBlueprint.make({
  */
 export default createFrontendPlugin({
   pluginId: 'user-settings',
+  title: 'Settings',
+  icon: <SettingsIcon />,
   info: { packageJson: () => import('../package.json') },
   extensions: [userSettingsPage, settingsNavItem],
   routes: {

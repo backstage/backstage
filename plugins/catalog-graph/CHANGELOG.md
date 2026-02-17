@@ -1,5 +1,53 @@
 # @backstage/plugin-catalog-graph
 
+## 0.5.7-next.2
+
+### Patch Changes
+
+- ac9bead: Added `@backstage/frontend-test-utils` dev dependency.
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 4183614: Updated usage of deprecated APIs in the new frontend system.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+
+## 0.5.7-next.1
+
+### Patch Changes
+
+- 8dd27c4: Fix large icon rendering in catalog graph nodes
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/types@1.2.2
+
+## 0.5.6
+
+### Patch Changes
+
+- 5c49a00: Update for the `qs` library bump: the old array limit setting has changed to be more strict; you can no longer just give a zero to mean unlimited. So we choose an arbitrary high value, to at least go higher than the default 20.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+
 ## 0.5.5-next.1
 
 ### Patch Changes

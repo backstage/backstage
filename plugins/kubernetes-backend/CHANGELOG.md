@@ -1,5 +1,45 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-kubernetes-node@0.4.1-next.1
+  - @backstage/plugin-permission-node@0.10.10-next.0
+
+## 0.21.1-next.1
+
+### Patch Changes
+
+- ce3639c: Add PersistentVolume and PersistentVolumeClaims Rendering
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.10-next.1
+  - @backstage/plugin-kubernetes-node@0.4.1-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.21.1-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/integration-aws-node@0.1.20-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-kubernetes-node@0.4.1-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.10-next.0
+
 ## 0.21.0
 
 ### Minor Changes

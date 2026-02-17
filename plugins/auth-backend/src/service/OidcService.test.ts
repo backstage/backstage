@@ -28,7 +28,7 @@ import {
 import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
 
 jest.setTimeout(60_000);
@@ -117,7 +117,6 @@ describe('OidcService', () => {
           claims_supported: ['sub', 'ent'],
           grant_types_supported: ['authorization_code'],
           authorization_endpoint: 'http://mock-base-url/v1/authorize',
-          registration_endpoint: 'http://mock-base-url/v1/register',
           code_challenge_methods_supported: ['S256', 'plain'],
         });
       });

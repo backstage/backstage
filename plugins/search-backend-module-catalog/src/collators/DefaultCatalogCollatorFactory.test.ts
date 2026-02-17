@@ -18,7 +18,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
 
 const expectedEntities: Entity[] = [

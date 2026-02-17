@@ -58,3 +58,14 @@ export const orientationSnippet = `<Tabs orientation="vertical">
   <TabPanel id="tab2">Content 2</TabPanel>
   <TabPanel id="tab3">Content 3</TabPanel>
 </Tabs>`;
+
+export const urlNavigationSnippet = `<Tabs>
+  <TabList>
+    <Tab id="overview" href="/settings/overview">Overview</Tab>
+    <Tab id="profile" href="/settings/profile">Profile</Tab>
+    <Tab id="security" href="/settings/security">Security</Tab>
+  </TabList>
+  <TabPanel id="overview">Overview content</TabPanel>
+  <TabPanel id="profile">Profile content</TabPanel>
+  <TabPanel id="security">Security content</TabPanel>
+</Tabs>`;

@@ -389,11 +389,14 @@ export const EntityLayout = (props: EntityLayoutProps) => {
             NotFoundComponent
           ) : (
             <WarningPanel title={t('entityLabels.warningPanelTitle')}>
-              There is no {kind} with the requested{' '}
-              <Link to="https://backstage.io/docs/features/software-catalog/references">
-                kind, namespace, and name
-              </Link>
-              .
+              {t('entityPage.notFoundMessage', {
+                kind,
+                link: (
+                  <Link to="https://backstage.io/docs/features/software-catalog/references">
+                    {t('entityPage.notFoundLinkText')}
+                  </Link>
+                ),
+              })}
             </WarningPanel>
           )}
         </Content>

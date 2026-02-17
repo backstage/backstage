@@ -20,7 +20,7 @@ const BASE_DOMAIN = 'https://developer.atlassian.com';
 const SCHEMA_SOURCE = `${BASE_DOMAIN}/cloud/bitbucket/swagger.v3.json`;
 
 const fetch = require('cross-fetch');
-const fs = require('fs');
+const fs = require('node:fs');
 
 const destFile = `${__dirname}/../bitbucket-cloud.oas.json`;
 

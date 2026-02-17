@@ -6,16 +6,16 @@ import {
   WithLongBreadcrumbs,
   WithTabs,
   WithCustomActions,
-  WithMenuItems,
+  WithMenu,
 } from './components';
-import { propDefs } from './props-definition';
+import { headerPagePropDefs } from './props-definition';
 import {
   usage,
   defaultSnippet,
   withTabs,
   withBreadcrumbs,
   withCustomActions,
-  withMenuItems,
+  withMenu,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -23,9 +23,8 @@ import { HeaderPageDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
-  type="Component"
   title="HeaderPage"
-  description="A header page component for the plugin that should sit under the Header component."
+  description="A secondary header with title, breadcrumbs, tabs, and actions."
 />
 
 <Snippet py={4} preview={<WithEverything />} code={defaultSnippet} />
@@ -36,38 +35,32 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ## API reference
 
-<PropsTable data={propDefs} />
+<PropsTable data={headerPagePropDefs} />
 
 ## Examples
 
-### With Breadcrumbs
+### Breadcrumbs
 
-You can add breadcrumbs to the header page to help users navigate to the previous page. The `breadcrumbs`
-prop is an array of objects with a `label` and `href` property. By default we truncate the breadcrumb label to 240px.
+Labels are truncated at 240px.
 
 <Snippet open preview={<WithLongBreadcrumbs />} code={withBreadcrumbs} />
 
-### With Tabs
+### Tabs
 
-You can add tabs to the header page to help users navigate to the different sections of the page. The `tabs`
-prop is an array of objects with a `label` and `href` property.
+Tabs use React Router and highlight based on the current route.
 
 <Snippet open preview={<WithTabs />} code={withTabs} />
 
-### With Custom Actions
-
-You can add custom actions to the header page to help users navigate to the different sections of the page. The `customActions`
-prop is a React node.
+### Custom actions
 
 <Snippet open preview={<WithCustomActions />} code={withCustomActions} />
 
-### With Menu Items
+### With menu
 
-You can add menu items to the header page to help users navigate to the different sections of the page. The `menuItems`
-prop is an array of objects with a `label`, `value` and `onClick` property.
+Use `customActions` to add a dropdown menu.
 
-<Snippet open preview={<WithMenuItems />} code={withMenuItems} />
+<Snippet open preview={<WithMenu />} code={withMenu} />
 
 <Theming definition={HeaderPageDefinition} />
 
-<ChangelogComponent component="Header" />
+<ChangelogComponent component="header-page" />

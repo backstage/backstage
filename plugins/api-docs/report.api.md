@@ -104,7 +104,9 @@ export const ConsumedApisCard: (props: {
 // @public (undocumented)
 export const ConsumingComponentsCard: (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ComponentEntity>[];
+  tableOptions?: TableOptions;
 }) => JSX_2.Element;
 
 // @public
@@ -138,7 +140,9 @@ export const EntityConsumedApisCard: (props: {
 // @public (undocumented)
 export const EntityConsumingComponentsCard: (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ComponentEntity>[];
+  tableOptions?: TableOptions;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -160,7 +164,9 @@ export const EntityProvidedApisCard: (props: {
 // @public (undocumented)
 export const EntityProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ComponentEntity>[];
+  tableOptions?: TableOptions;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -215,7 +221,9 @@ export const ProvidedApisCard: (props: {
 // @public (undocumented)
 export const ProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ComponentEntity>[];
+  tableOptions?: TableOptions;
 }) => JSX_2.Element;
 
 // @public (undocumented)

@@ -30,7 +30,8 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   query: QueryState<TFilter>,
 ): PaginationResult<T> & { reload: () => void } {
   const {
-    getData: getDataProp,
+    data,
+    getData: getDataProp = () => [],
     paginationOptions = {},
     sortFn,
     filterFn,
@@ -43,7 +44,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   const { sort, filter, search } = query;
 
   const [items, setItems] = useState<T[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!data);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [loadCount, setLoadCount] = useState(0);
 
@@ -52,6 +53,10 @@ export function useCompletePagination<T extends TableItem, TFilter>(
 
   // Load data on mount and when loadCount changes (reload trigger)
   useEffect(() => {
+    if (data) {
+      return;
+    }
+
     let cancelled = false;
     setIsLoading(true);
     setError(undefined);
@@ -75,7 +80,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     return () => {
       cancelled = true;
     };
-  }, [getData, loadCount]);
+  }, [data, getData, loadCount]);
 
   // Reset offset when query changes (query object is memoized)
   const prevQueryRef = useRef(query);
@@ -86,9 +91,11 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     }
   }, [query]);
 
+  const resolvedItems = useMemo(() => data ?? items, [data, items]);
+
   // Process data client-side (filter, search, sort)
   const processedData = useMemo(() => {
-    let result = [...items];
+    let result = [...resolvedItems];
     if (filter !== undefined && filterFn) {
       result = filterFn(result, filter);
     }
@@ -99,7 +106,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
       result = sortFn(result, sort);
     }
     return result;
-  }, [items, sort, filter, search, filterFn, searchFn, sortFn]);
+  }, [resolvedItems, sort, filter, search, filterFn, searchFn, sortFn]);
 
   const totalCount = processedData.length;
 

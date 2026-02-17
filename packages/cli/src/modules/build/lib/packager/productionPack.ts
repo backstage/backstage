@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import npmPackList from 'npm-packlist';
-import { resolve as resolvePath, posix as posixPath } from 'path';
+import { resolve as resolvePath, posix as posixPath } from 'node:path';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../../../../lib/entryPoints';
 import { getEntryPointDefaultFeatureType } from '../../../../lib/typeDistProject';
@@ -148,7 +148,11 @@ async function rewriteEntryPoints(
 
   for (const entryPoint of entryPoints) {
     if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
-      outputExports[entryPoint.mount] = entryPoint.path;
+      // Non-script files (like CSS) get their paths rewritten from src/ to dist/
+      outputExports[entryPoint.mount] = entryPoint.path.replace(
+        /^(\.\/)?src\//,
+        './dist/',
+      );
       continue;
     }
 

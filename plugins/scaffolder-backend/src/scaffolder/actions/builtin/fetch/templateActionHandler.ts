@@ -30,7 +30,7 @@ import { isBinaryFile } from 'isbinaryfile';
 import { createDefaultFilters } from '../../../../lib/templating/filters/createDefaultFilters';
 import { convertFiltersToRecord } from '../../../../util/templating';
 import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
-import { extname } from 'path';
+import { extname } from 'node:path';
 
 export type TemplateActionInput = {
   targetPath?: string;

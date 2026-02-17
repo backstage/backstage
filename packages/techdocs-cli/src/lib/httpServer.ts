@@ -15,7 +15,7 @@
  */
 
 import serveHandler from 'serve-handler';
-import http from 'http';
+import http from 'node:http';
 import httpProxy from 'http-proxy';
 import { createLogger } from './utility';
 import {

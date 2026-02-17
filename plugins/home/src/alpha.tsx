@@ -14,60 +14,88 @@
  * limitations under the License.
  */
 
+/**
+ * The home plugin for Backstage's new frontend system.
+ *
+ * @remarks
+ * This package provides the new frontend system implementation of the home plugin,
+ * which offers customizable home pages with widget support and optional visit tracking.
+ *
+ * @packageDocumentation
+ */
+
+import { lazy as reactLazy } from 'react';
 import {
-  coreExtensionData,
-  createExtensionDataRef,
   createExtensionInput,
   PageBlueprint,
+  NavItemBlueprint,
   createFrontendPlugin,
   createRouteRef,
   AppRootElementBlueprint,
   identityApiRef,
   storageApiRef,
+  errorApiRef,
   ApiBlueprint,
+  ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
 import { VisitListener } from './components/';
-import { visitsApiRef, VisitsStorageApi } from './api';
+import { visitsApiRef, VisitsStorageApi, VisitsWebStorageApi } from './api';
+import HomeIcon from '@material-ui/icons/Home';
+import {
+  homePageWidgetDataRef,
+  homePageLayoutComponentDataRef,
+  HomePageLayoutBlueprint,
+  HomePageWidgetBlueprint,
+  type HomePageLayoutProps,
+} from '@backstage/plugin-home-react/alpha';
 
 const rootRouteRef = createRouteRef();
 
-/**
- * @alpha
- */
-export const titleExtensionDataRef = createExtensionDataRef<string>().with({
-  id: 'title',
-});
-
 const homePage = PageBlueprint.makeWithOverrides({
   inputs: {
-    props: createExtensionInput(
-      [
-        coreExtensionData.reactElement.optional(),
-        titleExtensionDataRef.optional(),
-      ],
-      {
-        singleton: true,
-        optional: true,
-      },
-    ),
+    widgets: createExtensionInput([homePageWidgetDataRef]),
+    layout: createExtensionInput([HomePageLayoutBlueprint.dataRefs.component], {
+      singleton: true,
+      optional: true,
+      internal: true,
+    }),
   },
-  factory: (originalFactory, { inputs }) => {
+  factory(originalFactory, { node, inputs }) {
     return originalFactory({
       path: '/home',
+      noHeader: true,
       routeRef: rootRouteRef,
-      loader: () =>
-        import('./components/').then(m => (
-          <m.HomepageCompositionRoot
-            children={inputs.props?.get(coreExtensionData.reactElement)}
-            title={inputs.props?.get(titleExtensionDataRef)}
-          />
-        )),
+      loader: async () => {
+        const LazyDefaultLayout = reactLazy(() =>
+          import('./alpha/DefaultHomePageLayout').then(m => ({
+            default: m.DefaultHomePageLayout,
+          })),
+        );
+
+        const DefaultLayoutComponent = (props: HomePageLayoutProps) => (
+          <ExtensionBoundary node={node}>
+            <LazyDefaultLayout {...props} />
+          </ExtensionBoundary>
+        );
+
+        const Layout =
+          inputs.layout?.get(homePageLayoutComponentDataRef) ??
+          DefaultLayoutComponent;
+
+        const widgets = inputs.widgets.map(widget => ({
+          ...widget.get(homePageWidgetDataRef),
+          node: widget.node,
+        }));
+
+        return <Layout widgets={widgets} />;
+      },
     });
   },
 });
 
 const visitListenerAppRootElement = AppRootElementBlueprint.make({
   name: 'visit-listener',
+  disabled: true,
   params: {
     element: <VisitListener />,
   },
@@ -75,25 +103,123 @@ const visitListenerAppRootElement = AppRootElementBlueprint.make({
 
 const visitsApi = ApiBlueprint.make({
   name: 'visits',
+  disabled: true,
   params: defineParams =>
     defineParams({
       api: visitsApiRef,
       deps: {
         storageApi: storageApiRef,
         identityApi: identityApiRef,
+        errorApi: errorApiRef,
       },
-      factory: ({ storageApi, identityApi }) =>
-        VisitsStorageApi.create({ storageApi, identityApi }),
+      factory: ({ storageApi, identityApi, errorApi }) => {
+        // Smart fallback: use custom storage API if available, otherwise localStorage
+        if (storageApi) {
+          return VisitsStorageApi.create({ storageApi, identityApi });
+        }
+        return VisitsWebStorageApi.create({ identityApi, errorApi });
+      },
     }),
 });
 
+const homeNavItem = NavItemBlueprint.make({
+  params: {
+    title: 'Home',
+    routeRef: rootRouteRef,
+    icon: HomeIcon,
+  },
+});
+
+const homePageToolkitWidget = HomePageWidgetBlueprint.make({
+  name: 'toolkit',
+  params: {
+    name: 'HomePageToolkit',
+    title: 'Toolkit',
+    components: () =>
+      import('./homePageComponents/Toolkit').then(m => ({
+        Content: m.Content,
+        ContextProvider: m.ContextProvider,
+      })),
+    componentProps: {
+      tools: [
+        {
+          url: 'https://backstage.io',
+          label: 'Backstage Docs',
+          icon: <HomeIcon />,
+        },
+      ],
+    },
+  },
+});
+
+const homePageStarredEntitiesWidget = HomePageWidgetBlueprint.make({
+  name: 'starred-entities',
+  params: {
+    name: 'HomePageStarredEntities',
+    title: 'Your Starred Entities',
+    components: () =>
+      import('./homePageComponents/StarredEntities').then(m => ({
+        Content: m.Content,
+      })),
+  },
+});
+
+const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
+  name: 'random-joke',
+  params: {
+    name: 'HomePageRandomJoke',
+    title: 'Random Joke',
+    description: 'Shows a random programming joke',
+    components: () =>
+      import('./homePageComponents/RandomJoke').then(m => ({
+        Content: m.Content,
+        Settings: m.Settings,
+        Actions: m.Actions,
+        ContextProvider: m.ContextProvider,
+      })),
+    layout: {
+      height: { minRows: 4 },
+      width: { minColumns: 3 },
+    },
+    settings: {
+      schema: {
+        title: 'Random Joke settings',
+        type: 'object',
+        properties: {
+          defaultCategory: {
+            title: 'Category',
+            type: 'string',
+            enum: ['any', 'programming', 'dad'],
+            default: 'any',
+          },
+        },
+      },
+    },
+  },
+});
+
 /**
+ * Home plugin for the new frontend system.
+ *
+ * Provides core homepage functionality with optional visit tracking extensions.
+ * Visit tracking extensions are disabled by default and can be enabled via app-config.yaml.
+ *
  * @alpha
  */
 export default createFrontendPlugin({
   pluginId: 'home',
+  title: 'Home',
+  icon: <HomeIcon />,
   info: { packageJson: () => import('../package.json') },
-  extensions: [homePage, visitsApi, visitListenerAppRootElement],
+  extensions: [
+    homePage,
+    homeNavItem,
+    visitsApi,
+    visitListenerAppRootElement,
+    homePageToolkitWidget,
+    homePageStarredEntitiesWidget,
+    homePageRandomJokeWidget,
+  ],
   routes: {
     root: rootRouteRef,
   },

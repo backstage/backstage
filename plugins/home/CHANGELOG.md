@@ -1,5 +1,64 @@
 # @backstage/plugin-home
 
+## 0.9.2-next.2
+
+### Patch Changes
+
+- 90956a6: Support new frontend system in the homepage plugin
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/core-app-api@1.19.5-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/plugin-home-react@0.1.35-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-compat-api@0.5.8-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/theme@0.7.2-next.1
+
+## 0.9.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/theme@0.7.2-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/core-app-api@1.19.4-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-home-react@0.1.35-next.0
+
+## 0.9.0
+
+### Minor Changes
+
+- e091a83: Widget configurations are now only saved to storage when the Save button is explicitly clicked. Added a Cancel button that allows users to discard unsaved changes and revert to the last saved state.
+
+### Patch Changes
+
+- bdda543: Updated WidgetOverlay color to use `alpha(theme.palette.background.paper, 0.93)` for better theme alignment instead of hardcoded RGBA
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-home-react@0.1.34
+
 ## 0.9.0-next.2
 
 ### Minor Changes

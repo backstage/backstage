@@ -61,6 +61,10 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
+import {
+  encodeLocationQueryCursor,
+  parseLocationQuery,
+} from './request/parseLocationQuery';
 
 /**
  * Options used by {@link createRouter}.
@@ -587,6 +591,50 @@ export async function createRouter(
           await auditorEvent?.fail({
             error: err,
           });
+          throw err;
+        }
+      })
+
+      .post('/locations/by-query', async (req, res) => {
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'location-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-query',
+          },
+        });
+
+        try {
+          const request = parseLocationQuery(req.body ?? {});
+          const result = await locationService.queryLocations({
+            ...request,
+            limit: request.limit + 1,
+            credentials: await httpAuth.credentials(req),
+          });
+
+          const hasNextPage = result.items.length > request.limit;
+          const items = hasNextPage
+            ? result.items.slice(0, request.limit)
+            : result.items;
+          const nextCursor = hasNextPage
+            ? encodeLocationQueryCursor({
+                limit: request.limit,
+                afterId: items[items.length - 1].id,
+                query: request.query,
+              })
+            : undefined;
+
+          await auditorEvent?.success();
+
+          res.status(200).json({
+            items,
+            totalItems: result.totalItems,
+            pageInfo: {
+              nextCursor,
+            },
+          });
+        } catch (err) {
+          await auditorEvent?.fail({ error: err });
           throw err;
         }
       })

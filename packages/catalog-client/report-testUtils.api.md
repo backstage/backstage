@@ -22,6 +22,9 @@ import { GetLocationsResponse } from '@backstage/catalog-client';
 import { Location as Location_2 } from '@backstage/catalog-client';
 import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
+import { QueryLocationsInitialRequest } from '@backstage/catalog-client';
+import { QueryLocationsRequest } from '@backstage/catalog-client';
+import { QueryLocationsResponse } from '@backstage/catalog-client';
 import { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
 
@@ -65,6 +68,10 @@ export class InMemoryCatalogClient implements CatalogApi {
   // (undocumented)
   queryEntities(request?: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
   // (undocumented)
+  queryLocations(
+    _request?: QueryLocationsRequest,
+  ): Promise<QueryLocationsResponse>;
+  // (undocumented)
   refreshEntity(_entityRef: string): Promise<void>;
   // (undocumented)
   removeEntityByUid(uid: string): Promise<void>;
@@ -72,6 +79,10 @@ export class InMemoryCatalogClient implements CatalogApi {
   removeLocationById(_id: string): Promise<void>;
   // (undocumented)
   streamEntities(request?: StreamEntitiesRequest): AsyncIterable<Entity[]>;
+  // (undocumented)
+  streamLocations(
+    _request?: QueryLocationsInitialRequest,
+  ): AsyncIterable<Location_2[]>;
   // (undocumented)
   validateEntity(
     _entity: Entity,

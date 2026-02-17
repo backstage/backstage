@@ -23,9 +23,9 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import * as path from 'path';
-import * as url from 'url';
-import fs from 'fs';
+import * as path from 'node:path';
+import * as url from 'node:url';
+import fs from 'node:fs';
 import {
   BackendDynamicPlugin,
   BaseDynamicPlugin,
@@ -33,7 +33,7 @@ import {
   NewBackendPluginInstaller,
 } from './types';
 import { ScannedPluginManifest, ScannedPluginPackage } from '../scanner/types';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { createSpecializedBackend } from '@backstage/backend-app-api';
 import { ConfigSources } from '@backstage/config-loader';
 import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';

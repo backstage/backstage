@@ -16,7 +16,7 @@
 
 import { createFilesystemReadDirAction } from './read';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { examples } from './read.examples';
 import yaml from 'yaml';

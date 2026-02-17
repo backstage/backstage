@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli",
-  "version": "0.35.2-next.1",
+  "version": "0.35.4-next.2",
   "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
@@ -55,10 +55,11 @@
     "@backstage/errors": "workspace:^",
     "@backstage/eslint-plugin": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/module-federation-common": "workspace:^",
     "@backstage/release-manifests": "workspace:^",
     "@backstage/types": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
-    "@module-federation/enhanced": "^0.9.0",
+    "@module-federation/enhanced": "^0.21.6",
     "@octokit/request": "^8.0.0",
     "@rollup/plugin-commonjs": "^26.0.0",
     "@rollup/plugin-json": "^6.0.0",
@@ -118,6 +119,7 @@
     "p-queue": "^6.6.2",
     "pirates": "^4.0.6",
     "postcss": "^8.1.0",
+    "postcss-import": "^16.1.0",
     "process": "^0.11.10",
     "raw-loader": "^4.0.2",
     "react-dev-utils": "^12.0.0-next.60",
@@ -133,7 +135,7 @@
     "style-loader": "^3.3.1",
     "sucrase": "^3.20.2",
     "swc-loader": "^0.2.3",
-    "tar": "^6.1.12",
+    "tar": "^7.5.6",
     "ts-checker-rspack-plugin": "^1.1.5",
     "ts-morph": "^24.0.0",
     "undici": "^7.2.3",
@@ -142,7 +144,7 @@
     "yargs": "^16.2.0",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0",
-    "zod": "^3.22.4",
+    "zod": "^3.25.76",
     "zod-validation-error": "^4.0.2"
   },
   "devDependencies": {
@@ -191,12 +193,12 @@
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
     "terser-webpack-plugin": "^5.1.3",
-    "webpack": "~5.103.0",
+    "webpack": "~5.104.0",
     "webpack-dev-server": "^5.0.0"
   },
   "peerDependencies": {
     "@jest/environment-jsdom-abstract": "^30.0.0",
-    "@module-federation/enhanced": "^0.9.0",
+    "@module-federation/enhanced": "^0.21.6",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.0",
     "esbuild-loader": "^4.0.0",
     "eslint-webpack-plugin": "^4.2.0",
@@ -206,7 +208,7 @@
     "jsdom": "^27.1.0",
     "mini-css-extract-plugin": "^2.4.2",
     "terser-webpack-plugin": "^5.1.3",
-    "webpack": "~5.103.0",
+    "webpack": "~5.104.0",
     "webpack-dev-server": "^5.0.0"
   },
   "peerDependenciesMeta": {

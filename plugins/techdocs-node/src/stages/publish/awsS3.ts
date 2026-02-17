@@ -46,8 +46,8 @@ import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
-import path from 'path';
-import { Readable } from 'stream';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import {
   bulkStorageOperation,
   getCloudPathForLocalPath,

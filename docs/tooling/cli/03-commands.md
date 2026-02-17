@@ -200,6 +200,7 @@ Options:
   --skip-build-dependencies  Skip the automatic building of local dependencies. Applies to backend packages only.
   --stats                    If bundle stats are available, write them to the output directory. Applies to app packages only.
   --config <path>            Config files to load instead of app-config.yaml. Applies to app packages only. (default: [])
+  --module-federation        Build a package as a module federation remote. Applies to frontend plugin packages only.
 ```
 
 ## package lint
@@ -286,7 +287,7 @@ it is possible to pre-select what you want to create using the `--select` flag,
 and provide options using `--option`, for example:
 
 ```bash
-backstage-cli new --select plugin --option pluginId=foo
+backstage-cli new --select frontend-plugin --option pluginId=foo
 ```
 
 This command is typically added as script in the root `package.json` to be

@@ -44,7 +44,7 @@ export const Default = meta.story({
   },
 });
 
-export const Surfaces = meta.story({
+export const Backgrounds = meta.story({
   args: {
     children: 'Toggle',
   },
@@ -64,26 +64,20 @@ export const Surfaces = meta.story({
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
-        <Text>On Surface 0</Text>
-        <Flex align="center" surface="0" p="4">
+        <Text>On Neutral 1</Text>
+        <Flex align="center" bg="neutral-1" p="4">
           <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
-        <Text>On Surface 1</Text>
-        <Flex align="center" surface="1" p="4">
+        <Text>On Neutral 2</Text>
+        <Flex align="center" bg="neutral-2" p="4">
           <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
-        <Text>On Surface 2</Text>
-        <Flex align="center" surface="2" p="4">
-          <ToggleButton>Toggle</ToggleButton>
-        </Flex>
-      </Flex>
-      <Flex direction="column" gap="4">
-        <Text>On Surface 3</Text>
-        <Flex align="center" surface="3" p="4">
+        <Text>On Neutral 3</Text>
+        <Flex align="center" bg="neutral-3" p="4">
           <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>

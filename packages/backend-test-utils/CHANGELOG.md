@@ -1,5 +1,51 @@
 # @backstage/backend-test-utils
 
+## 1.11.0-next.1
+
+### Minor Changes
+
+- 42abfb1: Added `createServiceMock`, a public utility for creating `ServiceMock` instances for custom service refs. This allows plugin authors to define mock creators for their own services following the same pattern as the built-in `mockServices` mocks.
+
+### Patch Changes
+
+- 68eb322: Added `@types/jest` as an optional peer dependency, since jest types are exposed in the public API surface.
+- Updated dependencies
+  - @backstage/backend-app-api@1.5.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-auth-node@0.6.13-next.1
+  - @backstage/plugin-events-node@0.4.19-next.0
+
+## 1.10.4-next.0
+
+### Patch Changes
+
+- f1d29b4: Updated `startTestBackend` to support factory-based extension points (v1.1 format) in addition to the existing direct implementation format.
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/backend-app-api@1.5.0-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.3
+
+### Patch Changes
+
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/backend-app-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-permission-common@0.9.4
+
 ## 1.10.3-next.1
 
 ### Patch Changes

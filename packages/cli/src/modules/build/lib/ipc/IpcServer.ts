@@ -15,7 +15,7 @@
  */
 
 import { serializeError } from '@backstage/errors';
-import { ChildProcess } from 'child_process';
+import { ChildProcess } from 'node:child_process';
 
 interface RequestMeta {
   generation: number;

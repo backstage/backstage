@@ -23,7 +23,8 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { PubSub } from '@google-cloud/pubsub';
 import { Counter, metrics } from '@opentelemetry/api';
 import { readSubscriptionTasksFromConfig } from './config';
-import { SubscriptionTask } from './types';
+import { EventContext, SubscriptionTask } from './types';
+import { JsonValue } from '@backstage/types';
 
 /**
  * Reads messages off of the events system and forwards them into Google Pub/Sub
@@ -103,7 +104,20 @@ export class EventConsumingGooglePubSubPublisher {
         onEvent: async event => {
           let status: 'success' | 'failed' | 'ignored' = 'failed';
           try {
-            const topic = task.mapToTopic(event);
+            const context: EventContext = {
+              event: {
+                topic: event.topic,
+                eventPayload: event.eventPayload as JsonValue,
+                metadata: event.metadata,
+              },
+            };
+
+            if (!task.filter(context)) {
+              status = 'ignored';
+              return;
+            }
+
+            const topic = task.mapToTopic(context);
             if (!topic) {
               status = 'ignored';
               return;
@@ -117,7 +131,7 @@ export class EventConsumingGooglePubSubPublisher {
 
             await pubsub.topic(topic.topic).publishMessage({
               json: event.eventPayload,
-              attributes: task.mapToAttributes(event),
+              attributes: task.mapToAttributes(context),
             });
 
             status = 'success';
