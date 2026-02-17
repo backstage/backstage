@@ -27,7 +27,6 @@ import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
 import { json } from 'express';
-import { readDcrTokenExpiration } from './readTokenExpiration';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { OidcError } from './OidcError';
@@ -397,8 +396,6 @@ export class OidcRouter {
           client_secret: bodyClientSecret,
         } = validateRequest(tokenRequestBodySchema, req.body);
 
-        const expiresIn = readDcrTokenExpiration(this.config);
-
         try {
           // Handle authorization_code grant type
           if (grantType === 'authorization_code') {
@@ -415,7 +412,6 @@ export class OidcRouter {
               redirectUri,
               codeVerifier,
               grantType,
-              expiresIn,
             });
 
             return res.json({

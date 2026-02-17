@@ -95,7 +95,6 @@ export interface Config {
 
     /**
      * The backstage token expiration.
-     * Defaults to 1 hour (3600s). Maximum allowed is 24 hours.
      */
     backstageTokenExpiration?: HumanDuration | string;
 
@@ -150,12 +149,6 @@ export interface Config {
        * dynamic client registration. Defaults to '[*]' which allows any redirect URI.
        */
       allowedRedirectUriPatterns?: string[];
-
-      /**
-       * The expiration time for the client registration access tokens.
-       * Defaults to 1 hour (3600s). Maximum allowed is 24 hours.
-       */
-      tokenExpiration?: HumanDuration | string;
     };
 
     /**

@@ -27,7 +27,6 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
-import { readDcrTokenExpiration } from './readTokenExpiration';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 
 export class OidcService {
@@ -439,9 +438,8 @@ export class OidcService {
     redirectUri: string;
     codeVerifier?: string;
     grantType: string;
-    expiresIn: number;
   }) {
-    const { code, redirectUri, codeVerifier, grantType, expiresIn } = params;
+    const { code, redirectUri, codeVerifier, grantType } = params;
 
     if (grantType !== 'authorization_code') {
       throw new InputError('Unsupported grant type');
@@ -520,7 +518,7 @@ export class OidcService {
     return {
       accessToken: token,
       tokenType: 'Bearer',
-      expiresIn: expiresIn,
+      expiresIn: 3600,
       idToken: token,
       scope: session.scope || 'openid',
       refreshToken,
@@ -547,12 +545,10 @@ export class OidcService {
         clientId: params.clientId,
       });
 
-    const expiresIn = readDcrTokenExpiration(this.config);
-
     return {
       accessToken,
       tokenType: 'Bearer',
-      expiresIn,
+      expiresIn: 3600,
       refreshToken,
     };
   }
