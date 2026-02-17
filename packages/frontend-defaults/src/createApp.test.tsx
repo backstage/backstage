@@ -410,7 +410,7 @@ describe('createApp', () => {
                     content [
                       <app/routes out=[core.reactElement]>
                         routes [
-                          <page:my-plugin out=[core.routing.path, core.reactElement, core.title] />
+                          <page:my-plugin out=[core.routing.path, core.reactElement] />
                         ]
                       </app/routes>
                     ]
