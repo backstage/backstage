@@ -18,8 +18,10 @@ import {
   EntitiesSearchFilter,
   EntityFilter,
 } from '@backstage/plugin-catalog-node';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { Knex } from 'knex';
 import { DbSearchRow } from '../../database/tables';
+import { applyPredicateEntityFilterToQuery } from './applyPredicateEntityFilterToQuery';
 
 function isEntitiesSearchFilter(
   filter: EntitiesSearchFilter | EntityFilter,
@@ -118,13 +120,28 @@ function applyInStrategy(
 
 // The actual exported function
 export function applyEntityFilterToQuery(options: {
-  filter: EntityFilter;
+  filter?: EntityFilter;
+  query?: FilterPredicate;
   targetQuery: Knex.QueryBuilder;
   onEntityIdField: string;
   knex: Knex;
-  strategy?: 'in' | 'join';
 }): Knex.QueryBuilder {
-  const { filter, targetQuery, onEntityIdField, knex } = options;
+  const { filter, query, targetQuery, onEntityIdField, knex } = options;
 
-  return applyInStrategy(filter, targetQuery, onEntityIdField, knex, false);
+  let result = targetQuery;
+
+  if (filter) {
+    result = applyInStrategy(filter, result, onEntityIdField, knex, false);
+  }
+
+  if (query) {
+    result = applyPredicateEntityFilterToQuery({
+      filter: query,
+      targetQuery: result,
+      onEntityIdField,
+      knex,
+    });
+  }
+
+  return result;
 }

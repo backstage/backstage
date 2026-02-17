@@ -54,6 +54,7 @@ import {
 import {
   DefaultApiClient,
   GetLocationsByQueryRequest,
+  QueryEntitiesByPredicateRequest,
   TypedResponse,
 } from './schema/openapi';
 import type {
@@ -356,61 +357,48 @@ export class CatalogClient implements CatalogApi {
     request: QueryEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<QueryEntitiesResponse> {
-    const params: {
-      limit?: number;
-      offset?: number;
-      after?: string;
-      orderField?: string[];
-      cursor?: string;
-      fields?: string[];
-    } = {};
-
-    let query;
+    const body: Record<string, unknown> = {};
 
     if (isQueryEntitiesInitialRequest(request)) {
-      // Initial request with query predicate
-      const { query: requestQuery, limit, offset, orderFields } = request;
-      query = requestQuery;
-
-      if (limit !== undefined) {
-        params.limit = limit;
+      const { query, limit, orderFields, fullTextFilter, fields } = request;
+      if (query && typeof query === 'object') {
+        body.query = query;
       }
-      if (offset !== undefined) {
-        params.offset = offset;
+      if (limit !== undefined) {
+        body.limit = limit;
       }
       if (orderFields !== undefined) {
-        params.orderField = (
+        body.orderField = (
           Array.isArray(orderFields) ? orderFields : [orderFields]
         ).map(({ field, order }) => `${field},${order}`);
       }
-    } else {
-      // Cursor-based pagination request
-      const { cursor, limit } = request;
-
-      params.after = cursor;
-      if (limit !== undefined) {
-        params.limit = limit;
+      if (fullTextFilter) {
+        body.fullTextFilter = fullTextFilter;
       }
-      // Query will be extracted from cursor on the backend
-      query = undefined;
+      if (fields?.length) {
+        body.fields = fields;
+      }
+    } else {
+      body.cursor = request.cursor;
+      if (request.limit !== undefined) {
+        body.limit = request.limit;
+      }
+      if (request.fields?.length) {
+        body.fields = request.fields;
+      }
     }
 
-    const response = await this.apiClient.queryEntitiesByPredicate(
-      {
-        body: query ? { query } : {},
-        query: params,
-      },
-      options,
+    const res = await this.requestRequired(
+      await this.apiClient.queryEntitiesByPredicate(
+        { body: body as unknown as QueryEntitiesByPredicateRequest },
+        options,
+      ),
     );
 
-    const result = await this.requestRequired(response);
-
     return {
-      items: result.items,
-      totalItems: result.items.length,
-      pageInfo: {
-        nextCursor: result.pageInfo?.nextCursor,
-      },
+      items: res.items,
+      totalItems: res.totalItems,
+      pageInfo: res.pageInfo,
     };
   }
 

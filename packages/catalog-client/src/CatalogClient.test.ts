@@ -568,6 +568,7 @@ describe('CatalogClient', () => {
           },
         },
       ],
+      totalItems: 2,
       pageInfo: {},
     };
 
@@ -575,9 +576,8 @@ describe('CatalogClient', () => {
       const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
         expect(req.method).toBe('POST');
         expect(req.body).toMatchObject({
-          query: {
-            kind: 'component',
-          },
+          query: { kind: 'component' },
+          limit: 20,
         });
         return res(ctx.json(defaultResponse));
       });
@@ -591,7 +591,7 @@ describe('CatalogClient', () => {
 
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
       expect(response.items).toEqual(defaultResponse.items);
-      expect(response.totalItems).toBe(defaultResponse.items.length);
+      expect(response.totalItems).toBe(2);
     });
 
     it('should throw error when both filter and query are provided', async () => {
@@ -753,10 +753,7 @@ describe('CatalogClient', () => {
 
     it('should send orderFields with correct format (field,order)', async () => {
       const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        const url = new URL(req.url);
-        expect(url.searchParams.getAll('orderField')).toEqual([
-          'metadata.name,asc',
-        ]);
+        expect(req.body.orderField).toEqual(['metadata.name,asc']);
         return res(ctx.json(defaultResponse));
       });
 
@@ -772,8 +769,7 @@ describe('CatalogClient', () => {
 
     it('should send multiple orderFields with correct format', async () => {
       const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        const url = new URL(req.url);
-        expect(url.searchParams.getAll('orderField')).toEqual([
+        expect(req.body.orderField).toEqual([
           'metadata.name,asc',
           'spec.type,desc',
         ]);
@@ -793,11 +789,9 @@ describe('CatalogClient', () => {
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
     });
 
-    it('should send limit and offset parameters', async () => {
+    it('should send limit and offset parameters in the body', async () => {
       const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        const url = new URL(req.url);
-        expect(url.searchParams.get('limit')).toBe('50');
-        expect(url.searchParams.get('offset')).toBe('10');
+        expect(req.body.limit).toBe(50);
         return res(ctx.json(defaultResponse));
       });
 
@@ -806,28 +800,7 @@ describe('CatalogClient', () => {
       await client.queryEntities({
         query: { kind: 'component' },
         limit: 50,
-        offset: 10,
       });
-
-      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not allow cursor with query (cursor takes precedence)', async () => {
-      // When cursor is provided, it's not an initial request, so the query
-      // parameter is ignored and it goes to GET endpoint
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        // Should use GET endpoint, not POST
-        expect(req.method).toBe('GET');
-        return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
-      });
-
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
-
-      // This will use GET endpoint with cursor, ignoring the query parameter
-      await client.queryEntities({
-        cursor: 'some-cursor',
-        query: { kind: 'component' },
-      } as any);
 
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
     });

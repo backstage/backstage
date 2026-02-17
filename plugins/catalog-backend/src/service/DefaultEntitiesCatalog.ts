@@ -31,7 +31,6 @@ import {
   EntityFacetsResponse,
   EntityOrder,
   EntityPagination,
-  EntityPredicateRequest,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '../catalog/types';
@@ -46,8 +45,6 @@ import {
 import { Stitcher } from '../stitching/types';
 
 import {
-  decodeCursor,
-  encodeCursor,
   expandLegacyCompoundRelationsInEntity,
   isQueryEntitiesCursorRequest,
   isQueryEntitiesInitialRequest,
@@ -55,7 +52,6 @@ import {
 import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
-import { applyPredicateEntityFilterToQuery } from './request/applyPredicateEntityFilterToQuery';
 import { processRawEntitiesResult } from './response';
 
 const DEFAULT_LIMIT = 200;
@@ -217,156 +213,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     };
   }
 
-  async queryEntitiesByPredicate(
-    request?: EntityPredicateRequest,
-  ): Promise<EntitiesResponse> {
-    const db = this.database;
-    const { limit, offset } = parsePagination(request?.pagination);
-
-    const cursor = request?.pagination?.after
-      ? decodeCursor(request.pagination.after)
-      : {
-          query: request?.query,
-          orderFields: request?.order || [],
-          isPrevious: false,
-          orderFieldValues: undefined,
-          firstSortFieldValues: undefined,
-        };
-
-    // Use query from cursor if not provided in request (pagination case)
-    const effectiveQuery = request?.query ?? cursor.query;
-    const sortField = cursor.orderFields?.[0];
-
-    let entitiesQuery = db<DbFinalEntitiesRow>('final_entities');
-
-    // Join with search table if we have a sort field
-    if (sortField) {
-      entitiesQuery = entitiesQuery
-        .distinct()
-        .leftOuterJoin({ order_0: 'search' }, function search(inner) {
-          inner
-            .on('order_0.entity_id', 'final_entities.entity_id')
-            .andOn('order_0.key', db.raw('?', [sortField.field]));
-        })
-        .select({
-          entity_id: 'final_entities.entity_id',
-          final_entity: 'final_entities.final_entity',
-          value: 'order_0.value',
-        });
-    } else {
-      entitiesQuery = entitiesQuery.select({
-        entity_id: 'final_entities.entity_id',
-        final_entity: 'final_entities.final_entity',
-      });
-    }
-
-    entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
-
-    // Apply predicate filter from cursor
-    if (effectiveQuery) {
-      entitiesQuery = applyPredicateEntityFilterToQuery({
-        filter: effectiveQuery,
-        targetQuery: entitiesQuery,
-        onEntityIdField: 'final_entities.entity_id',
-        knex: db,
-      });
-    }
-
-    // Apply cursor-based pagination (keyset pagination)
-    if (cursor.orderFieldValues) {
-      if (cursor.orderFieldValues.length === 2) {
-        const [sortValue, entityId] = cursor.orderFieldValues;
-        const isOrderingDescending = sortField?.order === 'desc';
-        entitiesQuery = entitiesQuery.andWhere(function nested() {
-          this.where(
-            'order_0.value',
-            isOrderingDescending ? '<' : '>',
-            sortValue,
-          )
-            .orWhere('order_0.value', '=', sortValue)
-            .andWhere('final_entities.entity_id', '>', entityId);
-        });
-      } else if (cursor.orderFieldValues.length === 1) {
-        const [entityId] = cursor.orderFieldValues;
-        entitiesQuery = entitiesQuery.andWhere(
-          'final_entities.entity_id',
-          '>',
-          entityId,
-        );
-      }
-    }
-
-    if (sortField) {
-      if (db.client.config.client === 'pg') {
-        entitiesQuery = entitiesQuery.orderBy([
-          { column: 'order_0.value', order: sortField.order, nulls: 'last' },
-          { column: 'final_entities.entity_id', order: 'asc' },
-        ]);
-      } else {
-        entitiesQuery = entitiesQuery.orderBy([
-          { column: 'order_0.value', order: undefined, nulls: 'last' },
-          { column: 'order_0.value', order: sortField.order },
-          { column: 'final_entities.entity_id', order: 'asc' },
-        ]);
-      }
-    } else {
-      entitiesQuery = entitiesQuery.orderBy('final_entities.entity_id', 'asc');
-    }
-
-    // Apply a manually set initial offset (only when not using cursor pagination)
-    if (!request?.pagination?.after && offset !== undefined) {
-      entitiesQuery = entitiesQuery.offset(offset);
-    }
-    const effectiveLimit = limit ?? DEFAULT_LIMIT;
-    entitiesQuery = entitiesQuery.limit(effectiveLimit + 1);
-
-    let rows = await entitiesQuery;
-    let pageInfo: DbPageInfo;
-
-    if (rows.length <= effectiveLimit) {
-      pageInfo = { hasNextPage: false };
-    } else {
-      // Remove the extra row
-      rows = rows.slice(0, -1);
-
-      const lastRow = rows[rows.length - 1];
-      const firstRow = rows[0];
-
-      // Create proper cursor with query field
-      const nextCursor: Cursor = {
-        query: effectiveQuery,
-        orderFields: cursor.orderFields || [],
-        orderFieldValues: sortField
-          ? [(lastRow as any).value, lastRow.entity_id]
-          : [lastRow.entity_id],
-        isPrevious: false,
-        firstSortFieldValues:
-          cursor.firstSortFieldValues ||
-          (sortField
-            ? [(firstRow as any).value, firstRow.entity_id]
-            : [firstRow.entity_id]),
-      };
-
-      pageInfo = {
-        hasNextPage: true,
-        endCursor: encodeCursor(nextCursor),
-      };
-    }
-
-    return {
-      entities: processRawEntitiesResult(
-        rows.map(r => r.final_entity!),
-        this.enableRelationsCompatibility
-          ? e => {
-              expandLegacyCompoundRelationsInEntity(e);
-              return e;
-            }
-          : undefined,
-      ),
-      pageInfo,
-    };
-  }
-
   async entitiesBatch(
     request: EntitiesBatchRequest,
   ): Promise<EntitiesBatchResponse> {
@@ -457,10 +303,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           });
         }
 
-        // Add regular filters, if given
-        if (cursor.filter) {
+        // Add regular filters and/or predicate query, if given
+        if (cursor.filter || cursor.query) {
           applyEntityFilterToQuery({
             filter: cursor.filter,
+            query: cursor.query,
             targetQuery: inner,
             onEntityIdField: 'final_entities.entity_id',
             knex: this.database,
