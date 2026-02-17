@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ export const createValidateScaffolderAction = ({
     description: `Validates a scaffolder template by calling the /v2/dry-run endpoint.
 This action:
 - Parses and validates the YAML template structure
-- Validates the template against the TemplateEntityV1beta3 schema
-- Calls the /v2/dry-run endpoint to execute template steps without side effects
+- Validates the template against the template entity schema
+- Calls the /v2/dry-run endpoint to dry-run template steps without side effects
 - Returns success with execution logs or specific validation errors`,
     schema: {
       input: (z: any) =>
