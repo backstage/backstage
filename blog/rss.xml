@@ -1323,7 +1323,7 @@ If you are building backend plugins for Backstage and do any local file operatio
 <p>Finally, don't be afraid to step outside the core use cases when it comes to the Backstage framework and finding solutions to meet your needs.</p>
 <p>"Backstage gives you a lot of really easy to use features right out of the box. And one of the great things about open source is you can look at the code and see exactly what the behavior is and work within that behavior. But we've also developed our own processes for custom tasks because — at the end of the day — our platform has some very custom aspects to it."" Scott said.</p>
 <p>Interested in more stories from Backstage adopters? Check out these recent posts from <a href="https://backstage.io/blog/2023/07/08/stash-adopter-post" target="_blank" rel="noopener noreferrer" class="">Stash</a> and <a href="https://backstage.io/blog/2023/08/17/expedia-proof-of-value-metrics-2" target="_blank" rel="noopener noreferrer" class="">Expedia Group</a>.</p>
-<p>Want to learn more about Backstage? Join our weekly <a href="https://info.backstage.spotify.com/office-hours" target="_blank" rel="noopener noreferrer" class="">Office Hours</a> and bring your burning questions.</p>]]></content:encoded>
+<p>Want to learn more about Backstage? Join our weekly <a href="https://spoti.fi/backstageofficehours" target="_blank" rel="noopener noreferrer" class="">Office Hours</a> and bring your burning questions.</p>]]></content:encoded>
         </item>
         <item>
             <title><![CDATA[Expedia Group shares Backstage proof of value metrics 2.0]]></title>
@@ -1521,7 +1521,7 @@ The <code>isolated-vm</code> repo has <a href="https://github.com/laverdet/isola
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-do-you-need-to-do">What do you need to do?<a href="https://backstage.io/blog/2023/06/21/switching-out-sandbox#what-do-you-need-to-do" class="hash-link" aria-label="Direct link to What do you need to do?" title="Direct link to What do you need to do?" translate="no">​</a></h2>
 <p>This change comes with the v1.15.0 release of Backstage that was released yesterday, so please make sure you are upgraded to the latest version of Backstage to keep your sandbox environments secure.</p>
 <p>For more guidance on how to upgrade, check out the documentation for <a href="https://backstage.io/docs/getting-started/keeping-backstage-updated" target="_blank" rel="noopener noreferrer" class="">keeping Backstage updated</a>.</p>
-<p>If you have any further questions you can either reach out to us in the <a href="https://discord.gg/backstage-687207715902193673" target="_blank" rel="noopener noreferrer" class="">Community Discord</a>, or in the <a href="https://info.backstage.spotify.com/office-hours" target="_blank" rel="noopener noreferrer" class="">office hours</a>.</p>]]></content:encoded>
+<p>If you have any further questions you can either reach out to us in the <a href="https://discord.gg/backstage-687207715902193673" target="_blank" rel="noopener noreferrer" class="">Community Discord</a>, or in the <a href="https://spoti.fi/backstageofficehours" target="_blank" rel="noopener noreferrer" class="">office hours</a>.</p>]]></content:encoded>
         </item>
     </channel>
 </rss>
