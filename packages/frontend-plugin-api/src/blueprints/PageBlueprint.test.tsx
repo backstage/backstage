@@ -274,7 +274,6 @@ describe('PageBlueprint', () => {
           "core.reactElement",
           "core.routing.path",
           "core.routing.ref",
-          "core.title",
         ],
       }
     `);

@@ -84,12 +84,8 @@ export const PageBlueprint = createExtensionBlueprint({
     },
     { config, node, inputs },
   ) {
-    const title =
-      config.title ??
-      params.title ??
-      node.spec.plugin.title ??
-      node.spec.plugin.pluginId;
-    const icon = params.icon ?? node.spec.plugin.icon;
+    const title = config.title ?? params.title;
+    const icon = params.icon;
     const pluginId = node.spec.plugin.pluginId;
     const noHeader = params.noHeader ?? false;
 
