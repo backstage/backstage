@@ -141,6 +141,13 @@ export const notificationsPlugin: BackstagePlugin<
   {}
 >;
 
+// @public
+export type NotificationsRenderItemProps = {
+  unreadCount: number;
+  to: string;
+  onClick: () => void;
+};
+
 // @public (undocumented)
 export const NotificationsSidebarItem: (
   props?: NotificationsSideBarItemProps,
@@ -158,6 +165,7 @@ export type NotificationsSideBarItemProps = {
   text?: string;
   disableHighlight?: boolean;
   noTrack?: boolean;
+  renderItem?: (props: NotificationsRenderItemProps) => React.ReactNode;
 };
 
 // @public (undocumented)
