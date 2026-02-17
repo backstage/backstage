@@ -60,4 +60,3 @@ You can filter the Catalog using a combination of the following:
 - **Filter by Namespace**
 
   Use the `Namespace` dropdown to filter the catalog list by namespace associated with the entity.
-
