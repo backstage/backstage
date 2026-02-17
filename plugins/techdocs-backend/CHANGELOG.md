@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.5
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-techdocs-node@1.14.2
+  - @backstage/catalog-client@1.13.0
+
 ## 2.1.5-next.2
 
 ### Patch Changes

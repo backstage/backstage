@@ -1,5 +1,21 @@
 # @backstage/plugin-devtools
 
+## 0.1.36
+
+### Patch Changes
+
+- 018ca87: Added `title` and `icon` to the plugin definition for the new frontend system.
+- f2612c2: Fixes an issue where a user lacking permission to schedule tasks can now easily see the issue through a custom icon + tooltip.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-components@0.18.7
+  - @backstage/core-compat-api@0.5.8
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/plugin-devtools-react@0.1.1
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/plugin-devtools-common@0.1.22
+
 ## 0.1.36-next.1
 
 ### Patch Changes

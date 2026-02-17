@@ -1,5 +1,13 @@
 # @backstage/config-loader
 
+## 1.10.8
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/cli-common@0.1.18
+
 ## 1.10.8-next.0
 
 ### Patch Changes

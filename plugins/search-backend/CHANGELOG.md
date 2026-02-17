@@ -1,5 +1,20 @@
 # @backstage/plugin-search-backend
 
+## 2.0.12
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.6
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-backend-node@1.4.1
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+
 ## 2.0.12-next.1
 
 ### Patch Changes

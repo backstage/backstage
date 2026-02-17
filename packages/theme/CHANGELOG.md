@@ -1,5 +1,12 @@
 # @backstage/theme
 
+## 0.7.2
+
+### Patch Changes
+
+- 1c52dcc: add square shape
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+
 ## 0.7.2-next.1
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.4.1
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- ce3639c: Add PersistentVolume and PersistentVolumeClaims Rendering
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-kubernetes-common@0.9.10
+
 ## 0.4.1-next.1
 
 ### Patch Changes

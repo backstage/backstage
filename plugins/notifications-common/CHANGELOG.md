@@ -1,5 +1,11 @@
 # @backstage/plugin-notifications-common
 
+## 0.2.1
+
+### Patch Changes
+
+- e9eb400: Allow configuring included topics for email notifications.
+
 ## 0.2.0
 
 ### Minor Changes

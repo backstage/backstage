@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-onelogin-provider
 
+## 0.3.12
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-auth-node@0.6.13
+
 ## 0.3.11-next.0
 
 ### Patch Changes

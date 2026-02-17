@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.7.9
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.4.0
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/backend-defaults@0.15.2
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-events-node@0.4.19
+
 ## 0.7.9-next.1
 
 ### Patch Changes

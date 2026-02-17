@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.5.18
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-scaffolder-node@0.12.5
+
 ## 0.5.18-next.1
 
 ### Patch Changes

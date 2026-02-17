@@ -1,6 +1,6 @@
 {
   "name": "example-app-legacy",
-  "version": "0.2.118-next.2",
+  "version": "0.2.118",
   "backstage": {
     "role": "frontend"
   },

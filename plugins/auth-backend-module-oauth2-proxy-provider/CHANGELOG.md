@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-oauth2-proxy-provider
 
+## 0.2.17
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-auth-node@0.6.13
+
 ## 0.2.16-next.0
 
 ### Patch Changes

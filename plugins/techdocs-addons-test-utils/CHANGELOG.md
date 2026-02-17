@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 2.0.2
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/plugin-catalog@1.33.0
+  - @backstage/core-app-api@1.19.5
+  - @backstage/plugin-techdocs@1.17.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-techdocs-react@1.3.8
+  - @backstage/integration-react@1.2.15
+  - @backstage/plugin-search-react@1.10.3
+  - @backstage/test-utils@1.7.15
+
 ## 2.0.2-next.2
 
 ### Patch Changes

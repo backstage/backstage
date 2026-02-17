@@ -1,5 +1,11 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.11
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+
 ## 0.1.11-next.0
 
 ### Patch Changes
