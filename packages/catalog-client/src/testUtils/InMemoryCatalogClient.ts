@@ -51,7 +51,10 @@ import {
   NotFoundError,
   NotImplementedError,
 } from '@backstage/errors';
-import { filterPredicateToFilterFunction } from '@backstage/filter-predicates';
+import {
+  FilterPredicate,
+  filterPredicateToFilterFunction,
+} from '@backstage/filter-predicates';
 import lodash from 'lodash';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
@@ -374,7 +377,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<QueryEntitiesResponse> {
     // Decode query parameters from cursor or from the request directly
     let filter: EntityFilterQuery | undefined;
-    let query: Record<string, unknown> | undefined;
+    let query: FilterPredicate | undefined;
     let orderFields: EntityOrderQuery | undefined;
     let fullTextFilter: { term: string; fields?: string[] } | undefined;
     let offset: number;
@@ -388,17 +391,14 @@ export class InMemoryCatalogClient implements CatalogApi {
         throw new InputError('Invalid cursor');
       }
       filter = deserializeFilter(c.filter as any[]);
-      query = c.query as Record<string, unknown> | undefined;
+      query = c.query as FilterPredicate | undefined;
       orderFields = c.orderFields as EntityOrderQuery | undefined;
       fullTextFilter = c.fullTextFilter as typeof fullTextFilter;
       offset = c.offset as number;
       limit = request.limit;
     } else {
       filter = request?.filter;
-      query =
-        request?.query && typeof request.query === 'object'
-          ? (request.query as Record<string, unknown>)
-          : undefined;
+      query = request?.query;
       orderFields = request?.orderFields;
       fullTextFilter = request?.fullTextFilter;
       offset = request?.offset ?? 0;
