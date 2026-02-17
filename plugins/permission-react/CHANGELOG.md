@@ -1,5 +1,14 @@
 # @backstage/plugin-permission-react
 
+## 0.4.40
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-permission-common@0.9.6
+
 ## 0.4.40-next.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-google-pubsub",
-  "version": "0.1.8-next.0",
+  "version": "0.2.0",
   "description": "The google-pubsub backend module for the events plugin.",
   "backstage": {
     "role": "backend-plugin-module",

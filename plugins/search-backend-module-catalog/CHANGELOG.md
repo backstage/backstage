@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.3.12
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-backend-node@1.4.1
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/catalog-client@1.13.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-catalog-common@1.1.8
+
 ## 0.3.12-next.1
 
 ### Patch Changes

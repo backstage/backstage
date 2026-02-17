@@ -1,5 +1,19 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.14
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/config-loader@1.10.8
+  - @backstage/cli-common@0.1.18
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-devtools-common@0.1.22
+
 ## 0.5.14-next.1
 
 ### Patch Changes

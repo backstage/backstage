@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-unprocessed-entities-common
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.6
+
 ## 0.0.13-next.0
 
 ### Patch Changes

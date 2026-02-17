@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.12
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+
 ## 1.0.12-next.0
 
 ### Patch Changes

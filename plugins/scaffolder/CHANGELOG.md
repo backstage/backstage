@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder
 
+## 1.35.3
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 4e581a6: Updated the browser tab title on the template wizard page to display the specific template title instead of the generic "Create a new component" text.
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 018ca87: Added `title` and `icon` to the plugin definition for the new frontend system.
+- 2eeca03: Scaffolder form fields in the new frontend system now use a Utility API pattern instead of multiple attachment points. The `FormFieldBlueprint` now uses this new approach, and while form fields created with older versions still work, they will produce a deprecation warning and will stop working in a future release.
+
+  As part of this change, the following alpha exports were removed:
+
+  - `formFieldsApiRef`
+  - `ScaffolderFormFieldsApi`
+
+- b9d90a7: Added `@backstage/frontend-test-utils` as a dev dependency for mock API usage in tests.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/integration@1.20.0
+  - @backstage/core-components@0.18.7
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/plugin-scaffolder-react@1.19.7
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-techdocs-react@1.3.8
+  - @backstage/integration-react@1.2.15
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-scaffolder-common@1.7.6
+
 ## 1.35.3-next.2
 
 ### Patch Changes
