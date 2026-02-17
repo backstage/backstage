@@ -40,11 +40,6 @@ async function main(args) {
 
   const auditMode = args.includes('--audit');
 
-  console.log(__dirname, rootPath, pluginDataPath);
-  if (auditMode) {
-    console.log('Running in AUDIT mode - will update plugin YAML files');
-  }
-
   const pluginDataFiles = fs.readdirSync(pluginDataPath);
 
   const pluginsData = [];

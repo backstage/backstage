@@ -124,7 +124,10 @@ const Plugins = () => {
 
   const otherPlugins = useMemo(() => {
     return plugins.otherPlugins
-      .filter(pluginData => pluginData.status !== 'inactive' && pluginData.status !== 'archived')
+      .filter(
+        pluginData =>
+          pluginData.status !== 'inactive' && pluginData.status !== 'archived',
+      )
       .filter(pluginData => matchesCategory(pluginData, selectedCategories))
       .filter(pluginData => matchesSearch(pluginData, searchTerm));
   }, [selectedCategories, searchTerm]);
@@ -171,15 +174,17 @@ const Plugins = () => {
           />
         </div>
 
-        {corePlugins.length === 0 && otherPlugins.length === 0 && inactivePlugins.length === 0 && (
-          <div className="margin-vert--lg">
-            <h3>No plugins found</h3>
-            <p>
-              We couldn't find any plugins matching your criteria. Please try
-              adjusting your search or filter settings.
-            </p>
-          </div>
-        )}
+        {corePlugins.length === 0 &&
+          otherPlugins.length === 0 &&
+          inactivePlugins.length === 0 && (
+            <div className="margin-vert--lg">
+              <h3>No plugins found</h3>
+              <p>
+                We couldn't find any plugins matching your criteria. Please try
+                adjusting your search or filter settings.
+              </p>
+            </div>
+          )}
 
         {showCoreFeatures && corePlugins.length > 0 && (
           <div>
@@ -209,21 +214,27 @@ const Plugins = () => {
           </div>
         )}
 
-        {showOtherPlugins && otherPlugins.length === 0 && inactivePlugins.length > 0 && (
-          <div>
-            <h2>Active Plugins (0)</h2>
-            <p>
-              We couldn't find any active plugins matching your criteria.
-            </p>
-          </div>
-        )}
+        {showOtherPlugins &&
+          otherPlugins.length === 0 &&
+          inactivePlugins.length > 0 && (
+            <div>
+              <h2>Active Plugins (0)</h2>
+              <p>We couldn't find any active plugins matching your criteria.</p>
+            </div>
+          )}
 
         {inactivePlugins.length > 0 && (
           <div>
             <h2>Inactive Plugins ({inactivePlugins.length})</h2>
             <p>
-              These plugins are no longer actively maintained as their NPM package has not seen an update in more than 365 days. They are kept here for reference but may not work with
-              current versions of Backstage. Details on the audit process can be found in the <Link to="/docs/plugins/plugin-directory-audit">Plugin Directory Audit</Link> documentation.
+              These plugins are no longer actively maintained as their NPM
+              package has not seen an update in more than 365 days. They are
+              kept here for reference but may not work with current versions of
+              Backstage. Details on the audit process can be found in the{' '}
+              <Link to="/docs/plugins/plugin-directory-audit">
+                Plugin Directory Audit
+              </Link>{' '}
+              documentation.
             </p>
             <div className="pluginsContainer margin-bottom--lg">
               {inactivePlugins.map(pluginData => (
