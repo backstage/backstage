@@ -30,14 +30,12 @@ const useStyles = makeStyles(
       gridTemplateColumns: 'auto 1fr auto',
       overflowY: 'auto',
       height: '100vh',
-      maxHeight: '100%',
       [theme.breakpoints.down('xs')]: {
         height: '100%',
       },
       '@media print': {
         display: 'block',
         height: 'auto',
-        maxHeight: 'none',
         overflowY: 'inherit',
       },
     },
