@@ -68,7 +68,7 @@ Otherwise, you can follow along with the progress, and as soon as every step is 
 
 ![run of example of create component](../assets/uiguide/successful-create-new-component.png)
 
-Selecting `REPOSITORY` displays the files in the main branch of the new `tutorial` repository. When you created the new `tutorial` component, three files were created in the repository
+Selecting `REPOSITORY` displays the files in the main branch of the new `tutorial` repository. When you created the new `tutorial` component, three files were created in the repository:
 
 - **catalog-info.yaml** - Describes the entity for the Software Catalog. [Descriptor Format of Catalog Entities](../features/software-catalog/descriptor-format.md) provides additional information.
 
