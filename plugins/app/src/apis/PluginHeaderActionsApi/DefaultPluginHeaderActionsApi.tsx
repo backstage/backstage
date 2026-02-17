@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { JSX } from 'react';
 import { type PluginHeaderActionsApi } from '@backstage/frontend-plugin-api';
+
+// Stable reference
+const EMPTY_ACTIONS = new Array<JSX.Element | null>();
 
 type ActionInput = {
   element: JSX.Element;
@@ -28,16 +31,18 @@ type ActionInput = {
  * @internal
  */
 export class DefaultPluginHeaderActionsApi implements PluginHeaderActionsApi {
-  constructor(private readonly actionsByPlugin: Map<string, ReactNode[]>) {}
+  constructor(
+    private readonly actionsByPlugin: Map<string, Array<JSX.Element | null>>,
+  ) {}
 
-  getPluginHeaderActions(pluginId: string): ReactNode[] {
-    return this.actionsByPlugin.get(pluginId) ?? [];
+  getPluginHeaderActions(pluginId: string): Array<JSX.Element | null> {
+    return this.actionsByPlugin.get(pluginId) ?? EMPTY_ACTIONS;
   }
 
   static fromActions(
     actions: Array<ActionInput>,
   ): DefaultPluginHeaderActionsApi {
-    const actionsByPlugin = new Map<string, ReactNode[]>();
+    const actionsByPlugin = new Map<string, Array<JSX.Element | null>>();
 
     for (const action of actions) {
       let pluginActions = actionsByPlugin.get(action.pluginId);

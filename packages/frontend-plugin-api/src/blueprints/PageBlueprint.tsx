@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { JSX } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
@@ -26,15 +26,6 @@ import {
 import { ExtensionBoundary, PageLayout, PageTab } from '../components';
 import { useApi } from '../apis/system';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
-
-function usePluginHeaderActions(pluginId: string): ReactNode {
-  const pluginHeaderActionsApi = useApi(pluginHeaderActionsApiRef);
-  const actions = pluginHeaderActionsApi.getPluginHeaderActions(pluginId);
-  if (actions.length === 0) {
-    return undefined;
-  }
-  return <>{actions}</>;
-}
 
 /**
  * Creates extensions that are routable React page components.
@@ -93,7 +84,9 @@ export const PageBlueprint = createExtensionBlueprint({
     if (params.loader) {
       const loader = params.loader;
       const PageContent = () => {
-        const headerActions = usePluginHeaderActions(pluginId);
+        const headerActionsApi = useApi(pluginHeaderActionsApiRef);
+        const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+
         return (
           <PageLayout
             title={title}
@@ -123,7 +116,9 @@ export const PageBlueprint = createExtensionBlueprint({
 
       const PageContent = () => {
         const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
-        const headerActions = usePluginHeaderActions(pluginId);
+
+        const headerActionsApi = useApi(pluginHeaderActionsApiRef);
+        const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
         return (
           <PageLayout
@@ -154,7 +149,8 @@ export const PageBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(<PageContent />);
     } else {
       const PageContent = () => {
-        const headerActions = usePluginHeaderActions(pluginId);
+        const headerActionsApi = useApi(pluginHeaderActionsApiRef);
+        const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
         return (
           <PageLayout title={title} icon={icon} headerActions={headerActions} />
         );

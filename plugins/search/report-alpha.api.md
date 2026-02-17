@@ -185,7 +185,7 @@ const _default: OverridableFrontendPlugin<
         path: string;
         title?: string;
         icon?: IconElement;
-        loader?: () => Promise<JSX.Element>;
+        loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
         noHeader?: boolean;
       };
@@ -355,7 +355,7 @@ export const searchPage: OverridableExtensionDefinition<{
     path: string;
     title?: string;
     icon?: IconElement;
-    loader?: () => Promise<JSX.Element>;
+    loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;
     noHeader?: boolean;
   };
