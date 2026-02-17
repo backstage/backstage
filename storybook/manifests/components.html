@@ -6184,7 +6184,7 @@ style?: React.CSSProperties</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Container, FullPage, Header, Text } from "@backstage/ui";
+                <pre><code>import { Container, FullPage, PluginHeader, Text } from "@backstage/ui";
 import { MemoryRouter } from "react-router-dom";</code></pre>
               </div>
           
@@ -6198,7 +6198,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               <pre><code>const Default = () =&gt; (
   &lt;&gt;
-    &lt;Header title=&quot;My Plugin&quot; /&gt;
+    &lt;PluginHeader title=&quot;My Plugin&quot; /&gt;
     &lt;FullPage style={{ backgroundColor: &#39;#c3f0ff&#39; }}&gt;
       &lt;Container&gt;
         &lt;Text as=&quot;p&quot;&gt;
@@ -6218,7 +6218,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               <pre><code>const WithScrollableContent = () =&gt; (
   &lt;&gt;
-    &lt;Header title=&quot;My Plugin&quot; /&gt;
+    &lt;PluginHeader title=&quot;My Plugin&quot; /&gt;
     &lt;FullPage&gt;
       &lt;Container&gt;
         &lt;Text as=&quot;h2&quot; variant=&quot;title-medium&quot;&gt;
@@ -6243,7 +6243,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               <pre><code>const WithTabs = () =&gt; (
   &lt;&gt;
-    &lt;Header title=&quot;My Plugin&quot; tabs={tabs} /&gt;
+    &lt;PluginHeader title=&quot;My Plugin&quot; tabs={tabs} /&gt;
     &lt;FullPage&gt;
       &lt;Container&gt;
         &lt;Text as=&quot;p&quot;&gt;
@@ -6268,446 +6268,14 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   no-story-error
   no-doc-error"
   role="listitem"
-  aria-label="Header">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-ok"></span> Header</h2>
-      <div class="badges">
-        <label for="c-18-backstage-ui-header-props" class="badge ok as-toggle">7 prop types</label>
-        
-        <label for="c-18-backstage-ui-header-stories" class="badge ok as-toggle">14 stories</label>
-        
-      </div>
-    </div>
-    <div class="meta" title="./packages/ui/src/components/Header/Header.stories.tsx">backstage-ui-header · ./packages/ui/src/components/Header/Header.stories.tsx</div>
-    
-    <div class="hint">A component that renders a toolbar.</div>
-    <div class="kv"><span class="chip">public:  </span></div>
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  
-  
-  <input id="c-18-backstage-ui-header-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-  <input id="c-18-backstage-ui-header-props" class="tg tg-props" type="checkbox" hidden />
-
-  <div class="panels">
-    
-    
-    
-        <div class="panel panel-props">
-          <div class="note ok">
-            <div class="row">
-              <span class="ex-name">Prop types</span>
-              <span class="badge ok">7 prop types</span>
-            </div>
-            <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
-            <pre><code>Props:</code></pre>
-            <pre><code>className?: string
-
-customActions?: React.ReactNode
-
-icon?: React.ReactNode
-
-onTabSelectionChange?: TabsProps[&#39;onSelectionChange&#39;]
-
-tabs?: HeaderTab[]
-
-title?: string
-
-titleLink?: string</code></pre>
-          </div>
-        </div>
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import {
-    Button,
-    ButtonIcon,
-    Container,
-    Header,
-    HeaderPage,
-    Menu,
-    MenuItem,
-    MenuTrigger,
-    Text,
-} from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
-import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@remixicon/react";</code></pre>
-              </div>
-          
-          
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Default</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Default = () =&gt; &lt;Header /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithTabs</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithTabs = () =&gt; &lt;Header tabs={tabs} /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithCustomActions</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithCustomActions = () =&gt; &lt;Header
-    customActions={
-      &lt;&gt;
-        &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiCloudy2Line /&gt;} /&gt;
-        &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiEmotionHappyLine /&gt;} /&gt;
-        &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiHeartLine /&gt;} /&gt;
-        &lt;MenuTrigger&gt;
-          &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiMore2Line /&gt;} /&gt;
-          &lt;Menu placement=&quot;bottom end&quot;&gt;
-            {menuItems.map(option =&gt; (
-              &lt;MenuItem
-                key={option.value}
-                onAction={option.onClick}
-                href={option.href}
-              &gt;
-                {option.label}
-              &lt;/MenuItem&gt;
-            ))}
-          &lt;/Menu&gt;
-        &lt;/MenuTrigger&gt;
-      &lt;/&gt;
-    } /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithAllOptionsAndTabs</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithAllOptionsAndTabs = () =&gt; &lt;Header tabs={tabs} /&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithHeaderPage</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithHeaderPage = () =&gt; &lt;&gt;
-    &lt;Header
-        customActions={
-          &lt;&gt;
-            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiCloudy2Line /&gt;} /&gt;
-            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiEmotionHappyLine /&gt;} /&gt;
-            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiHeartLine /&gt;} /&gt;
-          &lt;/&gt;
-        } /&gt;
-    &lt;HeaderPage
-        title=&quot;Page title&quot;
-        tabs={tabs2}
-        customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
-        breadcrumbs={breadcrumbs} /&gt;
-&lt;/&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithLayout</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithLayout = () =&gt; &lt;&gt;
-    &lt;Header tabs={tabs} /&gt;
-    &lt;HeaderPage
-        title=&quot;Page title&quot;
-        tabs={tabs2}
-        customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
-        breadcrumbs={breadcrumbs} /&gt;
-&lt;/&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithLayoutNoTabs</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithLayoutNoTabs = () =&gt; &lt;&gt;
-    &lt;Header /&gt;
-    &lt;HeaderPage title=&quot;Page title&quot; tabs={tabs2} /&gt;
-&lt;/&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithEverything</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithEverything = () =&gt; &lt;&gt;
-    &lt;Header
-        tabs={tabs}
-        titleLink=&quot;/&quot;
-        customActions={
-          &lt;&gt;
-            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiCloudy2Line /&gt;} /&gt;
-            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiEmotionHappyLine /&gt;} /&gt;
-            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiHeartLine /&gt;} /&gt;
-          &lt;/&gt;
-        } /&gt;
-    &lt;HeaderPage
-        title=&quot;Page title&quot;
-        tabs={tabs2}
-        customActions={
-          &lt;&gt;
-            &lt;Button variant=&quot;secondary&quot;&gt;Secondary&lt;/Button&gt;
-            &lt;Button variant=&quot;primary&quot;&gt;Primary&lt;/Button&gt;
-          &lt;/&gt;
-        } /&gt;
-&lt;/&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithMockedURLCampaigns</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithMockedURLCampaigns = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/campaigns&#39;]}&gt;
-    &lt;Header tabs={tabs} /&gt;
-    &lt;Container&gt;
-        &lt;Text as=&quot;p&quot;&gt;Current URL is mocked to be: &lt;strong&gt;/campaigns&lt;/strong&gt;
-        &lt;/Text&gt;
-        &lt;Text as=&quot;p&quot;&gt;Notice how the &quot;Campaigns&quot; tab is selected (highlighted) because it
-                      matches the current path.
-                    &lt;/Text&gt;
-    &lt;/Container&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithMockedURLIntegrations</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithMockedURLIntegrations = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/integrations&#39;]}&gt;
-    &lt;Header tabs={tabs} /&gt;
-    &lt;Container&gt;
-        &lt;Text as=&quot;p&quot;&gt;Current URL is mocked to be: &lt;strong&gt;/integrations&lt;/strong&gt;
-        &lt;/Text&gt;
-        &lt;Text as=&quot;p&quot;&gt;Notice how the &quot;Integrations&quot; tab is selected (highlighted) because it
-                      matches the current path.
-                    &lt;/Text&gt;
-    &lt;/Container&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithMockedURLNoMatch</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithMockedURLNoMatch = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/some-other-page&#39;]}&gt;
-    &lt;Header tabs={tabs} /&gt;
-    &lt;Container&gt;
-        &lt;Text as=&quot;p&quot;&gt;Current URL is mocked to be: &lt;strong&gt;/some-other-page&lt;/strong&gt;
-        &lt;/Text&gt;
-        &lt;Text as=&quot;p&quot;&gt;No tab is selected because the current path doesn&#39;t match any tab&#39;s
-                      href.
-                    &lt;/Text&gt;
-        &lt;Text as=&quot;p&quot;&gt;Tabs without href (like &quot;Overview&quot;, &quot;Checks&quot;, &quot;Tracks&quot;) fall back to
-                      React Aria&#39;s internal state.
-                    &lt;/Text&gt;
-    &lt;/Container&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithTabsMatchingStrategies</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithTabsMatchingStrategies = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
-    &lt;Header
-        title=&quot;Route Matching Demo&quot;
-        tabs={[
-          {
-            id: &#39;home&#39;,
-            label: &#39;Home&#39;,
-            href: &#39;/home&#39;,
-          },
-          {
-            id: &#39;mentorship&#39;,
-            label: &#39;Mentorship&#39;,
-            href: &#39;/mentorship&#39;,
-            matchStrategy: &#39;prefix&#39;,
-          },
-          {
-            id: &#39;catalog&#39;,
-            label: &#39;Catalog&#39;,
-            href: &#39;/catalog&#39;,
-            matchStrategy: &#39;prefix&#39;,
-          },
-          {
-            id: &#39;settings&#39;,
-            label: &#39;Settings&#39;,
-            href: &#39;/settings&#39;,
-          },
-        ]} /&gt;
-    &lt;Container&gt;
-        &lt;Text&gt;
-            &lt;strong&gt;Current URL:&lt;/strong&gt;/mentorship/events
-                    &lt;/Text&gt;
-        &lt;br /&gt;
-        &lt;Text&gt;Notice how the &quot;Mentorship&quot; tab is active even though we&#39;re on a
-                      nested route. This is because it uses{&#39; &#39;}
-            &lt;code&gt;matchStrategy=&quot;prefix&quot;&lt;/code&gt;.
-                    &lt;/Text&gt;
-        &lt;br /&gt;
-        &lt;Text&gt;• &lt;strong&gt;Home&lt;/strong&gt;: exact matching (default) - not active
-                    &lt;/Text&gt;
-        &lt;Text&gt;• &lt;strong&gt;Mentorship&lt;/strong&gt;: prefix matching - IS active (URL starts
-                      with /mentorship)
-                    &lt;/Text&gt;
-        &lt;Text&gt;• &lt;strong&gt;Catalog&lt;/strong&gt;: prefix matching - not active
-                    &lt;/Text&gt;
-        &lt;Text&gt;• &lt;strong&gt;Settings&lt;/strong&gt;: exact matching (default) - not active
-                    &lt;/Text&gt;
-    &lt;/Container&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithTabsExactMatching</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithTabsExactMatching = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
-    &lt;Header
-        title=&quot;Exact Matching Demo&quot;
-        tabs={[
-          {
-            id: &#39;mentorship&#39;,
-            label: &#39;Mentorship&#39;,
-            href: &#39;/mentorship&#39;,
-          },
-          {
-            id: &#39;events&#39;,
-            label: &#39;Events&#39;,
-            href: &#39;/mentorship/events&#39;,
-          },
-          {
-            id: &#39;mentors&#39;,
-            label: &#39;Mentors&#39;,
-            href: &#39;/mentorship/mentors&#39;,
-          },
-        ]} /&gt;
-    &lt;Container&gt;
-        &lt;Text&gt;
-            &lt;strong&gt;Current URL:&lt;/strong&gt;/mentorship/events
-                    &lt;/Text&gt;
-        &lt;br /&gt;
-        &lt;Text&gt;With default exact matching, only the &quot;Events&quot; tab is active because
-                      it exactly matches the current URL. The &quot;Mentorship&quot; tab is not active
-                      even though the URL is under /mentorship.
-                    &lt;/Text&gt;
-    &lt;/Container&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithTabsPrefixMatchingDeep</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithTabsPrefixMatchingDeep = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/catalog/users/john/details&#39;]}&gt;
-    &lt;Header
-        title=&quot;Deep Nesting Demo&quot;
-        tabs={[
-          {
-            id: &#39;catalog&#39;,
-            label: &#39;Catalog&#39;,
-            href: &#39;/catalog&#39;,
-            matchStrategy: &#39;prefix&#39;,
-          },
-          {
-            id: &#39;users&#39;,
-            label: &#39;Users&#39;,
-            href: &#39;/catalog/users&#39;,
-            matchStrategy: &#39;prefix&#39;,
-          },
-          {
-            id: &#39;components&#39;,
-            label: &#39;Components&#39;,
-            href: &#39;/catalog/components&#39;,
-            matchStrategy: &#39;prefix&#39;,
-          },
-        ]} /&gt;
-    &lt;Container&gt;
-        &lt;Text as=&quot;p&quot;&gt;
-            &lt;strong&gt;Current URL:&lt;/strong&gt;/catalog/users/john/details
-                    &lt;/Text&gt;
-        &lt;br /&gt;
-        &lt;Text as=&quot;p&quot;&gt;Active tab is &lt;strong&gt;Users&lt;/strong&gt;because:
-                    &lt;/Text&gt;
-        &lt;ul&gt;
-            &lt;li&gt;
-                &lt;strong&gt;Catalog&lt;/strong&gt;: Matches since URL starts with /catalog
-                          &lt;/li&gt;
-            &lt;li&gt;
-                &lt;strong&gt;Users&lt;/strong&gt;: Is active since URL starts with
-                            /catalog/users, and is more specific (has more url segments) than
-                            &quot;Catalog&quot;
-                          &lt;/li&gt;
-            &lt;li&gt;
-                &lt;strong&gt;Components&lt;/strong&gt;: not active (URL doesn&#39;t start with
-                            /catalog/components)
-                          &lt;/li&gt;
-        &lt;/ul&gt;
-        &lt;Text as=&quot;p&quot;&gt;This demonstrates how prefix matching works with deeply nested routes.
-                    &lt;/Text&gt;
-    &lt;/Container&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
-            </div>
-        </div>
-    
-  </div>
-</article>
-<article
-  class="card 
-  no-error 
-  no-info 
-  no-story-error
-  no-doc-error"
-  role="listitem"
   aria-label="HeaderPage">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> HeaderPage</h2>
       <div class="badges">
-        <label for="c-19-backstage-ui-headerpage-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-18-backstage-ui-headerpage-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-19-backstage-ui-headerpage-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-18-backstage-ui-headerpage-stories" class="badge ok as-toggle">10 stories</label>
         
       </div>
     </div>
@@ -6720,9 +6288,9 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-19-backstage-ui-headerpage-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-backstage-ui-headerpage-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-19-backstage-ui-headerpage-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-18-backstage-ui-headerpage-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7039,9 +6607,9 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Link</h2>
       <div class="badges">
-        <label for="c-20-backstage-ui-link-props" class="badge ok as-toggle">7 prop types</label>
-        <label for="c-20-backstage-ui-link-info" class="badge info as-toggle">1 info</label>
-        <label for="c-20-backstage-ui-link-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-19-backstage-ui-link-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-19-backstage-ui-link-info" class="badge info as-toggle">1 info</label>
+        <label for="c-19-backstage-ui-link-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
@@ -7053,10 +6621,10 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-20-backstage-ui-link-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-20-backstage-ui-link-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-backstage-ui-link-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-19-backstage-ui-link-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-20-backstage-ui-link-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-19-backstage-ui-link-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7380,8 +6948,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
         
-        <label for="c-21-backstage-ui-menu-info" class="badge info as-toggle">1 info</label>
-        <label for="c-21-backstage-ui-menu-stories" class="badge ok as-toggle">16 stories</label>
+        <label for="c-20-backstage-ui-menu-info" class="badge info as-toggle">1 info</label>
+        <label for="c-20-backstage-ui-menu-stories" class="badge ok as-toggle">16 stories</label>
         
       </div>
     </div>
@@ -7393,8 +6961,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-21-backstage-ui-menu-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-21-backstage-ui-menu-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-backstage-ui-menu-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-20-backstage-ui-menu-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -7867,8 +7435,8 @@ import {
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
         
-        <label for="c-22-backstage-ui-menuautocomplete-info" class="badge info as-toggle">1 info</label>
-        <label for="c-22-backstage-ui-menuautocomplete-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-21-backstage-ui-menuautocomplete-info" class="badge info as-toggle">1 info</label>
+        <label for="c-21-backstage-ui-menuautocomplete-stories" class="badge ok as-toggle">5 stories</label>
         
       </div>
     </div>
@@ -7880,8 +7448,8 @@ import {
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-22-backstage-ui-menuautocomplete-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-22-backstage-ui-menuautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-backstage-ui-menuautocomplete-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-21-backstage-ui-menuautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -8083,8 +7651,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
         
-        <label for="c-23-backstage-ui-menuautocompletelistbox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-23-backstage-ui-menuautocompletelistbox-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-22-backstage-ui-menuautocompletelistbox-info" class="badge info as-toggle">1 info</label>
+        <label for="c-22-backstage-ui-menuautocompletelistbox-stories" class="badge ok as-toggle">6 stories</label>
         
       </div>
     </div>
@@ -8096,8 +7664,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-23-backstage-ui-menuautocompletelistbox-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-23-backstage-ui-menuautocompletelistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-backstage-ui-menuautocompletelistbox-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-22-backstage-ui-menuautocompletelistbox-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -8373,8 +7941,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
         
-        <label for="c-24-backstage-ui-menulistbox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-24-backstage-ui-menulistbox-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-23-backstage-ui-menulistbox-info" class="badge info as-toggle">1 info</label>
+        <label for="c-23-backstage-ui-menulistbox-stories" class="badge ok as-toggle">4 stories</label>
         
       </div>
     </div>
@@ -8386,8 +7954,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-24-backstage-ui-menulistbox-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-24-backstage-ui-menulistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-backstage-ui-menulistbox-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-23-backstage-ui-menulistbox-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -8562,9 +8130,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PasswordField</h2>
       <div class="badges">
-        <label for="c-25-backstage-ui-passwordfield-props" class="badge ok as-toggle">3 prop types</label>
-        <label for="c-25-backstage-ui-passwordfield-info" class="badge info as-toggle">1 info</label>
-        <label for="c-25-backstage-ui-passwordfield-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-24-backstage-ui-passwordfield-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-24-backstage-ui-passwordfield-info" class="badge info as-toggle">1 info</label>
+        <label for="c-24-backstage-ui-passwordfield-stories" class="badge ok as-toggle">12 stories</label>
         
       </div>
     </div>
@@ -8576,10 +8144,10 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-25-backstage-ui-passwordfield-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-25-backstage-ui-passwordfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-passwordfield-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-passwordfield-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-25-backstage-ui-passwordfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-passwordfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8763,6 +8331,438 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     /&gt;
   &lt;/&gt;
 );</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="PluginHeader">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> PluginHeader</h2>
+      <div class="badges">
+        <label for="c-25-backstage-ui-pluginheader-props" class="badge ok as-toggle">7 prop types</label>
+        
+        <label for="c-25-backstage-ui-pluginheader-stories" class="badge ok as-toggle">14 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/components/PluginHeader/PluginHeader.stories.tsx">backstage-ui-pluginheader · ./packages/ui/src/components/PluginHeader/PluginHeader.stories.tsx</div>
+    
+    <div class="hint">A component that renders a plugin header with icon, title, custom actions, and navigation tabs.</div>
+    <div class="kv"><span class="chip">public:  </span></div>
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-25-backstage-ui-pluginheader-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-25-backstage-ui-pluginheader-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">7 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/PluginHeader/PluginHeader.tsx::PluginHeader</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>className?: string
+
+customActions?: React.ReactNode
+
+icon?: React.ReactNode
+
+onTabSelectionChange?: TabsProps[&#39;onSelectionChange&#39;]
+
+tabs?: HeaderTab[]
+
+title?: string
+
+titleLink?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import {
+    Button,
+    ButtonIcon,
+    Container,
+    HeaderPage,
+    Menu,
+    MenuItem,
+    MenuTrigger,
+    PluginHeader,
+    Text,
+} from "@backstage/ui";
+import { MemoryRouter } from "react-router-dom";
+import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@remixicon/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;PluginHeader /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithTabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithTabs = () =&gt; &lt;PluginHeader tabs={tabs} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithCustomActions</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithCustomActions = () =&gt; &lt;PluginHeader
+    customActions={
+      &lt;&gt;
+        &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiCloudy2Line /&gt;} /&gt;
+        &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiEmotionHappyLine /&gt;} /&gt;
+        &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiHeartLine /&gt;} /&gt;
+        &lt;MenuTrigger&gt;
+          &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiMore2Line /&gt;} /&gt;
+          &lt;Menu placement=&quot;bottom end&quot;&gt;
+            {menuItems.map(option =&gt; (
+              &lt;MenuItem
+                key={option.value}
+                onAction={option.onClick}
+                href={option.href}
+              &gt;
+                {option.label}
+              &lt;/MenuItem&gt;
+            ))}
+          &lt;/Menu&gt;
+        &lt;/MenuTrigger&gt;
+      &lt;/&gt;
+    } /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithAllOptionsAndTabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithAllOptionsAndTabs = () =&gt; &lt;PluginHeader tabs={tabs} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithHeaderPage</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithHeaderPage = () =&gt; &lt;&gt;
+    &lt;PluginHeader
+        customActions={
+          &lt;&gt;
+            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiCloudy2Line /&gt;} /&gt;
+            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiEmotionHappyLine /&gt;} /&gt;
+            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiHeartLine /&gt;} /&gt;
+          &lt;/&gt;
+        } /&gt;
+    &lt;HeaderPage
+        title=&quot;Page title&quot;
+        tabs={tabs2}
+        customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
+        breadcrumbs={breadcrumbs} /&gt;
+&lt;/&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithLayout</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLayout = () =&gt; &lt;&gt;
+    &lt;PluginHeader tabs={tabs} /&gt;
+    &lt;HeaderPage
+        title=&quot;Page title&quot;
+        tabs={tabs2}
+        customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
+        breadcrumbs={breadcrumbs} /&gt;
+&lt;/&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithLayoutNoTabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLayoutNoTabs = () =&gt; &lt;&gt;
+    &lt;PluginHeader /&gt;
+    &lt;HeaderPage title=&quot;Page title&quot; tabs={tabs2} /&gt;
+&lt;/&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithEverything</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithEverything = () =&gt; &lt;&gt;
+    &lt;PluginHeader
+        tabs={tabs}
+        titleLink=&quot;/&quot;
+        customActions={
+          &lt;&gt;
+            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiCloudy2Line /&gt;} /&gt;
+            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiEmotionHappyLine /&gt;} /&gt;
+            &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiHeartLine /&gt;} /&gt;
+          &lt;/&gt;
+        } /&gt;
+    &lt;HeaderPage
+        title=&quot;Page title&quot;
+        tabs={tabs2}
+        customActions={
+          &lt;&gt;
+            &lt;Button variant=&quot;secondary&quot;&gt;Secondary&lt;/Button&gt;
+            &lt;Button variant=&quot;primary&quot;&gt;Primary&lt;/Button&gt;
+          &lt;/&gt;
+        } /&gt;
+&lt;/&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithMockedURLCampaigns</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMockedURLCampaigns = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/campaigns&#39;]}&gt;
+    &lt;PluginHeader tabs={tabs} /&gt;
+    &lt;Container&gt;
+        &lt;Text as=&quot;p&quot;&gt;Current URL is mocked to be: &lt;strong&gt;/campaigns&lt;/strong&gt;
+        &lt;/Text&gt;
+        &lt;Text as=&quot;p&quot;&gt;Notice how the &quot;Campaigns&quot; tab is selected (highlighted) because it
+                      matches the current path.
+                    &lt;/Text&gt;
+    &lt;/Container&gt;
+&lt;/MemoryRouter&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithMockedURLIntegrations</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMockedURLIntegrations = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/integrations&#39;]}&gt;
+    &lt;PluginHeader tabs={tabs} /&gt;
+    &lt;Container&gt;
+        &lt;Text as=&quot;p&quot;&gt;Current URL is mocked to be: &lt;strong&gt;/integrations&lt;/strong&gt;
+        &lt;/Text&gt;
+        &lt;Text as=&quot;p&quot;&gt;Notice how the &quot;Integrations&quot; tab is selected (highlighted) because it
+                      matches the current path.
+                    &lt;/Text&gt;
+    &lt;/Container&gt;
+&lt;/MemoryRouter&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithMockedURLNoMatch</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMockedURLNoMatch = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/some-other-page&#39;]}&gt;
+    &lt;PluginHeader tabs={tabs} /&gt;
+    &lt;Container&gt;
+        &lt;Text as=&quot;p&quot;&gt;Current URL is mocked to be: &lt;strong&gt;/some-other-page&lt;/strong&gt;
+        &lt;/Text&gt;
+        &lt;Text as=&quot;p&quot;&gt;No tab is selected because the current path doesn&#39;t match any tab&#39;s
+                      href.
+                    &lt;/Text&gt;
+        &lt;Text as=&quot;p&quot;&gt;Tabs without href (like &quot;Overview&quot;, &quot;Checks&quot;, &quot;Tracks&quot;) fall back to
+                      React Aria&#39;s internal state.
+                    &lt;/Text&gt;
+    &lt;/Container&gt;
+&lt;/MemoryRouter&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithTabsMatchingStrategies</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithTabsMatchingStrategies = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
+    &lt;PluginHeader
+        title=&quot;Route Matching Demo&quot;
+        tabs={[
+          {
+            id: &#39;home&#39;,
+            label: &#39;Home&#39;,
+            href: &#39;/home&#39;,
+          },
+          {
+            id: &#39;mentorship&#39;,
+            label: &#39;Mentorship&#39;,
+            href: &#39;/mentorship&#39;,
+            matchStrategy: &#39;prefix&#39;,
+          },
+          {
+            id: &#39;catalog&#39;,
+            label: &#39;Catalog&#39;,
+            href: &#39;/catalog&#39;,
+            matchStrategy: &#39;prefix&#39;,
+          },
+          {
+            id: &#39;settings&#39;,
+            label: &#39;Settings&#39;,
+            href: &#39;/settings&#39;,
+          },
+        ]} /&gt;
+    &lt;Container&gt;
+        &lt;Text&gt;
+            &lt;strong&gt;Current URL:&lt;/strong&gt;/mentorship/events
+                    &lt;/Text&gt;
+        &lt;br /&gt;
+        &lt;Text&gt;Notice how the &quot;Mentorship&quot; tab is active even though we&#39;re on a
+                      nested route. This is because it uses{&#39; &#39;}
+            &lt;code&gt;matchStrategy=&quot;prefix&quot;&lt;/code&gt;.
+                    &lt;/Text&gt;
+        &lt;br /&gt;
+        &lt;Text&gt;• &lt;strong&gt;Home&lt;/strong&gt;: exact matching (default) - not active
+                    &lt;/Text&gt;
+        &lt;Text&gt;• &lt;strong&gt;Mentorship&lt;/strong&gt;: prefix matching - IS active (URL starts
+                      with /mentorship)
+                    &lt;/Text&gt;
+        &lt;Text&gt;• &lt;strong&gt;Catalog&lt;/strong&gt;: prefix matching - not active
+                    &lt;/Text&gt;
+        &lt;Text&gt;• &lt;strong&gt;Settings&lt;/strong&gt;: exact matching (default) - not active
+                    &lt;/Text&gt;
+    &lt;/Container&gt;
+&lt;/MemoryRouter&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithTabsExactMatching</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithTabsExactMatching = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
+    &lt;PluginHeader
+        title=&quot;Exact Matching Demo&quot;
+        tabs={[
+          {
+            id: &#39;mentorship&#39;,
+            label: &#39;Mentorship&#39;,
+            href: &#39;/mentorship&#39;,
+          },
+          {
+            id: &#39;events&#39;,
+            label: &#39;Events&#39;,
+            href: &#39;/mentorship/events&#39;,
+          },
+          {
+            id: &#39;mentors&#39;,
+            label: &#39;Mentors&#39;,
+            href: &#39;/mentorship/mentors&#39;,
+          },
+        ]} /&gt;
+    &lt;Container&gt;
+        &lt;Text&gt;
+            &lt;strong&gt;Current URL:&lt;/strong&gt;/mentorship/events
+                    &lt;/Text&gt;
+        &lt;br /&gt;
+        &lt;Text&gt;With default exact matching, only the &quot;Events&quot; tab is active because
+                      it exactly matches the current URL. The &quot;Mentorship&quot; tab is not active
+                      even though the URL is under /mentorship.
+                    &lt;/Text&gt;
+    &lt;/Container&gt;
+&lt;/MemoryRouter&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithTabsPrefixMatchingDeep</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithTabsPrefixMatchingDeep = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/catalog/users/john/details&#39;]}&gt;
+    &lt;PluginHeader
+        title=&quot;Deep Nesting Demo&quot;
+        tabs={[
+          {
+            id: &#39;catalog&#39;,
+            label: &#39;Catalog&#39;,
+            href: &#39;/catalog&#39;,
+            matchStrategy: &#39;prefix&#39;,
+          },
+          {
+            id: &#39;users&#39;,
+            label: &#39;Users&#39;,
+            href: &#39;/catalog/users&#39;,
+            matchStrategy: &#39;prefix&#39;,
+          },
+          {
+            id: &#39;components&#39;,
+            label: &#39;Components&#39;,
+            href: &#39;/catalog/components&#39;,
+            matchStrategy: &#39;prefix&#39;,
+          },
+        ]} /&gt;
+    &lt;Container&gt;
+        &lt;Text as=&quot;p&quot;&gt;
+            &lt;strong&gt;Current URL:&lt;/strong&gt;/catalog/users/john/details
+                    &lt;/Text&gt;
+        &lt;br /&gt;
+        &lt;Text as=&quot;p&quot;&gt;Active tab is &lt;strong&gt;Users&lt;/strong&gt;because:
+                    &lt;/Text&gt;
+        &lt;ul&gt;
+            &lt;li&gt;
+                &lt;strong&gt;Catalog&lt;/strong&gt;: Matches since URL starts with /catalog
+                          &lt;/li&gt;
+            &lt;li&gt;
+                &lt;strong&gt;Users&lt;/strong&gt;: Is active since URL starts with
+                            /catalog/users, and is more specific (has more url segments) than
+                            &quot;Catalog&quot;
+                          &lt;/li&gt;
+            &lt;li&gt;
+                &lt;strong&gt;Components&lt;/strong&gt;: not active (URL doesn&#39;t start with
+                            /catalog/components)
+                          &lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;Text as=&quot;p&quot;&gt;This demonstrates how prefix matching works with deeply nested routes.
+                    &lt;/Text&gt;
+    &lt;/Container&gt;
+&lt;/MemoryRouter&gt;;</code></pre>
             </div>
         </div>
     
@@ -9427,7 +9427,7 @@ startCollapsed?: boolean</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Button, ButtonIcon, FieldLabel, Flex, Header, SearchField } from "@backstage/ui";
+                <pre><code>import { Button, ButtonIcon, FieldLabel, Flex, PluginHeader, SearchField } from "@backstage/ui";
 import { Form } from "react-aria-components";
 import { MemoryRouter } from "react-router-dom";
 import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
@@ -9599,7 +9599,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               <pre><code>const InHeader = args =&gt; (
   &lt;&gt;
-    &lt;Header
+    &lt;PluginHeader
       title=&quot;Title&quot;
       customActions={
         &lt;&gt;
@@ -9631,7 +9631,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               
               <pre><code>const StartCollapsedInHeader = args =&gt; (
   &lt;&gt;
-    &lt;Header
+    &lt;PluginHeader
       title=&quot;Title&quot;
       customActions={
         &lt;&gt;
