@@ -32,7 +32,7 @@ const configSchema = z.object({
   addedDate: z.coerce.date(),
   order: z.number().optional(),
   state: z.enum(['active', 'inactive', 'archived']),
-  age: z.number().optional(),
+  staleSince: z.coerce.date().optional(),
 });
 
 async function main() {

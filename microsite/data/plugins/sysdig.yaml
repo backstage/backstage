@@ -9,4 +9,4 @@ iconUrl: https://sysdig.com/wp-content/uploads/sysdig-logo-new-white.svg
 npmPackageName: '@sysdig/backstage-plugin-sysdig'
 addedDate: '2024-03-06'
 status: inactive
-age: 483
+staleSince: '2026-02-17'

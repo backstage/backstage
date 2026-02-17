@@ -9,4 +9,4 @@ iconUrl: https://landscape.cncf.io/logos/devfile.svg
 npmPackageName: '@redhat-developer/plugin-scaffolder-frontend-module-devfile-field'
 addedDate: '2023-12-08'
 status: inactive
-age: 789
+staleSince: '2026-02-17'

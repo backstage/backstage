@@ -9,4 +9,4 @@ iconUrl: https://raw.githubusercontent.com/thefrontside/frontside.com/production
 npmPackageName: '@frontside/backstage-plugin-graphql-backend'
 addedDate: '2024-05-01'
 status: inactive
-age: 493
+staleSince: '2026-02-17'

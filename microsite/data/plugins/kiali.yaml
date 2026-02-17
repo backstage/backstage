@@ -9,4 +9,4 @@ iconUrl: /img/kiali.svg
 npmPackageName: '@janus-idp/backstage-plugin-kiali'
 addedDate: '2023-07-25'
 status: inactive
-age: 439
+staleSince: '2026-02-17'

@@ -9,4 +9,4 @@ iconUrl: /img/library-check-logo.png
 npmPackageName: '@anakz/backstage-plugin-library-check'
 addedDate: '2024-03-11'
 status: inactive
-age: 657
+staleSince: '2026-02-17'

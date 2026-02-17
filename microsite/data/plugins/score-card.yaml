@@ -9,4 +9,4 @@ iconUrl: /img/score-card-plugin-logo.png
 npmPackageName: '@oriflame/backstage-plugin-score-card'
 addedDate: '2022-10-06'
 status: inactive
-age: 501
+staleSince: '2026-02-17'

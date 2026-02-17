@@ -9,4 +9,4 @@ iconUrl: /img/cyclops.svg
 npmPackageName: '@cyclopsui/backstage-plugin-cyclops-modules'
 addedDate: '2024-01-02'
 status: inactive
-age: 407
+staleSince: '2026-02-17'

@@ -9,4 +9,4 @@ iconUrl: /img/should-i-deploy-logo.png
 npmPackageName: backstage-plugin-should-i-deploy
 addedDate: '2023-11-05'
 status: inactive
-age: 832
+staleSince: '2026-02-17'

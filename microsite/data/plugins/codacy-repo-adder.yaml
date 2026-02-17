@@ -9,4 +9,4 @@ iconUrl: /img/codacy-icon.svg
 npmPackageName: '@codacy/backstage-plugin'
 addedDate: '2024-04-19'
 status: inactive
-age: 669
+staleSince: '2026-02-17'

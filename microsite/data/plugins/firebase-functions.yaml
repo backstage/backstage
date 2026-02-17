@@ -9,4 +9,4 @@ iconUrl: https://roadie.io/images/logos/firebase.png
 npmPackageName: '@roadiehq/backstage-plugin-firebase-functions'
 addedDate: '2021-04-20'
 status: inactive
-age: 598
+staleSince: '2026-02-17'

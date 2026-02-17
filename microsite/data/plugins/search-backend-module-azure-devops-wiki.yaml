@@ -9,4 +9,4 @@ iconUrl: /img/ado-wiki-search-icon.png
 npmPackageName: '@mdude2314/backstage-plugin-search-backend-module-azure-devops-wiki'
 addedDate: '2023-06-13'
 status: inactive
-age: 634
+staleSince: '2026-02-17'

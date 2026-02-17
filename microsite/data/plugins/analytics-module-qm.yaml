@@ -9,4 +9,4 @@ iconUrl: /img/qm-icon.png
 npmPackageName: '@quantum-metric/plugin-analytics-module-qm'
 addedDate: '2024-03-15'
 status: inactive
-age: 683
+staleSince: '2026-02-17'

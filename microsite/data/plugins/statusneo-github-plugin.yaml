@@ -9,4 +9,4 @@ iconUrl: /img/github-statusneo.png
 npmPackageName: '@statusneo/backstage-plugin-github'
 addedDate: '2023-02-15'
 status: inactive
-age: 903
+staleSince: '2026-02-17'

@@ -9,4 +9,4 @@ iconUrl: https://raw.githubusercontent.com/tduniec/backstage-timesaver-plugin/ma
 npmPackageName: '@tduniec/backstage-plugin-time-saver'
 addedDate: '2024-01-30'
 status: inactive
-age: 410
+staleSince: '2026-02-17'

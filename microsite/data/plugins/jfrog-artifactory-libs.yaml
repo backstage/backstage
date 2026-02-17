@@ -9,4 +9,4 @@ iconUrl: https://raw.githubusercontent.com/Vity01/backstage-jfrog-artifactory-li
 npmPackageName: backstage-plugin-jfrog-artifactory-libs
 addedDate: '2023-08-14'
 status: inactive
-age: 532
+staleSince: '2026-02-17'

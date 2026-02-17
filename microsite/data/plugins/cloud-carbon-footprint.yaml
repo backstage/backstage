@@ -9,4 +9,4 @@ iconUrl: https://www.cloudcarbonfootprint.org/img/logo.png
 npmPackageName: '@cloud-carbon-footprint/backstage-plugin-frontend'
 addedDate: '2022-05-03'
 status: inactive
-age: 378
+staleSince: '2026-02-17'

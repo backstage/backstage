@@ -9,4 +9,4 @@ iconUrl: https://raw.githubusercontent.com/purple-technology/backstage-aws-cloud
 npmPackageName: backstage-aws-cloudformation-plugin
 addedDate: '2021-08-30'
 status: inactive
-age: 953
+staleSince: '2026-02-17'

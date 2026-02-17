@@ -9,4 +9,4 @@ iconUrl: https://raw.githubusercontent.com/cncf/artwork/master/projects/litmus/i
 npmPackageName: backstage-plugin-litmus
 addedDate: '2023-10-06'
 status: inactive
-age: 714
+staleSince: '2026-02-17'

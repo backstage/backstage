@@ -9,4 +9,4 @@ iconUrl: https://raw.githubusercontent.com/cncf/artwork/master/projects/harbor/i
 npmPackageName: '@bestsellerit/backstage-plugin-harbor'
 addedDate: '2022-06-23'
 status: inactive
-age: 1134
+staleSince: '2026-02-17'

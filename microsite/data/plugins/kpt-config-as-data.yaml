@@ -9,4 +9,4 @@ iconUrl: https://github.com/GoogleContainerTools/kpt/blob/main/logo/KptLogoSmall
 npmPackageName: '@kpt/backstage-plugin-cad'
 addedDate: '2022-05-13'
 status: inactive
-age: 1167
+staleSince: '2026-02-17'

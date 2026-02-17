@@ -9,4 +9,4 @@ iconUrl: https://raw.githubusercontent.com/jquad-group/backstage-jquad/main/img/
 npmPackageName: '@jquad-group/plugin-tekton-pipelines'
 addedDate: '2022-08-08'
 status: inactive
-age: 1016
+staleSince: '2026-02-17'

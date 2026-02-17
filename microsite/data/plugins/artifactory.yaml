@@ -11,4 +11,4 @@ iconUrl: https://raw.githubusercontent.com/StageCentral/backstage-artifactory-pl
 npmPackageName: '@stagecentral/plugin-artifactory'
 addedDate: '2023-08-23'
 status: inactive
-age: 661
+staleSince: '2026-02-17'

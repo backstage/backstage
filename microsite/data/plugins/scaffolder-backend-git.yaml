@@ -9,4 +9,4 @@ iconUrl: https://git-scm.com/images/logos/downloads/Git-Logo-2Color.png
 npmPackageName: '@mdude2314/backstage-plugin-scaffolder-git-actions'
 addedDate: '2022-05-13'
 status: inactive
-age: 812
+staleSince: '2026-02-17'

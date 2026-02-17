@@ -56,7 +56,15 @@ async function main(args) {
     );
 
     const npmPackage = await getNpmPackage(pluginDataYaml.npmPackageName);
+    const modifiedTime = npmPackage.time?.modified;
     const age = getAge(npmPackage.time?.modified);
+
+    if (!modifiedTime || isNaN(age)) {
+      console.warn(
+        `Skipping ${pluginDataYaml.title}: Could not calculate age (Data: ${modifiedTime})`,
+      );
+      continue; // Skip to the next plugin in the loop
+    }
 
     const pluginData = {
       npmPackageName: pluginDataYaml.npmPackageName,
@@ -93,7 +101,7 @@ async function main(args) {
 
       if (statusChanged) {
         pluginDataYaml.status = newStatus;
-        pluginDataYaml.age = age;
+        pluginDataYaml.staleSince = new Date().toISOString().split('T')[0];
 
         // Write updated YAML back to file
         const yamlContent = yaml.dump(pluginDataYaml, {
