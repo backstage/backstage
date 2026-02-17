@@ -110,22 +110,6 @@ describe('createListScaffolderActionsAction', () => {
     expect(output.actions).toEqual([]);
   });
 
-  it('should throw error when templateActionRegistry is not provided', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-
-    createListScaffolderActionsAction({
-      actionsRegistry: mockActionsRegistry,
-      templateActionRegistry: null as any,
-    });
-
-    await expect(
-      mockActionsRegistry.invoke({
-        id: 'test:list-scaffolder-actions',
-        input: {},
-      }),
-    ).rejects.toThrow('templateActionRegistry must be provided');
-  });
-
   it('should maintain consistent sorting across multiple calls', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockActions = [

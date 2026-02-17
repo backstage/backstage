@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { InputError } from '@backstage/errors';
 import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
 
 export const createListScaffolderActionsAction = ({
@@ -57,18 +56,13 @@ Each action includes:
       }> = [];
 
       // Use the TemplateActionRegistry to get all template actions
-      if (templateActionRegistry) {
-        const actionsMap = await templateActionRegistry.list({ credentials });
-        actionsList = Array.from(actionsMap.values()).map(action => ({
-          id: action.id,
-          description: action.description || '',
-          schema: action.schema || { input: {}, output: {} },
-          examples: action.examples || [],
-        }));
-      } else {
-        throw new InputError('templateActionRegistry must be provided');
-      }
-
+      const actionsMap = await templateActionRegistry.list({ credentials });
+      actionsList = Array.from(actionsMap.values()).map(action => ({
+        id: action.id,
+        description: action.description || '',
+        schema: action.schema || { input: {}, output: {} },
+        examples: action.examples || [],
+      }));
       // Sort by id for consistency with /api/scaffolder/v2/actions
       actionsList.sort((a, b) => a.id.localeCompare(b.id));
 
