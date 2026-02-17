@@ -222,7 +222,7 @@ const Plugins = () => {
             <h2>Inactive Plugins ({inactivePlugins.length})</h2>
             <p>
               These plugins are no longer actively maintained as their NPM package has not seen an update in more than 365 days. They are kept here for reference but may not work with
-              current versions of Backstage.
+              current versions of Backstage. Details on the audit process can be found in the <Link to="/docs/plugins/plugin-directory-audit">Plugin Directory Audit</Link> documentation.
             </p>
             <div className="pluginsContainer margin-bottom--lg">
               {inactivePlugins.map(pluginData => (
