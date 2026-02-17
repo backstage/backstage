@@ -14,7 +14,7 @@ export interface IPluginData {
   addedDate: string;
   isNew: boolean;
   order?: number;
-  status?: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'archived';
 }
 
 const defaultIconUrl = '/img/logo-gradient-on-dark.svg';
