@@ -15,7 +15,7 @@
     "sync:css:watch": "node scripts/sync-css.js --watch"
   },
   "resolutions": {
-    "@types/react": "19.2.10",
+    "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3"
   },
   "dependencies": {
@@ -44,7 +44,7 @@
     "@shikijs/transformers": "^3.13.0",
     "@types/mdx": "^2.0.13",
     "@types/node": "^22.13.14",
-    "@types/react": "19.2.10",
+    "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "chokidar": "^3.6.0",
     "eslint": "^9",
