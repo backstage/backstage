@@ -6,6 +6,7 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import type { ButtonProps } from '@material-ui/core/Button';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
@@ -29,7 +30,20 @@ import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
+import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+
+// @alpha
+export const catalogExportCustomizationDataRef: ConfigurableExtensionDataRef<
+  {
+    customExporters?: CatalogExportSettings['customExporters'];
+    onSuccess?: CatalogExportSettings['onSuccess'];
+    onError?: CatalogExportSettings['onError'];
+    buttonProps?: CatalogExportSettings['buttonProps'];
+  },
+  'catalog.export-customization',
+  {}
+>;
 
 // @alpha (undocumented)
 export const catalogTranslationRef: TranslationRef<
@@ -997,6 +1011,11 @@ const _default: OverridableFrontendPlugin<
               offset?: number | undefined;
               limit?: number | undefined;
             };
+        exportSettings:
+          | {
+              enableExport?: boolean | undefined;
+            }
+          | undefined;
         path: string | undefined;
       };
       configInput: {
@@ -1006,6 +1025,11 @@ const _default: OverridableFrontendPlugin<
               mode: 'offset' | 'cursor';
               offset?: number | undefined;
               limit?: number | undefined;
+            }
+          | undefined;
+        exportSettings?:
+          | {
+              enableExport?: boolean | undefined;
             }
           | undefined;
         path?: string | undefined;
@@ -1023,6 +1047,25 @@ const _default: OverridableFrontendPlugin<
       inputs: {
         filters: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        exportCustomizers: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            {
+              customExporters?: CatalogExportSettings['customExporters'];
+              onSuccess?: CatalogExportSettings['onSuccess'];
+              onError?: CatalogExportSettings['onError'];
+              buttonProps?: CatalogExportSettings['buttonProps'];
+            },
+            'catalog.export-customization',
+            {
+              optional: true;
+            }
+          >,
           {
             singleton: false;
             optional: false;
@@ -1196,6 +1239,10 @@ const _default: OverridableFrontendPlugin<
   }
 >;
 export default _default;
+
+// Warnings were encountered during analysis:
+//
+// src/alpha/pages.d.ts:8:5 - (ae-forgotten-export) The symbol "CatalogExportSettings" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

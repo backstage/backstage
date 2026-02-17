@@ -121,7 +121,12 @@ const routes = (
 
     <Route
       path="/catalog"
-      element={<CatalogIndexPage pagination={{ mode: 'offset', limit: 20 }} />}
+      element={
+        <CatalogIndexPage
+          pagination={{ mode: 'offset', limit: 20 }}
+          exportSettings={{ enableExport: true }}
+        />
+      }
     />
     <Route
       path="/catalog/:namespace/:kind/:name"
