@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { JSX } from 'react';
 import { createApiRef } from '../system';
 
 /**
@@ -32,7 +32,7 @@ export type PluginHeaderActionsApi = {
   /**
    * Returns the header actions for a given plugin.
    */
-  getPluginHeaderActions(pluginId: string): ReactNode[];
+  getPluginHeaderActions(pluginId: string): Array<JSX.Element | null>;
 };
 
 /**

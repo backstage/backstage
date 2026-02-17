@@ -38,7 +38,7 @@ export interface PageLayoutProps {
   title?: string;
   icon?: IconElement;
   noHeader?: boolean;
-  headerActions?: ReactNode;
+  headerActions?: Array<JSX.Element | null>;
   tabs?: PageTab[];
   children?: ReactNode;
 }

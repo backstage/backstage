@@ -1722,7 +1722,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     path: string;
     title?: string;
     icon?: IconElement;
-    loader?: () => Promise<JSX.Element>;
+    loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;
     noHeader?: boolean;
   };
@@ -1735,7 +1735,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
           optional: true;
         }
       >
-    | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
+    | ExtensionDataRef_2<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef_2<
         string,
         'core.title',
@@ -1752,7 +1752,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
       >;
   inputs: {
     pages: ExtensionInput_2<
-      | ConfigurableExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef_2<JSX_2.Element, 'core.reactElement', {}>
       | ConfigurableExtensionDataRef_2<string, 'core.routing.path', {}>
       | ConfigurableExtensionDataRef_2<
           RouteRef<AnyRouteRefParams_2>,
@@ -1804,7 +1804,7 @@ export interface PageLayoutProps {
   // (undocumented)
   children?: ReactNode;
   // (undocumented)
-  headerActions?: ReactNode;
+  headerActions?: Array<JSX.Element | null>;
   // (undocumented)
   icon?: IconElement;
   // (undocumented)
@@ -1853,7 +1853,7 @@ export const PluginHeaderActionBlueprint: ExtensionBlueprint_2<{
 
 // @public
 export type PluginHeaderActionsApi = {
-  getPluginHeaderActions(pluginId: string): ReactNode[];
+  getPluginHeaderActions(pluginId: string): Array<JSX_2.Element | null>;
 };
 
 // @public
