@@ -55,7 +55,10 @@ export default async (options: ExportOptions) => {
   console.log(
     `Discovering frontend dependencies of ${targetPackageJson.name}...`,
   );
-  const packages = await discoverFrontendPackages(targetPackageJson);
+  const packages = await discoverFrontendPackages(
+    targetPackageJson,
+    paths.targetDir,
+  );
   console.log(`Found ${packages.length} frontend packages to scan`);
 
   console.log('Creating TypeScript project...');

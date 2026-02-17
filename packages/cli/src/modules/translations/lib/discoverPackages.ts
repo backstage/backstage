@@ -19,7 +19,7 @@ import {
   PackageGraph,
   PackageRole,
 } from '@backstage/cli-node';
-import { resolve as resolvePath } from 'node:path';
+import { dirname, resolve as resolvePath } from 'node:path';
 import fs from 'fs-extra';
 
 /**
@@ -71,54 +71,103 @@ export async function readTargetPackage(
 }
 
 /**
- * Discovers frontend packages that are dependencies of the given target
- * package and resolves their entry point file paths.
+ * Discovers frontend packages that are transitive dependencies of the given
+ * target package and resolves their entry point file paths. Walks both
+ * workspace packages (source) and npm-installed packages (declaration files).
  */
 export async function discoverFrontendPackages(
   targetPackageJson: BackstagePackageJson,
+  targetDir: string,
 ): Promise<DiscoveredPackage[]> {
-  const allPackages = await PackageGraph.listTargetPackages();
-  const packagesByName = new Map(allPackages.map(p => [p.packageJson.name, p]));
+  // Build a lookup of workspace packages for preferring source over dist
+  let workspaceByName: Map<
+    string,
+    { packageJson: BackstagePackageJson; dir: string }
+  >;
+  try {
+    const workspacePackages = await PackageGraph.listTargetPackages();
+    workspaceByName = new Map(
+      workspacePackages.map(p => [p.packageJson.name, p]),
+    );
+  } catch {
+    workspaceByName = new Map();
+  }
 
-  // Collect all direct dependencies of the target package
-  const depNames = new Set<string>([
-    ...Object.keys(targetPackageJson.dependencies ?? {}),
-    ...Object.keys((targetPackageJson as any).devDependencies ?? {}),
-  ]);
-
+  const visited = new Set<string>();
   const result: DiscoveredPackage[] = [];
 
-  for (const depName of depNames) {
-    const pkg = packagesByName.get(depName);
-    if (!pkg) {
-      continue;
-    }
+  async function visit(
+    packageJson: BackstagePackageJson,
+    pkgDir: string,
+    includeDevDeps: boolean,
+  ) {
+    const deps: Record<string, string> = {
+      ...packageJson.dependencies,
+      ...(includeDevDeps ? (packageJson as any).devDependencies : {}),
+    };
 
-    const role = pkg.packageJson.backstage?.role;
-    if (!role || !FRONTEND_ROLES.includes(role)) {
-      continue;
-    }
+    for (const depName of Object.keys(deps)) {
+      if (visited.has(depName)) {
+        continue;
+      }
+      visited.add(depName);
 
-    const entryPoints = resolveEntryPoints(pkg.packageJson, pkg.dir);
-    if (entryPoints.size > 0) {
-      result.push({
-        name: pkg.packageJson.name,
-        dir: pkg.dir,
-        entryPoints,
-      });
+      let depPkgJson: BackstagePackageJson;
+      let depDir: string;
+      let isWorkspace: boolean;
+
+      // Prefer workspace package (has source files) over npm-installed
+      const workspacePkg = workspaceByName.get(depName);
+      if (workspacePkg) {
+        depPkgJson = workspacePkg.packageJson;
+        depDir = workspacePkg.dir;
+        isWorkspace = true;
+      } else {
+        try {
+          const pkgJsonPath = require.resolve(`${depName}/package.json`, {
+            paths: [pkgDir],
+          });
+          depPkgJson = await fs.readJson(pkgJsonPath);
+          depDir = dirname(pkgJsonPath);
+          isWorkspace = false;
+        } catch {
+          continue;
+        }
+      }
+
+      // Only recurse into Backstage ecosystem packages
+      if (!depPkgJson.backstage) {
+        continue;
+      }
+
+      const role = depPkgJson.backstage?.role;
+      if (role && FRONTEND_ROLES.includes(role)) {
+        const entryPoints = resolveEntryPoints(depPkgJson, depDir, isWorkspace);
+        if (entryPoints.size > 0) {
+          result.push({ name: depName, dir: depDir, entryPoints });
+        }
+      }
+
+      // Walk this package's production dependencies for transitive refs
+      await visit(depPkgJson, depDir, false);
     }
   }
+
+  // Start from the target, including its devDependencies
+  await visit(targetPackageJson, targetDir, true);
 
   return result;
 }
 
 /**
  * Resolves the entry points of a package to absolute file paths.
- * Uses the `exports` field from package.json, falling back to `main`/`types`.
+ * For workspace packages, prefers source entry points (import/default).
+ * For npm packages, prefers type declaration entry points (.d.ts).
  */
 function resolveEntryPoints(
   packageJson: BackstagePackageJson,
   packageDir: string,
+  isWorkspace: boolean,
 ): Map<string, string> {
   const entryPoints = new Map<string, string>();
 
@@ -128,24 +177,30 @@ function resolveEntryPoints(
 
   if (exports) {
     for (const [subpath, target] of Object.entries(exports)) {
-      // Skip package.json entry
       if (subpath === './package.json') {
         continue;
       }
 
-      // The target can be a string or a conditions map
-      const filePath =
-        typeof target === 'string'
-          ? target
-          : target?.import ?? target?.types ?? target?.default;
+      let filePath: string | undefined;
+      if (typeof target === 'string') {
+        filePath = target;
+      } else if (isWorkspace) {
+        // Workspace: exports point to source .ts files
+        filePath = target?.import ?? target?.types ?? target?.default;
+      } else {
+        // npm: prefer .d.ts for type-based extraction
+        filePath = target?.types ?? target?.import ?? target?.default;
+      }
 
       if (typeof filePath === 'string') {
         entryPoints.set(subpath, resolvePath(packageDir, filePath));
       }
     }
   } else {
-    // Fallback to main/types
-    const main = packageJson.types ?? packageJson.main;
+    // Fallback: prefer types for npm, source for workspace
+    const main = isWorkspace
+      ? packageJson.main ?? packageJson.types
+      : packageJson.types ?? packageJson.main;
     if (main) {
       entryPoints.set('.', resolvePath(packageDir, main));
     }
