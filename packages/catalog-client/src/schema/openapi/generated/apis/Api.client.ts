@@ -457,7 +457,7 @@ export class DefaultApiClient {
   }
 
   /**
-   * Query entities using predicate-based filters. This endpoint provides an alternative filtering method with a more expressive filter syntax supporting logical operators ($all, $any, $not) and value operators ($exists, $in).  Example query: ```json {   \"query\": {     \"$all\": [       {\"kind\": \"component\"},       {\"$any\": [         {\"spec.type\": \"service\"},         {\"spec.type\": \"website\"}       ]},       {\"$not\": {\"spec.lifecycle\": \"experimental\"}}     ]   } } ```
+   * Query entities using predicate-based filters.
    * @param queryEntitiesByPredicateRequest -
    */
   public async queryEntitiesByPredicate(

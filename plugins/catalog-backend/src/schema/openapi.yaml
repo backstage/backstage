@@ -1099,26 +1099,7 @@ paths:
       operationId: QueryEntitiesByPredicate
       tags:
         - Entity
-      description: |
-        Query entities using predicate-based filters. This endpoint provides an
-        alternative filtering method with a more expressive filter syntax supporting
-        logical operators ($all, $any, $not) and value operators ($exists, $in).
-
-        Example query:
-        ```json
-        {
-          "query": {
-            "$all": [
-              {"kind": "component"},
-              {"$any": [
-                {"spec.type": "service"},
-                {"spec.type": "website"}
-              ]},
-              {"$not": {"spec.lifecycle": "experimental"}}
-            ]
-          }
-        }
-        ```
+      description: Query entities using predicate-based filters.
       responses:
         '200':
           description: Ok
