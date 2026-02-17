@@ -1,8 +1,0 @@
-import{j as s}from"./iframe-CIst4AKw.js";import{H as r}from"./HeaderLabel-x2PunPjx.js";import"./preload-helper-PPVm8Dsz.js";import"./makeStyles-CyiKs3qI.js";import"./Grid-DSn-A5sL.js";import"./Link-Brm3t_Ck.js";import"./index-BKxkX0e4.js";import"./lodash-Bv_R2aXJ.js";import"./index-DTrbkxL5.js";import"./useAnalytics-B1Tkmcph.js";import"./useApp-Bg0Bzijx.js";const f={title:"Layout/HeaderLabel",component:r,tags:["!manifest"]},e=a=>s.jsx(r,{...a});e.args={label:"This is label",value:"This is value",url:"https://backstage.io"};e.__docgenInfo={description:"",methods:[],displayName:"Default",props:{label:{required:!0,tsType:{name:"string"},description:""},value:{required:!1,tsType:{name:"string"},description:""},url:{required:!1,tsType:{name:"string"},description:""}}};e.parameters={...e.parameters,docs:{...e.parameters?.docs,source:{code:`const Default = () => (
-  <HeaderLabel
-    label="This is label"
-    value="This is value"
-    url="https://backstage.io"
-  />
-);
-`,...e.parameters?.docs?.source}}};e.parameters={...e.parameters,docs:{...e.parameters?.docs,source:{originalSource:"(args: HeaderLabelProps) => <HeaderLabel {...args} />",...e.parameters?.docs?.source}}};const g=["Default"];export{e as Default,g as __namedExportsOrder,f as default};
