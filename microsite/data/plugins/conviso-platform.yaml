@@ -6,6 +6,6 @@ category: Security
 description: Import your Backstage catalog entities as security assets in Conviso Platform.
 documentation: https://github.com/convisoappsec/backstage-plugin-conviso/blob/main/README.md
 iconUrl: https://raw.githubusercontent.com/convisoappsec/backstage-plugin-conviso/main/assets/convisoappsec_logo.png
-npmPackageName: 'backstage-plugin-conviso'
+npmPackageName: '@conviso/backstage-plugin-conviso'
 addedDate: '2025-11-14'
 status: active
