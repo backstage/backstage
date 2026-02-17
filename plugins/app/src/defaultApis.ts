@@ -37,7 +37,7 @@ import {
   VMwareCloudAuth,
   OpenShiftAuth,
 } from '../../../packages/core-app-api/src/apis/implementations';
-import { ToastApiForwarder } from './apis';
+import { ToastApiForwarder, toastApiForwarderRef } from './apis';
 
 import {
   alertApiRef,
@@ -109,12 +109,21 @@ export const apis = [
       }),
   }),
   ApiBlueprint.make({
+    name: 'toast-forwarder',
+    params: defineParams =>
+      defineParams({
+        api: toastApiForwarderRef,
+        deps: {},
+        factory: () => new ToastApiForwarder(),
+      }),
+  }),
+  ApiBlueprint.make({
     name: 'toast',
     params: defineParams =>
       defineParams({
         api: toastApiRef,
-        deps: {},
-        factory: () => new ToastApiForwarder(),
+        deps: { forwarder: toastApiForwarderRef },
+        factory: ({ forwarder }) => forwarder,
       }),
   }),
   analyticsApi,

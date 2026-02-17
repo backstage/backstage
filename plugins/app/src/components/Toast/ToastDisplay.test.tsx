@@ -23,11 +23,10 @@ import {
   appThemeApiRef,
   AppThemeApi,
 } from '@backstage/core-plugin-api';
-import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { ToastDisplay } from './ToastDisplay';
-import { ToastApiForwarder } from '../../apis';
+import { ToastApiForwarder, toastApiForwarderRef } from '../../apis';
 
 // Mock AlertApi with proper Observable implementation
 class MockAlertApi implements AlertApi {
@@ -88,7 +87,7 @@ describe('ToastDisplay', () => {
       <TestApiProvider
         apis={[
           [alertApiRef, alertApi],
-          [toastApiRef, toastApi],
+          [toastApiForwarderRef, toastApi],
           [appThemeApiRef, mockAppThemeApi],
         ]}
       >

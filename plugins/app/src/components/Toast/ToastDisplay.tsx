@@ -16,9 +16,9 @@
 
 import { useEffect, useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { ToastQueue } from '@react-stately/toast';
 import { ToastContainer } from './ToastContainer';
+import { toastApiForwarderRef } from '../../apis';
 import type {
   ToastApiMessageDisplayProps,
   ToastApiMessageContent,
@@ -85,7 +85,7 @@ function mapSeverity(
  */
 export function ToastDisplay(props: ToastApiMessageDisplayProps) {
   const alertApi = useApi(alertApiRef);
-  const toastApi = useApi(toastApiRef);
+  const toastApi = useApi(toastApiForwarderRef);
   const { transientTimeoutMs = 5000 } = props;
 
   // Create toast queue once per component instance

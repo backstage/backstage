@@ -1938,7 +1938,6 @@ export const swappableComponentsApiRef: ApiRef_2<SwappableComponentsApi>;
 // @public
 export type ToastApi = {
   post(toast: ToastApiMessage): ToastApiPostResult;
-  toast$(): Observable<ToastApiMessageWithKey>;
 };
 
 // @public
@@ -1946,14 +1945,14 @@ export type ToastApiMessage = {
   title: ReactNode;
   description?: ReactNode;
   status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
-  links?: ToastLink[];
+  links?: ToastApiMessageLink[];
   timeout?: number;
 };
 
 // @public
-export type ToastApiMessageWithKey = ToastApiMessage & {
-  key: string;
-  close(): void;
+export type ToastApiMessageLink = {
+  label: string;
+  href: string;
 };
 
 // @public
@@ -1963,12 +1962,6 @@ export type ToastApiPostResult = {
 
 // @public
 export const toastApiRef: ApiRef<ToastApi>;
-
-// @public
-export type ToastLink = {
-  label: string;
-  href: string;
-};
 
 // @public (undocumented)
 export type TranslationApi = {

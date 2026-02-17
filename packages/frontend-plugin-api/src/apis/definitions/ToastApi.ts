@@ -15,7 +15,6 @@
  */
 
 import { createApiRef, ApiRef } from '../system';
-import { Observable } from '@backstage/types';
 import { ReactNode } from 'react';
 
 /**
@@ -23,7 +22,7 @@ import { ReactNode } from 'react';
  *
  * @public
  */
-export type ToastLink = {
+export type ToastApiMessageLink = {
   /** Display text for the link */
   label: string;
   /** URL the link points to */
@@ -43,7 +42,7 @@ export type ToastApiMessage = {
   /** Status variant of the toast - defaults to 'success' */
   status?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
   /** Optional array of links to display */
-  links?: ToastLink[];
+  links?: ToastApiMessageLink[];
   /** Timeout in milliseconds before auto-dismiss. If not set, toast is permanent. */
   timeout?: number;
 };
@@ -57,25 +56,6 @@ export type ToastApiMessage = {
 export type ToastApiPostResult = {
   /** Dismiss the toast. */
   close(): void;
-};
-
-/**
- * Toast message with key, as emitted by the toast$() observable.
- *
- * @public
- */
-export type ToastApiMessageWithKey = ToastApiMessage & {
-  /** Unique key for the toast, used internally for tracking */
-  key: string;
-  /** Dismiss this toast programmatically */
-  close(): void;
-  /**
-   * Register a callback that fires when this toast is closed.
-   * Used internally by the toast display to sync with the rendering queue.
-   *
-   * @internal
-   */
-  onClose(callback: () => void): void;
 };
 
 /**
@@ -117,11 +97,6 @@ export type ToastApi = {
    * @returns A handle with a `close()` method to programmatically dismiss the toast
    */
   post(toast: ToastApiMessage): ToastApiPostResult;
-
-  /**
-   * Observe toasts posted by other parts of the application.
-   */
-  toast$(): Observable<ToastApiMessageWithKey>;
 };
 
 /**
