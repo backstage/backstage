@@ -14,7 +14,7 @@ export type Component =
   | 'dialog'
   | 'flex'
   | 'grid'
-  | 'header'
+  | 'plugin-header'
   | 'header-page'
   | 'heading'
   | 'icon'

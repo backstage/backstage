@@ -1,6 +1,6 @@
 'use client';
 
-import { Header } from '../../../../../packages/ui/src/components/Header/Header';
+import { PluginHeader } from '../../../../../packages/ui/src/components/PluginHeader/PluginHeader';
 import { HeaderPage } from '../../../../../packages/ui/src/components/HeaderPage/HeaderPage';
 import { ButtonIcon } from '../../../../../packages/ui/src/components/ButtonIcon/ButtonIcon';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
@@ -27,7 +27,7 @@ const tabs2 = [
 
 export const WithAllOptionsAndTabs = () => (
   <MemoryRouter>
-    <Header
+    <PluginHeader
       title="My plugin"
       titleLink="/"
       tabs={tabs}
@@ -44,7 +44,7 @@ export const WithAllOptionsAndTabs = () => (
 
 export const WithAllOptions = () => (
   <MemoryRouter>
-    <Header
+    <PluginHeader
       title="My plugin"
       titleLink="/"
       customActions={
@@ -61,7 +61,7 @@ export const WithAllOptions = () => (
 export const WithHeaderPage = () => (
   <MemoryRouter>
     <>
-      <Header title="My plugin" titleLink="/" tabs={tabs.slice(0, 2)} />
+      <PluginHeader title="My plugin" titleLink="/" tabs={tabs.slice(0, 2)} />
       <HeaderPage
         title="Page title"
         tabs={tabs2}

@@ -16,7 +16,7 @@
 
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
-import { Header } from './Header';
+import { PluginHeader } from './PluginHeader';
 import type { HeaderTab } from './types';
 import {
   Button,
@@ -38,8 +38,8 @@ import {
 import { HeaderPageBreadcrumb } from '../HeaderPage/types';
 
 const meta = preview.meta({
-  title: 'Backstage UI/Header',
-  component: Header,
+  title: 'Backstage UI/PluginHeader',
+  component: PluginHeader,
   parameters: {
     layout: 'fullscreen',
   },
@@ -213,7 +213,7 @@ export const WithCustomActions = meta.story({
   args: {},
   decorators: [withRouter],
   render: args => (
-    <Header
+    <PluginHeader
       {...args}
       customActions={
         <>
@@ -253,7 +253,7 @@ export const WithHeaderPage = meta.story({
   decorators: [withRouter],
   render: args => (
     <>
-      <Header
+      <PluginHeader
         {...args}
         customActions={
           <>
@@ -277,7 +277,7 @@ export const WithLayout = meta.story({
   decorators: layoutDecorator,
   render: args => (
     <>
-      <Header {...args} tabs={tabs} />
+      <PluginHeader {...args} tabs={tabs} />
       <HeaderPage
         title="Page title"
         tabs={tabs2}
@@ -292,7 +292,7 @@ export const WithLayoutNoTabs = meta.story({
   decorators: layoutDecorator,
   render: args => (
     <>
-      <Header {...args} />
+      <PluginHeader {...args} />
       <HeaderPage title="Page title" tabs={tabs2} />
     </>
   ),
@@ -306,7 +306,7 @@ export const WithEverything = meta.story({
   decorators: layoutDecorator,
   render: args => (
     <>
-      <Header
+      <PluginHeader
         {...args}
         customActions={
           <>
@@ -336,7 +336,7 @@ export const WithMockedURLCampaigns = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/campaigns']}>
-      <Header {...args} />
+      <PluginHeader {...args} />
       <Container>
         <Text as="p">
           Current URL is mocked to be: <strong>/campaigns</strong>
@@ -356,7 +356,7 @@ export const WithMockedURLIntegrations = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/integrations']}>
-      <Header {...args} />
+      <PluginHeader {...args} />
       <Container>
         <Text as="p">
           Current URL is mocked to be: <strong>/integrations</strong>
@@ -376,7 +376,7 @@ export const WithMockedURLNoMatch = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/some-other-page']}>
-      <Header {...args} />
+      <PluginHeader {...args} />
       <Container>
         <Text as="p">
           Current URL is mocked to be: <strong>/some-other-page</strong>
@@ -424,7 +424,7 @@ export const WithTabsMatchingStrategies = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/mentorship/events']}>
-      <Header {...args} />
+      <PluginHeader {...args} />
       <Container>
         <Text>
           <strong>Current URL:</strong> /mentorship/events
@@ -477,7 +477,7 @@ export const WithTabsExactMatching = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/mentorship/events']}>
-      <Header {...args} />
+      <PluginHeader {...args} />
       <Container>
         <Text>
           <strong>Current URL:</strong> /mentorship/events
@@ -519,7 +519,7 @@ export const WithTabsPrefixMatchingDeep = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/catalog/users/john/details']}>
-      <Header {...args} />
+      <PluginHeader {...args} />
       <Container>
         <Text as="p">
           <strong>Current URL:</strong> /catalog/users/john/details

@@ -17,18 +17,18 @@
 import type { ComponentDefinition } from '../../types';
 
 /**
- * Component definition for Header
+ * Component definition for PluginHeader
  * @public
  */
-export const HeaderDefinition = {
+export const PluginHeaderDefinition = {
   classNames: {
-    root: 'bui-Header',
-    toolbar: 'bui-HeaderToolbar',
-    toolbarWrapper: 'bui-HeaderToolbarWrapper',
-    toolbarContent: 'bui-HeaderToolbarContent',
-    toolbarControls: 'bui-HeaderToolbarControls',
-    toolbarIcon: 'bui-HeaderToolbarIcon',
-    toolbarName: 'bui-HeaderToolbarName',
-    tabsWrapper: 'bui-HeaderTabsWrapper',
+    root: 'bui-PluginHeader',
+    toolbar: 'bui-PluginHeaderToolbar',
+    toolbarWrapper: 'bui-PluginHeaderToolbarWrapper',
+    toolbarContent: 'bui-PluginHeaderToolbarContent',
+    toolbarControls: 'bui-PluginHeaderToolbarControls',
+    toolbarIcon: 'bui-PluginHeaderToolbarIcon',
+    toolbarName: 'bui-PluginHeaderToolbarName',
+    tabsWrapper: 'bui-PluginHeaderTabsWrapper',
   },
 } as const satisfies ComponentDefinition;

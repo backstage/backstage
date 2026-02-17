@@ -16,21 +16,21 @@
 
 import { Link } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
-import { HeaderDefinition } from './definition';
+import { PluginHeaderDefinition } from './definition';
 import { useRef } from 'react';
 import { RiShapesLine } from '@remixicon/react';
-import type { HeaderToolbarProps } from './types';
+import type { PluginHeaderToolbarProps } from './types';
 import { Text } from '../Text';
-import styles from './Header.module.css';
+import styles from './PluginHeader.module.css';
 import clsx from 'clsx';
 
 /**
- * A component that renders a toolbar.
+ * A component that renders the toolbar section of a plugin header.
  *
  * @internal
  */
-export const HeaderToolbar = (props: HeaderToolbarProps) => {
-  const { classNames, cleanedProps } = useStyles(HeaderDefinition, props);
+export const PluginHeaderToolbar = (props: PluginHeaderToolbarProps) => {
+  const { classNames, cleanedProps } = useStyles(PluginHeaderDefinition, props);
   const { className, icon, title, titleLink, customActions, hasTabs } =
     cleanedProps;
 

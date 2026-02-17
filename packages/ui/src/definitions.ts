@@ -42,7 +42,7 @@ export {
   GridDefinition,
   GridItemDefinition,
 } from './components/Grid/definition';
-export { HeaderDefinition } from './components/Header/definition';
+export { PluginHeaderDefinition } from './components/PluginHeader/definition';
 export { HeaderPageDefinition } from './components/HeaderPage/definition';
 export { LinkDefinition } from './components/Link/definition';
 export { MenuDefinition } from './components/Menu/definition';
