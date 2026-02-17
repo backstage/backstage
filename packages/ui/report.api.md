@@ -191,7 +191,6 @@ export type AccordionTriggerOwnProps = {
   subtitle?: string;
   // (undocumented)
   title?: string;
-  subtitle?: string;
   children?: ReactNode;
 };
 
