@@ -32,7 +32,7 @@ import { ExtensionBoundary } from '../components';
  *   attachTo: { id: 'page:my-plugin', input: 'pages' },
  *   name: 'overview',
  *   params: {
- *     path: '/overview',
+ *     path: 'overview',
  *     title: 'Overview',
  *     routeRef: overviewRouteRef,
  *     loader: () => import('./components/Overview').then(m => <m.Overview />),
@@ -59,9 +59,9 @@ export const SubPageBlueprint = createExtensionBlueprint({
   *factory(
     params: {
       /**
-       * The path for this sub-page, relative to the parent page.
-       * Should start with '/'.
-       * @example '/overview', '/settings', '/details'
+       * The path for this sub-page, relative to the parent page. Must **not** start with '/'.
+       *
+       * @example 'overview', 'settings', 'details'
        */
       path: string;
       /**
