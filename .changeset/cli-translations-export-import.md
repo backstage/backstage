@@ -1,5 +1,5 @@
 ---
-'@backstage/cli': minor
+'@backstage/cli': patch
 ---
 
 Added `translations export` and `translations import` commands for managing translation files.
