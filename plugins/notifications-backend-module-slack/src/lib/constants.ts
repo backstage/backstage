@@ -27,9 +27,3 @@
  * however IDs are preferred.
  */
 export const ANNOTATION_SLACK_BOT_NOTIFY = 'slack.com/bot-notify';
-
-/**
- * @public
- * Metadata key containing a list of all user entities before resolution
- */
-export const USER_REFS_FROM_REQUEST_KEY = 'userRefsFromRequest';
