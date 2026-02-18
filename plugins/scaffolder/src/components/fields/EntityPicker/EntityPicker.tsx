@@ -75,6 +75,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
+  const autoSelect = uiSchema?.['ui:autoSelect'] ?? true;
 
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
@@ -209,7 +210,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
                 ?.entityRef!
         }
-        autoSelect
+        autoSelect={autoSelect}
         freeSolo={allowArbitraryValues}
         renderInput={params => (
           <TextField
