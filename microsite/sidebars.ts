@@ -556,6 +556,7 @@ export default {
                 'frontend-system/architecture/extensions',
                 'frontend-system/architecture/extension-blueprints',
                 'frontend-system/architecture/extension-overrides',
+                'frontend-system/architecture/sharing-extensions',
                 'frontend-system/architecture/references',
                 'frontend-system/architecture/utility-apis',
                 'frontend-system/architecture/routes',
