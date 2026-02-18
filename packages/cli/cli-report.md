@@ -25,6 +25,7 @@ Commands:
   new
   package [command]
   repo [command]
+  translations [command]
   versions:bump
   versions:migrate
 ```
@@ -539,6 +540,44 @@ Options:
   --successCache
   --successCacheDir <path>
   -h, --help
+```
+
+### `backstage-cli translations`
+
+```
+Usage: backstage-cli translations [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  export
+  help [command]
+  import
+```
+
+### `backstage-cli translations export`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --output
+  --pattern
+  --version
+```
+
+### `backstage-cli translations import`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --input
+  --output
+  --version
 ```
 
 ### `backstage-cli versions:bump`
