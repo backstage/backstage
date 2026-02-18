@@ -174,7 +174,7 @@ export const columnFactories = Object.freeze({
                 label={t}
                 size="small"
                 variant="outlined"
-                style={{ marginBottom: '0px' }}
+                style={{ marginBottom: '4px' }}
               />
             ))}
         </>
