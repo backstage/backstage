@@ -17,6 +17,6 @@ To view the entities that you own:
 A page is displayed that shows the entities of which you have ownership, either directly, or through a group of which you are a member. You can toggle between showing:
 
 - `Direct Relations` - entities that you directly own
-- `Aggregated Relations`- entities that you own through your group
+- `Aggregated Relations` - entities that you own through your group
 
 ![Screenshot of the Backstage portal entities owned by guest user.](../assets/uiguide/entities-owned-by-me.png)
