@@ -39,6 +39,16 @@
 
 ### Patch Changes
 
+- 7dc3dfe: Removed the `auth.experimentalDynamicClientRegistration.tokenExpiration` config option. DCR tokens now use the default 1 hour expiration.
+
+  If you need longer-lived access, use refresh tokens via the `offline_access` scope instead. DCR clients should already have the `offline_access` scope available. Enable refresh tokens by setting:
+
+  ```yaml
+  auth:
+    experimentalRefreshToken:
+      enabled: true
+  ```
+
 - 7455dae: Use node prefix on native imports
 - Updated dependencies
   - @backstage/plugin-catalog-node@2.0.0
