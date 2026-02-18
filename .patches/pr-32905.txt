@@ -1,0 +1,1 @@
+Fix type compatibility for older plugins in FrontendFeature type
