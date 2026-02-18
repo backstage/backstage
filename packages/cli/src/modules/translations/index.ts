@@ -65,12 +65,6 @@ export default createCliPlugin({
               default: 'src/translations/resources.ts',
               description: 'Output path for the generated wiring module',
             },
-            pattern: {
-              type: 'string',
-              default: DEFAULT_MESSAGE_PATTERN,
-              description:
-                'File path pattern for message files, with {id} and {lang} placeholders',
-            },
           })
           .help()
           .parse(args);

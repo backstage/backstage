@@ -31,7 +31,6 @@ import {
 interface ImportOptions {
   input: string;
   output: string;
-  pattern: string;
 }
 
 interface ManifestRefEntry {
@@ -69,8 +68,12 @@ export default async (options: ImportOptions) => {
 
   const manifest: Manifest = await fs.readJson(manifestPath);
 
-  // Use the pattern from manifest if available, falling back to the CLI default
-  const pattern = manifest.pattern ?? options.pattern;
+  if (!manifest.pattern) {
+    throw new Error(
+      'No pattern found in manifest.json. Re-run "backstage-cli translations export" to regenerate it.',
+    );
+  }
+  const pattern = manifest.pattern;
 
   const parsePath = createMessagePathParser(pattern);
 

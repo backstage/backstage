@@ -474,15 +474,16 @@ manifest and translated message files produced by `translations export`, and
 generates a TypeScript module that creates `TranslationResource` objects for each
 translated ref.
 
+The file pattern used during export is stored in the manifest and automatically
+used by the import command.
+
 ```text
 Usage: backstage-cli translations import [options]
 
 Options:
-  --input <dir>        Input directory containing the manifest and translated message files (default: "translations")
-  --output <path>      Output path for the generated wiring module (default: "src/translations/resources.ts")
-  --pattern <pattern>  File path pattern for message files, with {id} and {lang}
-                       placeholders (default: "{id}.{lang}.json")
-  -h, --help           display help for command
+  --input <dir>    Input directory containing the manifest and translated message files (default: "translations")
+  --output <path>  Output path for the generated wiring module (default: "src/translations/resources.ts")
+  -h, --help       display help for command
 ```
 
 ### Examples

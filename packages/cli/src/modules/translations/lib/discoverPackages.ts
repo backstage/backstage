@@ -17,21 +17,10 @@
 import {
   BackstagePackageJson,
   PackageGraph,
-  PackageRole,
+  PackageRoles,
 } from '@backstage/cli-node';
 import { dirname, resolve as resolvePath } from 'node:path';
 import fs from 'fs-extra';
-
-/**
- * Package roles that can contain frontend translation refs.
- */
-const FRONTEND_ROLES: PackageRole[] = [
-  'frontend',
-  'frontend-plugin',
-  'frontend-plugin-module',
-  'web-library',
-  'common-library',
-];
 
 /** A discovered package with its entry points resolved to file paths. */
 export interface DiscoveredPackage {
@@ -141,7 +130,7 @@ export async function discoverFrontendPackages(
       }
 
       const role = depPkgJson.backstage?.role;
-      if (role && FRONTEND_ROLES.includes(role)) {
+      if (role && isFrontendRole(role)) {
         const entryPoints = resolveEntryPoints(depPkgJson, depDir, isWorkspace);
         if (entryPoints.size > 0) {
           result.push({ name: depName, dir: depDir, entryPoints });
@@ -207,4 +196,12 @@ function resolveEntryPoints(
   }
 
   return entryPoints;
+}
+
+function isFrontendRole(role: string): boolean {
+  try {
+    return PackageRoles.getRoleInfo(role).platform === 'web';
+  } catch {
+    return false;
+  }
 }
