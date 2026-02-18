@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-This change introduces a new uiSchema field of ui:autoSelect. This change will allow teams disable the unFocus auto select of an Entity if teams don't want this feature.
+Added a new `ui:autoSelect` option to the EntityPicker field that controls whether an entity is automatically selected when the field loses focus. When set to `false`, the field will remain empty if the user closes it without explicitly selecting an entity, preventing unintentional selections. Defaults to `true` for backward compatibility.
