@@ -76,7 +76,7 @@ From left to right, the actions are:
 Selecting an entity in the main panel displays details of the entity. The type of details depends on the type of entity. For example, selecting a Component, such as `example-website`, displays the following details:
 
 - `About` - Metadata for the entity, such as description, owner, tags, and domain.
-- `Relations` - see [Viewing entity relations](../getting-started/viewing-entity-relationships.md)
+- `Relations` - see [Viewing entity relationships](../getting-started/viewing-entity-relationships.md)
 - `Links` - any links associated with the entity
 - `Has subcomponents` - An entity reference to another component of which the component is a part
 
