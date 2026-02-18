@@ -34,7 +34,7 @@ module.exports = {
     },
   },
   create(context) {
-    const packages = getPackages(context.getCwd());
+    const packages = getPackages(context.cwd);
     if (!packages) {
       return {};
     }
