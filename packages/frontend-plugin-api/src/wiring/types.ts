@@ -73,4 +73,6 @@ export type ExtensionFactoryMiddleware = (
 ) => Iterable<ExtensionDataValue<any, any>>;
 
 /** @public  */
-export type FrontendFeature = FrontendPlugin | FrontendModule;
+export type FrontendFeature =
+  | (Omit<FrontendPlugin, 'pluginId'> & { pluginId?: string })
+  | FrontendModule;
