@@ -21,6 +21,8 @@ import {
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GitlabDiscoveryEntityProvider } from '../providers';
+import { catalogScmEventsServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { GitlabScmEventsBridge } from '../events/GitlabScmEventsBridge';
 
 /**
  * Registers the GitlabDiscoveryEntityProvider with the catalog processing extension point.
@@ -39,8 +41,18 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         events: eventsServiceRef,
+        catalogScmEvents: catalogScmEventsServiceRef,
+        lifecycle: coreServices.lifecycle,
       },
-      async init({ config, catalog, logger, scheduler, events }) {
+      async init({
+        config,
+        catalog,
+        logger,
+        scheduler,
+        events,
+        catalogScmEvents,
+        lifecycle,
+      }) {
         const gitlabDiscoveryEntityProvider =
           GitlabDiscoveryEntityProvider.fromConfig(config, {
             logger,
@@ -48,6 +60,15 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
             scheduler,
           });
         catalog.addEntityProvider(gitlabDiscoveryEntityProvider);
+
+        const bridge = new GitlabScmEventsBridge({
+          logger,
+          events,
+          catalogScmEvents,
+        });
+        lifecycle.addStartupHook(async () => {
+          await bridge.start();
+        });
       },
     });
   },
