@@ -382,7 +382,7 @@ const app = createApp({
 
 #### Custom file patterns
 
-By default, message files use the pattern `{id}.{lang}.json` (e.g. `catalog.en.json`). You can change this with the `--pattern` option:
+By default, message files use the pattern `messages/{id}.{lang}.json` (e.g. `messages/catalog.en.json`). You can change this with the `--pattern` option:
 
 ```bash
 yarn backstage-cli translations export --pattern '{lang}/{id}.json'
@@ -391,8 +391,8 @@ yarn backstage-cli translations export --pattern '{lang}/{id}.json'
 This produces a directory structure grouped by language instead:
 
 ```text
-translations/messages/en/catalog.json
-translations/messages/zh/catalog.json
+translations/en/catalog.json
+translations/zh/catalog.json
 ```
 
 The pattern is stored in the manifest, so the `import` command automatically uses the same layout.

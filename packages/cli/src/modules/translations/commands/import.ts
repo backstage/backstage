@@ -48,20 +48,12 @@ export default async (options: ImportOptions) => {
   await readTargetPackage(paths.targetDir, paths.targetRoot);
 
   const inputDir = resolvePath(paths.targetDir, options.input);
-  const messagesDir = resolvePath(inputDir, 'messages');
   const manifestPath = resolvePath(inputDir, 'manifest.json');
   const outputPath = resolvePath(paths.targetDir, options.output);
 
   if (!(await fs.pathExists(manifestPath))) {
     throw new Error(
       `No manifest.json found at ${manifestPath}. ` +
-        'Run "backstage-cli translations export" first.',
-    );
-  }
-
-  if (!(await fs.pathExists(messagesDir))) {
-    throw new Error(
-      `No messages directory found at ${messagesDir}. ` +
         'Run "backstage-cli translations export" first.',
     );
   }
@@ -77,8 +69,10 @@ export default async (options: ImportOptions) => {
 
   const parsePath = createMessagePathParser(pattern);
 
-  // Discover all JSON files under the messages directory
-  const allFiles = await collectJsonFiles(messagesDir);
+  // Discover all JSON files under the translations directory
+  const allFiles = (await collectJsonFiles(inputDir)).filter(
+    f => f !== 'manifest.json',
+  );
 
   // Parse each file to extract id + lang, filtering out default language files
   const translationsByRef = new Map<
@@ -120,7 +114,7 @@ export default async (options: ImportOptions) => {
     console.log('No translated message files found.');
     const example = formatMessagePath(pattern, '<ref-id>', 'sv');
     console.log(
-      `Add translated files as messages/${example} in the translations directory.`,
+      `Add translated files as ${example} in the translations directory.`,
     );
     return;
   }
@@ -150,7 +144,7 @@ export default async (options: ImportOptions) => {
         const jsonRelPath = posixPath.normalize(
           relativePath(
             resolvePath(outputPath, '..'),
-            resolvePath(messagesDir, relPath),
+            resolvePath(inputDir, relPath),
           ),
         );
         return `    ${JSON.stringify(lang)}: () => import('./${jsonRelPath}'),`;

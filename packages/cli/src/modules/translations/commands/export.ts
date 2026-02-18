@@ -39,12 +39,8 @@ export default async (options: ExportOptions) => {
     paths.targetRoot,
   );
 
-  const messagesDir = resolvePath(paths.targetDir, options.output, 'messages');
-  const manifestPath = resolvePath(
-    paths.targetDir,
-    options.output,
-    'manifest.json',
-  );
+  const outputDir = resolvePath(paths.targetDir, options.output);
+  const manifestPath = resolvePath(outputDir, 'manifest.json');
 
   const tsconfigPath = paths.resolveTargetRoot('tsconfig.json');
   if (!(await fs.pathExists(tsconfigPath))) {
@@ -104,7 +100,7 @@ export default async (options: ExportOptions) => {
       ref.id,
       DEFAULT_LANGUAGE,
     );
-    const filePath = resolvePath(messagesDir, relPath);
+    const filePath = resolvePath(outputDir, relPath);
     await fs.ensureDir(dirname(filePath));
     await fs.writeJson(filePath, ref.messages, { spaces: 2 });
   }
@@ -132,6 +128,6 @@ export default async (options: ExportOptions) => {
   console.log(
     `\nExported ${allRefs.length} translation ref(s) to ${options.output}/`,
   );
-  console.log(`  Messages: ${options.output}/messages/${examplePath}`);
+  console.log(`  Messages: ${options.output}/${examplePath}`);
   console.log(`  Manifest: ${options.output}/manifest.json`);
 };

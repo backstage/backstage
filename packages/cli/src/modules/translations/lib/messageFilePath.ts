@@ -17,9 +17,9 @@
 // The default language for exported translation messages.
 export const DEFAULT_LANGUAGE = 'en';
 
-// Default file path pattern for translation message files.
-// Supported placeholders: {id} (ref ID) and {lang} (language code).
-export const DEFAULT_MESSAGE_PATTERN = '{id}.{lang}.json';
+// Default file path pattern for translation message files relative to the
+// translations directory. Supported placeholders: {id} and {lang}.
+export const DEFAULT_MESSAGE_PATTERN = 'messages/{id}.{lang}.json';
 
 /** Formats a message file pattern into a concrete relative path. */
 export function formatMessagePath(

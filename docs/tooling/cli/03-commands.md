@@ -447,8 +447,9 @@ Usage: backstage-cli translations export [options]
 
 Options:
   --output <dir>       Output directory for exported messages and manifest (default: "translations")
-  --pattern <pattern>  File path pattern for message files, with {id} and {lang}
-                       placeholders (default: "{id}.{lang}.json")
+  --pattern <pattern>  File path pattern for message files relative to the output
+                       directory, with {id} and {lang} placeholders
+                       (default: "messages/{id}.{lang}.json")
   -h, --help           display help for command
 ```
 

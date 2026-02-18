@@ -26,13 +26,13 @@ describe('messageFilePath', () => {
   describe('formatMessagePath', () => {
     it('formats the default pattern', () => {
       expect(formatMessagePath(DEFAULT_MESSAGE_PATTERN, 'org', 'en')).toBe(
-        'org.en.json',
+        'messages/org.en.json',
       );
     });
 
     it('formats with a different language', () => {
       expect(formatMessagePath(DEFAULT_MESSAGE_PATTERN, 'catalog', 'sv')).toBe(
-        'catalog.sv.json',
+        'messages/catalog.sv.json',
       );
     });
 
@@ -52,12 +52,12 @@ describe('messageFilePath', () => {
   describe('createMessagePathParser', () => {
     it('parses the default pattern', () => {
       const parse = createMessagePathParser(DEFAULT_MESSAGE_PATTERN);
-      expect(parse('org.en.json')).toEqual({ id: 'org', lang: 'en' });
+      expect(parse('messages/org.en.json')).toEqual({ id: 'org', lang: 'en' });
     });
 
     it('parses dotted ref IDs in the default pattern', () => {
       const parse = createMessagePathParser(DEFAULT_MESSAGE_PATTERN);
-      expect(parse('plugin.notifications.sv.json')).toEqual({
+      expect(parse('messages/plugin.notifications.sv.json')).toEqual({
         id: 'plugin.notifications',
         lang: 'sv',
       });
@@ -71,7 +71,7 @@ describe('messageFilePath', () => {
     it('returns undefined for non-matching paths', () => {
       const parse = createMessagePathParser(DEFAULT_MESSAGE_PATTERN);
       expect(parse('not-a-match.txt')).toBeUndefined();
-      expect(parse('dir/org.en.json')).toBeUndefined();
+      expect(parse('other/org.en.json')).toBeUndefined();
     });
 
     it('returns undefined for invalid language code', () => {
@@ -100,7 +100,9 @@ describe('messageFilePath', () => {
 
   describe('messagePatternToGlob', () => {
     it('converts the default pattern', () => {
-      expect(messagePatternToGlob(DEFAULT_MESSAGE_PATTERN)).toBe('*.*.json');
+      expect(messagePatternToGlob(DEFAULT_MESSAGE_PATTERN)).toBe(
+        'messages/*.*.json',
+      );
     });
 
     it('converts a language-directory pattern', () => {
@@ -109,8 +111,8 @@ describe('messageFilePath', () => {
   });
 
   describe('patternHasSubdirectories', () => {
-    it('returns false for flat patterns', () => {
-      expect(patternHasSubdirectories(DEFAULT_MESSAGE_PATTERN)).toBe(false);
+    it('returns true for the default pattern', () => {
+      expect(patternHasSubdirectories(DEFAULT_MESSAGE_PATTERN)).toBe(true);
     });
 
     it('returns true for patterns with directories', () => {
