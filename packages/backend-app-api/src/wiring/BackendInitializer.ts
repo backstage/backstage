@@ -313,73 +313,111 @@ export class BackendInitializer {
     const pluginInits = new Map<string, BackendRegisterInit>();
     const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
 
+    const registrationErrors: Array<{
+      pluginId: string;
+      moduleId?: string;
+      error: Error;
+    }> = [];
+
     // Enumerate all registrations
     for (const feature of this.#registrations) {
       for (const r of feature.getRegistrations()) {
-        const provides = new Set<ExtensionPoint<unknown>>();
+        const addedExtensionPointIds: string[] = [];
+        try {
+          const provides = new Set<ExtensionPoint<unknown>>();
 
-        if (r.type === 'plugin' || r.type === 'module') {
-          // Handle v1 format: Array<readonly [ExtensionPoint<unknown>, unknown]>
-          for (const [extRef, extImpl] of r.extensionPoints) {
-            if (this.#extensionPoints.has(extRef.id)) {
+          if (r.type === 'plugin' || r.type === 'module') {
+            // Handle v1 format: Array<readonly [ExtensionPoint<unknown>, unknown]>
+            for (const [extRef, extImpl] of r.extensionPoints) {
+              if (this.#extensionPoints.has(extRef.id)) {
+                throw new Error(
+                  `ExtensionPoint with ID '${extRef.id}' is already registered`,
+                );
+              }
+              this.#extensionPoints.set(extRef.id, {
+                pluginId: r.pluginId,
+                factory: () => extImpl,
+              });
+              addedExtensionPointIds.push(extRef.id);
+              provides.add(extRef);
+            }
+          } else if (r.type === 'plugin-v1.1' || r.type === 'module-v1.1') {
+            // Handle v1.1 format: Array<ExtensionPointRegistration>
+            for (const extReg of r.extensionPoints) {
+              if (this.#extensionPoints.has(extReg.extensionPoint.id)) {
+                throw new Error(
+                  `ExtensionPoint with ID '${extReg.extensionPoint.id}' is already registered`,
+                );
+              }
+              this.#extensionPoints.set(extReg.extensionPoint.id, {
+                pluginId: r.pluginId,
+                factory: extReg.factory,
+              });
+              addedExtensionPointIds.push(extReg.extensionPoint.id);
+              provides.add(extReg.extensionPoint);
+            }
+          }
+
+          if (r.type === 'plugin' || r.type === 'plugin-v1.1') {
+            if (pluginInits.has(r.pluginId)) {
+              throw new Error(`Plugin '${r.pluginId}' is already registered`);
+            }
+            pluginInits.set(r.pluginId, {
+              provides,
+              consumes: new Set(Object.values(r.init.deps)),
+              init: r.init,
+            });
+          } else if (r.type === 'module' || r.type === 'module-v1.1') {
+            let modules = moduleInits.get(r.pluginId);
+            if (!modules) {
+              modules = new Map();
+              moduleInits.set(r.pluginId, modules);
+            }
+            if (modules.has(r.moduleId)) {
               throw new Error(
-                `ExtensionPoint with ID '${extRef.id}' is already registered`,
+                `Module '${r.moduleId}' for plugin '${r.pluginId}' is already registered`,
               );
             }
-            this.#extensionPoints.set(extRef.id, {
-              pluginId: r.pluginId,
-              factory: () => extImpl,
+            modules.set(r.moduleId, {
+              provides,
+              consumes: new Set(Object.values(r.init.deps)),
+              init: r.init,
             });
-            provides.add(extRef);
+          } else {
+            throw new Error(`Invalid registration type '${(r as any).type}'`);
           }
-        } else if (r.type === 'plugin-v1.1' || r.type === 'module-v1.1') {
-          // Handle v1.1 format: Array<ExtensionPointRegistration>
-          for (const extReg of r.extensionPoints) {
-            if (this.#extensionPoints.has(extReg.extensionPoint.id)) {
-              throw new Error(
-                `ExtensionPoint with ID '${extReg.extensionPoint.id}' is already registered`,
-              );
-            }
-            this.#extensionPoints.set(extReg.extensionPoint.id, {
-              pluginId: r.pluginId,
-              factory: extReg.factory,
+        } catch (error: unknown) {
+          assertError(error);
+          // Clean up partially registered extension points
+          for (const id of addedExtensionPointIds) {
+            this.#extensionPoints.delete(id);
+          }
+          const pluginId = (r as any).pluginId;
+          if (!pluginId) {
+            throw error;
+          }
+          if (r.type === 'module' || r.type === 'module-v1.1') {
+            registrationErrors.push({
+              pluginId,
+              moduleId: (r as any).moduleId,
+              error,
             });
-            provides.add(extReg.extensionPoint);
+          } else {
+            registrationErrors.push({ pluginId, error });
           }
-        }
-
-        if (r.type === 'plugin' || r.type === 'plugin-v1.1') {
-          if (pluginInits.has(r.pluginId)) {
-            throw new Error(`Plugin '${r.pluginId}' is already registered`);
-          }
-          pluginInits.set(r.pluginId, {
-            provides,
-            consumes: new Set(Object.values(r.init.deps)),
-            init: r.init,
-          });
-        } else if (r.type === 'module' || r.type === 'module-v1.1') {
-          let modules = moduleInits.get(r.pluginId);
-          if (!modules) {
-            modules = new Map();
-            moduleInits.set(r.pluginId, modules);
-          }
-          if (modules.has(r.moduleId)) {
-            throw new Error(
-              `Module '${r.moduleId}' for plugin '${r.pluginId}' is already registered`,
-            );
-          }
-          modules.set(r.moduleId, {
-            provides,
-            consumes: new Set(Object.values(r.init.deps)),
-            init: r.init,
-          });
-        } else {
-          throw new Error(`Invalid registration type '${(r as any).type}'`);
         }
       }
     }
 
-    const pluginIds = [...pluginInits.keys()];
+    const registrationFailedPluginIds = new Set(
+      registrationErrors
+        .filter(e => !e.moduleId)
+        .map(e => e.pluginId),
+    );
+
+    const pluginIds = [
+      ...new Set([...pluginInits.keys(), ...registrationFailedPluginIds]),
+    ];
 
     const rootConfig = await this.#serviceRegistry.get(
       coreServices.rootConfig,
@@ -396,9 +434,20 @@ export class BackendInitializer {
       allowBootFailurePredicate: createAllowBootFailurePredicate(rootConfig),
     });
 
+    // Report registration errors attributed to specific plugins/modules
+    for (const { pluginId, moduleId, error } of registrationErrors) {
+      if (moduleId) {
+        resultCollector.onPluginModuleResult(pluginId, moduleId, error);
+      } else {
+        resultCollector.onPluginResult(pluginId, error);
+      }
+    }
+
     // All plugins are initialized in parallel
     await Promise.all(
-      pluginIds.map(async pluginId => {
+      pluginIds
+        .filter(id => !registrationFailedPluginIds.has(id))
+        .map(async pluginId => {
         try {
           // Initialize all eager services
           await this.#serviceRegistry.initializeEagerServicesWithScope(

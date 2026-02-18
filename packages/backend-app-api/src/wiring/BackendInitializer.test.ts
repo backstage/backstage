@@ -899,7 +899,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should reject duplicate plugins', async () => {
-    const init = new BackendInitializer([]);
+    const init = new BackendInitializer(baseFactories);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -922,13 +922,24 @@ describe('BackendInitializer', () => {
         },
       }),
     );
-    await expect(init.start()).rejects.toThrow(
+
+    const err = await init.start().then(
+      () => {
+        throw new Error('Expected BackendStartupError to be thrown');
+      },
+      (e: BackendStartupError) => e,
+    );
+
+    expect(err).toBeInstanceOf(BackendStartupError);
+    const plugin = err?.result.plugins.find(p => p.pluginId === 'test');
+    expect(plugin?.failure?.error.message).toBe(
       "Plugin 'test' is already registered",
     );
+    expect(plugin?.failure?.allowed).toBe(false);
   });
 
   it('should reject duplicate modules', async () => {
-    const init = new BackendInitializer([]);
+    const init = new BackendInitializer(baseFactories);
     init.add(testPlugin);
     init.add(
       createBackendModule({
@@ -954,8 +965,200 @@ describe('BackendInitializer', () => {
         },
       }),
     );
-    await expect(init.start()).rejects.toThrow(
-      "Module 'mod' for plugin 'test' is already registered",
+
+    const err = await init.start().then(
+      () => {
+        throw new Error('Expected BackendStartupError to be thrown');
+      },
+      (e: BackendStartupError) => e,
+    );
+
+    expect(err).toBeInstanceOf(BackendStartupError);
+    const plugin = err?.result.plugins.find(p => p.pluginId === 'test');
+    const modResult = plugin?.modules.find(
+      m => m.failure?.error.message === "Module 'mod' for plugin 'test' is already registered",
+    );
+    expect(modResult).toBeDefined();
+    expect(modResult?.failure?.allowed).toBe(false);
+  });
+
+  it('should allow other plugins to continue when one has a registration error', async () => {
+    const pluginAInit = jest.fn(async () => {});
+    const init = new BackendInitializer(baseFactories);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'plugin-a',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            init: pluginAInit,
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'plugin-b',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'plugin-b',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+
+    const err = await init.start().then(
+      () => {
+        throw new Error('Expected BackendStartupError to be thrown');
+      },
+      (e: BackendStartupError) => e,
+    );
+
+    expect(err).toBeInstanceOf(BackendStartupError);
+    // plugin-a should have started successfully
+    expect(pluginAInit).toHaveBeenCalled();
+    const pluginA = err?.result.plugins.find(p => p.pluginId === 'plugin-a');
+    expect(pluginA?.failure).toBeUndefined();
+    // plugin-b should have a registration failure
+    const pluginB = err?.result.plugins.find(p => p.pluginId === 'plugin-b');
+    expect(pluginB?.failure?.error.message).toBe(
+      "Plugin 'plugin-b' is already registered",
+    );
+  });
+
+  it('should permit registration errors for plugins with onPluginBootFailure: continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              plugins: { test: { onPluginBootFailure: 'continue' } },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+
+    const { result } = await init.start();
+    const plugin = result.plugins.find(p => p.pluginId === 'test');
+    expect(plugin?.failure?.error.message).toBe(
+      "Plugin 'test' is already registered",
+    );
+    expect(plugin?.failure?.allowed).toBe(true);
+  });
+
+  it('should attribute duplicate extension point errors to the correct plugin', async () => {
+    const extensionPoint = createExtensionPoint<string>({ id: 'shared-ext' });
+    const init = new BackendInitializer(baseFactories);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'plugin-a',
+        register(reg) {
+          reg.registerExtensionPoint(extensionPoint, 'a');
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'plugin-b',
+        register(reg) {
+          reg.registerExtensionPoint(extensionPoint, 'b');
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+
+    const err = await init.start().then(
+      () => {
+        throw new Error('Expected BackendStartupError to be thrown');
+      },
+      (e: BackendStartupError) => e,
+    );
+
+    expect(err).toBeInstanceOf(BackendStartupError);
+    // plugin-a should succeed (registered first)
+    const pluginA = err?.result.plugins.find(p => p.pluginId === 'plugin-a');
+    expect(pluginA?.failure).toBeUndefined();
+    // plugin-b should fail due to duplicate extension point
+    const pluginB = err?.result.plugins.find(p => p.pluginId === 'plugin-b');
+    expect(pluginB?.failure?.error.message).toBe(
+      "ExtensionPoint with ID 'shared-ext' is already registered",
+    );
+  });
+
+  it('should attribute invalid registration type errors to plugin when pluginId is available', async () => {
+    const init = new BackendInitializer(baseFactories);
+    // Create a fake registration with an invalid type but valid pluginId
+    const fakeFeature = {
+      $$type: '@backstage/BackendFeature' as const,
+      version: 'v1' as const,
+      featureType: 'registrations' as const,
+      getRegistrations: () => [
+        {
+          type: 'invalid-type',
+          pluginId: 'broken-plugin',
+          init: { deps: {}, func: async () => {} },
+          extensionPoints: [],
+        },
+      ],
+    };
+    init.add(fakeFeature as any);
+
+    const err = await init.start().then(
+      () => {
+        throw new Error('Expected BackendStartupError to be thrown');
+      },
+      (e: BackendStartupError) => e,
+    );
+
+    expect(err).toBeInstanceOf(BackendStartupError);
+    const plugin = err?.result.plugins.find(
+      p => p.pluginId === 'broken-plugin',
+    );
+    expect(plugin?.failure?.error.message).toBe(
+      "Invalid registration type 'invalid-type'",
     );
   });
 
