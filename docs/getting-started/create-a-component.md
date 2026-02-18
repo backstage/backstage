@@ -36,7 +36,7 @@ To create the component:
 
    ![setup-nodejs-categories-owners](../assets/uiguide/setup-nodejs-cat-owner.png)
 
-5. For this example, enter `tutorial` for the `Name` of the service. and select `NEXT`.
+5. For this example, enter `tutorial` for the `Name` of the service and select `NEXT`.
 
    ![enter name of new component](../assets/uiguide/enter-name-of-new-component.png)
 
