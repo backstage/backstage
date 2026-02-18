@@ -185,13 +185,11 @@ export const AccordionTriggerDefinition: {
 // @public
 export type AccordionTriggerOwnProps = {
   className?: string;
-  iconEnd?: React.ReactElement;
-  iconStart?: React.ReactElement;
-  // (undocumented)
-  subtitle?: string;
-  // (undocumented)
   title?: string;
-  children?: ReactNode;
+  subtitle?: string;
+  children?: React.ReactNode;
+  iconStart?: React.ReactElement;
+  iconEnd?: React.ReactElement;
 };
 
 // @public
