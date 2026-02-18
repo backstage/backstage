@@ -74,8 +74,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
+  const autoSelect = uiSchema?.['ui:options']?.autoSelect ?? true;
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
-  const autoSelect = uiSchema?.['ui:autoSelect'] ?? true;
 
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);

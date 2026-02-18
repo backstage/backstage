@@ -119,13 +119,13 @@ entity:
     defaultNamespace: payment
 ```
 
-### `ui:autoSelect`
+### `autoSelect`
 
 Whether to automatically select the highlighted option when the input loses focus. Defaults to `true`.
 
 When set to `false`, users must explicitly select an option from the dropdown by clicking or pressing Enter. This prevents accidental selections when typing to filter options.
 
-- Default behavior with `ui:autoSelect` as `true` (auto-selects on blur)
+- Default behavior with `autoSelect` as `true` (auto-selects on blur)
 
 ```yaml
 entity:
@@ -134,11 +134,10 @@ entity:
   description: Entity of the component
   ui:field: EntityPicker
   ui:options:
-    catalogFilter:
-      kind: Component
+    autoSelect: true
 ```
 
-- Require explicit selection with `ui:autoSelect` as `false`
+- Require explicit selection with `autoSelect` as `false`
 
 ```yaml
 entity:
@@ -147,9 +146,7 @@ entity:
   description: Entity of the component
   ui:field: EntityPicker
   ui:options:
-    catalogFilter:
-      kind: Component
-  ui:autoSelect: false
+    autoSelect: false
 ```
 
 ## MultiEntityPicker

@@ -418,8 +418,8 @@ describe('<EntityPicker />', () => {
       uiSchema = {
         'ui:options': {
           defaultKind: 'Group',
+          autoSelect: false,
         },
-        'ui:autoSelect': false,
       };
       props = {
         ...props,
@@ -447,8 +447,8 @@ describe('<EntityPicker />', () => {
       uiSchema = {
         'ui:options': {
           defaultKind: 'Group',
+          autoSelect: true,
         },
-        'ui:autoSelect': true,
       };
       props = {
         ...props,
