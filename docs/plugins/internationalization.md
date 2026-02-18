@@ -298,7 +298,7 @@ Go to the Settings page — you should see language switching buttons. Switch la
 
 ### Using the CLI for full translation workflows
 
-When translating your app to other languages at scale — especially when working with translation management systems (TMS) like Smartling, Crowdin, or Lokalise — the Backstage CLI provides `translations export` and `translations import` commands that automate the extraction and wiring of translation messages across all your plugin dependencies.
+When translating your app to other languages at scale — especially when working with external translation systems — the Backstage CLI provides `translations export` and `translations import` commands that automate the extraction and wiring of translation messages across all your plugin dependencies.
 
 #### Exporting default messages
 
@@ -397,13 +397,13 @@ translations/zh/catalog.json
 
 The pattern is stored in the manifest, so the `import` command automatically uses the same layout.
 
-#### Integration with a TMS
+#### Integration with external translation systems
 
-The exported JSON files are standard key-value pairs compatible with most translation management systems. A typical workflow looks like:
+The exported JSON files are standard key-value pairs compatible with most external translation systems. A typical workflow looks like:
 
 1. Run `translations export` to generate the source English files
-2. Upload the `.en.json` files to your TMS
-3. Download the translated files from your TMS into the `messages/` directory
+2. Upload the `.en.json` files to your translation system
+3. Download the translated files back into the translations directory
 4. Run `translations import` to regenerate the wiring code
 
 For full command reference, see the [CLI commands documentation](../tooling/cli/03-commands.md#translations-export).
