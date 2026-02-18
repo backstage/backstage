@@ -8,7 +8,7 @@ Audience: Developers
 
 ## Overview
 
-Components in the Software Catalog are created using a software template. Templates load skeletons of code, which can include some variables, and incorporate your company's best practices. The templates are published to a location, such as GitHub or GitLab.
+Components can be created in the Software Catalog using software templates. Templates load skeletons of code, which can include some variables, and incorporate your company's best practices. The templates are published to a location, such as GitHub or GitLab.
 
 The standalone Backstage application includes the `Example Node.js Template`, which is an example template for the scaffolder that creates and registers a simple Node.js service. You can also [create your own templates](../features/software-templates/adding-templates.md).
 
@@ -42,8 +42,9 @@ To create the component:
 
 6. Enter your GitHub user name as the `Owner`.
 7. Enter `tutorial` for the `Repository` and select `REVIEW`.
+   
    ![select review create component](../assets/uiguide/select-review-create-component.png)
-8. Review the information and select `CREATE`.
+9. Review the information and select `CREATE`.
 
    ![select create to make component](../assets/uiguide/select-create-to-make-component.png)
 
@@ -68,9 +69,9 @@ Otherwise, you can follow along with the progress, and as soon as every step is 
 
 ![run of example of create component](../assets/uiguide/successful-create-new-component.png)
 
-Selecting `REPOSITORY` displays the files in the main branch of the new `tutorial` repository. When you created the new `tutorial` component, three files were created in the repository:
+Selecting `REPOSITORY` displays the `catalog-info.yaml`file and other project setup files that were created for the new component in the main branch of the `tutorial` repository. 
 
-- **catalog-info.yaml** - Describes the entity for the Software Catalog. [Descriptor Format of Catalog Entities](../features/software-catalog/descriptor-format.md) provides additional information.
+The `catalog-info.yaml` file describes the entity for the Software Catalog. [Descriptor Format of Catalog Entities](../features/software-catalog/descriptor-format.md) provides additional information.
 
   ```
    apiVersion: backstage.io/v1alpha1
@@ -81,22 +82,6 @@ Selecting `REPOSITORY` displays the files in the main branch of the new `tutoria
      type: service
      owner: user:guest
      lifecycle: experimental
-  ```
-
-- **index.js** -
-
-  ```
-  console.log('Hello from tutorial!');
-  ```
-
-- **package.json** -
-
-  ```
-    {
-      "name": "tutorial",
-      "private": true,
-      "dependencies": {}
-    }
   ```
 
 Selecting `OPEN IN CATALOG` displays details of the new component, such as its relationships, links, and subcomponents.
