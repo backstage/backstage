@@ -16,7 +16,7 @@ The standalone Backstage application includes the `Example Node.js Template`, wh
 
 For this example, the default Node.js template will be used. The template creates a repository in GitHub and adds the necessary files to it so that the component is integrated into the Software Catalog. Because you are creating a repository, you must first create an integration between Backstage and GitHub.
 
-- You should have already [installed a standalone app](../getting-started/index.md).
+- You should have already [installed a standalone app](./index.md).
 
 - Register the [GitHub Scaffolder Action module](../features/software-templates/builtin-actions.md#installing-action-modules).
 
