@@ -19,7 +19,7 @@ import fs from 'fs-extra';
 import {
   resolve as resolvePath,
   relative as relativePath,
-  posix as posixPath,
+  sep,
 } from 'node:path';
 import { readTargetPackage } from '../lib/discoverPackages';
 import {
@@ -141,12 +141,12 @@ export default async (options: ImportOptions) => {
     const translationEntries = entries
       .sort((a, b) => a.lang.localeCompare(b.lang))
       .map(({ lang, relPath }) => {
-        const jsonRelPath = posixPath.normalize(
-          relativePath(
-            resolvePath(outputPath, '..'),
-            resolvePath(inputDir, relPath),
-          ),
-        );
+        const jsonRelPath = relativePath(
+          resolvePath(outputPath, '..'),
+          resolvePath(inputDir, relPath),
+        )
+          .split(sep)
+          .join('/');
         return `    ${JSON.stringify(lang)}: () => import('./${jsonRelPath}'),`;
       })
       .join('\n');

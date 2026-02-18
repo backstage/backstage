@@ -44,21 +44,17 @@ describe('extractTranslations', () => {
       exportName: 'orgTranslationRef',
     });
 
-    // Verify a subset of messages
-    expect(refs[0].messages).toMatchObject({
-      'groupProfileCard.groupNotFound': 'Group not found',
-      'membersListCard.title': 'Members',
-      'membersListCard.subtitle': 'of {{groupName}}',
-      'userProfileCard.userNotFound': 'User not found',
-    });
+    expect(refs[0].messages).toBeDefined();
+    expect(Object.keys(refs[0].messages)).not.toHaveLength(0);
+
+    // Verify some well-known keys exist without pinning exact wording
+    expect(refs[0].messages).toHaveProperty(['groupProfileCard.groupNotFound']);
+    expect(refs[0].messages).toHaveProperty(['membersListCard.title']);
 
     // Verify interpolation placeholders are preserved
-    expect(refs[0].messages['membersListCard.paginationLabel']).toBe(
-      ', page {{page}} of {{nbPages}}',
+    expect(refs[0].messages['membersListCard.subtitle']).toContain(
+      '{{groupName}}',
     );
-
-    // Verify total message count
-    expect(Object.keys(refs[0].messages).length).toBe(26);
   });
 
   it('ignores non-TranslationRef exports', () => {

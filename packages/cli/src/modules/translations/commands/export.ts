@@ -26,7 +26,11 @@ import {
   extractTranslationRefsFromSourceFile,
   TranslationRefInfo,
 } from '../lib/extractTranslations';
-import { DEFAULT_LANGUAGE, formatMessagePath } from '../lib/messageFilePath';
+import {
+  DEFAULT_LANGUAGE,
+  formatMessagePath,
+  validatePattern,
+} from '../lib/messageFilePath';
 
 interface ExportOptions {
   output: string;
@@ -34,6 +38,8 @@ interface ExportOptions {
 }
 
 export default async (options: ExportOptions) => {
+  validatePattern(options.pattern);
+
   const targetPackageJson = await readTargetPackage(
     paths.targetDir,
     paths.targetRoot,

@@ -64,7 +64,7 @@ export function patternHasSubdirectories(pattern: string): boolean {
   return pattern.includes('/');
 }
 
-function validatePattern(pattern: string) {
+export function validatePattern(pattern: string) {
   if (!pattern.includes('{id}')) {
     throw new Error(
       `Invalid message file pattern: must contain {id} placeholder. Got: ${pattern}`,

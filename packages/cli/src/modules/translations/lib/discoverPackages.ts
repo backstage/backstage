@@ -92,7 +92,7 @@ export async function discoverFrontendPackages(
   ) {
     const deps: Record<string, string> = {
       ...packageJson.dependencies,
-      ...(includeDevDeps ? (packageJson as any).devDependencies : {}),
+      ...(includeDevDeps ? packageJson.devDependencies ?? {} : {}),
     };
 
     for (const depName of Object.keys(deps)) {
