@@ -1336,7 +1336,11 @@ export type FetchApi = {
 export const fetchApiRef: ApiRef<FetchApi>;
 
 // @public (undocumented)
-export type FrontendFeature = FrontendPlugin | FrontendModule;
+export type FrontendFeature =
+  | (Omit<FrontendPlugin, 'pluginId'> & {
+      pluginId?: string;
+    })
+  | FrontendModule;
 
 // @public (undocumented)
 export interface FrontendFeatureLoader {
