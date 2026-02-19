@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import {
-  TemplateEntityV1beta3,
-  ScaffolderClient,
-} from '@backstage/plugin-scaffolder-common';
-import { ForwardedError } from '@backstage/errors';
+import { ScaffolderClient } from '@backstage/plugin-scaffolder-common';
+// import { ForwardedError } from '@backstage/errors';
 import yaml from 'yaml';
+
+const MAX_CONTENT_SIZE = 64 * 1024;
+
+function base64EncodeContent(content: string): string {
+  if (content.length > MAX_CONTENT_SIZE) {
+    return Buffer.from('<file too large>', 'utf8').toString('base64');
+  }
+  return Buffer.from(content, 'utf8').toString('base64');
+}
 
 export const createDryRunTemplateAction = ({
   actionsRegistry,
@@ -40,7 +46,7 @@ export const createDryRunTemplateAction = ({
     description: `Validates a scaffolder template by dry-running it.
 This action:
 - Calls scaffolderClient.dryRun()to validate and dry-run template.
-- Returns success with execution logs or throws ForwardedError for API/validation failures`,
+- Returns success with execution logs or errors for validation failures`,
     schema: {
       input: z =>
         z.object({
@@ -53,19 +59,17 @@ This action:
             .record(z.unknown())
             .optional()
             .describe('Input values for template parameters (default: {})'),
-          directoryContents: z
+          files: z
             .array(
               z.object({
                 path: z
                   .string()
                   .describe('File path relative to template root'),
-                base64Content: z
-                  .string()
-                  .describe('Base64-encoded file content'),
+                content: z.string().describe('file content'),
               }),
             )
             .optional()
-            .describe('Optional directory contents for template files'),
+            .describe('files required for running the template'),
         }),
       output: z =>
         z.object({
@@ -104,13 +108,13 @@ This action:
         }),
     },
     action: async ({ input }: { input: any }) => {
-      const { templateYaml, values = {}, directoryContents = [] } = input;
+      const { templateYaml, values = {}, files = [] } = input;
 
       try {
         // Parse YAML content
-        let template: TemplateEntityV1beta3;
+        let template;
         try {
-          template = yaml.parse(templateYaml) as TemplateEntityV1beta3;
+          template = yaml.parse(templateYaml);
         } catch (parseError: any) {
           return {
             output: {
@@ -133,7 +137,12 @@ This action:
         const result = await scaffolderClient.dryRun({
           template,
           values,
-          directoryContents,
+          directoryContents: files.map(
+            (file: { path: string; content: string }) => ({
+              path: file.path,
+              base64Content: base64EncodeContent(file.content),
+            }),
+          ),
         });
 
         return {
@@ -150,9 +159,25 @@ This action:
           },
         };
       } catch (error: any) {
-        // Use ForwardedError to properly propagate errors from the scaffolder API
-        // This allows the Actions Service to handle and forward the error appropriately
-        throw new ForwardedError('Template validation failed', error);
+        // Extract error messages from ResponseError or generic errors
+        const errorMessages: string[] = [];
+
+        if (error.name === 'ResponseError' || error.body) {
+          // Extract from API response
+          if (error.body?.error?.message)
+            errorMessages.push(error.body?.error?.message);
+          if (error.body?.errors) errorMessages.push(error.body?.errors);
+        } else if (error.message) {
+          errorMessages.push(error.message);
+        }
+
+        return {
+          output: {
+            valid: false,
+            message: 'Template validation failed',
+            errors: errorMessages,
+          },
+        };
       }
     },
   });
