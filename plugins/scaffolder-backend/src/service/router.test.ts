@@ -20,12 +20,6 @@ import express from 'express';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
 
-/**
- * TODO: The following should import directly from the router file.
- * Due to a circular dependency between this plugin and the
- * plugin-scaffolder-backend-module-cookiecutter plugin, it results in an error:
- * TypeError: _pluginscaffolderbackend.createTemplateAction is not a function
- */
 import {
   parseEntityRef,
   stringifyEntityRef,
