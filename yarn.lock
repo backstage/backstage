@@ -17572,92 +17572,92 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-arm64@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-darwin-arm64@npm:1.7.5"
+"@rspack/binding-darwin-arm64@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-darwin-arm64@npm:1.7.6"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-x64@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-darwin-x64@npm:1.7.5"
+"@rspack/binding-darwin-x64@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-darwin-x64@npm:1.7.6"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-gnu@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.7.5"
+"@rspack/binding-linux-arm64-gnu@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.7.6"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-musl@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-linux-arm64-musl@npm:1.7.5"
+"@rspack/binding-linux-arm64-musl@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-linux-arm64-musl@npm:1.7.6"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-gnu@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-linux-x64-gnu@npm:1.7.5"
+"@rspack/binding-linux-x64-gnu@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-linux-x64-gnu@npm:1.7.6"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-musl@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-linux-x64-musl@npm:1.7.5"
+"@rspack/binding-linux-x64-musl@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-linux-x64-musl@npm:1.7.6"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-wasm32-wasi@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-wasm32-wasi@npm:1.7.5"
+"@rspack/binding-wasm32-wasi@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-wasm32-wasi@npm:1.7.6"
   dependencies:
     "@napi-rs/wasm-runtime": "npm:1.0.7"
   conditions: cpu=wasm32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-arm64-msvc@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.7.5"
+"@rspack/binding-win32-arm64-msvc@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.7.6"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-ia32-msvc@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.7.5"
+"@rspack/binding-win32-ia32-msvc@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.7.6"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-x64-msvc@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding-win32-x64-msvc@npm:1.7.5"
+"@rspack/binding-win32-x64-msvc@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding-win32-x64-msvc@npm:1.7.6"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding@npm:1.7.5":
-  version: 1.7.5
-  resolution: "@rspack/binding@npm:1.7.5"
+"@rspack/binding@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@rspack/binding@npm:1.7.6"
   dependencies:
-    "@rspack/binding-darwin-arm64": "npm:1.7.5"
-    "@rspack/binding-darwin-x64": "npm:1.7.5"
-    "@rspack/binding-linux-arm64-gnu": "npm:1.7.5"
-    "@rspack/binding-linux-arm64-musl": "npm:1.7.5"
-    "@rspack/binding-linux-x64-gnu": "npm:1.7.5"
-    "@rspack/binding-linux-x64-musl": "npm:1.7.5"
-    "@rspack/binding-wasm32-wasi": "npm:1.7.5"
-    "@rspack/binding-win32-arm64-msvc": "npm:1.7.5"
-    "@rspack/binding-win32-ia32-msvc": "npm:1.7.5"
-    "@rspack/binding-win32-x64-msvc": "npm:1.7.5"
+    "@rspack/binding-darwin-arm64": "npm:1.7.6"
+    "@rspack/binding-darwin-x64": "npm:1.7.6"
+    "@rspack/binding-linux-arm64-gnu": "npm:1.7.6"
+    "@rspack/binding-linux-arm64-musl": "npm:1.7.6"
+    "@rspack/binding-linux-x64-gnu": "npm:1.7.6"
+    "@rspack/binding-linux-x64-musl": "npm:1.7.6"
+    "@rspack/binding-wasm32-wasi": "npm:1.7.6"
+    "@rspack/binding-win32-arm64-msvc": "npm:1.7.6"
+    "@rspack/binding-win32-ia32-msvc": "npm:1.7.6"
+    "@rspack/binding-win32-x64-msvc": "npm:1.7.6"
   dependenciesMeta:
     "@rspack/binding-darwin-arm64":
       optional: true
@@ -17679,23 +17679,23 @@ __metadata:
       optional: true
     "@rspack/binding-win32-x64-msvc":
       optional: true
-  checksum: 10/3e66805d4dae5f2051f10c5a9126e5bf25926d2a6ccb1c794af2aa49c15e4fdcb9e362bd015a9afef1e788a3272dfe7a28a3c866713badda34579896d736ed4f
+  checksum: 10/fec6c978e51f20471e278a07018b414125cf3bccf9c6bd7032ca65603cfe5bf0fdd7f58c156c0640b5dfab05e82a1e1170ac6d1aacaf4f46b61564be77dbe41b
   languageName: node
   linkType: hard
 
 "@rspack/core@npm:^1.4.11":
-  version: 1.7.5
-  resolution: "@rspack/core@npm:1.7.5"
+  version: 1.7.6
+  resolution: "@rspack/core@npm:1.7.6"
   dependencies:
     "@module-federation/runtime-tools": "npm:0.22.0"
-    "@rspack/binding": "npm:1.7.5"
+    "@rspack/binding": "npm:1.7.6"
     "@rspack/lite-tapable": "npm:1.1.0"
   peerDependencies:
     "@swc/helpers": ">=0.5.1"
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 10/c17d93ef1e7e0728b74bf527150642d9bf072cabb63964ebd32c82da94d6d2f9eac7ff2cc13031bbd376c0c03710899f549e61d2bcfc0a6638a9f3bc8620b7ce
+  checksum: 10/9f23c4849926d9ddff34f703ab2be41878bca9e877c130d16d20d911ba4b13f15dfe96d7e86225d7f5a1e48034ab92cccec89f3765f84ff518538f6bb07f1f06
   languageName: node
   linkType: hard
 
