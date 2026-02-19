@@ -27,7 +27,7 @@ export type AzureBlobStorageIntegrationConfig = {
   /**
    * The name of the Azure Storage Account, e.g., "mystorageaccount".
    */
-  accountName?: string;
+  accountName: string;
 
   /**
    * The primary or secondary key for the Azure Storage Account.
@@ -156,15 +156,5 @@ export function readAzureBlobStorageIntegrationConfig(
 export function readAzureBlobStorageIntegrationConfigs(
   configs: Config[],
 ): AzureBlobStorageIntegrationConfig[] {
-  // First read all the explicit integrations
-  const result = configs.map(readAzureBlobStorageIntegrationConfig);
-
-  // If no explicit blob.core.windows.net integration was added, put one in the list as
-  // a convenience
-  if (!result.some(c => c.host === AZURE_HOST)) {
-    result.push({
-      host: AZURE_HOST,
-    });
-  }
-  return result;
+  return configs.map(readAzureBlobStorageIntegrationConfig);
 }

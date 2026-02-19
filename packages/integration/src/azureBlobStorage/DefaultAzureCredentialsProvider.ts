@@ -19,6 +19,10 @@ import {
   ClientSecretCredential,
   TokenCredential,
 } from '@azure/identity';
+import {
+  StorageSharedKeyCredential,
+  AnonymousCredential,
+} from '@azure/storage-blob';
 import { AzureBlobStorageIntegrationConfig } from './config';
 import { AzureCredentialsManager } from './types';
 import { ScmIntegrationRegistry } from '../registry';
@@ -28,7 +32,10 @@ import { ScmIntegrationRegistry } from '../registry';
  * @public
  */
 export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
-  private cachedCredentials: Map<string, TokenCredential>;
+  private cachedCredentials: Map<
+    string,
+    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
+  >;
 
   private constructor(
     private readonly configProviders: Map<
@@ -36,7 +43,10 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
       AzureBlobStorageIntegrationConfig
     >,
   ) {
-    this.cachedCredentials = new Map<string, TokenCredential>();
+    this.cachedCredentials = new Map<
+      string,
+      TokenCredential | StorageSharedKeyCredential
+    >();
   }
 
   /**
@@ -60,7 +70,19 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
 
   private createCredential(
     config: AzureBlobStorageIntegrationConfig,
-  ): TokenCredential {
+  ): TokenCredential | StorageSharedKeyCredential | AnonymousCredential {
+    if (config.accountKey && config.accountName) {
+      return new StorageSharedKeyCredential(
+        config.accountName,
+        config.accountKey,
+      );
+    }
+
+    // SAS Token, credentials embedded in getServiceUrl()
+    if (config.sasToken) {
+      return new AnonymousCredential();
+    }
+
     if (
       config.aadCredential &&
       config.aadCredential.clientId &&
@@ -77,7 +99,11 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     return new DefaultAzureCredential();
   }
 
-  async getCredentials(accountName: string): Promise<TokenCredential> {
+  async getCredentials(
+    accountName: string,
+  ): Promise<
+    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
+  > {
     if (this.cachedCredentials.has(accountName)) {
       return this.cachedCredentials.get(accountName)!;
     }
@@ -93,5 +119,23 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     this.cachedCredentials.set(accountName, credential);
 
     return credential;
+  }
+
+  getServiceUrl(accountName: string): string {
+    const config = this.configProviders.get(accountName);
+    if (!config) {
+      throw new Error(`No configuration found for account: ${accountName}`);
+    }
+
+    // Custom endpoint with optional SAS token
+    if (config.endpoint) {
+      if (config.sasToken) {
+        return `${config.endpoint}?${config.sasToken}`;
+      }
+      return config.endpoint;
+    }
+
+    // Default Azure blob storage URL
+    return `https://${config.accountName}.${config.host}`;
   }
 }

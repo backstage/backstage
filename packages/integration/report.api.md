@@ -132,6 +132,8 @@ export interface AzureCredentialsManager {
   ): Promise<
     TokenCredential | StorageSharedKeyCredential | AnonymousCredential
   >;
+  // (undocumented)
+  getServiceUrl(accountName: string): string;
 }
 
 // @public
@@ -337,7 +339,13 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     integrations: ScmIntegrationRegistry,
   ): DefaultAzureCredentialsManager;
   // (undocumented)
-  getCredentials(accountName: string): Promise<TokenCredential>;
+  getCredentials(
+    accountName: string,
+  ): Promise<
+    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
+  >;
+  // (undocumented)
+  getServiceUrl(accountName: string): string;
 }
 
 // @public

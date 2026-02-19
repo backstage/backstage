@@ -32,4 +32,5 @@ export interface AzureCredentialsManager {
   ): Promise<
     TokenCredential | StorageSharedKeyCredential | AnonymousCredential
   >;
+  getServiceUrl(accountName: string): string;
 }

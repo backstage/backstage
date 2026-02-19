@@ -19,6 +19,10 @@ import {
   ClientSecretCredential,
   DefaultAzureCredential,
 } from '@azure/identity';
+import {
+  AnonymousCredential,
+  StorageSharedKeyCredential,
+} from '@azure/storage-blob';
 import { ScmIntegrationRegistry } from '../registry';
 import { ConfigReader } from '@backstage/config';
 import { DefaultAzureCredentialsManager } from './DefaultAzureCredentialsProvider';
@@ -97,10 +101,15 @@ describe('DefaultAzureCredentialsManager', () => {
 
     const credential = await manager.getCredentials('testaccount');
 
+    // When using aadCredential, the returned credential should be a TokenCredential
+    expect('getToken' in credential).toBe(true);
+
     const scopes = ['https://storage.azure.com/.default'];
 
     const expectedToken = await mockCredential.getToken(scopes);
-    const receivedToken = await credential.getToken(scopes);
+    const receivedToken = await (credential as ClientSecretCredential).getToken(
+      scopes,
+    );
 
     expect(receivedToken?.token).toEqual(expectedToken.token);
   });
@@ -145,5 +154,91 @@ describe('DefaultAzureCredentialsManager', () => {
 
     const cachedCredential = await manager.getCredentials('testaccount');
     expect(cachedCredential).toBe(credential);
+  });
+
+  describe('getCredentials with account key', () => {
+    it('should return StorageSharedKeyCredential when accountKey is provided', async () => {
+      const manager = buildProvider([
+        {
+          accountName: 'testaccount',
+          accountKey: 'dGVzdGtleQ==',
+        },
+      ]);
+
+      const credential = await manager.getCredentials('testaccount');
+
+      expect(credential).toBeInstanceOf(StorageSharedKeyCredential);
+    });
+  });
+
+  describe('getCredentials with SAS token', () => {
+    it('should return AnonymousCredential when sasToken is provided', async () => {
+      const manager = buildProvider([
+        {
+          accountName: 'testaccount',
+          endpoint: 'https://custom.endpoint.com',
+          sasToken: 'sv=2021-06-08&ss=b&srt=sco&sp=rwdlacx',
+        },
+      ]);
+
+      const credential = await manager.getCredentials('testaccount');
+
+      expect(credential).toBeInstanceOf(AnonymousCredential);
+    });
+  });
+
+  describe('getServiceUrl', () => {
+    it('should return default Azure blob storage URL when no endpoint configured', () => {
+      const manager = buildProvider([
+        {
+          accountName: 'testaccount',
+        },
+      ]);
+
+      const serviceUrl = manager.getServiceUrl('testaccount');
+
+      expect(serviceUrl).toBe('https://testaccount.blob.core.windows.net');
+    });
+
+    it('should return custom endpoint when configured without SAS token', () => {
+      const manager = buildProvider([
+        {
+          accountName: 'testaccount',
+          endpoint: 'https://custom.endpoint.com',
+        },
+      ]);
+
+      const serviceUrl = manager.getServiceUrl('testaccount');
+
+      expect(serviceUrl).toBe('https://custom.endpoint.com');
+    });
+
+    it('should append SAS token to endpoint when configured', () => {
+      const manager = buildProvider([
+        {
+          accountName: 'testaccount',
+          endpoint: 'https://custom.endpoint.com',
+          sasToken: 'sv=2021-06-08&ss=b&srt=sco&sp=rwdlacx&se=2024-12-31',
+        },
+      ]);
+
+      const serviceUrl = manager.getServiceUrl('testaccount');
+
+      expect(serviceUrl).toBe(
+        'https://custom.endpoint.com?sv=2021-06-08&ss=b&srt=sco&sp=rwdlacx&se=2024-12-31',
+      );
+    });
+
+    it('should throw error when account not found', () => {
+      const manager = buildProvider([
+        {
+          accountName: 'testaccount',
+        },
+      ]);
+
+      expect(() => manager.getServiceUrl('nonexistent')).toThrow(
+        'No configuration found for account: nonexistent',
+      );
+    });
   });
 });
