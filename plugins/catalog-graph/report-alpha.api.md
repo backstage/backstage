@@ -103,8 +103,8 @@ const _default: OverridableFrontendPlugin<
         direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         title?: string | undefined;
-        relations?: string[] | undefined;
         maxDepth?: number | undefined;
+        relations?: string[] | undefined;
         kinds?: string[] | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
@@ -166,9 +166,9 @@ const _default: OverridableFrontendPlugin<
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        maxDepth?: number | undefined;
         relations?: string[] | undefined;
         rootEntityRefs?: string[] | undefined;
-        maxDepth?: number | undefined;
         kinds?: string[] | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
