@@ -1,0 +1,94 @@
+name: Sync Pull Requests Scheduled
+
+on:
+  schedule:
+    # Every 30 minutes, processing a rotating batch of PRs
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  plan:
+    permissions:
+      pull-requests: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.batch.outputs.matrix }}
+      count: ${{ steps.batch.outputs.count }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - name: Determine PR batch
+        id: batch
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            // 48 slots per day (one per 30-minute cron window).
+            // Each PR is assigned a fixed slot via pr.number % 48, so
+            // opening/closing other PRs never shifts the assignment.
+            const totalSlots = 48;
+            const now = new Date();
+            const currentSlot =
+              now.getUTCHours() * 2 + (now.getUTCMinutes() >= 30 ? 1 : 0);
+
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const batch = prs.filter(
+              pr => pr.number % totalSlots === currentSlot,
+            );
+
+            core.info(
+              `Slot ${currentSlot}/${totalSlots}: ` +
+              `${batch.length} PRs to process out of ${prs.length} open`,
+            );
+
+            const matrix = {
+              include: batch.map(pr => ({ prNumber: String(pr.number) })),
+            };
+
+            core.setOutput('matrix', JSON.stringify(matrix));
+            core.setOutput('count', String(batch.length));
+
+  sync:
+    needs: plan
+    if: needs.plan.outputs.count > 0
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+      fail-fast: false
+      max-parallel: 1
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - name: Backstage PR automation
+        uses: backstage/actions/pr-automation@c3038aa5576b9cd845ccc518ef854d3660e8cb40 # v0.7.6
+        with:
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-owner: backstage
+          project-number: '14'
+          pr-number: ${{ matrix.prNumber }}
+          action: synchronize
+          required-checks: |
+            DCO
+            E2E Linux 22.x
+            E2E Linux 24.x
+            Test 22.x
+            Test 24.x
+            Verify 22.x
+            Verify 24.x
