@@ -38142,10 +38142,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru.min@npm:^1.1.0, lru.min@npm:^1.1.3":
-  version: 1.1.3
-  resolution: "lru.min@npm:1.1.3"
-  checksum: 10/b741bf51e6f2620f35f66657c31a37bb4e6aaa3d7f4dfd8a657cd4e6a4d75be881057d71f54a907a4938d5993677d92cdfa71203054a73af6978514ba73767ee
+"lru.min@npm:^1.1.0, lru.min@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "lru.min@npm:1.1.4"
+  checksum: 10/c7041fb558fa0c39b3e14b8c711716af729a4df96af25e6a2d54f5d60d936a1e33edbabcfa3a71359f73f746763dc51da3fc679d60e2f087aa722f139f56ccd4
   languageName: node
   linkType: hard
 
@@ -39945,19 +39945,18 @@ __metadata:
   linkType: hard
 
 "mysql2@npm:^3.0.0":
-  version: 3.16.2
-  resolution: "mysql2@npm:3.16.2"
+  version: 3.17.3
+  resolution: "mysql2@npm:3.17.3"
   dependencies:
     aws-ssl-profiles: "npm:^1.1.2"
     denque: "npm:^2.1.0"
     generate-function: "npm:^2.3.1"
     iconv-lite: "npm:^0.7.2"
     long: "npm:^5.3.2"
-    lru.min: "npm:^1.1.3"
+    lru.min: "npm:^1.1.4"
     named-placeholders: "npm:^1.1.6"
-    seq-queue: "npm:^0.0.5"
-    sqlstring: "npm:^2.3.3"
-  checksum: 10/b44cff80bb804b56eec422cce65555ea3879d8bb1ccc0e1e26df09c8300167a123396e8591da09c1f8769d16d498f9aa454d0b0a11e53235cfd403f0f6597ba2
+    sql-escaper: "npm:^1.3.3"
+  checksum: 10/8fdb862f4bb30124f72d88650e110be7a4261d2ff4989c1ec6d42a3cb6981992d8192b6c1069e183464a1cf6f6963f487d70c67733fd09e1f7d347d5e4a6ed45
   languageName: node
   linkType: hard
 
@@ -46359,13 +46358,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"seq-queue@npm:^0.0.5":
-  version: 0.0.5
-  resolution: "seq-queue@npm:0.0.5"
-  checksum: 10/fa302e3b2aaece644532603ae42d675f9b8750e395a98740dd58dc5e02985ce6f0c2b78715b5984d6f6a807893735a14212a70d6ec591e6fba410397269588a0
-  languageName: node
-  linkType: hard
-
 "serialize-error@npm:^7.0.1":
   version: 7.0.1
   resolution: "serialize-error@npm:7.0.1"
@@ -47184,10 +47176,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sqlstring@npm:^2.3.3":
-  version: 2.3.3
-  resolution: "sqlstring@npm:2.3.3"
-  checksum: 10/4e5a25af2d77a031fe00694034bf9fd822ddc3a483c9383124b120aa6b9ae9ab71e173cd29fba9c653998ebfef9e97be668957839960b9b3dc1afcb45f1ddb64
+"sql-escaper@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "sql-escaper@npm:1.3.3"
+  checksum: 10/bc53ff84eba322ba76bd10f95c2a180b477e13453236583dbed3bed48d6ade3ca73922eaa860372c2b3a9427e3345fd1a19d1e3b8d0e36fa1d79c450f113b962
   languageName: node
   linkType: hard
 
