@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import {
-  templateEntityV1beta3Validator,
   TemplateEntityV1beta3,
+  ScaffolderClient,
 } from '@backstage/plugin-scaffolder-common';
-import { ResponseError } from '@backstage/errors';
+import { ForwardedError } from '@backstage/errors';
 import yaml from 'yaml';
 
-export const createValidateScaffolderAction = ({
+export const createDryRunTemplateAction = ({
   actionsRegistry,
-  auth,
-  discovery,
+  scaffolderClient,
 }: {
   actionsRegistry: ActionsRegistryService;
-  auth: AuthService;
-  discovery: DiscoveryService;
+  scaffolderClient: ScaffolderClient;
 }) => {
   // Register the validate-scaffolder action that calls /v2/dry-run endpoint
   actionsRegistry.register({
@@ -40,14 +37,12 @@ export const createValidateScaffolderAction = ({
       readOnly: true,
       idempotent: true,
     },
-    description: `Validates a scaffolder template by calling the /v2/dry-run endpoint.
+    description: `Validates a scaffolder template by dry-running it.
 This action:
-- Parses and validates the YAML template structure
-- Validates the template against the template entity schema
-- Calls the /v2/dry-run endpoint to dry-run template steps without side effects
-- Returns success with execution logs or specific validation errors`,
+- Calls scaffolderClient.dryRun()to validate and dry-run template.
+- Returns success with execution logs or throws ForwardedError for API/validation failures`,
     schema: {
-      input: (z: any) =>
+      input: z =>
         z.object({
           templateYaml: z
             .string()
@@ -72,7 +67,7 @@ This action:
             .optional()
             .describe('Optional directory contents for template files'),
         }),
-      output: (z: any) =>
+      output: z =>
         z.object({
           valid: z.boolean().describe('Whether the template is valid'),
           message: z
@@ -81,7 +76,7 @@ This action:
           errors: z
             .array(z.string())
             .optional()
-            .describe('List of specific validation errors'),
+            .describe('List of validation errors'),
           log: z
             .array(
               z.object({
@@ -108,13 +103,7 @@ This action:
             .describe('Parsed template steps'),
         }),
     },
-    action: async ({
-      input,
-      credentials,
-    }: {
-      input: any;
-      credentials: any;
-    }) => {
+    action: async ({ input }: { input: any }) => {
       const { templateYaml, values = {}, directoryContents = [] } = input;
 
       try {
@@ -137,59 +126,15 @@ This action:
           };
         }
 
-        // Validate template structure
-        if (!(await templateEntityV1beta3Validator.check(template))) {
-          return {
-            output: {
-              valid: false,
-              message: 'Invalid template structure',
-              errors: [
-                'Template does not conform to TemplateEntityV1beta3 schema',
-              ],
-            },
-          };
-        }
-
-        // Validate that steps exist
-        if (!template.spec.steps || template.spec.steps.length === 0) {
-          return {
-            output: {
-              valid: false,
-              message: 'Template has no steps defined',
-              errors: ['Template must have at least one step'],
-            },
-          };
-        }
-
-        // Get a token to call the scaffolder API
-        const { token } = await auth.getPluginRequestToken({
-          onBehalfOf: credentials,
-          targetPluginId: 'scaffolder',
+        // Use ScaffolderClient to call the dryRun API
+        // - Template validation
+        // - Parameter validation
+        // - Dry-run execution of all steps
+        const result = await scaffolderClient.dryRun({
+          template,
+          values,
+          directoryContents,
         });
-
-        // Get the scaffolder base URL
-        const baseUrl = await discovery.getBaseUrl('scaffolder');
-        const dryRunUrl = `${baseUrl}/v2/dry-run`;
-
-        // Call the /v2/dry-run endpoint
-        const response = await fetch(dryRunUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            template,
-            values,
-            directoryContents,
-          }),
-        });
-
-        if (!response.ok) {
-          throw await ResponseError.fromResponse(response);
-        }
-
-        const result = await response.json();
 
         return {
           output: {
@@ -205,37 +150,9 @@ This action:
           },
         };
       } catch (error: any) {
-        // Extract meaningful error messages
-        const errorMessages: string[] = [];
-
-        if (error.message) {
-          errorMessages.push(error.message);
-        }
-
-        if (error.cause) {
-          errorMessages.push(`Cause: ${error.cause.message || error.cause}`);
-        }
-
-        if (error.body?.errors && Array.isArray(error.body.errors)) {
-          error.body.errors.forEach((err: any) => {
-            errorMessages.push(err.message || String(err));
-          });
-        } else if (error.errors && Array.isArray(error.errors)) {
-          error.errors.forEach((err: any) => {
-            errorMessages.push(err.message || String(err));
-          });
-        }
-
-        return {
-          output: {
-            valid: false,
-            message: 'Template validation failed',
-            errors:
-              errorMessages.length > 0
-                ? errorMessages
-                : ['Unknown validation error'],
-          },
-        };
+        // Use ForwardedError to properly propagate errors from the scaffolder API
+        // This allows the Actions Service to handle and forward the error appropriately
+        throw new ForwardedError('Template validation failed', error);
       }
     },
   });

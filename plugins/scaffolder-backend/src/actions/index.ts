@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
-import { createValidateScaffolderAction } from './createValidateScaffolderAction';
+import { ScaffolderClient } from '@backstage/plugin-scaffolder-common';
+import { createDryRunTemplateAction } from './createDryRunTemplateAction';
 
 export const createScaffolderActions = (options: {
   actionsRegistry: ActionsRegistryService;
-  auth: AuthService;
-  discovery: DiscoveryService;
+  scaffolderClient: ScaffolderClient;
 }) => {
-  createValidateScaffolderAction(options);
+  createDryRunTemplateAction(options);
 };
