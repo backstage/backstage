@@ -6691,7 +6691,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-azure@workspace:^, @backstage/plugin-scaffolder-backend-module-azure@workspace:plugins/scaffolder-backend-module-azure":
+"@backstage/plugin-scaffolder-backend-module-azure@workspace:plugins/scaffolder-backend-module-azure":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-azure@workspace:plugins/scaffolder-backend-module-azure"
   dependencies:
@@ -6746,7 +6746,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket":
+"@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket"
   dependencies:
@@ -6826,7 +6826,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-gerrit@workspace:^, @backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit":
+"@backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit"
   dependencies:
@@ -6843,7 +6843,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-gitea@workspace:^, @backstage/plugin-scaffolder-backend-module-gitea@workspace:plugins/scaffolder-backend-module-gitea":
+"@backstage/plugin-scaffolder-backend-module-gitea@workspace:plugins/scaffolder-backend-module-gitea":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-gitea@workspace:plugins/scaffolder-backend-module-gitea"
   dependencies:
@@ -6887,7 +6887,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-gitlab@workspace:^, @backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
+"@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab"
   dependencies:
@@ -6980,7 +6980,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend"
   dependencies:
-    "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -6990,21 +6989,10 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-auth-node": "workspace:^"
-    "@backstage/plugin-bitbucket-cloud-common": "workspace:^"
-    "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-azure": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-gerrit": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-gitea": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-github": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-gitlab": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
@@ -7017,7 +7005,6 @@ __metadata:
     "@types/nunjucks": "npm:^3.1.4"
     "@types/supertest": "npm:^2.0.8"
     "@types/zen-observable": "npm:^0.8.0"
-    concat-stream: "npm:^2.0.0"
     esbuild: "npm:^0.27.0"
     express: "npm:^4.22.0"
     fs-extra: "npm:^11.2.0"
@@ -7030,7 +7017,6 @@ __metadata:
     logform: "npm:^2.3.2"
     luxon: "npm:^3.0.0"
     nunjucks: "npm:^3.2.3"
-    p-limit: "npm:^3.1.0"
     p-queue: "npm:^6.6.2"
     prom-client: "npm:^15.0.0"
     strip-ansi: "npm:^7.1.0"
