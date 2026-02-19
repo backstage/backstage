@@ -74,6 +74,7 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
@@ -103,6 +104,7 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldSchema: FieldSchema_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
@@ -249,6 +251,7 @@ export type MyGroupsPickerUiOptions = NonNullable<
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
@@ -278,6 +281,7 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnedEntityPickerFieldSchema: FieldSchema_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
