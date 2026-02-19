@@ -21,6 +21,7 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { ScaffolderClient } from '@backstage/plugin-scaffolder-common';
 import {
   scaffolderActionsExtensionPoint,
   TaskBroker,
@@ -171,6 +172,13 @@ export const scaffolderPlugin = createBackendPlugin({
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
 
+        // Create ScaffolderClient for MCP actions (isomorphic client)
+        const scaffolderClient = new ScaffolderClient({
+          discoveryApi: discovery,
+          fetchApi: { fetch },
+          scmIntegrationsApi: integrations,
+        });
+
         const templateExtensions = {
           additionalTemplateFilters: convertFiltersToRecord(
             additionalTemplateFilters,
@@ -222,8 +230,7 @@ export const scaffolderPlugin = createBackendPlugin({
         // Register MCP actions for scaffolder
         createScaffolderActions({
           actionsRegistry: actionsRegistryService,
-          auth,
-          discovery,
+          scaffolderClient,
         });
 
         const router = await createRouter({
