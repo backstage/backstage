@@ -176,7 +176,7 @@
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
     "luxon": "^3.0.0",
-    "minimatch": "^9.0.0",
+    "minimatch": "^10.2.1",
     "mysql2": "^3.0.0",
     "node-fetch": "^2.7.0",
     "node-forge": "^1.3.2",
