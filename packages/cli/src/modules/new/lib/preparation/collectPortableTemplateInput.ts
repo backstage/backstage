@@ -45,7 +45,7 @@ const knownFrontendPluginPackages: Record<string, string> = {
   app: '@backstage/plugin-app',
   auth: '@backstage/plugin-auth',
   catalog: '@backstage/plugin-catalog',
-  events: '@backstage/plugin-events',
+
   kubernetes: '@backstage/plugin-kubernetes',
   notifications: '@backstage/plugin-notifications',
   permission: '@backstage/plugin-permission',
