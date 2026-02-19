@@ -85,7 +85,7 @@ export class GitlabUrlReader implements UrlReaderService {
   ): Promise<UrlReaderServiceReadUrlResponse> {
     const { etag, lastModifiedAfter, signal, token } = options ?? {};
     const isArtifact = url.includes('/-/jobs/artifacts/');
-    const builtUrl = await this.getGitlabFetchUrl(url, token);
+    const builtUrl = await this.getGitlabFetchUrl(url);
 
     let response: Response;
     try {
@@ -330,81 +330,52 @@ export class GitlabUrlReader implements UrlReaderService {
     return `gitlab{host=${host},authed=${Boolean(token)}}`;
   }
 
-  private async getGitlabFetchUrl(
-    target: string,
-    token?: string,
-  ): Promise<string> {
+  private async getGitlabFetchUrl(target: string): Promise<string> {
     // If the target is for a job artifact then go down that path
     const targetUrl = new URL(target);
     if (targetUrl.pathname.includes('/-/jobs/artifacts/')) {
-      return this.getGitlabArtifactFetchUrl(targetUrl, token).then(value =>
+      return this.getGitlabArtifactFetchUrl(targetUrl).then(value =>
         value.toString(),
       );
     }
-    // Default to the old behavior of assuming the url is for a file
-    return getGitLabFileFetchUrl(target, this.integration.config, token);
+    // Default to the optimized behavior - no API call needed for file URLs
+    return getGitLabFileFetchUrl(target, this.integration.config);
   }
 
   // convert urls of the form:
   //    https://example.com/<namespace>/<project>/-/jobs/artifacts/<ref>/raw/<path_to_file>?job=<job_name>
   // to urls of the form:
-  //    https://example.com/api/v4/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path?job=<job_name>
-  private async getGitlabArtifactFetchUrl(
-    target: URL,
-    token?: string,
-  ): Promise<URL> {
+  //    https://example.com/api/v4/projects/namespace%2Fproject/jobs/artifacts/:ref_name/raw/*artifact_path?job=<job_name>
+  private getGitlabArtifactFetchUrl(target: URL): Promise<URL> {
     if (!target.pathname.includes('/-/jobs/artifacts/')) {
       throw new Error('Unable to process url as an GitLab artifact');
     }
     try {
       const [namespaceAndProject, ref] =
         target.pathname.split('/-/jobs/artifacts/');
-      const projectPath = new URL(target);
-      projectPath.pathname = namespaceAndProject;
-      const projectId = await this.resolveProjectToId(projectPath, token);
+
+      // Extract project path directly instead of making API call
       const relativePath = getGitLabIntegrationRelativePath(
         this.integration.config,
       );
+
+      let projectPath = namespaceAndProject;
+      // Check relative path exist and remove it if so
+      if (relativePath) {
+        projectPath = projectPath.replace(relativePath, '');
+      }
+      // Trim an initial / if it exists
+      projectPath = projectPath.replace(/^\//, '');
+
       const newUrl = new URL(target);
-      newUrl.pathname = `${relativePath}/api/v4/projects/${projectId}/jobs/artifacts/${ref}`;
-      return newUrl;
+      newUrl.pathname = `${relativePath}/api/v4/projects/${encodeURIComponent(
+        projectPath,
+      )}/jobs/artifacts/${ref}`;
+      return Promise.resolve(newUrl);
     } catch (e) {
       throw new Error(
         `Unable to translate GitLab artifact URL: ${target}, ${e}`,
       );
     }
-  }
-
-  private async resolveProjectToId(
-    pathToProject: URL,
-    token?: string,
-  ): Promise<number> {
-    let project = pathToProject.pathname;
-    // Check relative path exist and remove it if so
-    const relativePath = getGitLabIntegrationRelativePath(
-      this.integration.config,
-    );
-    if (relativePath) {
-      project = project.replace(relativePath, '');
-    }
-    // Trim an initial / if it exists
-    project = project.replace(/^\//, '');
-    const result = await fetch(
-      `${
-        pathToProject.origin
-      }${relativePath}/api/v4/projects/${encodeURIComponent(project)}`,
-      getGitLabRequestOptions(this.integration.config, token),
-    );
-    const data = await result.json();
-    if (!result.ok) {
-      if (result.status === 401) {
-        throw new Error(
-          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
-        );
-      }
-
-      throw new Error(`Gitlab error: ${data.error}, ${data.error_description}`);
-    }
-    return Number(data.id);
   }
 }
