@@ -23,31 +23,27 @@
     color: var(--bui-fg-primary);
   }
 
-  .bui-Box[data-surface='0'] {
-    background-color: var(--bui-bg-neutral-0);
-  }
-
-  .bui-Box[data-surface='1'] {
+  .bui-Box[data-bg='neutral-1'] {
     background-color: var(--bui-bg-neutral-1);
   }
 
-  .bui-Box[data-surface='2'] {
+  .bui-Box[data-bg='neutral-2'] {
     background-color: var(--bui-bg-neutral-2);
   }
 
-  .bui-Box[data-surface='3'] {
+  .bui-Box[data-bg='neutral-3'] {
     background-color: var(--bui-bg-neutral-3);
   }
 
-  .bui-Box[data-surface='danger'] {
+  .bui-Box[data-bg='danger'] {
     background-color: var(--bui-bg-danger);
   }
 
-  .bui-Box[data-surface='warning'] {
+  .bui-Box[data-bg='warning'] {
     background-color: var(--bui-bg-warning);
   }
 
-  .bui-Box[data-surface='success'] {
+  .bui-Box[data-bg='success'] {
     background-color: var(--bui-bg-success);
   }
 }

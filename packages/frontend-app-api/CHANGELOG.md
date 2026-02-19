@@ -1,5 +1,46 @@
 # @backstage/frontend-app-api
 
+## 0.15.0
+
+### Minor Changes
+
+- 55b2ef6: **BREAKING**: Updated the behavior of the new API override logic to reject the override and block app startup instead of just logging a deprecation warning.
+
+### Patch Changes
+
+- 7edb810: Implemented support for the `internal` extension input option.
+- 492503a: Updated error reporting and app tree resolution logic to attribute errors to the correct extension and allow app startup to proceed more optimistically:
+
+  - If an attachment fails to provide the required input data, the error is now attributed to the attachment rather than the parent extension.
+  - Singleton extension inputs will now only forward attachment errors if the input is required.
+  - Array extension inputs will now filter out failed attachments instead of failing the entire app tree resolution.
+
+- ef6916e: Added `IconElement` type as a replacement for the deprecated `IconComponent`. The `IconsApi` now has a new `icon()` method that returns `IconElement`, while the existing `getIcon()` method is deprecated. The `IconBundleBlueprint` now accepts both `IconComponent` and `IconElement` values.
+- 122d39c: Completely removed support for the deprecated `app.experimental.packages` configuration. Replace existing usage directly with `app.packages`.
+- 9554c36: **DEPRECATED**: Deprecated support for multiple attachment points.
+- 53b6549: Plugins in the new frontend system now have a `pluginId` field rather than `id` to better align with naming conventions used throughout the frontend and backend systems. The old field is still present but marked as deprecated. All internal code has been updated to prefer `pluginId` while maintaining backward compatibility by falling back to `id` when needed.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 09032d7: Internal update to simplify testing utility implementations.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/frontend-defaults@0.4.0
+  - @backstage/core-app-api@1.19.5
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/version-bridge@1.0.12
+
+## 0.15.0-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.5-next.1
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/frontend-defaults@0.4.0-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/version-bridge@1.0.12-next.0
+
 ## 0.15.0-next.1
 
 ### Minor Changes

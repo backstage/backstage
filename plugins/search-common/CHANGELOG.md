@@ -1,5 +1,13 @@
 # @backstage/plugin-search-common
 
+## 1.2.22
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.6
+
 ## 1.2.22-next.0
 
 ### Patch Changes

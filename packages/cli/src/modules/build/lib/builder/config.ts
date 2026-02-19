@@ -37,7 +37,7 @@ import {
   OutputPlugin,
 } from 'rollup';
 
-import { forwardFileImports } from './plugins';
+import { forwardFileImports, cssEntryPoints } from './plugins';
 import { BuildOptions, Output } from './types';
 import { paths } from '../../../../lib/paths';
 import { BackstagePackageJson } from '@backstage/cli-node';
@@ -275,6 +275,7 @@ export async function makeRollupConfigs(
           target: 'ES2023',
           minify: options.minify,
         }),
+        cssEntryPoints({ entryPoints, targetDir }),
       ],
     });
   }

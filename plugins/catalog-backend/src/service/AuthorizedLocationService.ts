@@ -28,6 +28,7 @@ import {
   BackstageCredentials,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 export class AuthorizedLocationService implements LocationService {
   private readonly locationService: LocationService;
@@ -81,6 +82,26 @@ export class AuthorizedLocationService implements LocationService {
     }
 
     return this.locationService.listLocations(options);
+  }
+
+  async queryLocations(options: {
+    limit: number;
+    afterId?: string;
+    query?: FilterPredicate;
+    credentials: BackstageCredentials;
+  }): Promise<{ items: Location[]; totalItems: number }> {
+    const authorizationResponse = (
+      await this.permissionApi.authorize(
+        [{ permission: catalogLocationReadPermission }],
+        { credentials: options.credentials },
+      )
+    )[0];
+
+    if (authorizationResponse.result === AuthorizeResult.DENY) {
+      return { items: [], totalItems: 0 };
+    }
+
+    return this.locationService.queryLocations(options);
   }
 
   async getLocation(

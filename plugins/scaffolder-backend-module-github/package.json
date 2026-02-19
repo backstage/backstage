@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-github",
-  "version": "0.9.6-next.1",
+  "version": "0.9.6",
   "description": "The github module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",
@@ -51,7 +51,7 @@
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@octokit/webhooks": "^10.9.2",
-    "libsodium-wrappers": "^0.7.11",
+    "libsodium-wrappers": "^0.8.0",
     "octokit": "^3.0.0",
     "octokit-plugin-create-pull-request": "^5.0.0",
     "yaml": "^2.0.0",
@@ -61,7 +61,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
-    "@types/libsodium-wrappers": "^0.7.10",
+    "@types/libsodium-wrappers": "^0.8.0",
     "fs-extra": "^11.2.0",
     "jsonschema": "^1.2.6"
   }

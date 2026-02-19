@@ -336,14 +336,14 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.34.4, @codemirror/view@npm:^6.35.0":
-  version: 6.39.12
-  resolution: "@codemirror/view@npm:6.39.12"
+  version: 6.39.14
+  resolution: "@codemirror/view@npm:6.39.14"
   dependencies:
     "@codemirror/state": "npm:^6.5.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/acd476d485914095fe38009bb29c7a6ac4cf3de2d3921172e27fc40639eb5bce0534766fd6e093c94aa60f076f263ce90a670a8052e220244bf4065f95c064bb
+  checksum: 10/956e79758d97e9fc6f6fd9a21575148cb0126712e0a3f78dc03031ebed1a5787eae581eda140f1af6686a5822b3c9c3a67547d2421a16003d45a2c0b6f83ca5e
   languageName: node
   linkType: hard
 
@@ -3307,11 +3307,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^12.33.0":
-  version: 12.33.0
-  resolution: "framer-motion@npm:12.33.0"
+"framer-motion@npm:^12.34.1":
+  version: 12.34.1
+  resolution: "framer-motion@npm:12.34.1"
   dependencies:
-    motion-dom: "npm:^12.33.0"
+    motion-dom: "npm:^12.34.1"
     motion-utils: "npm:^12.29.2"
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -3325,7 +3325,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10/e3dd7c3167e4ea7d38d9020a672f8ab8b68fbc9994ae3c354e5d8b1c7827747db9206f6bdb024a4dab1b7ebd10ea044a14bacf50b7868271c59b1b5b2579dbb7
+  checksum: 10/406ba84c1b6ecb33e9a14793039f2c71fabea7327bd3c3c772dcd468dadbae9ae1c37750cfdbe6cd604dce8d0537de37014f541490203d4711ef6b35dc82b3c4
   languageName: node
   linkType: hard
 
@@ -3660,22 +3660,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-dom-parser@npm:5.1.7":
-  version: 5.1.7
-  resolution: "html-dom-parser@npm:5.1.7"
+"html-dom-parser@npm:5.1.8":
+  version: 5.1.8
+  resolution: "html-dom-parser@npm:5.1.8"
   dependencies:
     domhandler: "npm:5.0.3"
     htmlparser2: "npm:10.1.0"
-  checksum: 10/1bcd5bf935433a5a501c5ecdd1653e1bf1fe6daaede2e053ca75c1eea092603123d06ee76aca3e9d72c16fe11dbe49adc805c15e65b0efbbb43b434b2633fbf8
+  checksum: 10/579deb63bd0981912983121971f687c952d7b2bf5c43dada2fe8eeb85f51f388ed084ffb6452afd136cd9db3ccbd1c9a6b3200d39c522acfecd50ee7f0c8ad25
   languageName: node
   linkType: hard
 
 "html-react-parser@npm:^5.2.5":
-  version: 5.2.16
-  resolution: "html-react-parser@npm:5.2.16"
+  version: 5.2.17
+  resolution: "html-react-parser@npm:5.2.17"
   dependencies:
     domhandler: "npm:5.0.3"
-    html-dom-parser: "npm:5.1.7"
+    html-dom-parser: "npm:5.1.8"
     react-property: "npm:2.0.2"
     style-to-js: "npm:1.1.21"
   peerDependencies:
@@ -3684,7 +3684,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/539f2434407a25142b4f4c1e16860459bdaed29ed2ef520eb2597dc1315d18247d051dc7e95533e644116a09a0cc10ba5d96ec0ef23bfae5d10bc21ef7c7ed08
+  checksum: 10/74ec0bc5945a90fd154c84830ff1caaa6c686c1c0c82330a1e3cda18b15c8f9b177d2c564d1d3cf566b586c34ce78e2006692aeda3300b0ba30c5234cb7b07c8
   languageName: node
   linkType: hard
 
@@ -5056,12 +5056,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-dom@npm:^12.33.0":
-  version: 12.33.0
-  resolution: "motion-dom@npm:12.33.0"
+"motion-dom@npm:^12.34.1":
+  version: 12.34.1
+  resolution: "motion-dom@npm:12.34.1"
   dependencies:
     motion-utils: "npm:^12.29.2"
-  checksum: 10/0993bb6380c16fc8c9a2f5a5c4638f3d31bf7680e0683292478d8101489bd86830bb59e8fca8d84ee9b7dadbcfd1f1541de2a47dc7a1294ce34abb00ca5caed5
+  checksum: 10/776ee4350307894a7f4328a0a0436f4e117fd10972bc2c50baf384c4a93030c80eacbd122f93a63b840b162786291c49895521a75e69835733e9c067f02e881f
   languageName: node
   linkType: hard
 
@@ -5073,10 +5073,10 @@ __metadata:
   linkType: hard
 
 "motion@npm:^12.4.1":
-  version: 12.33.0
-  resolution: "motion@npm:12.33.0"
+  version: 12.34.1
+  resolution: "motion@npm:12.34.1"
   dependencies:
-    framer-motion: "npm:^12.33.0"
+    framer-motion: "npm:^12.34.1"
     tslib: "npm:^2.4.0"
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -5089,7 +5089,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10/492e5a552b3c548d88a4597e611cf5c2709b26089500bbebf155ee9ec52aeaf00c35f262b65c924a3419f05da92a97caa4617263781d8f6651cc1ac10b97f548
+  checksum: 10/3d2232a937125e7ab348ac2318c6f7e0bc9baf951a48a1257485043282c427776f059276cfb6c1ea0727c15ed1ac564ec52f6b681d9bf6b090e4ba9febc2e9e7
   languageName: node
   linkType: hard
 
@@ -6430,15 +6430,15 @@ __metadata:
   linkType: hard
 
 "tar@npm:^7.4.3":
-  version: 7.5.7
-  resolution: "tar@npm:7.5.7"
+  version: 7.5.9
+  resolution: "tar@npm:7.5.9"
   dependencies:
     "@isaacs/fs-minipass": "npm:^4.0.0"
     chownr: "npm:^3.0.0"
     minipass: "npm:^7.1.2"
     minizlib: "npm:^3.1.0"
     yallist: "npm:^5.0.0"
-  checksum: 10/0d6938dd32fe5c0f17c8098d92bd9889ee0ed9d11f12381b8146b6e8c87bb5aa49feec7abc42463f0597503d8e89e4c4c0b42bff1a5a38444e918b4878b7fd21
+  checksum: 10/1213cdde9c22d6acf8809ba5d2a025212ce3517bc99c4a4c6981b7dc0489bf3b164db9c826c9517680889194c9ba57448c8ff0da35eca9a60bb7689bf0b3897d
   languageName: node
   linkType: hard
 

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-home",
-  "version": "0.9.2-next.1",
+  "version": "0.9.2",
   "description": "A Backstage plugin that helps you build a home page",
   "backstage": {
     "role": "frontend-plugin",
@@ -60,6 +60,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
@@ -83,6 +84,8 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-defaults": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",

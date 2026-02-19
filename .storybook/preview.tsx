@@ -5,7 +5,7 @@ import addonLinks from '@storybook/addon-links';
 import { definePreview } from '@storybook/react-vite';
 import { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
-import { Content, AlertDisplay } from '@backstage/core-components';
+import { AlertDisplay } from '@backstage/core-components';
 import { apis } from './support/apis';
 import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
@@ -57,8 +57,6 @@ export default definePreview({
   },
 
   parameters: {
-    layout: 'fullscreen',
-
     backgrounds: {
       disable: true,
     },
@@ -134,11 +132,10 @@ export default definePreview({
         };
       }, [selectedTheme, selectedThemeName]);
 
-      document.body.style.backgroundColor = 'var(--bui-bg-neutral-0)';
+      document.body.style.backgroundColor = 'var(--bui-bg-app)';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor =
-          'var(--bui-bg-neutral-0)';
+        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg-app)';
       });
 
       return (
@@ -146,9 +143,7 @@ export default definePreview({
           {/* @ts-ignore */}
           <TestApiProvider apis={apis}>
             <AlertDisplay />
-            <Content>
-              <Story />
-            </Content>
+            <Story />
           </TestApiProvider>
         </UnifiedThemeProvider>
       );

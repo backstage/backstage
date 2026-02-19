@@ -301,9 +301,9 @@ export const scaffolderReactTranslationRef: TranslationRef<
   {
     readonly 'workflow.noDescription': 'No description';
     readonly 'stepper.backButtonText': 'Back';
+    readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.createButtonText': 'Create';
     readonly 'stepper.reviewButtonText': 'Review';
-    readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
     readonly 'passwordWidget.content': 'This widget is insecure. Please use [`ui:field: Secret`](https://backstage.io/docs/features/software-templates/writing-templates/#using-secrets) instead of `ui:widget: password`';
     readonly 'scaffolderPageContextMenu.createLabel': 'Create';

@@ -1,5 +1,12 @@
 # yarn-plugin-backstage
 
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.18
+
 ## 0.0.9-next.0
 
 ### Patch Changes

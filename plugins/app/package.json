@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app",
-  "version": "0.4.0-next.1",
+  "version": "0.4.0",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "app",
@@ -59,6 +59,7 @@
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",

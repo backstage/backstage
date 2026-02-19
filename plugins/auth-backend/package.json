@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.26.1-next.0",
+  "version": "0.27.0",
   "description": "A Backstage backend plugin that handles authentication",
   "backstage": {
     "role": "backend-plugin",
@@ -57,14 +57,17 @@
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "express-session": "^1.17.1",
+    "ipaddr.js": "^2.3.0",
     "jose": "^5.0.0",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "matcher": "^4.0.0",
-    "minimatch": "^9.0.0",
+    "minimatch": "^10.2.1",
     "passport": "^0.7.0",
-    "uuid": "^11.0.0"
+    "uuid": "^11.0.0",
+    "zod": "^4.3.5",
+    "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
@@ -76,6 +79,7 @@
     "@types/express": "^4.17.6",
     "@types/express-session": "^1.17.2",
     "@types/passport": "^1.0.3",
+    "msw": "^1.0.0",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

@@ -10,7 +10,6 @@ Français \| [English](README.md) \| [한국어](README-ko_kr.md) \| [中文版]
 ![Code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
 [![Codecov](https://img.shields.io/codecov/c/github/backstage/backstage)](https://codecov.io/gh/backstage/backstage)
 [![](https://img.shields.io/github/v/release/backstage/backstage)](https://github.com/backstage/backstage/releases)
-[![Uffizzi](https://img.shields.io/endpoint?url=https%3A%2F%2Fapp.uffizzi.com%2Fapi%2Fv1%2Fpublic%2Fshields%2Fgithub.com%2Fbackstage%2Fbackstage)](https://app.uffizzi.com/ephemeral-environments/backstage/backstage)
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/7678/badge)](https://bestpractices.coreinfrastructure.org/projects/7678)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/backstage/backstage/badge)](https://securityscorecards.dev/viewer/?uri=github.com/backstage/backstage)
 
@@ -56,7 +55,7 @@ Si vous voulez contribuer et vous impliquer dans notre communauté, voici les re
 - [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Pour obtenir de l'aide ou discuter du projet
 - [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Rendez-vous ici si vous souhaitez contribuer
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Contribuez à définir la direction technique
-- [FAQ](https://backstage.io/docs/FAQ)
+- [FAQ](https://backstage.io/docs/faq)
 - [Code of Conduct](CODE_OF_CONDUCT.md) - C'est comme ça qu'on fonctionne
 - [Adopters](ADOPTERS.md) - Les entreprises utilisant déjà Backstage
 - [Blog](https://backstage.io/blog/) - Annonces et mises à jour
@@ -66,7 +65,7 @@ Si vous voulez contribuer et vous impliquer dans notre communauté, voici les re
 
 ## Licence
 
-Copyright 2020-2025 © Les auteurs de Backstage. Tous droits réservés. La Linux Foundation détient des marques déposées et utilise des marques commerciales. Pour une liste des marques de commerce de la Linux Foundation, veuillez consulter notre page d'utilisation des marques: https://www.linuxfoundation.org/trademark-usage
+Copyright 2020-2026 © Les auteurs de Backstage. Tous droits réservés. La Linux Foundation détient des marques déposées et utilise des marques commerciales. Pour une liste des marques de commerce de la Linux Foundation, veuillez consulter notre page d'utilisation des marques: https://www.linuxfoundation.org/trademark-usage
 
 Sous licence Apache, version 2.0: http://www.apache.org/licenses/LICENSE-2.0
 

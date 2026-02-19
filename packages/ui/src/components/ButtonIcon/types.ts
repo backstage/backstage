@@ -16,10 +16,10 @@
 
 import type { ReactElement, CSSProperties } from 'react';
 import type { ButtonProps as RAButtonProps } from 'react-aria-components';
-import type { LeafSurfaceProps, Responsive } from '../../types';
+import type { Responsive } from '../../types';
 
 /** @public */
-export type ButtonIconOwnProps = LeafSurfaceProps & {
+export type ButtonIconOwnProps = {
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   icon?: ReactElement;

@@ -17,6 +17,7 @@
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * Holds the information required to create a new location in the catalog location store.
@@ -40,6 +41,12 @@ export interface LocationService {
   listLocations(options: {
     credentials: BackstageCredentials;
   }): Promise<Location[]>;
+  queryLocations(options: {
+    limit: number;
+    afterId?: string;
+    query?: FilterPredicate;
+    credentials: BackstageCredentials;
+  }): Promise<{ items: Location[]; totalItems: number }>;
   getLocation(
     id: string,
     options: { credentials: BackstageCredentials },
@@ -79,6 +86,11 @@ export interface RefreshService {
 export interface LocationStore {
   createLocation(location: LocationInput): Promise<Location>;
   listLocations(): Promise<Location[]>;
+  queryLocations(options: {
+    limit: number;
+    afterId?: string;
+    query?: FilterPredicate;
+  }): Promise<{ items: Location[]; totalItems: number }>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
   getLocationByEntity(entityRef: CompoundEntityRef | string): Promise<Location>;

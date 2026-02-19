@@ -1,5 +1,28 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.18
+
+### Patch Changes
+
+- e9eb400: Allow configuring included topics for email notifications.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-notifications-node@0.2.23
+
+## 0.3.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-notifications-node@0.2.23-next.1
+
 ## 0.3.18-next.0
 
 ### Patch Changes

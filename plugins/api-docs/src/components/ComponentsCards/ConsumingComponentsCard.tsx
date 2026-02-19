@@ -31,6 +31,7 @@ import {
   Link,
   Progress,
   TableColumn,
+  TableOptions,
   WarningPanel,
 } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -41,19 +42,25 @@ import { apiDocsTranslationRef } from '../../translation';
  */
 export const ConsumingComponentsCard = (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ComponentEntity>[];
+  tableOptions?: TableOptions;
 }) => {
-  const { variant = 'gridItem', columns = EntityTable.componentEntityColumns } =
-    props;
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const {
+    variant = 'gridItem',
+    title = t('consumingComponentsCard.title'),
+    columns = EntityTable.componentEntityColumns,
+    tableOptions = {},
+  } = props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_API_CONSUMED_BY,
   });
-  const { t } = useTranslationRef(apiDocsTranslationRef);
 
   if (loading) {
     return (
-      <InfoCard variant={variant} title={t('consumingComponentsCard.title')}>
+      <InfoCard variant={variant} title={title}>
         <Progress />
       </InfoCard>
     );
@@ -61,7 +68,7 @@ export const ConsumingComponentsCard = (props: {
 
   if (error || !entities) {
     return (
-      <InfoCard variant={variant} title={t('consumingComponentsCard.title')}>
+      <InfoCard variant={variant} title={title}>
         <WarningPanel
           severity="error"
           title={t('consumingComponentsCard.error.title')}
@@ -73,7 +80,7 @@ export const ConsumingComponentsCard = (props: {
 
   return (
     <EntityTable
-      title={t('consumingComponentsCard.title')}
+      title={title}
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
@@ -88,6 +95,7 @@ export const ConsumingComponentsCard = (props: {
         </div>
       }
       columns={columns}
+      tableOptions={tableOptions}
       entities={entities as ComponentEntity[]}
     />
   );

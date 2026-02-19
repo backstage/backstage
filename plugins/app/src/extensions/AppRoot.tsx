@@ -202,8 +202,8 @@ function DefaultRouter(props: PropsWithChildren<{}>) {
     <BrowserRouter
       basename={basePath}
       future={{
-        v7_relativeSplatPath: true,
-        v7_startTransition: true,
+        v7_relativeSplatPath: false,
+        v7_startTransition: false,
       }}
     >
       {props.children}

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { IconComponent, IconsApi } from '@backstage/frontend-plugin-api';
+import {
+  IconComponent,
+  IconElement,
+  IconsApi,
+} from '@backstage/frontend-plugin-api';
+import { createElement, isValidElement } from 'react';
 
 /**
  * Implementation for the {@link IconsApi}
@@ -22,14 +27,47 @@ import { IconComponent, IconsApi } from '@backstage/frontend-plugin-api';
  * @internal
  */
 export class DefaultIconsApi implements IconsApi {
-  #icons: Map<string, IconComponent>;
+  #icons: Map<string, IconElement>;
+  #components = new Map<string, IconComponent>();
 
-  constructor(icons: { [key in string]: IconComponent }) {
-    this.#icons = new Map(Object.entries(icons));
+  constructor(icons: { [key in string]: IconComponent | IconElement }) {
+    const deprecatedKeys: string[] = [];
+
+    this.#icons = new Map(
+      Object.entries(icons).map(([key, value]) => {
+        if (value === null || isValidElement(value)) {
+          return [key, value];
+        }
+        deprecatedKeys.push(key);
+        return [key, createElement(value as IconComponent)];
+      }),
+    );
+
+    if (deprecatedKeys.length > 0) {
+      const keys = deprecatedKeys.join(', ');
+      // eslint-disable-next-line no-console
+      console.warn(
+        `The following icons were registered as IconComponent, which is deprecated. Use IconElement instead by passing <MyIcon /> rather than MyIcon: ${keys}`,
+      );
+    }
+  }
+
+  icon(key: string): IconElement | undefined {
+    return this.#icons.get(key);
   }
 
   getIcon(key: string): IconComponent | undefined {
-    return this.#icons.get(key);
+    let component = this.#components.get(key);
+    if (component) {
+      return component;
+    }
+    const el = this.#icons.get(key);
+    if (el === undefined) {
+      return undefined;
+    }
+    component = () => el;
+    this.#components.set(key, component);
+    return component;
   }
 
   listIconKeys(): string[] {

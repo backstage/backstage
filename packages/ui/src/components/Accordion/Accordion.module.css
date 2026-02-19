@@ -22,6 +22,18 @@
     background-color: var(--bui-bg-neutral-1);
     border-radius: var(--bui-radius-3);
     padding: var(--bui-space-3);
+
+    &[data-on-bg='neutral-1'] {
+      background-color: var(--bui-bg-neutral-2);
+    }
+
+    &[data-on-bg='neutral-2'] {
+      background-color: var(--bui-bg-neutral-3);
+    }
+
+    &[data-on-bg='neutral-3'] {
+      background-color: var(--bui-bg-neutral-4);
+    }
   }
 
   .bui-AccordionTrigger {

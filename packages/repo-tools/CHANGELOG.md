@@ -1,5 +1,35 @@
 # @backstage/repo-tools
 
+## 0.16.4
+
+### Patch Changes
+
+- cd75ed0: Add newline to OpenAPI license template files.
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Bump to tar v7
+- 6523040: Support Prettier v3 for api-reports
+- be7ebad: Updated package-docs exclude list to reflect renamed example app packages.
+- df59ee6: The `type-deps` command now follows relative imports and re-exports into declaration chunk files, and detects ambient global types such as the `jest` namespace.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/config-loader@1.10.8
+  - @backstage/cli-common@0.1.18
+  - @backstage/cli-node@0.2.18
+
+## 0.16.4-next.2
+
+### Patch Changes
+
+- be7ebad: Updated package-docs exclude list to reflect renamed example app packages.
+- df59ee6: The `type-deps` command now follows relative imports and re-exports into declaration chunk files, and detects ambient global types such as the `jest` namespace.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/config-loader@1.10.8-next.0
+
 ## 0.16.4-next.1
 
 ### Patch Changes

@@ -78,6 +78,50 @@ function shouldCheckTypes(pkg: Package & PackageJsonWithTypes) {
   );
 }
 
+/**
+ * Read a declaration file and recursively follow all relative imports and
+ * re-exports, collecting the source content of each file encountered.
+ */
+function collectDeclSources(entryPath: string): string[] {
+  const visited = new Set<string>();
+  const sources: string[] = [];
+
+  function visit(filePath: string) {
+    const resolved = resolvePath(filePath);
+    if (visited.has(resolved)) {
+      return;
+    }
+    visited.add(resolved);
+
+    // Handle .js -> .d.ts extension mapping used by declaration chunk files
+    let actualPath = resolved;
+    if (!fs.existsSync(actualPath)) {
+      actualPath = resolved.replace(/\.js$/, '.d.ts');
+    }
+    if (!fs.existsSync(actualPath)) {
+      return;
+    }
+
+    const src = fs.readFileSync(actualPath, 'utf8');
+    sources.push(src);
+
+    // Follow relative imports and re-exports into chunk files
+    const relativeRefs = (
+      src.match(/^(?:import|export) .* from '\..*';$/gm) || []
+    )
+      .map(match => match.match(/from '(.*)'/)?.[1] ?? '')
+      .filter(n => n.startsWith('.'));
+
+    const dir = resolvePath(actualPath, '..');
+    for (const ref of relativeRefs) {
+      visit(resolvePath(dir, ref));
+    }
+  }
+
+  visit(entryPath);
+  return sources;
+}
+
 function findAllDeps(declSrc: string) {
   const importedDeps = (declSrc.match(/^import .* from '.*';$/gm) || [])
     .map(match => match.match(/from '(.*)'/)?.[1] ?? '')
@@ -89,7 +133,21 @@ function findAllDeps(declSrc: string) {
     .filter(n => !n.startsWith('.'))
     // We allow references to these without an explicit dependency.
     .filter(n => !['node', 'react'].includes(n));
-  return Array.from(new Set([...importedDeps, ...referencedDeps]));
+
+  // Detect ambient global type namespaces (e.g. jest.Mocked, jest.MockInstance)
+  // that are used in type positions but don't appear as explicit imports.
+  // Strip comments first to avoid false positives from JSDoc examples.
+  const strippedSrc = declSrc
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '');
+  const ambientDeps: string[] = [];
+  if (/\bjest\.\w/.test(strippedSrc)) {
+    ambientDeps.push('jest');
+  }
+
+  return Array.from(
+    new Set([...importedDeps, ...referencedDeps, ...ambientDeps]),
+  );
 }
 
 /**
@@ -98,11 +156,8 @@ function findAllDeps(declSrc: string) {
  */
 function checkTypes(pkg: Package) {
   const allDeps = getPackageExportDetails(pkg.packageJson).flatMap(exp => {
-    const typeDecl = fs.readFileSync(
-      resolvePath(pkg.dir, 'dist', exp.distPath),
-      'utf8',
-    );
-    return findAllDeps(typeDecl);
+    const entryPath = resolvePath(pkg.dir, 'dist', exp.distPath);
+    return collectDeclSources(entryPath).flatMap(src => findAllDeps(src));
   });
   const deps = Array.from(new Set(allDeps));
 

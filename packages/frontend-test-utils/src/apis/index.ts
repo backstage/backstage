@@ -14,18 +14,73 @@
  * limitations under the License.
  */
 
+export { mockApis } from './mockApis';
+export { createApiMock, type ApiMock } from './createApiMock';
 export {
-  MockConfigApi,
-  type ErrorWithContext,
-  MockErrorApi,
-  type MockErrorApiOptions,
-  MockFetchApi,
-  type MockFetchApiOptions,
-  MockPermissionApi,
-  MockStorageApi,
-  type MockStorageBucket,
-  mockApis,
-  type ApiMock,
-} from '@backstage/test-utils';
+  type MockApiFactorySymbol,
+  type MockWithApiFactory,
+  attachMockApiFactory,
+} from './MockWithApiFactory';
+export {
+  TestApiProvider,
+  type TestApiProviderProps,
+  type TestApiPair,
+  type TestApiPairs,
+} from './TestApiProvider';
 
-export { MockAnalyticsApi } from './AnalyticsApi/MockAnalyticsApi';
+/**
+ * Mock API classes are exported as types only to prevent direct instantiation.
+ * Always use the `mockApis` namespace to create mock instances (e.g., `mockApis.alert()`).
+ */
+
+/**
+ * @public
+ */
+export type { MockAlertApi } from './AlertApi';
+
+/**
+ * @public
+ */
+export type { MockAnalyticsApi } from './AnalyticsApi';
+
+/**
+ * @public
+ */
+export type { MockConfigApi } from './ConfigApi';
+
+/**
+ * @public
+ */
+export type {
+  MockErrorApi,
+  MockErrorApiOptions,
+  ErrorWithContext,
+} from './ErrorApi';
+
+/**
+ * @public
+ */
+export type { MockFetchApi, MockFetchApiOptions } from './FetchApi';
+
+/**
+ * @public
+ */
+export type {
+  MockFeatureFlagsApi,
+  MockFeatureFlagsApiOptions,
+} from './FeatureFlagsApi';
+
+/**
+ * @public
+ */
+export type { MockPermissionApi } from './PermissionApi';
+
+/**
+ * @public
+ */
+export type { MockStorageApi } from './StorageApi';
+
+/**
+ * @public
+ */
+export type { MockTranslationApi } from './TranslationApi';

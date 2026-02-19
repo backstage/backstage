@@ -1,5 +1,39 @@
 # @backstage/e2e-test-utils
 
+## 0.1.2
+
+### Patch Changes
+
+- b96c20e: Added optional `channel` option to `generateProjects()` to allow customizing the Playwright browser channel for testing against different browsers variants. When not provided, the function defaults to 'chrome' to maintain backward compatibility.
+
+  Example usage:
+
+  ```ts
+  import { generateProjects } from '@backstage/e2e-test-utils';
+
+  export default defineConfig({
+    projects: generateProjects({ channel: 'msedge' }),
+  });
+  ```
+
+- 7455dae: Use node prefix on native imports
+
+## 0.1.2-next.1
+
+### Patch Changes
+
+- b96c20e: Added optional `channel` option to `generateProjects()` to allow customizing the Playwright browser channel for testing against different browsers variants. When not provided, the function defaults to 'chrome' to maintain backward compatibility.
+
+  Example usage:
+
+  ```ts
+  import { generateProjects } from '@backstage/e2e-test-utils';
+
+  export default defineConfig({
+    projects: generateProjects({ channel: 'msedge' }),
+  });
+  ```
+
 ## 0.1.2-next.0
 
 ### Patch Changes

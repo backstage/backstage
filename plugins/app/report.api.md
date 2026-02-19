@@ -14,6 +14,7 @@ import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -476,7 +477,7 @@ const appPlugin: OverridableFrontendPlugin<
         icons: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
-              [x: string]: IconComponent;
+              [x: string]: IconComponent | IconElement;
             },
             'core.icons',
             {}
@@ -580,6 +581,30 @@ const appPlugin: OverridableFrontendPlugin<
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/plugin-header-actions': OverridableExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        actions: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'plugin-header-actions';
       params: <
         TApi,
         TImpl extends TApi,
@@ -854,6 +879,62 @@ const appPlugin: OverridableFrontendPlugin<
     'component:app/core-not-found-error-page': OverridableExtensionDefinition<{
       kind: 'component';
       name: 'core-not-found-error-page';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          ref: SwappableComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.swappableComponent',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends SwappableComponentRef<any>>(params: {
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
+    }>;
+    'component:app/core-page-layout': OverridableExtensionDefinition<{
+      kind: 'component';
+      name: 'core-page-layout';
       config: {};
       configInput: {};
       output: ExtensionDataRef<

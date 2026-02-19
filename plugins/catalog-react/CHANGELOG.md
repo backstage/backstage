@@ -1,5 +1,103 @@
 # @backstage/plugin-catalog-react
 
+## 2.0.0
+
+### Minor Changes
+
+- 0e9578d: Migrated `UnregisterEntityDialog` from Material UI to Backstage UI components.
+- 491a06c: Add the ability to show icons for the tabs on the entity page (new frontend)
+- b4e8249: Implemented support for the new `queryLocations` and `streamLocations` that allow paginated/streamed and filtered location queries
+- 7feb83b: **BREAKING ALPHA**: All of the predicate types and functions have been moved to the `@backstage/filter-predicates` package.
+
+  When moving into the more general package, they were renamed as follows:
+
+  - `EntityPredicate` -> `FilterPredicate`
+  - `EntityPredicateExpression` -> `FilterPredicateExpression`
+  - `EntityPredicatePrimitive` -> `FilterPredicatePrimitive`
+  - `entityPredicateToFilterFunction` -> `filterPredicateToFilterFunction`
+  - `EntityPredicateValue` -> `FilterPredicateValue`
+
+- e8258d0: **BREAKING**: Removed the 'summary' entity card type from `EntityCardType`. Users should migrate to using 'content' or 'info' card types instead.
+
+  TypeScript will now show errors if you try to use `type: 'summary'` when creating entity cards.
+
+- ac9bead: Added `createTestEntityPage` test utility for testing entity cards and content extensions in the new frontend system. This utility creates a test page extension that provides `EntityProvider` context and accepts entity extensions through input redirects:
+
+  ```typescript
+  import { renderTestApp } from '@backstage/frontend-test-utils';
+  import { createTestEntityPage } from '@backstage/plugin-catalog-react/testUtils';
+
+  renderTestApp({
+    extensions: [createTestEntityPage({ entity: myEntity }), myEntityCard],
+  });
+  ```
+
+### Patch Changes
+
+- f523983: Fixes a bug where the `EntityListProvider` would not correctly hydrate query parameters if more than 20 were provided for the same key.
+- 09a6aad: The `catalogApiMock` test utility now returns a `MockWithApiFactory`, allowing it to be passed directly to test utilities like `renderTestApp` and `TestApiProvider` without needing the `[catalogApiRef, catalogApiMock()]` tuple.
+- 88dbd5e: fixed bug in `UserListPicker` by getting the `kindParamater` from the `filters` rather than from the `queryParameters`
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/ui@0.12.0
+  - @backstage/frontend-test-utils@0.5.0
+  - @backstage/core-components@0.18.7
+  - @backstage/core-compat-api@0.5.8
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/integration-react@1.2.15
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/version-bridge@1.0.12
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 2.0.0-next.2
+
+### Minor Changes
+
+- 491a06c: Add the ability to show icons for the tabs on the entity page (new frontend)
+- 7feb83b: **BREAKING ALPHA**: All of the predicate types and functions have been moved to the `@backstage/filter-predicates` package.
+
+  When moving into the more general package, they were renamed as follows:
+
+  - `EntityPredicate` -> `FilterPredicate`
+  - `EntityPredicateExpression` -> `FilterPredicateExpression`
+  - `EntityPredicatePrimitive` -> `FilterPredicatePrimitive`
+  - `entityPredicateToFilterFunction` -> `filterPredicateToFilterFunction`
+  - `EntityPredicateValue` -> `FilterPredicateValue`
+
+- ac9bead: Added `createTestEntityPage` test utility for testing entity cards and content extensions in the new frontend system. This utility creates a test page extension that provides `EntityProvider` context and accepts entity extensions through input redirects:
+
+  ```typescript
+  import { renderTestApp } from '@backstage/frontend-test-utils';
+  import { createTestEntityPage } from '@backstage/plugin-catalog-react/testUtils';
+
+  renderTestApp({
+    extensions: [createTestEntityPage({ entity: myEntity }), myEntityCard],
+  });
+  ```
+
+### Patch Changes
+
+- 09a6aad: The `catalogApiMock` test utility now returns a `MockWithApiFactory`, allowing it to be passed directly to test utilities like `renderTestApp` and `TestApiProvider` without needing the `[catalogApiRef, catalogApiMock()]` tuple.
+- 88dbd5e: fixed bug in `UserListPicker` by getting the `kindParamater` from the `filters` rather than from the `queryParameters`
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/ui@0.12.0-next.2
+  - @backstage/frontend-test-utils@0.5.0-next.2
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/integration-react@1.2.15-next.2
+  - @backstage/core-compat-api@0.5.8-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/plugin-permission-react@0.4.40-next.1
+  - @backstage/version-bridge@1.0.12-next.0
+  - @backstage/filter-predicates@0.1.0-next.0
+
 ## 1.22.0-next.1
 
 ### Minor Changes

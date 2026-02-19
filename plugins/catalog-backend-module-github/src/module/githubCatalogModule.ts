@@ -23,12 +23,15 @@ import {
   catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { catalogScmEventsServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
+import { octokitProviderServiceRef } from '../util/octokitProviderService';
+import { GithubScmEventsBridge } from '../events/GithubScmEventsBridge';
 
 /**
- * Registers the `GithubEntityProvider` with the catalog processing extension point.
+ * Registers all relevant GitHub integration points into the catalog backend.
  *
  * @public
  */
@@ -46,6 +49,9 @@ export const githubCatalogModule = createBackendModule({
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         catalog: catalogServiceRef,
+        octokitProvider: octokitProviderServiceRef,
+        catalogScmEvents: catalogScmEventsServiceRef,
+        lifecycle: coreServices.lifecycle,
       },
       async init({
         catalogProcessing,
@@ -56,6 +62,9 @@ export const githubCatalogModule = createBackendModule({
         catalogAnalyzers,
         auth,
         catalog,
+        octokitProvider,
+        catalogScmEvents,
+        lifecycle,
       }) {
         catalogAnalyzers.addScmLocationAnalyzer(
           new GithubLocationAnalyzer({
@@ -72,6 +81,19 @@ export const githubCatalogModule = createBackendModule({
             scheduler,
           }),
         );
+
+        const bridge = new GithubScmEventsBridge({
+          logger,
+          events,
+          octokitProvider,
+          catalogScmEvents,
+        });
+        lifecycle.addStartupHook(async () => {
+          await bridge.start();
+        });
+        lifecycle.addShutdownHook(async () => {
+          await bridge.stop();
+        });
       },
     });
   },

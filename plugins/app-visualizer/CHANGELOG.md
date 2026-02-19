@@ -1,5 +1,35 @@
 # @backstage/plugin-app-visualizer
 
+## 0.2.0
+
+### Minor Changes
+
+- ef6916e: Migrated to use `SubPageBlueprint` for tabbed navigation and added a copy-tree-as-JSON plugin header action using `PluginHeaderActionBlueprint`. The plugin now specifies a `title` and `icon`.
+
+### Patch Changes
+
+- cb090b4: Bump react-aria-components to v1.14.0
+- c38b74d: Internal updates for blueprint moves to `@backstage/plugin-app-react`.
+- 4137a43: Updated CSS token references to use renamed `--bui-border-2` token.
+- 4d50e1f: Improved rendering performance of the details page.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/ui@0.12.0
+  - @backstage/core-components@0.18.7
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+
+## 0.1.28-next.1
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/ui@0.12.0-next.2
+  - @backstage/frontend-plugin-api@0.14.0-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+
 ## 0.1.28-next.0
 
 ### Patch Changes

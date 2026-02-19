@@ -23,8 +23,11 @@ test('the results are rendered as expected', async ({ page }) => {
   await expect(enterButton).toBeVisible();
   await enterButton.click();
 
-  await page.goto('/search');
-  await page.route(`http://*/api/search/query?term=*`, async route => {
+  // Wait for sign-in to complete before navigating
+  await expect(page.getByRole('link', { name: 'Catalog' })).toBeVisible();
+
+  // Set up route interception BEFORE navigating to the search page
+  await page.route(`**/api/search/query?term=*`, async route => {
     const results = [
       {
         type: 'software-catalog',
@@ -38,9 +41,13 @@ test('the results are rendered as expected', async ({ page }) => {
     await route.fulfill({ json: { results } });
   });
 
+  await page.goto('/search');
+
   await expect(
     page.getByPlaceholder('Search in Backstage Example App'),
   ).toBeVisible();
 
+  // Type a search query to trigger the mocked response
+  await page.getByPlaceholder('Search in Backstage Example App').fill('test');
   await expect(page.getByText('Backstage system documentation')).toBeVisible();
 });

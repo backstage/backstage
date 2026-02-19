@@ -16,7 +16,7 @@
 
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { GroupSchema } from '@gitbeaker/rest';
+import { GroupSchema, CreateGroupOptions } from '@gitbeaker/rest';
 import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabGroupEnsureExists.examples';
 
@@ -45,6 +45,12 @@ export const createGitlabGroupEnsureExistsAction = (options: {
           z
             .string({
               description: 'The token to use for authorization to GitLab',
+            })
+            .optional(),
+        description: z =>
+          z
+            .string({
+              description: 'The group’s description',
             })
             .optional(),
         path: z =>
@@ -77,8 +83,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         ctx.output('groupId', 42);
         return;
       }
-
-      const { token, repoUrl, path } = ctx.input;
+      const { token, repoUrl, path, description } = ctx.input;
 
       const { host } = parseRepoUrl(repoUrl, integrations);
 
@@ -86,14 +91,23 @@ export const createGitlabGroupEnsureExistsAction = (options: {
 
       let currentPath: string | null = null;
       let parentId: number | null = null;
-      for (const { name, slug } of pathIterator(path)) {
+      const pathParts = [...pathIterator(path)];
+      const lastIndex = pathParts.length - 1;
+      for (let i = 0; i < pathParts.length; i++) {
+        const { name, slug } = pathParts[i];
         const fullPath: string = currentPath ? `${currentPath}/${slug}` : slug;
-        const result = (await api.Groups.search(
-          fullPath,
-        )) as unknown as Array<GroupSchema>; // recast since the return type for search is wrong in the gitbeaker typings
-        const subGroup = result.find(
-          searchPathElem => searchPathElem.full_path === fullPath,
-        );
+        let subGroup: GroupSchema | undefined;
+        try {
+          subGroup = (await api.Groups.show(
+            fullPath,
+          )) as unknown as GroupSchema;
+        } catch (error: any) {
+          // 404 means the group doesn't exist - we'll create it below
+          // Any other error should be thrown
+          if (error.cause?.response?.status !== 404) {
+            throw error;
+          }
+        }
         if (!subGroup) {
           ctx.logger.info(`creating missing group ${fullPath}`);
 
@@ -101,17 +115,11 @@ export const createGitlabGroupEnsureExistsAction = (options: {
             key: `ensure.${name}.${slug}.${parentId}`,
             // eslint-disable-next-line no-loop-func
             fn: async () => {
-              return (
-                await api.Groups.create(
-                  name,
-                  slug,
-                  parentId
-                    ? {
-                        parentId: parentId,
-                      }
-                    : {},
-                )
-              )?.id;
+              const groupOptions: CreateGroupOptions = {
+                ...(parentId ? { parentId } : {}),
+                ...(description && i === lastIndex ? { description } : {}),
+              };
+              return (await api.Groups.create(name, slug, groupOptions))?.id;
             },
           });
         } else {

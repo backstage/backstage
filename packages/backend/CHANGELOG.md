@@ -1,5 +1,85 @@
 # example-backend
 
+## 0.0.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.4.0
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.11
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.19
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.17
+  - @backstage/plugin-auth-backend@0.27.0
+  - @backstage/plugin-search-backend-module-elasticsearch@1.8.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.6
+  - @backstage/plugin-search-backend-module-techdocs@0.4.11
+  - @backstage/plugin-search-backend-module-catalog@0.3.12
+  - @backstage/plugin-search-backend-module-explore@0.3.11
+  - @backstage/plugin-notifications-backend@0.6.2
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-backend-node@1.4.1
+  - @backstage/plugin-kubernetes-backend@0.21.1
+  - @backstage/plugin-permission-backend@0.7.9
+  - @backstage/plugin-scaffolder-backend@3.1.3
+  - @backstage/backend-defaults@0.15.2
+  - @backstage/plugin-devtools-backend@0.5.14
+  - @backstage/plugin-techdocs-backend@2.1.5
+  - @backstage/plugin-signals-backend@0.3.12
+  - @backstage/plugin-events-backend@0.5.11
+  - @backstage/plugin-search-backend@2.0.12
+  - @backstage/plugin-proxy-backend@0.6.10
+  - @backstage/plugin-app-backend@0.5.11
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-mcp-actions-backend@0.1.9
+  - @backstage/plugin-auth-backend-module-github-provider@0.5.0
+  - @backstage/plugin-events-backend-module-google-pubsub@0.2.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.16
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.4
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.8
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.19
+
+## 0.0.47-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.27.0-next.1
+  - @backstage/plugin-devtools-backend@0.5.14-next.1
+  - @backstage/plugin-mcp-actions-backend@0.1.9-next.1
+  - @backstage/plugin-scaffolder-backend@3.1.3-next.2
+  - @backstage/plugin-search-backend@2.0.12-next.1
+  - @backstage/plugin-techdocs-backend@2.1.5-next.2
+  - @backstage/plugin-search-backend-module-explore@0.3.11-next.1
+  - @backstage/plugin-catalog-backend@3.4.0-next.2
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-app-backend@0.5.11-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.5.0-next.0
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.16-next.0
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.4-next.0
+  - @backstage/plugin-auth-node@0.6.13-next.1
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.19-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.17-next.1
+  - @backstage/plugin-events-backend@0.5.11-next.0
+  - @backstage/plugin-events-backend-module-google-pubsub@0.1.8-next.0
+  - @backstage/plugin-kubernetes-backend@0.21.1-next.2
+  - @backstage/plugin-notifications-backend@0.6.2-next.2
+  - @backstage/plugin-permission-backend@0.7.9-next.0
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.16-next.0
+  - @backstage/plugin-permission-node@0.10.10-next.0
+  - @backstage/plugin-proxy-backend@0.6.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.6-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.3.12-next.1
+  - @backstage/plugin-search-backend-module-elasticsearch@1.8.0-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.4.11-next.1
+  - @backstage/plugin-search-backend-node@1.4.1-next.0
+  - @backstage/plugin-signals-backend@0.3.12-next.0
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.11-next.1
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.8-next.1
+
 ## 0.0.47-next.1
 
 ### Patch Changes

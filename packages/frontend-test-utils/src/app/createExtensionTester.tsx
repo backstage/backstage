@@ -38,7 +38,7 @@ import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/read
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createErrorCollector } from '../../../frontend-app-api/src/wiring/createErrorCollector';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
-import { TestApiRegistry, type TestApiPairs } from '../utils';
+import { resolveTestApiEntries, TestApiPairs } from '../apis/TestApiProvider';
 
 /**
  * Represents a snapshot of an extension in the app tree.
@@ -96,7 +96,7 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
   /** @internal */
   static forSubject<
     T extends ExtensionDefinitionParameters,
-    TApiPairs extends any[],
+    const TApiPairs extends any[],
   >(
     subject: ExtensionDefinition<T>,
     options?: {
@@ -281,9 +281,7 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
       collector,
     );
 
-    const apiHolder = this.#apis
-      ? TestApiRegistry.from(...this.#apis)
-      : TestApiRegistry.from();
+    const apiHolder = resolveTestApiEntries(this.#apis ?? []);
 
     instantiateAppNodeTree(tree.root, apiHolder, collector);
 

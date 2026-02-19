@@ -1,5 +1,11 @@
 # @backstage/plugin-permission-common
 
+## 0.9.6
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+
 ## 0.9.5-next.0
 
 ### Patch Changes

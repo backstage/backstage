@@ -1,6 +1,6 @@
 {
   "name": "@backstage/e2e-test-utils",
-  "version": "0.1.2-next.0",
+  "version": "0.1.2",
   "description": "Shared end-to-end test utilities Backstage",
   "backstage": {
     "role": "node-library"

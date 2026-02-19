@@ -53,7 +53,6 @@ Chai
 Chainguard
 changeset
 changesets
-Changesets
 chanwit
 Chanwit
 CI/CD
@@ -68,12 +67,10 @@ Cobertura
 codeblocks
 Codecov
 codehilite
-Codehilite
 codemod
 codemods
 codeowners
 codescene
-CodeScene
 composability
 composable
 config
@@ -125,7 +122,6 @@ devs
 dialogs
 disambiguator
 discoverability
-Discoverability
 dls
 Dockerfile
 dockerfiles
@@ -136,7 +132,6 @@ Dominik
 DOMPurify
 don'ts
 dynatrace
-Dynatrace
 dyno
 ecco
 elasticsearch
@@ -157,12 +152,10 @@ faqs
 featureful
 Figma
 firehydrant
-FireHydrant
 Firekube
 Firestore
 Fiverr
 flightcontrol
-Flightcontrol
 Francesco
 Frontside
 Gaurav
@@ -188,7 +181,6 @@ haproxy
 hardcoded
 hardcoding
 harness
-Harness
 Helidon
 Henneke
 Heroku
@@ -281,7 +273,6 @@ microsite
 microtasks
 middleware
 minikube
-Minikube
 Minio
 misattributed
 misconfiguration
@@ -290,7 +281,6 @@ mkdocs
 Mkdocs
 modularization
 monorepo
-Monorepo
 monorepos
 monospace
 morgan
@@ -327,7 +317,6 @@ Olausson
 Oldsberg
 onboarded
 onboarding
-Onboarding
 onelogin
 openapi
 OpenSearch
@@ -335,7 +324,6 @@ OpenShift
 openssl
 orgs
 overridable
-Overridable
 padding
 paddings
 pagerduty
@@ -345,13 +333,13 @@ parallelization
 param
 params
 parseable
+passthrough
 passwordless
 Patrik
 pattison
 Peloton
 PEP
 performant
-Performant
 periskop
 Periskop
 permissioned
@@ -434,6 +422,7 @@ SCM
 SCMs
 scrollable
 scrollbar
+scrollbars
 sdks
 seb
 semlas
@@ -559,6 +548,7 @@ validator
 validators
 Valkey
 varchar
+viewport
 vite
 VMware
 Vodafone

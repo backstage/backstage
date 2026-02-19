@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-test-utils",
-  "version": "1.10.5-next.0",
+  "version": "1.11.0",
   "description": "Test helpers library for Backstage backends",
   "backstage": {
     "role": "node-library"
@@ -88,5 +88,13 @@
     "@types/lodash": "^4.14.151",
     "@types/supertest": "^2.0.8",
     "supertest": "^7.0.0"
+  },
+  "peerDependencies": {
+    "@types/jest": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/jest": {
+      "optional": true
+    }
   }
 }

@@ -1,5 +1,49 @@
 # @backstage/frontend-plugin-api
 
+## 0.14.0
+
+### Minor Changes
+
+- ef6916e: Added `IconElement` type as a replacement for the deprecated `IconComponent`. The `IconsApi` now has a new `icon()` method that returns `IconElement`, while the existing `getIcon()` method is deprecated. The `IconBundleBlueprint` now accepts both `IconComponent` and `IconElement` values.
+- bb9b471: Plugin IDs that do not match the standard format are deprecated (letters, digits, and dashes only, starting with a letter). Plugin IDs that do no match this format will be rejected in a future release.
+- ef6916e: Added `SubPageBlueprint` for creating sub-page tabs, `PluginHeaderActionBlueprint` and `PluginHeaderActionsApi` for plugin-scoped header actions, and `PageLayout` as a swappable component. The `PageBlueprint` now supports sub-pages with tabbed navigation, page title, icon, and header actions. Plugins can now specify a `title` and `icon` in `createFrontendPlugin`.
+- c38b74d: **BREAKING**: The following blueprints have been removed and are now only available from `@backstage/plugin-app-react`:
+
+  - `IconBundleBlueprint`
+  - `NavContentBlueprint`
+  - `RouterBlueprint`
+  - `SignInPageBlueprint`
+  - `SwappableComponentBlueprint`
+  - `ThemeBlueprint`
+  - `TranslationBlueprint`
+
+- 10ebed4: **BREAKING**: Removed type support for multiple attachment points in the `ExtensionDefinitionAttachTo` type. Extensions can no longer specify an array of attachment points in the `attachTo` property.
+
+  The runtime still supports multiple attachment points for backward compatibility with existing compiled code, but new code will receive type errors if attempting to use this pattern.
+
+  Extensions that previously used multiple attachment points should migrate to using a Utility API pattern instead. See the [Sharing Extensions Across Multiple Locations](https://backstage.io/docs/frontend-system/architecture/27-sharing-extensions) guide for the recommended approach.
+
+### Patch Changes
+
+- 7edb810: Added a new `internal` option to `createExtensionInput` that marks the input as only allowing attachments from the same plugin.
+- 9554c36: **DEPRECATED**: Multiple attachment points for extensions have been deprecated. The functionality continues to work for backward compatibility, but will log a deprecation warning and be removed in a future release.
+
+  Extensions using array attachment points should migrate to using Utility APIs instead. See the [Sharing Extensions Across Multiple Locations](https://backstage.io/docs/frontend-system/architecture/27-sharing-extensions) guide for the recommended pattern.
+
+- 53b6549: Plugins in the new frontend system now have a `pluginId` field rather than `id` to better align with naming conventions used throughout the frontend and backend systems. The old field is still present but marked as deprecated. All internal code has been updated to prefer `pluginId` while maintaining backward compatibility by falling back to `id` when needed.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12
+
+## 0.14.0-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12-next.0
+
 ## 0.14.0-next.1
 
 ### Minor Changes
