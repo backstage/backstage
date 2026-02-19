@@ -28,17 +28,11 @@ You can filter the Catalog using a combination of the following:
 
   Use the `Kind` dropdown list to select which kind of entity to show in the list:
   - API
-
   - Component
-
   - Group
-
   - Location
-
   - System
-
   - Template
-
   - User
 
 - **Filter by Type**
