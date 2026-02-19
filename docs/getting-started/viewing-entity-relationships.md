@@ -12,13 +12,13 @@ To see these relationships:
 
 1. Select the name of the component in the main panel, in this example, `example-website`.
 
-     ![Screenshot of the Backstage portal with example-website selected.](../assets/uiguide/select-example-website.png)
+   ![Screenshot of the Backstage portal with example-website selected.](../assets/uiguide/select-example-website.png)
 
    A page is displayed that includes a `Relations` section. This section displays the selected entity and any other types of entities to which it is related. Each relationship is also designated, such as `hasPart/partOf` and `apiProvidedBy/providesApi`. [Well-known Relations between Catalog Entities](../features/software-catalog/well-known-relations.md) describes the most common relationships, but you can also [create your own relationships](../features/software-catalog/extending-the-model.md#adding-a-new-relation-type).
 
 2. Selecting any of the related entities allows you to drill down further through the system model.
 
-    ![Screenshot of the example-website Relations panel.](../assets/uiguide/example-website-relationships.png)
+   ![Screenshot of the example-website Relations panel.](../assets/uiguide/example-website-relationships.png)
 
 ## Filtering the relationships
 
@@ -46,30 +46,29 @@ The `Catalog Graph` automatically reflects any changes you make to the filter se
   - `MAX DEPTH` = 1
 
     ![Max Depth at 1](../assets/uiguide/max-depth-1.png)
-    
+
   - `MAX DEPTH` = infinite
 
     ![Max Depth at infinite](../assets/uiguide/max-depth-infinite.png)
-  
 
 - `KINDS` - select what kinds of entities you want to view, default is all kinds
 - `RELATIONS` - select which relationships you want to view, default is all relationships
-- `Direction`- orientation in which you want to view the entity and its associated nodes
+- `Direction` - orientation in which you want to view the entity and its associated nodes
   - Top to bottom
   - Bottom to top
   - Left to right
   - Right to left
 - `Curve`
-
   - `Curve` = Monotone
 
     ![Curve at Monotone.](../assets/uiguide/curve-monotone.png)
-    
+
   - `Curve` = Step Before
 
     ![Curve at Step Before.](../assets/uiguide/curve-step-before.png)
 
 You can also toggle:
+
 - `Simplified`
   - On = simple view
   - Off = detailed view
@@ -78,18 +77,18 @@ You can also toggle:
   - Off = You only see relations from the selected entity to its nodes.
 
   The following graphics illustrate the view of the nodes and relationships, based on the combination of the settings of `Simplified` and `Merge relations`.
-    - `Simplified` = On and `Merge Relations` = On
+  - `Simplified` = On and `Merge Relations` = On
 
-      ![Simplified is On and Merge Relations is On.](../assets/uiguide/simplify-on-merge-relations-on.png)
+    ![Simplified is On and Merge Relations is On.](../assets/uiguide/simplify-on-merge-relations-on.png)
 
-    - `Simplified` = On and `Merge Relations` = Off
+  - `Simplified` = On and `Merge Relations` = Off
 
-      ![Simplified is On and Merge Relations is Off.](../assets/uiguide/simplify-on-merge-relations-off.png)
+    ![Simplified is On and Merge Relations is Off.](../assets/uiguide/simplify-on-merge-relations-off.png)
 
-    - `Simplified` = Off and `Merge Relations` = On
+  - `Simplified` = Off and `Merge Relations` = On
 
-      ![Simplified is Off and Merge Relations is On.](../assets/uiguide/simplify-off-merge-relations-on.png)
+    ![Simplified is Off and Merge Relations is On.](../assets/uiguide/simplify-off-merge-relations-on.png)
 
-    - `Simplified` = Off and `Merge Relations` = Off
+  - `Simplified` = Off and `Merge Relations` = Off
 
-      ![Simplified is Off and Merge Relations is Off.](../assets/uiguide/simplify-off-merge-relations-off.png)
+    ![Simplified is Off and Merge Relations is Off.](../assets/uiguide/simplify-off-merge-relations-off.png)
