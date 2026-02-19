@@ -111,6 +111,7 @@ export const createGitlabProjectVariableAction: (options: {
     token?: string | undefined;
     variableProtected?: boolean | undefined;
     masked?: boolean | undefined;
+    maskedAndHidden?: boolean | undefined;
     raw?: boolean | undefined;
     environmentScope?: string | undefined;
   },
@@ -221,6 +222,7 @@ export function createPublishGitlabAction(options: {
           variable_type?: 'file' | 'env_var' | undefined;
           masked?: boolean | undefined;
           environment_scope?: string | undefined;
+          masked_and_hidden?: boolean | undefined;
         }[]
       | undefined;
   },
