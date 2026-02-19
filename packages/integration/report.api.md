@@ -126,13 +126,13 @@ export type AzureCredentialBase = {
 
 // @public
 export interface AzureCredentialsManager {
-  // (undocumented)
   getCredentials(
     accountName: string,
   ): Promise<
     TokenCredential | StorageSharedKeyCredential | AnonymousCredential
   >;
-  // (undocumented)
+  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
   getServiceUrl(accountName: string): string;
 }
 

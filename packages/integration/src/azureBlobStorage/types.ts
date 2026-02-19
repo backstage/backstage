@@ -27,10 +27,32 @@ import type {
  *
  */
 export interface AzureCredentialsManager {
+  /**
+   * Retrieves the appropriate credential for the specified Azure storage account.
+   *
+   * Returns different credential types based on the configured authentication method:
+   * - StorageSharedKeyCredential for account key authentication
+   * - AnonymousCredential for SAS token authentication (token is embedded in the service URL)
+   * - TokenCredential (ClientSecretCredential or DefaultAzureCredential) for Azure AD authentication
+   *
+   * @param accountName - The name of the Azure storage account
+   * @returns A promise that resolves to the credential object
+   */
   getCredentials(
     accountName: string,
   ): Promise<
     TokenCredential | StorageSharedKeyCredential | AnonymousCredential
   >;
+
+  /**
+   * Constructs the service URL for the specified Azure storage account.
+   *
+   * Returns the appropriate URL based on configuration:
+   * - Custom endpoint URL if configured (with optional SAS token appended as query parameter)
+   * - Default Azure Blob Storage URL in the format: https://{accountName}.blob.core.windows.net
+   *
+   * @param accountName - The name of the Azure storage account
+   * @returns The service URL string
+   */
   getServiceUrl(accountName: string): string;
 }
