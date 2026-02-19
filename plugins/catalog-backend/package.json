@@ -89,7 +89,7 @@
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "minimatch": "^9.0.0",
+    "minimatch": "^10.2.1",
     "p-limit": "^3.0.2",
     "prom-client": "^15.0.0",
     "uuid": "^11.0.0",

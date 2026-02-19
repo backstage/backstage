@@ -78,7 +78,7 @@
     "knex-pglite": "^0.11.0",
     "knip": "^5.42.0",
     "lodash": "^4.17.21",
-    "minimatch": "^9.0.0",
+    "minimatch": "^10.2.1",
     "p-limit": "^3.0.2",
     "portfinder": "^1.0.32",
     "tar": "^7.5.6",
