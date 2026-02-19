@@ -47,8 +47,8 @@ export interface DefaultCatalogGraphApiOptions {
 
   /**
    * Known relations.
-   * Defaults to the built-in relations, but can be customed so the UI suggests
-   * other relations in the drop-down.
+   * Defaults to the built-in relations, but can be customized so the UI
+   * suggests other relations in the drop-down.
    *
    * Can also be configured via `catalogGraph.knownRelations` in app config.
    */
@@ -63,8 +63,8 @@ export interface DefaultCatalogGraphApiOptions {
 
   /**
    * Known relation pairs.
-   * Defaults to the built-in relation pairs, but can be customed to incude more
-   * relations pairs for custom relations.
+   * Defaults to the built-in relation pairs, but can be customized to include
+   * more relations pairs for custom relations.
    *
    * Can also be configured via `catalogGraph.knownRelationPairs` in app config.
    */
@@ -81,7 +81,7 @@ export interface DefaultCatalogGraphApiOptions {
    * Default relation types. These are the relation types that will be used by
    * default in the UI, unless overridden by props.
    *
-   * Defaults to all relations, but can be customed to include more relations
+   * Defaults to all relations, but can be customized to include more relations
    * or exclude certain relations that aren't suitable or feasible to display.
    *
    * Can also be configured via `catalogGraph.defaultRelationTypes` in app config.

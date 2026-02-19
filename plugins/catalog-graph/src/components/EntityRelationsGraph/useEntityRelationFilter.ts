@@ -47,7 +47,6 @@ export function useEntityRelationGraphFilter({
 
     const entities: { [ref: string]: Entity } = {};
 
-    const expectedEntities = new Set([...rootEntityRefs]);
     const processedEntityRefs = new Set<string>();
 
     let nextDepthRefQueue = [...rootEntityRefs];
@@ -55,6 +54,9 @@ export function useEntityRelationGraphFilter({
 
     while (
       nextDepthRefQueue.length > 0 &&
+      // The backend fetching uses maxDepth + 1 for small graphs, so to quickly
+      // have the graph ready if depth is increased.
+      // Hence necessary here as well.
       (!isFinite(maxDepth) || depth < maxDepth + 1)
     ) {
       const entityRefQueue = nextDepthRefQueue;
@@ -88,7 +90,6 @@ export function useEntityRelationGraphFilter({
             ) {
               if (!processedEntityRefs.has(rel.targetRef)) {
                 nextDepthRefQueue.push(rel.targetRef);
-                expectedEntities.add(rel.targetRef);
               }
             }
           }
