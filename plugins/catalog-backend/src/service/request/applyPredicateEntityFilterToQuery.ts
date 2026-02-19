@@ -129,6 +129,14 @@ function applyPredicateInStrategy(
 
   // Handle $all (AND)
   if (isAllPredicate(filter)) {
+    // Empty $all array is vacuous truth - matches all entities
+    if (filter.$all.length === 0) {
+      if (negate) {
+        return targetQuery.andWhere(knex.raw('1 = 0'));
+      }
+      return targetQuery;
+    }
+
     return targetQuery[negate ? 'andWhereNot' : 'andWhere'](
       function allFilter() {
         for (const subFilter of filter.$all) {
@@ -148,6 +156,14 @@ function applyPredicateInStrategy(
 
   // Handle $any (OR)
   if (isAnyPredicate(filter)) {
+    // Empty $any array matches nothing
+    if (filter.$any.length === 0) {
+      if (negate) {
+        return targetQuery;
+      }
+      return targetQuery.andWhere(knex.raw('1 = 0'));
+    }
+
     return targetQuery[negate ? 'andWhereNot' : 'andWhere'](
       function anyFilter() {
         for (const subFilter of filter.$any) {
