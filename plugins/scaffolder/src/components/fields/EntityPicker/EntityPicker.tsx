@@ -15,6 +15,7 @@
  */
 import {
   type EntityFilterQuery,
+  type EntityOrderQuery,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
 import {
@@ -71,6 +72,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     errors,
   } = props;
   const catalogFilter = buildCatalogFilter(uiSchema);
+  const orderFields = buildOrderFields(uiSchema);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
@@ -91,8 +93,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
     ];
     const { items } = await catalogApi.getEntities(
       catalogFilter
-        ? { filter: catalogFilter, fields }
-        : { filter: undefined, fields },
+        ? { filter: catalogFilter, fields, order: orderFields }
+        : { filter: undefined, fields, order: orderFields },
     );
 
     const entityRefToPresentation = new Map<
@@ -282,6 +284,14 @@ function convertSchemaFiltersToQuery(
  * @param uiSchema The `uiSchema` of an `EntityPicker` component.
  * @returns An `EntityFilterQuery` based on the `uiSchema`, or `undefined` if `catalogFilter` is not specified in the `uiSchema`.
  */
+type OrderField = { field: string; order: 'asc' | 'desc' };
+
+const DEFAULT_ENTITY_ORDER: OrderField[] = [
+  { field: 'kind', order: 'asc' },
+  { field: 'metadata.namespace', order: 'asc' },
+  { field: 'metadata.name', order: 'asc' },
+];
+
 function buildCatalogFilter(
   uiSchema: EntityPickerProps['uiSchema'],
 ): EntityFilterQuery | undefined {
@@ -300,4 +310,17 @@ function buildCatalogFilter(
   }
 
   return convertSchemaFiltersToQuery(catalogFilter);
+}
+
+function buildOrderFields(
+  uiSchema: EntityPickerProps['uiSchema'],
+): EntityOrderQuery {
+  const orderFields = uiSchema['ui:options']?.orderFields;
+  if (!orderFields?.length) {
+    return DEFAULT_ENTITY_ORDER;
+  }
+  return orderFields.map(({ field, order }) => ({
+    field,
+    order: order ?? 'asc',
+  }));
 }

@@ -61,6 +61,17 @@ export const EntityPickerFieldSchema = makeFieldSchema({
       )
         .optional()
         .describe('List of key-value filter expression for entities'),
+      orderFields: z
+        .array(
+          z.object({
+            field: z.string(),
+            order: z.enum(['asc', 'desc']).optional(),
+          }),
+        )
+        .optional()
+        .describe(
+          'Ordering directives passed to the catalog when loading options',
+        ),
     }),
 });
 

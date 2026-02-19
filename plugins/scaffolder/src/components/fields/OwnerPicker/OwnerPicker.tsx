@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 import { EntityPicker } from '../EntityPicker/EntityPicker';
+import type {
+  EntityPickerProps,
+  EntityPickerUiOptions,
+} from '../EntityPicker/schema';
 import { OwnerPickerProps } from './schema';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -44,13 +48,23 @@ export const OwnerPicker = (props: OwnerPickerProps) => {
     kind: allowedKinds || ['Group', 'User'],
   };
 
-  const ownerUiSchema = {
+  const defaultOrderFields: EntityPickerUiOptions['orderFields'] = [
+    { field: 'spec.profile.displayName', order: 'asc' },
+    { field: 'metadata.name', order: 'asc' },
+  ];
+  const orderFields = Array.isArray(uiSchema['ui:options']?.orderFields)
+    ? (uiSchema['ui:options']
+        ?.orderFields as EntityPickerUiOptions['orderFields'])
+    : defaultOrderFields;
+
+  const ownerUiSchema: EntityPickerProps['uiSchema'] = {
     ...uiSchema,
     'ui:options': {
       catalogFilter,
       defaultKind: 'Group',
       allowArbitraryValues:
         uiSchema['ui:options']?.allowArbitraryValues ?? true,
+      orderFields,
       ...(defaultNamespace !== undefined ? { defaultNamespace } : {}),
     },
   };

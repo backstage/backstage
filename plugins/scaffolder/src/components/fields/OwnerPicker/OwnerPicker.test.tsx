@@ -34,6 +34,11 @@ const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   metadata: { namespace, name },
 });
 
+const ownerDefaultOrder = [
+  { field: 'spec.profile.displayName', order: 'asc' as const },
+  { field: 'metadata.name', order: 'asc' as const },
+];
+
 describe('<OwnerPicker />', () => {
   const entities: Entity[] = [
     makeEntity('Group', 'default', 'team-a'),
@@ -49,6 +54,7 @@ describe('<OwnerPicker />', () => {
       allowArbitraryValues?: boolean;
       defaultNamespace?: string | false;
       catalogFilter?: EntityFilterQuery;
+      orderFields?: { field: string; order?: 'asc' | 'desc' }[];
     };
   };
   const rawErrors: string[] = [];
@@ -113,6 +119,7 @@ describe('<OwnerPicker />', () => {
             'spec.profile.displayName',
             'spec.type',
           ],
+          order: ownerDefaultOrder,
         }),
       );
     });
@@ -219,6 +226,7 @@ describe('<OwnerPicker />', () => {
             'spec.profile.displayName',
             'spec.type',
           ],
+          order: ownerDefaultOrder,
         }),
       );
     });
@@ -263,6 +271,7 @@ describe('<OwnerPicker />', () => {
               'spec.type': 'team',
             },
           ],
+          order: ownerDefaultOrder,
         }),
       );
     });
@@ -310,6 +319,7 @@ describe('<OwnerPicker />', () => {
               'spec.type': ['team', 'business-unit'],
             },
           ],
+          order: ownerDefaultOrder,
         }),
       );
     });

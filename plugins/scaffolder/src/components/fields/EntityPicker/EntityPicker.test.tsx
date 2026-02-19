@@ -37,6 +37,12 @@ const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   metadata: { namespace, name },
 });
 
+const defaultOrder = [
+  { field: 'kind', order: 'asc' as const },
+  { field: 'metadata.namespace', order: 'asc' as const },
+  { field: 'metadata.name', order: 'asc' as const },
+];
+
 describe('<EntityPicker />', () => {
   const entities: Entity[] = [
     makeEntity('Group', 'default', 'team-a'),
@@ -73,6 +79,36 @@ describe('<EntityPicker />', () => {
     );
   });
 
+  describe('with orderFields override', () => {
+    it('uses custom ordering when provided', async () => {
+      uiSchema = {
+        'ui:options': {
+          orderFields: [{ field: 'metadata.title', order: 'desc' }],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps;
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          order: [{ field: 'metadata.title', order: 'desc' }],
+        }),
+      );
+    });
+  });
+
   afterEach(() => jest.resetAllMocks());
 
   describe('without allowedKinds and catalogFilter', () => {
@@ -106,6 +142,7 @@ describe('<EntityPicker />', () => {
           'spec.type',
         ],
         filter: undefined,
+        order: defaultOrder,
       });
     });
 
@@ -152,6 +189,7 @@ describe('<EntityPicker />', () => {
           filter: {
             kind: ['User'],
           },
+          order: defaultOrder,
         }),
       );
     });
@@ -204,6 +242,7 @@ describe('<EntityPicker />', () => {
               'metadata.name': 'test-entity',
             },
           ],
+          order: defaultOrder,
         }),
       );
     });
@@ -231,6 +270,7 @@ describe('<EntityPicker />', () => {
             kind: ['Group'],
             'metadata.name': 'test-entity',
           },
+          order: defaultOrder,
         }),
       );
     });
@@ -261,6 +301,7 @@ describe('<EntityPicker />', () => {
               'metadata.annotation.some/anotation': CATALOG_FILTER_EXISTS,
             },
           ],
+          order: defaultOrder,
         }),
       );
     });
@@ -373,6 +414,7 @@ describe('<EntityPicker />', () => {
               'metadata.name': 'test-group',
             },
           ],
+          order: defaultOrder,
         }),
       );
     });
