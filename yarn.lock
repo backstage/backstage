@@ -4080,6 +4080,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
+    p-throttle: "npm:^4.1.1"
   languageName: unknown
   linkType: soft
 

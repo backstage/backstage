@@ -17,6 +17,7 @@
 export { readGitlabConfigs } from '../providers/config';
 export { GitLabClient, paginated } from './client';
 export type {
+  GitLabCommit,
   GitLabGroup,
   GitLabGroupSamlIdentity,
   GitLabProject,

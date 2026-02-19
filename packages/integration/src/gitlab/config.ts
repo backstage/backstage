@@ -22,6 +22,32 @@ const GITLAB_HOST = 'gitlab.com';
 const GITLAB_API_BASE_URL = 'https://gitlab.com/api/v4';
 
 /**
+ * Reads an optional number array from config
+ */
+function readOptionalNumberArray(
+  config: Config,
+  key: string,
+): number[] | undefined {
+  const value = config.getOptional(key);
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!Array.isArray(value)) {
+    throw new Error(
+      `Invalid ${key} config: expected an array, got ${typeof value}`,
+    );
+  }
+  return value.map((item, index) => {
+    if (typeof item !== 'number') {
+      throw new Error(
+        `Invalid ${key} config: all values must be numbers, got ${typeof item} at index ${index}`,
+      );
+    }
+    return item;
+  });
+}
+
+/**
  * The configuration parameters for a single GitLab integration.
  *
  * @public
@@ -59,6 +85,29 @@ export type GitLabIntegrationConfig = {
    * Signing key to sign commits
    */
   commitSigningKey?: string;
+
+  /**
+   * Retry configuration for failed requests.
+   */
+  retry?: {
+    /**
+     * Maximum number of retries for failed requests
+     * @defaultValue 0
+     */
+    maxRetries?: number;
+
+    /**
+     * HTTP status codes that should trigger a retry
+     * @defaultValue []
+     */
+    retryStatusCodes?: number[];
+
+    /**
+     * Rate limit for requests per minute
+     * @defaultValue -1
+     */
+    maxApiRequestsPerMinute?: number;
+  };
 };
 
 /**
@@ -100,12 +149,25 @@ export function readGitLabIntegrationConfig(
     );
   }
 
+  const retryConfig = config.getOptionalConfig('retry');
+
+  const retry = retryConfig
+    ? {
+        maxRetries: retryConfig.getOptionalNumber('maxRetries') ?? 0,
+        retryStatusCodes:
+          readOptionalNumberArray(retryConfig, 'retryStatusCodes') ?? [],
+        maxApiRequestsPerMinute:
+          retryConfig.getOptionalNumber('maxApiRequestsPerMinute') ?? -1,
+      }
+    : undefined;
+
   return {
     host,
     token,
     apiBaseUrl,
     baseUrl,
     commitSigningKey: config.getOptionalString('commitSigningKey'),
+    retry,
   };
 }
 

@@ -78,9 +78,6 @@ describe('GitlabUrlReader', () => {
   describe('read', () => {
     beforeEach(() => {
       worker.use(
-        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
-          res(ctx.status(200), ctx.json({ id: 12345 })),
-        ),
         rest.get('*', (req, res, ctx) =>
           res(
             ctx.status(200),
@@ -107,14 +104,14 @@ describe('GitlabUrlReader', () => {
         url: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
         config: createConfig(),
         response: expect.objectContaining({
-          url: 'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+          url: 'https://gitlab.com/api/v4/projects/groupA%2Fteams%2FteamA%2FsubgroupA%2FrepoA/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         }),
       },
       {
         url: 'https://gitlab.example.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
         config: createConfig('0123456789'),
         response: expect.objectContaining({
-          url: 'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+          url: 'https://gitlab.example.com/api/v4/projects/groupA%2Fteams%2FteamA%2FsubgroupA%2FrepoA/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
           headers: expect.objectContaining({
             authorization: 'Bearer 0123456789',
           }),
@@ -124,7 +121,7 @@ describe('GitlabUrlReader', () => {
         url: 'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/to/file.yaml', // Repo not in subgroup
         config: createConfig(),
         response: expect.objectContaining({
-          url: 'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+          url: 'https://gitlab.com/api/v4/projects/groupA%2Fteams%2FteamA%2FrepoA/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
         }),
       },
 
@@ -133,7 +130,7 @@ describe('GitlabUrlReader', () => {
         url: 'https://gitlab.example.com/a/b/blob/master/c.yaml',
         config: createConfig(),
         response: expect.objectContaining({
-          url: 'https://gitlab.example.com/api/v4/projects/12345/repository/files/c.yaml/raw?ref=master',
+          url: 'https://gitlab.example.com/api/v4/projects/a%2Fb/repository/files/c.yaml/raw?ref=master',
         }),
       },
     ])('should handle happy path %#', async ({ url, config, response }) => {
@@ -177,9 +174,6 @@ describe('GitlabUrlReader', () => {
 
     it('should throw NotModified on HTTP 304 from etag', async () => {
       worker.use(
-        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
-          res(ctx.status(200), ctx.json({ id: 12345 })),
-        ),
         rest.get('*', (req, res, ctx) => {
           expect(req.headers.get('If-None-Match')).toBe('999');
           return res(ctx.status(304));
@@ -198,9 +192,6 @@ describe('GitlabUrlReader', () => {
 
     it('should throw NotModified on HTTP 304 from lastModifiedAt', async () => {
       worker.use(
-        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
-          res(ctx.status(200), ctx.json({ id: 12345 })),
-        ),
         rest.get('*', (req, res, ctx) => {
           expect(req.headers.get('If-Modified-Since')).toBe(
             new Date('2019 12 31 23:59:59 GMT').toUTCString(),
@@ -221,9 +212,6 @@ describe('GitlabUrlReader', () => {
 
     it('should return etag and last-modified in response', async () => {
       worker.use(
-        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
-          res(ctx.status(200), ctx.json({ id: 12345 })),
-        ),
         rest.get('*', (_req, res, ctx) => {
           return res(
             ctx.status(200),
@@ -248,15 +236,6 @@ describe('GitlabUrlReader', () => {
 
     it('should return the file when using a user token', async () => {
       worker.use(
-        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
-            return res(
-              ctx.status(401),
-              ctx.json({ message: '401 Unauthorized' }),
-            );
-          }
-          return res(ctx.status(200), ctx.json({ id: 12345 }));
-        }),
         rest.get('*', (_req, res, ctx) => {
           return res(ctx.status(200), ctx.body('foo'));
         }),
@@ -566,18 +545,6 @@ describe('GitlabUrlReader', () => {
     });
 
     it('should return the file when using a user token', async () => {
-      worker.use(
-        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
-            return res(
-              ctx.status(401),
-              ctx.json({ message: '401 Unauthorized' }),
-            );
-          }
-          return res(ctx.status(200), ctx.json({ id: 12345 }));
-        }),
-      );
-
       const response = await gitlabProcessor.readTree(
         'https://gitlab.com/user/project/tree/main',
         { token: 'gl-user-token' },
@@ -738,30 +705,13 @@ describe('GitlabUrlReader', () => {
   });
 
   describe('getGitlabFetchUrl', () => {
-    beforeEach(() => {
-      worker.use(
-        rest.get(
-          '*/api/v4/projects/group%2Fsubgroup%2Fproject',
-          (_, res, ctx) => res(ctx.status(200), ctx.json({ id: 12345 })),
-        ),
-        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
-            return res(
-              ctx.status(401),
-              ctx.json({ message: '401 Unauthorized' }),
-            );
-          }
-          return res(ctx.status(200), ctx.json({ id: 12345 }));
-        }),
-      );
-    });
     it('should fall back to getGitLabFileFetchUrl for blob urls', async () => {
       await expect(
         (gitlabProcessor as any).getGitlabFetchUrl(
           'https://gitlab.com/group/subgroup/project/-/blob/branch/my/path/to/file.yaml',
         ),
       ).resolves.toEqual(
-        'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+        'https://gitlab.com/api/v4/projects/group%2Fsubgroup%2Fproject/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
       );
     });
     it('should work for job artifact urls', async () => {
@@ -770,7 +720,7 @@ describe('GitlabUrlReader', () => {
           'https://gitlab.com/group/subgroup/project/-/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
         ),
       ).resolves.toEqual(
-        'https://gitlab.com/api/v4/projects/12345/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+        'https://gitlab.com/api/v4/projects/group%2Fsubgroup%2Fproject/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
       );
     });
     it('should fail on unfamiliar or non-Gitlab urls', async () => {
@@ -779,7 +729,7 @@ describe('GitlabUrlReader', () => {
           'https://gitlab.com/some/random/endpoint',
         ),
       ).rejects.toThrow(
-        'Failed converting /some/random/endpoint to a project id. Url path must include /blob/.',
+        'Failed extracting project path from /some/random/endpoint. Url path must include /blob/.',
       );
     });
     it('should resolve the project path using a user token', async () => {
@@ -789,39 +739,18 @@ describe('GitlabUrlReader', () => {
           'gl-user-token',
         ),
       ).resolves.toEqual(
-        'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+        'https://gitlab.com/api/v4/projects/user%2Fproject/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
       );
     });
   });
 
   describe('getGitlabArtifactFetchUrl', () => {
-    beforeEach(() => {
-      worker.use(
-        rest.get(
-          '*/api/v4/projects/group%2Fsubgroup%2Fproject',
-          (_, res, ctx) => res(ctx.status(200), ctx.json({ id: 12345 })),
-        ),
-        rest.get(
-          '*/api/v4/projects/groupA%2Fsubgroup%2Fproject',
-          (_, res, ctx) => res(ctx.status(404)),
-        ),
-        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
-            return res(
-              ctx.status(401),
-              ctx.json({ message: '401 Unauthorized' }),
-            );
-          }
-          return res(ctx.status(200), ctx.json({ id: 12345 }));
-        }),
-      );
-    });
-    it('should reject urls that are not for the job artifacts API', async () => {
-      await expect(
+    it('should reject urls that are not for the job artifacts API', () => {
+      expect(() =>
         (gitlabProcessor as any).getGitlabArtifactFetchUrl(
           new URL('https://gitlab.com/some/url'),
         ),
-      ).rejects.toThrow('Unable to process url as an GitLab artifact');
+      ).toThrow('Unable to process url as an GitLab artifact');
     });
     it('should work for job artifact urls', async () => {
       await expect(
@@ -832,18 +761,22 @@ describe('GitlabUrlReader', () => {
         ),
       ).resolves.toEqual(
         new URL(
-          'https://gitlab.com/api/v4/projects/12345/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+          'https://gitlab.com/api/v4/projects/group%2Fsubgroup%2Fproject/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
         ),
       );
     });
-    it('errors in mapping the project ID should be captured', async () => {
+    it('should work for job artifact urls with any project path', async () => {
       await expect(
         (gitlabProcessor as any).getGitlabArtifactFetchUrl(
           new URL(
             'https://gitlab.com/groupA/subgroup/project/-/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
           ),
         ),
-      ).rejects.toThrow(/^Unable to translate GitLab artifact URL:/);
+      ).resolves.toEqual(
+        new URL(
+          'https://gitlab.com/api/v4/projects/groupA%2Fsubgroup%2Fproject/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+        ),
+      );
     });
     it('should resolve the project path using a user token', async () => {
       await expect(
@@ -855,51 +788,9 @@ describe('GitlabUrlReader', () => {
         ),
       ).resolves.toEqual(
         new URL(
-          'https://gitlab.com/api/v4/projects/12345/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+          'https://gitlab.com/api/v4/projects/user%2Fproject/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
         ),
       );
-    });
-  });
-
-  describe('resolveProjectToId', () => {
-    beforeEach(() => {
-      worker.use(
-        rest.get('*/api/v4/projects/group%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('authorization') !== 'Bearer gl-dummy-token') {
-            return res(
-              ctx.status(401),
-              ctx.json({ message: '401 Unauthorized' }),
-            );
-          }
-          return res(ctx.status(200), ctx.json({ id: 12345 }));
-        }),
-        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
-          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
-            return res(
-              ctx.status(401),
-              ctx.json({ message: '401 Unauthorized' }),
-            );
-          }
-          return res(ctx.status(200), ctx.json({ id: 12345 }));
-        }),
-      );
-    });
-
-    it('should resolve the project path to a valid project id', async () => {
-      await expect(
-        (gitlabProcessor as any).resolveProjectToId(
-          new URL('https://gitlab.com/group/project'),
-        ),
-      ).resolves.toEqual(12345);
-    });
-
-    it('should resolve the project path to a valid project id using a user token', async () => {
-      await expect(
-        (gitlabProcessor as any).resolveProjectToId(
-          new URL('https://gitlab.com/user/project'),
-          'gl-user-token',
-        ),
-      ).resolves.toEqual(12345);
     });
   });
 });

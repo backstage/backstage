@@ -135,7 +135,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
     this.events = options.events;
     this.gitLabClient = new GitLabClient({
-      config: this.integration.config,
+      integration: this.integration,
       logger: this.logger,
     });
   }
