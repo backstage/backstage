@@ -17,8 +17,8 @@
 import {
   DefaultAzureCredential,
   ClientSecretCredential,
-  TokenCredential,
 } from '@azure/identity';
+import type { TokenCredential } from '@azure/identity';
 import {
   StorageSharedKeyCredential,
   AnonymousCredential,
@@ -45,7 +45,7 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
   ) {
     this.cachedCredentials = new Map<
       string,
-      TokenCredential | StorageSharedKeyCredential
+      TokenCredential | StorageSharedKeyCredential | AnonymousCredential
     >();
   }
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { TokenCredential } from '@azure/identity';
-import {
+import type { TokenCredential } from '@azure/identity';
+import type {
   StorageSharedKeyCredential,
   AnonymousCredential,
 } from '@azure/storage-blob';
