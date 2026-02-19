@@ -8,3 +8,4 @@ documentation: https://www.npmjs.com/package/@citrixcloud/backstage-sds-workspac
 iconUrl: /img/citrix_sds.png
 npmPackageName: '@citrixcloud/backstage-sds-workspaces'
 addedDate: '2025-10-07'
+status: active

@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/ga-icon.png
 npmPackageName: '@backstage-community/plugin-analytics-module-ga4'
 addedDate: '2021-10-07'
+status: active

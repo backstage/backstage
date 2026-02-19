@@ -8,3 +8,5 @@ documentation: https://docs.rafay.co/backstage/setup/
 iconUrl: https://avatars.githubusercontent.com/u/33210764?s=200&v=4
 npmPackageName: '@rafaysystems/backstage-plugin-rafay'
 addedDate: '2023-08-24'
+status: inactive
+staleSince: '2026-02-17'

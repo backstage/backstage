@@ -8,3 +8,5 @@ documentation: https://github.com/redhat-developer/backstage-odo-devfile-plugin/
 iconUrl: https://odo.dev/img/logo.png
 npmPackageName: '@redhat-developer/plugin-scaffolder-odo-actions'
 addedDate: '2023-12-08'
+status: inactive
+staleSince: '2026-02-17'

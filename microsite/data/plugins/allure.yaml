@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://avatars.githubusercontent.com/u/5879127
 npmPackageName: '@backstage-community/plugin-allure'
 addedDate: '2021-09-02'
+status: active

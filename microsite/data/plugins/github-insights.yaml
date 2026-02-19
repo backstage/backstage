@@ -8,3 +8,4 @@ documentation: https://roadie.io/backstage/plugins/github-insights/?utm_source=b
 iconUrl: https://roadie.io/images/logos/insights.png
 npmPackageName: '@roadiehq/backstage-plugin-github-insights'
 addedDate: '2021-04-20'
+status: active

@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/nexus-repository-manager.svg
 npmPackageName: '@backstage-community/plugin-nexus-repository-manager'
 addedDate: '2023-10-25'
+status: active

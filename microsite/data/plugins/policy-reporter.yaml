@@ -7,3 +7,4 @@ documentation: https://github.com/kyverno/backstage-policy-reporter-plugin
 iconUrl: https://github.com/cncf/artwork/blob/main/projects/kyverno/icon/color/kyverno-icon-color.png?raw=true
 npmPackageName: '@kyverno/backstage-plugin-policy-reporter'
 addedDate: '2025-01-31'
+status: active

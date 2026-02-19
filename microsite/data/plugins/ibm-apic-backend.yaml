@@ -8,3 +8,5 @@ documentation: https://github.com/croz-ltd/apic-backend-plugin?utm_source=backst
 iconUrl: https://croz.net/app/uploads/2024/05/apple-touch-icon.png
 npmPackageName: '@croz/plugin-ibm-apic-backend'
 addedDate: '2024-03-01'
+status: inactive
+staleSince: '2026-02-17'

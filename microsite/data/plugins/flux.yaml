@@ -8,3 +8,5 @@ documentation: https://github.com/weaveworks/weaveworks-backstage/tree/main/plug
 iconUrl: https://raw.githubusercontent.com/fluxcd/website/main/assets/icons/logo.svg
 npmPackageName: '@weaveworksoss/backstage-plugin-flux'
 addedDate: '2023-08-23'
+status: inactive
+staleSince: '2026-02-17'

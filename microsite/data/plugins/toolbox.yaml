@@ -8,3 +8,4 @@ documentation: https://github.com/drodil/backstage-plugin-toolbox
 iconUrl: /img/toolbox-logo.png
 npmPackageName: '@drodil/backstage-plugin-toolbox'
 addedDate: '2023-01-09'
+status: active

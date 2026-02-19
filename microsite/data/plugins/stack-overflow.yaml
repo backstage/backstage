@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/stack-overflow-logo.svg
 npmPackageName: '@backstage-community/plugin-stack-overflow'
 addedDate: '2022-06-14'
+status: active

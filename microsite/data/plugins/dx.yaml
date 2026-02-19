@@ -8,3 +8,4 @@ documentation: https://github.com/get-dx/backstage-plugin
 iconUrl: /img/dx-icon.png
 npmPackageName: '@get-dx/backstage-plugin'
 addedDate: '2024-03-05'
+status: active

@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/backstage/blob/master/plugins/catalo
 iconUrl: /img/puppet.png
 npmPackageName: '@backstage/plugin-catalog-backend-module-puppetdb'
 addedDate: '2023-02-06'
+status: active

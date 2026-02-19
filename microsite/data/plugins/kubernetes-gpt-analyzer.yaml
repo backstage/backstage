@@ -8,3 +8,4 @@ documentation: https://platform.vee.codes/plugin/kubernetes-gpt-analyzer/
 iconUrl: https://veecode-platform.github.io/support/imgs/logo_4.svg
 npmPackageName: '@veecode-platform/backstage-plugin-kubernetes-gpt-analyzer'
 addedDate: '2024-07-31'
+status: active

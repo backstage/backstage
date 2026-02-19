@@ -8,3 +8,4 @@ documentation: https://github.com/daytonaio/backstage-plugins/tree/main/plugins/
 iconUrl: /img/daytona.svg
 npmPackageName: '@daytonaio/backstage-plugin-daytona'
 addedDate: '2024-11-02'
+status: active

@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://www.gocd.org/assets/images/go_logo-5b5ca9e1.svg
 npmPackageName: '@backstage-community/plugin-gocd'
 addedDate: '2022-01-15'
+status: active

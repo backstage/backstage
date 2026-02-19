@@ -7,3 +7,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/bazaar.svg
 npmPackageName: '@backstage-community/plugin-bazaar'
 addedDate: '2022-01-11'
+status: active

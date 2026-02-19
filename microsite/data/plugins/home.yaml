@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/backstage/blob/master/plugins/home/R
 iconUrl: /img/home.png
 npmPackageName: '@backstage/plugin-home'
 addedDate: '2021-08-31'
+status: active

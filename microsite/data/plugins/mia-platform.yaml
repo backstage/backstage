@@ -8,3 +8,4 @@ documentation: https://github.com/mia-platform/backstage-plugin/blob/main/README
 iconUrl: /img/mia-platform.png
 npmPackageName: '@mia-platform/backstage-plugin-frontend'
 addedDate: '2024-04-12'
+status: active

@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/github-pull-requests-board-logo.svg
 npmPackageName: '@backstage-community/plugin-github-pull-requests-board'
 addedDate: '2022-05-10'
+status: active

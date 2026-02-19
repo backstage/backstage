@@ -8,3 +8,4 @@ documentation: https://github.com/hashicorp-forge/backstage-plugin-hcp-consul/tr
 iconUrl: /img/hcp-consul.svg
 npmPackageName: '@hashicorp/plugin-hcp-consul'
 addedDate: '2023-11-24'
+status: active

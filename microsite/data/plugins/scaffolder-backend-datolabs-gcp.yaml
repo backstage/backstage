@@ -8,3 +8,4 @@ documentation: https://github.com/datolabs-io/backstage-plugins/blob/main/worksp
 iconUrl: https://avatars1.githubusercontent.com/u/2810941?s=280&v=4
 npmPackageName: '@datolabs/plugin-scaffolder-backend-module-gcp'
 addedDate: '2024-12-20'
+status: active

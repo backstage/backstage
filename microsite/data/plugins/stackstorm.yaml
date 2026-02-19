@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/stackstorm.png
 npmPackageName: '@backstage-community/plugin-stackstorm'
 addedDate: '2023-02-02'
+status: active

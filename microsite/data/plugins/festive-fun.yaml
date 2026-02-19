@@ -6,5 +6,7 @@ category: Humor
 description: Festive, seasonal, animations to spice up your instance of Backstage!
 documentation: https://github.com/benjmac/backstage-plugin-festive-fun/
 iconUrl: https://raw.githubusercontent.com/benjmac/backstage-plugin-festive-fun/main/docs/festive-fun-logo.png
-npmPackageName: 'backstage-plugin-festive-fun'
+npmPackageName: backstage-plugin-festive-fun
 addedDate: '2023-11-20'
+status: inactive
+staleSince: '2026-02-17'

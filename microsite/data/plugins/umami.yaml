@@ -8,3 +8,4 @@ documentation: https://github.com/AxisCommunications/backstage-plugins/blob/main
 iconUrl: /img/umami-logo.svg
 npmPackageName: '@axis-backstage/plugin-analytics-module-umami'
 addedDate: '2024-02-05'
+status: active

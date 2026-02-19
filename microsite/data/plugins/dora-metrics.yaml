@@ -8,3 +8,4 @@ documentation: https://github.com/liatrio/backstage-dora-plugin/tree/main
 iconUrl: /img/liatrio-icon.png
 npmPackageName: '@liatrio/backstage-dora-plugin'
 addedDate: '2024-10-14'
+status: active

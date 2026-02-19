@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/tekton.svg
 npmPackageName: '@backstage-community/plugin-tekton'
 addedDate: '2023-05-15'
+status: active

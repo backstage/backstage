@@ -8,3 +8,4 @@ documentation: https://roadie.io/backstage/plugins/tech-insights/
 iconUrl: https://roadie.io/images/logos/tech-insights.png
 npmPackageName: '@backstage-community/plugin-tech-insights'
 addedDate: '2022-03-31'
+status: active

@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/jenkins.png
 npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-jenkins'
 addedDate: '2024-12-06'
+status: active

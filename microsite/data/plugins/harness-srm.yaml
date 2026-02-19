@@ -8,3 +8,4 @@ documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/ha
 iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-harness-srm'
 addedDate: '2023-11-17'
+status: active

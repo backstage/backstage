@@ -8,3 +8,4 @@ documentation: https://www.npmjs.com/package/@remunda/backstage-plugin-datacontr
 iconUrl: https://www.remunda.cz/logos/datacontract.png
 npmPackageName: '@remunda/backstage-plugin-datacontract'
 addedDate: '2025-08-19'
+status: active

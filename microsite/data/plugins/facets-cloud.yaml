@@ -10,3 +10,4 @@ documentation: https://github.com/Facets-cloud/facets-backstage-plugin
 iconUrl: /img/facets-cloud-logo.png
 npmPackageName: '@facets-cloud/backstage-plugin'
 addedDate: '2025-02-25'
+status: active

@@ -8,3 +8,4 @@ documentation: https://roadie.io/backstage/plugins/datadog/?utm_source=backstage
 iconUrl: https://roadie.io/images/logos/datadog-white-background.png
 npmPackageName: '@roadiehq/backstage-plugin-datadog'
 addedDate: '2021-04-20'
+status: active

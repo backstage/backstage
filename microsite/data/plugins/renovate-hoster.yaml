@@ -8,3 +8,4 @@ documentation: https://github.com/secustor/backstage-plugins/tree/main/plugins/r
 iconUrl: '/img/logo-gradient-on-dark.svg'
 npmPackageName: '@secustor/backstage-plugin-renovate'
 addedDate: '2025-03-31'
+status: active

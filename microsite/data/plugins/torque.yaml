@@ -1,7 +1,7 @@
 ---
 title: Torque
 author: Quali
-authorUrl: 'https://www.qtorque.io/'
+authorUrl: https://www.qtorque.io/
 category: Orchestration
 description: |
   Deploy the environments you need to keep building, testing and delivering incredible code. 
@@ -10,3 +10,5 @@ documentation: https://github.com/QualiTorque/torque-backstage-plugin/tree/main/
 iconUrl: https://user-images.githubusercontent.com/8643801/214640977-751bc338-6b77-40a0-a897-cba41b6f006a.png
 npmPackageName: '@qtorque/backstage-torque-plugin'
 addedDate: '2023-01-25'
+status: inactive
+staleSince: '2026-02-17'
