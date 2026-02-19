@@ -22,10 +22,8 @@ import {
   AzureBlobStorageUrlReader,
   parseUrl,
 } from './AzureBlobStorageUrlReader';
-import {
-  DefaultAzureCredentialsManager,
-  ScmIntegrations,
-} from '@backstage/integration';
+import { ScmIntegrations } from '@backstage/integration';
+import { DefaultAzureCredentialsManager } from '@backstage/integration/backend';
 import { UrlReaderPredicateTuple } from './types';
 import { mockServices } from '@backstage/backend-test-utils';
 import { Readable } from 'node:stream';

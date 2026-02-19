@@ -31,9 +31,9 @@ import * as uuid from 'uuid';
 import { readAzureBlobStorageConfigs } from './config';
 import {
   AzureBlobStorageIntergation,
-  DefaultAzureCredentialsManager,
   ScmIntegrations,
 } from '@backstage/integration';
+import { DefaultAzureCredentialsManager } from '@backstage/integration/backend';
 import { AzureBlobStorageConfig } from './types';
 
 /**

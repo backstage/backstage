@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { AzureBlobStorageIntergation } from './AzureBlobStorageIntegration';
-export {
-  readAzureBlobStorageIntegrationConfig,
-  readAzureBlobStorageIntegrationConfigs,
-} from './config';
-export type { AzureBlobStorageIntegrationConfig } from './config';
-export type { AzureCredentialsManager } from './types';
+
+/**
+ * Backend-only exports for Azure Blob Storage integration.
+ *
+ * This module requires Node.js-specific Azure SDK packages and should
+ * only be imported in backend code.
+ *
+ * @packageDocumentation
+ */
+
+export { DefaultAzureCredentialsManager } from './DefaultAzureCredentialsProvider';

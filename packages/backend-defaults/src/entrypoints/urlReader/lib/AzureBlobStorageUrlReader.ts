@@ -31,9 +31,9 @@ import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
   AzureBlobStorageIntergation,
   AzureCredentialsManager,
-  DefaultAzureCredentialsManager,
   ScmIntegrations,
 } from '@backstage/integration';
+import { DefaultAzureCredentialsManager } from '@backstage/integration/backend';
 import {
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
