@@ -274,6 +274,7 @@ describe('DatabaseDocumentStore', () => {
 
         expect(rows).toEqual([
           {
+            total_count: '2',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -320,6 +321,7 @@ describe('DatabaseDocumentStore', () => {
 
         expect(rows).toEqual([
           {
+            total_count: '2',
             document: {
               location: 'LOCATION-1',
               text: 'Around the world',
@@ -329,6 +331,7 @@ describe('DatabaseDocumentStore', () => {
             type: 'test',
           },
           {
+            total_count: '2',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -382,6 +385,7 @@ describe('DatabaseDocumentStore', () => {
 
         expect(rows).toEqual([
           {
+            total_count: '1',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -436,6 +440,7 @@ describe('DatabaseDocumentStore', () => {
 
         expect(rows).toEqual([
           {
+            total_count: '1',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -503,6 +508,7 @@ describe('DatabaseDocumentStore', () => {
 
         expect(rows).toEqual([
           {
+            total_count: '4',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -513,6 +519,7 @@ describe('DatabaseDocumentStore', () => {
             type: 'my-type',
           },
           {
+            total_count: '4',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -523,6 +530,7 @@ describe('DatabaseDocumentStore', () => {
             type: 'my-type',
           },
           {
+            total_count: '4',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -533,6 +541,7 @@ describe('DatabaseDocumentStore', () => {
             type: 'my-type',
           },
           {
+            total_count: '4',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -585,6 +594,7 @@ describe('DatabaseDocumentStore', () => {
 
         expect(rows).toEqual([
           {
+            total_count: '1',
             document: {
               location: 'LOCATION-1',
               text: 'Hello World',
@@ -635,6 +645,7 @@ describe('DatabaseDocumentStore', () => {
 
         expect(rows).toEqual([
           {
+            total_count: '2',
             document: {
               title: 'Lorem Ipsum',
               text: 'Hello World',
@@ -645,6 +656,7 @@ describe('DatabaseDocumentStore', () => {
             type: 'my-type',
           },
           {
+            total_count: '2',
             document: {
               title: 'Dolor sit amet',
               text: 'Hello World',

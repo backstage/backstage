@@ -16,7 +16,7 @@
 
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { assertError } from '@backstage/errors';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 function handleBadError(error: Error, logger: LoggerService) {
   const logId = randomBytes(10).toString('hex');

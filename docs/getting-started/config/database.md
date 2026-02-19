@@ -108,6 +108,88 @@ If you opt for the second option of replacing the entire string, take care to no
 
 :::
 
+## Passwordless PostgreSQL in the Cloud
+
+If you want to host your PostgreSQL server in the cloud with passwordless authentication, you can use Azure Database for PostgreSQL with Microsoft Entra authentication or Google Cloud SQL for PostgreSQL with Cloud IAM.
+
+### Azure with Entra authentication
+
+Remove `password` from the connection configuration and set `type` to `azure`.
+
+Optionally set `tokenCredential` with the following properties. If no credential information is provided, it will default to using Default Azure Credential and a tokenRenewalOffsetTime of 5 minutes.
+
+#### Credential Selection
+
+The credential type is automatically inferred based on the fields you provide:
+
+- Client Secret Credential is used when all three are provided:
+  - `tenantId`
+  - `clientId`
+  - `clientSecret`
+- Managed Identity Credential is used when only `clientId` is provided. This enables user-assigned managed identity.
+- Default Azure Credential is used when no credential fields are provided. Default Azure Credential supports [many credential types](https://learn.microsoft.com/azure/developer/javascript/sdk/authentication/credential-chains#use-defaultazurecredential-for-flexibility), choosing one based on the runtime environment.
+
+#### Token Renewal
+
+Set `tokenRenewalOffsetTime` to control how early OAuth tokens should be refreshed.
+
+The value may be:
+
+- A human-readable string such as '1d', '2 hours', '30 seconds'
+- A duration object, e.g. { minutes: 3, seconds: 30 }
+
+Azure PostgreSQL uses short-lived Entra ID access tokens.
+By default, the database connector refreshes tokens 5 minutes before they expire.
+
+#### User Configuration
+
+Set `user` to the display name of your Entra ID group, service principal, or managed identity. Set it to the user principal name if you're authenticating with a user's credentials.
+
+#### Example
+
+```yaml title="app-config.yaml"
+backend:
+  database:
+    client: pg
+    connection:
+      # highlight-add-start
+      type: azure
+      tokenCredential:
+        tokenRenewalOffsetTime: 5 minutes
+      # highlight-add-end
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      # highlight-remove-start
+      password: ${POSTGRES_PASSWORD}
+      # highlight-remove-end
+```
+
+### Google with Cloud IAM
+
+Remove `password` from the connection configuration and set `type` to `cloudsql`.
+
+Under the hood, this implements [Automatic IAM Database Authentication](https://github.com/GoogleCloudPlatform/cloud-sql-nodejs-connector?tab=readme-ov-file#automatic-iam-database-authentication).
+
+For an IAM user account, set `user` to the user's email address. For a service account, set `user` to the service account's email without the .gserviceaccount.com domain suffix.
+
+```yaml title="app-config.yaml"
+backend:
+  database:
+    client: pg
+    connection:
+      # highlight-add-start
+      type: cloudsql
+      instance: my-project:region:my-instance
+      # highlight-add-end
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      # highlight-remove-start
+      password: ${POSTGRES_PASSWORD}
+      # highlight-remove-end
+```
+
 [Start the Backstage app](../index.md#2-run-the-backstage-app):
 
 ```shell
@@ -126,16 +208,16 @@ You may not want to install Postgres locally, the following sections outline alt
 
 You can run Postgres in a Docker container, this is great for local development or getting a Backstage POC up and running quickly, here's how:
 
-First we need to pull down the container image, we'll use Postgres 17, check out the [Postgres Version Policy](../../overview/versioning-policy.md#postgresql-releases) to learn which versions are supported.
+First we need to pull down the container image, we'll use Postgres 18, check out the [Postgres Version Policy](../../overview/versioning-policy.md#postgresql-releases) to learn which versions are supported.
 
 ```shell
-docker pull postgres:17.0-trixie
+docker pull postgres:18-trixie
 ```
 
 Then we just need to start up the container.
 
 ```shell
-docker run -d --name postgres --restart=always -p 5432:5432 -e POSTGRES_PASSWORD=<secret> postgres:17.0-trixie
+docker run -d --name postgres --restart=always -p 5432:5432 -e POSTGRES_PASSWORD=<secret> postgres:18-trixie
 ```
 
 This will run Postgres in the background for you, but remember to start it up again when you reboot your system.
@@ -145,11 +227,9 @@ This will run Postgres in the background for you, but remember to start it up ag
 Another way to run Postgres is to use Docker Compose, here's what that would look like:
 
 ```yaml title="docker-compose.local.yaml"
-version: '4'
-
 services:
   postgres:
-    image: postgres:17.0-trixie
+    image: postgres:18-trixie
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: <secret>

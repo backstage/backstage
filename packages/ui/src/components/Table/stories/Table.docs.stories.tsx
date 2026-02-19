@@ -40,6 +40,7 @@ export const TableRockBand: Story = {
         id: 'name',
         label: 'Band name',
         isRowHeader: true,
+        defaultWidth: '4fr',
         cell: item => (
           <CellProfile name={item.name} src={item.image} href={item.website} />
         ),
@@ -47,16 +48,19 @@ export const TableRockBand: Story = {
       {
         id: 'genre',
         label: 'Genre',
+        defaultWidth: '4fr',
         cell: item => <CellText title={item.genre} />,
       },
       {
         id: 'yearFormed',
         label: 'Year formed',
+        defaultWidth: '1fr',
         cell: item => <CellText title={item.yearFormed.toString()} />,
       },
       {
         id: 'albums',
         label: 'Albums',
+        defaultWidth: '1fr',
         cell: item => <CellText title={item.albums.toString()} />,
       },
     ];

@@ -16,47 +16,27 @@
 
 import { createElement, forwardRef } from 'react';
 import { BoxProps } from './types';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
-import styles from './Box.module.css';
+import { useDefinition } from '../../hooks/useDefinition';
 import { BoxDefinition } from './definition';
-import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  // Resolve the surface this Box creates for its children
-  // Using 'surface' parameter = container behavior (auto increments)
-  const { surface: resolvedSurface } = useSurface({
-    surface: props.surface,
-  });
-
-  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
-    useStyles(BoxDefinition, {
-      ...props,
-      surface: resolvedSurface, // Use resolved surface for data attribute
-    });
-
-  const { as = 'div', children, className, surface, ...rest } = cleanedProps;
+  const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
+    BoxDefinition,
+    props,
+  );
+  const { classes, as, childrenWithBgProvider } = ownProps;
 
   return createElement(
     as,
     {
       ref,
-      className: clsx(
-        classNames.root,
-        styles[classNames.root],
-        utilityClasses,
-        className,
-      ),
-      style,
+      className: classes.root,
+      style: { ...ownProps.style, ...utilityStyle },
       ...dataAttributes,
-      ...rest,
+      ...restProps,
     },
-    resolvedSurface ? (
-      <SurfaceProvider surface={resolvedSurface}>{children}</SurfaceProvider>
-    ) : (
-      children
-    ),
+    childrenWithBgProvider,
   );
 });
 

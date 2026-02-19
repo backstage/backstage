@@ -1,5 +1,25 @@
 # @backstage/cli-common
 
+## 0.1.18
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/errors@1.2.7
+
+## 0.1.17
+
+### Patch Changes
+
+- ae4dd5d: Move some of the symlink resolution to `isChildPath`
+
 ## 0.1.16
 
 ### Patch Changes

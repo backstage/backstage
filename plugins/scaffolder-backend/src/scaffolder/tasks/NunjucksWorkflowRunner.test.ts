@@ -1066,6 +1066,50 @@ describe('NunjucksWorkflowRunner', () => {
       }
     });
 
+    it('should run a step repeatedly - only iterations where the "if" condition is truthy', async () => {
+      const truthyConditions = [true, 1, 'a', {}];
+      const falsyConditions = [false, 0, null, ''];
+      const conditions = [...truthyConditions, ...falsyConditions];
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.conditions}}',
+            action: 'jest-mock-action',
+            input: { condition: '${{each.value}}' },
+            if: '${{each.value}}',
+          },
+        ],
+        parameters: {
+          conditions,
+        },
+      });
+      await runner.execute(task);
+
+      truthyConditions.forEach((condition, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"${condition}"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({ input: { condition } }),
+        );
+      });
+
+      falsyConditions.forEach((condition, idx) => {
+        expectTaskLog(
+          `info: Skipping step each: {"key":"${
+            idx + truthyConditions.length
+          }","value":"${condition}"}`,
+        );
+        expect(fakeActionHandler).not.toHaveBeenCalledWith(
+          expect.objectContaining({ input: { condition } }),
+        );
+      });
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(truthyConditions.length);
+    });
+
     it('should run a step repeatedly with validation of single-expression value', async () => {
       const numbers = [5, 7, 9];
       const task = createMockTaskWithSpec({

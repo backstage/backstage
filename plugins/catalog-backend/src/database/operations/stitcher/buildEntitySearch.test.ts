@@ -15,6 +15,7 @@
  */
 
 import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
+import { performance } from 'node:perf_hooks';
 import { buildEntitySearch, mapToRows, traverse } from './buildEntitySearch';
 
 describe('buildEntitySearch', () => {
@@ -48,6 +49,23 @@ describe('buildEntitySearch', () => {
         { key: 'root.list.a', value: 1 },
         { key: 'root.list.a', value: 2 },
       ]);
+    });
+
+    it('handles large arrays without quadratic performance degradation', () => {
+      // Generate an array with 500 unique string items to verify that the
+      // Set-based dedup scales linearly rather than quadratically.
+      // With the previous Array.some() approach this would cause ~125,000
+      // comparisons; with Set.has() it's ~500 lookups.
+      const items = Array.from({ length: 500 }, (_, i) => `tag-${i}`);
+      const input = { tags: items };
+
+      const start = performance.now();
+      const output = traverse(input);
+      const elapsed = performance.now() - start;
+
+      expect(output).toHaveLength(1000);
+      // Should complete well under 100ms with O(n); O(n²) would be noticeably slower
+      expect(elapsed).toBeLessThan(100);
     });
 
     it('skips over special keys', () => {

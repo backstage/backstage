@@ -1,5 +1,145 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.3
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Removed unused dependency
+- 0ce78b0: Support `if` conditions inside `each` loops for scaffolder steps
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- 1e669cc: Migrate audit events reference docs to http://backstage.io/docs.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.3
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.17
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.6
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18
+  - @backstage/backend-openapi-utils@0.6.6
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-scaffolder-node@0.12.5
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-events-node@0.4.19
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.18
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18
+  - @backstage/plugin-scaffolder-common@1.7.6
+
+## 3.1.3-next.2
+
+### Patch Changes
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.3-next.2
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-auth-node@0.6.13-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.17-next.1
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/plugin-permission-node@0.10.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.6-next.2
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 3.1.3-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.3-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.6-next.1
+  - @backstage/plugin-scaffolder-common@1.7.6-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 3.1.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Removed unused dependency
+- 1e669cc: Migrate audit events reference docs to http://backstage.io/docs.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.17-next.0
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.19-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.18-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.18-next.0
+  - @backstage/backend-openapi-utils@0.6.6-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.18-next.0
+  - @backstage/plugin-scaffolder-common@1.7.6-next.0
+
+## 3.1.1
+
+### Patch Changes
+
+- 5012852: Remove unused abort controller in debug:wait action
+- c641c14: Wrap some of the action logic with `resolveSafeChildPath` and improve symlink handling when fetching remote and local files
+- 27f9061: REwrite]
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.4
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.17
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+  - @backstage/plugin-bitbucket-cloud-common@0.3.6
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.18
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.17
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.17
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.17
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.1
+  - @backstage/plugin-scaffolder-common@1.7.5
+
 ## 3.1.1-next.2
 
 ### Patch Changes

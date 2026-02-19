@@ -1,0 +1,46 @@
+import { CodeBlock } from '@/components/CodeBlock';
+import { Banner } from '@/components/Banner';
+import { snippet } from './snippets';
+
+# Installation
+
+## Import BUI's global styles
+
+Backstage UI works by importing a global CSS file at the root of your application. This file includes all the default styles for the components.
+First, you'll need to install the package using a package manager. For example, if you're using Yarn:
+
+<CodeBlock
+  lang="shell"
+  title="Run this command in your `packages/app` directory"
+  code={`yarn add @backstage/ui`}
+/>
+
+<CodeBlock
+  lang="tsx"
+  title="Add this line to `packages/app/src/index.tsx`"
+  code={`import '@backstage/cli/asset-types';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import '@backstage/ui/css/styles.css'; // [!code ++]
+
+ReactDOM.createRoot(document.getElementById('root')!).render(<App />);`}
+/>
+
+<Banner
+  text="Import these styles only once at your application root. Plugin developers should skip this step to avoid conflicts."
+  variant="warning"
+/>
+
+## Use BUI components
+
+As a plugin maintainer, you can use BUI components in your plugin. As mentioned above, you should not import the styles
+again in your plugin as this will be handled at the root of your application. To get started, just add the library to
+your plugin and import the components you need.
+
+<CodeBlock
+  lang="shell"
+  title="Run this command in your `packages/[your-plugin]` directory"
+  code={`yarn add @backstage/ui`}
+/>
+
+<CodeBlock lang="tsx" title="Let's get started 🚀" code={snippet} />

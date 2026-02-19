@@ -15,7 +15,7 @@
  */
 
 import { Response } from 'express';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { ClientAuthResponse } from '../types';
 import { serializeError } from '@backstage/errors';
 

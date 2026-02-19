@@ -1,5 +1,50 @@
 # @backstage/create-app
 
+## 0.7.9
+
+### Patch Changes
+
+- 40f2720: Updated to include the missing core plugins in the template used with the `--next` flag. Also updated `react-router*` versions and added Jest 30-related dependencies. Finally, moved the order of `@playwright/test` so it won't trigger a file change during the creation process.
+- 1ea737c: Bumped create-app version.
+- 7c41134: Bumped create-app version.
+- 65ba820: Updated the app template sidebar to use the new `NavContentBlueprint` API for page-based navigation.
+- 7455dae: Use node prefix on native imports
+- c38b74d: Switched `next-app` template to use blueprint from `@backstage/plugin-app-react`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.18
+
+## 0.7.9-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.9-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.9-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- c38b74d: Switched `next-app` template to use blueprint from `@backstage/plugin-app-react`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.18-next.0
+
+## 0.7.8
+
+### Patch Changes
+
+- fea3e39: Bumped create-app version.
+- 9f1ee3e: Bumped create-app version.
+- 880310b: Bumped create-app version.
+- f1fe6fe: Updated Dockerfile to use Node 24 and Debian Trixie
+- Updated dependencies
+  - @backstage/cli-common@0.1.17
+
 ## 0.7.8-next.3
 
 ### Patch Changes

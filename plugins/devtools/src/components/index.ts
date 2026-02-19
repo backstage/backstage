@@ -16,3 +16,7 @@
 
 export * from './Content';
 export * from './DevToolsLayout';
+export {
+  type DevToolsPageProps,
+  type DevToolsPageContent,
+} from './DevToolsPage';

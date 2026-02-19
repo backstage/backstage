@@ -26,11 +26,15 @@ import {
   entityFilterExpressionDataRef,
   entityContentGroupDataRef,
   defaultEntityContentGroups,
+  entityContentIconDataRef,
 } from './extensionData';
-import { EntityPredicate } from '../predicates/types';
+import {
+  FilterPredicate,
+  createZodV3FilterPredicateSchema,
+} from '@backstage/filter-predicates';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
-import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import { Entity } from '@backstage/catalog-model';
+import { ReactElement } from 'react';
 
 /**
  * @alpha
@@ -47,20 +51,23 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
     entityContentGroupDataRef.optional(),
+    entityContentIconDataRef.optional(),
   ],
   dataRefs: {
     title: entityContentTitleDataRef,
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
     group: entityContentGroupDataRef,
+    icon: entityContentIconDataRef,
   },
   config: {
     schema: {
       path: z => z.string().optional(),
       title: z => z.string().optional(),
       filter: z =>
-        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
+        z.union([z.string(), createZodV3FilterPredicateSchema(z)]).optional(),
       group: z => z.literal(false).or(z.string()).optional(),
+      icon: z => z.string().optional(),
     },
   },
   *factory(
@@ -80,9 +87,10 @@ export const EntityContentBlueprint = createExtensionBlueprint({
        */
       defaultGroup?: [Error: `Use the 'group' param instead`];
       group?: keyof typeof defaultEntityContentGroups | (string & {});
+      icon?: string | ReactElement;
       loader: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
-      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      filter?: string | FilterPredicate | ((entity: Entity) => boolean);
     },
     { node, config },
   ) {
@@ -91,6 +99,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     // up by packages that depend on `catalog-react`.
     const path = config.path ?? params.path ?? params.defaultPath;
     const title = config.title ?? params.title ?? params.defaultTitle;
+    const icon = config.icon ?? params.icon;
     const group = config.group ?? params.group ?? params.defaultGroup;
 
     yield coreExtensionData.reactElement(
@@ -109,6 +118,9 @@ export const EntityContentBlueprint = createExtensionBlueprint({
 
     if (group && typeof group === 'string') {
       yield entityContentGroupDataRef(group);
+    }
+    if (icon) {
+      yield entityContentIconDataRef(icon);
     }
   },
 });

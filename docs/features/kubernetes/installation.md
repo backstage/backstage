@@ -75,7 +75,7 @@ Backstage app.
 If either existing
 [cluster locators](https://backstage.io/docs/features/kubernetes/configuration#clusterlocatormethods)
 don't work for your use-case, it is possible to implement a custom
-[KubernetesClustersSupplier](https://backstage.io/docs/reference/plugin-kubernetes-backend.kubernetesclusterssupplier).
+[KubernetesClustersSupplier](https://backstage.io/api/stable/interfaces/_backstage_plugin-kubernetes-node.KubernetesClustersSupplier.html).
 
 Here's a very simplified example:
 
@@ -130,7 +130,7 @@ export const kubernetesModuleCustomClusterDiscovery = createBackendModule({
         );
 
         // there's also the ability to get access to some of the default implementations of the extension points where
-        // neccessary:
+        // necessary:
         serviceLocator.addServiceLocator(
           async ({ getDefault, clusterSupplier }) => {
             // get access to the default service locator:

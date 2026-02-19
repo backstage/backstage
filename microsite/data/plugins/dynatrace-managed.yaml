@@ -7,10 +7,4 @@ description: View problem and synthetic information for services in your softwar
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/dynatrace/plugins/dynatrace
 iconUrl: /img/dynatrace.svg
 npmPackageName: '@backstage-community/plugin-dynatrace'
-tags:
-  - monitoring
-  - observability
-  - alerting
-  - problem
-  - synthetic
 addedDate: '2022-06-23'

@@ -29,7 +29,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './gitea.examples';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 const checkGiteaContentUrl = async (
   config: GiteaIntegrationConfig,

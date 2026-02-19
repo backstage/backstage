@@ -181,7 +181,9 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const currentType = filters.type?.value || '';
   const currentCount = `(${entities.length})`;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
-  const titlePreamble = capitalize(filters.user?.value ?? 'all');
+  const titlePreamble = capitalize(
+    filters.user?.value ?? t('catalogTable.allFilters'),
+  );
   const title =
     props.title ||
     [titlePreamble, currentType, pluralize(currentKind), currentCount]

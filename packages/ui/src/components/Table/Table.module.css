@@ -30,7 +30,7 @@
   }
 
   .bui-TableHeader {
-    border-bottom: 1px solid var(--bui-border);
+    border-bottom: 1px solid var(--bui-border-2);
     transition: color 0.2s ease-in-out;
   }
 
@@ -39,12 +39,6 @@
     padding: var(--bui-space-3);
     font-size: var(--bui-font-size-3);
     color: var(--bui-fg-primary);
-
-    &:hover {
-      .bui-TableHeadSortButton {
-        opacity: 1;
-      }
-    }
   }
 
   .bui-TableHeadSelection {
@@ -68,17 +62,16 @@
     transition: opacity 0.1s ease-in-out;
     color: var(--bui-fg-secondary);
 
+    .bui-TableHead:hover &,
+    [data-sort-direction='ascending'] &,
+    [data-sort-direction='descending'] & {
+      opacity: 1;
+    }
+
     & svg {
       transition: transform 0.1s ease-in-out;
     }
-
-    &[data-sort-order='asc'] svg {
-      opacity: 1;
-      transform: rotate(0);
-    }
-
-    &[data-sort-order='desc'] svg {
-      opacity: 1;
+    [data-sort-direction='descending'] & svg {
       transform: rotate(180deg);
     }
   }
@@ -88,7 +81,7 @@
   }
 
   .bui-TableRow {
-    border-bottom: 1px solid var(--bui-border);
+    border-bottom: 1px solid var(--bui-border-2);
     transition: color 0.2s ease-in-out;
 
     &:hover {

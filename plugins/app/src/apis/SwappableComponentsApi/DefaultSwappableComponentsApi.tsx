@@ -17,8 +17,8 @@
 import {
   SwappableComponentRef,
   SwappableComponentsApi,
-  SwappableComponentBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import { OpaqueSwappableComponentRef } from '@internal/frontend';
 
 import { lazy } from 'react';

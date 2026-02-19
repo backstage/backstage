@@ -1,5 +1,21 @@
 # @backstage/codemods
 
+## 0.1.54
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/cli-common@0.1.18
+
+## 0.1.54-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/cli-common@0.1.18-next.0
+
 ## 0.1.53
 
 ### Patch Changes

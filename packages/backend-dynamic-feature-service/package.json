@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-dynamic-feature-service",
-  "version": "0.7.8-next.2",
+  "version": "0.7.9",
   "description": "Backstage dynamic feature service",
   "backstage": {
     "role": "node-library"
@@ -68,7 +68,7 @@
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
-    "@module-federation/sdk": "^0.9.0",
+    "@module-federation/sdk": "^0.21.6",
     "chokidar": "^3.5.3",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",

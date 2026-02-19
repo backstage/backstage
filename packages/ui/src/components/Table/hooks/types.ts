@@ -45,11 +45,20 @@ export interface QueryOptions<TFilter> {
 }
 
 /** @public */
-export interface PaginationOptions {
-  pageSize?: number;
+export interface PaginationOptions
+  extends Partial<
+    Pick<
+      TablePaginationProps,
+      | 'pageSize'
+      | 'pageSizeOptions'
+      | 'onPageSizeChange'
+      | 'onNextPage'
+      | 'onPreviousPage'
+      | 'showPageSizeOptions'
+      | 'getLabel'
+    >
+  > {
   initialOffset?: number;
-  showPageSizeOptions?: boolean;
-  getLabel?: TablePaginationProps['getLabel'];
 }
 
 /** @public */
@@ -87,15 +96,25 @@ export interface CursorResponse<T> {
 }
 
 /** @public */
-export interface UseTableCompleteOptions<T extends TableItem, TFilter = unknown>
-  extends QueryOptions<TFilter> {
+export type UseTableCompleteOptions<
+  T extends TableItem,
+  TFilter = unknown,
+> = QueryOptions<TFilter> & {
   mode: 'complete';
-  getData: () => T[] | Promise<T[]>;
   paginationOptions?: PaginationOptions;
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
   filterFn?: (data: T[], filter: TFilter) => T[];
   searchFn?: (data: T[], search: string) => T[];
-}
+} & (
+    | {
+        data: T[] | undefined;
+        getData?: never;
+      }
+    | {
+        data?: never;
+        getData: () => T[] | Promise<T[]>;
+      }
+  );
 
 /** @public */
 export interface UseTableOffsetOptions<T extends TableItem, TFilter = unknown>

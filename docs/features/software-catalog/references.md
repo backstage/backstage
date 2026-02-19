@@ -40,7 +40,7 @@ used, and the relevant documentation should specify which rule applies where.
 Entity ref strings are frequently passed between systems as identifiers of
 entities. In those cases the refs should always be complete (have all three
 parts). The sender should ensure that the refs are always lowercased in an
-`en-US` locale, preferably by using [the `stringifyEntityRef` function](https://backstage.io/docs/reference/catalog-model.stringifyentityref/)
+`en-US` locale, preferably by using [the `stringifyEntityRef` function](https://backstage.io/api/stable/functions/_backstage_catalog-model.index.stringifyEntityRef.html)
 which does this automatically. The receiver should treat incoming refs case
 insensitively to avoid problems with senders who do not obey this rule.
 

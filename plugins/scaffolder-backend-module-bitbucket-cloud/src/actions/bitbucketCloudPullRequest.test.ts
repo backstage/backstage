@@ -415,4 +415,50 @@ describe('publish:bitbucketCloud:pull-request', () => {
       'https://bitbucket.org/workspace/repo/pull-requests/1',
     );
   });
+
+  it('should use username and token credentials from integration config', async () => {
+    const tokenConfig = new ConfigReader({
+      integrations: {
+        bitbucketCloud: [
+          {
+            username: 'test-user',
+            token: 'api-token-123',
+          },
+        ],
+      },
+    });
+
+    const tokenIntegrations = ScmIntegrations.fromConfig(tokenConfig);
+    const tokenAction = createPublishBitbucketCloudPullRequestAction({
+      integrations: tokenIntegrations,
+      config: tokenConfig,
+    });
+
+    server.use(
+      ...handlers,
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
+        (_, res, ctx) => {
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({}),
+          );
+        },
+      ),
+    );
+
+    await tokenAction.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        sourceBranch: 'new-branch',
+      },
+    });
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'pullRequestUrl',
+      'https://bitbucket.org/workspace/repo/pull-requests/1',
+    );
+  });
 });

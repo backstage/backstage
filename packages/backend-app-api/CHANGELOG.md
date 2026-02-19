@@ -1,5 +1,46 @@
 # @backstage/backend-app-api
 
+## 1.5.0
+
+### Minor Changes
+
+- f1d29b4: Added support for extension point factories, along with the ability to report module startup failures via the extension point factory context.
+
+### Patch Changes
+
+- 6bb2f21: Fixed memory leak by properly cleaning up process event listeners on backend shutdown.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+
+## 1.5.0-next.1
+
+### Patch Changes
+
+- 6bb2f21: Fixed memory leak by properly cleaning up process event listeners on backend shutdown.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 1.5.0-next.0
+
+### Minor Changes
+
+- f1d29b4: Added support for extension point factories, along with the ability to report module startup failures via the extension point factory context.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.4.1
+
+### Patch Changes
+
+- 04db26b: Clean up process event listeners on backend stop to prevent leaks
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
 ## 1.4.0
 
 ### Minor Changes

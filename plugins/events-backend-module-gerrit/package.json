@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-gerrit",
-  "version": "0.2.27",
+  "version": "0.2.28",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "events",

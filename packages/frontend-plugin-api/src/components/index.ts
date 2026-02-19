@@ -25,3 +25,4 @@ export {
 } from './createSwappableComponent';
 export { useAppNode } from './AppNodeProvider';
 export * from './DefaultSwappableComponents';
+export { PageLayout, type PageLayoutProps, type PageTab } from './PageLayout';

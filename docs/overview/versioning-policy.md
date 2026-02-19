@@ -195,4 +195,4 @@ The Backstage project recommends and supports using PostgreSQL for persistent st
 
 The PostgreSQL [versioning policy](https://www.postgresql.org/support/versioning/) is to release a new major version every year with new features which is then supported for 5 years after its initial release.
 
-Our policy mirrors the PostgreSQL versioning policy - we will support the last 5 major versions. We will also test the newest and oldest versions in that range. For example, if the range we support is currently 13 to 17, then we would only test 13 and 17 explicitly.
+Our policy mirrors the PostgreSQL versioning policy - we will support the last 5 major versions. We will also test the newest and oldest versions in that range. For example, if the range we support is currently 14 to 18, then we would only test 14 and 18 explicitly.

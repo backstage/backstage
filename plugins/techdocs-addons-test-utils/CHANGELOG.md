@@ -1,5 +1,79 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 2.0.2
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/plugin-catalog@1.33.0
+  - @backstage/core-app-api@1.19.5
+  - @backstage/plugin-techdocs@1.17.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-techdocs-react@1.3.8
+  - @backstage/integration-react@1.2.15
+  - @backstage/plugin-search-react@1.10.3
+  - @backstage/test-utils@1.7.15
+
+## 2.0.2-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/plugin-catalog@1.33.0-next.2
+  - @backstage/core-app-api@1.19.5-next.1
+  - @backstage/plugin-techdocs@1.16.3-next.2
+  - @backstage/integration-react@1.2.15-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/plugin-techdocs-react@1.3.8-next.1
+  - @backstage/plugin-search-react@1.10.3-next.2
+  - @backstage/test-utils@1.7.15-next.2
+
+## 2.0.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/plugin-catalog@1.33.0-next.1
+  - @backstage/plugin-search-react@1.10.3-next.1
+  - @backstage/plugin-techdocs@1.16.3-next.1
+  - @backstage/test-utils@1.7.15-next.1
+  - @backstage/plugin-techdocs-react@1.3.8-next.0
+  - @backstage/integration-react@1.2.15-next.1
+
+## 2.0.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/plugin-techdocs@1.16.3-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-techdocs-react@1.3.8-next.0
+  - @backstage/core-app-api@1.19.4-next.0
+  - @backstage/plugin-search-react@1.10.3-next.0
+  - @backstage/plugin-catalog@1.32.3-next.0
+  - @backstage/integration-react@1.2.15-next.0
+  - @backstage/test-utils@1.7.15-next.0
+
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.2
+  - @backstage/plugin-techdocs@1.16.2
+  - @backstage/plugin-search-react@1.10.2
+  - @backstage/integration-react@1.2.14
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-techdocs-react@1.3.7
+
 ## 2.0.1-next.1
 
 ### Patch Changes

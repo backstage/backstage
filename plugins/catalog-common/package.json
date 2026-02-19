@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-common",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Common functionalities for the catalog plugin",
   "backstage": {
     "role": "common-library",

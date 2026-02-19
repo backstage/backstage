@@ -21,7 +21,7 @@ import { JsonObject } from '@backstage/types';
 import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
-import path from 'path';
+import path from 'node:path';
 import { Connector } from '../types';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 

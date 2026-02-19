@@ -1,5 +1,120 @@
 # @backstage/plugin-catalog-backend
 
+## 3.4.0
+
+### Minor Changes
+
+- f1d29b4: Failures to connect catalog providers are now attributed to the module that provided the failing provider. This means that such failures will be reported as module startup failures rather than a failure to start the catalog plugin, and will therefore respect `onPluginModuleBootFailure` configuration instead.
+- 34cc520: Implemented handling of events from the newly introduced alpha
+  `catalogScmEventsServiceRef` service, in the builtin entity providers. This
+  allows entities to get refreshed, and locations updated or removed, as a
+  response to incoming events. In its first iteration, only the GitHub module
+  implements such event handling however.
+
+  This is not yet enabled by default, but this fact may change in a future
+  release. To try it out, ensure that you have the latest catalog GitHub module
+  installed, and set the following in your app-config:
+
+  ```yaml
+  catalog:
+    scmEvents: true
+  ```
+
+  Or if you want to pick and choose from the various features:
+
+  ```yaml
+  catalog:
+    scmEvents:
+      # refresh (reprocess) upon events?
+      refresh: true
+      # automatically unregister locations based on events? (files deleted, repos archived, etc)
+      unregister: true
+      # automatically move locations based on events? (repo transferred, file renamed, etc)
+      move: true
+  ```
+
+- b4e8249: Implemented the `POST /locations/by-query` endpoint which allows paginated, filtered location queries
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- 7455dae: Use node prefix on native imports
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- 08a5813: Fixed O(n²) performance bottleneck in `buildEntitySearch` `traverse()` by replacing `Array.some()` linear scan with a `Set` for O(1) duplicate path key detection.
+- 1e669cc: Migrate audit events reference docs to http://backstage.io/docs.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-openapi-utils@0.6.6
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-events-node@0.4.19
+
+## 3.4.0-next.2
+
+### Patch Changes
+
+- 08a5813: Fixed O(n²) performance bottleneck in `buildEntitySearch` `traverse()` by replacing `Array.some()` linear scan with a `Set` for O(1) duplicate path key detection.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/catalog-client@1.12.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/plugin-permission-node@0.10.10-next.0
+
+## 3.4.0-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 3.4.0-next.0
+
+### Minor Changes
+
+- f1d29b4: Failures to connect catalog providers are now attributed to the module that provided the failing provider. This means that such failures will be reported as module startup failures rather than a failure to start the catalog plugin, and will therefore respect `onPluginModuleBootFailure` configuration instead.
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- 7455dae: Use node prefix on native imports
+- 1e669cc: Migrate audit events reference docs to http://backstage.io/docs.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-openapi-utils@0.6.6-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+
+## 3.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+
 ## 3.3.1-next.1
 
 ### Patch Changes

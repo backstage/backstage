@@ -1,5 +1,56 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.14
+
+### Patch Changes
+
+- cc6206e: Added support for `{org}.visualstudio.com` domains used by Azure DevOps
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- 6c8a464: Added missing `branch` field to the `azureDevOps` provider config schema.
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-catalog-common@1.1.8
+
+## 0.3.14-next.2
+
+### Patch Changes
+
+- cc6206e: Added support for `{org}.visualstudio.com` domains used by Azure DevOps
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.2
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.3.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.3.14-next.0
+
+### Patch Changes
+
+- cfd8103: Updated imports to use stable catalog extension points from `@backstage/plugin-catalog-node` instead of the deprecated alpha exports.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+
+## 0.3.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+
 ## 0.3.13-next.0
 
 ### Patch Changes

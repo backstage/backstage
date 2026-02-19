@@ -31,7 +31,7 @@ import { assertError, InputError, NotFoundError } from '@backstage/errors';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import fs from 'fs-extra';
-import os from 'os';
+import os from 'node:os';
 
 export async function getWorkingDirectory(
   config: Config,

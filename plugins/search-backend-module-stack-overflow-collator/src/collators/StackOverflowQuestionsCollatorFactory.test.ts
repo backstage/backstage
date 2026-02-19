@@ -23,7 +23,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { ConfigReader } from '@backstage/config';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { setupServer } from 'msw/node';
 import { rest, RestRequest } from 'msw';
 

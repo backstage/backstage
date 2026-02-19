@@ -19,6 +19,8 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { catalogTranslationRef } from '../../alpha/translation';
 
 const useStyles = makeStyles(theme => ({
   value: {
@@ -55,6 +57,7 @@ export interface AboutFieldProps {
 export function AboutField(props: AboutFieldProps) {
   const { label, value, gridSizes, children, className } = props;
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const childElements = useElementFilter(children, c => c.getElements());
 
@@ -64,7 +67,7 @@ export function AboutField(props: AboutFieldProps) {
       childElements
     ) : (
       <Typography variant="body2" className={classes.value}>
-        {value || `unknown`}
+        {value || t('aboutCard.unknown')}
       </Typography>
     );
   return (

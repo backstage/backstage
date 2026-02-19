@@ -18,6 +18,7 @@ import {
   TestDatabaseId,
   TestDatabases,
 } from '@backstage/backend-test-utils';
+import { JsonObject } from '@backstage/types';
 import { OidcService } from './OidcService';
 import {
   BackstageCredentials,
@@ -28,15 +29,35 @@ import {
 import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
+import { CimdClientInfo } from './CimdClient';
+
+jest.mock('./CimdClient', () => ({
+  ...jest.requireActual('./CimdClient'),
+  fetchCimdMetadata: jest.fn(),
+}));
+
+import * as CimdClient from './CimdClient';
+
+const mockFetchCimdMetadata =
+  CimdClient.fetchCimdMetadata as jest.MockedFunction<
+    typeof CimdClient.fetchCimdMetadata
+  >;
 
 jest.setTimeout(60_000);
 
 describe('OidcService', () => {
   const databases = TestDatabases.create();
 
-  async function createOidcService(databaseId: TestDatabaseId) {
+  interface CreateOidcServiceOptions {
+    databaseId: TestDatabaseId;
+    config?: JsonObject;
+  }
+
+  async function createOidcService(options: CreateOidcServiceOptions) {
+    const { databaseId, config: configData = {} } = options;
+
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
@@ -63,7 +84,7 @@ describe('OidcService', () => {
       getUserInfo: jest.fn(),
     } as unknown as jest.Mocked<UserInfoDatabase>;
 
-    const mockConfig = mockServices.rootConfig.mock();
+    const config = mockServices.rootConfig({ data: configData });
 
     return {
       service: OidcService.create({
@@ -72,13 +93,12 @@ describe('OidcService', () => {
         baseUrl: 'http://mock-base-url',
         userInfo: mockUserInfo,
         oidc: oidcDatabase,
-        config: mockConfig,
+        config,
       }),
       mocks: {
         auth: mockAuth,
         tokenIssuer: mockTokenIssuer,
         userInfo: mockUserInfo,
-        config: mockConfig,
       },
     };
   }
@@ -86,7 +106,7 @@ describe('OidcService', () => {
   describe.each(databases.eachSupportedId())('%p', databaseId => {
     describe('getConfiguration', () => {
       it('should return OIDC configuration', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const config = service.getConfiguration();
 
@@ -117,7 +137,6 @@ describe('OidcService', () => {
           claims_supported: ['sub', 'ent'],
           grant_types_supported: ['authorization_code'],
           authorization_endpoint: 'http://mock-base-url/v1/authorize',
-          registration_endpoint: 'http://mock-base-url/v1/register',
           code_challenge_methods_supported: ['S256', 'plain'],
         });
       });
@@ -125,7 +144,7 @@ describe('OidcService', () => {
 
     describe('listPublicKeys', () => {
       it('should return public keys from token issuer', async () => {
-        const { service, mocks } = await createOidcService(databaseId);
+        const { service, mocks } = await createOidcService({ databaseId });
         const mockKeys = [{ kid: 'key-1', use: 'sig' }] as AnyJWK[];
         mocks.tokenIssuer.listPublicKeys.mockResolvedValue({ keys: mockKeys });
 
@@ -138,7 +157,7 @@ describe('OidcService', () => {
 
     describe('getUserInfo', () => {
       it('should return user info for valid token', async () => {
-        const { service, mocks } = await createOidcService(databaseId);
+        const { service, mocks } = await createOidcService({ databaseId });
         const mockCredentials: BackstageCredentials<BackstageUserPrincipal> = {
           principal: {
             type: 'user',
@@ -173,7 +192,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error for non-user principal', async () => {
-        const { service, mocks } = await createOidcService(databaseId);
+        const { service, mocks } = await createOidcService({ databaseId });
         const mockCredentials: BackstageCredentials<BackstageServicePrincipal> =
           {
             principal: {
@@ -197,7 +216,7 @@ describe('OidcService', () => {
 
     describe('registerClient', () => {
       it('should create a new client with generated credentials', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -221,14 +240,16 @@ describe('OidcService', () => {
       });
 
       it('should throw an error for invalid redirect URI', async () => {
-        const {
-          service,
-          mocks: { config },
-        } = await createOidcService(databaseId);
-
-        config.getOptionalStringArray.mockReturnValue([
-          'https://example.com/*',
-        ]);
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: ['https://example.com/*'],
+              },
+            },
+          },
+        });
 
         await expect(
           service.registerClient({
@@ -239,12 +260,16 @@ describe('OidcService', () => {
       });
 
       it('should create a new client with valid redirect URI', async () => {
-        const {
-          service,
-          mocks: { config },
-        } = await createOidcService(databaseId);
-
-        config.getOptionalStringArray.mockReturnValue(['cursor:*']);
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: ['cursor:*'],
+              },
+            },
+          },
+        });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -259,7 +284,7 @@ describe('OidcService', () => {
       });
 
       it('should create a client with default values', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -278,7 +303,7 @@ describe('OidcService', () => {
 
     describe('createAuthorizationSession', () => {
       it('should create a authorization session for valid client', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -302,7 +327,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error for invalid client', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         await expect(
           service.createAuthorizationSession({
@@ -314,7 +339,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error for invalid redirect URI', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -331,7 +356,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error for unsupported response type', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -348,7 +373,7 @@ describe('OidcService', () => {
       });
 
       it('should handle PKCE parameters', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -367,7 +392,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error for invalid PKCE method', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -388,7 +413,7 @@ describe('OidcService', () => {
 
     describe('approveAuthorizationSession', () => {
       it('should approve a valid authorization session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -413,7 +438,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error for invalid authorization session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         await expect(
           service.approveAuthorizationSession({
@@ -424,7 +449,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error when trying to approve an already approved session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -451,7 +476,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error when trying to approve an already rejected session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -480,7 +505,7 @@ describe('OidcService', () => {
 
     describe('getAuthorizationSession', () => {
       it('should return authorization session details', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -513,7 +538,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error when trying to get an already approved session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -539,7 +564,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error when trying to get an already rejected session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -567,7 +592,7 @@ describe('OidcService', () => {
 
     describe('rejectAuthorizationSession', () => {
       it('should reject a authorization session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -593,7 +618,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error for invalid authorization session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         await expect(
           service.rejectAuthorizationSession({
@@ -604,7 +629,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error when trying to reject an already approved session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -631,7 +656,7 @@ describe('OidcService', () => {
       });
 
       it('should throw error when trying to reject an already rejected session', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -660,7 +685,7 @@ describe('OidcService', () => {
 
     describe('exchangeCodeForToken', () => {
       it('should exchange valid code for tokens', async () => {
-        const { service, mocks } = await createOidcService(databaseId);
+        const { service, mocks } = await createOidcService({ databaseId });
         const mockToken = 'mock-jwt-token';
         mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
 
@@ -687,73 +712,31 @@ describe('OidcService', () => {
           code,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
-          expiresIn: 3600,
         });
 
         expect(tokenResult).toEqual({
           accessToken: mockToken,
           tokenType: 'Bearer',
           expiresIn: 3600,
-          idToken: mockToken,
-          scope: 'openid',
-        });
-      });
-
-      it('should exchange valid code for tokens with custom expiration', async () => {
-        const { service, mocks } = await createOidcService(databaseId);
-        const mockToken = 'mock-jwt-token';
-        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
-
-        const client = await service.registerClient({
-          clientName: 'Test Client',
-          redirectUris: ['https://example.com/callback'],
-        });
-
-        const authSession = await service.createAuthorizationSession({
-          clientId: client.clientId,
-          redirectUri: 'https://example.com/callback',
-          responseType: 'code',
-          scope: 'openid',
-        });
-
-        const authResult = await service.approveAuthorizationSession({
-          sessionId: authSession.id,
-          userEntityRef: 'user:default/test',
-        });
-
-        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
-
-        const tokenResult = await service.exchangeCodeForToken({
-          code,
-          redirectUri: 'https://example.com/callback',
-          grantType: 'authorization_code',
-          expiresIn: 6000,
-        });
-
-        expect(tokenResult).toEqual({
-          accessToken: mockToken,
-          tokenType: 'Bearer',
-          expiresIn: 6000,
           idToken: mockToken,
           scope: 'openid',
         });
       });
 
       it('should throw error for invalid grant type', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         await expect(
           service.exchangeCodeForToken({
             code: 'test-code',
             redirectUri: 'https://example.com/callback',
             grantType: 'client_credentials',
-            expiresIn: 3600,
           }),
         ).rejects.toThrow('Unsupported grant type');
       });
 
       it('should handle PKCE verification', async () => {
-        const { service, mocks } = await createOidcService(databaseId);
+        const { service, mocks } = await createOidcService({ databaseId });
         const mockToken = 'mock-jwt-token';
         mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
 
@@ -788,14 +771,13 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           codeVerifier,
-          expiresIn: 3600,
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
       });
 
       it('should throw error for invalid PKCE verifier', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -824,9 +806,473 @@ describe('OidcService', () => {
             redirectUri: 'https://example.com/callback',
             grantType: 'authorization_code',
             codeVerifier: 'invalid-verifier',
-            expiresIn: 3600,
           }),
         ).rejects.toThrow('Invalid code verifier');
+      });
+    });
+
+    describe('CIMD (Client ID Metadata Document) support', () => {
+      const cimdClientId = 'https://example.com/oauth-metadata.json';
+      const cimdMetadata: CimdClientInfo = {
+        clientId: cimdClientId,
+        clientName: 'CIMD Test Client',
+        redirectUris: ['http://localhost:8080/callback'],
+        responseTypes: ['code'],
+        grantTypes: ['authorization_code'],
+        scope: 'openid',
+      };
+
+      beforeEach(() => {
+        mockFetchCimdMetadata.mockResolvedValue(cimdMetadata);
+      });
+
+      afterEach(() => {
+        mockFetchCimdMetadata.mockReset();
+      });
+
+      const pkceCodeVerifier = 'test-code-verifier-for-pkce';
+      const pkceCodeChallenge = crypto
+        .createHash('sha256')
+        .update(pkceCodeVerifier)
+        .digest('base64url');
+      const pkceParams = {
+        codeChallenge: pkceCodeChallenge,
+        codeChallengeMethod: 'S256' as const,
+      };
+
+      describe('getConfiguration', () => {
+        it('should include client_id_metadata_document_supported when CIMD is enabled', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          const config = service.getConfiguration();
+
+          expect(config.client_id_metadata_document_supported).toBe(true);
+        });
+
+        it('should not include client_id_metadata_document_supported when CIMD is disabled', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: false },
+              },
+            },
+          });
+
+          const config = service.getConfiguration();
+
+          expect(config).not.toHaveProperty(
+            'client_id_metadata_document_supported',
+          );
+        });
+      });
+
+      describe('createAuthorizationSession with CIMD', () => {
+        it('should create authorization session for CIMD client', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            scope: 'openid',
+            ...pkceParams,
+          });
+
+          expect(authSession).toEqual({
+            id: expect.any(String),
+            clientName: 'CIMD Test Client',
+            scope: 'openid',
+            redirectUri: 'http://localhost:8080/callback',
+          });
+          expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
+            clientId: cimdClientId,
+            validatedUrl: expect.any(URL),
+          });
+        });
+
+        it('should throw error when CIMD is disabled but URL client_id is provided', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: false },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('Client ID metadata documents not enabled');
+        });
+
+        it('should throw error when client_id does not match allowedClientIdPatterns', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['https://trusted.com/*'],
+                },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId, // https://example.com/oauth-metadata.json
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('Invalid client_id');
+        });
+
+        it('should accept client_id matching allowedClientIdPatterns', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['https://example.com/*'],
+                },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            ...pkceParams,
+          });
+
+          expect(authSession).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              clientName: 'CIMD Test Client',
+            }),
+          );
+        });
+
+        it('should throw error for redirect_uri not in CIMD metadata', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://unauthorized.com/callback',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('Redirect URI not registered');
+        });
+
+        it('should throw error when redirect_uri does not match allowedRedirectUriPatterns', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedRedirectUriPatterns: ['https://*.example.com/*'],
+                },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('Invalid redirect_uri');
+        });
+
+        it('should reject redirect_uri when CIMD metadata uses wildcard patterns', async () => {
+          mockFetchCimdMetadata.mockResolvedValue({
+            ...cimdMetadata,
+            redirectUris: ['http://localhost:*/callback'],
+          });
+
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedRedirectUriPatterns: ['http://localhost:*'],
+                },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+              ...pkceParams,
+            }),
+          ).rejects.toThrow('Redirect URI not registered');
+        });
+
+        it('should reject redirect_uri not exactly matching CIMD metadata', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedRedirectUriPatterns: ['http://localhost:*'],
+                },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://localhost:8080/other-path',
+              responseType: 'code',
+              ...pkceParams,
+            }),
+          ).rejects.toThrow('Redirect URI not registered');
+        });
+
+        it('should require PKCE for CIMD clients', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('PKCE is required for public clients');
+        });
+      });
+
+      describe('getAuthorizationSession with CIMD', () => {
+        it('should return session details for CIMD client', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            scope: 'openid',
+            state: 'test-state',
+            ...pkceParams,
+          });
+
+          const details = await service.getAuthorizationSession({
+            sessionId: authSession.id,
+          });
+
+          expect(details).toEqual(
+            expect.objectContaining({
+              id: authSession.id,
+              clientId: cimdClientId,
+              clientName: 'CIMD Test Client',
+              redirectUri: 'http://localhost:8080/callback',
+              scope: 'openid',
+              state: 'test-state',
+            }),
+          );
+        });
+      });
+
+      describe('full CIMD authorization flow', () => {
+        it('should complete full authorization flow for CIMD client', async () => {
+          const { service, mocks } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+          const mockToken = 'mock-jwt-token';
+          mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            scope: 'openid',
+            ...pkceParams,
+          });
+
+          const approveResult = await service.approveAuthorizationSession({
+            sessionId: authSession.id,
+            userEntityRef: 'user:default/test',
+          });
+
+          expect(approveResult.redirectUrl).toMatch(
+            /^http:\/\/localhost:8080\/callback\?code=.+$/,
+          );
+
+          const code = new URL(approveResult.redirectUrl).searchParams.get(
+            'code',
+          )!;
+          const tokenResult = await service.exchangeCodeForToken({
+            code,
+            redirectUri: 'http://localhost:8080/callback',
+            grantType: 'authorization_code',
+            codeVerifier: pkceCodeVerifier,
+          });
+
+          expect(tokenResult).toEqual({
+            accessToken: mockToken,
+            tokenType: 'Bearer',
+            expiresIn: 3600,
+            idToken: mockToken,
+            scope: 'openid',
+          });
+        });
+
+        it('should complete CIMD flow with PKCE', async () => {
+          const { service, mocks } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+          const mockToken = 'mock-jwt-token';
+          mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+          const codeVerifier = 'test-code-verifier-for-pkce';
+          const codeChallenge = crypto
+            .createHash('sha256')
+            .update(codeVerifier)
+            .digest('base64url');
+
+          // Create authorization session with PKCE
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            codeChallenge,
+            codeChallengeMethod: 'S256',
+          });
+
+          // Approve the session
+          const approveResult = await service.approveAuthorizationSession({
+            sessionId: authSession.id,
+            userEntityRef: 'user:default/test',
+          });
+
+          // Exchange code for token with verifier
+          const code = new URL(approveResult.redirectUrl).searchParams.get(
+            'code',
+          )!;
+          const tokenResult = await service.exchangeCodeForToken({
+            code,
+            redirectUri: 'http://localhost:8080/callback',
+            grantType: 'authorization_code',
+            codeVerifier,
+          });
+
+          expect(tokenResult.accessToken).toBe(mockToken);
+        });
+      });
+
+      describe('coexistence of CIMD and DCR', () => {
+        it('should use DCR for non-URL client_id when both are enabled', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+                experimentalDynamicClientRegistration: { enabled: true },
+              },
+            },
+          });
+
+          // Register a DCR client
+          const dcrClient = await service.registerClient({
+            clientName: 'DCR Client',
+            redirectUris: ['https://example.com/callback'],
+          });
+
+          // Create session with DCR client
+          const authSession = await service.createAuthorizationSession({
+            clientId: dcrClient.clientId,
+            redirectUri: 'https://example.com/callback',
+            responseType: 'code',
+          });
+
+          expect(authSession.clientName).toBe('DCR Client');
+          expect(mockFetchCimdMetadata).not.toHaveBeenCalled();
+        });
+
+        it('should use CIMD for URL client_id when both are enabled', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+                experimentalDynamicClientRegistration: { enabled: true },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            ...pkceParams,
+          });
+
+          expect(authSession.clientName).toBe('CIMD Test Client');
+          expect(mockFetchCimdMetadata).toHaveBeenCalledWith({
+            clientId: cimdClientId,
+            validatedUrl: expect.any(URL),
+          });
+        });
       });
     });
   });

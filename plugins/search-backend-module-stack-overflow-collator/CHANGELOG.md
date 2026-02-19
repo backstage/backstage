@@ -1,5 +1,26 @@
 # @backstage/plugin-search-backend-module-stack-overflow-collator
 
+## 0.3.17
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-backend-node@1.4.1
+  - @backstage/plugin-search-common@1.2.22
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-search-backend-node@1.4.1-next.0
+  - @backstage/plugin-search-common@1.2.22-next.0
+  - @backstage/config@1.3.6
+
 ## 0.3.16
 
 ### Patch Changes

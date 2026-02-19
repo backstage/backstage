@@ -20,6 +20,7 @@ import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -481,6 +482,47 @@ export type StreamEntitiesRequest = Omit<
 };
 
 /**
+ * The request type for {@link CatalogApi.queryLocations}.
+ *
+ * @public
+ */
+export type QueryLocationsRequest =
+  | QueryLocationsInitialRequest
+  | QueryLocationsCursorRequest;
+
+/**
+ * The request type for initial requests to {@link CatalogApi.queryLocations}.
+ *
+ * @public
+ */
+export interface QueryLocationsInitialRequest {
+  limit?: number;
+  query?: FilterPredicate;
+}
+
+/**
+ * The request type for cursor requests to {@link CatalogApi.queryLocations}.
+ *
+ * @public
+ */
+export interface QueryLocationsCursorRequest {
+  cursor: string;
+}
+
+/**
+ * The response type for {@link CatalogApi.queryLocations}.
+ *
+ * @public
+ */
+export interface QueryLocationsResponse {
+  items: Location[];
+  totalItems: number;
+  pageInfo: {
+    nextCursor?: string;
+  };
+}
+
+/**
  * A client for interacting with the Backstage software catalog through its API.
  *
  * @public
@@ -628,6 +670,62 @@ export interface CatalogApi {
     request?: {},
     options?: CatalogRequestOptions,
   ): Promise<GetLocationsResponse>;
+
+  /**
+   * Gets paginated locations from the catalog.
+   *
+   * @remarks
+   *
+   * @example
+   *
+   * ```
+   * const response = await catalogClient.queryLocations({
+   *   limit: 20,
+   *   query: {
+   *     type: 'url',
+   *     target: { $hasPrefix: 'https://github.com/backstage/backstage' },
+   *   },
+   * });
+   * ```
+   *
+   * This will match all locations of type `url` having a target starting
+   * with `https://github.com/backstage/backstage`.
+   *
+   * The response will contain a maximum of 20 locations. In case
+   * more than 20 locations exist, the response will contain a `nextCursor`
+   * property that can be used to fetch the next batch of locations.
+   *
+   * ```
+   * const secondBatchResponse = await catalogClient
+   *  .queryLocations({ cursor: response.pageInfo.nextCursor });
+   * ```
+   *
+   * `secondBatchResponse` will contain the next batch of (maximum) 20 locations,
+   * again together with a `nextCursor` property if there is more data to fetch.
+   *
+   * @public
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  queryLocations(
+    request?: QueryLocationsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryLocationsResponse>;
+
+  /**
+   * Asynchronously streams locations from the catalog. Uses `queryLocations`
+   * to fetch locations in batches, and yields them one page at a time.
+   *
+   * @public
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  streamLocations(
+    request?: QueryLocationsInitialRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Location[]>;
 
   /**
    * Gets a registered location by its ID.

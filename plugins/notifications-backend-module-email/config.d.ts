@@ -161,9 +161,14 @@ export interface Config {
            */
           maxSeverity?: NotificationSeverity;
           /**
-           * A notification who's topic is in this array will not be emailed
+           * A notification with topic is in this array will not be emailed
            */
           excludedTopics?: string[];
+          /**
+           * A notification with topic in this array will be emailed. If not defined, only
+           * excludedTopics takes effect.
+           */
+          includedTopics?: string[];
         };
         /**
          * White list of addresses to send email to

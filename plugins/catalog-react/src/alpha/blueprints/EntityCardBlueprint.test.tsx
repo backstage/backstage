@@ -108,6 +108,18 @@ describe('EntityCardBlueprint', () => {
                                   ],
                                   "type": "object",
                                 },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "$hasPrefix": {
+                                      "type": "string",
+                                    },
+                                  },
+                                  "required": [
+                                    "$hasPrefix",
+                                  ],
+                                  "type": "object",
+                                },
                               ],
                             },
                             "propertyNames": {
@@ -177,7 +189,6 @@ describe('EntityCardBlueprint', () => {
               },
               "type": {
                 "enum": [
-                  "summary",
                   "info",
                   "content",
                 ],

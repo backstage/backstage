@@ -1,5 +1,57 @@
 # @backstage/core-components
 
+## 0.18.7
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- cebfea7: Removed link styles from LinkButton to avoid styling inconsistencies related to import order.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/theme@0.7.2
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/version-bridge@1.0.12
+
+## 0.18.7-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/version-bridge@1.0.12-next.0
+  - @backstage/theme@0.7.2-next.1
+
+## 0.18.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.7.2-next.0
+
+## 0.18.6-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- cebfea7: Removed link styles from LinkButton to avoid styling inconsistencies related to import order.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.5
+
+### Patch Changes
+
+- a723b8a: The MarkdownContent component now handles HTML content the same way as GitHub when rendering GitHub-flavored Markdown
+- c671db9: Fixed bug in Table component where the toolbar layout would break when both a title and filters were present.
+- 55a9dc2: Update colour token again in ItemCardHeader to respect theme definition.
+
 ## 0.18.5-next.0
 
 ### Patch Changes

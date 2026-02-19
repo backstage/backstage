@@ -444,7 +444,7 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-import { SignInPageBlueprint } from '@backstage/frontend-plugin-api';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 
 const signInPage = SignInPageBlueprint.make({
   params: {
@@ -492,7 +492,7 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-import { ThemeBlueprint } from '@backstage/frontend-plugin-api';
+import { ThemeBlueprint } from '@backstage/plugin-app-react';
 
 const customLightThemeExtension = ThemeBlueprint.make({
   name: 'custom-light',
@@ -535,7 +535,7 @@ const app = createApp({
 Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app.
 
 ```ts
-import { IconBundleBlueprint } from '@backstage/frontend-plugin-api';
+import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 
 const exampleIconBundle = IconBundleBlueprint.make({
   name: 'example-bundle',
@@ -586,10 +586,8 @@ Can be converted to the following extension:
 
 ```tsx
 import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
-import {
-  createTranslationMessages,
-  TranslationBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { createTranslationMessages } from '@backstage/frontend-plugin-api';
+import { TranslationBlueprint } from '@backstage/plugin-app-react';
 
 const catalogTranslations = TranslationBlueprint.make({
   name: 'catalog-overrides',
@@ -662,7 +660,7 @@ const convertedRootFeatures = convertLegacyAppRoot(
 );
 ```
 
-Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
+Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
 
 Here is an example converting the `CustomAppBarrier` into extension:
 
@@ -688,7 +686,7 @@ createApp({
 
 #### App Root Sidebar
 
-New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items which are the other `NavItem` extensions provided by the system.
+New apps feature a built-in sidebar extension which is created by using the `NavContentBlueprint` in `src/modules/nav/Sidebar.tsx`. The default implementation of the sidebar in this blueprint will render some items explicitly in different groups, and then render the rest of the items. Nav items are auto-discovered from page extensions registered under `app/routes` (no explicit `NavItemBlueprint` required), with metadata from page config, nav item extensions, or plugin defaults.
 
 In order to migrate your existing sidebar, you will want to create an override for the `app/nav` extension. You can do this by copying the standard of having a `src/modules/nav/` folder, which can contain an extension which you can install into the `app` in the form of a `module`.
 
@@ -704,53 +702,51 @@ export const navModule = createFrontendModule({
 
 Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where you implement the entire `Sidebar` component.
 
+The component receives a `navItems` prop with `take(id)` and `rest()` methods for placing specific items in custom positions. The recommended approach is to use `navItems.withComponent(...)` to define a component for rendering each nav item, and then use the returned `take(id)` and `rest()` methods to get pre-rendered elements directly. Items taken from the renderer are also taken from the main list. Keys are automatically assigned when rendering via `rest()`.
+
 ```tsx title="in packages/app/src/modules/nav/Sidebar.tsx"
-import { NavContentBlueprint } from '@backstage/frontend-plugin-api';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 
 export const SidebarContent = NavContentBlueprint.make({
   params: {
-    component: ({ items }) => (
-      <Sidebar>
-        <SidebarLogo />
-        <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-          <SidebarSearchModal />
-        </SidebarGroup>
-        <SidebarDivider />
-        <SidebarGroup label="Menu" icon={<MenuIcon />}>
-          ...
-        </SidebarGroup>
-        <SidebarGroup label="Plugins">
-          <SidebarScrollWrapper>
-            {/* Items in this group will be scrollable if they run out of space */}
-            {items.map((item, index) => (
-              <SidebarItem {...item} key={index} />
-            ))}
-          </SidebarScrollWrapper>
-        </SidebarGroup>
-      </Sidebar>
-    ),
+    component: ({ navItems }) => {
+      const nav = navItems.withComponent(item => (
+        <SidebarItem icon={() => item.icon} to={item.href} text={item.title} />
+      ));
+
+      return (
+        <Sidebar>
+          <SidebarLogo />
+          <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+            <SidebarSearchModal />
+          </SidebarGroup>
+          <SidebarDivider />
+          <SidebarGroup label="Menu" icon={<MenuIcon />}>
+            {nav.take('page:catalog')}
+            {nav.take('page:scaffolder')}
+            <SidebarDivider />
+            <SidebarScrollWrapper>
+              {nav.rest({ sortBy: 'title' })}
+            </SidebarScrollWrapper>
+          </SidebarGroup>
+        </Sidebar>
+      );
+    },
   },
 });
 ```
 
-The `items` property is a list of all extensions provided by the `NavItemBlueprint` that are currently installed in the App. If you don't want to auto populate this list you can simply remove the rendering of that `SidebarGroup`, but otherwise you can see from the above example how a `SidebarItem` element is rendered for each of the items in the list.
+The deprecated `items` prop (a flat list compatible with `<SidebarItem {...item} />`) remains supported for backward compatibility. If you don't want to auto-populate the list, simply remove the rendering of that `SidebarGroup`.
 
-You might also notice that when you're rendering additional fixed icons for plugins that these might become duplicated as the plugin provides a `NavItem` extension and you're also rendering one in the `Sidebar` manually. In order to remove the item from the list of `items` which is passed through, we recommend that you disable that extension using config:
+You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `nav.rest()`. To exclude an item from the remaining list, call `nav.take('page:search')` before calling `nav.rest()` — you can discard the return value. Items that have been taken will not appear in `rest()`.
+
+You can also use the old `NavItemBlueprint`-based nav item extensions to disable items from the nav bar, these can be disabled in config without affecting the page itself:
 
 ```yaml title="in app-config.yaml"
 app:
   extensions:
     - nav-item:search: false
     - nav-item:catalog: false
-```
-
-You can also determine the order of the provided auto installed `NavItems` that you get from the system in config. The below example ensures that the `catalog` navigation item will proceed the `search` navigation item when being passed through as the `item` prop.
-
-```yaml title="in app-config.yaml"
-app:
-  extensions:
-    - nav-item:catalog
-    - nav-item:search
 ```
 
 #### App Root Routes

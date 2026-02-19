@@ -28,6 +28,8 @@ import {
   SwappableComponentsApi,
   IconsApi,
   FeatureFlagsApi,
+  PluginWrapperApi,
+  PluginHeaderActionsApi,
   TranslationsApi,
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
@@ -36,6 +38,7 @@ import {
   Progress,
   NotFoundErrorPage,
   ErrorDisplay,
+  PageLayout,
   LegacyComponentsApi,
 } from './extensions';
 import { apis } from './defaultApis';
@@ -58,6 +61,8 @@ export const appPlugin = createFrontendPlugin({
     SwappableComponentsApi,
     IconsApi,
     FeatureFlagsApi,
+    PluginWrapperApi,
+    PluginHeaderActionsApi,
     TranslationsApi,
     DefaultSignInPage,
     oauthRequestDialogAppRootElement,
@@ -66,6 +71,7 @@ export const appPlugin = createFrontendPlugin({
     Progress,
     NotFoundErrorPage,
     ErrorDisplay,
+    PageLayout,
     LegacyComponentsApi,
   ],
 });

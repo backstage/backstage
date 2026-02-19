@@ -49,16 +49,13 @@
 }
 
 .sectionTitle {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  padding: 0 12px 4px;
-  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
   margin-top: 40px;
-  text-transform: uppercase;
-
-  &:first-child {
-    margin-top: 12px;
-  }
+  padding: 8px 12px;
+  margin-bottom: 8px;
 }
 
 .line {

@@ -15,9 +15,9 @@
  */
 
 import { readJson } from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import {
-  getModuleFederationOptions,
+  getModuleFederationRemoteOptions,
   serveBundle,
 } from '../../../../build/lib/bundler';
 import { paths } from '../../../../../lib/paths';
@@ -55,11 +55,12 @@ export async function startFrontend(options: StartAppOptions) {
     verifyVersions: options.verifyVersions,
     skipOpenBrowser: options.skipOpenBrowser,
     linkedWorkspace: options.linkedWorkspace,
-    moduleFederation: await getModuleFederationOptions(
-      packageJson,
-      resolvePath(paths.targetDir),
-      options.isModuleFederationRemote,
-    ),
+    moduleFederationRemote: options.isModuleFederationRemote
+      ? await getModuleFederationRemoteOptions(
+          packageJson,
+          resolvePath(paths.targetDir),
+        )
+      : undefined,
   });
 
   await waitForExit();

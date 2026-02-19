@@ -98,8 +98,8 @@ export function ThemeContent({
               <Box
                 p="3"
                 style={{
-                  backgroundColor: 'var(--bui-bg-surface-2)',
-                  border: '1px solid var(--bui-border)',
+                  backgroundColor: 'var(--bui-bg-neutral-2)',
+                  border: '1px solid var(--bui-border-2)',
                   borderRadius: 'var(--bui-radius-2)',
                   fontFamily: 'monospace',
                   fontSize: '14px',

@@ -1,5 +1,37 @@
 # @backstage/core-app-api
 
+## 1.19.5
+
+### Patch Changes
+
+- 5a71e7a: Fixed memory leak caused by duplicate `AppThemeSelector` instances and missing cleanup in `AppThemeSelector` and `AppLanguageSelector`. Added `dispose()` method to both selectors for proper resource cleanup.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/version-bridge@1.0.12
+
+## 1.19.5-next.1
+
+### Patch Changes
+
+- 5a71e7a: Fixed memory leak caused by duplicate `AppThemeSelector` instances and missing cleanup in `AppThemeSelector` and `AppLanguageSelector`. Added `dispose()` method to both selectors for proper resource cleanup.
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/version-bridge@1.0.12-next.0
+
+## 1.19.4-next.0
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 1.19.3
 
 ### Patch Changes
