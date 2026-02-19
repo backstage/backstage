@@ -52,9 +52,7 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
   /**
    * Creates an instance of DefaultAzureCredentialsManager from a Backstage integration registry.
    */
-  static fromIntegrations(
-    integrations: ScmIntegrationRegistry,
-  ): DefaultAzureCredentialsManager {
+  static fromIntegrations(integrations: ScmIntegrationRegistry) {
     const configProviders = integrations.azureBlobStorage
       .list()
       .reduce((acc, integration) => {
@@ -68,9 +66,7 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     return new DefaultAzureCredentialsManager(configProviders);
   }
 
-  private createCredential(
-    config: AzureBlobStorageIntegrationConfig,
-  ): TokenCredential | StorageSharedKeyCredential | AnonymousCredential {
+  private createCredential(config: AzureBlobStorageIntegrationConfig) {
     if (config.accountKey && config.accountName) {
       return new StorageSharedKeyCredential(
         config.accountName,
@@ -99,11 +95,7 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     return new DefaultAzureCredential();
   }
 
-  async getCredentials(
-    accountName: string,
-  ): Promise<
-    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
-  > {
+  async getCredentials(accountName: string) {
     if (this.cachedCredentials.has(accountName)) {
       return this.cachedCredentials.get(accountName)!;
     }
@@ -121,7 +113,7 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     return credential;
   }
 
-  getServiceUrl(accountName: string): string {
+  getServiceUrl(accountName: string) {
     const config = this.configProviders.get(accountName);
     if (!config) {
       throw new Error(`No configuration found for account: ${accountName}`);
