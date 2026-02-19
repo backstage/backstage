@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AnonymousCredential,
-  BlobServiceClient,
-  ContainerClient,
-  StorageSharedKeyCredential,
-} from '@azure/storage-blob';
+import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 import { Config } from '@backstage/config';
 import {
   LoggerService,
@@ -39,7 +34,6 @@ import {
   DefaultAzureCredentialsManager,
   ScmIntegrations,
 } from '@backstage/integration';
-import { TokenCredential } from '@azure/identity';
 import { AzureBlobStorageConfig } from './types';
 
 /**
@@ -156,36 +150,14 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
 
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
-    let credential:
-      | TokenCredential
-      | StorageSharedKeyCredential
-      | AnonymousCredential;
-    if (this.integration.config.accountKey) {
-      credential = new StorageSharedKeyCredential(
-        this.integration.config.accountName as string,
-        this.integration.config.accountKey as string,
-      ); // StorageSharedKeyCredential is only allowed in node.js runtime not in browser
-    } else {
-      credential = await this.credentialsProvider.getCredentials(
-        this.integration.config.accountName as string,
-      );
-    }
-    let blobServiceClientUrl: string;
 
-    if (this.integration.config.endpoint) {
-      if (this.integration.config.sasToken) {
-        blobServiceClientUrl = `${this.integration.config.endpoint}?${this.integration.config.sasToken}`;
-      } else {
-        blobServiceClientUrl = `${this.integration.config.endpoint}`;
-      }
-    } else {
-      blobServiceClientUrl = `https://${this.integration.config.accountName}.${this.integration.config.host}`;
-    }
-
-    this.blobServiceClient = new BlobServiceClient(
-      blobServiceClientUrl,
-      credential,
+    const accountName = this.integration.config.accountName;
+    const credential = await this.credentialsProvider.getCredentials(
+      accountName,
     );
+    const serviceUrl = this.credentialsProvider.getServiceUrl(accountName);
+
+    this.blobServiceClient = new BlobServiceClient(serviceUrl, credential);
     await this.scheduleFn();
   }
 
