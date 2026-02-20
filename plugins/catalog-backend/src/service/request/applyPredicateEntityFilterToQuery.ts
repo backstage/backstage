@@ -187,7 +187,7 @@ function applyPredicateInStrategy(
     return targetQuery[negate ? 'andWhereNot' : 'andWhere'](
       function fieldFilter() {
         for (const [key, value] of Object.entries(filter)) {
-          const normalizedKey = key.toLowerCase();
+          const normalizedKey = key.toLocaleLowerCase('en-US');
 
           if (isExistsValue(value)) {
             // Handle $exists
@@ -202,7 +202,9 @@ function applyPredicateInStrategy(
             }
           } else if (isInValue(value)) {
             // Handle $in
-            const values = value.$in.map(v => String(v).toLowerCase());
+            const values = value.$in.map(v =>
+              String(v).toLocaleLowerCase('en-US'),
+            );
             const matchQuery = knex<DbSearchRow>('search')
               .select('search.entity_id')
               .where({ key: normalizedKey })
@@ -210,7 +212,7 @@ function applyPredicateInStrategy(
             this.andWhere(onEntityIdField, 'in', matchQuery);
           } else if (isHasPrefixValue(value)) {
             // Handle $hasPrefix
-            const prefix = value.$hasPrefix.toLowerCase();
+            const prefix = value.$hasPrefix.toLocaleLowerCase('en-US');
             const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
             const matchQuery = knex<DbSearchRow>('search')
               .select('search.entity_id')
@@ -227,7 +229,7 @@ function applyPredicateInStrategy(
               .select('search.entity_id')
               .where({
                 key: normalizedKey,
-                value: String(value).toLowerCase(),
+                value: String(value).toLocaleLowerCase('en-US'),
               });
             this.andWhere(onEntityIdField, 'in', matchQuery);
           } else {
