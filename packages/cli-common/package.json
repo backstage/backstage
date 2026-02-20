@@ -32,7 +32,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "start": "backstage-cli package start",
-    "test": "backstage-cli package test"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' backstage-cli package test"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
@@ -44,5 +44,13 @@
     "@backstage/cli": "workspace:^",
     "@types/cross-spawn": "^6.0.2",
     "@types/node": "^22.13.14"
+  },
+  "peerDependencies": {
+    "open": "^10"
+  },
+  "peerDependenciesMeta": {
+    "open": {
+      "optional": true
+    }
   }
 }

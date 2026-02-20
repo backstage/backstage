@@ -20,7 +20,7 @@ import { stringify as stringifyYaml } from 'yaml';
 import inquirer, { Question, Answers } from 'inquirer';
 import { paths } from '../../../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
-import openBrowser from 'react-dev-utils/openBrowser';
+import { openBrowser } from '@backstage/cli-common';
 
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.

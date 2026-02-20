@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,12 @@
  */
 
 /**
- * Common functionality used by cli, backend, and create-app
- *
- * @packageDocumentation
+ * Loads the ESM-only `open` package. Isolated so tests can jest.mock this module.
  */
 
-export { findPaths, BACKSTAGE_JSON } from './paths';
-export { isChildPath } from './isChildPath';
-export type { Paths, ResolveFunc } from './paths';
-export { bootstrapEnvProxyAgents } from './proxyBootstrap';
-export {
-  run,
-  runOutput,
-  runCheck,
-  type RunChildProcess,
-  type RunOptions,
-  type RunOnOutput,
-} from './run';
-export { ExitCodeError } from './errors';
-export { openBrowser } from './vendored/react-dev-utils/openBrowser';
+export function loadOpen() {
+  return import('open');
+}
+
+/** Set by jest.mock in tests; unused in production. */
+export const __openMock = undefined as unknown as jest.Mock | undefined;
