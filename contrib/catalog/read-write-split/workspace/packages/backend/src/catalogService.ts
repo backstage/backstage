@@ -142,7 +142,7 @@ export class ReadWriteSplitCatalogService implements CatalogService {
   }
 
   async getLocations(
-    request: object | undefined,
+    request: {} | undefined,
     options: CatalogServiceRequestOptions,
   ): Promise<GetLocationsResponse> {
     return this.#catalogRead.getLocations(
