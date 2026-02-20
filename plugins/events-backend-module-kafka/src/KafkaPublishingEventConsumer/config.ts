@@ -25,6 +25,14 @@ export interface KafkaPublisherConfig {
   backstageTopic: string;
   kafkaTopic: string;
   producerConfig: ProducerConfig;
+  headers?: {
+    /** Enable forwarding Backstage event metadata as Kafka headers */
+    forward?: boolean;
+    /** Only forward these header keys (case-insensitive). If set, blacklist is ignored */
+    whitelist?: string[];
+    /** Do not forward these header keys (case-insensitive). Default: ['authorization'] */
+    blacklist?: string[];
+  };
 }
 
 export interface KafkaPublishingEventConsumerConfig {
@@ -74,6 +82,21 @@ export const readPublisherConfig = (
                   topicConfig.getOptionalConfig('kafka.retry'),
                 ),
               },
+              headers: (() => {
+                const headersCfg = topicConfig.getOptionalConfig('headers');
+                if (!headersCfg) return undefined;
+                const forward =
+                  headersCfg.getOptionalBoolean('forward') ?? false;
+                const whitelist =
+                  headersCfg.getOptionalStringArray('whitelist');
+                const blacklist =
+                  headersCfg.getOptionalStringArray('blacklist');
+                return {
+                  forward,
+                  whitelist,
+                  blacklist,
+                };
+              })(),
             };
           }),
       };

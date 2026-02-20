@@ -23,7 +23,10 @@ import {
 } from './config';
 import { Config } from '@backstage/config';
 import { loggerServiceAdapter } from '../utils/LoggerServiceAdapter';
-import { payloadToBuffer } from '../utils/kafkaTransformers';
+import {
+  payloadToBuffer,
+  convertMetadataToHeaders,
+} from '../utils/kafkaTransformers';
 
 type KafkaPublisher = {
   producer: Producer;
@@ -84,11 +87,19 @@ export class KafkaPublishingEventConsumer {
             id: `kafka:publisher:${config.backstageTopic}`,
             topics: [config.backstageTopic],
             onEvent: async (params: EventParams) => {
+              const headers = config.headers?.forward
+                ? convertMetadataToHeaders(params.metadata, {
+                    whitelist: config.headers?.whitelist,
+                    blacklist: config.headers?.blacklist,
+                  })
+                : undefined;
+
               await producer.send({
                 topic: config.kafkaTopic,
                 messages: [
                   {
                     value: payloadToBuffer(params.eventPayload),
+                    headers,
                   },
                 ],
               });

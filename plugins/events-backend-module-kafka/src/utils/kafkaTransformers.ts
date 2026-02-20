@@ -27,9 +27,12 @@ export const convertHeadersToMetadata = (
 
   Object.entries(headers).forEach(([key, value]) => {
     // If value is an array use toString() on all values converting any Buffer types to valid strings
-    if (Array.isArray(value)) metadata[key] = value.map(v => v.toString());
-    // Always return the values using toString() to catch all Buffer types that should be converted to strings
-    else metadata[key] = value?.toString();
+    if (Array.isArray(value)) {
+      metadata[key] = value.map(v => v.toString());
+    } else {
+      // Always return the values using toString() to catch all Buffer types that should be converted to strings
+      metadata[key] = value?.toString();
+    }
   });
 
   return metadata;
@@ -46,4 +49,41 @@ export const payloadToBuffer = (payload: unknown): Buffer => {
 
   // Convert to JSON string then encode
   return Buffer.from(JSON.stringify(payload), 'utf8');
+};
+
+export const convertMetadataToHeaders = (
+  metadata: EventMetadata | undefined,
+  options?: {
+    whitelist?: string[];
+    blacklist?: string[];
+  },
+): IHeaders | undefined => {
+  if (!metadata) return undefined;
+
+  const wl = options?.whitelist?.map(k => k.toLowerCase());
+  const bl = options?.blacklist?.map(k => k.toLowerCase()) ?? ['authorization'];
+
+  const result: IHeaders = {};
+
+  for (const [key, value] of Object.entries(metadata)) {
+    const k = key.toLowerCase();
+    if (wl && wl.length > 0) {
+      if (!wl.includes(k)) continue;
+    } else {
+      if (bl.includes(k)) continue;
+    }
+
+    if (Array.isArray(value)) {
+      const filtered = value
+        .filter(v => v !== undefined)
+        .map(v => v!.toString());
+      result[key] = filtered.length > 0 ? filtered : undefined;
+    } else if (value === undefined) {
+      result[key] = undefined;
+    } else {
+      result[key] = value.toString();
+    }
+  }
+
+  return Object.keys(result).length > 0 ? result : undefined;
 };

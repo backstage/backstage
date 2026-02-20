@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { convertHeadersToMetadata, payloadToBuffer } from './kafkaTransformers';
+import {
+  convertHeadersToMetadata,
+  payloadToBuffer,
+  convertMetadataToHeaders,
+} from './kafkaTransformers';
 
 describe('kafka-transformers', () => {
   describe('convertHeadersToMetadata', () => {
@@ -133,5 +137,84 @@ describe('kafka-transformers', () => {
       expect(payloadToBuffer(true).toString()).toBe('true');
       expect(payloadToBuffer(null).toString()).toBe('null');
     });
+  });
+});
+describe('convertMetadataToHeaders', () => {
+  it('returns undefined when metadata is undefined', () => {
+    expect(convertMetadataToHeaders(undefined)).toBeUndefined();
+  });
+
+  it('forwards metadata excluding default authorization', () => {
+    const headers = convertMetadataToHeaders(
+      {
+        Authorization: 'Bearer secret',
+        'trace-id': 'abc-123',
+        type: 'UserCreated',
+      },
+      {},
+    );
+
+    expect(headers).toEqual({ 'trace-id': 'abc-123', type: 'UserCreated' });
+    expect(headers?.Authorization).toBeUndefined();
+  });
+
+  it('uses whitelist when provided', () => {
+    const headers = convertMetadataToHeaders(
+      {
+        authorization: 'secret',
+        'trace-id': 'abc-123',
+        type: 'UserCreated',
+      },
+      { whitelist: ['trace-id'] },
+    );
+
+    expect(headers).toEqual({ 'trace-id': 'abc-123' });
+  });
+
+  it('uses blacklist when provided', () => {
+    const headers = convertMetadataToHeaders(
+      {
+        'trace-id': 'abc-123',
+        type: 'UserCreated',
+        foo: 'bar',
+      },
+      { blacklist: ['foo'] },
+    );
+
+    expect(headers).toEqual({ 'trace-id': 'abc-123', type: 'UserCreated' });
+  });
+
+  it('converts array values to string arrays', () => {
+    const headers = convertMetadataToHeaders(
+      {
+        tags: ['a', 'b'],
+      },
+      {},
+    );
+
+    expect(headers).toEqual({ tags: ['a', 'b'] });
+  });
+
+  it('preserves undefined values', () => {
+    const headers = convertMetadataToHeaders(
+      {
+        optional: undefined,
+        present: 'yes',
+      },
+      {},
+    );
+
+    expect(headers).toEqual({ optional: undefined, present: 'yes' });
+  });
+
+  it('drops undefined items in arrays', () => {
+    const headers = convertMetadataToHeaders(
+      {
+        arr: ['a', undefined, 'b'],
+      } as any,
+      {},
+    );
+
+    expect(headers).toEqual({ arr: ['a', 'b'] });
   });
 });
