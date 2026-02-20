@@ -73,10 +73,9 @@ export const AsyncSelectFilter = () => {
         label="Asynchronous Values"
         name="async_values"
         values={async () => {
-          const response = await fetch('https://swapi.dev/api/planets');
-          const json: { results: Array<{ name: string }> } =
-            await response.json();
-          return json.results.map(r => r.name);
+          const response = await fetch('https://swapi.info/api/planets');
+          const json: Array<{ name: string }> = await response.json();
+          return json.map(r => r.name);
         }}
       />
     </Paper>
@@ -90,6 +89,22 @@ export const Autocomplete = () => {
         name="autocomplete"
         label="Single-Select Autocomplete Filter"
         values={['value1', 'value2']}
+      />
+    </Paper>
+  );
+};
+
+export const AutocompleteWithLabels = () => {
+  return (
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Autocomplete
+        name="autocomplete"
+        label="Autocomplete Filter With Labels"
+        values={[
+          { value: 'value1', label: 'Label 1' },
+          { value: 'value2', label: 'Label 2' },
+          { value: 'value3', label: 'Label 3' },
+        ]}
       />
     </Paper>
   );
@@ -118,13 +133,12 @@ export const AsyncMultiSelectAutocomplete = () => {
         values={async partial => {
           if (partial === '') return [];
           const response = await fetch(
-            `https://swapi.dev/api/people?search=${encodeURIComponent(
+            `https://swapi.info/api/people?search=${encodeURIComponent(
               partial,
             )}`,
           );
-          const json: { results: Array<{ name: string }> } =
-            await response.json();
-          return json.results.map(r => r.name);
+          const json: Array<{ name: string }> = await response.json();
+          return json.map(r => r.name);
         }}
       />
     </Paper>
