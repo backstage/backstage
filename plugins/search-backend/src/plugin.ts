@@ -33,6 +33,13 @@ import {
 } from '@backstage/plugin-search-backend-node/alpha';
 
 import { createRouter } from './service/router';
+import { AuthorizedSearchEngine } from './service/AuthorizedSearchEngine.ts';
+import {
+  PermissionEvaluator,
+  toPermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import { registerActions } from './actions';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 class SearchIndexRegistry implements SearchIndexRegistryExtensionPoint {
   private collators: RegisterCollatorParameters[] = [];
@@ -100,6 +107,7 @@ export default createBackendPlugin({
         httpAuth: coreServices.httpAuth,
         lifecycle: coreServices.rootLifecycle,
         searchIndexService: searchIndexServiceRef,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         config,
@@ -111,6 +119,7 @@ export default createBackendPlugin({
         httpAuth,
         lifecycle,
         searchIndexService,
+        actionsRegistry,
       }) {
         let searchEngine = searchEngineRegistry.getSearchEngine();
         if (!searchEngine) {
@@ -135,6 +144,26 @@ export default createBackendPlugin({
           await searchIndexService.stop();
         });
 
+        let permissionEvaluator: PermissionEvaluator;
+        if ('authorizeConditional' in permissions) {
+          permissionEvaluator = permissions as PermissionEvaluator;
+        } else {
+          logger.warn(
+            'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
+          );
+          permissionEvaluator = toPermissionEvaluator(permissions);
+        }
+
+        const engine = config.getOptionalBoolean('permission.enabled')
+          ? new AuthorizedSearchEngine(
+              searchEngine,
+              searchIndexService.getDocumentTypes(),
+              permissionEvaluator,
+              auth,
+              config,
+            )
+          : searchEngine;
+
         const router = await createRouter({
           config,
           discovery,
@@ -142,11 +171,17 @@ export default createBackendPlugin({
           auth,
           httpAuth,
           logger,
-          engine: searchEngine,
+          engine,
           types: searchIndexService.getDocumentTypes(),
         });
-
         http.use(router);
+
+        registerActions({
+          engine,
+          actionsRegistry,
+          lifecycle,
+          searchIndexService,
+        });
       },
     });
   },
