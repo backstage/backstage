@@ -19,6 +19,7 @@
 // ******************************************************************
 
 import { QueryEntitiesByPredicateRequestFullTextFilter } from '../models/QueryEntitiesByPredicateRequestFullTextFilter.model';
+import { QueryEntitiesByPredicateRequestOrderByInner } from '../models/QueryEntitiesByPredicateRequestOrderByInner.model';
 
 /**
  * @public
@@ -26,7 +27,7 @@ import { QueryEntitiesByPredicateRequestFullTextFilter } from '../models/QueryEn
 export interface QueryEntitiesByPredicateRequest {
   cursor?: string;
   limit?: number;
-  orderField?: Array<string>;
+  orderBy?: Array<QueryEntitiesByPredicateRequestOrderByInner>;
   fullTextFilter?: QueryEntitiesByPredicateRequestFullTextFilter;
   fields?: Array<string>;
   /**

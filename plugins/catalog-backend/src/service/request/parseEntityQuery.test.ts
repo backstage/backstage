@@ -77,9 +77,12 @@ describe('parseEntityQuery', () => {
       );
     });
 
-    it('parses orderField into orderFields', () => {
+    it('parses orderBy into orderFields', () => {
       const result = parseEntityQuery({
-        orderField: ['metadata.name,asc', 'metadata.namespace,desc'],
+        orderBy: [
+          { field: 'metadata.name', order: 'asc' },
+          { field: 'metadata.namespace', order: 'desc' },
+        ],
       });
       expect(result).toEqual(
         expect.objectContaining({
@@ -128,9 +131,12 @@ describe('parseEntityQuery', () => {
       );
     });
 
-    it('throws on invalid orderField order value', () => {
+    it('throws on invalid orderBy order value', () => {
       expect(() =>
-        parseEntityQuery({ orderField: ['metadata.name,sideways'] }),
+        parseEntityQuery({
+          // @ts-expect-error - invalid order value
+          orderBy: [{ field: 'metadata.name', order: 'sideways' }],
+        }),
       ).toThrow(/Invalid order field order/);
     });
   });

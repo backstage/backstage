@@ -368,9 +368,7 @@ export class CatalogClient implements CatalogApi {
         body.limit = limit;
       }
       if (orderFields !== undefined) {
-        body.orderField = (
-          Array.isArray(orderFields) ? orderFields : [orderFields]
-        ).map(({ field, order }) => `${field},${order}`);
+        body.orderBy = [orderFields].flat();
       }
       if (fullTextFilter) {
         body.fullTextFilter = fullTextFilter;

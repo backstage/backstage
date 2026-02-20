@@ -751,9 +751,11 @@ describe('CatalogClient', () => {
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
     });
 
-    it('should send orderFields with correct format (field,order)', async () => {
+    it('should send orderFields with correct format', async () => {
       const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body.orderField).toEqual(['metadata.name,asc']);
+        expect(req.body.orderBy).toEqual([
+          { field: 'metadata.name', order: 'asc' },
+        ]);
         return res(ctx.json(defaultResponse));
       });
 
@@ -769,9 +771,9 @@ describe('CatalogClient', () => {
 
     it('should send multiple orderFields with correct format', async () => {
       const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body.orderField).toEqual([
-          'metadata.name,asc',
-          'spec.type,desc',
+        expect(req.body.orderBy).toEqual([
+          { field: 'metadata.name', order: 'asc' },
+          { field: 'spec.type', order: 'desc' },
         ]);
         return res(ctx.json(defaultResponse));
       });

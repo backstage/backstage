@@ -1269,10 +1269,20 @@ export const spec = {
                   limit: {
                     type: 'number',
                   },
-                  orderField: {
+                  orderBy: {
                     type: 'array',
                     items: {
-                      type: 'string',
+                      type: 'object',
+                      required: ['field', 'order'],
+                      properties: {
+                        field: {
+                          type: 'string',
+                        },
+                        order: {
+                          type: 'string',
+                          enum: ['asc', 'desc'],
+                        },
+                      },
                     },
                   },
                   fullTextFilter: {

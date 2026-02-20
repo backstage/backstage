@@ -41,17 +41,16 @@ function isSupportedFilterPredicateRoot(
 }
 
 function parseOrderFields(
-  orderField: string[] | undefined,
+  orderField: Array<{ field: string; order: string }> | undefined,
 ): EntityOrder[] | undefined {
   if (!orderField?.length) {
     return undefined;
   }
-  return orderField.map(entry => {
-    const [field, order] = entry.split(',');
-    if (order !== undefined && order !== 'asc' && order !== 'desc') {
+  return orderField.map(({ field, order }) => {
+    if (order !== 'asc' && order !== 'desc') {
       throw new InputError('Invalid order field order, must be asc or desc');
     }
-    return { field, order: order as 'asc' | 'desc' };
+    return { field, order };
   });
 }
 
@@ -98,7 +97,7 @@ export function parseEntityQuery(
     query = result.data;
   }
 
-  const orderFields = parseOrderFields(request.orderField);
+  const orderFields = parseOrderFields(request.orderBy);
 
   return {
     query,
