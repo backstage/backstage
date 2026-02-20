@@ -115,60 +115,55 @@ function isFieldExpression(filter: FilterPredicate): boolean {
  * ```
  */
 
-function applyPredicateInStrategy(
-  filter: FilterPredicate,
-  targetQuery: Knex.QueryBuilder,
-  onEntityIdField: string,
-  knex: Knex,
-  negate: boolean,
-): Knex.QueryBuilder {
+export function applyPredicateEntityFilterToQuery(options: {
+  filter: FilterPredicate;
+  targetQuery: Knex.QueryBuilder;
+  onEntityIdField: string;
+  knex: Knex;
+}): Knex.QueryBuilder {
+  const { filter, targetQuery, onEntityIdField, knex } = options;
   // Handle $not
   if (isNotPredicate(filter)) {
-    return applyPredicateInStrategy(
-      filter.$not,
-      targetQuery,
-      onEntityIdField,
-      knex,
-      !negate,
+    return targetQuery.andWhereNot(subQuery =>
+      applyPredicateEntityFilterToQuery({
+        filter: filter.$not,
+        targetQuery: subQuery,
+        onEntityIdField,
+        knex,
+      }),
     );
   }
 
   // Handle $all (AND)
   if (isAllPredicate(filter)) {
-    return targetQuery[negate ? 'andWhereNot' : 'andWhere'](
-      function allFilter() {
-        for (const subFilter of filter.$all) {
-          this.andWhere(subQuery =>
-            applyPredicateInStrategy(
-              subFilter,
-              subQuery,
-              onEntityIdField,
-              knex,
-              false,
-            ),
-          );
-        }
-      },
-    );
+    return targetQuery.andWhere(function allFilter() {
+      for (const subFilter of filter.$all) {
+        this.andWhere(subQuery =>
+          applyPredicateEntityFilterToQuery({
+            filter: subFilter,
+            targetQuery: subQuery,
+            onEntityIdField,
+            knex,
+          }),
+        );
+      }
+    });
   }
 
   // Handle $any (OR)
   if (isAnyPredicate(filter)) {
-    return targetQuery[negate ? 'andWhereNot' : 'andWhere'](
-      function anyFilter() {
-        for (const subFilter of filter.$any) {
-          this.orWhere(subQuery =>
-            applyPredicateInStrategy(
-              subFilter,
-              subQuery,
-              onEntityIdField,
-              knex,
-              false,
-            ),
-          );
-        }
-      },
-    );
+    return targetQuery.andWhere(function anyFilter() {
+      for (const subFilter of filter.$any) {
+        this.orWhere(subQuery =>
+          applyPredicateEntityFilterToQuery({
+            filter: subFilter,
+            targetQuery: subQuery,
+            onEntityIdField,
+            knex,
+          }),
+        );
+      }
+    });
   }
 
   // Reject primitives at the top level. Matching by value without specifying
@@ -184,83 +179,60 @@ function applyPredicateInStrategy(
 
   // Handle field expressions like { "kind": "component" } or { "spec.type": { "$in": ["service", "website"] } }
   if (isFieldExpression(filter)) {
-    return targetQuery[negate ? 'andWhereNot' : 'andWhere'](
-      function fieldFilter() {
-        for (const [key, value] of Object.entries(filter)) {
-          const normalizedKey = key.toLocaleLowerCase('en-US');
+    return targetQuery.andWhere(function fieldFilter() {
+      for (const [key, value] of Object.entries(filter)) {
+        const normalizedKey = key.toLocaleLowerCase('en-US');
 
-          if (isExistsValue(value)) {
-            // Handle $exists
-            const existsQuery = knex<DbSearchRow>('search')
-              .select('search.entity_id')
-              .where({ key: normalizedKey });
+        if (isExistsValue(value)) {
+          // Handle $exists
+          const existsQuery = knex<DbSearchRow>('search')
+            .select('search.entity_id')
+            .where({ key: normalizedKey });
 
-            if (value.$exists) {
-              this.andWhere(onEntityIdField, 'in', existsQuery);
-            } else {
-              this.andWhere(onEntityIdField, 'not in', existsQuery);
-            }
-          } else if (isInValue(value)) {
-            // Handle $in
-            const values = value.$in.map(v =>
-              String(v).toLocaleLowerCase('en-US'),
-            );
-            const matchQuery = knex<DbSearchRow>('search')
-              .select('search.entity_id')
-              .where({ key: normalizedKey })
-              .whereIn('value', values);
-            this.andWhere(onEntityIdField, 'in', matchQuery);
-          } else if (isHasPrefixValue(value)) {
-            // Handle $hasPrefix
-            const prefix = value.$hasPrefix.toLocaleLowerCase('en-US');
-            const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
-            const matchQuery = knex<DbSearchRow>('search')
-              .select('search.entity_id')
-              .where({ key: normalizedKey })
-              .andWhereRaw('?? like ? escape ?', [
-                'value',
-                `${escaped}%`,
-                '\\',
-              ]);
-            this.andWhere(onEntityIdField, 'in', matchQuery);
-          } else if (isPrimitive(value)) {
-            // Handle direct value match
-            const matchQuery = knex<DbSearchRow>('search')
-              .select('search.entity_id')
-              .where({
-                key: normalizedKey,
-                value: String(value).toLocaleLowerCase('en-US'),
-              });
-            this.andWhere(onEntityIdField, 'in', matchQuery);
+          if (value.$exists) {
+            this.andWhere(onEntityIdField, 'in', existsQuery);
           } else {
-            // Reject unsupported/invalid predicate values
-            throw new InputError(
-              `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, or $hasPrefix operator, but got ${JSON.stringify(
-                value,
-              )}`,
-            );
+            this.andWhere(onEntityIdField, 'not in', existsQuery);
           }
+        } else if (isInValue(value)) {
+          // Handle $in
+          const values = value.$in.map(v =>
+            String(v).toLocaleLowerCase('en-US'),
+          );
+          const matchQuery = knex<DbSearchRow>('search')
+            .select('search.entity_id')
+            .where({ key: normalizedKey })
+            .whereIn('value', values);
+          this.andWhere(onEntityIdField, 'in', matchQuery);
+        } else if (isHasPrefixValue(value)) {
+          // Handle $hasPrefix
+          const prefix = value.$hasPrefix.toLocaleLowerCase('en-US');
+          const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
+          const matchQuery = knex<DbSearchRow>('search')
+            .select('search.entity_id')
+            .where({ key: normalizedKey })
+            .andWhereRaw('?? like ? escape ?', ['value', `${escaped}%`, '\\']);
+          this.andWhere(onEntityIdField, 'in', matchQuery);
+        } else if (isPrimitive(value)) {
+          // Handle direct value match
+          const matchQuery = knex<DbSearchRow>('search')
+            .select('search.entity_id')
+            .where({
+              key: normalizedKey,
+              value: String(value).toLocaleLowerCase('en-US'),
+            });
+          this.andWhere(onEntityIdField, 'in', matchQuery);
+        } else {
+          // Reject unsupported/invalid predicate values
+          throw new InputError(
+            `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, or $hasPrefix operator, but got ${JSON.stringify(
+              value,
+            )}`,
+          );
         }
-      },
-    );
+      }
+    });
   }
 
   return targetQuery;
-}
-
-export function applyPredicateEntityFilterToQuery(options: {
-  filter: FilterPredicate;
-  targetQuery: Knex.QueryBuilder;
-  onEntityIdField: string;
-  knex: Knex;
-}): Knex.QueryBuilder {
-  const { filter, targetQuery, onEntityIdField, knex } = options;
-
-  return applyPredicateInStrategy(
-    filter,
-    targetQuery,
-    onEntityIdField,
-    knex,
-    false,
-  );
 }
