@@ -155,22 +155,6 @@ describe('SearchModal', () => {
     expect(toggleModal).toHaveBeenCalledTimes(1);
   });
 
-  it('should render SearchModal hiding its content', async () => {
-    const { getByTestId } = await renderInTestApp(
-      <ApiProvider apis={apiRegistry}>
-        <SearchModal open hidden toggleModal={toggleModal} />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/search': rootRouteRef,
-        },
-      },
-    );
-
-    expect(getByTestId('search-bar-next')).toBeInTheDocument();
-    expect(getByTestId('search-bar-next')).not.toBeVisible();
-  });
-
   it('should focus on its search bar when opened', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
@@ -251,5 +235,37 @@ describe('SearchModal', () => {
     await userEvent.click(fullResultsBtn);
 
     expect(navigate).toHaveBeenCalledWith('/search?query=term');
+  });
+
+  it('should completely unmount the Dialog from DOM when open prop is false', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open={false} hidden={false} toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    // Dialog should not exist in the DOM at all (unmounted, not just hidden)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('should completely unmount the Dialog from DOM when hidden prop is true', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    // Dialog should not exist in the DOM at all (unmounted, not just hidden)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
