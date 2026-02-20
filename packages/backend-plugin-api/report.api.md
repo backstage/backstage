@@ -245,6 +245,7 @@ export namespace coreServices {
     'root',
     'singleton'
   >;
+  const queue: ServiceRef<QueueService, 'plugin', 'singleton'>;
 }
 
 // @public
@@ -389,6 +390,9 @@ export interface DiscoveryService {
 }
 
 // @public
+export type DLQHandler = (job: Job, error: Error) => Promise<void>;
+
+// @public
 export type ExtensionPoint<T> = {
   id: string;
   T: T;
@@ -438,6 +442,19 @@ export { isChildPath };
 
 // @public
 export function isDatabaseConflictError(e: unknown): boolean;
+
+// @public
+export interface Job {
+  attempt: number;
+  id: string;
+  payload: JsonValue;
+}
+
+// @public
+export type JobOptions = {
+  delay?: number;
+  priority?: number;
+};
 
 // @public
 export interface LifecycleService {
@@ -564,6 +581,35 @@ export interface PluginServiceFactoryOptions<
   // (undocumented)
   service: ServiceRef<TService, 'plugin', TInstances>;
 }
+
+// @public
+export type ProcessOptions = {
+  concurrency?: number;
+};
+
+// @public
+export interface Queue {
+  add(payload: JsonValue, options?: JobOptions): Promise<void>;
+  disconnect(): Promise<void>;
+  getJobCount(): Promise<number>;
+  pause(): Promise<void>;
+  process(handler: (job: Job) => Promise<void>, options?: ProcessOptions): void;
+  resume(): Promise<void>;
+}
+
+// @public
+export type QueueOptions = {
+  dlqHandler?: DLQHandler;
+  store?: QueueStore;
+};
+
+// @public
+export interface QueueService {
+  getQueue(name: string, options?: QueueOptions): Promise<Queue>;
+}
+
+// @public
+export type QueueStore = 'memory' | 'redis' | 'kafka' | 'sqs' | 'postgres';
 
 // @public
 export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
