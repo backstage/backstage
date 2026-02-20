@@ -23,24 +23,6 @@ import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { DbSearchRow } from '../../database/tables';
 
-function isAllPredicate(
-  filter: FilterPredicate,
-): filter is { $all: FilterPredicate[] } {
-  return typeof filter === 'object' && filter !== null && '$all' in filter;
-}
-
-function isAnyPredicate(
-  filter: FilterPredicate,
-): filter is { $any: FilterPredicate[] } {
-  return typeof filter === 'object' && filter !== null && '$any' in filter;
-}
-
-function isNotPredicate(
-  filter: FilterPredicate,
-): filter is { $not: FilterPredicate } {
-  return typeof filter === 'object' && filter !== null && '$not' in filter;
-}
-
 function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
   return (
     typeof value === 'string' ||
@@ -49,30 +31,8 @@ function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
   );
 }
 
-function isExistsValue(
-  value: FilterPredicateValue,
-): value is { $exists: boolean } {
-  return typeof value === 'object' && value !== null && '$exists' in value;
-}
-
-function isInValue(
-  value: FilterPredicateValue,
-): value is { $in: FilterPredicatePrimitive[] } {
-  return typeof value === 'object' && value !== null && '$in' in value;
-}
-
-function isHasPrefixValue(
-  value: FilterPredicateValue,
-): value is { $hasPrefix: string } {
-  return typeof value === 'object' && value !== null && '$hasPrefix' in value;
-}
-
-function isFieldExpression(filter: FilterPredicate): boolean {
-  if (typeof filter !== 'object' || filter === null) {
-    return false;
-  }
-  // Not a logical operator
-  return !('$all' in filter || '$any' in filter || '$not' in filter);
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /**
@@ -114,7 +74,6 @@ function isFieldExpression(filter: FilterPredicate): boolean {
  * ORDER BY final_entities.entity_ref ASC;
  * ```
  */
-
 export function applyPredicateEntityFilterToQuery(options: {
   filter: FilterPredicate;
   targetQuery: Knex.QueryBuilder;
@@ -122,53 +81,9 @@ export function applyPredicateEntityFilterToQuery(options: {
   knex: Knex;
 }): Knex.QueryBuilder {
   const { filter, targetQuery, onEntityIdField, knex } = options;
-  // Handle $not
-  if (isNotPredicate(filter)) {
-    return targetQuery.andWhereNot(subQuery =>
-      applyPredicateEntityFilterToQuery({
-        filter: filter.$not,
-        targetQuery: subQuery,
-        onEntityIdField,
-        knex,
-      }),
-    );
-  }
 
-  // Handle $all (AND)
-  if (isAllPredicate(filter)) {
-    return targetQuery.andWhere(function allFilter() {
-      for (const subFilter of filter.$all) {
-        this.andWhere(subQuery =>
-          applyPredicateEntityFilterToQuery({
-            filter: subFilter,
-            targetQuery: subQuery,
-            onEntityIdField,
-            knex,
-          }),
-        );
-      }
-    });
-  }
-
-  // Handle $any (OR)
-  if (isAnyPredicate(filter)) {
-    return targetQuery.andWhere(function anyFilter() {
-      for (const subFilter of filter.$any) {
-        this.orWhere(subQuery =>
-          applyPredicateEntityFilterToQuery({
-            filter: subFilter,
-            targetQuery: subQuery,
-            onEntityIdField,
-            knex,
-          }),
-        );
-      }
-    });
-  }
-
-  // Reject primitives at the top level. Matching by value without specifying
-  // a field key is ambiguous and should not be allowed.
-  if (isPrimitive(filter)) {
+  // We do not support top-level primitives; all matching happens through objects
+  if (!filter || typeof filter !== 'object' || Array.isArray(filter)) {
     throw new InputError(
       `Invalid filter predicate: top-level primitive values are not supported. ` +
         `Wrap the value in a field expression, e.g. { "kind": ${JSON.stringify(
@@ -177,62 +92,128 @@ export function applyPredicateEntityFilterToQuery(options: {
     );
   }
 
-  // Handle field expressions like { "kind": "component" } or { "spec.type": { "$in": ["service", "website"] } }
-  if (isFieldExpression(filter)) {
-    return targetQuery.andWhere(function fieldFilter() {
-      for (const [key, value] of Object.entries(filter)) {
-        const normalizedKey = key.toLocaleLowerCase('en-US');
+  if ('$not' in filter) {
+    return targetQuery.andWhereNot(inner =>
+      applyPredicateEntityFilterToQuery({
+        filter: filter.$not,
+        targetQuery: inner,
+        onEntityIdField,
+        knex,
+      }),
+    );
+  }
 
-        if (isExistsValue(value)) {
-          // Handle $exists
-          const existsQuery = knex<DbSearchRow>('search')
-            .select('search.entity_id')
-            .where({ key: normalizedKey });
-
-          if (value.$exists) {
-            this.andWhere(onEntityIdField, 'in', existsQuery);
-          } else {
-            this.andWhere(onEntityIdField, 'not in', existsQuery);
-          }
-        } else if (isInValue(value)) {
-          // Handle $in
-          const values = value.$in.map(v =>
-            String(v).toLocaleLowerCase('en-US'),
-          );
-          const matchQuery = knex<DbSearchRow>('search')
-            .select('search.entity_id')
-            .where({ key: normalizedKey })
-            .whereIn('value', values);
-          this.andWhere(onEntityIdField, 'in', matchQuery);
-        } else if (isHasPrefixValue(value)) {
-          // Handle $hasPrefix
-          const prefix = value.$hasPrefix.toLocaleLowerCase('en-US');
-          const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
-          const matchQuery = knex<DbSearchRow>('search')
-            .select('search.entity_id')
-            .where({ key: normalizedKey })
-            .andWhereRaw('?? like ? escape ?', ['value', `${escaped}%`, '\\']);
-          this.andWhere(onEntityIdField, 'in', matchQuery);
-        } else if (isPrimitive(value)) {
-          // Handle direct value match
-          const matchQuery = knex<DbSearchRow>('search')
-            .select('search.entity_id')
-            .where({
-              key: normalizedKey,
-              value: String(value).toLocaleLowerCase('en-US'),
-            });
-          this.andWhere(onEntityIdField, 'in', matchQuery);
-        } else {
-          // Reject unsupported/invalid predicate values
-          throw new InputError(
-            `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, or $hasPrefix operator, but got ${JSON.stringify(
-              value,
-            )}`,
-          );
-        }
+  if ('$all' in filter) {
+    if (filter.$all.length === 0) {
+      return targetQuery.andWhereRaw('1 = 0');
+    }
+    return targetQuery.andWhere(outer => {
+      for (const subFilter of filter.$all) {
+        outer.andWhere(inner =>
+          applyPredicateEntityFilterToQuery({
+            filter: subFilter,
+            targetQuery: inner,
+            onEntityIdField,
+            knex,
+          }),
+        );
       }
     });
   }
 
-  return targetQuery;
+  if ('$any' in filter) {
+    if (filter.$any.length === 0) {
+      return targetQuery.andWhereRaw('1 = 0');
+    }
+    return targetQuery.andWhere(outer => {
+      for (const subFilter of filter.$any) {
+        outer.orWhere(inner =>
+          applyPredicateEntityFilterToQuery({
+            filter: subFilter,
+            targetQuery: inner,
+            onEntityIdField,
+            knex,
+          }),
+        );
+      }
+    });
+  }
+
+  // Treat the filter as a field expression like { "kind": "component" } or { "spec.type": { "$in": ["service", "website"] } }
+  if (Object.keys(filter).length === 0) {
+    return targetQuery;
+  }
+  return targetQuery.andWhere(inner => {
+    for (const [keyAnyCase, value] of Object.entries(filter)) {
+      applyFieldCondition({
+        key: keyAnyCase.toLocaleLowerCase('en-US'),
+        value,
+        targetQuery: inner,
+        onEntityIdField,
+        knex,
+      });
+    }
+  });
+}
+
+/**
+ * Applies a single { key: value } filter to the target query.
+ */
+function applyFieldCondition(options: {
+  key: string;
+  value: FilterPredicateValue;
+  targetQuery: Knex.QueryBuilder;
+  onEntityIdField: string;
+  knex: Knex;
+}): Knex.QueryBuilder {
+  const { key, value, targetQuery, onEntityIdField, knex } = options;
+
+  if (isPrimitive(value)) {
+    const matchQuery = knex<DbSearchRow>('search')
+      .select('search.entity_id')
+      .where({
+        key,
+        value: String(value).toLocaleLowerCase('en-US'),
+      });
+    return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
+  }
+
+  if (isObject(value)) {
+    if ('$exists' in value) {
+      const existsQuery = knex<DbSearchRow>('search')
+        .select('search.entity_id')
+        .where({ key });
+      if (value.$exists) {
+        return targetQuery.andWhere(onEntityIdField, 'in', existsQuery);
+      }
+      return targetQuery.andWhere(onEntityIdField, 'not in', existsQuery);
+    }
+
+    if ('$in' in value) {
+      const values = (value.$in as FilterPredicatePrimitive[]).map(v =>
+        String(v).toLocaleLowerCase('en-US'),
+      );
+      const matchQuery = knex<DbSearchRow>('search')
+        .select('search.entity_id')
+        .where({ key })
+        .whereIn('value', values);
+      return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
+    }
+
+    if ('$hasPrefix' in value) {
+      const prefix = (value.$hasPrefix as string).toLocaleLowerCase('en-US');
+      const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
+      const matchQuery = knex<DbSearchRow>('search')
+        .select('search.entity_id')
+        .where({ key })
+        .andWhereRaw('?? like ? escape ?', ['value', `${escaped}%`, '\\']);
+      return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
+    }
+  }
+
+  throw new InputError(
+    `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, or $hasPrefix operator, but got ${JSON.stringify(
+      value,
+    )}`,
+  );
 }

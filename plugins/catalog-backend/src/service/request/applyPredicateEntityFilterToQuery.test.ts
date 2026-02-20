@@ -116,6 +116,16 @@ describe.each(databases.eachSupportedId())(
       );
     }
 
+    it('matches everything for empty field expression', async () => {
+      await expect(query({})).resolves.toEqual([
+        'api-d',
+        'bare-e',
+        'service-a',
+        'service-b',
+        'website-c',
+      ]);
+    });
+
     it('filters by direct field value', async () => {
       await expect(query({ kind: 'component' })).resolves.toEqual([
         'bare-e',
@@ -140,12 +150,20 @@ describe.each(databases.eachSupportedId())(
       ).resolves.toEqual(['service-a', 'service-b']);
     });
 
+    it('returns nothing for empty $all', async () => {
+      await expect(query({ $all: [] })).resolves.toEqual([]);
+    });
+
     it('filters with $any', async () => {
       await expect(
         query({
           $any: [{ 'spec.type': 'service' }, { 'spec.type': 'website' }],
         }),
       ).resolves.toEqual(['service-a', 'service-b', 'website-c']);
+    });
+
+    it('returns nothing for empty $any', async () => {
+      await expect(query({ $any: [] })).resolves.toEqual([]);
     });
 
     it('filters with $not', async () => {
