@@ -181,6 +181,18 @@ describe.each(databases.eachSupportedId())(
       ).resolves.toEqual(['bare-e']);
     });
 
+    it('filters with $hasPrefix', async () => {
+      await expect(
+        query({ 'metadata.name': { $hasPrefix: 'service' } }),
+      ).resolves.toEqual(['service-a', 'service-b']);
+    });
+
+    it('filters with $hasPrefix case-insensitively', async () => {
+      await expect(
+        query({ 'metadata.name': { $hasPrefix: 'Service' } }),
+      ).resolves.toEqual(['service-a', 'service-b']);
+    });
+
     it('handles nested logical operators', async () => {
       await expect(
         query({

@@ -61,6 +61,12 @@ function isInValue(
   return typeof value === 'object' && value !== null && '$in' in value;
 }
 
+function isHasPrefixValue(
+  value: FilterPredicateValue,
+): value is { $hasPrefix: string } {
+  return typeof value === 'object' && value !== null && '$hasPrefix' in value;
+}
+
 function isFieldExpression(filter: FilterPredicate): boolean {
   if (typeof filter !== 'object' || filter === null) {
     return false;
@@ -202,6 +208,19 @@ function applyPredicateInStrategy(
               .where({ key: normalizedKey })
               .whereIn('value', values);
             this.andWhere(onEntityIdField, 'in', matchQuery);
+          } else if (isHasPrefixValue(value)) {
+            // Handle $hasPrefix
+            const prefix = value.$hasPrefix.toLowerCase();
+            const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
+            const matchQuery = knex<DbSearchRow>('search')
+              .select('search.entity_id')
+              .where({ key: normalizedKey })
+              .andWhereRaw('?? like ? escape ?', [
+                'value',
+                `${escaped}%`,
+                '\\',
+              ]);
+            this.andWhere(onEntityIdField, 'in', matchQuery);
           } else if (isPrimitive(value)) {
             // Handle direct value match
             const matchQuery = knex<DbSearchRow>('search')
@@ -214,7 +233,7 @@ function applyPredicateInStrategy(
           } else {
             // Reject unsupported/invalid predicate values
             throw new InputError(
-              `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, or $in operator, but got ${JSON.stringify(
+              `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, or $hasPrefix operator, but got ${JSON.stringify(
                 value,
               )}`,
             );
