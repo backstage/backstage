@@ -19,7 +19,11 @@ import {
   ProfileInfo,
 } from '@backstage/core-plugin-api';
 import { OAuthApiCreateOptions } from '../types.ts';
-import { AuthConnector, PopupOptions } from '../../../../lib';
+import {
+  AuthConnector,
+  PopupOptions,
+  AuthorizationParams,
+} from '../../../../lib';
 
 export type { PopupOptions } from '../../../../lib/AuthConnector';
 /**
@@ -45,6 +49,7 @@ export type OAuth2Session = {
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
   popupOptions?: PopupOptions;
+  authorizationParams?: AuthorizationParams | (() => AuthorizationParams);
 };
 
 /**
@@ -55,4 +60,5 @@ export type OAuth2CreateOptionsWithAuthConnector = {
   scopeTransform?: (scopes: string[]) => string[];
   defaultScopes?: string[];
   authConnector: AuthConnector<OAuth2Session>;
+  authorizationParams?: AuthorizationParams | (() => AuthorizationParams);
 };
