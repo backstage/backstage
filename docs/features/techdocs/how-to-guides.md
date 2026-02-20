@@ -90,13 +90,12 @@ the source code hosting provider. Notice that instead of the `dir:` prefix, the
 - **Bitbucket**: `url:https://bitbuckethost.com/project/repo/src/<branch_name>`
 - **Azure**: `url:https://azurehost.com/organization/project/_git/repository`
 
-Note, just as it's possible to specify a subdirectory with the `dir:` prefix,
-you can also provide a path to a non-root directory inside the repository which
-contains the `mkdocs.yml` file and `docs/` directory. It is important that it is
-suffixed with a '/' in order for relative path resolution to work consistently.
+:::note
+Just as you can specify a subdirectory with the `dir:` prefix, you can also provide a path to a non-root directory inside the repository that contains the `mkdocs.yml` file and `docs/` directory. Make sure the path is suffixed with a '/' for relative path resolution to work consistently.
 
-e.g.
+For example:
 `url:https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend/examples/documented-component/`
+:::
 
 ### Why is URL Reader faster than a git clone?
 
@@ -656,7 +655,9 @@ Here, the markdown file refers to another file (`*.puml` or `*.pu`) which contai
 ```
 ````
 
-Note: To refer external diagram files, we need to include the diagrams directory in the path. Please refer [`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile) for details.
+:::note
+To reference external diagram files, you need to include the diagrams directory in the path. For details, refer to the [`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile).
+:::
 
 ## How to add Mermaid support in TechDocs
 

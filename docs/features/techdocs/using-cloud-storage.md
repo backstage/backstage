@@ -88,9 +88,9 @@ techdocs:
         $file: '/path/to/google_application_credentials.json'
 ```
 
-Note: If you are finding it difficult to make the file
-`google_application_credentials.json` available on a server, you could use the
-file's content and set as an environment variable. And then use
+:::note
+If you find it difficult to make the `google_application_credentials.json` file available on a server, you can use the file's content as an environment variable instead. Then use the following configuration:
+:::
 
 ```yaml
 techdocs:
@@ -346,9 +346,9 @@ techdocs:
         roleArn: arn:aws:iam::123456789012:role/my-backstage-role
 ```
 
-Note: Assuming a role requires that primary credentials are already configured
-at `AWS.config.credentials`. Read more about
-[assuming roles in AWS](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html).
+:::note
+Assuming a role requires that primary credentials are already configured at `AWS.config.credentials`. To learn more, read about [assuming roles in AWS](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html).
+:::
 
 **5. That's it!**
 

@@ -133,13 +133,9 @@ techdocs:
   builder: 'local'
 ```
 
-Note that we recommend generating docs on CI/CD instead. Read more in the
-"Basic" and "Recommended" sections of the
-[TechDocs Architecture](architecture.md). But if you want to get started quickly
-set `techdocs.builder` to `'local'` so that TechDocs Backend is responsible for
-generating documentation sites. If set to `'external'`, Backstage will assume
-that the sites are being generated on each entity's CI/CD pipeline, and are
-being stored in a storage somewhere.
+:::note
+We recommend generating documentation on CI/CD instead. To learn more, read the "Basic" and "Recommended" sections of the [TechDocs Architecture](architecture.md). However, if you want to get started quickly, set `techdocs.builder` to `'local'` so that TechDocs Backend generates the documentation sites. If set to `'external'`, Backstage will assume that sites are generated on each entity's CI/CD pipeline and stored in external storage.
+:::
 
 When `techdocs.builder` is set to `'external'`, TechDocs becomes more or less a
 read-only experience where it serves static files from a storage containing all
@@ -227,7 +223,9 @@ case you want to pin the version, use the example below:
 RUN pip3 install mkdocs-techdocs-core==1.2.3
 ```
 
-Note: We recommend Python version 3.11 or higher.
+:::note
+We recommend Python version 3.11 or higher.
+:::
 
 > Caveat: Please install the `mkdocs-techdocs-core` package after all other
 > Python packages. The order is important to make sure we get correct version of
