@@ -75,8 +75,10 @@ export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 // @public
 export class LunrSearchEngine implements SearchEngine {
   constructor(options: { logger: LoggerService });
+  // @deprecated (undocumented)
+  protected get docStore(): Record<string, IndexableDocument>;
   // (undocumented)
-  protected docStore: Record<string, IndexableDocument>;
+  protected docStores: Record<string, Record<string, IndexableDocument>>;
   // (undocumented)
   getIndexer(type: string): Promise<LunrSearchEngineIndexer>;
   // (undocumented)
