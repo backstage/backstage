@@ -150,7 +150,7 @@ Options:
   --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
                                   in case a default <docs-dir>/index.md is not provided. (default: false)
   --runAsDefaultUser              Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
-  -v --verbose                    Enable verbose output. (default: false)
+  -v, --verbose                   Enable verbose output. (default: false)
   -h, --help                      display help for command
 ```
 

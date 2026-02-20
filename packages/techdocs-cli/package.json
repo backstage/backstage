@@ -49,7 +49,7 @@
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
-    "commander": "^12.0.0",
+    "commander": "^14.0.3",
     "fs-extra": "^11.0.0",
     "global-agent": "^3.0.0",
     "http-proxy": "^1.18.1",
@@ -59,7 +59,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/commander": "^2.12.2",
     "@types/fs-extra": "^11.0.0",
     "@types/http-proxy": "^1.17.4",
     "@types/node": "^22.13.14",

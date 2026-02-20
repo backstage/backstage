@@ -45,7 +45,7 @@
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
     "chalk": "^4.0.0",
-    "commander": "^12.0.0",
+    "commander": "^14.0.3",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.3",
     "inquirer": "^8.2.0",

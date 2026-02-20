@@ -29,10 +29,10 @@ jest.mock('./paths', () => ({
 }));
 
 describe('findRoleFromCommand', () => {
-  function mkCommand(args: string) {
+  function mkCommand(args?: string) {
     const parsed = new Command()
       .option('--role <role>', 'test role')
-      .parse(['node', 'entry.js', ...args.split(' ')]) as Command;
+      .parse(args?.split(' ') ?? [], { from: 'user' });
     return parsed.opts();
   }
 
@@ -48,7 +48,7 @@ describe('findRoleFromCommand', () => {
   });
 
   it('provides role info by role', async () => {
-    await expect(findRoleFromCommand(mkCommand(''))).resolves.toEqual(
+    await expect(findRoleFromCommand(mkCommand())).resolves.toEqual(
       'web-library',
     );
 
