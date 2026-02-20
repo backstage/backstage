@@ -24,7 +24,7 @@ export interface Config {
   catalogGraph?: {
     /**
      * The mode to use for fetching the graph.
-     * If `@backstage/plugin-catalog-backend-module-graph` is installed, this can be set to
+     * If `catalog-backend-module-graph` is installed, this can be set to
      * 'backend' to improve performance by constructing the graph in the backend
      * instead of iteratively fetching entities from the frontend.
      *
@@ -65,7 +65,7 @@ export interface Config {
 
     /**
      * Known relations.
-     * Defaults to the built-in relations, but can be customed so the UI suggests
+     * Defaults to the built-in relations, but can be customized so the UI suggests
      * other relations in the drop-down.
      *
      * To only add relations on top of the built-in ones, use
@@ -80,7 +80,7 @@ export interface Config {
 
     /**
      * Known relation pairs.
-     * Defaults to the built-in relation pairs, but can be customed to incude more
+     * Defaults to the built-in relation pairs, but can be customized to incude more
      * relations pairs for custom relations.
      *
      * To only add relation pairs on top of the built-in ones, use
@@ -97,7 +97,7 @@ export interface Config {
      * Default relation types. These are the relation types that will be used by
      * default in the UI, unless overridden by props.
      *
-     * Defaults to all relations, but can be customed to include more relations
+     * Defaults to all relations, but can be customized to include more relations
      * or exclude certain relations that aren't suitable or feasible to display.
      */
     defaultRelationTypes?: DefaultRelations;
