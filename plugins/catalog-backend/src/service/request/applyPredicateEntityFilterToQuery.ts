@@ -35,45 +35,6 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-/**
- * example generated query
- * Selects all non-null final entities that:
- *
- * - Are of kind "component"
- * - Have spec.type = "service"
- * - Are owned by either:
- *   - backend-team
- *   - platform-team
- * - Are NOT in experimental lifecycle
- *
- * Results are ordered by entity_ref in ascending order.
- *
- * SQL Reference:
- * ```
- * SELECT final_entities.*
- * FROM final_entities
- * WHERE final_entities.final_entity IS NOT NULL
- *   AND final_entities.entity_id IN (
- *     SELECT entity_id FROM search WHERE key = 'kind' AND value = 'component'
- *   )
- *   AND final_entities.entity_id IN (
- *     SELECT entity_id FROM search WHERE key = 'spec.type' AND value = 'service'
- *   )
- *   AND (
- *     final_entities.entity_id IN (
- *       SELECT entity_id FROM search WHERE key = 'spec.owner' AND value = 'backend-team'
- *     )
- *     OR
- *     final_entities.entity_id IN (
- *       SELECT entity_id FROM search WHERE key = 'spec.owner' AND value = 'platform-team'
- *     )
- *   )
- *   AND final_entities.entity_id NOT IN (
- *     SELECT entity_id FROM search WHERE key = 'spec.lifecycle' AND value = 'experimental'
- *   )
- * ORDER BY final_entities.entity_ref ASC;
- * ```
- */
 export function applyPredicateEntityFilterToQuery(options: {
   filter: FilterPredicate;
   targetQuery: Knex.QueryBuilder;
@@ -190,9 +151,7 @@ function applyFieldCondition(options: {
     }
 
     if ('$in' in value) {
-      const values = (value.$in as FilterPredicatePrimitive[]).map(v =>
-        String(v).toLocaleLowerCase('en-US'),
-      );
+      const values = value.$in.map(v => String(v).toLocaleLowerCase('en-US'));
       const matchQuery = knex<DbSearchRow>('search')
         .select('search.entity_id')
         .where({ key })
@@ -201,7 +160,7 @@ function applyFieldCondition(options: {
     }
 
     if ('$hasPrefix' in value) {
-      const prefix = (value.$hasPrefix as string).toLocaleLowerCase('en-US');
+      const prefix = value.$hasPrefix.toLocaleLowerCase('en-US');
       const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
       const matchQuery = knex<DbSearchRow>('search')
         .select('search.entity_id')
