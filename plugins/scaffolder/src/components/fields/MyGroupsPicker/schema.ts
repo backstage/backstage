@@ -23,6 +23,13 @@ import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
 export const MyGroupsPickerFieldSchema = makeFieldSchema({
   output: z => z.string(),
+  uiOptions: z =>
+    z.object({
+      namespaces: z
+        .array(z.string())
+        .optional()
+        .describe('List of namespaces to filter groups by'),
+    }),
 });
 
 /**
