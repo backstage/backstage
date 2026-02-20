@@ -33,6 +33,9 @@ import {
   humanizeEntityRef,
   useEntityList,
   useStarredEntities,
+  useStarredEntitiesCount,
+  useOwnedEntitiesCount,
+  useAllEntitiesCount,
 } from '@backstage/plugin-catalog-react';
 import Typography from '@material-ui/core/Typography';
 import { visuallyHidden } from '@mui/utils';
@@ -100,6 +103,11 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const { loading, error, entities, filters, pageInfo, paginationMode } =
     entityListContext;
+
+  // Get accurate counts from the same hooks used by the sidebar
+  const { count: starredCount } = useStarredEntitiesCount();
+  const { count: ownedCount } = useOwnedEntitiesCount();
+  const { count: allCount } = useAllEntitiesCount();
 
   const tableColumns = useMemo(
     () =>
@@ -179,7 +187,25 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const currentKind = filters.kind?.label || '';
   const currentType = filters.type?.value || '';
-  const currentCount = `(${entities.length})`;
+
+  // Use the appropriate count based on the active user filter
+  // These hooks return the same accurate counts that the sidebar uses
+  const userFilterValue = filters.user?.value;
+  let displayCount: number | undefined;
+
+  if (userFilterValue === 'starred') {
+    displayCount = starredCount;
+  } else if (userFilterValue === 'owned') {
+    displayCount = ownedCount;
+  } else if (userFilterValue === 'all') {
+    displayCount = allCount;
+  } else {
+    // For other filters, fall back to entities.length
+    displayCount = entities.length;
+  }
+
+  const currentCount = displayCount !== undefined ? `(${displayCount})` : '';
+
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(
     filters.user?.value ?? t('catalogTable.allFilters'),

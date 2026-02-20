@@ -33,6 +33,17 @@ import { act, fireEvent, screen } from '@testing-library/react';
 import { CatalogTable } from './CatalogTable';
 import { CatalogTableColumnsFunc } from './types';
 
+// Mock the count hooks
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  ...jest.requireActual('@backstage/plugin-catalog-react'),
+  useStarredEntitiesCount: jest.fn(),
+  useOwnedEntitiesCount: jest.fn(),
+  useAllEntitiesCount: jest.fn(),
+}));
+
+const { useStarredEntitiesCount, useOwnedEntitiesCount, useAllEntitiesCount } =
+  jest.requireMock('@backstage/plugin-catalog-react');
+
 const entities: Entity[] = [
   {
     apiVersion: 'backstage.io/v1alpha1',
@@ -59,6 +70,14 @@ describe('CatalogTable component', () => {
 
   beforeEach(() => {
     window.open = jest.fn();
+
+    // Set default return values for count hooks
+    useStarredEntitiesCount.mockReturnValue({ count: 0, loading: false });
+    useOwnedEntitiesCount.mockReturnValue({ count: 0, loading: false });
+    useAllEntitiesCount.mockReturnValue({
+      count: entities.length,
+      loading: false,
+    });
   });
 
   afterEach(() => {
@@ -97,6 +116,9 @@ describe('CatalogTable component', () => {
   });
 
   it('should display entity names when loading has finished and no error occurred', async () => {
+    // Mock the owned count hook to return 3
+    useOwnedEntitiesCount.mockReturnValue({ count: 3, loading: false });
+
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
@@ -454,6 +476,9 @@ describe('CatalogTable component', () => {
     // (e.g., due to client-side filtering like starred entities),
     // the count in the title reflects the actual filtered count
     const filteredEntities = [entities[0]]; // Only 1 entity visible after filtering
+
+    // Mock the starred count hook to return 1
+    useStarredEntitiesCount.mockReturnValue({ count: 1, loading: false });
 
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
