@@ -107,6 +107,7 @@
     color: var(--bui-fg-primary);
     font-size: var(--bui-font-size-3);
     gap: var(--bui-space-6);
+    min-width: 0;
   }
 
   .bui-MenuItemListBox {
@@ -144,10 +145,17 @@
     display: flex;
     align-items: center;
     gap: var(--bui-space-2);
+    /* Allow content to shrink and handle overflow */
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     & > svg {
       width: 1rem;
       height: 1rem;
+      flex-shrink: 0;
     }
   }
 
@@ -155,6 +163,7 @@
     display: none;
     width: 1rem;
     height: 1rem;
+    flex-shrink: 0;
 
     & > svg {
       width: 1rem;
