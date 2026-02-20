@@ -185,4 +185,174 @@ describe('SignalManager', () => {
       JSON.stringify({ channel: 'test', message: { msg: 'test' } }),
     );
   });
+
+  describe('channel connection count and event subscriptions', () => {
+    it('should not subscribe to events again when second connection subscribes to same channel', () => {
+      const subscribeCallCount = jest.fn();
+      const mockEventsWithSpy = {
+        publish: async () => {},
+        subscribe: async (subscriber: EventsServiceSubscribeOptions) => {
+          subscribeCallCount();
+          onEvent = subscriber.onEvent;
+        },
+      };
+
+      const testManager = SignalManager.create({
+        events: mockEventsWithSpy,
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig(),
+        lifecycle: mockLifecycle,
+      });
+
+      const ws1 = new MockWebSocket();
+      const ws2 = new MockWebSocket();
+      testManager.addConnection(ws1 as unknown as WebSocket);
+      testManager.addConnection(ws2 as unknown as WebSocket);
+
+      ws1.trigger(
+        'message',
+        JSON.stringify({ action: 'subscribe', channel: 'channel1' }),
+        false,
+      );
+
+      expect(subscribeCallCount).toHaveBeenCalledTimes(1);
+
+      ws2.trigger(
+        'message',
+        JSON.stringify({ action: 'subscribe', channel: 'channel1' }),
+        false,
+      );
+
+      expect(subscribeCallCount).toHaveBeenCalledTimes(1);
+    });
+
+    it('should maintain separate connection counts for different channels', () => {
+      const subscribeCallCount = jest.fn();
+      const subscribedChannels: string[] = [];
+      const mockEventsWithSpy = {
+        publish: async () => {},
+        subscribe: async (subscriber: EventsServiceSubscribeOptions) => {
+          subscribeCallCount();
+          subscribedChannels.push(...subscriber.topics);
+          onEvent = subscriber.onEvent;
+        },
+      };
+
+      const testManager = SignalManager.create({
+        events: mockEventsWithSpy,
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig(),
+        lifecycle: mockLifecycle,
+      });
+
+      const ws1 = new MockWebSocket();
+      const ws2 = new MockWebSocket();
+      testManager.addConnection(ws1 as unknown as WebSocket);
+      testManager.addConnection(ws2 as unknown as WebSocket);
+
+      ws1.trigger(
+        'message',
+        JSON.stringify({ action: 'subscribe', channel: 'channel1' }),
+        false,
+      );
+      ws2.trigger(
+        'message',
+        JSON.stringify({ action: 'subscribe', channel: 'channel2' }),
+        false,
+      );
+
+      expect(subscribeCallCount).toHaveBeenCalledTimes(2);
+      expect(subscribedChannels).toContain('signals:channel1');
+      expect(subscribedChannels).toContain('signals:channel2');
+    });
+
+    it('should properly clean up subscriptions when connection is terminated', async () => {
+      const ws1 = new MockWebSocket();
+      const ws2 = new MockWebSocket();
+
+      manager.addConnection(ws1 as unknown as WebSocket);
+      manager.addConnection(ws2 as unknown as WebSocket);
+
+      // Both subscribe to same channel
+      ws1.trigger(
+        'message',
+        JSON.stringify({ action: 'subscribe', channel: 'cleanup-test' }),
+        false,
+      );
+      ws2.trigger(
+        'message',
+        JSON.stringify({ action: 'subscribe', channel: 'cleanup-test' }),
+        false,
+      );
+
+      await onEvent({
+        topic: 'signals',
+        eventPayload: {
+          recipients: { type: 'broadcast' },
+          channel: 'cleanup-test',
+          message: { msg: 'before-close' },
+        },
+      });
+
+      expect(ws1.data.length).toEqual(1);
+      expect(ws2.data.length).toEqual(1);
+
+      ws1.trigger('close', 1000, Buffer.from('normal closure'));
+
+      await onEvent({
+        topic: 'signals',
+        eventPayload: {
+          recipients: { type: 'broadcast' },
+          channel: 'cleanup-test',
+          message: { msg: 'after-close' },
+        },
+      });
+
+      expect(ws1.data.length).toEqual(1);
+      expect(ws2.data.length).toEqual(2);
+    });
+
+    it('should not resubscribe to events after count reaches zero and increases again', () => {
+      const subscribeCallCount = jest.fn();
+      const mockEventsWithSpy = {
+        publish: async () => {},
+        subscribe: async (subscriber: EventsServiceSubscribeOptions) => {
+          subscribeCallCount();
+          onEvent = subscriber.onEvent;
+        },
+      };
+
+      const testManager = SignalManager.create({
+        events: mockEventsWithSpy,
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig(),
+        lifecycle: mockLifecycle,
+      });
+
+      const ws1 = new MockWebSocket();
+      testManager.addConnection(ws1 as unknown as WebSocket);
+
+      ws1.trigger(
+        'message',
+        JSON.stringify({ action: 'subscribe', channel: 'resubscribe-test' }),
+        false,
+      );
+
+      expect(subscribeCallCount).toHaveBeenCalledTimes(1);
+
+      ws1.trigger(
+        'message',
+        JSON.stringify({ action: 'unsubscribe', channel: 'resubscribe-test' }),
+        false,
+      );
+
+      ws1.trigger(
+        'message',
+        JSON.stringify({ action: 'subscribe', channel: 'resubscribe-test' }),
+        false,
+      );
+
+      expect(subscribeCallCount).toHaveBeenCalledTimes(1);
+    });
+  });
 });
