@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ export function applyPredicateEntityFilterToQuery(options: {
   const { filter, targetQuery, onEntityIdField, knex } = options;
 
   // We do not support top-level primitives; all matching happens through objects
-  if (!filter || typeof filter !== 'object' || Array.isArray(filter)) {
+  if (!isObject(filter)) {
     throw new InputError(
       `Invalid filter predicate: top-level primitive values are not supported. ` +
         `Wrap the value in a field expression, e.g. { "kind": ${JSON.stringify(
