@@ -45,11 +45,9 @@ export function applyPredicateEntityFilterToQuery(options: {
 
   // We do not support top-level primitives; all matching happens through objects
   if (!isObject(filter)) {
+    const actual = JSON.stringify(filter);
     throw new InputError(
-      `Invalid filter predicate: top-level primitive values are not supported. ` +
-        `Wrap the value in a field expression, e.g. { "kind": ${JSON.stringify(
-          filter,
-        )} }`,
+      `Invalid filter predicate: top-level primitive values are not supported. Wrap the value in a field expression, e.g. { "kind": ${actual} }`,
     );
   }
 
@@ -171,14 +169,39 @@ function applyFieldCondition(options: {
     }
 
     if ('$contains' in value) {
-      // TODO(freben): Implement this, AT LEAST for some special cases such as tags and relations.
-      throw new InputError('The $contains operator is not supported');
+      const target = value.$contains;
+
+      // If the target is a primitive, match on the special array syntax.
+      //
+      // FROM: `{ "a": { "$contains": "b" } }`
+      //
+      // TO:   `{ "a.b": "true" }`
+      //
+      // The search table does not actually show us that "a" was an array to
+      // begin with, so this can mistakenly also match on an object that had a
+      // "b" key with a true value. We'll consider that an acceptable tradeoff
+      // though.
+      if (isPrimitive(target)) {
+        const matchQuery = knex<DbSearchRow>('search')
+          .select('search.entity_id')
+          .where({
+            key: `${key}.${String(target).toLocaleLowerCase('en-US')}`,
+            value: 'true',
+          });
+        return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
+      }
+
+      // TODO(freben): Implement this for more use cases - for example simple
+      // objects (resulting in a $and and appending key strings) and maybe
+      // a subset of relations?
+      throw new InputError(
+        'Non primitive forms of the $contains operator is not supported',
+      );
     }
   }
 
+  const actual = JSON.stringify(value);
   throw new InputError(
-    `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, or $hasPrefix operator, but got ${JSON.stringify(
-      value,
-    )}`,
+    `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, or $hasPrefix operator, but got ${actual}`,
   );
 }
