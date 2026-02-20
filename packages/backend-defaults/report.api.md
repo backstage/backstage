@@ -11,4 +11,14 @@ export function createBackend(): Backend;
 
 // @public
 export const discoveryFeatureLoader: BackendFeature;
+
+// @public
+export function discoveryFeatureLoaderFactory(
+  options?: DiscoveryFeatureLoaderOptions,
+): BackendFeature;
+
+// @public
+export interface DiscoveryFeatureLoaderOptions {
+  alwaysExcludedPackages?: string[];
+}
 ```

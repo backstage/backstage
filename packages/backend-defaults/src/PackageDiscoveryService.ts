@@ -52,16 +52,25 @@ function isBackendFeatureFactory(
   );
 }
 
+/**
+ * Checks if a package name (loosely) matches the Backstage backend naming convention.
+ * @internal
+ */
+export function isBackendPackageName(name: string): boolean {
+  return name.endsWith('-backend') || name.includes('-backend-module-');
+}
+
 /** @internal */
 async function findClosestPackageDir(
   searchDir: string,
+  deps: { pathExists: (path: string) => Promise<boolean> } = fs,
 ): Promise<string | undefined> {
   let path = searchDir;
 
   // Some confidence check to avoid infinite loop
   for (let i = 0; i < 1000; i++) {
     const packagePath = resolvePath(path, 'package.json');
-    const exists = await fs.pathExists(packagePath);
+    const exists = await deps.pathExists(packagePath);
     if (exists) {
       return path;
     }
@@ -77,15 +86,28 @@ async function findClosestPackageDir(
     `Iteration limit reached when searching for root package.json at ${searchDir}`,
   );
 }
+export interface PackageDiscoveryServiceOptions {
+  alwaysExcludedPackages?: string[];
+}
 
 /** @internal */
 export class PackageDiscoveryService {
   private readonly config: RootConfigService;
   private readonly logger: RootLoggerService;
+  private readonly options?: PackageDiscoveryServiceOptions;
+  private readonly validPathExists: (path: string) => Promise<boolean>;
 
-  constructor(config: RootConfigService, logger: RootLoggerService) {
+  constructor(
+    config: RootConfigService,
+    logger: RootLoggerService,
+    options?: PackageDiscoveryServiceOptions,
+    // TODO: This should probably be a generic fs interface/service
+    pathExists?: (path: string) => Promise<boolean>,
+  ) {
     this.config = config;
     this.logger = logger;
+    this.options = options;
+    this.validPathExists = pathExists ?? fs.pathExists;
   }
 
   getDependencyNames(path: string) {
@@ -95,19 +117,45 @@ export class PackageDiscoveryService {
     const dependencyNames = Object.keys(dependencies || {});
 
     if (packagesConfig === 'all') {
-      return dependencyNames;
+      const excludedPackagesSet = new Set<string>();
+      if (this.options?.alwaysExcludedPackages) {
+        for (const name of this.options.alwaysExcludedPackages) {
+          excludedPackagesSet.add(name);
+        }
+      }
+      return dependencyNames.filter(name => !excludedPackagesSet.has(name));
+    }
+
+    const excludedPackagesSet = new Set(
+      this.config.getOptionalStringArray('backend.packages.exclude'),
+    );
+    if (this.options?.alwaysExcludedPackages) {
+      for (const name of this.options.alwaysExcludedPackages) {
+        excludedPackagesSet.add(name);
+      }
     }
 
     const includedPackagesConfig = this.config.getOptionalStringArray(
       'backend.packages.include',
     );
 
+    // Warn when explicitly included packages don't match backend naming convention
+    if (includedPackagesConfig) {
+      const nonMatchingNames = includedPackagesConfig.filter(
+        name => !isBackendPackageName(name),
+      );
+      if (nonMatchingNames.length > 0) {
+        this.logger.warn(
+          `Packages in backend.packages.include don't match backend naming convention and will be skipped: ${nonMatchingNames.join(
+            ', ',
+          )}`,
+        );
+      }
+    }
+
     const includedPackages = includedPackagesConfig
       ? new Set(includedPackagesConfig)
       : dependencyNames;
-    const excludedPackagesSet = new Set(
-      this.config.getOptionalStringArray('backend.packages.exclude'),
-    );
 
     return [...includedPackages].filter(name => !excludedPackagesSet.has(name));
   }
@@ -118,7 +166,10 @@ export class PackageDiscoveryService {
       return { features: [] };
     }
 
-    const packageDir = await findClosestPackageDir(process.argv[1]);
+    const packageDir = await findClosestPackageDir(process.argv[1], {
+      pathExists: this.validPathExists,
+    });
+
     if (!packageDir) {
       throw new Error('Package discovery failed to find package.json');
     }
@@ -128,7 +179,9 @@ export class PackageDiscoveryService {
 
     const features: BackendFeature[] = [];
 
-    for (const name of dependencyNames) {
+    const candidateNames = dependencyNames.filter(isBackendPackageName);
+
+    for (const name of candidateNames) {
       let depPkg: BackstagePackageJson;
       try {
         const packageJsonPath = require.resolve(`${name}/package.json`, {
@@ -138,10 +191,11 @@ export class PackageDiscoveryService {
       } catch (error) {
         // Handle packages with "exports" field that don't export ./package.json
         if (isError(error) && error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
-          continue; // Skip packages that don't export package.json - they can't be Backstage packages
+          continue; // Skip packages that don't export package.json
         }
         throw error;
       }
+
       if (
         !depPkg?.backstage?.role ||
         !DETECTED_PACKAGE_ROLES.includes(depPkg.backstage.role)

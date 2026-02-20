@@ -106,7 +106,39 @@ This example touches on the fact that services can have different scopes, being 
 
 A more advanced way to deploy Backstage is to split the backend plugins into multiple different backend deployments. Both the [deployment documentation](../../deployment/scaling.md) and [Threat Model](../../overview/threat-model.md#trust-model) explain the benefits of this, so here we'll focus on how to do it.
 
-To create a separate backend we need to create an additional backend package. This package will be built and deployed separately from your existing backend. There is currently no template to create a backend via `yarn new`, so the quickest way is to copy the new package and modify. The naming is up to you and it depends on how you are splitting things up. For this example we'll just use a simple suffix. You might end up with a directory structure like this:
+To deploy a separate backend, you can either deploy the same backend package, but choose plugins dynamically, or create a new backend package.
+
+### With the same backend package
+
+Using the [backend package discovery](./02-backend-package-discovery.md) feature, you can deploy the same backend package with different plugin configurations. This allows you to split your backend into multiple deployments without maintaining separate backend packages or building multiple Docker images.
+
+The key is to use different `app-config.yaml` files (or environment-specific configs) that specify which plugins to load:
+
+```yaml
+# app-config.catalog.yaml
+backend:
+  packages:
+    include:
+      - '@backstage/plugin-catalog-backend'
+      - '@backstage/plugin-catalog-backend-module-github'
+```
+
+```yaml
+# app-config.search.yaml
+backend:
+  packages:
+    include:
+      - '@backstage/plugin-search-backend'
+      - '@backstage/plugin-search-backend-module-catalog'
+```
+
+Both deployments use the same backend package (and can use the same container image), but load different plugins based on the configuration file passed at runtime. This approach is simpler to maintain than creating separate backend packages, as you only need to manage one codebase and build process.
+
+See the [backend package discovery documentation](./02-backend-package-discovery.md) for more details on integration options, and the [writing config guide](../../conf/writing.md) to load different configurations.
+
+### With dedicated backend packages
+
+Another option is to create an additional backend package. This package will be built and deployed separately from your existing backend. There is currently no template to create a backend via `yarn new`, so the quickest way is to copy the new package and modify. The naming is up to you and it depends on how you are splitting things up. For this example we'll just use a simple suffix. You might end up with a directory structure like this:
 
 ```text
 packages/
