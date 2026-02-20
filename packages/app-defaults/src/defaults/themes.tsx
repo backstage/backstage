@@ -20,6 +20,7 @@ import {
 } from '@backstage/theme';
 import DarkIcon from '@material-ui/icons/Brightness2';
 import LightIcon from '@material-ui/icons/WbSunny';
+import ContrastIcon from '@material-ui/icons/Tonality';
 import { AppTheme } from '@backstage/core-plugin-api';
 
 export const themes: AppTheme[] = [
@@ -39,6 +40,18 @@ export const themes: AppTheme[] = [
     icon: <DarkIcon />,
     Provider: ({ children }) => (
       <UnifiedThemeProvider theme={builtinThemes.dark} children={children} />
+    ),
+  },
+  {
+    id: 'high-contrast-dark',
+    title: 'High Contrast (dark)',
+    variant: 'dark',
+    icon: <ContrastIcon />,
+    Provider: ({ children }) => (
+      <UnifiedThemeProvider
+        theme={builtinThemes.highContrastDark}
+        children={children}
+      />
     ),
   },
 ];

@@ -164,4 +164,78 @@ export const palettes = {
       indicator: '#9BF0E1',
     },
   },
+  highContrastDark: {
+    type: 'dark' as const,
+    mode: 'dark' as const,
+    background: {
+      default: '#000000',
+      paper: '#0A0A0A',
+    },
+    status: {
+      ok: '#00FF00',
+      warning: '#FFFF00',
+      error: '#FF4444',
+      running: '#00FFFF',
+      pending: '#FFFF00',
+      aborted: '#888888',
+    },
+    bursts: {
+      fontColor: '#FFFFFF',
+      slackChannelText: '#FFFFFF',
+      backgroundColor: {
+        default: '#000000',
+      },
+      gradient: {
+        linear: 'linear-gradient(90deg, #000000, #1A1A1A)',
+      },
+    },
+    primary: {
+      main: '#00FFFF',
+      dark: '#00CCCC',
+    },
+    secondary: {
+      main: '#FFFF00',
+    },
+    banner: {
+      info: '#00FFFF',
+      error: '#FF4444',
+      text: '#000000',
+      link: '#FFFF00',
+      closeButtonColor: '#000000',
+      warning: '#FFFF00',
+    },
+    border: '#FFFFFF',
+    textContrast: '#FFFFFF',
+    textVerySubtle: '#888888',
+    textSubtle: '#CCCCCC',
+    highlight: '#FFFF00',
+    errorBackground: '#330000',
+    warningBackground: '#333300',
+    infoBackground: '#003333',
+    errorText: '#FF4444',
+    infoText: '#00FFFF',
+    warningText: '#FFFF00',
+    linkHover: '#FFFF00',
+    link: '#00FFFF',
+    gold: '#FFFF00',
+    navigation: {
+      background: '#000000',
+      indicator: '#FFFF00',
+      color: '#FFFFFF',
+      selectedColor: '#00FFFF',
+      navItem: {
+        hoverBackground: '#1A1A1A',
+      },
+      submenu: {
+        background: '#0A0A0A',
+      },
+    },
+    pinSidebarButton: {
+      icon: '#000000',
+      background: '#FFFFFF',
+    },
+    tabbar: {
+      indicator: '#00FFFF',
+    },
+  },
 };

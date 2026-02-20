@@ -83,7 +83,7 @@ const app = createApp({
 | `Provider` | This is needed to set the legacy theme with MUI only. This will be become redundant later on when we fully replace with BUI but for now you need to have it for MUI to work. BUI is based on CSS and don't rely on any global providers. |
 
 :::note
-Your list of custom themes overrides the default themes. If you still want to use the default themes, they are exported as `themes.light` and `themes.dark` from [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme). Be sure to provide both `light` and `dark` modes so users can choose their preference.
+Your list of custom themes overrides the default themes. If you still want to use the default themes, they are exported as `themes.light`, `themes.dark` and `themes.highContrastDark` from [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme). Be sure to provide both `light` and `dark` modes so users can choose their preference.
 :::
 
 ## Create a theme for Backstage UI (New)
