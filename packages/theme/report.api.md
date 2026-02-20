@@ -162,6 +162,8 @@ export type BackstageTypography = {
 // @public
 export interface BaseThemeOptionsInput<PaletteOptions> {
   // (undocumented)
+  borderRadius?: number;
+  // (undocumented)
   defaultPageTheme?: string;
   // (undocumented)
   fontFamily?: string;
@@ -183,6 +185,9 @@ export function createBaseThemeOptions<PaletteOptions>(
   options: BaseThemeOptionsInput<PaletteOptions>,
 ): {
   palette: PaletteOptions;
+  shape: {
+    borderRadius: number;
+  };
   typography: BackstageTypography;
   page: PageTheme;
   getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
@@ -433,6 +438,8 @@ export interface UnifiedTheme {
 
 // @public
 export interface UnifiedThemeOptions {
+  // (undocumented)
+  borderRadius?: number;
   // (undocumented)
   components?: ThemeOptions['components'];
   // (undocumented)

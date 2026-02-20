@@ -122,6 +122,7 @@ export const myTheme = createUnifiedTheme({
       },
     },
   }),
+  borderRadius: 8,
   defaultPageTheme: 'home',
   fontFamily: 'Comic Sans MS',
   /* below drives the header colors */
