@@ -17,7 +17,7 @@
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import { buildPackage, Output } from '../../../lib/builder';
-import { findRoleFromCommand } from '../../../../../lib/role';
+import { findRoleFromCommand } from '../../../lib/role';
 import {
   BackstagePackageJson,
   PackageGraph,

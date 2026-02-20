@@ -20,7 +20,7 @@ import { findRoleFromCommand } from './role';
 
 const mockDir = createMockDirectory();
 
-jest.mock('./paths', () => ({
+jest.mock('../../../lib/paths', () => ({
   paths: {
     resolveTarget(filename: string) {
       return mockDir.resolve(filename);
