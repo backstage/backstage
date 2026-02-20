@@ -53,6 +53,7 @@ import {
 } from './utils';
 import {
   DefaultApiClient,
+  GetEntitiesByQuery,
   GetLocationsByQueryRequest,
   QueryEntitiesByPredicateRequest,
   TypedResponse,
@@ -271,35 +272,33 @@ export class CatalogClient implements CatalogApi {
     request: QueryEntitiesRequest = {},
     options?: CatalogRequestOptions,
   ): Promise<QueryEntitiesResponse> {
+    const isInitialRequest = isQueryEntitiesInitialRequest(request);
+
     // Validate that filter and query are mutually exclusive
-    if (
-      isQueryEntitiesInitialRequest(request) &&
-      request.filter &&
-      request.query
-    ) {
+    if (isInitialRequest && request.filter && request.query) {
       throw new Error(
         'Cannot specify both "filter" and "query" in the same request. Use "filter" for traditional key-value filtering or "query" for predicate-based filtering.',
       );
     }
 
     // Route to POST endpoint if query predicate is provided (initial request)
-    if (isQueryEntitiesInitialRequest(request) && request.query) {
+    if (isInitialRequest && request.query) {
       return this.queryEntitiesByPredicate(request, options);
     }
 
     // Route to POST endpoint if cursor contains a query predicate (pagination)
-    if (
-      !isQueryEntitiesInitialRequest(request) &&
-      cursorContainsQuery(request.cursor)
-    ) {
+    // TODO(freben): It's costly and non-opaque to have to introspect the cursor
+    // like this. It should be refactored in the future to not need this.
+    // Suggestion: make the GET and POST endpoints understand the same cursor
+    // format, and pick which one to call ONLY based on whether the cursor size
+    // risks hitting url length limits
+    if (!isInitialRequest && cursorContainsQuery(request.cursor)) {
       return this.queryEntitiesByPredicate(request, options);
     }
 
-    const params: Partial<
-      Parameters<typeof this.apiClient.getEntitiesByQuery>[0]['query']
-    > = {};
+    const params: Partial<GetEntitiesByQuery['query']> = {};
 
-    if (isQueryEntitiesInitialRequest(request)) {
+    if (isInitialRequest) {
       const {
         fields = [],
         filter,
@@ -357,7 +356,7 @@ export class CatalogClient implements CatalogApi {
     request: QueryEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<QueryEntitiesResponse> {
-    const body: Record<string, unknown> = {};
+    const body: QueryEntitiesByPredicateRequest = {};
 
     if (isQueryEntitiesInitialRequest(request)) {
       const { query, limit, orderFields, fullTextFilter, fields } = request;
@@ -387,10 +386,7 @@ export class CatalogClient implements CatalogApi {
     }
 
     const res = await this.requestRequired(
-      await this.apiClient.queryEntitiesByPredicate(
-        { body: body as unknown as QueryEntitiesByPredicateRequest },
-        options,
-      ),
+      await this.apiClient.queryEntitiesByPredicate({ body }, options),
     );
 
     return {
