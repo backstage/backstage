@@ -807,6 +807,81 @@ describe('CatalogClient', () => {
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
     });
 
+    it('should paginate using POST when cursor contains a query', async () => {
+      // Simulate a cursor that contains a query predicate (as the server would encode it)
+      const cursorPayload = Buffer.from(
+        JSON.stringify({
+          orderFields: [],
+          orderFieldValues: [],
+          isPrevious: false,
+          query: { kind: 'component' },
+          totalItems: 100,
+        }),
+      ).toString('base64');
+
+      const page2Response = {
+        items: [
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: { name: 'service-3', namespace: 'default' },
+          },
+        ],
+        totalItems: 100,
+        pageInfo: {},
+      };
+
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        expect(req.method).toBe('POST');
+        expect(req.body).toMatchObject({ cursor: cursorPayload });
+        return res(ctx.json(page2Response));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities({
+        cursor: cursorPayload,
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+      expect(response.items).toEqual(page2Response.items);
+      expect(response.totalItems).toBe(100);
+    });
+
+    it('should use GET endpoint for cursor without query', async () => {
+      // A cursor that does NOT contain a query field should go to GET
+      const cursorPayload = Buffer.from(
+        JSON.stringify({
+          orderFields: [],
+          orderFieldValues: [],
+          isPrevious: false,
+          totalItems: 50,
+        }),
+      ).toString('base64');
+
+      const mockedGetEndpoint = jest.fn().mockImplementation((_req, res, ctx) =>
+        res(
+          ctx.json({
+            items: [],
+            totalItems: 50,
+            pageInfo: {},
+          }),
+        ),
+      );
+
+      const mockedPostEndpoint = jest.fn();
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities/by-query`, mockedGetEndpoint),
+        rest.post(`${mockBaseUrl}/entities/by-query`, mockedPostEndpoint),
+      );
+
+      await client.queryEntities({ cursor: cursorPayload });
+
+      expect(mockedGetEndpoint).toHaveBeenCalledTimes(1);
+      expect(mockedPostEndpoint).not.toHaveBeenCalled();
+    });
+
     it('should handle errors from POST endpoint', async () => {
       const mockedEndpoint = jest
         .fn()
