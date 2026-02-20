@@ -593,6 +593,7 @@ export interface CatalogApi {
    * const response = await catalogClient.queryEntities({
    *   filter: [{ kind: 'group' }],
    *   limit: 20,
+   *   fields: ['metadata', 'kind'],
    *   fullTextFilter: {
    *     term: 'A',
    *   },
@@ -609,11 +610,15 @@ export interface CatalogApi {
    *
    * ```
    * const secondBatchResponse = await catalogClient
-   *  .queryEntities({ cursor: response.nextCursor });
+   *   .queryEntities({
+   *     cursor: response.nextCursor,
+   *     limit: 20,
+   *     fields: ['metadata', 'kind'],
+   *   });
    * ```
    *
-   * secondBatchResponse will contain the next batch of (maximum) 20 entities,
-   * together with a prevCursor property, useful to fetch the previous batch.
+   * `secondBatchResponse` will contain the next batch of (maximum) 20 entities,
+   * together with a `prevCursor` property, useful to fetch the previous batch.
    *
    * @public
    *

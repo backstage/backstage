@@ -215,7 +215,6 @@ export interface QueryEntitiesInitialRequest {
   filter?: EntityFilter;
   /**
    * Predicate-based query for filtering entities.
-   * Mutually exclusive with filter.
    */
   query?: FilterPredicate;
   orderFields?: EntityOrder[];
@@ -281,7 +280,6 @@ export type Cursor = {
   filter?: EntityFilter;
   /**
    * A predicate-based query to be applied to the full list of entities.
-   * Mutually exclusive with filter.
    */
   query?: FilterPredicate;
   /**

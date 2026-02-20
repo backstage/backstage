@@ -594,17 +594,6 @@ describe('CatalogClient', () => {
       expect(response.totalItems).toBe(2);
     });
 
-    it('should throw error when both filter and query are provided', async () => {
-      await expect(
-        client.queryEntities({
-          filter: { kind: 'component' },
-          query: { kind: 'component' },
-        } as any),
-      ).rejects.toThrow(
-        'Cannot specify both "filter" and "query" in the same request',
-      );
-    });
-
     it('should support $all operator', async () => {
       const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
         expect(req.body).toMatchObject({

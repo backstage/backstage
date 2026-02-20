@@ -274,13 +274,6 @@ export class CatalogClient implements CatalogApi {
   ): Promise<QueryEntitiesResponse> {
     const isInitialRequest = isQueryEntitiesInitialRequest(request);
 
-    // Validate that filter and query are mutually exclusive
-    if (isInitialRequest && request.filter && request.query) {
-      throw new Error(
-        'Cannot specify both "filter" and "query" in the same request. Use "filter" for traditional key-value filtering or "query" for predicate-based filtering.',
-      );
-    }
-
     // Route to POST endpoint if query predicate is provided (initial request)
     if (isInitialRequest && request.query) {
       return this.queryEntitiesByPredicate(request, options);

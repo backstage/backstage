@@ -308,7 +308,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       });
     });
 
-    it('combines permission filter into query field using $all on CONDITIONAL with initial request', async () => {
+    it('passes through query alongside permission filter on CONDITIONAL with initial request', async () => {
       fakePermissionApi.authorizeConditional.mockResolvedValue([
         {
           result: AuthorizeResult.CONDITIONAL,
@@ -335,7 +335,8 @@ describe('AuthorizedEntitiesCatalog', () => {
           nextCursor: {
             isPrevious: false,
             orderFieldValues: ['xxx', null],
-            query: { $all: [{ kind: 'b' }, userQuery] },
+            query: userQuery,
+            filter: { key: 'kind', values: ['b'] },
             orderFields: [{ field: 'name', order: 'asc' }],
           },
         },
@@ -351,8 +352,8 @@ describe('AuthorizedEntitiesCatalog', () => {
 
       expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
         credentials: mockCredentials.none(),
-        query: { $all: [{ kind: 'b' }, userQuery] },
-        filter: undefined,
+        query: userQuery,
+        filter: { key: 'kind', values: ['b'] },
       });
 
       expect(response.pageInfo.nextCursor).toEqual({
@@ -364,7 +365,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       });
     });
 
-    it('combines permission filter into cursor query field using $all on CONDITIONAL with cursor request', async () => {
+    it('passes through cursor query alongside permission filter on CONDITIONAL with cursor request', async () => {
       fakePermissionApi.authorizeConditional.mockResolvedValue([
         {
           result: AuthorizeResult.CONDITIONAL,
@@ -391,13 +392,15 @@ describe('AuthorizedEntitiesCatalog', () => {
           nextCursor: {
             isPrevious: false,
             orderFieldValues: ['yyy', null],
-            query: { $all: [{ kind: 'b' }, userQuery] },
+            query: userQuery,
+            filter: { key: 'kind', values: ['b'] },
             orderFields: [{ field: 'name', order: 'asc' }],
           },
           prevCursor: {
             isPrevious: true,
             orderFieldValues: ['aaa', null],
-            query: { $all: [{ kind: 'b' }, userQuery] },
+            query: userQuery,
+            filter: { key: 'kind', values: ['b'] },
             orderFields: [{ field: 'name', order: 'asc' }],
           },
         },
@@ -422,8 +425,7 @@ describe('AuthorizedEntitiesCatalog', () => {
         credentials: mockCredentials.none(),
         cursor: {
           ...cursor,
-          query: { $all: [{ kind: 'b' }, userQuery] },
-          filter: undefined,
+          filter: { key: 'kind', values: ['b'] },
         },
       });
 
@@ -441,41 +443,6 @@ describe('AuthorizedEntitiesCatalog', () => {
         query: userQuery,
         filter: undefined,
         orderFields: [{ field: 'name', order: 'asc' }],
-      });
-    });
-
-    it('converts multi-value permission filter with $in when converting to predicate', async () => {
-      fakePermissionApi.authorizeConditional.mockResolvedValue([
-        {
-          result: AuthorizeResult.CONDITIONAL,
-          conditions: {
-            rule: 'IS_ENTITY_KIND',
-            params: { kinds: ['component', 'api'] },
-          },
-        },
-      ]);
-
-      const userQuery: FilterPredicate = { 'metadata.name': 'my-entity' };
-
-      fakeCatalog.queryEntities.mockResolvedValue({
-        items: { type: 'object', entities: [] },
-        pageInfo: {},
-        totalItems: 0,
-      } as QueryEntitiesResponse);
-
-      const catalog = createCatalog(isEntityKind);
-
-      await catalog.queryEntities({
-        credentials: mockCredentials.none(),
-        query: userQuery,
-      });
-
-      expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
-        credentials: mockCredentials.none(),
-        query: {
-          $all: [{ kind: { $in: ['component', 'api'] } }, userQuery],
-        },
-        filter: undefined,
       });
     });
   });

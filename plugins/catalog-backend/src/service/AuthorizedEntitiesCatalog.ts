@@ -44,30 +44,6 @@ import {
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 
-function entityFilterToFilterPredicate(filter: EntityFilter): FilterPredicate {
-  if ('allOf' in filter) {
-    return { $all: filter.allOf.map(entityFilterToFilterPredicate) };
-  }
-
-  if ('anyOf' in filter) {
-    return { $any: filter.anyOf.map(entityFilterToFilterPredicate) };
-  }
-
-  if ('not' in filter) {
-    return { $not: entityFilterToFilterPredicate(filter.not) };
-  }
-
-  if (!filter.values) {
-    return { [filter.key]: { $exists: true } } as FilterPredicate;
-  }
-
-  if (filter.values.length === 1) {
-    return { [filter.key]: filter.values[0] } as FilterPredicate;
-  }
-
-  return { [filter.key]: { $in: filter.values } } as FilterPredicate;
-}
-
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   private readonly entitiesCatalog: EntitiesCatalog;
   private readonly permissionApi: PermissionsService;
@@ -178,45 +154,25 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
         requestFilter = request.cursor.filter;
         requestQuery = request.cursor.query;
 
-        if (request.cursor.query) {
-          const permissionPredicate =
-            entityFilterToFilterPredicate(permissionFilter);
-          permissionedRequest = {
-            ...request,
-            cursor: {
-              ...request.cursor,
-              query: { $all: [permissionPredicate, request.cursor.query] },
-              filter: undefined,
-            },
-          };
-        } else {
-          permissionedRequest = {
-            ...request,
-            cursor: {
-              ...request.cursor,
-              filter: request.cursor.filter
-                ? { allOf: [permissionFilter, request.cursor.filter] }
-                : permissionFilter,
-            },
-          };
-        }
-      } else if (request.query) {
-        const permissionPredicate =
-          entityFilterToFilterPredicate(permissionFilter);
-        requestQuery = request.query;
         permissionedRequest = {
           ...request,
-          query: { $all: [permissionPredicate, request.query] },
-          filter: undefined,
+          cursor: {
+            ...request.cursor,
+            filter: request.cursor.filter
+              ? { allOf: [permissionFilter, request.cursor.filter] }
+              : permissionFilter,
+          },
         };
       } else {
+        requestFilter = request.filter;
+        requestQuery = request.query;
+
         permissionedRequest = {
           ...request,
           filter: request.filter
             ? { allOf: [permissionFilter, request.filter] }
             : permissionFilter,
         };
-        requestFilter = request.filter;
       }
 
       const response = await this.entitiesCatalog.queryEntities(
