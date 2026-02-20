@@ -423,7 +423,7 @@ export type QueryEntitiesRequest =
  *
  * @remarks
  *
- * Either `filter` or `query` can be provided, but not both:
+ * Either `filter` or `query` can be provided, or even both:
  * - `filter`: Uses the traditional key-value filter syntax (GET endpoint)
  * - `query`: Uses the predicate-based filter syntax with logical operators (POST endpoint)
  *
@@ -434,12 +434,11 @@ export type QueryEntitiesInitialRequest = {
   limit?: number;
   offset?: number;
   /**
-   * Traditional key-value based filter. Mutually exclusive with `query`.
+   * Traditional key-value based filter.
    */
   filter?: EntityFilterQuery;
   /**
    * Predicate-based filter with logical operators ($all, $any, $not, $exists, $in, $hasPrefix).
-   * Mutually exclusive with `filter`.
    *
    * @example
    * ```typescript
