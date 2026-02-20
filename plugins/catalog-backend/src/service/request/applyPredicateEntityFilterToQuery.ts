@@ -105,7 +105,7 @@ export function applyPredicateEntityFilterToQuery(options: {
 
   if ('$all' in filter) {
     if (filter.$all.length === 0) {
-      return targetQuery.andWhereRaw('1 = 0');
+      return targetQuery;
     }
     return targetQuery.andWhere(outer => {
       for (const subFilter of filter.$all) {

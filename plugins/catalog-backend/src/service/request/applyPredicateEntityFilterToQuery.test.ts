@@ -150,8 +150,14 @@ describe.each(databases.eachSupportedId())(
       ).resolves.toEqual(['service-a', 'service-b']);
     });
 
-    it('returns nothing for empty $all', async () => {
-      await expect(query({ $all: [] })).resolves.toEqual([]);
+    it('matches everything for empty $all', async () => {
+      await expect(query({ $all: [] })).resolves.toEqual([
+        'api-d',
+        'bare-e',
+        'service-a',
+        'service-b',
+        'website-c',
+      ]);
     });
 
     it('filters with $any', async () => {
