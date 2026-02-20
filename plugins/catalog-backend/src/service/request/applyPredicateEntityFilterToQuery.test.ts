@@ -231,6 +231,12 @@ describe.each(databases.eachSupportedId())(
       ).resolves.toEqual(['service-a', 'website-c']);
     });
 
+    it('throws on $contains operator', async () => {
+      await expect(
+        query({ 'metadata.name': { $contains: 'service' } as any }),
+      ).rejects.toThrow(/\$contains operator is not supported/);
+    });
+
     it('throws on top-level primitive', async () => {
       await expect(query('bad-value' as any)).rejects.toThrow(
         /top-level primitive values are not supported/,

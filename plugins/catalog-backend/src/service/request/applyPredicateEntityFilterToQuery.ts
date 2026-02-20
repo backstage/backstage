@@ -209,6 +209,11 @@ function applyFieldCondition(options: {
         .andWhereRaw('?? like ? escape ?', ['value', `${escaped}%`, '\\']);
       return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
     }
+
+    if ('$contains' in value) {
+      // TODO(freben): Implement this, AT LEAST for some special cases such as tags and relations.
+      throw new InputError('The $contains operator is not supported');
+    }
   }
 
   throw new InputError(
