@@ -438,7 +438,7 @@ export type QueryEntitiesInitialRequest = {
    */
   filter?: EntityFilterQuery;
   /**
-   * Predicate-based filter with logical operators ($all, $any, $not, $exists, $in).
+   * Predicate-based filter with logical operators ($all, $any, $not, $exists, $in, $hasPrefix).
    * Mutually exclusive with `filter`.
    *
    * @example
