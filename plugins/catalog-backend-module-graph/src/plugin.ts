@@ -30,7 +30,7 @@ import { GraphModule } from './GraphModule';
  */
 export const catalogModuleGraph = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'catalog-module-graph',
+  moduleId: 'graph',
   register(env) {
     env.registerInit({
       deps: {
