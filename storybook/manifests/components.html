@@ -596,7 +596,7 @@
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Accordion</h2>
       <div class="badges">
-        <label for="c-0-backstage-ui-accordion-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-0-backstage-ui-accordion-props" class="badge ok as-toggle">3 prop types</label>
         <label for="c-0-backstage-ui-accordion-info" class="badge info as-toggle">1 info</label>
         <label for="c-0-backstage-ui-accordion-stories" class="badge ok as-toggle">7 stories</label>
         
@@ -630,11 +630,15 @@
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">1 prop type</span>
+              <span class="badge ok">3 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Accordion/Accordion.tsx::Accordion</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>className?: string</code></pre>
+            <pre><code>bg?: ContainerBg | &#39;neutral-auto&#39;
+
+children?: ReactNode
+
+className?: string</code></pre>
           </div>
         </div>
     
@@ -652,6 +656,7 @@
     AccordionPanel,
     AccordionTrigger,
     Box,
+    Button,
     Flex,
     Text,
 } from "@backstage/ui";</code></pre>
@@ -840,6 +845,10 @@
         &lt;AccordionTrigger title=&quot;Toggle Panel&quot; /&gt;
         &lt;AccordionPanel&gt;
           &lt;Content /&gt;
+          &lt;Flex mt=&quot;3&quot; gap=&quot;2&quot;&gt;
+            &lt;Button&gt;Action&lt;/Button&gt;
+            &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;
+          &lt;/Flex&gt;
         &lt;/AccordionPanel&gt;
       &lt;/Accordion&gt;
     &lt;/Flex&gt;
@@ -850,6 +859,10 @@
           &lt;AccordionTrigger title=&quot;Auto (neutral-2)&quot; /&gt;
           &lt;AccordionPanel&gt;
             &lt;Content /&gt;
+            &lt;Flex mt=&quot;3&quot; gap=&quot;2&quot;&gt;
+              &lt;Button&gt;Action&lt;/Button&gt;
+              &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;
+            &lt;/Flex&gt;
           &lt;/AccordionPanel&gt;
         &lt;/Accordion&gt;
       &lt;/Flex&gt;
@@ -861,6 +874,10 @@
           &lt;AccordionTrigger title=&quot;Auto (neutral-3)&quot; /&gt;
           &lt;AccordionPanel&gt;
             &lt;Content /&gt;
+            &lt;Flex mt=&quot;3&quot; gap=&quot;2&quot;&gt;
+              &lt;Button&gt;Action&lt;/Button&gt;
+              &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;
+            &lt;/Flex&gt;
           &lt;/AccordionPanel&gt;
         &lt;/Accordion&gt;
       &lt;/Flex&gt;
@@ -869,9 +886,13 @@
       &lt;Text&gt;Neutral 3 container&lt;/Text&gt;
       &lt;Flex mt=&quot;2&quot;&gt;
         &lt;Accordion defaultExpanded&gt;
-          &lt;AccordionTrigger title=&quot;Auto (neutral-4)&quot; /&gt;
+          &lt;AccordionTrigger title=&quot;Auto (neutral-3)&quot; /&gt;
           &lt;AccordionPanel&gt;
             &lt;Content /&gt;
+            &lt;Flex mt=&quot;3&quot; gap=&quot;2&quot;&gt;
+              &lt;Button&gt;Action&lt;/Button&gt;
+              &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;
+            &lt;/Flex&gt;
           &lt;/AccordionPanel&gt;
         &lt;/Accordion&gt;
       &lt;/Flex&gt;
