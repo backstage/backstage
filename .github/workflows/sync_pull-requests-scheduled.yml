@@ -75,7 +75,7 @@ jobs:
           egress-policy: audit
 
       - name: Backstage PR automation
-        uses: backstage/actions/pr-automation@c3038aa5576b9cd845ccc518ef854d3660e8cb40 # v0.7.6
+        uses: backstage/actions/pr-automation@c4dd040f963edd226462b5f32efd319ffca12ac5 # v0.7.7
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}

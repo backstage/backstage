@@ -24,7 +24,7 @@ jobs:
           node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@c3038aa5576b9cd845ccc518ef854d3660e8cb40 # v0.7.6
+        uses: backstage/actions/yarn-install@c4dd040f963edd226462b5f32efd319ffca12ac5 # v0.7.7
         with:
           cache-prefix: ${{ runner.os }}-v22.x
 
