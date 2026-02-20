@@ -551,7 +551,31 @@ Done! You now have support for TechDocs in your own software template!
 
 ### Prevent download of Google fonts
 
-If your Backstage instance does not have internet access, the generation will fail. TechDocs tries to download the Roboto font from Google. You can disable it by adding the following lines to mkdocs.yaml:
+If your Backstage instance does not have internet access, the generation will fail. TechDocs tries to download the Roboto font from Google. You can disable it by configuring your `app-config.yaml` or by manually updating your `mkdocs.yml` file.
+
+#### Using app-config
+
+Add the following configuration to your `app-config.yaml` to automatically
+disable external font downloads for all TechDocs sites:
+
+```yaml
+techdocs:
+  generator:
+    mkdocs:
+      disableExternalFonts: true
+```
+
+This configuration will automatically patch the `mkdocs.yml` file during the
+generation process. If no `theme` section exists, it will create one with `name:
+material` and `font: false`. If a `theme` section exists but `font` is not
+configured, it will add `font: false` to the existing theme. If `font` is
+already explicitly configured in your `mkdocs.yml`, the patcher will respect
+your file-level configuration and not override it.
+
+#### Manual configuration in mkdocs.yml
+
+Alternatively, you can manually add the following configuration to your `mkdocs.yaml`
+file:
 
 ```yaml
 theme:
@@ -561,9 +585,25 @@ theme:
 
 :::note Note
 
-The addition `name: material` is necessary. Otherwise it will not work
+The addition `name: material` is necessary. Otherwise it will not work.
+
+If you explicitly set `font: true` or `font: false` in your `mkdocs.yml`, the
+app-config patcher will respect that setting and not override it. The patcher
+only adds `font: false` when the `font` property is not already configured.
 
 :::
+
+#### Using techdocs-cli in CI/CD
+
+When generating TechDocs sites in CI/CD workflows using `techdocs-cli`, you can
+use the `--disableExternalFonts` flag:
+
+```bash
+techdocs-cli generate --disableExternalFonts
+```
+
+This will automatically patch the `mkdocs.yml` file during the generation
+process, just like the `app-config.yaml` option does for local generation.
 
 ## How to enable iframes in TechDocs
 

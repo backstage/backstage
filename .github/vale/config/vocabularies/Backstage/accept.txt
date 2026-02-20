@@ -575,3 +575,4 @@ zsh
 resizable
 enums
 LLMs
+patcher
