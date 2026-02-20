@@ -142,9 +142,13 @@ export class ReadWriteSplitCatalogService implements CatalogService {
   }
 
   async getLocations(
-    options: CatalogRequestOptions,
+    request: {} | undefined,
+    options: CatalogServiceRequestOptions,
   ): Promise<GetLocationsResponse> {
-    return this.#catalogRead.getLocations(options);
+    return this.#catalogRead.getLocations(
+      request,
+      await this.#getOptions(options),
+    );
   }
 
   async getLocationById(
