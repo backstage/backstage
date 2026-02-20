@@ -191,17 +191,139 @@ function applyFieldCondition(options: {
         return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
       }
 
-      // TODO(freben): Implement this for more use cases - for example simple
-      // objects (resulting in a $and and appending key strings) and maybe
-      // a subset of relations?
+      // Object form of $contains - currently only supports relation-style
+      // objects with "type" and optional "targetRef" keys.
+      //
+      // FROM: `{ "relations": { "$contains": { "type": "ownedBy", "targetRef": "group:default/team-a" } } }`
+      //
+      // TO:   search for key = "relations.ownedby" AND value = "group:default/team-a"
+      if (isObject(target)) {
+        if (key === 'relations') {
+          return applyContainsRelation({
+            target,
+            targetQuery,
+            onEntityIdField,
+            knex,
+          });
+        }
+
+        throw new InputError(
+          `Object form of $contains is not supported for field "${key}"`,
+        );
+      }
+
+      const actual = JSON.stringify(target);
       throw new InputError(
-        'Non primitive forms of the $contains operator is not supported',
+        `Unsupported $contains target for field "${key}": ${actual}`,
       );
     }
   }
 
   const actual = JSON.stringify(value);
   throw new InputError(
-    `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, or $hasPrefix operator, but got ${actual}`,
+    `Invalid filter predicate value for field "${key}": expected a primitive value, $exists, $in, $hasPrefix, or $contains operator, but got ${actual}`,
   );
+}
+
+/**
+ * Handles expressions on the form
+ *
+ * ```
+ * {
+ *   "relations": {
+ *     "$contains": {
+ *       "type": "ownedBy",
+ *       "targetRef": "group:default/team-a"
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * which map onto the search table's special `relation.<type>: <targetRef>`
+ * syntax.
+ *
+ * Only the keys "type" and "targetRef" are supported. The "type" key is
+ * required. If "targetRef" is omitted, it becomes an existence check for any
+ * relation of that type. The "targetRef" value can be a string or an `$in`
+ * array.
+ */
+function applyContainsRelation(options: {
+  target: Record<string, unknown>;
+  targetQuery: Knex.QueryBuilder;
+  onEntityIdField: string;
+  knex: Knex;
+}): Knex.QueryBuilder {
+  const { target: rawTarget, targetQuery, onEntityIdField, knex } = options;
+
+  function parseStringOrIn(value: unknown): string[] {
+    if (typeof value === 'string') {
+      return [value.toLocaleLowerCase('en-US')];
+    }
+    if (
+      isObject(value) &&
+      Object.keys(value).length === 1 &&
+      '$in' in value &&
+      Array.isArray(value.$in) &&
+      value.$in.every((v): v is string => typeof v === 'string')
+    ) {
+      if (value.$in.length === 0) {
+        throw new InputError(
+          `Empty "$in" array for $contains on "relations" is not allowed`,
+        );
+      }
+      return value.$in.map(v => v.toLocaleLowerCase('en-US'));
+    }
+    const actual = JSON.stringify(value);
+    throw new InputError(
+      `Unsupported value in $contains for "relations": expected a string or { "$in": [strings] }, but got ${actual}`,
+    );
+  }
+
+  let type: string | undefined;
+  let targetRef: string[] | undefined;
+
+  for (const [rawKey, value] of Object.entries(rawTarget)) {
+    const key = rawKey.toLocaleLowerCase('en-US');
+
+    if (key === 'type') {
+      if (type !== undefined) {
+        throw new InputError(
+          `Duplicate key "${rawKey}" in $contains for "relations"`,
+        );
+      }
+      if (typeof value !== 'string') {
+        throw new InputError(
+          `The $contains operator for "relations" requires a "type" string property`,
+        );
+      }
+      type = value;
+    } else if (key === 'targetref') {
+      if (targetRef !== undefined) {
+        throw new InputError(
+          `Duplicate key "${rawKey}" in $contains for "relations"`,
+        );
+      }
+      targetRef = parseStringOrIn(value);
+    } else {
+      throw new InputError(
+        `Unsupported key "${rawKey}" in $contains for "relations". Only "type" and "targetRef" are supported`,
+      );
+    }
+  }
+
+  if (!type) {
+    throw new InputError(
+      `The $contains operator for "relations" requires a "type" string property`,
+    );
+  }
+
+  const matchQuery = knex<DbSearchRow>('search')
+    .select('search.entity_id')
+    .where({ key: `relations.${type.toLocaleLowerCase('en-US')}` });
+
+  if (targetRef) {
+    matchQuery.whereIn('value', targetRef);
+  }
+
+  return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
 }

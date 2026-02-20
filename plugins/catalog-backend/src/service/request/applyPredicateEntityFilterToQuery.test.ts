@@ -45,18 +45,24 @@ describe.each(databases.eachSupportedId())(
         kind: 'Component',
         metadata: { name: 'service-a', namespace: 'default' },
         spec: { type: 'service', lifecycle: 'production', owner: 'team-a' },
+        relations: [
+          { type: 'ownedBy', targetRef: 'group:default/team-a' },
+          { type: 'consumesApi', targetRef: 'api:default/api-d' },
+        ],
       });
       await addEntity({
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: { name: 'service-b', namespace: 'default' },
         spec: { type: 'service', lifecycle: 'experimental', owner: 'team-b' },
+        relations: [{ type: 'ownedBy', targetRef: 'group:default/team-b' }],
       });
       await addEntity({
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: { name: 'website-c', namespace: 'default' },
         spec: { type: 'website', lifecycle: 'production', owner: 'team-a' },
+        relations: [{ type: 'ownedBy', targetRef: 'group:default/team-a' }],
       });
       await addEntity({
         apiVersion: 'backstage.io/v1alpha1',
@@ -145,6 +151,12 @@ describe.each(databases.eachSupportedId())(
           'service-a',
           'service-b',
         ]);
+      });
+
+      it('throws on unsupported field operator', async () => {
+        await expect(query({ kind: { $bad: 'value' } as any })).rejects.toThrow(
+          /\$contains operator, but got/,
+        );
       });
 
       it('throws on top-level primitive', async () => {
@@ -252,13 +264,127 @@ describe.each(databases.eachSupportedId())(
         ).resolves.toEqual(['bare-e']);
       });
 
-      it('throws on non-primitive $contains', async () => {
+      it('matches relations by type only (existence)', async () => {
+        await expect(
+          query({ relations: { $contains: { type: 'consumesApi' } } }),
+        ).resolves.toEqual(['service-a']);
+      });
+
+      it('matches relations by type and exact targetRef', async () => {
         await expect(
           query({
-            'metadata.tags': { $contains: { nested: 'object' } } as any,
+            relations: {
+              $contains: {
+                type: 'ownedBy',
+                targetRef: 'group:default/team-a',
+              },
+            },
+          }),
+        ).resolves.toEqual(['service-a', 'website-c']);
+      });
+
+      it('matches relations by type and targetRef case-insensitively', async () => {
+        await expect(
+          query({
+            relations: {
+              $contains: {
+                type: 'OwnedBy',
+                targetRef: 'Group:Default/Team-A',
+              },
+            },
+          }),
+        ).resolves.toEqual(['service-a', 'website-c']);
+      });
+
+      it('handles mixed-case keys in $contains object', async () => {
+        await expect(
+          query({
+            relations: {
+              $contains: {
+                TyPe: 'ownedBy',
+                TargetRef: 'group:default/team-a',
+              },
+            },
+          } as any),
+        ).resolves.toEqual(['service-a', 'website-c']);
+      });
+
+      it('matches relations by type and targetRef with $in', async () => {
+        await expect(
+          query({
+            relations: {
+              $contains: {
+                type: 'ownedBy',
+                targetRef: {
+                  $in: ['group:default/team-a', 'group:default/team-b'],
+                },
+              },
+            },
+          }),
+        ).resolves.toEqual(['service-a', 'service-b', 'website-c']);
+      });
+
+      it('throws on unsupported keys in $contains object', async () => {
+        await expect(
+          query({
+            relations: {
+              $contains: { type: 'ownedBy', badKey: 'value' },
+            } as any,
+          }),
+        ).rejects.toThrow(/Unsupported key "badKey" in \$contains/);
+      });
+
+      it('throws on duplicate keys in $contains object', async () => {
+        await expect(
+          query({
+            relations: {
+              // JSON.parse allows duplicate keys, last one wins, but we
+              // simulate via an object that has both casings
+              $contains: JSON.parse('{"type": "ownedBy", "Type": "ownedBy"}'),
+            },
+          }),
+        ).rejects.toThrow(/Duplicate key "Type" in \$contains/);
+      });
+
+      it('throws on $contains object without type', async () => {
+        await expect(
+          query({
+            relations: {
+              $contains: { targetRef: 'group:default/team-a' },
+            } as any,
+          }),
+        ).rejects.toThrow(/requires a "type" string property/);
+      });
+
+      it('throws on empty $in array in targetRef', async () => {
+        await expect(
+          query({
+            relations: {
+              $contains: { type: 'ownedBy', targetRef: { $in: [] } },
+            },
+          }),
+        ).rejects.toThrow(/Empty "\$in" array for \$contains on "relations"/);
+      });
+
+      it('throws on unsupported targetRef value', async () => {
+        await expect(
+          query({
+            relations: {
+              $contains: { type: 'ownedBy', targetRef: ['bad'] },
+            } as any,
+          }),
+        ).rejects.toThrow(/Unsupported value in \$contains for "relations"/);
+      });
+
+      it('throws on object $contains for non-relations fields', async () => {
+        await expect(
+          query({
+            'metadata.tags': {
+              $contains: { type: 'something' },
+            } as any,
           }),
         ).rejects.toThrow(
-          /Non primitive forms of the \$contains operator is not supported/,
+          /Object form of \$contains is not supported for field/,
         );
       });
     });
