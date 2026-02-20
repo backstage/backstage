@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { OptionValues } from 'commander';
-import { paths } from './paths';
+import { paths } from '../../../lib/paths';
 import { PackageRoles, PackageRole } from '@backstage/cli-node';
 
 export async function findRoleFromCommand(

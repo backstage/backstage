@@ -16,7 +16,7 @@
 
 import { ModuleFederationRemoteOptions } from './types';
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { readEntryPoints } from '../../../../lib/entryPoints';
+import { readEntryPoints } from '../entryPoints';
 import {
   createTypeDistProject,
   getEntryPointDefaultFeatureType,
