@@ -102,7 +102,7 @@ export function applyPredicateEntityFilterToQuery(options: {
 
   // Treat the filter as a field expression like { "kind": "component" } or { "spec.type": { "$in": ["service", "website"] } }
   if (Object.keys(filter).length === 0) {
-    return targetQuery;
+    return targetQuery.andWhereRaw('1 = 1');
   }
   return targetQuery.andWhere(inner => {
     for (const [keyAnyCase, value] of Object.entries(filter)) {
@@ -144,10 +144,11 @@ function applyFieldCondition(options: {
       const existsQuery = knex<DbSearchRow>('search')
         .select('search.entity_id')
         .where({ key });
-      if (value.$exists) {
-        return targetQuery.andWhere(onEntityIdField, 'in', existsQuery);
-      }
-      return targetQuery.andWhere(onEntityIdField, 'not in', existsQuery);
+      return targetQuery.andWhere(
+        onEntityIdField,
+        value.$exists ? 'in' : 'not in',
+        existsQuery,
+      );
     }
 
     if ('$in' in value) {

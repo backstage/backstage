@@ -126,6 +126,10 @@ describe.each(databases.eachSupportedId())(
       ]);
     });
 
+    it('matches nothing for {$not: {}}', async () => {
+      await expect(query({ $not: {} })).resolves.toEqual([]);
+    });
+
     it('filters by direct field value', async () => {
       await expect(query({ kind: 'component' })).resolves.toEqual([
         'bare-e',
