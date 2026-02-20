@@ -32,8 +32,10 @@ export const AccordionDefinition = defineComponent<AccordionOwnProps>()({
   classNames: {
     root: 'bui-Accordion',
   },
-  bg: 'consumer',
+  bg: 'provider',
   propDefs: {
+    bg: { dataAttribute: true, default: 'neutral-auto' },
+    children: {},
     className: {},
   },
 });

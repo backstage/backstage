@@ -21,12 +21,15 @@ import type {
   DisclosurePanelProps as RADisclosurePanelProps,
   DisclosureGroupProps as RADisclosureGroupProps,
 } from 'react-aria-components';
+import type { ProviderBg } from '../../types';
 
 /**
  * Own props for the Accordion component.
  * @public
  */
 export type AccordionOwnProps = {
+  bg?: ProviderBg;
+  children?: ReactNode;
   className?: string;
 };
 
@@ -35,7 +38,7 @@ export type AccordionOwnProps = {
  * @public
  */
 export interface AccordionProps
-  extends Omit<RADisclosureProps, 'className'>,
+  extends Omit<RADisclosureProps, 'children' | 'className'>,
     AccordionOwnProps {}
 
 /**

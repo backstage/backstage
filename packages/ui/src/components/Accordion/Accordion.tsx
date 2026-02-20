@@ -45,7 +45,7 @@ export const Accordion = forwardRef(
       AccordionDefinition,
       props,
     );
-    const { classes } = ownProps;
+    const { classes, childrenWithBgProvider } = ownProps;
 
     return (
       <RADisclosure
@@ -53,7 +53,9 @@ export const Accordion = forwardRef(
         className={classes.root}
         {...dataAttributes}
         {...restProps}
-      />
+      >
+        {childrenWithBgProvider}
+      </RADisclosure>
     );
   },
 );

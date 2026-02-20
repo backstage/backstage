@@ -38,7 +38,9 @@ export function useDefinition<
 
   // Provider: resolve bg and provide context for children
   const providerBg = useBgProvider(
-    definition.bg === 'provider' ? props.bg : undefined,
+    definition.bg === 'provider'
+      ? props.bg ?? (definition.propDefs as any).bg?.default
+      : undefined,
   );
 
   // Consumer: read parent context bg
