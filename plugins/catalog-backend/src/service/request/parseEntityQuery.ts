@@ -110,5 +110,6 @@ export function parseEntityQuery(
       : undefined,
     fields: request.fields,
     limit: request.limit,
+    offset: request.offset,
   };
 }

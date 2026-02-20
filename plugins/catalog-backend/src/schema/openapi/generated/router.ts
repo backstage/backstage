@@ -1269,6 +1269,9 @@ export const spec = {
                   limit: {
                     type: 'number',
                   },
+                  offset: {
+                    type: 'number',
+                  },
                   orderBy: {
                     type: 'array',
                     items: {

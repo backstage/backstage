@@ -359,12 +359,16 @@ export class CatalogClient implements CatalogApi {
     const body: QueryEntitiesByPredicateRequest = {};
 
     if (isQueryEntitiesInitialRequest(request)) {
-      const { query, limit, orderFields, fullTextFilter, fields } = request;
+      const { query, limit, offset, orderFields, fullTextFilter, fields } =
+        request;
       if (query && typeof query === 'object') {
         body.query = query;
       }
       if (limit !== undefined) {
         body.limit = limit;
+      }
+      if (offset !== undefined) {
+        body.offset = offset;
       }
       if (orderFields !== undefined) {
         body.orderBy = [orderFields].flat();

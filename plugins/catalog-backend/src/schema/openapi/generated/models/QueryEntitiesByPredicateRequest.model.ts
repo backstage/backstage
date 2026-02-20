@@ -27,6 +27,7 @@ import { QueryEntitiesByPredicateRequestOrderByInner } from '../models/QueryEnti
 export interface QueryEntitiesByPredicateRequest {
   cursor?: string;
   limit?: number;
+  offset?: number;
   orderBy?: Array<QueryEntitiesByPredicateRequestOrderByInner>;
   fullTextFilter?: QueryEntitiesByPredicateRequestFullTextFilter;
   fields?: Array<string>;

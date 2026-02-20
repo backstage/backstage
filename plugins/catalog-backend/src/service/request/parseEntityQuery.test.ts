@@ -28,6 +28,7 @@ describe('parseEntityQuery', () => {
         fullTextFilter: undefined,
         fields: undefined,
         limit: undefined,
+        offset: undefined,
       });
     });
 
@@ -66,6 +67,18 @@ describe('parseEntityQuery', () => {
     it('passes through limit', () => {
       const result = parseEntityQuery({ limit: 50 });
       expect(result).toEqual(expect.objectContaining({ limit: 50 }));
+    });
+
+    it('passes through offset', () => {
+      const result = parseEntityQuery({ offset: 100 });
+      expect(result).toEqual(expect.objectContaining({ offset: 100 }));
+    });
+
+    it('passes through limit and offset together', () => {
+      const result = parseEntityQuery({ limit: 50, offset: 100 });
+      expect(result).toEqual(
+        expect.objectContaining({ limit: 50, offset: 100 }),
+      );
     });
 
     it('passes through fields', () => {

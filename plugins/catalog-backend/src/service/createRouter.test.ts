@@ -509,6 +509,31 @@ describe('createRouter readonly disabled', () => {
       );
     });
 
+    it('queries entities with an offset', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: {},
+        totalItems: 5,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ query: { kind: 'b' }, limit: 2, offset: 3 });
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: { kind: 'b' },
+          limit: 2,
+          offset: 3,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+
     it('paginates with a cursor in the body', async () => {
       const items: Entity[] = [
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },

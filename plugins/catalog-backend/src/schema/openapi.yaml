@@ -1125,6 +1125,8 @@ paths:
                   type: string
                 limit:
                   type: number
+                offset:
+                  type: number
                 orderBy:
                   type: array
                   items:
