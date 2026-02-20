@@ -998,10 +998,42 @@ const _default: OverridableFrontendPlugin<
               offset?: number | undefined;
               limit?: number | undefined;
             };
+        columns:
+          | {
+              custom?:
+                | {
+                    title: string;
+                    field: string;
+                    width?: number | undefined;
+                    defaultValue?: string | undefined;
+                    kind?: string | string[] | undefined;
+                    sortable?: boolean | undefined;
+                  }[]
+                | undefined;
+              include?: string[] | undefined;
+              exclude?: string[] | undefined;
+            }
+          | undefined;
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
+        columns?:
+          | {
+              custom?:
+                | {
+                    title: string;
+                    field: string;
+                    width?: number | undefined;
+                    defaultValue?: string | undefined;
+                    kind?: string | string[] | undefined;
+                    sortable?: boolean | undefined;
+                  }[]
+                | undefined;
+              include?: string[] | undefined;
+              exclude?: string[] | undefined;
+            }
+          | undefined;
         pagination?:
           | boolean
           | {
