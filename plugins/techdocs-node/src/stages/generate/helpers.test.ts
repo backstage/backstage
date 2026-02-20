@@ -24,6 +24,7 @@ import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'node:path';
 import { ParsedLocationAnnotation } from '../../helpers';
 import {
+  createOrUpdateEntityMetadata,
   createOrUpdateMetadata,
   getGeneratorKey,
   getMkdocsYml,
@@ -617,6 +618,53 @@ describe('helpers', () => {
 
       const json = await fs.readJson(filePath);
       expect(json.etag).toBe('etag123abc');
+    });
+  });
+
+  describe('createOrUpdateEntityMetadata', () => {
+    const mockFiles = {
+      'entity_metadata.json': '{"site_name": "Entity Docs"}',
+      'catalog.yaml': 'site_name: Catalog Docs',
+    };
+
+    beforeEach(() => {
+      mockDir.setContent(mockFiles);
+    });
+
+    it('should create the file if it does not exist', async () => {
+      const filePath = mockDir.resolve('wrong_entity_metadata.json');
+      await createOrUpdateEntityMetadata(
+        mockDir.resolve('catalog.yaml'),
+        filePath,
+        mockLogger,
+      );
+
+      // Check if the file exists
+      await expect(
+        fs.access(filePath, fs.constants.F_OK),
+      ).resolves.not.toThrow();
+    });
+
+    it('should throw error when the YAML is invalid', async () => {
+      const filePath = mockDir.resolve('entity_metadata.json');
+      const catalogPath = mockDir.resolve('invalid_catalog.yaml');
+
+      await expect(
+        createOrUpdateEntityMetadata(catalogPath, filePath, mockLogger),
+      ).rejects.toThrow();
+    });
+
+    it('should add catalog yaml contents to the metadata json', async () => {
+      const filePath = mockDir.resolve('entity_metadata.json');
+
+      await createOrUpdateEntityMetadata(
+        mockDir.resolve('catalog.yaml'),
+        filePath,
+        mockLogger,
+      );
+
+      const json = await fs.readJson(filePath);
+      expect(json.site_name).toEqual('Catalog Docs');
     });
   });
 
