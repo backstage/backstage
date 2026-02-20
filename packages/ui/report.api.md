@@ -72,8 +72,13 @@ export const AccordionDefinition: {
   readonly classNames: {
     readonly root: 'bui-Accordion';
   };
-  readonly bg: 'consumer';
+  readonly bg: 'provider';
   readonly propDefs: {
+    readonly bg: {
+      readonly dataAttribute: true;
+      readonly default: 'neutral-auto';
+    };
+    readonly children: {};
     readonly className: {};
   };
 };
@@ -112,6 +117,8 @@ export interface AccordionGroupProps
 
 // @public
 export type AccordionOwnProps = {
+  bg?: ProviderBg;
+  children?: ReactNode;
   className?: string;
 };
 
@@ -145,7 +152,7 @@ export interface AccordionPanelProps
 
 // @public
 export interface AccordionProps
-  extends Omit<DisclosureProps, 'className'>,
+  extends Omit<DisclosureProps, 'children' | 'className'>,
     AccordionOwnProps {}
 
 // @public (undocumented)
