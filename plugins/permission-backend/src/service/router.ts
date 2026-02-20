@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
-import express, { Request, Response } from 'express';
-import Router from 'express-promise-router';
+import express from 'express';
 import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
-  EvaluatePermissionResponse,
-  IdentifiedPermissionMessage,
   isResourcePermission,
-  PermissionAttributes,
-  PermissionMessageBatch,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -47,49 +41,17 @@ import {
   RootConfigService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
+import { createOpenApiRouter } from '../schema/openapi';
+import {
+  EvaluatePermissionRequest,
+  ResourcePermissionRequest,
+} from '../schema/openapi/generated/models';
 
-const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
-  action: z
-    .union([
-      z.literal('create'),
-      z.literal('read'),
-      z.literal('update'),
-      z.literal('delete'),
-    ])
-    .optional(),
-});
-
-const basicPermissionSchema = z.object({
-  type: z.literal('basic'),
-  name: z.string(),
-  attributes: attributesSchema,
-});
-
-const resourcePermissionSchema = z.object({
-  type: z.literal('resource'),
-  name: z.string(),
-  attributes: attributesSchema,
-  resourceType: z.string(),
-});
-
-const evaluatePermissionRequestSchema = z.union([
-  z.object({
-    id: z.string(),
-    resourceRef: z.undefined().optional(),
-    permission: basicPermissionSchema,
-  }),
-  z.object({
-    id: z.string(),
-    resourceRef: z
-      .union([z.string(), z.array(z.string()).nonempty()])
-      .optional(),
-    permission: resourcePermissionSchema,
-  }),
-]);
-
-const evaluatePermissionRequestBatchSchema = z.object({
-  items: z.array(evaluatePermissionRequestSchema),
-});
+function isResourcePermissionRequest(
+  request: EvaluatePermissionRequest,
+): request is ResourcePermissionRequest {
+  return isResourcePermission(request.permission);
+}
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -109,7 +71,7 @@ export interface RouterOptions {
 }
 
 const handleRequest = async (
-  requests: z.infer<typeof evaluatePermissionRequestBatchSchema>['items'],
+  requests: EvaluatePermissionRequest[],
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   credentials: BackstageCredentials<
@@ -117,9 +79,7 @@ const handleRequest = async (
   >,
   auth: AuthService,
   userInfo: UserInfoService,
-): Promise<
-  IdentifiedPermissionMessage<InternalEvaluatePermissionResponse>[]
-> => {
+) => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
@@ -160,7 +120,7 @@ const handleRequest = async (
             };
           }
 
-          if (!isResourcePermission(request.permission)) {
+          if (!isResourcePermissionRequest(request)) {
             throw new Error(
               `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
             );
@@ -217,70 +177,43 @@ export async function createRouter(
     auth,
   });
 
-  const router = Router();
-  router.use(express.json());
+  const router = await createOpenApiRouter();
 
   router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
   });
 
-  router.post(
-    '/authorize',
-    async (
-      req: Request,
-      res: Response<PermissionMessageBatch<InternalEvaluatePermissionResponse>>,
-    ) => {
-      const credentials = await httpAuth.credentials(req, {
-        allow: ['user', 'none'],
-      });
+  router.post('/authorize', async (req, res) => {
+    const credentials = await httpAuth.credentials(req, {
+      allow: ['user', 'none'],
+    });
 
-      const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
-        req.body,
-      );
+    const body = req.body;
 
-      if (!parseResult.success) {
-        throw new InputError(parseResult.error.toString());
-      }
-
-      const body = parseResult.data;
-
+    if (
+      (auth.isPrincipal(credentials, 'none') && !disabledDefaultAuthPolicy) ||
+      (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
+    ) {
       if (
-        (auth.isPrincipal(credentials, 'none') && !disabledDefaultAuthPolicy) ||
-        (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
+        body.items.some(r => isResourcePermissionRequest(r) && !r.resourceRef)
       ) {
-        if (
-          body.items.some(
-            r =>
-              isResourcePermission(r.permission) && r.resourceRef === undefined,
-          )
-        ) {
-          throw new InputError(
-            'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',
-          );
-        }
+        throw new InputError(
+          'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',
+        );
       }
+    }
 
-      res.json({
-        items: await handleRequest(
-          body.items,
-          policy,
-          permissionIntegrationClient,
-          credentials,
-          auth,
-          userInfo,
-        ),
-      });
-    },
-  );
+    res.json({
+      items: await handleRequest(
+        body.items,
+        policy,
+        permissionIntegrationClient,
+        credentials,
+        auth,
+        userInfo,
+      ),
+    });
+  });
 
   return router;
 }
-
-/**
- * @internal
- */
-type InternalEvaluatePermissionResponse =
-  | EvaluatePermissionResponse
-  | {
-      result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
-    };

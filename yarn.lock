@@ -6568,6 +6568,7 @@ __metadata:
   resolution: "@backstage/plugin-permission-backend@workspace:plugins/permission-backend"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6576,6 +6577,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/repo-tools": "workspace:^"
     "@types/express": "npm:^4.17.6"
     "@types/lodash": "npm:^4.14.151"
     "@types/supertest": "npm:^2.0.8"
