@@ -59,6 +59,10 @@ export function registerCommands(program: Command) {
       'Name for site when using default MkDocs config',
       'Documentation Site',
     )
+    .option(
+      '--catalog-file <PATH>',
+      'Path to the backstage catalog file. This is optional and will only be used if serving using the --preview-app-bundle-path flag',
+    )
     .option('-v --verbose', 'Enable verbose output.', false)
     .option(
       '--omitTechdocsCoreMkdocsPlugin',
@@ -282,6 +286,11 @@ export function registerCommands(program: Command) {
       '--site-name',
       'Name for site when using default MkDocs config',
       'Documentation Site',
+    )
+    .option(
+      '--site-dir <PATH>',
+      'Directory containing generated TechDocs site.',
+      './site/',
     )
     .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
     .option('-v --verbose', 'Enable verbose output.', false)
