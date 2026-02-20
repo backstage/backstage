@@ -83,6 +83,8 @@ When defining the `templates` array it will override the default set of template
       "new": {
         "templates": [
           "@backstage/cli/templates/frontend-plugin",
+          "@backstage/cli/templates/frontend-plugin-module",
+          "@backstage/cli/templates/legacy-frontend-plugin",
           "@backstage/cli/templates/backend-plugin",
           "@backstage/cli/templates/backend-plugin-module",
           "@backstage/cli/templates/plugin-web-library",
