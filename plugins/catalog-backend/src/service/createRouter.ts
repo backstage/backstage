@@ -20,6 +20,7 @@ import {
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  SchemaService,
 } from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
@@ -37,7 +38,7 @@ import { z } from 'zod';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
-import { createOpenApiRouter } from '../schema/openapi';
+import { EndpointMap, spec } from '../schema/openapi';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
 import {
   basicEntityFilter,
@@ -82,6 +83,7 @@ export interface RouterOptions {
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
   auditor: AuditorService;
+  schema: SchemaService;
   enableRelationsCompatibility?: boolean;
 }
 
@@ -91,13 +93,6 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = await createOpenApiRouter({
-    validatorOptions: {
-      // We want the spec to be up to date with the expected value, but the return type needs
-      //  to be controlled by the router implementation not the request validator.
-      ignorePaths: /^\/validate-entity\/?$/,
-    },
-  });
   const {
     entitiesCatalog,
     locationAnalyzer,
@@ -111,8 +106,21 @@ export async function createRouter(
     auth,
     httpAuth,
     auditor,
+    schema: schemaService,
     enableRelationsCompatibility = false,
   } = options;
+
+  // Register the OpenAPI spec with the schema service
+  schemaService.register(spec);
+
+  // Create the router from the registered schema
+  const router = await schemaService.createRouter<EndpointMap>({
+    validatorOptions: {
+      // We want the spec to be up to date with the expected value, but the return type needs
+      //  to be controlled by the router implementation not the request validator.
+      ignorePaths: /^\/validate-entity\/?$/,
+    },
+  });
 
   const readonlyEnabled =
     config.getOptionalBoolean('catalog.readonly') || false;
