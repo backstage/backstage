@@ -25,7 +25,7 @@ import semver from 'semver';
 import { OptionValues } from 'commander';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'node:path';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 import {
   fetchPackageInfo,

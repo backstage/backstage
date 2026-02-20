@@ -20,7 +20,7 @@ import recursiveReaddir from 'recursive-readdir';
 import { resolve as resolvePath, relative as relativePath } from 'node:path';
 import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import {
   PortableTemplateFile,
   PortableTemplatePointer,

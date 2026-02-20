@@ -18,7 +18,7 @@ import chalk from 'chalk';
 import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'node:path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import {
   BackstagePackage,
   PackageGraph,

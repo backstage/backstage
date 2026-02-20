@@ -19,12 +19,13 @@ import { getHasYarnPlugin } from './yarnPlugin';
 
 const mockDir = createMockDirectory();
 
-jest.mock('./paths', () => ({
-  paths: {
+jest.mock('@backstage/cli-common', () => ({
+  ...jest.requireActual('@backstage/cli-common'),
+  findPaths: () => ({
     resolveTargetRoot(filename: string) {
       return mockDir.resolve(filename);
     },
-  },
+  }),
 }));
 
 describe('getHasYarnPlugin', () => {

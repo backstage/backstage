@@ -16,7 +16,10 @@
 
 import fs from 'fs-extra';
 import semver from 'semver';
-import { paths } from './paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { Lockfile } from './versioning';
 
 /* eslint-disable @backstage/no-relative-monorepo-imports */

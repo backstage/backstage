@@ -17,7 +17,7 @@
 import { version as cliVersion } from '../../../../package.json';
 import os from 'node:os';
 import { runOutput } from '@backstage/cli-common';
-import { paths } from '../../../lib/paths';
+import { paths } from '../paths';
 import { Lockfile } from '../../../lib/versioning';
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import { minimatch } from 'minimatch';

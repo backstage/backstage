@@ -19,7 +19,7 @@ import { ESLint } from 'eslint';
 import { OptionValues } from 'commander';
 import { relative as relativePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 
 export async function command(opts: OptionValues) {
   const packages = await PackageGraph.listTargetPackages();

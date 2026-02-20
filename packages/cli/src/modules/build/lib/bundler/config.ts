@@ -25,7 +25,7 @@ import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
-import { paths as cliPaths } from '../../../../lib/paths';
+import { paths as cliPaths } from '../../paths';
 import fs from 'fs-extra';
 import { optimization as optimizationConfig } from './optimization';
 import pickBy from 'lodash/pickBy';

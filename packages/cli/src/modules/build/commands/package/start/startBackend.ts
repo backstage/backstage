@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
-import { paths } from '../../../../../lib/paths';
+import { paths } from '../../../paths';
 import { runBackend } from '../../../lib/runner';
 
 interface StartBackendOptions {

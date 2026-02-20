@@ -23,7 +23,7 @@ import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'node:path';
 import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { runCheck, runOutput } from '@backstage/cli-common';
 import { isChildPath } from '@backstage/cli-common';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';

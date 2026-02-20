@@ -17,7 +17,7 @@
 import { relative as relativePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { rspack } from '@rspack/core';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 
 /**
  * This returns of collection of plugins that links a separate workspace into

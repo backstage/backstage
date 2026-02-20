@@ -16,7 +16,10 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
-import { paths } from '../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 const DEFAULT_CACHE_BASE_PATH = 'node_modules/.cache/backstage-cli';
 

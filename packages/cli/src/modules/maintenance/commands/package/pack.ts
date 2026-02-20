@@ -18,7 +18,7 @@ import {
   productionPack,
   revertProductionPack,
 } from '../../../../modules/build/lib/packager/productionPack';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import fs from 'fs-extra';
 import { publishPreflightCheck } from '../../lib/publishing';
 import { createTypeDistProject } from '../../../../lib/typeDistProject';

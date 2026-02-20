@@ -17,7 +17,10 @@
 import fs from 'fs-extra';
 import yaml from 'yaml';
 import z from 'zod';
-import { paths } from './paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 const yarnRcSchema = z.object({
   plugins: z

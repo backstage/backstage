@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 
 export type BundlingPathsOptions = {
   // bundle entrypoint, e.g. 'src/index'

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
 
-export default async function clean() {
-  await fs.remove(paths.resolveTarget('dist'));
-  await fs.remove(paths.resolveTarget('dist-types'));
-  await fs.remove(paths.resolveTarget('coverage'));
-}
+/* eslint-disable-next-line no-restricted-syntax */
+export const paths = findPaths(__dirname);

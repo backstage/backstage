@@ -29,7 +29,7 @@ import {
   relative as relativePath,
   extname,
 } from 'node:path';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { publishPreflightCheck } from '../../lib/publishing';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx', '.json'];

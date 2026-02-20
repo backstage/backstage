@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageRoles } from '@backstage/cli-node';
-import { paths } from '../../../lib/paths';
+import { paths } from '../paths';
 
 export default async () => {
   const { packages } = await getPackages(paths.targetDir);

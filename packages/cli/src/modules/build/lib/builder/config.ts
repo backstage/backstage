@@ -39,7 +39,7 @@ import {
 
 import { forwardFileImports, cssEntryPoints } from './plugins';
 import { BuildOptions, Output } from './types';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../entryPoints';
 

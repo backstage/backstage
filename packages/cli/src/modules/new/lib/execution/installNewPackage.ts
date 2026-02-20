@@ -16,7 +16,7 @@
 import fs from 'fs-extra';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { Task } from '../tasks';
 import { PortableTemplateInput } from '../types';
 

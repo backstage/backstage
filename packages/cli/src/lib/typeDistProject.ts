@@ -20,7 +20,10 @@ import {
 } from '@backstage/cli-node';
 import { resolve as resolvePath } from 'node:path';
 import { Project, SourceFile, SyntaxKind, ts, Type } from 'ts-morph';
-import { paths } from './paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 export const createTypeDistProject = async () => {
   return new Project({

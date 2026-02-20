@@ -15,7 +15,7 @@
  */
 
 import { Command, OptionValues } from 'commander';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { runCheck } from '@backstage/cli-common';
 
 function includesAnyOf(hayStack: string[], ...needles: string[]) {

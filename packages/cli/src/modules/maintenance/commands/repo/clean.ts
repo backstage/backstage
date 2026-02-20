@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { run } from '@backstage/cli-common';
 
 export async function command(): Promise<void> {

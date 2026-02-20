@@ -18,7 +18,7 @@ import { OptionValues } from 'commander';
 import { startPackage } from './startPackage';
 import { resolveLinkedWorkspace } from './resolveLinkedWorkspace';
 import { findRoleFromCommand } from '../../../lib/role';
-import { paths } from '../../../../../lib/paths';
+import { paths } from '../../../paths';
 
 export async function command(opts: OptionValues): Promise<void> {
   await startPackage({

@@ -25,7 +25,7 @@ import upperCase from 'lodash/upperCase';
 import upperFirst from 'lodash/upperFirst';
 import lowerFirst from 'lodash/lowerFirst';
 import { Lockfile } from '../../../../lib/versioning';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { createPackageVersionProvider } from '../../../../lib/version';
 import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 

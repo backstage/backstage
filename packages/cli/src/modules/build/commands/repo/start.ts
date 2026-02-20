@@ -20,7 +20,7 @@ import {
   PackageRole,
 } from '@backstage/cli-node';
 import { relative as relativePath } from 'node:path';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
 import { startPackage } from '../package/start/startPackage';
 import { parseArgs } from 'node:util';

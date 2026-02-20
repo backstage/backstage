@@ -24,7 +24,7 @@ import {
 import { tmpdir } from 'node:os';
 import * as tar from 'tar';
 import partition from 'lodash/partition';
-import { paths } from '../../../../lib/paths';
+import { paths } from '../../paths';
 import { run } from '@backstage/cli-common';
 import {
   dependencies as cliDependencies,
