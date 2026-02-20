@@ -500,6 +500,7 @@ export type PluginConfig<
 // @public
 export type PluginFeatureFlagConfig = {
   name: string;
+  description?: string;
 };
 
 export { ProfileInfo };
