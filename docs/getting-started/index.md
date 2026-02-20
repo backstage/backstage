@@ -69,8 +69,10 @@ This guide also assumes a basic understanding of working on a Linux based operat
 
 - A minimum of 20 GB disk space to run the standalone Backstage application with demo data. NOTE: As you add more modules and plugins to an installation, the disk space requirements will increase, accordingly.
 - A minimum of 6 GB memory.
-- Access to a Unix-based operating system, such as Linux, macOS or
-  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/). The Linux version must support the required Node.js version.
+- Access to a Unix-based operating system, such as Linux or macOS, or
+  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/).
+  The Linux version must support the required Node.js version.
+  The commands in this guide assume a Unix-like shell environment. Windows users should use WSL or another compatible environment to follow the instructions.
 - A GNU-like build environment available at the command line.
   For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
   On macOS, you will want to run `xcode-select --install` to get the XCode command line build tooling in place.
