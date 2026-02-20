@@ -3,16 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "yarn sync:css",
     "build": "next build",
     "lint": "eslint .",
-    "prestart": "yarn sync:css",
     "start": "next dev",
     "sync:changelog": "node scripts/sync-changelog.mjs",
     "sync:changelog:dry-run": "node scripts/sync-changelog.mjs --dry-run",
-    "sync:changelog:force": "node scripts/sync-changelog.mjs --force",
-    "sync:css": "node scripts/sync-css.js",
-    "sync:css:watch": "node scripts/sync-css.js --watch"
+    "sync:changelog:force": "node scripts/sync-changelog.mjs --force"
   },
   "resolutions": {
     "@types/react": "19.2.10",
@@ -46,10 +42,10 @@
     "@types/node": "^22.13.14",
     "@types/react": "19.2.10",
     "@types/react-dom": "19.2.3",
-    "chokidar": "^3.6.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "lightningcss": "^1.28.2",
+    "postcss": "^8.5.6",
+    "postcss-import": "^16.1.1",
     "typescript": "^5",
     "unified": "^11.0.4"
   }
