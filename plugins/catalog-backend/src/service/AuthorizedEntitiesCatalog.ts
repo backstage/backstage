@@ -35,6 +35,7 @@ import {
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '../catalog/types';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { basicEntityFilter } from './request';
 import { isQueryEntitiesCursorRequest } from './util';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
@@ -42,6 +43,30 @@ import {
   BackstageCredentials,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+
+function entityFilterToFilterPredicate(filter: EntityFilter): FilterPredicate {
+  if ('allOf' in filter) {
+    return { $all: filter.allOf.map(entityFilterToFilterPredicate) };
+  }
+
+  if ('anyOf' in filter) {
+    return { $any: filter.anyOf.map(entityFilterToFilterPredicate) };
+  }
+
+  if ('not' in filter) {
+    return { $not: entityFilterToFilterPredicate(filter.not) };
+  }
+
+  if (!filter.values) {
+    return { [filter.key]: { $exists: true } } as FilterPredicate;
+  }
+
+  if (filter.values.length === 1) {
+    return { [filter.key]: filter.values[0] } as FilterPredicate;
+  }
+
+  return { [filter.key]: { $in: filter.values } } as FilterPredicate;
+}
 
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   private readonly entitiesCatalog: EntitiesCatalog;
@@ -147,18 +172,42 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
       let permissionedRequest: QueryEntitiesRequest;
       let requestFilter: EntityFilter | undefined;
+      let requestQuery: FilterPredicate | undefined;
 
       if (isQueryEntitiesCursorRequest(request)) {
         requestFilter = request.cursor.filter;
+        requestQuery = request.cursor.query;
 
+        if (request.cursor.query) {
+          const permissionPredicate =
+            entityFilterToFilterPredicate(permissionFilter);
+          permissionedRequest = {
+            ...request,
+            cursor: {
+              ...request.cursor,
+              query: { $all: [permissionPredicate, request.cursor.query] },
+              filter: undefined,
+            },
+          };
+        } else {
+          permissionedRequest = {
+            ...request,
+            cursor: {
+              ...request.cursor,
+              filter: request.cursor.filter
+                ? { allOf: [permissionFilter, request.cursor.filter] }
+                : permissionFilter,
+            },
+          };
+        }
+      } else if (request.query) {
+        const permissionPredicate =
+          entityFilterToFilterPredicate(permissionFilter);
+        requestQuery = request.query;
         permissionedRequest = {
           ...request,
-          cursor: {
-            ...request.cursor,
-            filter: request.cursor.filter
-              ? { allOf: [permissionFilter, request.cursor.filter] }
-              : permissionFilter,
-          },
+          query: { $all: [permissionPredicate, request.query] },
+          filter: undefined,
         };
       } else {
         permissionedRequest = {
@@ -177,11 +226,13 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
       const prevCursor: Cursor | undefined = response.pageInfo.prevCursor && {
         ...response.pageInfo.prevCursor,
         filter: requestFilter,
+        query: requestQuery,
       };
 
       const nextCursor: Cursor | undefined = response.pageInfo.nextCursor && {
         ...response.pageInfo.nextCursor,
         filter: requestFilter,
+        query: requestQuery,
       };
 
       return {
@@ -193,6 +244,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
       };
     }
 
+    // The ALLOW case
     return this.entitiesCatalog.queryEntities(request);
   }
 
