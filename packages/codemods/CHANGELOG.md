@@ -1,5 +1,13 @@
 # @backstage/codemods
 
+## 0.1.55-next.0
+
+### Patch Changes
+
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- Updated dependencies
+  - @backstage/cli-common@0.1.18
+
 ## 0.1.54
 
 ### Patch Changes

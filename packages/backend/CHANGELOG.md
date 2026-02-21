@@ -1,5 +1,47 @@
 # example-backend
 
+## 0.0.48-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.3-next.0
+  - @backstage/plugin-auth-backend@0.27.1-next.0
+  - @backstage/plugin-catalog-backend@3.4.1-next.0
+  - @backstage/plugin-scaffolder-backend@3.1.4-next.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-app-backend@0.5.11
+  - @backstage/plugin-auth-backend-module-github-provider@0.5.0
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.16
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.4
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.12-next.0
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.20-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.18-next.0
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.9-next.0
+  - @backstage/plugin-devtools-backend@0.5.14
+  - @backstage/plugin-events-backend@0.5.11
+  - @backstage/plugin-events-backend-module-google-pubsub@0.2.0
+  - @backstage/plugin-kubernetes-backend@0.21.2-next.0
+  - @backstage/plugin-mcp-actions-backend@0.1.10-next.0
+  - @backstage/plugin-notifications-backend@0.6.3-next.0
+  - @backstage/plugin-permission-backend@0.7.9
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.16
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-proxy-backend@0.6.10
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.20-next.0
+  - @backstage/plugin-search-backend@2.0.12
+  - @backstage/plugin-search-backend-module-catalog@0.3.13-next.0
+  - @backstage/plugin-search-backend-module-elasticsearch@1.8.0
+  - @backstage/plugin-search-backend-module-explore@0.3.11
+  - @backstage/plugin-search-backend-module-techdocs@0.4.12-next.0
+  - @backstage/plugin-search-backend-node@1.4.1
+  - @backstage/plugin-signals-backend@0.3.12
+  - @backstage/plugin-techdocs-backend@2.1.6-next.0
+
 ## 0.0.47
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/integration
 
+## 1.21.0-next.0
+
+### Minor Changes
+
+- d933f62: Add configurable throttling and retry mechanism for GitLab integration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
 ## 1.20.0
 
 ### Minor Changes

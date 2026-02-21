@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-gitlab-org
 
+## 0.2.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.8.1-next.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-catalog-node@2.0.1-next.0
+  - @backstage/plugin-events-node@0.4.19
+
 ## 0.2.18
 
 ### Patch Changes

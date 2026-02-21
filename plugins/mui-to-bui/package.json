@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-mui-to-bui",
-  "version": "0.2.4",
+  "version": "0.2.5-next.0",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "mui-to-bui",

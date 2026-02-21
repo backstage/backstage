@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-react",
-  "version": "2.0.0",
+  "version": "2.0.1-next.0",
   "description": "A frontend library that helps other Backstage plugins interact with the catalog",
   "backstage": {
     "role": "web-library",

@@ -1,5 +1,20 @@
 # @backstage/plugin-api-docs
 
+## 0.13.5-next.0
+
+### Patch Changes
+
+- 9c9d425: Fixed invisible text in parameter input fields when using dark mode in OpenAPI definition pages
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/plugin-catalog@1.33.1-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
 ## 0.13.4
 
 ### Patch Changes
