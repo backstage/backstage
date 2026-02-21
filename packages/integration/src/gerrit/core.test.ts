@@ -311,6 +311,45 @@ describe('gerrit core', () => {
         'https://gerrit.com/a/projects/web%2Fproject/branches/master',
       );
     });
+    it('throws when ref type is not a branch (tag).', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+      };
+      expect(() =>
+        getGerritBranchApiUrl(
+          config,
+          'https://gerrit.com/web/project/+/refs/tags/v1.0.0/README.md',
+        ),
+      ).toThrow('Unsupported gitiles ref type: tag');
+    });
+    it('throws when ref type is not a branch (sha).', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+      };
+      expect(() =>
+        getGerritBranchApiUrl(
+          config,
+          'https://gerrit.com/web/project/+/157f862803d45b9d269f0e390f88aece1ded51e8/README.md',
+        ),
+      ).toThrow('Unsupported gitiles ref type: sha');
+    });
+    it('throws when ref type is not a branch (head).', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+      };
+      expect(() =>
+        getGerritBranchApiUrl(
+          config,
+          'https://gerrit.com/web/project/+/HEAD/README.md',
+        ),
+      ).toThrow('Unsupported gitiles ref type: head');
+    });
   });
 
   describe('getGerritCloneRepoUrl', () => {

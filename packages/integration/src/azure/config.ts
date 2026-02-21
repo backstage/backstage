@@ -359,14 +359,14 @@ export function readAzureIntegrationConfigs(
 }
 
 /**
- * These config sections have been removed but to insure they
+ * These config sections have been removed but to ensure they
  * don't leak sensitive tokens we have this check in place
  * to throw an error if found
  *
  * @internal
  * @deprecated To be removed at a later date
  */
-export function deprecatedConfigCheck(config: Config) {
+function deprecatedConfigCheck(config: Config) {
   if (config.getOptional('credential') || config.getOptional('token')) {
     throw new Error(
       `Invalid Azure integration config, 'credential' and 'token' have been removed. Use 'credentials' instead.`,
