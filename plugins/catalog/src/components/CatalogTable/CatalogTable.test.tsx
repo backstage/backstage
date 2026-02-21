@@ -33,6 +33,17 @@ import { act, fireEvent, screen } from '@testing-library/react';
 import { CatalogTable } from './CatalogTable';
 import { CatalogTableColumnsFunc } from './types';
 
+// Mock the count hooks
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  ...jest.requireActual('@backstage/plugin-catalog-react'),
+  useStarredEntitiesCount: jest.fn(),
+  useOwnedEntitiesCount: jest.fn(),
+  useAllEntitiesCount: jest.fn(),
+}));
+
+const { useStarredEntitiesCount, useOwnedEntitiesCount, useAllEntitiesCount } =
+  jest.requireMock('@backstage/plugin-catalog-react');
+
 const entities: Entity[] = [
   {
     apiVersion: 'backstage.io/v1alpha1',
@@ -59,6 +70,14 @@ describe('CatalogTable component', () => {
 
   beforeEach(() => {
     window.open = jest.fn();
+
+    // Set default return values for count hooks
+    useStarredEntitiesCount.mockReturnValue({ count: 0, loading: false });
+    useOwnedEntitiesCount.mockReturnValue({ count: 0, loading: false });
+    useAllEntitiesCount.mockReturnValue({
+      count: entities.length,
+      loading: false,
+    });
   });
 
   afterEach(() => {
@@ -97,6 +116,9 @@ describe('CatalogTable component', () => {
   });
 
   it('should display entity names when loading has finished and no error occurred', async () => {
+    // Mock the owned count hook to return 3
+    useOwnedEntitiesCount.mockReturnValue({ count: 3, loading: false });
+
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
@@ -447,5 +469,50 @@ describe('CatalogTable component', () => {
 
     const labelCellValue = screen.getByText('generic');
     expect(labelCellValue).toBeInTheDocument();
+  });
+
+  it('should display count based on filtered entities length, not totalItems', async () => {
+    // This test verifies that when totalItems differs from entities.length
+    // (e.g., due to client-side filtering like starred entities),
+    // the count in the title reflects the actual filtered count
+    const filteredEntities = [entities[0]]; // Only 1 entity visible after filtering
+
+    // Mock the starred count hook to return 1
+    useStarredEntitiesCount.mockReturnValue({ count: 1, loading: false });
+
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            entities: filteredEntities,
+            totalItems: 3, // Backend reports 3 total, but only 1 is shown after filtering
+            filters: {
+              user: new UserListFilter(
+                'starred',
+                () => false,
+                () => false,
+              ),
+              kind: {
+                value: 'component',
+                label: 'Component',
+                getCatalogFilters: () => ({ kind: 'component' }),
+                toQueryValue: () => 'component',
+              },
+            },
+          }}
+        >
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // Should show (1) based on filtered entities, not (3) from totalItems
+    expect(screen.getByText(/Starred Components \(1\)/)).toBeInTheDocument();
+    expect(screen.queryByText(/\(3\)/)).not.toBeInTheDocument();
   });
 });
