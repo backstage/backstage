@@ -1,0 +1,224 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Toast Container - Container for all toasts (bottom center) */
+.container {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100050;
+  width: 300px;
+  outline: none;
+}
+
+@media (min-width: 500px) {
+  .container {
+    width: 350px;
+    bottom: 2rem;
+  }
+}
+
+/* Individual Toast */
+.toast {
+  /* CSS Variables */
+  --toast-peek: 0.75rem;
+  --toast-scale: calc(max(0, 1 - (var(--toast-index) * 0.05)));
+
+  /* Layout */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  padding: var(--bui-space-4);
+  gap: var(--bui-space-3);
+
+  /* Appearance */
+  border-radius: var(--bui-radius-3);
+  background-color: var(--bui-bg-surface-1);
+  font-family: var(--bui-font-regular);
+  font-size: var(--bui-font-size-3);
+  outline: none;
+  cursor: default;
+  user-select: none;
+  /* All toasts need pointer-events to trigger hover expansion */
+  pointer-events: auto;
+
+  /* Stacking */
+  z-index: calc(1000 - var(--toast-index));
+  transform-origin: bottom center;
+
+  /* Shadow */
+  box-shadow: 0 4px 12px -2px rgba(0 0 0 / 0.4);
+}
+
+.toast:focus-visible {
+  outline: 2px solid var(--bui-border-focus);
+  outline-offset: 2px;
+}
+
+/* Extend hover area above each toast to fill gaps when expanded */
+/* This prevents the stack from collapsing when hovering between toasts */
+.toast::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  /* Height matches the expanded gap to ensure continuous hover */
+  height: 12px;
+  pointer-events: auto;
+}
+
+/* Status variants - color icon and title */
+.toast[data-status='neutral'] .title {
+  color: var(--bui-fg-primary);
+}
+
+.toast[data-status='info'] .icon,
+.toast[data-status='info'] .title {
+  color: var(--bui-fg-info);
+}
+
+.toast[data-status='success'] .icon,
+.toast[data-status='success'] .title {
+  color: var(--bui-fg-success);
+}
+
+.toast[data-status='warning'] .icon,
+.toast[data-status='warning'] .title {
+  color: var(--bui-fg-warning);
+}
+
+.toast[data-status='danger'] .icon,
+.toast[data-status='danger'] .title {
+  color: var(--bui-fg-danger);
+}
+
+.wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--bui-space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bui-space-1);
+}
+
+/* Icon */
+.icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--bui-space-0_5);
+}
+
+.icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Title */
+.title {
+  font-weight: var(--bui-font-weight-bold);
+  font-size: var(--bui-font-size-3);
+  word-wrap: break-word;
+  margin-top: var(--bui-space-0_5);
+}
+
+/* Description */
+.description {
+  color: var(--bui-fg-secondary);
+  font-size: var(--bui-font-size-3);
+  opacity: 0.9;
+  word-wrap: break-word;
+}
+
+/* Links */
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bui-space-3);
+  margin-top: var(--bui-space-1);
+}
+
+.links a {
+  font-family: var(--bui-font-regular);
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: inline-block;
+
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: min(2px, max(1px, 0.05em));
+  text-underline-offset: calc(0.025em + 2px);
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+}
+
+.links a:hover {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: min(2px, max(1px, 0.05em));
+  text-underline-offset: calc(0.025em + 2px);
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+}
+
+/* Close Button */
+.closeButton {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.25rem -0.25rem 0 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--bui-radius-2);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  color: var(--bui-fg-primary);
+}
+
+.closeButton svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.closeButton:hover {
+  background-color: var(--bui-bg-neutral-on-surface-1-hover);
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid var(--bui-border-focus);
+  outline-offset: 1px;
+}
+
+.closeButton:active {
+  background-color: var(--bui-bg-neutral-on-surface-1-pressed);
+}
