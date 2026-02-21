@@ -8,38 +8,53 @@ Audience: Developers
 
 :::note Note
 Entity files are stored in YAML format, if you are not familiar with YAML, you can learn more about it [here](https://yaml.org).
+
+[Descriptor Format of Catalog Entities](../features/software-catalog/descriptor-format.md) provides additional information on the format of the YAML entity files.
 :::
 
-## Summary
+## Overview
 
 This guide will walk you through how to pull Backstage data from other locations manually. There are integrations that will automatically do this for you.
 
+When registering a component, you can:
+
+- Link to an existing entity file: The file is analyzed to determine which entities are defined, and the entities are added to the Scaffolded Backstage App Catalog. For example, `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`.
+
+- Link to a repository: All `catalog-info.yaml` files are discovered in the repository and their defined entities are added to the Scaffolded Backstage App Catalog. For example, `https://github.com/backstage/backstage`.
+
+  :::note Note
+  If no entities are found, a Pull Request is created that adds an example `catalog-info.yaml` file to the repository. When the Pull Request is merged, the Scaffolded Backstage App Catalog loads all of the defined entities.
+
+  :::
+
 ## Prerequisites
 
-You should have already [have a standalone app](./index.md).
+- You should have already [installed a standalone app](./index.md).
 
-## 1. Finding our template
+## Registering a component
 
-Register a new component, by going to `create` and choose `Register existing component`
+To manually register a component in the Software Catalog:
 
-  <!-- todo: Needs zoomable plugin -->
+1. Select `Create`.
+2. Select `REGISTER EXISTING COMPONENT`.
 
-![Software template main screen, with a blue button to add an existing component](../assets/getting-started/b-existing-1.png)
+   ![Select Register existing component.](../assets/uiguide/select-register-existing-component.png)
 
-## 2. Filling out the template
+3. Fill out the template.
 
-For repository URL, use `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`. This is used in our [demo site](https://demo.backstage.io) catalog.
+   The standalone Backstage application includes one template. For this example, enter the repository URL to the entity file, `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`. This is used in the Backstage [demo site](https://demo.backstage.io) catalog.
 
-![Register a new component wizard, asking for an URL to the existing component YAML file](../assets/getting-started/b-existing-2.png)
+   ![enter url of component entity file.](../assets/uiguide/enter-url-of-component.png)
 
-Hit `Analyze` and review the changes.
+4. Select `ANALYZE`.
+5. If the changes from `ANALYZE` are correct, select `IMPORT`.
 
-## 3. Import the entity
+    ![review and select import.](../assets/uiguide/review-select-import.png)
 
-If the changes from `Analyze` are correct, click `Apply`.
+   If your entity was successfully imported, the details will be displayed.
 
-![Register a new component wizard, showing the metadata for the component YAML we use in this tutorial](../assets/getting-started/b-existing-3.png)
+    ![details of registered component.](../assets/uiguide/details-for-registered-backstage-website.png)
 
-You should receive a message that your entities have been added.
+6. Select `Home` to view your new entity in the Software Catalog.
 
-If you go back to `Home`, you should be able to find `backstage`. You can click it and see the details for this new entity.
+    ![Backstage website component in software catalog.](../assets/uiguide/backstage-website-registered-catalog-view.png)

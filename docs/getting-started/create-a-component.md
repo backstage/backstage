@@ -6,38 +6,88 @@ description: Leverage the scaffolder to start creating components with best prac
 
 Audience: Developers
 
-## Summary
+## Overview
 
-This guide will walk you through how to use Software Templates to create new components with baked in best practices.
+Components can be created in the Software Catalog using software templates. Templates load skeletons of code, which can include some variables, and incorporate your company's best practices. The templates are published to a location, such as GitHub or GitLab.
+
+The standalone Backstage application includes the `Example Node.js Template`, which is an example template for the scaffolder that creates and registers a simple Node.js service. You can also [create your own templates](../features/software-templates/adding-templates.md).
 
 ## Prerequisites
 
-:::note
+For this example, the default Node.js template will be used. The template creates a repository in GitHub and adds the necessary files to it so that the component is integrated into the Software Catalog. Because you are creating a repository, you must first create an integration between Backstage and GitHub.
 
-If you're running Backstage with Node 20 or later, you'll need to pass the flag `--no-node-snapshot` to Node in order to use the templates feature. One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage: `export NODE_OPTIONS=--no-node-snapshot`
+- You should have already [installed a standalone app](./index.md).
 
-:::
+- Register the [GitHub Scaffolder Action module](../features/software-templates/builtin-actions.md#installing-action-modules).
 
-You should already have [a standalone app](./index.md).
+- [Set up a GitHub Integration](../getting-started/config/authentication.md#setting-up-a-github-integration) with Backstage, using a GitHub Personal Access Token.
 
-You will also need to register the [GitHub Scaffolder Action module](../features/software-templates/builtin-actions.md#installing-action-modules) before moving forward.
+## Creating the component
 
-## Creating your component
+To create the component:
 
-- Go to `create` and choose to create a website with the `Example Node.js Template`
-- Type in a name, let's use `tutorial` and click `Next Step`
+1. Select `Create`.
 
-![Software template deployment input screen asking for a name](../assets/getting-started/b-scaffold-1.png)
+   ![select create for new component](../assets/uiguide/select-create-for-new-component.png)
 
-- You should see the following screen:
+2. Select `Service` in the `CATEGORIES` dropdown list.
+3. Select the `Owner`. For this example, you can select `guest`.
+4. Select `Choose` in the `Example Node.js Template`.
 
-![Software template deployment input screen asking for the GitHub username, and name of the new repo to create](../assets/getting-started/b-scaffold-2.png)
+   ![setup-nodejs-categories-owners](../assets/uiguide/setup-nodejs-cat-owner.png)
 
-- For host, it should default to github.com
-- As owner, type your GitHub username
-- For the repository name, type `tutorial`. Go to the next step
+5. For this example, enter `tutorial` for the `Name` of the service and select `NEXT`.
 
-- Review the details of this new service, and press `Create` if you want to
-  deploy it like this.
-- You can follow along with the progress, and as soon as every step is
-  finished, you can take a look at your new service
+   ![enter name of new component](../assets/uiguide/enter-name-of-new-component.png)
+
+6. Enter your GitHub user name as the `Owner`.
+7. Enter `tutorial` for the `Repository` and select `REVIEW`.
+   
+   ![select review create component](../assets/uiguide/select-review-create-component.png)
+9. Review the information and select `CREATE`.
+
+   ![select create to make component](../assets/uiguide/select-create-to-make-component.png)
+
+If you see an error message, similar to the following,
+
+    ![error creating new component](../assets/uiguide/error-creating-new-component.png)
+
+Perform the following steps:
+
+1. Close the Backstage app.
+2. Enter `CTRL-C` in the terminal window to stop the Backstage frontend and backend.
+3. In the terminal window, enter:
+
+   ```
+   export NODE_OPTIONS=--no-node-snapshot
+   ```
+
+4. Enter `yarn start` to restart the Backstage application.
+5. Repeat steps to create the component.
+
+Otherwise, you can follow along with the progress, and as soon as every step is finished, you can take a look at your new service in either the repository or the Catalog.
+
+![run of example of create component](../assets/uiguide/successful-create-new-component.png)
+
+Selecting `REPOSITORY` displays the `catalog-info.yaml`file and other project setup files that were created for the new component in the main branch of the `tutorial` repository. 
+
+The `catalog-info.yaml` file describes the entity for the Software Catalog. [Descriptor Format of Catalog Entities](../features/software-catalog/descriptor-format.md) provides additional information.
+
+  ```
+   apiVersion: backstage.io/v1alpha1
+   kind: Component
+   metadata:
+     name: "tutorial"
+   spec:
+     type: service
+     owner: user:guest
+     lifecycle: experimental
+  ```
+
+Selecting `OPEN IN CATALOG` displays details of the new component, such as its relationships, links, and subcomponents.
+
+![select open in catalog](../assets/uiguide/tutorial-component-open-in-catalog.png)
+
+Selecting `Home` in the sidebar, displays the new `tutorial` component in the Catalog.
+
+![new tutorial component in software catalog](../assets/uiguide/new-tutorial-component-in-software-catalog.png)
