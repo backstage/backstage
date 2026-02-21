@@ -543,6 +543,32 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     }
   }
 
+  /**
+   * Check if a step's `if` condition uses status check functions (always() or failure())
+   * that should cause the step to be attempted even when a previous step has failed.
+   */
+  private hasStatusCheckFunction(step: TaskStep): boolean {
+    if (typeof step.if !== 'string') return false;
+    return /\b(?:always|failure)\s*\(\s*\)/.test(step.if);
+  }
+
+  /**
+   * Preprocess bare status check functions in the step's `if` condition.
+   * Converts bare `always()` and `failure()` strings to their
+   * boolean values. Template expressions like `${{ always() }}` are handled
+   * separately via template globals.
+   */
+  private preprocessStepCondition(
+    step: TaskStep,
+    taskState: { failed: boolean },
+  ): TaskStep {
+    if (typeof step.if !== 'string') return step;
+    const trimmed = step.if.trim();
+    if (trimmed === 'always()') return { ...step, if: true };
+    if (trimmed === 'failure()') return { ...step, if: taskState.failed };
+    return step;
+  }
+
   async execute(task: TaskContext): Promise<WorkflowResponse> {
     if (!isValidTaskSpec(task.spec)) {
       throw new InputError(
@@ -558,12 +584,19 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
     this.environment = await this.getEnvironmentConfig();
 
+    // Track whether any step has failed, used by status check functions
+    const taskState = { failed: false };
+
     const renderTemplate = await SecureTemplater.loadRenderer({
       templateFilters: {
         ...this.defaultTemplateFilters,
         ...additionalTemplateFilters,
       },
-      templateGlobals: additionalTemplateGlobals,
+      templateGlobals: {
+        ...additionalTemplateGlobals,
+        always: () => true,
+        failure: () => taskState.failed,
+      },
     });
 
     try {
@@ -595,16 +628,64 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )
           : [{ result: AuthorizeResult.ALLOW }];
 
+      let firstError: Error | undefined;
+      const allErrors: Array<{ step: TaskStep; error: Error }> = [];
+
       for (const step of task.spec.steps) {
-        await this.executeStep(
-          task,
-          step,
-          context,
-          renderTemplate,
-          taskTrack,
-          workspacePath,
-          decision,
-        );
+        // If a previous step failed, skip steps that don't use status check functions
+        if (taskState.failed && !this.hasStatusCheckFunction(step)) {
+          await task.emitLog(
+            `Skipping step ${step.id} because a previous step failed`,
+            { stepId: step.id, status: 'skipped' },
+          );
+          continue;
+        }
+
+        try {
+          // Preprocess bare status functions (e.g. `if: always()`) into booleans
+          const processedStep = this.preprocessStepCondition(step, taskState);
+          await this.executeStep(
+            task,
+            processedStep,
+            context,
+            renderTemplate,
+            taskTrack,
+            workspacePath,
+            decision,
+          );
+        } catch (err) {
+          const error = err as Error;
+          allErrors.push({ step, error });
+
+          if (!firstError) {
+            firstError = error;
+          } else {
+            // Log subsequent errors to preserve debugging information
+            this.options.logger.error(
+              `Additional error in step ${step.id} (${step.name}): ${error.message}`,
+              error,
+            );
+            await task.emitLog(
+              `Additional error occurred: ${error.message}\n${error.stack}`,
+              { stepId: step.id, status: 'failed' },
+            );
+          }
+          taskState.failed = true;
+        }
+      }
+
+      if (firstError) {
+        // If there were multiple errors, add context to the first error
+        if (allErrors.length > 1) {
+          const additionalErrorSummary = allErrors
+            .slice(1)
+            .map(({ step }) => `${step.id} (${step.name})`)
+            .join(', ');
+          this.options.logger.warn(
+            `Task failed with ${allErrors.length} errors. First error from step ${allErrors[0].step.id}. Additional failures in: ${additionalErrorSummary}`,
+          );
+        }
+        throw firstError;
       }
 
       const output = this.render(task.spec.output, context, renderTemplate);
