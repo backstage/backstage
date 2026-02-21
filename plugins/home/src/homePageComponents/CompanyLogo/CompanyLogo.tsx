@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import Typography from '@material-ui/core/Typography';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useAppTitle } from '@backstage/core-components';
 import { ReactNode } from 'react';
 
 type CompanyLogoProps = {
@@ -29,15 +29,11 @@ type CompanyLogoProps = {
  */
 export const CompanyLogo = (props: CompanyLogoProps) => {
   const { logo, className } = props;
-  const configApi = useApi(configApiRef);
+  const appTitle = useAppTitle();
 
   return (
     <div className={className}>
-      {logo ? (
-        <>{logo}</>
-      ) : (
-        <Typography variant="h1">{configApi.getString('app.title')}</Typography>
-      )}
+      {logo ? <>{logo}</> : <Typography variant="h1">{appTitle}</Typography>}
     </div>
   );
 };

@@ -27,6 +27,14 @@ export interface Config {
 
     /**
      * The title of the app, as shown in the Backstage web interface.
+     *
+     * Translation priority:
+     * 1. Translated value for 'app.title' (if translation override exists)
+     * 2. This config value (used when no translation override is provided)
+     * 3. Default value 'Backstage' (if neither translation nor config is set)
+     *
+     * Translations can be provided via the i18n system using the fixed key 'app.title'.
+     *
      * @visibility frontend
      */
     title?: string;

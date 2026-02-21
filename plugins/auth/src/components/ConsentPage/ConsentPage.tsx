@@ -37,9 +37,9 @@ import {
   Page,
   Progress,
   ResponseErrorPanel,
+  useAppTitle,
 } from '@backstage/core-components';
 import { useConsentSession } from './useConsentSession';
-import { configApiRef, useApi } from '@backstage/frontend-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   authCard: {
@@ -101,8 +101,7 @@ export const ConsentPage = () => {
   const classes = useStyles();
   const { sessionId } = useParams<{ sessionId: string }>();
   const { state, handleAction } = useConsentSession({ sessionId });
-  const configApi = useApi(configApiRef);
-  const appTitle = configApi.getOptionalString('app.title') ?? 'Backstage';
+  const appTitle = useAppTitle();
 
   if (!sessionId) {
     return (

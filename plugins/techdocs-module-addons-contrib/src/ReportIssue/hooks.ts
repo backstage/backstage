@@ -16,7 +16,8 @@
 
 import parseGitUrl from 'git-url-parse';
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
+import { useAppTitle } from '@backstage/core-components';
 import {
   replaceGithubUrlType,
   replaceGitLabUrlType,
@@ -77,8 +78,7 @@ export const useGitTemplate = (debounceTime?: number) => {
   const [editLink] = useShadowRootElements([PAGE_EDIT_LINK_SELECTOR]);
   const url = (editLink as HTMLAnchorElement)?.href ?? '';
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
-  const configApi = useApi(configApiRef);
-  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
+  const appTitle = useAppTitle();
   if (!selection || !url) return initialTemplate;
 
   const type = scmIntegrationsApi.byUrl(url)?.type;
