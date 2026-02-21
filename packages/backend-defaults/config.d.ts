@@ -634,6 +634,10 @@ export interface Config {
           }
         | {
             /**
+             * The rest config for default, regular connections
+             */
+            type?: 'default';
+            /**
              * Password that belongs to the client User
              * @visibility secret
              */
