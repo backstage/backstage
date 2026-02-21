@@ -96,10 +96,7 @@ export const DefaultTemplateOutputs = (props: {
             titleTypographyProps={{ component: 'h2' }}
           >
             <Box padding={2} height="100%">
-              <MarkdownContent
-                content={textOutput.content ?? ''}
-                linkTarget="_blank"
-              />
+              <MarkdownContent content={textOutput.content ?? ''} />
             </Box>
           </InfoCard>
         </Box>
