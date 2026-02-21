@@ -1,0 +1,10 @@
+---
+title: Scaffolder Backend Module Kubernetes
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Scaffolder
+description: Scaffolder backend module providing actions for interacting with Kubernetes clusters, such as creating namespaces, from Backstage templates.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-kubernetes/plugins/kubernetes-actions/README.md
+npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-kubernetes'
+addedDate: '2026-02-21'
+status: active

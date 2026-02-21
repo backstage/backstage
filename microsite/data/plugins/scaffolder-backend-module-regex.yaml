@@ -1,0 +1,10 @@
+---
+title: Scaffolder Backend Module Regex
+author: Red Hat
+authorUrl: https://redhat.com
+category: Scaffolder
+description: Scaffolder backend module providing RegExp string replacement actions for use in Backstage templates.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-regex/plugins/regex-actions/README.md
+npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-regex'
+addedDate: '2026-02-21'
+status: active

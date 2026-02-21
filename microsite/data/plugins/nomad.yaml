@@ -1,0 +1,10 @@
+---
+title: HashiCorp Nomad
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Infrastructure
+description: Displays HashiCorp Nomad job versions and task group allocations for catalog entities.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/nomad/plugins/nomad/README.md
+npmPackageName: '@backstage-community/plugin-nomad'
+addedDate: '2026-02-21'
+status: active

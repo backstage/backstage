@@ -1,0 +1,10 @@
+---
+title: Bitbucket Pull Requests
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Source Control Mgmt
+description: Lists and filters pull requests from Bitbucket Data Center repositories within Backstage entity pages.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/bitbucket-pull-requests/plugins/bitbucket-pull-requests/README.md
+npmPackageName: '@backstage-community/plugin-bitbucket-pull-requests'
+addedDate: '2026-02-21'
+status: active
