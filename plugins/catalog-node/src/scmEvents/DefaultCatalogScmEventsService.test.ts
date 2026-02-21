@@ -15,11 +15,21 @@
  */
 
 import { createDeferred } from '@backstage/types';
+import { MetricsAPI } from '@opentelemetry/api';
 import { DefaultCatalogScmEventsService } from './DefaultCatalogScmEventsService';
 
 describe('DefaultCatalogScmEventsService', () => {
+  const counterAdd = jest.fn();
+  const mockMetrics = {
+    getMeter: () => ({
+      createCounter: () => ({
+        add: counterAdd,
+      }),
+    }),
+  } as unknown as MetricsAPI;
+
   it('should publish and subscribe to events', async () => {
-    const service = new DefaultCatalogScmEventsService();
+    const service = new DefaultCatalogScmEventsService(mockMetrics);
 
     const subscriber1 = {
       onEvents: jest.fn(),
@@ -53,7 +63,7 @@ describe('DefaultCatalogScmEventsService', () => {
   });
 
   it('waits for all subscribers to acknowledge the events', async () => {
-    const service = new DefaultCatalogScmEventsService();
+    const service = new DefaultCatalogScmEventsService(mockMetrics);
 
     const work1 = createDeferred<void>();
     const work2 = createDeferred<void>();
@@ -101,5 +111,13 @@ describe('DefaultCatalogScmEventsService', () => {
     await new Promise(resolve => setTimeout(resolve, 0));
 
     expect(completed).toBe(true);
+  });
+
+  it('marks event actions taken', () => {
+    const service = new DefaultCatalogScmEventsService(mockMetrics);
+
+    service.markEventActionTaken({ action: 'refresh' });
+
+    expect(counterAdd).toHaveBeenCalledWith(1, { action: 'refresh' });
   });
 });

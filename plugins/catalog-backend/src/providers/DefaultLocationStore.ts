@@ -305,16 +305,40 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     }
 
     if (exactLocationsToDelete.size > 0) {
-      await this.#deleteLocationsByExactUrl(exactLocationsToDelete);
+      const count = await this.#deleteLocationsByExactUrl(
+        exactLocationsToDelete,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'delete',
+      });
     }
     if (locationPrefixesToDelete.size > 0) {
-      await this.#deleteLocationsByUrlPrefix(locationPrefixesToDelete);
+      const count = await this.#deleteLocationsByUrlPrefix(
+        locationPrefixesToDelete,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'delete',
+      });
     }
     if (exactLocationsToCreate.size > 0) {
-      await this.#createLocationsByExactUrl(exactLocationsToCreate);
+      const count = await this.#createLocationsByExactUrl(
+        exactLocationsToCreate,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'create',
+      });
     }
     if (locationPrefixesToMove.size > 0) {
-      await this.#moveLocationsByUrlPrefix(locationPrefixesToMove);
+      const count = await this.#moveLocationsByUrlPrefix(
+        locationPrefixesToMove,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'move',
+      });
     }
   }
 

@@ -1429,6 +1429,7 @@ describe('POST /locations/by-query works end to end', () => {
     const mockScmEvents = {
       subscribe: jest.fn(),
       publish: jest.fn(),
+      markEventActionTaken: jest.fn(),
     };
 
     const store = new DefaultLocationStore(knex, mockScmEvents, {

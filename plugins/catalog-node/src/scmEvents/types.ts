@@ -55,6 +55,22 @@ export interface CatalogScmEventsService {
    * guarantees.
    */
   publish(events: CatalogScmEvent[]): Promise<void>;
+
+  /**
+   * As a consumer of SCM events, mark that you have taken an action as a result
+   * of an SCM event. This
+   */
+  markEventActionTaken(options: {
+    /**
+     * The number of actions taken of the given type. Defaults to 1.
+     */
+    count?: number;
+    /**
+     * The type of action taken - typically "refresh", "delete",
+     * "create", or "move".
+     */
+    action: string;
+  }): void;
 }
 
 /**
