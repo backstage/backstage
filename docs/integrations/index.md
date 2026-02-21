@@ -26,3 +26,9 @@ integrations:
 
 See documentation for each type of integration for full details on
 configuration.
+
+## Backstage OpenAPI Module
+
+If you want to integrate the OpenAPI specifications from your Backstage instance itself into the catalog, you can use the `catalog-backend-module-backstage-openapi`. This module helps discover and ingest OpenAPI definitions from Backstage plugins.
+
+For more details, see the [module documentation](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-backstage-openapi).
