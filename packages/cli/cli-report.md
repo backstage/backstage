@@ -66,31 +66,28 @@ Options:
 ### `backstage-cli config schema`
 
 ```
-Usage: <none>
+Usage: program [options]
 
 Options:
-  --format
-  --help
+  --format <type>
   --merge
-  --no-merge
-  --package
-  --version
+  --package <name>
+  -h, --help
 ```
 
 ### `backstage-cli config:check`
 
 ```
-Usage: <none>
+Usage: program [options]
 
 Options:
-  --config
+  --config <path>
   --deprecated
   --frontend
-  --help
   --lax
-  --package
+  --package <name>
   --strict
-  --version
+  -h, --help
 ```
 
 ### `backstage-cli config:docs`
@@ -106,31 +103,28 @@ Options:
 ### `backstage-cli config:print`
 
 ```
-Usage: <none>
+Usage: program [options]
 
 Options:
-  --config
-  --format
+  --config <path>
+  --format <type>
   --frontend
-  --help
   --lax
-  --package
-  --version
+  --package <name>
   --with-secrets
+  -h, --help
 ```
 
 ### `backstage-cli config:schema`
 
 ```
-Usage: <none>
+Usage: program [options]
 
 Options:
-  --format
-  --help
+  --format <type>
   --merge
-  --no-merge
-  --package
-  --version
+  --package <name>
+  -h, --help
 ```
 
 ### `backstage-cli create-github-app`
@@ -145,13 +139,12 @@ Options:
 ### `backstage-cli info`
 
 ```
-Usage: <none>
+Usage: program [options]
 
 Options:
-  --format
-  --help
-  --include
-  --version
+  --format <type>
+  --include <pattern>
+  -h, --help
 ```
 
 ### `backstage-cli migrate`
