@@ -53,6 +53,7 @@ import {
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { createDebugLogAction } from '../scaffolder/actions/builtin';
+import { DefaultTemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   extractFilterMetadata,
@@ -174,7 +175,7 @@ const createTestRouter = async (
       | Record<string, TemplateGlobal>
       | CreatedTemplateGlobal[];
     autocompleteHandlers?: Record<string, AutocompleteHandler>;
-    actionsRegistry?: ActionsService;
+    actionService?: ActionsService;
   } = {},
 ) => {
   const logger = mockServices.logger.mock({
@@ -216,6 +217,17 @@ const createTestRouter = async (
     throw new Error(`no mock found for kind: ${kind}`);
   });
 
+  let templateActionRegistry = new DefaultTemplateActionRegistry(
+    actionsRegistryServiceMock(),
+    logger,
+  );
+  if (overrides.actionService) {
+    templateActionRegistry = new DefaultTemplateActionRegistry(
+      overrides.actionService,
+      logger,
+    );
+  }
+
   const router = await createRouter({
     logger,
     config: new ConfigReader({}),
@@ -243,7 +255,7 @@ const createTestRouter = async (
       }),
       createDebugLogAction(),
     ],
-    actionsRegistry: overrides.actionsRegistry ?? actionsRegistryServiceMock(),
+    templateActionRegistry: templateActionRegistry,
   });
 
   router.use(mockErrorHandler());
@@ -275,8 +287,9 @@ describe('scaffolder router', () => {
     });
 
     it('should include actions from the remote actions registry', async () => {
-      const mockActionsRegistry = actionsRegistryServiceMock();
-      mockActionsRegistry.register({
+      const mockActionsService = actionsRegistryServiceMock();
+
+      mockActionsService.register({
         name: 'my-demo-action',
         title: 'Test',
         description: 'Test',
@@ -287,7 +300,7 @@ describe('scaffolder router', () => {
         action: async () => ({ output: { name: 'test' } }),
       });
       const { router } = await createTestRouter({
-        actionsRegistry: mockActionsRegistry,
+        actionService: mockActionsService,
       });
       const response = await request(router).get('/v2/actions').send();
 
