@@ -30,6 +30,8 @@ import {
   useTechDocsAddons,
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { techdocsTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -52,6 +54,7 @@ export const TechDocsReaderPageSubheader = (props: {
   toolbarProps?: ToolbarProps;
 }) => {
   const classes = useStyles();
+  const { t } = useTranslationRef(techdocsTranslationRef);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
@@ -90,7 +93,7 @@ export const TechDocsReaderPageSubheader = (props: {
         {subheaderAddons}
         {settingsAddons ? (
           <>
-            <Tooltip title="Settings">
+            <Tooltip title={t('reader.settings')}>
               <IconButton
                 aria-controls="tech-docs-reader-page-settings"
                 aria-haspopup="true"

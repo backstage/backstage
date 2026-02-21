@@ -17,6 +17,7 @@
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { rootDocsRouteRef } from '../../../routes';
 import {
@@ -27,9 +28,10 @@ import {
   TableOptions,
   TableProps,
 } from '@backstage/core-components';
+import { techdocsTranslationRef } from '../../../translation';
 import { actionFactories } from './actions';
 import { columnFactories, defaultColumns } from './columns';
-import { DocsTableRow } from './types';
+import { DocsTableRow, ColumnFactories, ActionFactories } from './types';
 import { entitiesToDocsMapper } from './helpers';
 
 /**
@@ -47,15 +49,25 @@ export type DocsTableProps = {
 };
 
 /**
+ * @public
+ */
+export interface DocsTableType {
+  (props: DocsTableProps): JSX.Element | null;
+  columns: ColumnFactories;
+  actions: ActionFactories;
+}
+
+/**
  * Component which renders a table documents
  *
  * @public
  */
-export const DocsTable = (props: DocsTableProps) => {
+const DocsTableComponent = (props: DocsTableProps): JSX.Element | null => {
   const { entities, title, loading, columns, actions, options } = props;
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const { t } = useTranslationRef(techdocsTranslationRef);
   if (!entities) return null;
 
   const documents = entitiesToDocsMapper(
@@ -65,7 +77,7 @@ export const DocsTable = (props: DocsTableProps) => {
   );
 
   const defaultActions: TableProps<DocsTableRow>['actions'] = [
-    actionFactories.createCopyDocsUrlAction(copyToClipboard),
+    actionFactories.createCopyDocsUrlAction(copyToClipboard, t),
   ];
 
   const pageSize = 20;
@@ -89,21 +101,35 @@ export const DocsTable = (props: DocsTableProps) => {
           title={
             title
               ? `${title} (${documents.length})`
-              : `All (${documents.length})`
+              : `${t('table.title.all')} (${documents.length})`
           }
+          localization={{
+            header: {
+              actions: t('table.header.actions'),
+            },
+            toolbar: {
+              searchPlaceholder: t('table.toolbar.searchPlaceholder'),
+            },
+            pagination: {
+              labelRowsSelect: t('table.pagination.labelRowsSelect'),
+            },
+            body: {
+              emptyDataSourceMessage: t('table.body.emptyDataSourceMessage'),
+            },
+          }}
         />
       ) : (
         <EmptyState
           missing="data"
-          title="No documents to show"
-          description="Create your own document. Check out our Getting Started Information"
+          title={t('table.emptyState.title')}
+          description={t('table.emptyState.description')}
           action={
             <LinkButton
               color="primary"
               to="https://backstage.io/docs/features/techdocs/getting-started"
               variant="contained"
             >
-              DOCS
+              {t('table.emptyState.docsButton')}
             </LinkButton>
           }
         />
@@ -111,6 +137,11 @@ export const DocsTable = (props: DocsTableProps) => {
     </>
   );
 };
+
+/**
+ * @public
+ */
+export const DocsTable = DocsTableComponent as DocsTableType;
 
 DocsTable.columns = columnFactories;
 DocsTable.actions = actionFactories;

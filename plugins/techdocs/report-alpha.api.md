@@ -27,6 +27,7 @@ import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-rea
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -513,6 +514,53 @@ export const techDocsSearchResultListItemExtension: OverridableExtensionDefiniti
   name: undefined;
   params: SearchResultListItemBlueprintParams;
 }>;
+
+// @alpha (undocumented)
+export const techdocsTranslationRef: TranslationRef<
+  'techdocs',
+  {
+    readonly 'search.placeholder': 'Search {{entityTitle}} docs';
+    readonly 'search.noResults': 'No results found';
+    readonly 'error.couldNotLoad': 'Could not load available documentation.';
+    readonly 'nav.title': 'Docs';
+    readonly 'table.columns.type': 'Type';
+    readonly 'table.columns.document': 'Document';
+    readonly 'table.columns.kind': 'Kind';
+    readonly 'table.columns.owner': 'Owner';
+    readonly 'table.body.emptyDataSourceMessage': 'No records to display';
+    readonly 'table.header.actions': 'Actions';
+    readonly 'table.title.all': 'All';
+    readonly 'table.toolbar.searchPlaceholder': 'Filter';
+    readonly 'table.actions.addToFavorites': 'Add to favorites';
+    readonly 'table.actions.removeFromFavorites': 'Remove from favorites';
+    readonly 'table.actions.copyDocsUrl': 'Click to copy documentation link to clipboard';
+    readonly 'table.emptyState.title': 'No documents to show';
+    readonly 'table.emptyState.description': 'Create your own document. Check out our Getting Started Information';
+    readonly 'table.emptyState.docsButton': 'DOCS';
+    readonly 'table.pagination.labelRowsSelect': 'rows';
+    readonly 'home.supportButton': 'Discover documentation in your ecosystem.';
+    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
+    readonly 'notFound.title': 'Documentation not found';
+    readonly 'notFound.builderNote': "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not generate docs if they are not found. Make sure the project's docs are generated and published by some external process (e.g. CI/CD pipeline). Or change techdocs.builder to 'local' to generate docs from this Backstage instance.";
+    readonly 'buildLogs.title': 'Build Details';
+    readonly 'buildLogs.closeDrawer': 'Close the drawer';
+    readonly 'buildLogs.showBuildLogs': 'Show Build Logs';
+    readonly 'buildLogs.waitingForLogs': 'Waiting for logs...';
+    readonly 'stateIndicator.initialBuild.message': 'Documentation is accessed for the first time and is being prepared. The subsequent loads are much faster.';
+    readonly 'stateIndicator.contentStaleRefreshing.message': 'A newer version of this documentation is being prepared and will be available shortly.';
+    readonly 'stateIndicator.contentStaleReady.message': 'A newer version of this documentation is now available, please refresh to view.';
+    readonly 'stateIndicator.contentStaleReady.refreshButton': 'Refresh';
+    readonly 'stateIndicator.contentStaleError.message': 'Building a newer version of this documentation failed.';
+    readonly 'redirectNotification.redirectNow': 'Redirect now';
+    readonly 'readerPageHeader.source': 'Source';
+    readonly 'readerPageHeader.lifecycle': 'Lifecycle';
+    readonly 'readerPageHeader.owner': 'Owner';
+    readonly 'pageWrapper.title': 'Documentation';
+    readonly 'pageWrapper.subtitle': 'Documentation available in {{orgName}}';
+    readonly 'entityContent.title': 'TechDocs';
+    readonly 'reader.settings': 'Settings';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

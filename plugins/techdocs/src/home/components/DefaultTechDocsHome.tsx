@@ -27,6 +27,8 @@ import {
   EntityTagPicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { techdocsTranslationRef } from '../../translation';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsPicker } from './TechDocsPicker';
 import { EntityListDocsTable } from './Tables';
@@ -56,6 +58,7 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
     PageWrapper,
     CustomHeader,
   } = props;
+  const { t } = useTranslationRef(techdocsTranslationRef);
   const Wrapper: FC<{
     children: ReactNode;
   }> = PageWrapper ? PageWrapper : TechDocsPageWrapper;
@@ -63,7 +66,7 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
     CustomHeader ||
     (() => (
       <ContentHeader title="">
-        <SupportButton>Discover documentation in your ecosystem.</SupportButton>
+        <SupportButton>{t('home.supportButton')}</SupportButton>
       </ContentHeader>
     ));
   return (

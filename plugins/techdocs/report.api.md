@@ -17,6 +17,7 @@ import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { JSX as JSX_3 } from 'react';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
@@ -36,6 +37,32 @@ import { ThemeOptions } from '@material-ui/core/styles';
 import { ToolbarProps } from '@material-ui/core/Toolbar';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
+// @public
+export interface ActionFactories {
+  // (undocumented)
+  createCopyDocsUrlAction(
+    copyToClipboard: Function,
+    t: Function,
+  ): (row: DocsTableRow) => {
+    icon: () => JSX_3.Element;
+    tooltip: string;
+    onClick: () => void;
+  };
+  // (undocumented)
+  createStarEntityAction(
+    isStarredEntity: Function,
+    toggleStarredEntity: Function,
+    t: Function,
+  ): (row: DocsTableRow) => {
+    cellStyle: {
+      paddingLeft: string;
+    };
+    icon: () => JSX_3.Element;
+    tooltip: string;
+    onClick: () => void;
+  };
+}
+
 // @public (undocumented)
 export type BackstageOverrides = Overrides & {
   [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
@@ -47,6 +74,20 @@ export type BackstageOverrides = Overrides & {
 export type CatalogReactComponentsNameToClassKey = {
   BackstageInfoCardGrid: InfoCardGridClassKey;
 };
+
+// @public
+export interface ColumnFactories {
+  // (undocumented)
+  createKindColumn(): TableColumn<DocsTableRow>;
+  // (undocumented)
+  createNameColumn(): TableColumn<DocsTableRow>;
+  // (undocumented)
+  createOwnerColumn(): TableColumn<DocsTableRow>;
+  // (undocumented)
+  createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow>;
+  // (undocumented)
+  createTypeColumn(): TableColumn<DocsTableRow>;
+}
 
 // @public
 export type ContentStateTypes =
@@ -98,37 +139,8 @@ export type DocsGroupConfig = {
   filterPredicate: ((entity: Entity) => boolean) | string;
 };
 
-// @public
-export const DocsTable: {
-  (props: DocsTableProps): JSX_2.Element | null;
-  columns: {
-    createTitleColumn(options?: {
-      hidden?: boolean;
-    }): TableColumn<DocsTableRow>;
-    createNameColumn(): TableColumn<DocsTableRow>;
-    createOwnerColumn(): TableColumn<DocsTableRow>;
-    createKindColumn(): TableColumn<DocsTableRow>;
-    createTypeColumn(): TableColumn<DocsTableRow>;
-  };
-  actions: {
-    createCopyDocsUrlAction(copyToClipboard: Function): (row: DocsTableRow) => {
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-    createStarEntityAction(
-      isStarredEntity: Function,
-      toggleStarredEntity: Function,
-    ): (row: DocsTableRow) => {
-      cellStyle: {
-        paddingLeft: string;
-      };
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-  };
-};
+// @public (undocumented)
+export const DocsTable: DocsTableType;
 
 // @public
 export type DocsTableProps = {
@@ -150,6 +162,16 @@ export type DocsTableRow = {
   };
 };
 
+// @public (undocumented)
+export interface DocsTableType {
+  // (undocumented)
+  (props: DocsTableProps): JSX.Element | null;
+  // (undocumented)
+  actions: ActionFactories;
+  // (undocumented)
+  columns: ColumnFactories;
+}
+
 // @public
 export const EmbeddedDocsRouter: ({
   children,
@@ -168,37 +190,8 @@ export type EntityListDocsGridPageProps = {
   groups?: DocsGroupConfig[];
 };
 
-// @public
-export const EntityListDocsTable: {
-  (props: EntityListDocsTableProps): JSX_2.Element;
-  columns: {
-    createTitleColumn(options?: {
-      hidden?: boolean;
-    }): TableColumn<DocsTableRow>;
-    createNameColumn(): TableColumn<DocsTableRow>;
-    createOwnerColumn(): TableColumn<DocsTableRow>;
-    createKindColumn(): TableColumn<DocsTableRow>;
-    createTypeColumn(): TableColumn<DocsTableRow>;
-  };
-  actions: {
-    createCopyDocsUrlAction(copyToClipboard: Function): (row: DocsTableRow) => {
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-    createStarEntityAction(
-      isStarredEntity: Function,
-      toggleStarredEntity: Function,
-    ): (row: DocsTableRow) => {
-      cellStyle: {
-        paddingLeft: string;
-      };
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-  };
-};
+// @public (undocumented)
+export const EntityListDocsTable: EntityListDocsTableType;
 
 // @public
 export type EntityListDocsTableProps = {
@@ -206,6 +199,16 @@ export type EntityListDocsTableProps = {
   actions?: TableProps<DocsTableRow>['actions'];
   options?: TableOptions<DocsTableRow>;
 };
+
+// @public (undocumented)
+export interface EntityListDocsTableType {
+  // (undocumented)
+  (props: EntityListDocsTableProps): JSX.Element | null;
+  // (undocumented)
+  actions: ActionFactories;
+  // (undocumented)
+  columns: ColumnFactories;
+}
 
 // @public
 export const EntityTechdocsContent: ({
