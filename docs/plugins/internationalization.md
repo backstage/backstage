@@ -1,12 +1,12 @@
 ---
 id: internationalization
-title: Internationalization (Experimental)
-description: Documentation on adding internationalization to the plugin
+title: Internationalization
+description: Documentation on adding internationalization to plugins and apps
 ---
 
 ## Overview
 
-The Backstage core function provides internationalization for plugins. The underlying library is [`i18next`](https://www.i18next.com/) with some additional Backstage typescript magic for type safety with keys.
+The Backstage core function provides internationalization for plugins and apps. The underlying library is [`i18next`](https://www.i18next.com/) with some additional Backstage typescript magic for type safety with keys.
 
 ## For a plugin developer
 
@@ -183,16 +183,56 @@ return (
 
 The return type of the outer `t` function will be a `JSX.Element`, with the underlying value being a React fragment of the different parts of the message.
 
-## For an application developer overwrite plugin messages
+## For an application developer
 
-Step 1: Create translation resources
+As an app developer you can both override the default English messages of any plugin, and provide translations for additional languages.
 
-You should separate different translations to their own files and import them in the main file:
+### Overriding messages
+
+To customize specific messages without adding new languages, create a translation resource that overrides the default English messages:
+
+```ts
+// packages/app/src/translations/catalog.ts
+
+import { createTranslationResource } from '@backstage/frontend-plugin-api';
+import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
+
+export const catalogTranslations = createTranslationResource({
+  ref: catalogTranslationRef,
+  translations: {
+    en: () =>
+      Promise.resolve({
+        default: {
+          'indexPage.title': 'Service directory',
+          'indexPage.createButtonTitle': 'Register new service',
+        },
+      }),
+  },
+});
+```
+
+Then register it in your app:
+
+```diff
++ import { catalogTranslations } from './translations/catalog';
+
+ const app = createApp({
++  __experimentalTranslations: {
++    resources: [catalogTranslations],
++  },
+ })
+```
+
+You only need to include the keys you want to override — any missing keys fall back to the plugin's defaults.
+
+### Adding language translations
+
+To add support for additional languages, create translation resources with lazy-loaded message files for each language:
 
 ```ts
 // packages/app/src/translations/userSettings.ts
 
-import { createTranslationResource } from '@backstage/core-plugin-api/alpha';
+import { createTranslationResource } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '@backstage/plugin-user-settings/alpha';
 
 export const userSettingsTranslations = createTranslationResource({
@@ -203,10 +243,12 @@ export const userSettingsTranslations = createTranslationResource({
 });
 ```
 
+The translation messages can be defined using `createTranslationMessages` for type safety:
+
 ```ts
 // packages/app/src/translations/userSettings-zh.ts
 
-import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
+import { createTranslationMessages } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '@backstage/plugin-user-settings/alpha';
 
 const zh = createTranslationMessages({
@@ -221,7 +263,7 @@ const zh = createTranslationMessages({
 export default zh;
 ```
 
-It's also possible to export the list of messages directly:
+Or as a plain object export:
 
 ```ts
 // packages/app/src/translations/userSettings-zh.ts
@@ -239,11 +281,7 @@ export default {
 };
 ```
 
-You should change `zh` under the translations object to your local language.
-
-Step 2: Config translations in `packages/app/src/App.tsx`
-
-In an app you can both override the default messages, as well as register translations for additional languages:
+Register it with the available languages declared:
 
 ```diff
 + import { userSettingsTranslations } from './translations/userSettings';
@@ -256,6 +294,116 @@ In an app you can both override the default messages, as well as register transl
  })
 ```
 
-Step 3: Check everything is working correctly
+Go to the Settings page — you should see language switching buttons. Switch languages to verify your translations are loaded correctly.
 
-Go to `Settings` page, you should see change language buttons just under change theme buttons. And then switch language, you should see language had changed
+### Using the CLI for full translation workflows
+
+When translating your app to other languages at scale — especially when working with external translation systems — the Backstage CLI provides `translations export` and `translations import` commands that automate the extraction and wiring of translation messages across all your plugin dependencies.
+
+#### Exporting default messages
+
+From your app package directory (e.g. `packages/app`), run:
+
+```bash
+yarn backstage-cli translations export
+```
+
+This scans all frontend plugin dependencies (including transitive ones) for `TranslationRef` definitions and writes their default English messages as JSON files:
+
+```text
+translations/
+  manifest.json
+  messages/
+    catalog.en.json
+    org.en.json
+    scaffolder.en.json
+    ...
+```
+
+Each `.en.json` file contains the flattened message keys and their default values:
+
+```json
+{
+  "indexPage.title": "All your components",
+  "indexPage.createButtonTitle": "Create new component",
+  "entityPage.notFound": "Entity not found"
+}
+```
+
+#### Creating translations
+
+Copy the exported files and translate them for your target languages:
+
+```bash
+cp translations/messages/catalog.en.json translations/messages/catalog.zh.json
+```
+
+Then edit `catalog.zh.json` with the translated strings. You only need to include the keys you want to translate — missing keys fall back to the English defaults at runtime.
+
+#### Generating wiring code
+
+Once you have translated files in place, run:
+
+```bash
+yarn backstage-cli translations import
+```
+
+This generates a TypeScript module at `src/translations/resources.ts` that wires everything together:
+
+```ts
+// This file is auto-generated by backstage-cli translations import
+// Do not edit manually.
+
+import { createTranslationResource } from '@backstage/frontend-plugin-api';
+import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
+
+export default [
+  createTranslationResource({
+    ref: catalogTranslationRef,
+    translations: {
+      zh: () => import('../../translations/messages/catalog.zh.json'),
+    },
+  }),
+];
+```
+
+Import the generated resources in your app:
+
+```ts
+import translationResources from './translations/resources';
+
+const app = createApp({
+  __experimentalTranslations: {
+    availableLanguages: ['en', 'zh'],
+    resources: translationResources,
+  },
+});
+```
+
+#### Custom file patterns
+
+By default, message files use the pattern `messages/{id}.{lang}.json` (e.g. `messages/catalog.en.json`). You can change this with the `--pattern` option:
+
+```bash
+yarn backstage-cli translations export --pattern '{lang}/{id}.json'
+```
+
+This produces a directory structure grouped by language instead:
+
+```text
+translations/en/catalog.json
+translations/zh/catalog.json
+```
+
+The pattern is stored in the manifest, so the `import` command automatically uses the same layout.
+
+#### Integration with external translation systems
+
+The exported JSON files are standard key-value pairs compatible with most external translation systems. A typical workflow looks like:
+
+1. Run `translations export` to generate the source English files
+2. Upload the `.en.json` files to your translation system
+3. Download the translated files back into the translations directory
+4. Run `translations import` to regenerate the wiring code
+
+For full command reference, see the [CLI commands documentation](../tooling/cli/03-commands.md#translations-export).
