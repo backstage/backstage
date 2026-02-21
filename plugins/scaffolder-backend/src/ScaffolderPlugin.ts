@@ -21,6 +21,7 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { ScaffolderClient } from '@backstage/plugin-scaffolder-common';
 import {
   scaffolderActionsExtensionPoint,
   TaskBroker,
@@ -59,7 +60,11 @@ import {
   convertFiltersToRecord,
   convertGlobalsToRecord,
 } from './util/templating';
-import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  actionsServiceRef,
+  actionsRegistryServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
+import { createScaffolderActions } from './actions';
 
 /**
  * Scaffolder plugin
@@ -141,9 +146,11 @@ export const scaffolderPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
+        discovery: coreServices.discovery,
         catalog: catalogServiceRef,
         events: eventsServiceRef,
         actionsRegistry: actionsServiceRef,
+        actionsRegistryService: actionsRegistryServiceRef,
       },
       async init({
         logger,
@@ -154,14 +161,23 @@ export const scaffolderPlugin = createBackendPlugin({
         auth,
         httpRouter,
         httpAuth,
+        discovery,
         catalog,
         permissions,
         events,
         auditor,
         actionsRegistry,
+        actionsRegistryService,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
+
+        // Create ScaffolderClient for MCP actions (isomorphic client)
+        const scaffolderClient = new ScaffolderClient({
+          discoveryApi: discovery,
+          fetchApi: { fetch },
+          scmIntegrationsApi: integrations,
+        });
 
         const templateExtensions = {
           additionalTemplateFilters: convertFiltersToRecord(
@@ -210,6 +226,12 @@ export const scaffolderPlugin = createBackendPlugin({
         log.info(
           `Starting scaffolder with the following actions enabled ${actionIds}`,
         );
+
+        // Register MCP actions for scaffolder
+        createScaffolderActions({
+          actionsRegistry: actionsRegistryService,
+          scaffolderClient,
+        });
 
         const router = await createRouter({
           logger,
