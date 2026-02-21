@@ -71,6 +71,15 @@ export const AccordionDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Accordion';
+    readonly trigger: 'bui-AccordionTrigger';
+    readonly triggerButton: 'bui-AccordionTriggerButton';
+    readonly triggerTitle: 'bui-AccordionTriggerTitle';
+    readonly triggerSubtitle: 'bui-AccordionTriggerSubtitle';
+    readonly triggerIconStart: 'bui-AccordionTriggerIconStart';
+    readonly triggerIconEnd: 'bui-AccordionTriggerIconEnd';
+    readonly triggerIcon: 'bui-AccordionTriggerIcon';
+    readonly panel: 'bui-AccordionPanel';
+    readonly group: 'bui-AccordionGroup';
   };
   readonly bg: 'provider';
   readonly propDefs: {
@@ -185,7 +194,9 @@ export type AccordionTriggerOwnProps = {
   className?: string;
   title?: string;
   subtitle?: string;
-  children?: ReactNode;
+  children?: React.ReactNode;
+  iconStart?: React.ReactElement;
+  iconEnd?: React.ReactElement;
 };
 
 // @public

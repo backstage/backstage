@@ -22,6 +22,18 @@ export const withSubtitleSnippet = `<Accordion>
   </AccordionPanel>
 </Accordion>`;
 
+export const withIconSnippet = `import { RiSettings4Line } from '@remixicon/react';
+
+<Accordion>
+  <AccordionTrigger
+    title="System Settings"
+    iconStart={<RiSettings4Line />}
+  />
+  <AccordionPanel>
+    <Text>Your content here</Text>
+  </AccordionPanel>
+</Accordion>`;
+
 export const customTriggerSnippet = `<Accordion>
   <AccordionTrigger>
     <Box>

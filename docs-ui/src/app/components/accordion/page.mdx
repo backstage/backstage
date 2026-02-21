@@ -11,6 +11,7 @@ import {
   accordionUsageSnippet,
   defaultSnippet,
   withSubtitleSnippet,
+  withIconSnippet,
   customTriggerSnippet,
   defaultExpandedSnippet,
   groupSingleOpenSnippet,
@@ -19,6 +20,7 @@ import {
 import {
   Default,
   WithSubtitle,
+  WithIcon,
   CustomTrigger,
   DefaultExpanded,
   GroupSingleOpen,
@@ -97,6 +99,18 @@ Accordions can display a subtitle below the title.
   preview={<WithSubtitle />}
   code={withSubtitleSnippet}
   layout="side-by-side"
+/>
+
+### With Icon
+
+Add an icon to improve visual hierarchy and scanability. Icons can be positioned at the start (default) or end of the title.
+
+<Snippet
+  align="center"
+  py={4}
+  height={240}
+  preview={<WithIcon />}
+  code={withIconSnippet}
 />
 
 ### Custom Trigger

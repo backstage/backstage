@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
 import type {
   DisclosureProps as RADisclosureProps,
   HeadingProps as RAHeadingProps,
@@ -49,7 +48,17 @@ export type AccordionTriggerOwnProps = {
   className?: string;
   title?: string;
   subtitle?: string;
-  children?: ReactNode;
+  children?: React.ReactNode;
+  /**
+   * Icon to display at the start of the trigger.
+   * @defaultValue undefined
+   */
+  iconStart?: React.ReactElement;
+  /**
+   * Icon to display at the end of the trigger.
+   * @defaultValue undefined
+   */
+  iconEnd?: React.ReactElement;
 };
 
 /**
