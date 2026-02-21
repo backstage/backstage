@@ -19,6 +19,7 @@ import {
   Entity,
   isUserEntity,
   parseEntityRef,
+  stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
@@ -280,8 +281,18 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     } else if (options.recipients.type === 'entity') {
       // Handle user-specific notification
       const entityRefs = [options.recipients.entityRef].flat();
-      if (entityRefs.some(e => parseEntityRef(e).kind === 'group')) {
-        // We've already dispatched a slack channel message, so let's not send a DM.
+      const explicitUserEntityRefs = entityRefs
+        .filter(entityRef => parseEntityRef(entityRef).kind === 'user')
+        .map(entityRef => stringifyEntityRef(parseEntityRef(entityRef)));
+      const normalizedUserRef = stringifyEntityRef(
+        parseEntityRef(notification.user),
+      );
+
+      if (
+        entityRefs.some(e => parseEntityRef(e).kind === 'group') &&
+        !explicitUserEntityRefs.includes(normalizedUserRef)
+      ) {
+        // This user was resolved from a non-user entity and we've already sent a group channel message.
         return;
       }
 
