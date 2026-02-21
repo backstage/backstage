@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.4-next.0
+
+### Patch Changes
+
+- 4e39e63: Removed unused dependencies
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/backend-openapi-utils@0.6.6
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@2.0.1-next.0
+  - @backstage/plugin-events-node@0.4.19
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-scaffolder-common@1.7.7-next.0
+  - @backstage/plugin-scaffolder-node@0.12.6-next.0
+
 ## 3.1.3
 
 ### Patch Changes

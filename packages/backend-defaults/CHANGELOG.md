@@ -1,5 +1,26 @@
 # @backstage/backend-defaults
 
+## 0.15.3-next.0
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- d933f62: Add configurable throttling and retry mechanism for GitLab integration.
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/backend-app-api@1.5.0
+  - @backstage/backend-dev-utils@0.1.7
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/cli-node@0.2.18
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.13
+  - @backstage/plugin-events-node@0.4.19
+  - @backstage/plugin-permission-node@0.10.10
+
 ## 0.15.2
 
 ### Patch Changes

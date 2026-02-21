@@ -1,5 +1,19 @@
 # @backstage/repo-tools
 
+## 0.16.5-next.0
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/cli-common@0.1.18
+  - @backstage/cli-node@0.2.18
+  - @backstage/config-loader@1.10.8
+  - @backstage/errors@1.2.7
+
 ## 0.16.4
 
 ### Patch Changes

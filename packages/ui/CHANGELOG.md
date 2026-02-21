@@ -1,5 +1,13 @@
 # @backstage/ui
 
+## 0.12.1-next.0
+
+### Patch Changes
+
+- a1f4bee: Made Accordion a `bg` provider so nested components like Button auto-increment their background level. Updated `useDefinition` to resolve `bg` `propDef` defaults for provider components.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12
+
 ## 0.12.0
 
 ### Minor Changes

@@ -1,5 +1,23 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 749ba60: Add an extension for custom Slack message layouts
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@2.0.1-next.0
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-notifications-node@0.2.23
+
 ## 0.3.1
 
 ### Patch Changes

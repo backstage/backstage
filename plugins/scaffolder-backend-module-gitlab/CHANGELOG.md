@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.11.4-next.0
+
+### Patch Changes
+
+- 5730c8e: Added `maskedAndHidden` option to `gitlab:projectVariable:create` and `publish:gitlab` action to support creating GitLab project variables that are both masked and hidden. Updated gitbeaker to version 43.8.0 for proper type support.
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-scaffolder-node@0.12.6-next.0
+
 ## 0.11.3
 
 ### Patch Changes

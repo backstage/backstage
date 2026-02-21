@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend-module-slack",
-  "version": "0.3.1",
+  "version": "0.4.0-next.0",
   "description": "The slack backend module for the notifications plugin.",
   "backstage": {
     "role": "backend-plugin-module",

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-visualizer",
-  "version": "0.2.0",
+  "version": "0.2.1-next.0",
   "description": "Visualizes the Backstage app structure",
   "backstage": {
     "role": "frontend-plugin",

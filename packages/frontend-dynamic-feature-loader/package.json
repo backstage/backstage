@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-dynamic-feature-loader",
-  "version": "0.1.9",
+  "version": "0.1.10-next.0",
   "backstage": {
     "role": "web-library"
   },
