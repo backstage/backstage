@@ -21,22 +21,25 @@ import {
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
   RELATION_PART_OF,
-  stringifyEntityRef,
 } from '@backstage/catalog-model';
+import {
+  discoveryApiRef,
+  errorApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { TestApiRegistry, mockApis } from '@backstage/test-utils';
+import { createDeferred, DeferredPromise } from '@backstage/types';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderHook, waitFor } from '@testing-library/react';
-import { filter, keyBy } from 'lodash';
-import { useEntityRelationGraph as useEntityRelationGraphMocked } from './useEntityRelationGraph';
+
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 import { EntityNode } from '../../lib/types';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
+import { useFetchMethod as useFetchMethodMocked } from './useFetchMethod';
 
-jest.mock('./useEntityRelationGraph');
-
-const useEntityRelationGraph = useEntityRelationGraphMocked as jest.Mock<
-  ReturnType<typeof useEntityRelationGraphMocked>
->;
+jest.mock('./useFetchMethod');
 
 /*
   This is the full test graph:
@@ -133,13 +136,27 @@ function deprecatedProperties(entity: Entity): Partial<EntityNode> {
   };
 }
 
+const fetchApi: typeof fetchApiRef.T = {} as any;
+let deferred: DeferredPromise<void, Error> = undefined as any;
+
 function GraphContext(props: PropsWithChildren<{}>) {
+  const config = mockApis.config();
   return (
     <ApiProvider
-      apis={TestApiRegistry.from([
-        catalogGraphApiRef,
-        new DefaultCatalogGraphApi(),
-      ])}
+      apis={TestApiRegistry.from(
+        [
+          catalogGraphApiRef,
+          new DefaultCatalogGraphApi({
+            config,
+            discoveryApi: mockApis.discovery(),
+            fetchApi,
+          }),
+        ],
+        [catalogApiRef, catalogApiMock()],
+        [discoveryApiRef, mockApis.discovery()],
+        [fetchApiRef, fetchApi],
+        [errorApiRef, {}],
+      )}
     >
       {props.children}
     </ApiProvider>
@@ -148,13 +165,20 @@ function GraphContext(props: PropsWithChildren<{}>) {
 
 describe('useEntityRelationNodesAndEdges', () => {
   beforeEach(() => {
-    useEntityRelationGraph.mockImplementation(({ filter: { kinds } }) => ({
-      loading: false,
-      entities: keyBy(
-        filter(entities, e => !kinds || kinds.includes(e.kind)),
-        stringifyEntityRef,
-      ),
-    }));
+    deferred = createDeferred();
+    fetchApi.fetch = jest.fn(async () => ({
+      json: async () => {
+        setTimeout(() => {
+          deferred.resolve();
+        }, 1);
+        return { entities: Object.values(entities) };
+      },
+      ok: true,
+    })) as any;
+
+    (
+      useFetchMethodMocked as jest.Mock<ReturnType<typeof useFetchMethodMocked>>
+    ).mockReturnValue('backend');
   });
 
   afterAll(() => {
@@ -162,14 +186,20 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should forward loading state', async () => {
-    useEntityRelationGraph.mockReturnValue({
-      loading: true,
-    });
+    const rootEntityRefs = ['b:d/c'];
+    deferred = createDeferred();
+    fetchApi.fetch = jest.fn(async () => ({
+      json: async () => {
+        await deferred;
+        return { entities: Object.values(entities) };
+      },
+      ok: true,
+    })) as any;
 
     const { result } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
+          rootEntityRefs,
         }),
       { wrapper: GraphContext },
     );
@@ -180,22 +210,69 @@ describe('useEntityRelationNodesAndEdges', () => {
     expect(error).toBeUndefined();
     expect(nodes).toBeUndefined();
     expect(edges).toBeUndefined();
+
+    deferred.resolve();
   });
 
-  test('should forward error state', async () => {
-    const returnError = new Error('Test');
-    useEntityRelationGraph.mockReturnValue({
-      loading: false,
-      error: returnError,
-    });
+  test('should forward error state with failing request', async () => {
+    const rootEntityRefs = ['b:d/c'];
+    const returnError = new Error('Intentional error');
+    fetchApi.fetch = jest.fn(async () => ({
+      json: async () => {
+        deferred.resolve(undefined);
+        throw returnError;
+      },
+      ok: false,
+      statusText: 'Intentional error',
+    })) as any;
 
-    const { result } = renderHook(
+    const { result, rerender } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
+          rootEntityRefs,
         }),
       { wrapper: GraphContext },
     );
+
+    // Simulate rerendering as this is triggered automatically due to the mock
+    for (let i = 0; i < 5; ++i) {
+      await new Promise(resolve => setTimeout(resolve, 1));
+      rerender();
+    }
+
+    const { nodes, edges, loading, error } = result.current;
+
+    expect(loading).toBe(false);
+    expect(error?.message).toContain(returnError.message);
+    expect(nodes).toBeUndefined();
+    expect(edges).toBeUndefined();
+  });
+
+  test('should forward error state with invalid json', async () => {
+    const rootEntityRefs = ['b:d/c'];
+    const returnError = new Error('Test');
+    fetchApi.fetch = jest.fn(async () => ({
+      json: async () => {
+        deferred.resolve(undefined);
+        throw returnError;
+      },
+      ok: true,
+    })) as any;
+
+    const { result, rerender } = renderHook(
+      () =>
+        useEntityRelationNodesAndEdges({
+          rootEntityRefs,
+        }),
+      { wrapper: GraphContext },
+    );
+
+    await deferred;
+    // Simulate rerendering as this is triggered automatically due to the mock
+    for (let i = 0; i < 5; ++i) {
+      await new Promise(resolve => setTimeout(resolve, 1));
+      rerender();
+    }
 
     const { nodes, edges, loading, error } = result.current;
 
@@ -206,10 +283,11 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate unidirectional graph with merged relations', async () => {
+    const rootEntityRefs = ['b:d/c'];
     const { result } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
+          rootEntityRefs,
           unidirectional: true,
           mergeRelations: true,
         }),
@@ -280,10 +358,11 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate unidirectional graph', async () => {
+    const rootEntityRefs = ['b:d/c'];
     const { result } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
+          rootEntityRefs,
           unidirectional: true,
           mergeRelations: false,
         }),
@@ -354,10 +433,11 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate bidirectional graph with merged relations', async () => {
+    const rootEntityRefs = ['b:d/c'];
     const { result } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
+          rootEntityRefs,
           unidirectional: false,
           mergeRelations: true,
         }),
@@ -435,10 +515,11 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate bidirectional graph with all relations', async () => {
+    const rootEntityRefs = ['b:d/c'];
     const { result } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
+          rootEntityRefs,
           unidirectional: false,
           mergeRelations: false,
         }),
@@ -544,10 +625,11 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should generate graph with multiple root nodes', async () => {
+    const rootEntityRefs = ['b:d/c', 'b:d/c2'];
     const { result } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c', 'b:d/c2'],
+          rootEntityRefs,
         }),
       { wrapper: GraphContext },
     );
@@ -557,6 +639,8 @@ describe('useEntityRelationNodesAndEdges', () => {
     });
 
     const { nodes, edges, loading, error } = result.current;
+
+    nodes?.sort((a, b) => a.id.localeCompare(b.id));
 
     expect(loading).toBe(false);
     expect(error).toBeUndefined();
@@ -571,13 +655,6 @@ describe('useEntityRelationNodesAndEdges', () => {
       {
         color: 'primary',
         focused: false,
-        id: 'k:d/a1',
-        entity: entities['k:d/a1'],
-        ...deprecatedProperties(entities['k:d/a1']),
-      },
-      {
-        color: 'primary',
-        focused: false,
         id: 'b:d/c1',
         entity: entities['b:d/c1'],
         ...deprecatedProperties(entities['b:d/c1']),
@@ -588,6 +665,13 @@ describe('useEntityRelationNodesAndEdges', () => {
         id: 'b:d/c2',
         entity: entities['b:d/c2'],
         ...deprecatedProperties(entities['b:d/c2']),
+      },
+      {
+        color: 'primary',
+        focused: false,
+        id: 'k:d/a1',
+        entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
     ]);
     expect(edges).toEqual([
@@ -616,11 +700,13 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should filter by relation', async () => {
+    const rootEntityRefs = ['b:d/c'];
+    const relations = [RELATION_OWNER_OF];
     const { result } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
-          relations: [RELATION_OWNER_OF],
+          rootEntityRefs,
+          relations,
         }),
       { wrapper: GraphContext },
     );
@@ -648,20 +734,6 @@ describe('useEntityRelationNodesAndEdges', () => {
         entity: entities['k:d/a1'],
         ...deprecatedProperties(entities['k:d/a1']),
       },
-      {
-        color: 'primary',
-        focused: false,
-        id: 'b:d/c1',
-        entity: entities['b:d/c1'],
-        ...deprecatedProperties(entities['b:d/c1']),
-      },
-      {
-        color: 'primary',
-        focused: false,
-        id: 'b:d/c2',
-        entity: entities['b:d/c2'],
-        ...deprecatedProperties(entities['b:d/c2']),
-      },
     ]);
     expect(edges).toEqual([
       {
@@ -675,11 +747,13 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   test('should filter by kind', async () => {
+    const rootEntityRefs = ['b:d/c'];
+    const kinds = ['b'];
     const { result } = renderHook(
       () =>
         useEntityRelationNodesAndEdges({
-          rootEntityRefs: ['b:d/c'],
-          kinds: ['b'],
+          rootEntityRefs,
+          kinds,
         }),
       { wrapper: GraphContext },
     );

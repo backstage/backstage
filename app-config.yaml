@@ -197,6 +197,11 @@ catalog:
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
       rules:
         - allow: [Template]
+  graph:
+    limitEntities: 2000
+
+catalogGraph:
+  fetchMode: backend
 
 scaffolder:
   auditor:

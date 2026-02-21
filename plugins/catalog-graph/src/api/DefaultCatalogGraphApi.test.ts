@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
+import { mockApis } from '@backstage/test-utils';
+import { fetchApiRef } from '@backstage/frontend-plugin-api';
+
 import { DefaultCatalogGraphApi } from './DefaultCatalogGraphApi';
+
+const config = mockApis.config();
+const fetchApi: typeof fetchApiRef.T = {} as any;
 
 describe('DefaultCatalogGraphApi', () => {
   it('default config', async () => {
-    const { defaultRelations } = new DefaultCatalogGraphApi();
+    const { defaultRelations } = new DefaultCatalogGraphApi({
+      config,
+      discoveryApi: mockApis.discovery(),
+      fetchApi,
+    });
 
     expect(defaultRelations.includes('')).toBe(false);
     expect(defaultRelations.includes('fooRelation')).toBe(false);
@@ -28,6 +38,9 @@ describe('DefaultCatalogGraphApi', () => {
 
   it('empty include config', async () => {
     const { defaultRelations } = new DefaultCatalogGraphApi({
+      config,
+      discoveryApi: mockApis.discovery(),
+      fetchApi,
       defaultRelationTypes: { include: [] },
     });
 
@@ -39,6 +52,9 @@ describe('DefaultCatalogGraphApi', () => {
 
   it('include config', async () => {
     const { defaultRelations } = new DefaultCatalogGraphApi({
+      config,
+      discoveryApi: mockApis.discovery(),
+      fetchApi,
       defaultRelationTypes: { include: ['ownedBy'] },
     });
 
@@ -50,6 +66,9 @@ describe('DefaultCatalogGraphApi', () => {
 
   it('exclude config', async () => {
     const { defaultRelations } = new DefaultCatalogGraphApi({
+      config,
+      discoveryApi: mockApis.discovery(),
+      fetchApi,
       defaultRelationTypes: { exclude: ['ownedBy', 'ownerOf'] },
     });
 

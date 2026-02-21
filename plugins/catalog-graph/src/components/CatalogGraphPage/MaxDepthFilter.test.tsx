@@ -17,11 +17,42 @@
 import { screen } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { MaxDepthFilter } from './MaxDepthFilter';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
+import { ApiProvider } from '@backstage/core-app-api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
 describe('<MaxDepthFilter/>', () => {
+  const fetchApi: typeof fetchApiRef.T = {} as any;
+
+  const config = mockApis.config();
+  const apis: TestApiRegistry = TestApiRegistry.from(
+    [
+      catalogGraphApiRef,
+      new DefaultCatalogGraphApi({
+        config,
+        discoveryApi: mockApis.discovery(),
+        fetchApi,
+      }),
+    ],
+    [discoveryApiRef, mockApis.discovery()],
+    [fetchApiRef, fetchApi],
+  );
+
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return <ApiProvider apis={apis}>{children}</ApiProvider>;
+  }
+
   test('should display current value', async () => {
-    await renderInTestApp(<MaxDepthFilter value={5} onChange={() => {}} />);
+    await renderInTestApp(
+      <Wrapper>
+        <MaxDepthFilter value={5} onChange={() => {}} />
+      </Wrapper>,
+    );
 
     expect(screen.getByLabelText('maxp')).toBeInTheDocument();
     expect(screen.getByLabelText('maxp')).toHaveValue(5);
@@ -29,7 +60,9 @@ describe('<MaxDepthFilter/>', () => {
 
   test('should display infinite if non finite', async () => {
     await renderInTestApp(
-      <MaxDepthFilter value={Number.POSITIVE_INFINITY} onChange={() => {}} />,
+      <Wrapper>
+        <MaxDepthFilter value={Number.POSITIVE_INFINITY} onChange={() => {}} />
+      </Wrapper>,
     );
 
     expect(screen.getByPlaceholderText(/Infinite/)).toBeInTheDocument();
@@ -38,7 +71,11 @@ describe('<MaxDepthFilter/>', () => {
 
   test('should clear max depth', async () => {
     const onChange = jest.fn();
-    await renderInTestApp(<MaxDepthFilter value={10} onChange={onChange} />);
+    await renderInTestApp(
+      <Wrapper>
+        <MaxDepthFilter value={10} onChange={onChange} />
+      </Wrapper>,
+    );
 
     expect(onChange).not.toHaveBeenCalled();
     await user.click(screen.getByLabelText('clear max depth'));
@@ -47,7 +84,11 @@ describe('<MaxDepthFilter/>', () => {
 
   test('should set max depth to undefined if below one', async () => {
     const onChange = jest.fn();
-    await renderInTestApp(<MaxDepthFilter value={1} onChange={onChange} />);
+    await renderInTestApp(
+      <Wrapper>
+        <MaxDepthFilter value={1} onChange={onChange} />
+      </Wrapper>,
+    );
 
     await user.clear(screen.getByLabelText('maxp'));
     await user.type(screen.getByLabelText('maxp'), '0');
@@ -58,12 +99,14 @@ describe('<MaxDepthFilter/>', () => {
   test('should select direction', async () => {
     let value = 5;
     await renderInTestApp(
-      <MaxDepthFilter
-        value={value}
-        onChange={v => {
-          value = v;
-        }}
-      />,
+      <Wrapper>
+        <MaxDepthFilter
+          value={value}
+          onChange={v => {
+            value = v;
+          }}
+        />
+      </Wrapper>,
     );
 
     expect(screen.getByLabelText('maxp')).toHaveValue(5);

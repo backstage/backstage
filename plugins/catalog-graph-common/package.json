@@ -1,0 +1,55 @@
+{
+  "name": "@backstage/plugin-catalog-graph-common",
+  "version": "0.1.0",
+  "description": "Common functionalities for the catalog-graph plugin",
+  "backstage": {
+    "role": "common-library",
+    "pluginId": "catalog-graph",
+    "pluginPackages": [
+      "@backstage/plugin-catalog-graph",
+      "@backstage/plugin-catalog-graph-common"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-graph-common"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApiFactory, createPlugin } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  createApiFactory,
+  createPlugin,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
 import { catalogEntityRouteRef, catalogGraphRouteRef } from './routes';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from './api';
 
@@ -32,8 +38,13 @@ export const catalogGraphPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: catalogGraphApiRef,
-      deps: {},
-      factory: () => new DefaultCatalogGraphApi(),
+      deps: {
+        config: configApiRef,
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ config, discoveryApi, fetchApi }) =>
+        new DefaultCatalogGraphApi({ config, discoveryApi, fetchApi }),
     }),
   ],
 });

@@ -5,7 +5,8 @@
     "role": "frontend-plugin",
     "pluginId": "catalog-graph",
     "pluginPackages": [
-      "@backstage/plugin-catalog-graph"
+      "@backstage/plugin-catalog-graph",
+      "@backstage/plugin-catalog-graph-common"
     ]
   },
   "publishConfig": {
@@ -37,7 +38,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -54,16 +56,19 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-catalog-graph-common": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "classnames": "^2.3.1",
+    "fast-json-stable-stringify": "^2.1.0",
     "lodash": "^4.17.15",
     "p-limit": "^3.1.0",
     "qs": "^6.9.4",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "uri-template": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -91,5 +96,6 @@
     "@types/react": {
       "optional": true
     }
-  }
+  },
+  "configSchema": "config.d.ts"
 }
