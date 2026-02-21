@@ -19782,10 +19782,10 @@ __metadata:
   linkType: hard
 
 "@storybook/addon-mcp@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@storybook/addon-mcp@npm:0.2.2"
+  version: 0.2.3
+  resolution: "@storybook/addon-mcp@npm:0.2.3"
   dependencies:
-    "@storybook/mcp": "npm:0.2.1"
+    "@storybook/mcp": "npm:0.2.2"
     "@tmcp/adapter-valibot": "npm:^0.1.4"
     "@tmcp/transport-http": "npm:^0.8.0"
     picoquery: "npm:^2.5.0"
@@ -19793,7 +19793,7 @@ __metadata:
     valibot: "npm:1.2.0"
   peerDependencies:
     storybook: ^9.1.16 || ^10.0.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0
-  checksum: 10/dc6d8e97307f0f7720e5fe7876f9cc5a4d66cebe9259f55b713ce8386fb5a25874d6c0b011afb5a1ab45e3b9a3eb1f590996f49f85c3feaf1a791b80d1fc65c9
+  checksum: 10/9b4fa821444f6d954a3f64a52fc835380d9196e0e857a058185da3c6dfe2bbaa5276a81bfbbf56294d3ea6fca1e8f85fac14c95e4414ba3ad1ecaceb1909c903
   languageName: node
   linkType: hard
 
@@ -19887,15 +19887,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/mcp@npm:0.2.1":
-  version: 0.2.1
-  resolution: "@storybook/mcp@npm:0.2.1"
+"@storybook/mcp@npm:0.2.2":
+  version: 0.2.2
+  resolution: "@storybook/mcp@npm:0.2.2"
   dependencies:
     "@tmcp/adapter-valibot": "npm:^0.1.4"
     "@tmcp/transport-http": "npm:^0.8.0"
     tmcp: "npm:^1.16.0"
     valibot: "npm:1.2.0"
-  checksum: 10/fc2cbd82c1e8ed4dbaebdc4db5b7142516a2a1cc7e91e578a7bf9d8b7c7f01072ba69c335fd0cec58b849404da95c3f637615c95587381b1a310b2e10b233d23
+  checksum: 10/0825f2e248c98abe8062a52cc0843bee107f0e64ee885decf19c3c3c453ef3521cb2615bc1aede76a51799cec4ba8494269ba18553b09fbe27dd111027ec86db
   languageName: node
   linkType: hard
 
