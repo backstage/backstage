@@ -12,7 +12,7 @@ The MCP Actions Backend exposes actions registered with the **Actions Registry**
 
 ### Configuring the Actions Registry
 
-For details on registering actions, see the [Actions Registry documentation](../../backend-system/core-services/actions-registry).
+For details on registering actions, see the [Actions Registry documentation](/docs/backend-system/core-services/actions-registry).
 
 ## Authentication
 
@@ -52,7 +52,7 @@ Authorization: Bearer <token>
 ```
 
 For more details about external access tokens and service-to-service authentication, see the
-[Service-to-Service Auth documentation](../../auth/service-to-service-auth).
+[Service-to-Service Auth documentation](/docs/auth/service-to-service-auth).
 
 ### Experimental: Dynamic Client Registration
 
@@ -109,6 +109,7 @@ The SSE protocol is deprecated and will be removed in a future release.
 
 - **Streamable HTTP:** `http://localhost:7007/api/mcp-actions/v1`
 - **SSE (deprecated):** `http://localhost:7007/api/mcp-actions/v1/sse`
+
 ```json
 {
   "mcpServers": {

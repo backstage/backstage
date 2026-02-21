@@ -1,9 +1,10 @@
-<<<<<<< HEAD
----
+## <<<<<<< HEAD
+
 id: actions
 title: Actions (alpha)
 sidebar_label: Actions (alpha)
 description: Documentation for the Actions Service
+
 ---
 
 ## Overview
@@ -155,13 +156,15 @@ async function fetchUserInfo(
 
 ## Best Practices
 
-For comprehensive guidance on action design, naming conventions, and schema design, see the [Actions Registry Best Practices](./actions-registry.md#best-practices) documentation.
-=======
+# For comprehensive guidance on action design, naming conventions, and schema design, see the [Actions Registry Best Practices](./actions-registry.md#best-practices) documentation.
+
 ---
+
 id: actions
 title: Actions (alpha)
 sidebar_label: Actions (alpha)
 description: Documentation for the Actions Service
+
 ---
 
 ## Overview
@@ -314,7 +317,6 @@ action: async ({ input }) => {
     );
   }
 };
-
 ```
 
 ---
@@ -322,4 +324,5 @@ action: async ({ input }) => {
 ## Best Practices
 
 For comprehensive guidance on action design, naming conventions, and schema design, see the [Actions Registry Best Practices](./actions-registry.md#best-practices) documentation.
->>>>>>> ba2686276bb9 (docs: address review comments for mcp-actions-backend)
+
+> > > > > > > ba2686276bb9 (docs: address review comments for mcp-actions-backend)
