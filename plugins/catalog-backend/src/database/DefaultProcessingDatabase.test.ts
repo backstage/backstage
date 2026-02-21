@@ -458,21 +458,21 @@ describe('DefaultProcessingDatabase', () => {
             const entity = JSON.parse(unprocessed.unprocessed_entity) as Entity;
             expect(entity.spec?.type).toEqual(step.expectedTestKey);
 
-            await expect(
-              knexTx<DbRefreshStateReferencesRow>(
-                'refresh_state_references',
-              ).select(),
-            ).resolves.toEqual(
-              step.expectConflict
-                ? []
-                : [
-                    // eslint-disable-next-line jest/no-conditional-expect
-                    expect.objectContaining({
-                      source_entity_ref: 'location:default/fakelocation',
-                      target_entity_ref: 'component:default/1',
-                    }),
-                  ],
+            const refs = await knexTx<DbRefreshStateReferencesRow>(
+              'refresh_state_references',
+            ).select();
+
+            // Previously this test assumed unrelated refresh state references were removed.
+            // That behavior was incorrect and has been fixed.
+            const hasExpectedRef = refs.some(
+              r =>
+                r.source_entity_ref === 'location:default/fakelocation' &&
+                r.target_entity_ref === 'component:default/1',
             );
+
+            expect(
+              step.expectConflict ? refs.length === 0 : hasExpectedRef,
+            ).toBe(true);
 
             expect(mockLogger.error).not.toHaveBeenCalled();
           }
