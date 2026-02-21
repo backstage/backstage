@@ -17,6 +17,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * A pagination rule for entities.
@@ -212,6 +213,11 @@ export interface QueryEntitiesInitialRequest {
   limit?: number;
   offset?: number;
   filter?: EntityFilter;
+  /**
+   * Predicate-based query for filtering entities.
+   * Mutually exclusive with filter.
+   */
+  query?: FilterPredicate;
   orderFields?: EntityOrder[];
   fullTextFilter?: {
     term: string;
@@ -273,6 +279,11 @@ export type Cursor = {
    * A filter to be applied to the full list of entities.
    */
   filter?: EntityFilter;
+  /**
+   * A predicate-based query to be applied to the full list of entities.
+   * Mutually exclusive with filter.
+   */
+  query?: FilterPredicate;
   /**
    * true if the cursor is a previous cursor.
    */

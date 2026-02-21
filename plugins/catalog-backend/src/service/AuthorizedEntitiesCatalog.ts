@@ -22,6 +22,7 @@ import {
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ConditionTransformer } from '@backstage/plugin-permission-node';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import {
   Cursor,
   EntitiesBatchRequest,
@@ -42,6 +43,7 @@ import {
   BackstageCredentials,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import { convertEntityFilterToPredicate } from './request/convertEntityFilterToPredicate';
 
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   private readonly entitiesCatalog: EntitiesCatalog;
@@ -141,34 +143,31 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
-      const permissionFilter: EntityFilter = this.transformConditions(
-        authorizeDecision.conditions,
+      const permissionFilterPredicate = convertEntityFilterToPredicate(
+        this.transformConditions(authorizeDecision.conditions),
       );
 
-      let permissionedRequest: QueryEntitiesRequest;
-      let requestFilter: EntityFilter | undefined;
+      const source = isQueryEntitiesCursorRequest(request)
+        ? request.cursor
+        : request;
 
-      if (isQueryEntitiesCursorRequest(request)) {
-        requestFilter = request.cursor.filter;
+      const { filter, query } = source;
+      const combinedQuery = this.mergePredicates(
+        permissionFilterPredicate,
+        filter ? convertEntityFilterToPredicate(filter) : undefined,
+        query,
+      );
 
-        permissionedRequest = {
-          ...request,
-          cursor: {
-            ...request.cursor,
-            filter: request.cursor.filter
-              ? { allOf: [permissionFilter, request.cursor.filter] }
-              : permissionFilter,
-          },
-        };
-      } else {
-        permissionedRequest = {
-          ...request,
-          filter: request.filter
-            ? { allOf: [permissionFilter, request.filter] }
-            : permissionFilter,
-        };
-        requestFilter = request.filter;
-      }
+      const permissionedRequest = isQueryEntitiesCursorRequest(request)
+        ? {
+            ...request,
+            cursor: {
+              ...request.cursor,
+              filter: undefined,
+              query: combinedQuery,
+            },
+          }
+        : { ...request, filter: undefined, query: combinedQuery };
 
       const response = await this.entitiesCatalog.queryEntities(
         permissionedRequest,
@@ -176,12 +175,14 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
       const prevCursor: Cursor | undefined = response.pageInfo.prevCursor && {
         ...response.pageInfo.prevCursor,
-        filter: requestFilter,
+        filter,
+        query,
       };
 
       const nextCursor: Cursor | undefined = response.pageInfo.nextCursor && {
         ...response.pageInfo.nextCursor,
-        filter: requestFilter,
+        filter,
+        query,
       };
 
       return {
@@ -334,5 +335,12 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
           : this.findParents(parentRef, allAncestryItems, newSeenEntityRefs),
       ),
     ];
+  }
+
+  private mergePredicates(
+    ...predicates: (FilterPredicate | undefined)[]
+  ): FilterPredicate {
+    const defined = predicates.filter(Boolean) as FilterPredicate[];
+    return defined.length === 1 ? defined[0] : { $all: defined };
   }
 }

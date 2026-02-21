@@ -303,10 +303,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           });
         }
 
-        // Add regular filters, if given
-        if (cursor.filter) {
+        // Add regular filters and/or predicate query, if given
+        if (cursor.filter || cursor.query) {
           applyEntityFilterToQuery({
             filter: cursor.filter,
+            query: cursor.query,
             targetQuery: inner,
             onEntityIdField: 'final_entities.entity_id',
             knex: this.database,
@@ -742,11 +743,18 @@ function parseCursorFromRequest(
   if (isQueryEntitiesInitialRequest(request)) {
     const {
       filter,
+      query,
       orderFields: sortFields = [],
       fullTextFilter,
       skipTotalItems = false,
     } = request;
-    return { filter, orderFields: sortFields, fullTextFilter, skipTotalItems };
+    return {
+      filter,
+      query,
+      orderFields: sortFields,
+      fullTextFilter,
+      skipTotalItems,
+    };
   }
   if (isQueryEntitiesCursorRequest(request)) {
     return {

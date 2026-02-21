@@ -7,7 +7,7 @@ import type { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
 import type { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { FilterPredicate } from '@backstage/filter-predicates';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 import { SerializedError } from '@backstage/errors';
 
 // @public
@@ -320,6 +320,7 @@ export type QueryEntitiesInitialRequest = {
   limit?: number;
   offset?: number;
   filter?: EntityFilterQuery;
+  query?: FilterPredicate;
   orderFields?: EntityOrderQuery;
   fullTextFilter?: {
     term: string;

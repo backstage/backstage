@@ -1095,6 +1095,55 @@ paths:
               type: string
           explode: false
           style: form
+    post:
+      operationId: QueryEntitiesByPredicate
+      tags:
+        - Entity
+      description: Query entities using predicate-based filters.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntitiesQueryResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cursor:
+                  type: string
+                limit:
+                  type: number
+                orderField:
+                  type: array
+                  items:
+                    type: string
+                fullTextFilter:
+                  type: object
+                  properties:
+                    term:
+                      type: string
+                    fields:
+                      type: array
+                      items:
+                        type: string
+                fields:
+                  type: array
+                  items:
+                    type: string
+                query:
+                  $ref: '#/components/schemas/JsonObject'
   /entity-facets:
     get:
       operationId: GetEntityFacets

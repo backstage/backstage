@@ -46,10 +46,15 @@ import {
   StreamEntitiesRequest,
   ValidateEntityResponse,
 } from './types/api';
-import { isQueryEntitiesInitialRequest, splitRefsIntoChunks } from './utils';
+import {
+  isQueryEntitiesInitialRequest,
+  splitRefsIntoChunks,
+  cursorContainsQuery,
+} from './utils';
 import {
   DefaultApiClient,
   GetLocationsByQueryRequest,
+  QueryEntitiesByPredicateRequest,
   TypedResponse,
 } from './schema/openapi';
 import type {
@@ -266,6 +271,30 @@ export class CatalogClient implements CatalogApi {
     request: QueryEntitiesRequest = {},
     options?: CatalogRequestOptions,
   ): Promise<QueryEntitiesResponse> {
+    // Validate that filter and query are mutually exclusive
+    if (
+      isQueryEntitiesInitialRequest(request) &&
+      request.filter &&
+      request.query
+    ) {
+      throw new Error(
+        'Cannot specify both "filter" and "query" in the same request. Use "filter" for traditional key-value filtering or "query" for predicate-based filtering.',
+      );
+    }
+
+    // Route to POST endpoint if query predicate is provided (initial request)
+    if (isQueryEntitiesInitialRequest(request) && request.query) {
+      return this.queryEntitiesByPredicate(request, options);
+    }
+
+    // Route to POST endpoint if cursor contains a query predicate (pagination)
+    if (
+      !isQueryEntitiesInitialRequest(request) &&
+      cursorContainsQuery(request.cursor)
+    ) {
+      return this.queryEntitiesByPredicate(request, options);
+    }
+
     const params: Partial<
       Parameters<typeof this.apiClient.getEntitiesByQuery>[0]['query']
     > = {};
@@ -318,6 +347,59 @@ export class CatalogClient implements CatalogApi {
     return this.requestRequired(
       await this.apiClient.getEntitiesByQuery({ query: params }, options),
     );
+  }
+
+  /**
+   * Query entities using predicate-based filters (POST endpoint).
+   * @internal
+   */
+  private async queryEntitiesByPredicate(
+    request: QueryEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryEntitiesResponse> {
+    const body: Record<string, unknown> = {};
+
+    if (isQueryEntitiesInitialRequest(request)) {
+      const { query, limit, orderFields, fullTextFilter, fields } = request;
+      if (query && typeof query === 'object') {
+        body.query = query;
+      }
+      if (limit !== undefined) {
+        body.limit = limit;
+      }
+      if (orderFields !== undefined) {
+        body.orderField = (
+          Array.isArray(orderFields) ? orderFields : [orderFields]
+        ).map(({ field, order }) => `${field},${order}`);
+      }
+      if (fullTextFilter) {
+        body.fullTextFilter = fullTextFilter;
+      }
+      if (fields?.length) {
+        body.fields = fields;
+      }
+    } else {
+      body.cursor = request.cursor;
+      if (request.limit !== undefined) {
+        body.limit = request.limit;
+      }
+      if (request.fields?.length) {
+        body.fields = request.fields;
+      }
+    }
+
+    const res = await this.requestRequired(
+      await this.apiClient.queryEntitiesByPredicate(
+        { body: body as unknown as QueryEntitiesByPredicateRequest },
+        options,
+      ),
+    );
+
+    return {
+      items: res.items,
+      totalItems: res.totalItems,
+      pageInfo: res.pageInfo,
+    };
   }
 
   /**
