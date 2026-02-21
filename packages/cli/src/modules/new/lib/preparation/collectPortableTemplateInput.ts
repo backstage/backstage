@@ -39,7 +39,7 @@ export async function collectPortableTemplateInput(
 ): Promise<PortableTemplateInput> {
   const { config, template, prefilledParams } = options;
 
-  const codeOwnersFilePath = await getCodeownersFilePath(targetPaths.targetRoot);
+  const codeOwnersFilePath = await getCodeownersFilePath(targetPaths.resolveRoot());
 
   const prompts = getPromptsForRole(template.role);
 

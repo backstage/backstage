@@ -42,19 +42,19 @@ export async function command(opts: OptionValues): Promise<void> {
       if (isValidUrl(arg)) {
         return arg;
       }
-      return targetPaths.resolveTarget(arg);
+      return targetPaths.resolve(arg);
     });
 
     if (role === 'frontend') {
       return buildFrontend({
-        targetDir: targetPaths.targetDir,
+        targetDir: targetPaths.resolve(),
         configPaths,
         writeStats: Boolean(opts.stats),
         webpack,
       });
     }
     return buildBackend({
-      targetDir: targetPaths.targetDir,
+      targetDir: targetPaths.resolve(),
       configPaths,
       skipBuildDependencies: Boolean(opts.skipBuildDependencies),
       minify: Boolean(opts.minify),
@@ -77,7 +77,7 @@ export async function command(opts: OptionValues): Promise<void> {
   if (isModuleFederationRemote) {
     console.log('Building package as a module federation remote');
     return buildFrontend({
-      targetDir: targetPaths.targetDir,
+      targetDir: targetPaths.resolve(),
       configPaths: [],
       writeStats: Boolean(opts.stats),
       isModuleFederationRemote,
@@ -100,7 +100,7 @@ export async function command(opts: OptionValues): Promise<void> {
   }
 
   const packageJson = (await fs.readJson(
-    targetPaths.resolveTarget('package.json'),
+    targetPaths.resolve('package.json'),
   )) as BackstagePackageJson;
 
   return buildPackage({

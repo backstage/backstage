@@ -24,9 +24,9 @@ import { run, targetPaths } from '@backstage/cli-common';
 export async function command(): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();
 
-  await fs.remove(targetPaths.resolveTargetRoot('dist'));
-  await fs.remove(targetPaths.resolveTargetRoot('dist-types'));
-  await fs.remove(targetPaths.resolveTargetRoot('coverage'));
+  await fs.remove(targetPaths.resolveRoot('dist'));
+  await fs.remove(targetPaths.resolveRoot('dist-types'));
+  await fs.remove(targetPaths.resolveRoot('coverage'));
 
   await Promise.all(
     Array.from(Array(10), async () => {

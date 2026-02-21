@@ -50,7 +50,7 @@ export class PortableTemplater {
   static async create(options: CreatePortableTemplaterOptions = {}) {
     let lockfile: Lockfile | undefined;
     try {
-      lockfile = await Lockfile.load(targetPaths.resolveTargetRoot('yarn.lock'));
+      lockfile = await Lockfile.load(targetPaths.resolveRoot('yarn.lock'));
     } catch {
       /* ignored */
     }

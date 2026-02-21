@@ -69,7 +69,7 @@ function extendsDefaultPattern(pattern: string): boolean {
 }
 
 export default async (opts: OptionValues) => {
-  const lockfilePath = targetPaths.resolveTargetRoot('yarn.lock');
+  const lockfilePath = targetPaths.resolveRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
   const hasYarnPlugin = await getHasYarnPlugin();
 
@@ -141,7 +141,7 @@ export default async (opts: OptionValues) => {
   }
 
   // First we discover all Backstage dependencies within our own repo
-  const dependencyMap = await mapDependencies(targetPaths.targetDir, pattern);
+  const dependencyMap = await mapDependencies(targetPaths.resolve(), pattern);
 
   // Next check with the package registry to see which dependency ranges we need to bump
   const versionBumps = new Map<string, PkgVersionInfo[]>();
@@ -418,7 +418,7 @@ export function createVersionFinder(options: {
 }
 
 function getBackstageJsonPath() {
-  return targetPaths.resolveTargetRoot(BACKSTAGE_JSON);
+  return targetPaths.resolveRoot(BACKSTAGE_JSON);
 }
 
 async function getBackstageJson() {

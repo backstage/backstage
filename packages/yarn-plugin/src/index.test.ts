@@ -19,7 +19,7 @@ import { spawn, SpawnOptionsWithoutStdio } from 'node:child_process';
 import fs from 'fs-extra';
 import yaml from 'yaml';
 import { buildDepTreeFromFiles } from 'snyk-nodejs-lockfile-parser';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.setTimeout(30_000);
@@ -86,7 +86,7 @@ describe('Backstage yarn plugin', () => {
     let initialLockFileContent: string | undefined;
 
     beforeAll(async () => {
-      const { targetRoot } = findPaths(process.cwd());
+      const targetRoot = targetPaths.resolveRoot();
       await executeCommand('yarn', ['build'], {
         cwd: joinPath(targetRoot, 'packages/yarn-plugin'),
       });

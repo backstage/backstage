@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths, findOwnPaths } from '@backstage/cli-common';
+
+const ownPaths = findOwnPaths(__dirname);
 
 /* eslint-disable-next-line no-restricted-syntax */
-export const paths = findPaths(__dirname);
+export const paths = {
+  get ownDir() {
+    return ownPaths.resolve();
+  },
+  get ownRoot() {
+    return ownPaths.resolveRoot();
+  },
+  get targetDir() {
+    return targetPaths.resolve();
+  },
+  get targetRoot() {
+    return targetPaths.resolveRoot();
+  },
+  resolveOwn: ownPaths.resolve,
+  resolveOwnRoot: ownPaths.resolveRoot,
+  resolveTarget: targetPaths.resolve,
+  resolveTargetRoot: targetPaths.resolveRoot,
+};

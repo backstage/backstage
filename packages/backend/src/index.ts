@@ -32,7 +32,7 @@ const searchLoader = createBackendFeatureLoader({
   *loader({ config }) {
     yield import('@backstage/plugin-search-backend');
     yield import('@backstage/plugin-search-backend-module-catalog');
-    yield import('@backstage-community/plugin-search-backend-module-explore');
+    yield import('@backstage/plugin-search-backend-module-explore');
     yield import('@backstage/plugin-search-backend-module-techdocs');
     if (config.has('search.elasticsearch')) {
       yield import('@backstage/plugin-search-backend-module-elasticsearch');

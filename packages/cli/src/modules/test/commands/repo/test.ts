@@ -24,10 +24,13 @@ import { relative as relativePath } from 'node:path';
 import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
 
-import { runCheck, runOutput, targetPaths, findOwnPaths } from '@backstage/cli-common';
-
-const ownPaths = findOwnPaths(__dirname);
-import { isChildPath } from '@backstage/cli-common';
+import {
+  runCheck,
+  runOutput,
+  targetPaths,
+  findOwnPaths,
+  isChildPath,
+} from '@backstage/cli-common';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
 type JestProject = {
@@ -65,7 +68,7 @@ interface TestGlobal extends Global {
 async function readPackageTreeHashes(graph: PackageGraph) {
   const pkgs = Array.from(graph.values()).map(pkg => ({
     ...pkg,
-    path: relativePath(targetPaths.targetRoot, pkg.dir),
+    path: relativePath(targetPaths.resolveRoot(), pkg.dir),
   }));
   const output = await runOutput([
     'git',
@@ -164,7 +167,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
   // Only include our config if caller isn't passing their own config
   if (!hasFlags('-c', '--config')) {
-    args.push('--config', ownPaths.resolveOwn('config/jest.js'));
+    args.push('--config', findOwnPaths(__dirname).resolve('config/jest.js'));
   }
 
   if (!hasFlags('--passWithNoTests')) {
@@ -343,7 +346,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       async filterConfigs(projectConfigs, globalRootConfig) {
         const cacheEntries = await cache.read();
         const lockfile = await Lockfile.load(
-          targetPaths.resolveTargetRoot('yarn.lock'),
+          targetPaths.resolveRoot('yarn.lock'),
         );
         const getPackageTreeHash = await readPackageTreeHashes(graph);
 

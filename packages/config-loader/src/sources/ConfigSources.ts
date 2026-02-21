@@ -27,7 +27,7 @@ import {
 } from './RemoteConfigSource';
 import { ConfigSource, SubstitutionFunc } from './types';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
 /**
  * A target to read configuration from.
@@ -157,7 +157,7 @@ export class ConfigSources {
   static defaultForTargets(
     options: ConfigSourcesDefaultForTargetsOptions,
   ): ConfigSource {
-    const rootDir = options.rootDir ?? findPaths(process.cwd()).targetRoot;
+    const rootDir = options.rootDir ?? targetPaths.resolveRoot();
 
     const argSources = options.targets.map(arg => {
       if (arg.type === 'url') {

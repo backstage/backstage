@@ -26,45 +26,31 @@ import { dirname, resolve as resolvePath } from 'node:path';
 export type ResolveFunc = (...paths: string[]) => string;
 
 /**
- * Paths relative to the target project that the CLI is operating on, based on
- * `process.cwd()`. This can be imported directly — no `__dirname` needed.
- *
- * Lazily initialized on first access and re-resolved if `process.cwd()` changes.
+ * Resolved paths relative to the target project, based on `process.cwd()`.
+ * Lazily initialized on first property access. Re-resolves automatically
+ * when `process.cwd()` changes.
  *
  * @public
  */
 export type TargetPaths = {
-  // The location of the app that the cli is being executed in
-  targetDir: string;
+  /** Resolve a path relative to the target package directory. */
+  resolve: ResolveFunc;
 
-  // The monorepo root package of the app that the cli is being executed in.
-  targetRoot: string;
-
-  // Resolve a path relative to the app
-  resolveTarget: ResolveFunc;
-
-  // Resolve a path relative to the app repo root
-  resolveTargetRoot: ResolveFunc;
+  /** Resolve a path relative to the target repo root. */
+  resolveRoot: ResolveFunc;
 };
 
 /**
- * Paths relative to the package that the calling code lives in. Requires
- * `__dirname` to locate the package root.
+ * Resolved paths relative to a specific package in the repository.
  *
  * @public
  */
 export type OwnPaths = {
-  // Root dir of the package itself, containing package.json
-  ownDir: string;
+  /** Resolve a path relative to the package root. */
+  resolve: ResolveFunc;
 
-  // Monorepo root dir of the package. Only accessible when running inside Backstage repo.
-  ownRoot: string;
-
-  // Resolve a path relative to own package
-  resolveOwn: ResolveFunc;
-
-  // Resolve a path relative to own monorepo root. Only accessible when running inside Backstage repo.
-  resolveOwnRoot: ResolveFunc;
+  /** Resolve a path relative to the monorepo root containing the package. */
+  resolveRoot: ResolveFunc;
 };
 
 /**
@@ -211,41 +197,34 @@ function getTargetRoot(): string {
  * Lazily resolved paths relative to the target project. Import this directly
  * for cwd-based path resolution without needing `__dirname`.
  *
- * Re-resolves automatically if `process.cwd()` changes.
- *
  * @public
  * @example
  *
- * import { targetPaths } from '@backstage/cli-common';
+ * import { targetPaths } from '\@backstage/cli-common';
  *
- * const root = targetPaths.targetRoot;
- * const lockfile = targetPaths.resolveTargetRoot('yarn.lock');
+ * const lockfile = targetPaths.resolveRoot('yarn.lock');
  */
 export const targetPaths: TargetPaths = {
-  get targetDir() {
-    return getTargetDir();
-  },
-  get targetRoot() {
-    return getTargetRoot();
-  },
-  resolveTarget: (...paths) => resolvePath(getTargetDir(), ...paths),
-  resolveTargetRoot: (...paths) => resolvePath(getTargetRoot(), ...paths),
+  resolve: (...paths) => resolvePath(getTargetDir(), ...paths),
+  resolveRoot: (...paths) => resolvePath(getTargetRoot(), ...paths),
 };
 
 const ownPathsCache = new Map<string, OwnPaths>();
 
 /**
- * Find paths relative to the package that the calling code lives in. Cheap to
- * call repeatedly — results are cached per package root, and the package root
- * lookup uses a hierarchical cache so sibling directories share work.
+ * Find paths relative to the package that the calling code lives in.
+ *
+ * Results are cached per package root, and the package root lookup uses a
+ * hierarchical directory cache so that multiple calls from different
+ * subdirectories within the same package share work.
  *
  * @public
  * @example
  *
- * import { findOwnPaths } from '@backstage/cli-common';
+ * import { findOwnPaths } from '\@backstage/cli-common';
  *
- * const ownPaths = findOwnPaths(__dirname);
- * const config = ownPaths.resolveOwn('config/jest.js');
+ * const own = findOwnPaths(__dirname);
+ * const config = own.resolve('config/jest.js');
  */
 export function findOwnPaths(searchDir: string): OwnPaths {
   const ownDir = findOwnDir(searchDir);
@@ -263,12 +242,8 @@ export function findOwnPaths(searchDir: string): OwnPaths {
   };
 
   const paths: OwnPaths = {
-    ownDir,
-    get ownRoot() {
-      return getOwnRoot();
-    },
-    resolveOwn: (...p) => resolvePath(ownDir, ...p),
-    resolveOwnRoot: (...p) => resolvePath(getOwnRoot(), ...p),
+    resolve: (...p) => resolvePath(ownDir, ...p),
+    resolveRoot: (...p) => resolvePath(getOwnRoot(), ...p),
   };
 
   ownPathsCache.set(ownDir, paths);
@@ -290,21 +265,21 @@ export function findPaths(searchDir: string): Paths {
   const own = findOwnPaths(searchDir);
   return {
     get ownDir() {
-      return own.ownDir;
+      return own.resolve();
     },
     get ownRoot() {
-      return own.ownRoot;
+      return own.resolveRoot();
     },
     get targetDir() {
-      return targetPaths.targetDir;
+      return targetPaths.resolve();
     },
     get targetRoot() {
-      return targetPaths.targetRoot;
+      return targetPaths.resolveRoot();
     },
-    resolveOwn: own.resolveOwn,
-    resolveOwnRoot: own.resolveOwnRoot,
-    resolveTarget: targetPaths.resolveTarget,
-    resolveTargetRoot: targetPaths.resolveTargetRoot,
+    resolveOwn: own.resolve,
+    resolveOwnRoot: own.resolveRoot,
+    resolveTarget: targetPaths.resolve,
+    resolveTargetRoot: targetPaths.resolveRoot,
   };
 }
 

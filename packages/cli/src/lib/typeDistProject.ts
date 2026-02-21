@@ -25,7 +25,7 @@ import { targetPaths } from '@backstage/cli-common';
 
 export const createTypeDistProject = async () => {
   return new Project({
-    tsConfigFilePath: targetPaths.resolveTargetRoot('tsconfig.json'),
+    tsConfigFilePath: targetPaths.resolveRoot('tsconfig.json'),
     skipAddingFilesFromTsConfig: true,
   });
 };

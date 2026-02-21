@@ -99,7 +99,7 @@ describe('findTargetPackages', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest
-      .spyOn(targetPaths, 'resolveTargetRoot')
+      .spyOn(targetPaths, 'resolveRoot')
       .mockImplementation((...parts: string[]) => {
         return posix.resolve('/root', ...parts);
       });

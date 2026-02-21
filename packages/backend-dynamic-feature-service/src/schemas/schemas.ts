@@ -20,7 +20,7 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
 import fs from 'fs-extra';
 import * as path from 'node:path';
@@ -100,7 +100,7 @@ const dynamicPluginsSchemasServiceFactoryWithOptions = (
               config,
               logger,
               // eslint-disable-next-line no-restricted-syntax
-              backstageRoot: findPaths(__dirname).targetRoot,
+              backstageRoot: targetPaths.resolveRoot(),
               preferAlpha: true,
             });
 

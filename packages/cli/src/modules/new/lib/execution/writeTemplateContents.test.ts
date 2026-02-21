@@ -33,8 +33,8 @@ describe('writeTemplateContents', () => {
     mockDir.clear();
     jest.resetAllMocks();
     jest
-      .spyOn(targetPaths, 'resolveTargetRoot')
-      .mockImplementation((...args) => mockDir.resolve(...args));
+      .spyOn(targetPaths, 'resolveRoot')
+      .mockImplementation((...args: string[]) => mockDir.resolve(...args));
   });
 
   it('should write an empty template', async () => {

@@ -39,7 +39,7 @@ interface StartAppOptions {
 
 export async function startFrontend(options: StartAppOptions) {
   const packageJson = (await readJson(
-    resolvePath(options.targetDir ?? targetPaths.targetDir, 'package.json'),
+    resolvePath(options.targetDir ?? targetPaths.resolve(), 'package.json'),
   )) as BackstagePackageJson;
 
   if (!hasReactDomClient()) {
@@ -59,7 +59,7 @@ export async function startFrontend(options: StartAppOptions) {
     moduleFederationRemote: options.isModuleFederationRemote
       ? await getModuleFederationRemoteOptions(
           packageJson,
-          resolvePath(targetPaths.targetDir),
+          resolvePath(targetPaths.resolve()),
         )
       : undefined,
   });

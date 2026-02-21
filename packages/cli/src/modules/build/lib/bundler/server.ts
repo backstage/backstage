@@ -54,7 +54,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   checkReactVersion();
 
   const { name } = await fs.readJson(
-    resolvePath(options.targetDir ?? targetPaths.targetDir, 'package.json'),
+    resolvePath(options.targetDir ?? targetPaths.resolve(), 'package.json'),
   );
 
   let devServer: RspackDevServer | undefined = undefined;
@@ -272,7 +272,7 @@ function checkReactVersion() {
   try {
     // Make sure we're looking at the root of the target repo
     const reactPkgPath = require.resolve('react/package.json', {
-      paths: [targetPaths.targetRoot],
+      paths: [targetPaths.resolveRoot()],
     });
     const reactPkg = require(reactPkgPath);
     if (reactPkg.version.startsWith('16.')) {

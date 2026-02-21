@@ -19,7 +19,7 @@ import { targetPaths } from '@backstage/cli-common';
 
 
 export default async function clean() {
-  await fs.remove(targetPaths.resolveTarget('dist'));
-  await fs.remove(targetPaths.resolveTarget('dist-types'));
-  await fs.remove(targetPaths.resolveTarget('coverage'));
+  await fs.remove(targetPaths.resolve('dist'));
+  await fs.remove(targetPaths.resolve('dist-types'));
+  await fs.remove(targetPaths.resolve('coverage'));
 }

@@ -26,14 +26,14 @@ export async function command(opts: OptionValues) {
   const packages = await PackageGraph.listTargetPackages();
 
   const eslint = new ESLint({
-    cwd: targetPaths.targetDir,
+    cwd: targetPaths.resolve(),
     overrideConfig: {
       plugins: ['deprecation'],
       rules: {
         'deprecation/deprecation': 'error',
       },
       parserOptions: {
-        project: [targetPaths.resolveTargetRoot('tsconfig.json')],
+        project: [targetPaths.resolveRoot('tsconfig.json')],
       },
     },
     extensions: ['jsx', 'ts', 'tsx', 'mjs', 'cjs'],
@@ -53,7 +53,7 @@ export async function command(opts: OptionValues) {
           continue;
         }
 
-        const path = relativePath(targetPaths.targetRoot, result.filePath);
+        const path = relativePath(targetPaths.resolveRoot(), result.filePath);
         deprecations.push({
           path,
           message: message.message,

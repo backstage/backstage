@@ -32,7 +32,7 @@ export class SuccessCache {
    * location.
    */
   static trimPaths(input: string) {
-    return input.replaceAll(targetPaths.targetRoot, '');
+    return input.replaceAll(targetPaths.resolveRoot(), '');
   }
 
   constructor(name: string, basePath?: string) {

@@ -44,7 +44,7 @@ export async function startBackend(options: StartBackendOptions) {
 
 export async function startBackendPlugin(options: StartBackendOptions) {
   const hasDevIndexEntry = await fs.pathExists(
-    resolvePath(options.targetDir ?? targetPaths.targetDir, 'dev/index.ts'),
+    resolvePath(options.targetDir ?? targetPaths.resolve(), 'dev/index.ts'),
   );
   if (!hasDevIndexEntry) {
     console.warn(

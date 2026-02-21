@@ -17,9 +17,9 @@
 import fs from 'fs-extra';
 import semver from 'semver';
 import { findOwnPaths } from '@backstage/cli-common';
+import { Lockfile } from './versioning';
 
 const ownPaths = findOwnPaths(__dirname);
-import { Lockfile } from './versioning';
 
 /* eslint-disable @backstage/no-relative-monorepo-imports */
 /*
@@ -84,12 +84,12 @@ export const packageVersions: Record<string, string> = {
 };
 
 export function findVersion() {
-  const pkgContent = fs.readFileSync(ownPaths.resolveOwn('package.json'), 'utf8');
+  const pkgContent = fs.readFileSync(ownPaths.resolve('package.json'), 'utf8');
   return JSON.parse(pkgContent).version;
 }
 
 export const version = findVersion();
-export const isDev = fs.pathExistsSync(ownPaths.resolveOwn('src'));
+export const isDev = fs.pathExistsSync(ownPaths.resolve('src'));
 
 export function createPackageVersionProvider(
   lockfile?: Lockfile,

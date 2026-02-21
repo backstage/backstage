@@ -97,7 +97,7 @@ async function readBuildInfo() {
   }
 
   const { version: packageVersion } = await fs.readJson(
-    targetPaths.resolveTarget('package.json'),
+    targetPaths.resolve('package.json'),
   );
 
   return {

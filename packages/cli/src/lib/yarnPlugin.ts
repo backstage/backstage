@@ -36,7 +36,7 @@ const yarnRcSchema = z.object({
  * @returns Promise<boolean> - true if the plugin is installed, false otherwise
  */
 export async function getHasYarnPlugin(): Promise<boolean> {
-  const yarnRcPath = targetPaths.resolveTargetRoot('.yarnrc.yml');
+  const yarnRcPath = targetPaths.resolveRoot('.yarnrc.yml');
   const yarnRcContent = await fs.readFile(yarnRcPath, 'utf-8').catch(e => {
     if (e.code === 'ENOENT') {
       // gracefully continue in case the file doesn't exist

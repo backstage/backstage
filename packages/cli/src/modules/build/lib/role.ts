@@ -27,7 +27,7 @@ export async function findRoleFromCommand(
     return PackageRoles.getRoleInfo(opts.role)?.role;
   }
 
-  const pkg = await fs.readJson(targetPaths.resolveTarget('package.json'));
+  const pkg = await fs.readJson(targetPaths.resolve('package.json'));
   const info = PackageRoles.getRoleFromPackage(pkg);
   if (!info) {
     throw new Error(`Target package must have 'backstage.role' set`);

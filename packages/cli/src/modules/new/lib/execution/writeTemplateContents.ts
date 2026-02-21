@@ -29,7 +29,7 @@ export async function writeTemplateContents(
   template: PortableTemplate,
   input: PortableTemplateInput,
 ): Promise<{ targetDir: string }> {
-  const targetDir = targetPaths.resolveTargetRoot(input.packagePath);
+  const targetDir = targetPaths.resolveRoot(input.packagePath);
 
   if (await fs.pathExists(targetDir)) {
     throw new InputError(`Package '${input.packagePath}' already exists`);

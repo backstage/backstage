@@ -53,7 +53,7 @@ export async function createWorkspaceLinkingPlugins(
       /^react(?:-router)?(?:-dom)?$/,
       resource => {
         if (!relativePath(linkedRoot.dir, resource.context).startsWith('..')) {
-          resource.context = targetPaths.targetDir;
+          resource.context = targetPaths.resolve();
         }
       },
     ),

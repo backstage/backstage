@@ -117,7 +117,7 @@ export async function makeRollupConfigs(
   options: BuildOptions,
 ): Promise<RollupOptions[]> {
   const configs = new Array<RollupOptions>();
-  const targetDir = options.targetDir ?? targetPaths.targetDir;
+  const targetDir = options.targetDir ?? targetPaths.resolve();
 
   let targetPkg = options.packageJson;
   if (!targetPkg) {
@@ -285,9 +285,9 @@ export async function makeRollupConfigs(
     const input = Object.fromEntries(
       scriptEntryPoints.map(e => [
         e.name,
-        targetPaths.resolveTargetRoot(
+        targetPaths.resolveRoot(
           'dist-types',
-          relativePath(targetPaths.targetRoot, targetDir),
+          relativePath(targetPaths.resolveRoot(), targetDir),
           e.path.replace(/\.(?:ts|tsx)$/, '.d.ts'),
         ),
       ]),

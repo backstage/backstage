@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths, findOwnPaths } from '@backstage/cli-common';
 import { PackageGraph } from '@backstage/cli-node';
 import { Minimatch } from 'minimatch';
 import { isAbsolute, relative as relativePath } from 'node:path';
 
 /* eslint-disable-next-line no-restricted-syntax */
-export const paths = findPaths(__dirname);
+export const paths = {
+  get targetDir() {
+    return targetPaths.resolve();
+  },
+  get targetRoot() {
+    return targetPaths.resolveRoot();
+  },
+  get ownRoot() {
+    return findOwnPaths(__dirname).resolveRoot();
+  },
+  resolveTarget: targetPaths.resolve,
+  resolveTargetRoot: targetPaths.resolveRoot,
+  resolveOwnRoot: (...p: string[]) => findOwnPaths(__dirname).resolveRoot(...p),
+};
 
 /** @internal */
 export interface ResolvePackagesOptions {
@@ -41,7 +54,7 @@ export async function resolvePackagePaths(
     for (const path of providedPaths) {
       const matches = packages.some(
         ({ dir }) =>
-          new Minimatch(path).match(relativePath(paths.targetRoot, dir)) ||
+          new Minimatch(path).match(relativePath(targetPaths.resolveRoot(), dir)) ||
           isChildPath(dir, path),
       );
       if (!matches) {
@@ -57,7 +70,7 @@ export async function resolvePackagePaths(
     packages = packages.filter(({ dir }) =>
       providedPaths.some(
         path =>
-          new Minimatch(path).match(relativePath(paths.targetRoot, dir)) ||
+          new Minimatch(path).match(relativePath(targetPaths.resolveRoot(), dir)) ||
           isChildPath(dir, path),
       ),
     );
@@ -66,7 +79,7 @@ export async function resolvePackagePaths(
   if (include) {
     packages = packages.filter(pkg =>
       include.some(pattern =>
-        new Minimatch(pattern).match(relativePath(paths.targetRoot, pkg.dir)),
+        new Minimatch(pattern).match(relativePath(targetPaths.resolveRoot(), pkg.dir)),
       ),
     );
   }
@@ -76,13 +89,13 @@ export async function resolvePackagePaths(
       exclude.some(
         pattern =>
           !new Minimatch(pattern).match(
-            relativePath(paths.targetRoot, pkg.dir),
+            relativePath(targetPaths.resolveRoot(), pkg.dir),
           ),
       ),
     );
   }
 
-  return packages.map(pkg => relativePath(paths.targetRoot, pkg.dir));
+  return packages.map(pkg => relativePath(targetPaths.resolveRoot(), pkg.dir));
 }
 
 /** @internal */
