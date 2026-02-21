@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-node': patch
+'@backstage/plugin-scaffolder-node': minor
 ---
 
-Removed deprecated `bitbucket` integration from being used in the `parseRepoUrl` function. It will use the `bitbucketCloud` or `bitbucketServer` integrations instead.
+**BREAKING** Removed deprecated `bitbucket` integration from being used in the `parseRepoUrl` function. It will use the `bitbucketCloud` or `bitbucketServer` integrations instead.
