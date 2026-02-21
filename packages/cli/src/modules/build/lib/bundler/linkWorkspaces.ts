@@ -17,10 +17,8 @@
 import { relative as relativePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { rspack } from '@rspack/core';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 /**
  * This returns of collection of plugins that links a separate workspace into
@@ -55,7 +53,7 @@ export async function createWorkspaceLinkingPlugins(
       /^react(?:-router)?(?:-dom)?$/,
       resource => {
         if (!relativePath(linkedRoot.dir, resource.context).startsWith('..')) {
-          resource.context = paths.targetDir;
+          resource.context = targetPaths.targetDir;
         }
       },
     ),

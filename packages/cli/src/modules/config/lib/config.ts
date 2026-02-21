@@ -16,10 +16,8 @@
 
 import { ConfigSources, loadConfigSchema } from '@backstage/config-loader';
 import { AppConfig, ConfigReader } from '@backstage/config';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from '@backstage/cli-node';
 import { resolve as resolvePath } from 'node:path';
@@ -37,7 +35,7 @@ type Options = {
 };
 
 export async function loadCliConfig(options: Options) {
-  const targetDir = options.targetDir ?? paths.targetDir;
+  const targetDir = options.targetDir ?? targetPaths.targetDir;
 
   // Consider all packages in the monorepo when loading in config
   const { packages } = await getPackages(targetDir);
@@ -66,7 +64,7 @@ export async function loadCliConfig(options: Options) {
   const schema = await loadConfigSchema({
     dependencies: localPackageNames,
     // Include the package.json in the project root if it exists
-    packagePaths: [paths.resolveTargetRoot('package.json')],
+    packagePaths: [targetPaths.resolveTargetRoot('package.json')],
     noUndeclaredProperties: options.strict,
   });
 
@@ -76,7 +74,7 @@ export async function loadCliConfig(options: Options) {
       ? async name => process.env[name] || 'x'
       : undefined,
     watch: Boolean(options.watch),
-    rootDir: paths.targetRoot,
+    rootDir: targetPaths.targetRoot,
     argv: options.args.flatMap(t => ['--config', resolvePath(targetDir, t)]),
   });
 

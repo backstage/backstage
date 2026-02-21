@@ -16,15 +16,13 @@
 
 import fs from 'fs-extra';
 import { OptionValues } from 'commander';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 import { ESLint } from 'eslint';
 
 export default async (directories: string[], opts: OptionValues) => {
   const eslint = new ESLint({
-    cwd: paths.targetDir,
+    cwd: targetPaths.targetDir,
     fix: opts.fix,
     extensions: ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'],
   });
@@ -50,14 +48,14 @@ export default async (directories: string[], opts: OptionValues) => {
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
   if (opts.format === 'eslint-formatter-friendly') {
-    process.chdir(paths.targetRoot);
+    process.chdir(targetPaths.targetRoot);
   }
 
   const resultText = await formatter.format(results);
 
   if (resultText) {
     if (opts.outputFile) {
-      await fs.writeFile(paths.resolveTarget(opts.outputFile), resultText);
+      await fs.writeFile(targetPaths.resolveTarget(opts.outputFile), resultText);
     } else {
       console.log(resultText);
     }

@@ -20,14 +20,12 @@ import {
 } from '@backstage/cli-node';
 import { resolve as resolvePath } from 'node:path';
 import { Project, SourceFile, SyntaxKind, ts, Type } from 'ts-morph';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 export const createTypeDistProject = async () => {
   return new Project({
-    tsConfigFilePath: paths.resolveTargetRoot('tsconfig.json'),
+    tsConfigFilePath: targetPaths.resolveTargetRoot('tsconfig.json'),
     skipAddingFilesFromTsConfig: true,
   });
 };

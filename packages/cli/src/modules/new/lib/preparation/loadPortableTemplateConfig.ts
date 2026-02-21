@@ -16,10 +16,8 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, dirname, isAbsolute } from 'node:path';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 import { defaultTemplates } from '../defaultTemplates';
 import {
   PortableTemplateConfig,
@@ -93,7 +91,7 @@ export async function loadPortableTemplateConfig(
 ): Promise<PortableTemplateConfig> {
   const { overrides = {} } = options;
   const pkgPath =
-    options.packagePath ?? paths.resolveTargetRoot('package.json');
+    options.packagePath ?? targetPaths.resolveTargetRoot('package.json');
   const pkgJson = await fs.readJson(pkgPath);
 
   const parsed = pkgJsonWithNewConfigSchema.safeParse(pkgJson);

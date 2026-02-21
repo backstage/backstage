@@ -18,17 +18,15 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 
-import { run, findPaths } from '@backstage/cli-common';
+import { run, targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 export async function command(): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();
 
-  await fs.remove(paths.resolveTargetRoot('dist'));
-  await fs.remove(paths.resolveTargetRoot('dist-types'));
-  await fs.remove(paths.resolveTargetRoot('coverage'));
+  await fs.remove(targetPaths.resolveTargetRoot('dist'));
+  await fs.remove(targetPaths.resolveTargetRoot('dist-types'));
+  await fs.remove(targetPaths.resolveTargetRoot('coverage'));
 
   await Promise.all(
     Array.from(Array(10), async () => {

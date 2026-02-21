@@ -16,10 +16,8 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 import { runBackend } from '../../../lib/runner';
 
 interface StartBackendOptions {
@@ -46,7 +44,7 @@ export async function startBackend(options: StartBackendOptions) {
 
 export async function startBackendPlugin(options: StartBackendOptions) {
   const hasDevIndexEntry = await fs.pathExists(
-    resolvePath(options.targetDir ?? paths.targetDir, 'dev/index.ts'),
+    resolvePath(options.targetDir ?? targetPaths.targetDir, 'dev/index.ts'),
   );
   if (!hasDevIndexEntry) {
     console.warn(

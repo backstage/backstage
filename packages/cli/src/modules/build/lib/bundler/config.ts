@@ -29,10 +29,8 @@ import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
 import fs from 'fs-extra';
 import { optimization as optimizationConfig } from './optimization';
 import pickBy from 'lodash/pickBy';
-import { runOutput, findPaths } from '@backstage/cli-common';
+import { runOutput, targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const cliPaths = findPaths(__dirname);
 import { transforms } from './transforms';
 import { version } from '../../../../lib/version';
 import yn from 'yn';
@@ -99,7 +97,7 @@ async function readBuildInfo() {
   }
 
   const { version: packageVersion } = await fs.readJson(
-    cliPaths.resolveTarget('package.json'),
+    targetPaths.resolveTarget('package.json'),
   );
 
   return {

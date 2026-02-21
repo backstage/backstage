@@ -23,10 +23,8 @@ import {
   PackageGraph,
   PackageRoles,
 } from '@backstage/cli-node';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 import { buildFrontend } from '../../../lib/buildFrontend';
 import { buildBackend } from '../../../lib/buildBackend';
 import { isValidUrl } from '../../../lib/urls';
@@ -44,19 +42,19 @@ export async function command(opts: OptionValues): Promise<void> {
       if (isValidUrl(arg)) {
         return arg;
       }
-      return paths.resolveTarget(arg);
+      return targetPaths.resolveTarget(arg);
     });
 
     if (role === 'frontend') {
       return buildFrontend({
-        targetDir: paths.targetDir,
+        targetDir: targetPaths.targetDir,
         configPaths,
         writeStats: Boolean(opts.stats),
         webpack,
       });
     }
     return buildBackend({
-      targetDir: paths.targetDir,
+      targetDir: targetPaths.targetDir,
       configPaths,
       skipBuildDependencies: Boolean(opts.skipBuildDependencies),
       minify: Boolean(opts.minify),
@@ -79,7 +77,7 @@ export async function command(opts: OptionValues): Promise<void> {
   if (isModuleFederationRemote) {
     console.log('Building package as a module federation remote');
     return buildFrontend({
-      targetDir: paths.targetDir,
+      targetDir: targetPaths.targetDir,
       configPaths: [],
       writeStats: Boolean(opts.stats),
       isModuleFederationRemote,
@@ -102,7 +100,7 @@ export async function command(opts: OptionValues): Promise<void> {
   }
 
   const packageJson = (await fs.readJson(
-    paths.resolveTarget('package.json'),
+    targetPaths.resolveTarget('package.json'),
   )) as BackstagePackageJson;
 
   return buildPackage({

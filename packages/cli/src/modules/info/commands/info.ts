@@ -16,10 +16,9 @@
 
 import { version as cliVersion } from '../../../../package.json';
 import os from 'node:os';
-import { runOutput, findPaths } from '@backstage/cli-common';
+import { runOutput, targetPaths, findOwnPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
+const ownPaths = findOwnPaths(__dirname);
 
 import { Lockfile } from '../../../lib/versioning';
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
@@ -59,9 +58,9 @@ function hasBackstageField(packageName: string, targetPath: string): boolean {
 export default async (options: InfoOptions) => {
   await new Promise(async () => {
     const yarnVersion = await runOutput(['yarn', '--version']);
-    const isLocal = fs.existsSync(paths.resolveOwn('./src'));
+    const isLocal = fs.existsSync(ownPaths.resolveOwn('./src'));
 
-    const backstageFile = paths.resolveTargetRoot('backstage.json');
+    const backstageFile = targetPaths.resolveTargetRoot('backstage.json');
     let backstageVersion = 'N/A';
     if (fs.existsSync(backstageFile)) {
       try {
@@ -86,9 +85,9 @@ export default async (options: InfoOptions) => {
       backstage: backstageVersion,
     };
 
-    const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+    const lockfilePath = targetPaths.resolveTargetRoot('yarn.lock');
     const lockfile = await Lockfile.load(lockfilePath);
-    const targetPath = paths.targetRoot;
+    const targetPath = targetPaths.targetRoot;
 
     // Get workspace package names and their versions
     const workspacePackages = new Map<string, string>();

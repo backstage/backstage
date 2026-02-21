@@ -61,7 +61,6 @@
     "@backstage/plugin-search-backend": "workspace:^",
     "@backstage/plugin-search-backend-module-catalog": "workspace:^",
     "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^",
-    "@backstage/plugin-search-backend-module-explore": "workspace:^",
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-signals-backend": "workspace:^",
@@ -69,7 +68,8 @@
     "@opentelemetry/auto-instrumentations-node": "^0.67.0",
     "@opentelemetry/exporter-prometheus": "^0.211.0",
     "@opentelemetry/sdk-node": "^0.211.0",
-    "example-app": "link:../app"
+    "example-app": "link:../app",
+    "@backstage-community/plugin-search-backend-module-explore": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

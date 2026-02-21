@@ -16,10 +16,8 @@
 
 import fs from 'fs-extra';
 import { OptionValues } from 'commander';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 import { PackageRoles, PackageRole } from '@backstage/cli-node';
 
 export async function findRoleFromCommand(
@@ -29,7 +27,7 @@ export async function findRoleFromCommand(
     return PackageRoles.getRoleInfo(opts.role)?.role;
   }
 
-  const pkg = await fs.readJson(paths.resolveTarget('package.json'));
+  const pkg = await fs.readJson(targetPaths.resolveTarget('package.json'));
   const info = PackageRoles.getRoleFromPackage(pkg);
   if (!info) {
     throw new Error(`Target package must have 'backstage.role' set`);

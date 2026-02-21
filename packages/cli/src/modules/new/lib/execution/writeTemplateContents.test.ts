@@ -17,10 +17,8 @@
 import { relative as relativePath } from 'node:path';
 import { writeTemplateContents } from './writeTemplateContents';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 const baseConfig = {
   version: '0.1.0',
@@ -35,7 +33,7 @@ describe('writeTemplateContents', () => {
     mockDir.clear();
     jest.resetAllMocks();
     jest
-      .spyOn(paths, 'resolveTargetRoot')
+      .spyOn(targetPaths, 'resolveTargetRoot')
       .mockImplementation((...args) => mockDir.resolve(...args));
   });
 

@@ -22,16 +22,14 @@ import { PortableTemplate, PortableTemplateInput } from '../types';
 import { ForwardedError, InputError } from '@backstage/errors';
 import { isMonoRepo as getIsMonoRepo } from '@backstage/cli-node';
 import { PortableTemplater } from './PortableTemplater';
-import { isChildPath, findPaths } from '@backstage/cli-common';
+import { isChildPath, targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 export async function writeTemplateContents(
   template: PortableTemplate,
   input: PortableTemplateInput,
 ): Promise<{ targetDir: string }> {
-  const targetDir = paths.resolveTargetRoot(input.packagePath);
+  const targetDir = targetPaths.resolveTargetRoot(input.packagePath);
 
   if (await fs.pathExists(targetDir)) {
     throw new InputError(`Package '${input.packagePath}' already exists`);

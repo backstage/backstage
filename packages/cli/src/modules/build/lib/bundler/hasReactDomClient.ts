@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 export function hasReactDomClient() {
   try {
     require.resolve('react-dom/client', {
-      paths: [paths.targetDir],
+      paths: [targetPaths.targetDir],
     });
     return true;
   } catch {

@@ -21,10 +21,8 @@ import { IpcServer, ServerDataStore } from '../ipc';
 import debounce from 'lodash/debounce';
 import { fileURLToPath } from 'node:url';
 import { isAbsolute as isAbsolutePath } from 'node:path';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 import spawn from 'cross-spawn';
 
 const loaderArgs = [
@@ -138,7 +136,7 @@ export async function runBackend(options: RunBackendOptions) {
           ...process.env,
           BACKSTAGE_CLI_LINKED_WORKSPACE: options.linkedWorkspace,
           BACKSTAGE_CLI_CHANNEL: '1',
-          ESBK_TSCONFIG_PATH: paths.resolveTargetRoot('tsconfig.json'),
+          ESBK_TSCONFIG_PATH: targetPaths.resolveTargetRoot('tsconfig.json'),
         },
         serialization: 'advanced',
       },

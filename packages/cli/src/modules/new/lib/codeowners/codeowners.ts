@@ -16,10 +16,8 @@
 
 import fs from 'fs-extra';
 import path from 'node:path';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 const TEAM_ID_RE = /^@[-\w]+\/[-\w]+$/;
 const USER_ID_RE = /^@[-\w]+$/;
@@ -85,7 +83,7 @@ export async function addCodeownersEntry(
 
   let filePath = codeownersFilePath;
   if (!filePath) {
-    filePath = await getCodeownersFilePath(paths.targetRoot);
+    filePath = await getCodeownersFilePath(targetPaths.targetRoot);
     if (!filePath) {
       return false;
     }

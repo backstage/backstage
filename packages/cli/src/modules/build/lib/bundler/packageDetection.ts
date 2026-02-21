@@ -20,10 +20,8 @@ import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import PQueue from 'p-queue';
 import { dirname, join as joinPath, resolve as resolvePath } from 'node:path';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const cliPaths = findPaths(__dirname);
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
 
@@ -149,7 +147,7 @@ export async function createDetectedModulesEntryPoint(options: {
   // Previous versions of the CLI would write the detected modules file to the
   // root `node_modules`, this makes sure that doesn't exist to minimize risk of conflicts
   const legacyDetectedModulesPath = joinPath(
-    cliPaths.targetRoot,
+    targetPaths.targetRoot,
     'node_modules',
     `${DETECTED_MODULES_MODULE_NAME}.js`,
   );

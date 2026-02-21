@@ -22,10 +22,8 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import { rspack } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
 
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const libPaths = findPaths(__dirname);
 import { loadCliConfig } from '../../../config/lib/config';
 import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
@@ -56,7 +54,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   checkReactVersion();
 
   const { name } = await fs.readJson(
-    resolvePath(options.targetDir ?? libPaths.targetDir, 'package.json'),
+    resolvePath(options.targetDir ?? targetPaths.targetDir, 'package.json'),
   );
 
   let devServer: RspackDevServer | undefined = undefined;
@@ -274,7 +272,7 @@ function checkReactVersion() {
   try {
     // Make sure we're looking at the root of the target repo
     const reactPkgPath = require.resolve('react/package.json', {
-      paths: [libPaths.targetRoot],
+      paths: [targetPaths.targetRoot],
     });
     const reactPkg = require(reactPkgPath);
     if (reactPkg.version.startsWith('16.')) {

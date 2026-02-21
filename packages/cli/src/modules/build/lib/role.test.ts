@@ -22,11 +22,11 @@ const mockDir = createMockDirectory();
 
 jest.mock('@backstage/cli-common', () => ({
   ...jest.requireActual('@backstage/cli-common'),
-  findPaths: () => ({
+  targetPaths: {
     resolveTarget(filename: string) {
       return mockDir.resolve(filename);
     },
-  }),
+  },
 }));
 
 describe('findRoleFromCommand', () => {

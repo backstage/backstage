@@ -21,11 +21,11 @@ const mockDir = createMockDirectory();
 
 jest.mock('@backstage/cli-common', () => ({
   ...jest.requireActual('@backstage/cli-common'),
-  findPaths: () => ({
+  targetPaths: {
     resolveTargetRoot(filename: string) {
       return mockDir.resolve(filename);
     },
-  }),
+  },
 }));
 
 describe('getHasYarnPlugin', () => {

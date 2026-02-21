@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BACKSTAGE_JSON, bootstrapEnvProxyAgents, findPaths } from '@backstage/cli-common';
+import { BACKSTAGE_JSON, bootstrapEnvProxyAgents, targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 bootstrapEnvProxyAgents();
 
@@ -71,7 +69,7 @@ function extendsDefaultPattern(pattern: string): boolean {
 }
 
 export default async (opts: OptionValues) => {
-  const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+  const lockfilePath = targetPaths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
   const hasYarnPlugin = await getHasYarnPlugin();
 
@@ -143,7 +141,7 @@ export default async (opts: OptionValues) => {
   }
 
   // First we discover all Backstage dependencies within our own repo
-  const dependencyMap = await mapDependencies(paths.targetDir, pattern);
+  const dependencyMap = await mapDependencies(targetPaths.targetDir, pattern);
 
   // Next check with the package registry to see which dependency ranges we need to bump
   const versionBumps = new Map<string, PkgVersionInfo[]>();
@@ -420,7 +418,7 @@ export function createVersionFinder(options: {
 }
 
 function getBackstageJsonPath() {
-  return paths.resolveTargetRoot(BACKSTAGE_JSON);
+  return targetPaths.resolveTargetRoot(BACKSTAGE_JSON);
 }
 
 async function getBackstageJson() {

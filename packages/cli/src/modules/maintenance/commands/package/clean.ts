@@ -15,13 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 export default async function clean() {
-  await fs.remove(paths.resolveTarget('dist'));
-  await fs.remove(paths.resolveTarget('dist-types'));
-  await fs.remove(paths.resolveTarget('coverage'));
+  await fs.remove(targetPaths.resolveTarget('dist'));
+  await fs.remove(targetPaths.resolveTarget('dist-types'));
+  await fs.remove(targetPaths.resolveTarget('coverage'));
 }

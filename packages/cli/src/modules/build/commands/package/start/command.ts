@@ -18,16 +18,14 @@ import { OptionValues } from 'commander';
 import { startPackage } from './startPackage';
 import { resolveLinkedWorkspace } from './resolveLinkedWorkspace';
 import { findRoleFromCommand } from '../../../lib/role';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
 
 export async function command(opts: OptionValues): Promise<void> {
   await startPackage({
     role: await findRoleFromCommand(opts),
     entrypoint: opts.entrypoint,
-    targetDir: paths.targetDir,
+    targetDir: targetPaths.targetDir,
     configPaths: opts.config as string[],
     checksEnabled: Boolean(opts.check),
     linkedWorkspace: await resolveLinkedWorkspace(opts.link),

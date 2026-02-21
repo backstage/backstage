@@ -16,10 +16,9 @@
 
 import { Command, OptionValues } from 'commander';
 
-import { runCheck, findPaths } from '@backstage/cli-common';
+import { runCheck, findOwnPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const paths = findPaths(__dirname);
+const ownPaths = findOwnPaths(__dirname);
 
 function includesAnyOf(hayStack: string[], ...needles: string[]) {
   for (const needle of needles) {
@@ -41,7 +40,7 @@ export default async (_opts: OptionValues, cmd: Command) => {
 
   // Only include our config if caller isn't passing their own config
   if (!includesAnyOf(args, '-c', '--config')) {
-    args.push('--config', paths.resolveOwn('config/jest.js'));
+    args.push('--config', ownPaths.resolveOwn('config/jest.js'));
   }
 
   if (!includesAnyOf(args, '--no-passWithNoTests', '--passWithNoTests=false')) {
