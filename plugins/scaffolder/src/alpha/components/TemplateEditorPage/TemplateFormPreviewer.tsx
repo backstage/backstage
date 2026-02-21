@@ -31,6 +31,7 @@ import {
   FieldExtensionOptions,
   FormProps,
 } from '@backstage/plugin-scaffolder-react';
+import { JsonObject } from '@backstage/types';
 
 import { editRouteRef } from '../../../routes';
 
@@ -39,6 +40,7 @@ import {
   TemplateEditorLayoutToolbar,
   TemplateEditorLayoutFiles,
   TemplateEditorLayoutPreview,
+  TemplateEditorLayoutConsole,
   TemplateEditorPanels,
 } from './TemplateEditorLayout';
 import { TemplateEditorToolbar } from './TemplateEditorToolbar';
@@ -49,6 +51,8 @@ import {
 } from './TemplateEditorToolbarTemplatesMenu';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
+import { DryRunProvider, useDryRun } from './DryRunContext';
+import { DryRunResults } from './DryRunResults';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
@@ -107,13 +111,15 @@ const useStyles = makeStyles(
       "toolbar"
       "textArea"
       "preview"
+      "results"
     `,
       [theme.breakpoints.up('md')]: {
         gridTemplateAreas: `
       "toolbar toolbar"
       "textArea preview"
+      "results results"
     `,
-        gridTemplateRows: 'auto 1fr',
+        gridTemplateRows: 'auto 1fr auto',
         gridTemplateColumns: '1fr',
       },
     },
@@ -195,6 +201,113 @@ export const TemplateFormPreviewer = ({
   );
 
   return (
+    <DryRunProvider>
+      <TemplateFormPreviewerContent
+        classes={classes}
+        customFieldExtensions={customFieldExtensions}
+        handleCloseDirectory={handleCloseDirectory}
+        templateOptions={templateOptions}
+        selectedTemplate={selectedTemplate}
+        handleSelectChange={handleSelectChange}
+        templateYaml={templateYaml}
+        setTemplateYaml={setTemplateYaml}
+        errorText={errorText}
+        setErrorText={setErrorText}
+        layouts={layouts}
+        formProps={formProps}
+      />
+    </DryRunProvider>
+  );
+};
+
+function TemplateFormPreviewerContent(props: {
+  classes: ReturnType<typeof useStyles>;
+  customFieldExtensions: FieldExtensionOptions<any, any>[];
+  handleCloseDirectory: () => void;
+  templateOptions: TemplateOption[];
+  selectedTemplate: TemplateOption | undefined;
+  handleSelectChange: (selected: TemplateOption) => void;
+  templateYaml: string;
+  setTemplateYaml: (yaml: string) => void;
+  errorText: string | undefined;
+  setErrorText: (errorText?: string) => void;
+  layouts: LayoutOptions[];
+  formProps?: FormProps;
+}) {
+  const {
+    classes,
+    customFieldExtensions,
+    handleCloseDirectory,
+    templateOptions,
+    selectedTemplate,
+    handleSelectChange,
+    templateYaml,
+    setTemplateYaml,
+    errorText,
+    setErrorText,
+    layouts,
+    formProps,
+  } = props;
+
+  const alertApi = useApi(alertApiRef);
+  const dryRun = useDryRun();
+
+  const handleDryRun = useCallback(
+    async (data: JsonObject) => {
+      try {
+        const fullTemplate = `apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: template-preview
+  title: Template Preview
+spec:
+  type: service
+${templateYaml
+  .split('\n')
+  .map(line => `  ${line}`)
+  .join('\n')}`;
+
+        const urlPattern = /url:\s*['".]?\.\/([\w\-/.]+)['"']?/g;
+        const directories = new Set<string>();
+        let match = urlPattern.exec(templateYaml);
+
+        while (match !== null) {
+          const dirPath = match[1];
+          directories.add(dirPath);
+          match = urlPattern.exec(templateYaml);
+        }
+
+        const files = Array.from(directories).map(dir => ({
+          path: `${dir}/.gitkeep`,
+          content: '',
+        }));
+
+        if (files.length === 0) {
+          files.push({
+            path: 'template/.gitkeep',
+            content: '',
+          });
+        }
+
+        await dryRun.execute({
+          templateContent: fullTemplate,
+          values: data,
+          files,
+        });
+        setErrorText();
+        alertApi.post({
+          message: 'Dry run completed successfully',
+          severity: 'success',
+        });
+      } catch (e) {
+        setErrorText(String(e.cause || e));
+        throw e;
+      }
+    },
+    [alertApi, dryRun, templateYaml, setErrorText],
+  );
+
+  return (
     <TemplateEditorLayout classes={{ root: classes.root }}>
       <TemplateEditorLayoutToolbar>
         <TemplateEditorToolbar fieldExtensions={customFieldExtensions}>
@@ -228,10 +341,14 @@ export const TemplateFormPreviewer = ({
               setErrorText={setErrorText}
               layouts={layouts}
               formProps={formProps}
+              onDryRun={handleDryRun}
             />
           </TemplateEditorLayoutPreview>
         }
       />
+      <TemplateEditorLayoutConsole>
+        <DryRunResults />
+      </TemplateEditorLayoutConsole>
     </TemplateEditorLayout>
   );
-};
+}
