@@ -15,7 +15,7 @@
  */
 
 import { Knex } from 'knex';
-import { DbRefreshStateRow } from '../../tables';
+import { DbFinalEntitiesRow } from '../../tables';
 
 /**
  * Marks a single entity as having been stitched.
@@ -36,11 +36,13 @@ export async function markDeferredStitchCompleted(option: {
 }): Promise<void> {
   const { knex, entityRef, stitchTicket } = option;
 
-  await knex<DbRefreshStateRow>('refresh_state')
+  await knex<DbFinalEntitiesRow>('final_entities')
     .update({
       next_stitch_at: null,
-      next_stitch_ticket: null,
+      // Intentionally leave stitch_ticket at its old value; we are supposed to
+      // only ever call this function when we had a complete stitch run and the
+      // next one should set this string to a new random value.
     })
     .where('entity_ref', '=', entityRef)
-    .andWhere('next_stitch_ticket', '=', stitchTicket);
+    .andWhere('stitch_ticket', '=', stitchTicket);
 }

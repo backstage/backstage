@@ -39,8 +39,6 @@ describe('markForStitching', () => {
           errors: '[]',
           next_update_at: knex.fn.now(),
           last_discovery_at: knex.fn.now(),
-          next_stitch_at: null,
-          next_stitch_ticket: null,
         },
         {
           entity_id: '2',
@@ -50,8 +48,6 @@ describe('markForStitching', () => {
           errors: '[]',
           next_update_at: knex.fn.now(),
           last_discovery_at: knex.fn.now(),
-          next_stitch_at: null,
-          next_stitch_ticket: null,
         },
         {
           entity_id: '3',
@@ -61,8 +57,6 @@ describe('markForStitching', () => {
           errors: '[]',
           next_update_at: knex.fn.now(),
           last_discovery_at: knex.fn.now(),
-          next_stitch_at: null,
-          next_stitch_ticket: null,
         },
         {
           entity_id: '4',
@@ -72,19 +66,36 @@ describe('markForStitching', () => {
           errors: '[]',
           next_update_at: knex.fn.now(),
           last_discovery_at: knex.fn.now(),
+        },
+      ]);
+      // Entity 4 has an existing final_entities row with old stitch data
+      await knex<DbFinalEntitiesRow>('final_entities').insert([
+        {
+          entity_id: '4',
+          entity_ref: 'k:ns/four',
+          hash: 'old',
+          stitch_ticket: 'old',
           next_stitch_at: '1971-01-01T00:00:00.000',
-          next_stitch_ticket: 'old',
         },
       ]);
 
       async function result() {
-        return knex<DbRefreshStateRow>('refresh_state')
-          .select('entity_id', 'next_stitch_at', 'next_stitch_ticket')
+        return knex<DbFinalEntitiesRow>('final_entities')
+          .select('entity_id', 'next_stitch_at', 'stitch_ticket')
           .orderBy('entity_id', 'asc');
       }
 
+      // Initially only entity 4 has a final_entities row
       const original = await result();
+      expect(original).toEqual([
+        {
+          entity_id: '4',
+          next_stitch_at: expect.anything(),
+          stitch_ticket: 'old',
+        },
+      ]);
 
+      // Calling with empty set should not create any new rows
       await markForStitching({
         knex,
         strategy: {
@@ -95,16 +106,14 @@ describe('markForStitching', () => {
         entityRefs: new Set(),
       });
       await expect(result()).resolves.toEqual([
-        { entity_id: '1', next_stitch_at: null, next_stitch_ticket: null },
-        { entity_id: '2', next_stitch_at: null, next_stitch_ticket: null },
-        { entity_id: '3', next_stitch_at: null, next_stitch_ticket: null },
         {
           entity_id: '4',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: 'old',
+          stitch_ticket: 'old',
         },
       ]);
 
+      // Mark entity 1 - should create a new final_entities row
       await markForStitching({
         knex,
         strategy: {
@@ -118,17 +127,16 @@ describe('markForStitching', () => {
         {
           entity_id: '1',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: expect.anything(),
+          stitch_ticket: expect.anything(),
         },
-        { entity_id: '2', next_stitch_at: null, next_stitch_ticket: null },
-        { entity_id: '3', next_stitch_at: null, next_stitch_ticket: null },
         {
           entity_id: '4',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: 'old',
+          stitch_ticket: 'old',
         },
       ]);
 
+      // Mark entity 2 - should create another new final_entities row
       await markForStitching({
         knex,
         strategy: {
@@ -142,21 +150,21 @@ describe('markForStitching', () => {
         {
           entity_id: '1',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: expect.anything(),
+          stitch_ticket: expect.anything(),
         },
         {
           entity_id: '2',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: expect.anything(),
+          stitch_ticket: expect.anything(),
         },
-        { entity_id: '3', next_stitch_at: null, next_stitch_ticket: null },
         {
           entity_id: '4',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: 'old',
+          stitch_ticket: 'old',
         },
       ]);
 
+      // Mark entities 3 and 4 by ID - entity 3 creates new row, entity 4 updates existing
       await markForStitching({
         knex,
         strategy: {
@@ -170,33 +178,29 @@ describe('markForStitching', () => {
         {
           entity_id: '1',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: expect.anything(),
+          stitch_ticket: expect.anything(),
         },
         {
           entity_id: '2',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: expect.anything(),
+          stitch_ticket: expect.anything(),
         },
         {
           entity_id: '3',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: expect.anything(),
+          stitch_ticket: expect.anything(),
         },
         {
           entity_id: '4',
           next_stitch_at: expect.anything(),
-          next_stitch_ticket: expect.anything(),
+          stitch_ticket: expect.anything(),
         },
       ]);
 
-      // It overwrites timers and tickets if they existed before
+      // Entity 4's ticket should have been updated (was 'old', now something else)
       const final = await result();
-      for (let i = 0; i < final.length; ++i) {
-        expect(original[i].next_stitch_at).not.toEqual(final[i].next_stitch_at);
-        expect(original[i].next_stitch_ticket).not.toEqual(
-          final[i].next_stitch_ticket,
-        );
-      }
+      const entity4Final = final.find(r => r.entity_id === '4');
+      expect(entity4Final?.stitch_ticket).not.toEqual('old');
     },
   );
 
@@ -461,8 +465,6 @@ describe('markForStitching', () => {
           errors: '[]',
           next_update_at: knex.fn.now(),
           last_discovery_at: knex.fn.now(),
-          next_stitch_at: null,
-          next_stitch_ticket: null,
         })),
       );
 
@@ -558,15 +560,15 @@ describe('markForStitching', () => {
       expect(deadlockErrors).toEqual([]);
 
       // Verify final state - all entities should have been marked for stitching
-      const finalState = await knex<DbRefreshStateRow>('refresh_state')
-        .select('entity_ref', 'next_stitch_at', 'next_stitch_ticket')
+      const finalState = await knex<DbFinalEntitiesRow>('final_entities')
+        .select('entity_ref', 'next_stitch_at', 'stitch_ticket')
         .whereNotNull('next_stitch_at')
         .orderBy('entity_ref');
 
       expect(finalState.length).toBeGreaterThan(0);
       finalState.forEach(row => {
         expect(row.next_stitch_at).not.toBeNull();
-        expect(row.next_stitch_ticket).not.toBeNull();
+        expect(row.stitch_ticket).not.toBeNull();
       });
     },
   );
