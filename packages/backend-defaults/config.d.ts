@@ -784,6 +784,88 @@ export interface Config {
                * Defaults to `false`.
                */
               noNamespaceAffectsAll?: boolean;
+              /**
+               * Socket settings passed to the Redis client. See
+               * https://github.com/redis/node-redis/blob/master/docs/client-configuration.md
+               * and https://keyv.org/docs/storage-adapters/redis/#keyv-redis-options.
+               */
+              socket?: {
+                /**
+                 * Enables TCP keepalive. When `true`, uses the Redis client default
+                 * delay (5000ms in node-redis). If unset, Backstage does not
+                 * override the Redis client defaults. If only
+                 * `keepAliveInitialDelay` is set, keepalive is enabled with that
+                 * delay.
+                 *
+                 * See https://github.com/redis/node-redis/blob/master/docs/client-configuration.md
+                 * and https://nodejs.org/api/net.html#socketsetkeepaliveenable-initialdelay
+                 */
+                keepAlive?: boolean;
+                /**
+                 * Initial delay before TCP keepalive probes. Supports a number in
+                 * milliseconds or a human duration string like '10s'.
+                 */
+                keepAliveInitialDelay?: number | HumanDuration | string;
+                /**
+                 * The maximum duration the socket can remain idle before being
+                 * automatically closed. Supports a number in milliseconds or a
+                 * human duration string like '10s'.
+                 */
+                socketTimeout?: number | HumanDuration | string;
+              };
+              /**
+               * Send `PING` command at interval. Supports a number in milliseconds
+               * or a human duration string like '10s'. Useful for environments
+               * with idle connection timeouts.
+               */
+              pingInterval?: number | HumanDuration | string;
+              /**
+               * Optional reconnect strategy configuration. When set, Backstage
+               * creates a reconnect strategy function and passes it to the Redis
+               * client. The strategy is used when node-redis detects a socket
+               * close or error (e.g. the connection was dropped by a load
+               * balancer or NAT).
+               *
+               * Note: half-open connections are not always detected by TCP. If
+               * the socket stays idle and the network silently drops it, the
+               * reconnect strategy will not run until the client observes an
+               * error. Use periodic traffic (pinger) or infrastructure/OS
+               * keepalive settings to avoid long idle periods.
+               *
+               * The strategy implements exponential backoff with jitter:
+               * delay = min(2^retries * baseDelayMs, maxDelayMs) ± jitterMs.
+               *
+               * See
+               * https://keyv.org/docs/storage-adapters/redis/#gracefully-handling-errors-and-timeouts.
+               */
+              reconnectStrategy?: {
+                /**
+                 * Base delay in milliseconds for exponential backoff. Defaults to
+                 * 100ms when reconnectStrategy is configured.
+                 */
+                baseDelayMs?: number;
+                /**
+                 * Max delay in milliseconds for exponential backoff. Defaults to
+                 * 2000ms when reconnectStrategy is configured.
+                 */
+                maxDelayMs?: number;
+                /**
+                 * Random jitter in milliseconds added to each delay (± jitter).
+                 * Defaults to 50ms when reconnectStrategy is configured.
+                 */
+                jitterMs?: number;
+                /**
+                 * Maximum number of retries before giving up. When unset, retries
+                 * are unbounded.
+                 */
+                maxRetries?: number;
+                /**
+                 * When true, stop reconnecting on socket timeout errors. This is
+                 * useful when you want timeouts to be treated as fatal and rely
+                 * on higher-level retry logic.
+                 */
+                stopOnSocketTimeout?: boolean;
+              };
             };
             /**
              * An optional Redis cluster configuration.
