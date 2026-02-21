@@ -55,12 +55,10 @@ defined in
 [`package.json`](https://github.com/backstage/backstage/blob/master/package.json):
 
 ```json
- "workspaces": {
-    "packages": [
-      "packages/*",
-      "plugins/*"
-    ]
-  },
+  "workspaces": [
+    "packages/*",
+    "plugins/*"
+  ],
 ```
 
 Let's look at them individually.
