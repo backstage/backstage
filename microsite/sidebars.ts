@@ -409,6 +409,11 @@ export default {
         'plugins/internationalization',
         'plugins/analytics',
         'plugins/feature-flags',
+        'plugins/mcp-actions-backend',
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2405e964d2c1 (docs: surface mcp-actions-backend in main docs)
         sidebarElementWithIndex(
           {
             label: 'OpenAPI',
