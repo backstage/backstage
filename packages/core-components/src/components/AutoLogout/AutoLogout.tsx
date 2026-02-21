@@ -231,18 +231,35 @@ const parseConfig = (
 export const AutoLogout = (props: AutoLogoutProps): JSX.Element | null => {
   const identityApi = useApi(identityApiRef);
   const configApi = useApi(configApiRef);
-  const [isLogged, setIsLogged] = useState(false);
+  const [isLogged, setIsLogged] = useState<boolean | null>(null);
+  const lastSeenOnlineStore: TimestampStore = useMemo(
+    () => new DefaultTimestampStore(LAST_SEEN_ONLINE_STORAGE_KEY),
+    [],
+  );
+
   useEffect(() => {
-    // if the user is not logged in, the autologout feature won't affect the app even if enabled
     async function isLoggedIn(identity: IdentityApi) {
-      if ((await identity.getCredentials()).token) {
-        setIsLogged(true);
-      } else {
+      try {
+        // Add timeout if identity.getCredentials() hangs/takes too long to return
+        setTimeout(() => {
+          if (isLogged === null || isLogged === false) {
+            lastSeenOnlineStore.delete();
+          }
+        }, 3000);
+        const creds = await identity.getCredentials();
+        if (creds?.token) {
+          setIsLogged(true);
+        } else {
+          setIsLogged(false);
+          lastSeenOnlineStore.delete();
+        }
+      } catch (err) {
         setIsLogged(false);
+        lastSeenOnlineStore.delete();
       }
     }
     isLoggedIn(identityApi);
-  }, [identityApi]);
+  }, [isLogged, lastSeenOnlineStore, identityApi]);
 
   const {
     enabled,
@@ -274,10 +291,6 @@ export const AutoLogout = (props: AutoLogoutProps): JSX.Element | null => {
     }
   }, [idleTimeoutMinutes, promptBeforeIdleSeconds]);
 
-  const lastSeenOnlineStore: TimestampStore = useMemo(
-    () => new DefaultTimestampStore(LAST_SEEN_ONLINE_STORAGE_KEY),
-    [],
-  );
   const [promptOpen, setPromptOpen] = useState<boolean>(false);
 
   const [remainingTimeCountdown, setRemainingTimeCountdown] =
@@ -285,7 +298,8 @@ export const AutoLogout = (props: AutoLogoutProps): JSX.Element | null => {
 
   useLogoutDisconnectedUserEffect({
     enableEffect: logoutIfDisconnected,
-    autologoutIsEnabled: enabled && isLogged,
+    autologoutIsEnabled: enabled,
+    isLoggedIn: isLogged,
     idleTimeoutSeconds: idleTimeoutMinutes * 60,
     lastSeenOnlineStore,
     identityApi,
