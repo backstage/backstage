@@ -1,0 +1,10 @@
+---
+title: Agent Forge
+author: CNOE Community
+authorUrl: https://cnoe.io
+category: Development
+description: An AI chat plugin for Backstage enabling interaction with multi-agentic AI systems for platform engineering tasks.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/agent-forge/plugins/agent-forge/README.md
+npmPackageName: '@backstage-community/plugin-agent-forge'
+addedDate: '2026-02-21'
+status: active

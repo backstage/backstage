@@ -1,0 +1,10 @@
+---
+title: Azure Resources Entity Provider
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Infrastructure
+description: Ingests Azure resources into the Backstage software catalog as entities.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/azure-resources/plugins/catalog-backend-module-azure-resources/README.md
+npmPackageName: '@backstage-community/plugin-catalog-backend-module-azure-resources'
+addedDate: '2026-02-21'
+status: active

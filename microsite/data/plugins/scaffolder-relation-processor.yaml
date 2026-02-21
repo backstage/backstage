@@ -1,0 +1,10 @@
+---
+title: Scaffolder Relation Processor
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Catalog
+description: A catalog backend module that creates relations linking scaffolder templates to the entities they generated, with optional owner notifications on template updates.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-relation-processor/plugins/catalog-backend-module-scaffolder-relation-processor/README.md
+npmPackageName: '@backstage-community/plugin-catalog-backend-module-scaffolder-relation-processor'
+addedDate: '2026-02-21'
+status: active
