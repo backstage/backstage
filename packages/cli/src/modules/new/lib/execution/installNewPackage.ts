@@ -16,7 +16,10 @@
 import fs from 'fs-extra';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { Task } from '../tasks';
 import { PortableTemplateInput } from '../types';
 

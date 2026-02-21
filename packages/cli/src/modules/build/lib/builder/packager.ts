@@ -18,7 +18,10 @@ import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
 import { relative as relativePath, resolve as resolvePath } from 'node:path';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
 import { PackageRoles } from '@backstage/cli-node';

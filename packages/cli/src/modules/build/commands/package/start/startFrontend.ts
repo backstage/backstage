@@ -20,7 +20,10 @@ import {
   getModuleFederationRemoteOptions,
   serveBundle,
 } from '../../../../build/lib/bundler';
-import { paths } from '../../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { hasReactDomClient } from '../../../../build/lib/bundler/hasReactDomClient';
 

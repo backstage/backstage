@@ -22,7 +22,10 @@ import openBrowser from 'react-dev-utils/openBrowser';
 import { rspack } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
 
-import { paths as libPaths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const libPaths = findPaths(__dirname);
 import { loadCliConfig } from '../../../config/lib/config';
 import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';

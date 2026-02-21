@@ -25,7 +25,10 @@ import upperCase from 'lodash/upperCase';
 import upperFirst from 'lodash/upperFirst';
 import lowerFirst from 'lodash/lowerFirst';
 import { Lockfile } from '../../../../lib/versioning';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { createPackageVersionProvider } from '../../../../lib/version';
 import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 

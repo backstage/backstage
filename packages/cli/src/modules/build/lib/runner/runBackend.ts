@@ -21,7 +21,10 @@ import { IpcServer, ServerDataStore } from '../ipc';
 import debounce from 'lodash/debounce';
 import { fileURLToPath } from 'node:url';
 import { isAbsolute as isAbsolutePath } from 'node:path';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import spawn from 'cross-spawn';
 
 const loaderArgs = [

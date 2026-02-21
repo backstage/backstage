@@ -24,8 +24,11 @@ import {
 import { tmpdir } from 'node:os';
 import * as tar from 'tar';
 import partition from 'lodash/partition';
-import { paths } from '../../paths';
-import { run } from '@backstage/cli-common';
+
+import { run, findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,

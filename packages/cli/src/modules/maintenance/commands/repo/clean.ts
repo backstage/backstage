@@ -17,8 +17,11 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { paths } from '../../paths';
-import { run } from '@backstage/cli-common';
+
+import { run, findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 export async function command(): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();

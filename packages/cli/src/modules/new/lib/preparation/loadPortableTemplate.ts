@@ -20,7 +20,10 @@ import recursiveReaddir from 'recursive-readdir';
 import { resolve as resolvePath, relative as relativePath } from 'node:path';
 import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import {
   PortableTemplateFile,
   PortableTemplatePointer,

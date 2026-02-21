@@ -16,8 +16,11 @@
 
 import { version as cliVersion } from '../../../../package.json';
 import os from 'node:os';
-import { runOutput } from '@backstage/cli-common';
-import { paths } from '../paths';
+import { runOutput, findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
+
 import { Lockfile } from '../../../lib/versioning';
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import { minimatch } from 'minimatch';

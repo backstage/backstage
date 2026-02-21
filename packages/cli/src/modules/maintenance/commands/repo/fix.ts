@@ -29,7 +29,10 @@ import {
   relative as relativePath,
   extname,
 } from 'node:path';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { publishPreflightCheck } from '../../lib/publishing';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx', '.json'];

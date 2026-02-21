@@ -20,7 +20,10 @@ import {
   PackageRole,
 } from '@backstage/cli-node';
 import { relative as relativePath } from 'node:path';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
 import { startPackage } from '../package/start/startPackage';
 import { parseArgs } from 'node:util';

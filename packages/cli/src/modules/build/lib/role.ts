@@ -16,7 +16,10 @@
 
 import fs from 'fs-extra';
 import { OptionValues } from 'commander';
-import { paths } from '../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { PackageRoles, PackageRole } from '@backstage/cli-node';
 
 export async function findRoleFromCommand(

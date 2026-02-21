@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BACKSTAGE_JSON, bootstrapEnvProxyAgents } from '@backstage/cli-common';
+import { BACKSTAGE_JSON, bootstrapEnvProxyAgents, findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 bootstrapEnvProxyAgents();
 
@@ -25,7 +28,7 @@ import semver from 'semver';
 import { OptionValues } from 'commander';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'node:path';
-import { paths } from '../../paths';
+
 import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 import {
   fetchPackageInfo,

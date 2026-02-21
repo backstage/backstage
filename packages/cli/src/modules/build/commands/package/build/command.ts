@@ -23,7 +23,10 @@ import {
   PackageGraph,
   PackageRoles,
 } from '@backstage/cli-node';
-import { paths } from '../../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { buildFrontend } from '../../../lib/buildFrontend';
 import { buildBackend } from '../../../lib/buildBackend';
 import { isValidUrl } from '../../../lib/urls';

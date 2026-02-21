@@ -15,8 +15,11 @@
  */
 
 import { Command, OptionValues } from 'commander';
-import { paths } from '../../paths';
-import { runCheck } from '@backstage/cli-common';
+
+import { runCheck, findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 function includesAnyOf(hayStack: string[], ...needles: string[]) {
   for (const needle of needles) {

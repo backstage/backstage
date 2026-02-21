@@ -39,7 +39,10 @@ import {
 
 import { forwardFileImports, cssEntryPoints } from './plugins';
 import { BuildOptions, Output } from './types';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../entryPoints';
 

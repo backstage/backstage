@@ -15,7 +15,10 @@
  */
 
 import fs from 'fs-extra';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 export default async function clean() {
   await fs.remove(paths.resolveTarget('dist'));

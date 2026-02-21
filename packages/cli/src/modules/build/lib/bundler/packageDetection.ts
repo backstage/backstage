@@ -20,7 +20,10 @@ import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import PQueue from 'p-queue';
 import { dirname, join as joinPath, resolve as resolvePath } from 'node:path';
-import { paths as cliPaths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const cliPaths = findPaths(__dirname);
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
 

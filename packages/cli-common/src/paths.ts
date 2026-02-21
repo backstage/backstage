@@ -84,15 +84,45 @@ export function findRootPath(
   );
 }
 
+// Hierarchical cache for ownDir lookups. When we resolve a searchDir to its
+// package root, we also cache every intermediate directory along the way. This
+// means sibling directories only need to walk up until they hit a cached ancestor.
+const ownDirCache = new Map<string, string>();
+
 // Finds the root of a given package
 export function findOwnDir(searchDir: string) {
-  const path = findRootPath(searchDir, () => true);
-  if (!path) {
-    throw new Error(
-      `No package.json found while searching for package root of ${searchDir}`,
-    );
+  const visited: string[] = [];
+  let dir = searchDir;
+
+  for (let i = 0; i < 1000; i++) {
+    const cached = ownDirCache.get(dir);
+    if (cached !== undefined) {
+      for (const d of visited) {
+        ownDirCache.set(d, cached);
+      }
+      return cached;
+    }
+
+    visited.push(dir);
+
+    const packagePath = resolvePath(dir, 'package.json');
+    if (fs.existsSync(packagePath)) {
+      for (const d of visited) {
+        ownDirCache.set(d, dir);
+      }
+      return dir;
+    }
+
+    const newDir = dirname(dir);
+    if (newDir === dir) {
+      break;
+    }
+    dir = newDir;
   }
-  return path;
+
+  throw new Error(
+    `No package.json found while searching for package root of ${searchDir}`,
+  );
 }
 
 // Finds the root of the monorepo that the package exists in. Only accessible when running inside Backstage repo.
@@ -109,6 +139,12 @@ export function findOwnRootDir(ownDir: string) {
 
 /**
  * Find paths related to a package and its execution context.
+ *
+ * This function is cheap to call repeatedly. The package root lookup is cached
+ * hierarchically, so calls from different subdirectories within the same package
+ * only walk the filesystem once. Prefer calling this eagerly at module scope
+ * rather than sharing a single instance across modules — this keeps modules
+ * independent and works correctly when they are split into separate packages.
  *
  * @public
  * @example

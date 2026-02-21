@@ -18,7 +18,10 @@ import {
   productionPack,
   revertProductionPack,
 } from '../../../../modules/build/lib/packager/productionPack';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import fs from 'fs-extra';
 import { publishPreflightCheck } from '../../lib/publishing';
 import { createTypeDistProject } from '../../../../lib/typeDistProject';

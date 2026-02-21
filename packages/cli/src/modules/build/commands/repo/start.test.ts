@@ -17,7 +17,10 @@
 import { PackageGraph } from '@backstage/cli-node';
 import { findTargetPackages } from './start';
 import { posix } from 'node:path';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 const mocks = {
   app: {

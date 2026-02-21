@@ -25,11 +25,14 @@ import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
-import { paths as cliPaths } from '../../paths';
+
 import fs from 'fs-extra';
 import { optimization as optimizationConfig } from './optimization';
 import pickBy from 'lodash/pickBy';
-import { runOutput } from '@backstage/cli-common';
+import { runOutput, findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const cliPaths = findPaths(__dirname);
 import { transforms } from './transforms';
 import { version } from '../../../../lib/version';
 import yn from 'yn';

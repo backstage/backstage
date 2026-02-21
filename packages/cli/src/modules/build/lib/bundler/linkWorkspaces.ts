@@ -17,7 +17,10 @@
 import { relative as relativePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { rspack } from '@rspack/core';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 /**
  * This returns of collection of plugins that links a separate workspace into

@@ -18,7 +18,10 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageRoles } from '@backstage/cli-node';
-import { paths } from '../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 export default async () => {
   const { packages } = await getPackages(paths.targetDir);

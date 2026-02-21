@@ -24,7 +24,10 @@ import {
   BackstagePackageJson,
   Lockfile,
 } from '@backstage/cli-node';
-import { paths } from '../../paths';
+import { findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 import { runWorkerQueueThreads } from '../../../../lib/parallel';
 import { createScriptOptionsParser } from '../../../../lib/optionsParser';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';

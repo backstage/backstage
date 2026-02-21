@@ -17,12 +17,15 @@
 import fs from 'fs-extra';
 import { dirname, resolve as resolvePath } from 'node:path';
 
-import { paths } from '../../paths';
+
 import { PortableTemplate, PortableTemplateInput } from '../types';
 import { ForwardedError, InputError } from '@backstage/errors';
 import { isMonoRepo as getIsMonoRepo } from '@backstage/cli-node';
 import { PortableTemplater } from './PortableTemplater';
-import { isChildPath } from '@backstage/cli-common';
+import { isChildPath, findPaths } from '@backstage/cli-common';
+
+/* eslint-disable-next-line no-restricted-syntax */
+const paths = findPaths(__dirname);
 
 export async function writeTemplateContents(
   template: PortableTemplate,
