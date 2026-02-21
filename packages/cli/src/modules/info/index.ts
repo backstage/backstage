@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import yargs from 'yargs';
+import { Command, Option } from 'commander';
 import { createCliPlugin } from '../../wiring/factory';
 import { lazy } from '../../lib/lazy';
 
@@ -24,25 +24,26 @@ export default createCliPlugin({
       path: ['info'],
       description: 'Show helpful information for debugging and reporting bugs',
       execute: async ({ args }) => {
-        const argv = await yargs()
-          .options({
-            include: {
-              type: 'string',
-              array: true,
-              default: [],
-              description:
-                'Glob patterns for additional packages to include (e.g., @spotify/backstage*)',
-            },
-            format: {
-              type: 'string',
-              choices: ['text', 'json'],
-              default: 'text',
-              description: 'Output format (text or json)',
-            },
-          })
-          .help()
-          .parse(args);
-        await lazy(() => import('./commands/info'), 'default')(argv);
+        const command = new Command();
+        const defaultCommand = command
+          .addOption(
+            new Option(
+              '--include <pattern>',
+              'Glob patterns for additional packages to include (e.g., @spotify/backstage*)',
+            )
+              .argParser((opt: string, opts: string[]) =>
+                opts ? [...opts, opt] : [opt],
+              )
+              .default([]),
+          )
+          .addOption(
+            new Option('--format <type>', 'Output format (text or json)')
+              .choices(['text', 'json'])
+              .default('text'),
+          )
+          .action(lazy(() => import('./commands/info'), 'default'));
+
+        await defaultCommand.parseAsync(args, { from: 'user' });
       },
     });
   },
