@@ -86,6 +86,12 @@ describe('publish:gitlab', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    // Reconfigure the mock after reset
+    (
+      initRepoAndPush as jest.MockedFunction<typeof initRepoAndPush>
+    ).mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    });
   });
 
   it('should call initRepoAndPush with the correct values', async () => {
