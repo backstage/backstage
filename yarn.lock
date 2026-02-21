@@ -22079,11 +22079,11 @@ __metadata:
   linkType: hard
 
 "@types/nodemailer@npm:^7.0.0":
-  version: 7.0.9
-  resolution: "@types/nodemailer@npm:7.0.9"
+  version: 7.0.10
+  resolution: "@types/nodemailer@npm:7.0.10"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10/6bfca388af668a05a68e750a7acbd5736a3dcdf96f34f23bf4211ab152572d55008fd813e38bf03f944c6edbd002a7f98d6cee048343b8e840b3b91a00befac9
+  checksum: 10/1c6ee3c93c5ba98cb1106e4e06bdf0df13ab27ca3b44468c6a1712fc4249f3bb7f0cd912248d6523b94cd163b31e036b5eeda40d81e1707ae5ab5df197b3da28
   languageName: node
   linkType: hard
 
