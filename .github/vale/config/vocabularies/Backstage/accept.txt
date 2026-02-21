@@ -322,6 +322,7 @@ openapi
 OpenSearch
 OpenShift
 openssl
+opentelemetry
 orgs
 overridable
 padding

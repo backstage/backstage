@@ -5460,6 +5460,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@opentelemetry/api": "npm:^1.9.0"
     lodash: "npm:^4.17.21"
     msw: "npm:^1.0.0"
     yaml: "npm:^2.0.0"

@@ -50,6 +50,7 @@ describe('GenericScmEventRefreshProvider', () => {
         return { unsubscribe: () => {} };
       }),
       publish: jest.fn(),
+      markEventActionTaken: jest.fn(),
     };
 
     const store = new GenericScmEventRefreshProvider(knex, scmEvents, {
