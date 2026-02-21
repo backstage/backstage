@@ -19,70 +19,6 @@ import { GerritIntegrationConfig } from './config';
 const GERRIT_BODY_PREFIX = ")]}'";
 
 /**
- * Parse a Gitiles URL and return branch, file path and project.
- *
- * @remarks
- *
- * Gerrit only handles code reviews so it does not have a native way to browse
- * or showing the content of gits. Image if Github only had the "pull requests"
- * tab.
- *
- * Any source code browsing is instead handled by optional services outside
- * Gerrit. The url format chosen for the Gerrit url reader is the one used by
- * the Gitiles project. Gerrit will work perfectly with Backstage without
- * having Gitiles installed but there are some places in the Backstage GUI
- * with links to the url used by the url reader. These will not work unless
- * the urls point to an actual Gitiles installation.
- *
- * Gitiles url:
- * https://g.com/optional_path/\{project\}/+/refs/heads/\{branch\}/\{filePath\}
- * https://g.com/a/optional_path/\{project\}/+/refs/heads/\{branch\}/\{filePath\}
- *
- *
- * @param url - An URL pointing to a file stored in git.
- * @public
- * @deprecated `parseGerritGitilesUrl` is deprecated. Use
- *  {@link parseGitilesUrlRef} instead.
- */
-export function parseGerritGitilesUrl(
-  config: GerritIntegrationConfig,
-  url: string,
-): { branch: string; filePath: string; project: string } {
-  const baseUrlParse = new URL(config.gitilesBaseUrl!);
-  const urlParse = new URL(url);
-
-  // Remove the gerrit authentication prefix '/a/' from the url
-  // In case of the gitilesBaseUrl is https://review.gerrit.com/plugins/gitiles
-  // and the url provided is https://review.gerrit.com/a/plugins/gitiles/...
-  // remove the prefix only if the pathname start with '/a/'
-  const urlPath = urlParse.pathname
-    .substring(urlParse.pathname.startsWith('/a/') ? 2 : 0)
-    .replace(baseUrlParse.pathname, '');
-
-  const parts = urlPath.split('/').filter(p => !!p);
-
-  const projectEndIndex = parts.indexOf('+');
-
-  if (projectEndIndex <= 0) {
-    throw new Error(`Unable to parse project from url: ${url}`);
-  }
-  const project = trimStart(parts.slice(0, projectEndIndex).join('/'), '/');
-
-  const branchIndex = parts.indexOf('heads');
-  if (branchIndex <= 0) {
-    throw new Error(`Unable to parse branch from url: ${url}`);
-  }
-  const branch = parts[branchIndex + 1];
-  const filePath = parts.slice(branchIndex + 2).join('/');
-
-  return {
-    branch,
-    filePath: filePath === '' ? '/' : filePath,
-    project,
-  };
-}
-
-/**
  * Parses Gitiles urls and returns the following:
  *
  * - The project
@@ -232,30 +168,6 @@ export function buildGerritEditUrl(
 }
 
 /**
- * Build a Gerrit Gitiles archive url that targets a specific branch and path
- *
- * @param config - A Gerrit provider config.
- * @param project - The name of the git project
- * @param branch - The branch we will target.
- * @param filePath - The absolute file path.
- * @public
- * @deprecated `buildGerritGitilesArchiveUrl` is deprecated. Use
- *  {@link buildGerritGitilesArchiveUrlFromLocation} instead.
- */
-export function buildGerritGitilesArchiveUrl(
-  config: GerritIntegrationConfig,
-  project: string,
-  branch: string,
-  filePath: string,
-): string {
-  const archiveName =
-    filePath === '/' || filePath === '' ? '.tar.gz' : `/${filePath}.tar.gz`;
-  return `${getGitilesAuthenticationUrl(
-    config,
-  )}/${project}/+archive/refs/heads/${branch}${archiveName}`;
-}
-
-/**
  * Build a Gerrit Gitiles archive url from a Gitiles url.
  *
  * @param config - A Gerrit provider config.
@@ -350,11 +262,15 @@ export function getGerritBranchApiUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { branch, project } = parseGerritGitilesUrl(config, url);
+  const { ref, refType, project } = parseGitilesUrlRef(config, url);
+
+  if (refType !== 'branch') {
+    throw new Error(`Unsupported gitiles ref type: ${refType}`);
+  }
 
   return `${config.baseUrl}${getAuthenticationPrefix(
     config,
-  )}projects/${encodeURIComponent(project)}/branches/${branch}`;
+  )}projects/${encodeURIComponent(project)}/branches/${ref}`;
 }
 
 /**
@@ -367,7 +283,7 @@ export function getGerritCloneRepoUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { project } = parseGerritGitilesUrl(config, url);
+  const { project } = parseGitilesUrlRef(config, url);
 
   return `${config.cloneUrl}${getAuthenticationPrefix(config)}${project}`;
 }

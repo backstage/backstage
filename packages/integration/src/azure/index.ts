@@ -38,5 +38,3 @@ export {
 
 export * from './types';
 export { DefaultAzureDevOpsCredentialsProvider } from './DefaultAzureDevOpsCredentialsProvider';
-
-export * from './deprecated';

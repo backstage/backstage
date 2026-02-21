@@ -15,7 +15,7 @@
  */
 
 import { GithubIntegrationConfig } from './config';
-import { getGithubFileFetchUrl, getGitHubRequestOptions } from './core';
+import { getGithubFileFetchUrl } from './core';
 import { GithubCredentials } from './types';
 
 describe('github core', () => {
@@ -34,28 +34,6 @@ describe('github core', () => {
   const noCredentials: GithubCredentials = {
     type: 'token',
   };
-
-  describe('getGitHubRequestOptions', () => {
-    it('inserts a token when needed', () => {
-      const withToken: GithubIntegrationConfig = {
-        host: '',
-        rawBaseUrl: '',
-        token: 'A',
-      };
-      const withoutToken: GithubIntegrationConfig = {
-        host: '',
-        rawBaseUrl: '',
-      };
-      expect(
-        (getGitHubRequestOptions(withToken, appCredentials).headers as any)
-          .Authorization,
-      ).toEqual('token A');
-      expect(
-        (getGitHubRequestOptions(withoutToken, noCredentials).headers as any)
-          .Authorization,
-      ).toBeUndefined();
-    });
-  });
 
   describe('getGithubFileFetchUrl', () => {
     it('rejects targets that do not look like URLs', () => {

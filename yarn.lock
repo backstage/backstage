@@ -6707,7 +6707,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud":
+"@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud"
   dependencies:
@@ -6728,7 +6728,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:plugins/scaffolder-backend-module-bitbucket-server":
+"@backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:plugins/scaffolder-backend-module-bitbucket-server":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:plugins/scaffolder-backend-module-bitbucket-server"
   dependencies:
@@ -6738,26 +6738,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-scaffolder-node": "workspace:^"
-    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    fs-extra: "npm:^11.2.0"
-    msw: "npm:^1.0.0"
-    yaml: "npm:^2.0.0"
-  languageName: unknown
-  linkType: soft
-
-"@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket"
-  dependencies:
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
-    "@backstage/errors": "workspace:^"
-    "@backstage/integration": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: "npm:^11.2.0"
