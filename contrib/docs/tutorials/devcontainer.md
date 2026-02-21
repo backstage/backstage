@@ -53,12 +53,15 @@ The dev container requires:
 
 ### Option 1: Open the Repository in a Dev Container
 
-1. **Clone the Backstage repository** (if you haven't already):
+1. **Fork and clone the Backstage repository** (if you haven't already):
 
-```shell
-git clone https://github.com/backstage/backstage.git
-cd backstage
-```
+- Go to https://github.com/backstage/backstage and click "Fork"
+- Clone your fork:
+
+  ```shell
+  git clone https://github.com/<your-username>/backstage.git
+  cd backstage
+  ```
 
 2. **Open in VS Code**:
 
