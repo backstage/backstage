@@ -1,0 +1,10 @@
+---
+title: Template Builder
+author: Balaji Sivasubramanian
+authorUrl: https://github.com/balajisiva
+category: Tooling
+description: Visual editor for creating and managing Backstage scaffolder templates with live YAML preview, flow visualization, and GitHub integration
+documentation: https://github.com/balajisiva/backstage-template-builder#readme
+iconUrl: https://raw.githubusercontent.com/balajisiva/backstage-template-builder/main/plugins/backstage-template-builder/icon.svg
+npmPackageName: '@balajisiva/backstage-plugin-template-builder'
+addedDate: '2026-02-16'
