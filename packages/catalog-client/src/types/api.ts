@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { SerializedError } from '@backstage/errors';
+import type { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import type { SerializedError } from '@backstage/errors';
 import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
@@ -438,7 +438,9 @@ export type QueryEntitiesInitialRequest = {
    */
   filter?: EntityFilterQuery;
   /**
-   * Predicate-based filter with logical operators ($all, $any, $not, $exists, $in, $hasPrefix).
+   * Predicate-based filter with operators for logical expressions (`$all`,
+   * `$any`, and `$not`) and matching (`$exists`, `$in`, `$hasPrefix`, and
+   * (partially) `$contains`).
    *
    * @example
    * ```typescript
@@ -446,7 +448,7 @@ export type QueryEntitiesInitialRequest = {
    *   query: {
    *     $all: [
    *       { kind: 'component' },
-   *       { 'spec.type': 'service' }
+   *       { 'spec.type': { $in: ['service', 'website'] } }
    *     ]
    *   }
    * }
