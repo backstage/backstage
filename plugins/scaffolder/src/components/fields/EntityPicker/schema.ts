@@ -21,6 +21,7 @@ export const createEntityQueryFilterExpressionSchema = (z: typeof zod) =>
     z
       .string()
       .or(z.object({ exists: z.boolean().optional() }))
+      .or(z.object({ currentUser: z.boolean().optional() }))
       .or(z.array(z.string())),
   );
 
@@ -60,7 +61,9 @@ export const EntityPickerFieldSchema = makeFieldSchema({
         createEntityQueryFilterExpressionSchema(z),
       )
         .optional()
-        .describe('List of key-value filter expression for entities'),
+        .describe(
+          'List of key-value filter expression for entities. Use { exists: true } for "field exists", { currentUser: true } for the current user (key decides: relations.ownedBy → ownership refs, e.g. spec.owner → single ref).',
+        ),
       autoSelect: z
         .boolean()
         .optional()
