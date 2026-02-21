@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { SerializedError } from '@backstage/errors';
+import type { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import type { SerializedError } from '@backstage/errors';
 import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
-import { FilterPredicate } from '@backstage/filter-predicates';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -418,8 +418,14 @@ export type QueryEntitiesRequest =
  * The method takes this type in an initial pagination request,
  * when requesting the first batch of entities.
  *
- * The properties filter, sortField, query and sortFieldOrder, are going
+ * The properties filter, query, sortField and sortFieldOrder, are going
  * to be immutable for the entire lifecycle of the following requests.
+ *
+ * @remarks
+ *
+ * Either `filter` or `query` can be provided, or even both:
+ * - `filter`: Uses the traditional key-value filter syntax (GET endpoint)
+ * - `query`: Uses the predicate-based filter syntax with logical operators (POST endpoint)
  *
  * @public
  */
@@ -427,7 +433,28 @@ export type QueryEntitiesInitialRequest = {
   fields?: string[];
   limit?: number;
   offset?: number;
+  /**
+   * Traditional key-value based filter.
+   */
   filter?: EntityFilterQuery;
+  /**
+   * Predicate-based filter with operators for logical expressions (`$all`,
+   * `$any`, and `$not`) and matching (`$exists`, `$in`, `$hasPrefix`, and
+   * (partially) `$contains`).
+   *
+   * @example
+   * ```typescript
+   * {
+   *   query: {
+   *     $all: [
+   *       { kind: 'component' },
+   *       { 'spec.type': { $in: ['service', 'website'] } }
+   *     ]
+   *   }
+   * }
+   * ```
+   */
+  query?: FilterPredicate;
   orderFields?: EntityOrderQuery;
   fullTextFilter?: {
     term: string;
@@ -567,6 +594,7 @@ export interface CatalogApi {
    * const response = await catalogClient.queryEntities({
    *   filter: [{ kind: 'group' }],
    *   limit: 20,
+   *   fields: ['metadata', 'kind'],
    *   fullTextFilter: {
    *     term: 'A',
    *   },
@@ -583,11 +611,15 @@ export interface CatalogApi {
    *
    * ```
    * const secondBatchResponse = await catalogClient
-   *  .queryEntities({ cursor: response.nextCursor });
+   *   .queryEntities({
+   *     cursor: response.nextCursor,
+   *     limit: 20,
+   *     fields: ['metadata', 'kind'],
+   *   });
    * ```
    *
-   * secondBatchResponse will contain the next batch of (maximum) 20 entities,
-   * together with a prevCursor property, useful to fetch the previous batch.
+   * `secondBatchResponse` will contain the next batch of (maximum) 20 entities,
+   * together with a `prevCursor` property, useful to fetch the previous batch.
    *
    * @public
    *

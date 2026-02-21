@@ -23,6 +23,7 @@ import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 import { Cursor, QueryEntitiesResponse } from '../catalog/types';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { mockCredentials } from '@backstage/backend-test-utils';
 
 describe('AuthorizedEntitiesCatalog', () => {
@@ -304,6 +305,144 @@ describe('AuthorizedEntitiesCatalog', () => {
             orderFieldValues: ['a', null],
           },
         },
+      });
+    });
+
+    it('passes through query alongside permission filter on CONDITIONAL with initial request', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'IS_ENTITY_KIND',
+            params: { kinds: ['b'] },
+          },
+        },
+      ]);
+
+      const userQuery: FilterPredicate = { 'metadata.name': 'my-entity' };
+
+      const entities = [
+        {
+          kind: 'component',
+          namespace: 'default',
+          name: 'a',
+        } as unknown as Entity,
+      ];
+
+      fakeCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities },
+        pageInfo: {
+          nextCursor: {
+            isPrevious: false,
+            orderFieldValues: ['xxx', null],
+            query: userQuery,
+            filter: { key: 'kind', values: ['b'] },
+            orderFields: [{ field: 'name', order: 'asc' }],
+          },
+        },
+        totalItems: 1,
+      } as QueryEntitiesResponse);
+
+      const catalog = createCatalog(isEntityKind);
+
+      const response = await catalog.queryEntities({
+        credentials: mockCredentials.none(),
+        query: userQuery,
+      });
+
+      expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
+        credentials: mockCredentials.none(),
+        query: userQuery,
+        filter: { key: 'kind', values: ['b'] },
+      });
+
+      expect(response.pageInfo.nextCursor).toEqual({
+        isPrevious: false,
+        orderFieldValues: ['xxx', null],
+        query: userQuery,
+        filter: undefined,
+        orderFields: [{ field: 'name', order: 'asc' }],
+      });
+    });
+
+    it('passes through cursor query alongside permission filter on CONDITIONAL with cursor request', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'IS_ENTITY_KIND',
+            params: { kinds: ['b'] },
+          },
+        },
+      ]);
+
+      const userQuery: FilterPredicate = { 'metadata.name': 'my-entity' };
+
+      const entities = [
+        {
+          kind: 'component',
+          namespace: 'default',
+          name: 'a',
+        } as unknown as Entity,
+      ];
+
+      fakeCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities },
+        pageInfo: {
+          nextCursor: {
+            isPrevious: false,
+            orderFieldValues: ['yyy', null],
+            query: userQuery,
+            filter: { key: 'kind', values: ['b'] },
+            orderFields: [{ field: 'name', order: 'asc' }],
+          },
+          prevCursor: {
+            isPrevious: true,
+            orderFieldValues: ['aaa', null],
+            query: userQuery,
+            filter: { key: 'kind', values: ['b'] },
+            orderFields: [{ field: 'name', order: 'asc' }],
+          },
+        },
+        totalItems: 3,
+      } as QueryEntitiesResponse);
+
+      const catalog = createCatalog(isEntityKind);
+
+      const cursor: Cursor = {
+        query: userQuery,
+        orderFields: [{ field: 'name', order: 'asc' }],
+        isPrevious: false,
+        orderFieldValues: ['xxx', null],
+      };
+
+      const response = await catalog.queryEntities({
+        credentials: mockCredentials.none(),
+        cursor,
+      });
+
+      expect(fakeCatalog.queryEntities).toHaveBeenCalledWith({
+        credentials: mockCredentials.none(),
+        cursor: {
+          ...cursor,
+          filter: { key: 'kind', values: ['b'] },
+        },
+      });
+
+      expect(response.pageInfo.nextCursor).toEqual({
+        isPrevious: false,
+        orderFieldValues: ['yyy', null],
+        query: userQuery,
+        filter: undefined,
+        orderFields: [{ field: 'name', order: 'asc' }],
+      });
+
+      expect(response.pageInfo.prevCursor).toEqual({
+        isPrevious: true,
+        orderFieldValues: ['aaa', null],
+        query: userQuery,
+        filter: undefined,
+        orderFields: [{ field: 'name', order: 'asc' }],
       });
     });
   });

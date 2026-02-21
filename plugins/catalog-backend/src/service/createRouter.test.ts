@@ -479,6 +479,87 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
+  describe('POST /entities/by-query', () => {
+    it('queries entities with a predicate filter', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: {},
+        totalItems: 1,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ query: { kind: 'b' }, limit: 10 });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items,
+        totalItems: 1,
+        pageInfo: {},
+      });
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: { kind: 'b' },
+          limit: 10,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+
+    it('queries entities with an offset', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: {},
+        totalItems: 5,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ query: { kind: 'b' }, limit: 2, offset: 3 });
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: { kind: 'b' },
+          limit: 2,
+          offset: 3,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+
+    it('paginates with a cursor in the body', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      const cursor = mockCursor({ totalItems: 100, isPrevious: false });
+
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: { nextCursor: mockCursor() },
+        totalItems: 100,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ cursor: encodeCursor(cursor) });
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cursor,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+  });
+
   describe('GET /entities/by-uid/:uid', () => {
     it('can fetch entity by uid', async () => {
       const entity: Entity = {

@@ -65,6 +65,7 @@ import {
   encodeLocationQueryCursor,
   parseLocationQuery,
 } from './request/parseLocationQuery';
+import { parseEntityQuery } from './request/parseEntityQuery';
 
 /**
  * Options used by {@link createRouter}.
@@ -255,6 +256,59 @@ export async function createRouter(
           await auditorEvent?.fail({
             error: err,
           });
+          throw err;
+        }
+      })
+      .post('/entities/by-query', async (req, res) => {
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-query',
+          },
+        });
+
+        try {
+          const credentials = await httpAuth.credentials(req);
+          const { fields: rawFields, ...parsed } = parseEntityQuery(
+            req.body ?? {},
+          );
+          const fields = rawFields?.length
+            ? parseEntityTransformParams({ fields: rawFields })
+            : undefined;
+
+          const { items, pageInfo, totalItems } =
+            await entitiesCatalog.queryEntities({
+              credentials,
+              fields,
+              ...parsed,
+            });
+
+          const meta = {
+            totalItems,
+            pageInfo: {
+              ...(pageInfo.nextCursor && {
+                nextCursor: encodeCursor(pageInfo.nextCursor),
+              }),
+              ...(pageInfo.prevCursor && {
+                prevCursor: encodeCursor(pageInfo.prevCursor),
+              }),
+            },
+          };
+
+          await auditorEvent?.success({ meta });
+
+          await writeEntitiesResponse({
+            res,
+            items,
+            alwaysUseObjectMode: enableRelationsCompatibility,
+            responseWrapper: entities => ({
+              items: entities,
+              ...meta,
+            }),
+          });
+        } catch (err) {
+          await auditorEvent?.fail({ error: err });
           throw err;
         }
       })
