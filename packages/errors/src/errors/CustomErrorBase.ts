@@ -17,6 +17,8 @@
 import { stringifyError } from '../serialization/error';
 import { isError } from './assertion';
 
+const customErrorSymbol = Symbol.for('@backstage/errors#CustomErrorBase');
+
 /**
  * A base class that custom Error classes can inherit from.
  *
@@ -63,6 +65,24 @@ export class CustomErrorBase extends Error {
       }
     }
 
+    Object.defineProperty(this, customErrorSymbol, {
+      value: true,
+      enumerable: false,
+      writable: false,
+      configurable: false,
+    });
+
     this.cause = isError(cause) ? cause : undefined;
   }
+}
+
+/**
+ * Returns true if the given error type extends CustomErrorBase
+ *
+ * @public
+ */
+export function isCustomError(err: unknown): err is CustomErrorBase {
+  return (
+    err !== null && typeof err === 'object' && (err as any)[customErrorSymbol]
+  );
 }

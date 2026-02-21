@@ -19,6 +19,7 @@ import {
   ForwardedError,
   isError,
   serializeError,
+  isCustomError,
 } from '@backstage/errors';
 
 import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
@@ -59,7 +60,9 @@ function describeError(err: unknown): string {
 
     const { name, message } = extractCause(serialized);
 
-    if (knownErrors.has(name)) {
+    // All Backstage errors except ResponseError extends CustomErrorBase, so we need
+    // to explicitly check both CustomErrorBase and ResponseError
+    if (knownErrors.has(name) || isCustomError(err)) {
       return `${name}: ${message}`;
     }
   }
