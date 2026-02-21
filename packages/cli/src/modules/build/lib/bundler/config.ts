@@ -25,11 +25,12 @@ import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
-import { paths as cliPaths } from '../../../../lib/paths';
+
 import fs from 'fs-extra';
 import { optimization as optimizationConfig } from './optimization';
 import pickBy from 'lodash/pickBy';
-import { runOutput } from '@backstage/cli-common';
+import { runOutput, targetPaths } from '@backstage/cli-common';
+
 import { transforms } from './transforms';
 import { version } from '../../../../lib/version';
 import yn from 'yn';
@@ -96,7 +97,7 @@ async function readBuildInfo() {
   }
 
   const { version: packageVersion } = await fs.readJson(
-    cliPaths.resolveTarget('package.json'),
+    targetPaths.resolve('package.json'),
   );
 
   return {

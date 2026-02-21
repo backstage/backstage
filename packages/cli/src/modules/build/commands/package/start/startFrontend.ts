@@ -20,7 +20,8 @@ import {
   getModuleFederationRemoteOptions,
   serveBundle,
 } from '../../../../build/lib/bundler';
-import { paths } from '../../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { hasReactDomClient } from '../../../../build/lib/bundler/hasReactDomClient';
 
@@ -38,7 +39,7 @@ interface StartAppOptions {
 
 export async function startFrontend(options: StartAppOptions) {
   const packageJson = (await readJson(
-    resolvePath(options.targetDir ?? paths.targetDir, 'package.json'),
+    resolvePath(options.targetDir ?? targetPaths.resolve(), 'package.json'),
   )) as BackstagePackageJson;
 
   if (!hasReactDomClient()) {
@@ -58,7 +59,7 @@ export async function startFrontend(options: StartAppOptions) {
     moduleFederationRemote: options.isModuleFederationRemote
       ? await getModuleFederationRemoteOptions(
           packageJson,
-          resolvePath(paths.targetDir),
+          resolvePath(targetPaths.resolve()),
         )
       : undefined,
   });

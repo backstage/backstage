@@ -15,10 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 
 export default async function clean() {
-  await fs.remove(paths.resolveTarget('dist'));
-  await fs.remove(paths.resolveTarget('dist-types'));
-  await fs.remove(paths.resolveTarget('coverage'));
+  await fs.remove(targetPaths.resolve('dist'));
+  await fs.remove(targetPaths.resolve('dist-types'));
+  await fs.remove(targetPaths.resolve('coverage'));
 }

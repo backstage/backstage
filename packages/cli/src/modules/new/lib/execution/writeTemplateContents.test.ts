@@ -17,7 +17,8 @@
 import { relative as relativePath } from 'node:path';
 import { writeTemplateContents } from './writeTemplateContents';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 
 const baseConfig = {
   version: '0.1.0',
@@ -32,8 +33,8 @@ describe('writeTemplateContents', () => {
     mockDir.clear();
     jest.resetAllMocks();
     jest
-      .spyOn(paths, 'resolveTargetRoot')
-      .mockImplementation((...args) => mockDir.resolve(...args));
+      .spyOn(targetPaths, 'resolveRoot')
+      .mockImplementation((...args: string[]) => mockDir.resolve(...args));
   });
 
   it('should write an empty template', async () => {

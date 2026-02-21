@@ -17,7 +17,8 @@
 import { PackageGraph } from '@backstage/cli-node';
 import { findTargetPackages } from './start';
 import { posix } from 'node:path';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 
 const mocks = {
   app: {
@@ -98,7 +99,7 @@ describe('findTargetPackages', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest
-      .spyOn(paths, 'resolveTargetRoot')
+      .spyOn(targetPaths, 'resolveRoot')
       .mockImplementation((...parts: string[]) => {
         return posix.resolve('/root', ...parts);
       });

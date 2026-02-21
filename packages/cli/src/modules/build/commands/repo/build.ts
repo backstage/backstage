@@ -18,7 +18,8 @@ import chalk from 'chalk';
 import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'node:path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import {
   BackstagePackage,
   PackageGraph,
@@ -89,7 +90,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       targetDir: pkg.dir,
       packageJson: pkg.packageJson,
       outputs,
-      logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
+      logPrefix: `${chalk.cyan(relativePath(targetPaths.resolveRoot(), pkg.dir))}: `,
       workspacePackages: packages,
       minify: opts.minify ?? buildOptions.minify,
     };

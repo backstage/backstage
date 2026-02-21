@@ -39,7 +39,8 @@ import {
 
 import { forwardFileImports, cssEntryPoints } from './plugins';
 import { BuildOptions, Output } from './types';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../entryPoints';
 
@@ -116,7 +117,7 @@ export async function makeRollupConfigs(
   options: BuildOptions,
 ): Promise<RollupOptions[]> {
   const configs = new Array<RollupOptions>();
-  const targetDir = options.targetDir ?? paths.targetDir;
+  const targetDir = options.targetDir ?? targetPaths.resolve();
 
   let targetPkg = options.packageJson;
   if (!targetPkg) {
@@ -284,9 +285,9 @@ export async function makeRollupConfigs(
     const input = Object.fromEntries(
       scriptEntryPoints.map(e => [
         e.name,
-        paths.resolveTargetRoot(
+        targetPaths.resolveRoot(
           'dist-types',
-          relativePath(paths.targetRoot, targetDir),
+          relativePath(targetPaths.resolveRoot(), targetDir),
           e.path.replace(/\.(?:ts|tsx)$/, '.d.ts'),
         ),
       ]),

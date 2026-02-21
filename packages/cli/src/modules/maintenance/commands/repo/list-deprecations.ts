@@ -19,20 +19,21 @@ import { ESLint } from 'eslint';
 import { OptionValues } from 'commander';
 import { relative as relativePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 
 export async function command(opts: OptionValues) {
   const packages = await PackageGraph.listTargetPackages();
 
   const eslint = new ESLint({
-    cwd: paths.targetDir,
+    cwd: targetPaths.resolve(),
     overrideConfig: {
       plugins: ['deprecation'],
       rules: {
         'deprecation/deprecation': 'error',
       },
       parserOptions: {
-        project: [paths.resolveTargetRoot('tsconfig.json')],
+        project: [targetPaths.resolveRoot('tsconfig.json')],
       },
     },
     extensions: ['jsx', 'ts', 'tsx', 'mjs', 'cjs'],
@@ -52,7 +53,7 @@ export async function command(opts: OptionValues) {
           continue;
         }
 
-        const path = relativePath(paths.targetRoot, result.filePath);
+        const path = relativePath(targetPaths.resolveRoot(), result.filePath);
         deprecations.push({
           path,
           message: message.message,

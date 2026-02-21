@@ -20,7 +20,8 @@ import {
   PackageRole,
 } from '@backstage/cli-node';
 import { relative as relativePath } from 'node:path';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
 import { startPackage } from '../package/start/startPackage';
 import { parseArgs } from 'node:util';
@@ -95,7 +96,7 @@ export async function findTargetPackages(
       pkg => nameOrPath === pkg.packageJson.name,
     );
     if (!matchingPackage) {
-      const absPath = paths.resolveTargetRoot(nameOrPath);
+      const absPath = targetPaths.resolveRoot(nameOrPath);
       matchingPackage = packages.find(
         pkg => relativePath(pkg.dir, absPath) === '',
       );
@@ -117,7 +118,7 @@ export async function findTargetPackages(
     );
     if (matchingPackages.length > 1) {
       // Final fallback is to check for the package path within the monorepo, packages/app or packages/backend
-      const expectedPath = paths.resolveTargetRoot(
+      const expectedPath = targetPaths.resolveRoot(
         role === 'frontend' ? 'packages/app' : 'packages/backend',
       );
       const matchByPath = matchingPackages.find(

@@ -16,19 +16,19 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
-import { paths } from '../../../../lib/paths';
+import { targetPaths, findOwnPaths } from '@backstage/cli-common';
 
 export type BundlingPathsOptions = {
   // bundle entrypoint, e.g. 'src/index'
   entry: string;
-  // Target directory, defaulting to paths.targetDir
+  // Target directory, defaulting to targetPaths.resolve()
   targetDir?: string;
   // Relative dist directory, defaulting to 'dist'
   dist?: string;
 };
 
 export function resolveBundlingPaths(options: BundlingPathsOptions) {
-  const { entry, targetDir = paths.targetDir } = options;
+  const { entry, targetDir = targetPaths.resolve() } = options;
 
   const resolveTargetModule = (pathString: string) => {
     for (const ext of ['mjs', 'js', 'ts', 'tsx', 'jsx']) {
@@ -49,7 +49,7 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
   } else {
     targetHtml = resolvePath(targetDir, `${entry}.html`);
     if (!fs.pathExistsSync(targetHtml)) {
-      targetHtml = paths.resolveOwn('templates/serve_index.html');
+      targetHtml = findOwnPaths(__dirname).resolve('templates/serve_index.html');
     }
   }
 
@@ -67,10 +67,10 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     targetSrc: resolvePath(targetDir, 'src'),
     targetDev: resolvePath(targetDir, 'dev'),
     targetEntry: resolveTargetModule(entry),
-    targetTsConfig: paths.resolveTargetRoot('tsconfig.json'),
+    targetTsConfig: targetPaths.resolveRoot('tsconfig.json'),
     targetPackageJson: resolvePath(targetDir, 'package.json'),
-    rootNodeModules: paths.resolveTargetRoot('node_modules'),
-    root: paths.targetRoot,
+    rootNodeModules: targetPaths.resolveRoot('node_modules'),
+    root: targetPaths.resolveRoot(),
   };
 }
 

@@ -24,7 +24,8 @@ import {
   BackstagePackageJson,
   Lockfile,
 } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { runWorkerQueueThreads } from '../../../../lib/parallel';
 import { createScriptOptionsParser } from '../../../../lib/optionsParser';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';
@@ -44,7 +45,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   const cacheContext = opts.successCache
     ? {
         entries: await cache.read(),
-        lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
+        lockfile: await Lockfile.load(targetPaths.resolveRoot('yarn.lock')),
       }
     : undefined;
 
@@ -62,7 +63,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
   if (opts.format === 'eslint-formatter-friendly') {
-    process.chdir(paths.targetRoot);
+    process.chdir(targetPaths.resolveRoot());
   }
 
   // Make sure lint output is colored unless the user explicitly disabled it
@@ -77,7 +78,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       const lintOptions = parseLintScript(pkg.packageJson.scripts?.lint);
       const base = {
         fullDir: pkg.dir,
-        relativeDir: relativePath(paths.targetRoot, pkg.dir),
+        relativeDir: relativePath(targetPaths.resolveRoot(), pkg.dir),
         lintOptions,
         parentHash: undefined,
       };
@@ -113,7 +114,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       shouldCache: Boolean(cacheContext),
       maxWarnings: opts.maxWarnings ?? -1,
       successCache: cacheContext?.entries,
-      rootDir: paths.targetRoot,
+      rootDir: targetPaths.resolveRoot(),
     },
     workerFactory: async ({
       fix,
@@ -263,7 +264,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   if (opts.outputFile && errorOutput) {
-    await fs.writeFile(paths.resolveTargetRoot(opts.outputFile), errorOutput);
+    await fs.writeFile(targetPaths.resolveRoot(opts.outputFile), errorOutput);
   }
 
   if (cacheContext) {

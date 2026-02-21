@@ -16,17 +16,16 @@
 
 import { relative as relativePath } from 'node:path';
 import { OptionValues } from 'commander';
-import { findPaths, run } from '@backstage/cli-common';
+import { findOwnPaths, run } from '@backstage/cli-common';
 import { platform } from 'node:os';
-
-// eslint-disable-next-line no-restricted-syntax
-const paths = findPaths(__dirname);
 
 export function createCodemodAction(name: string) {
   return async (dirs: string[], opts: OptionValues) => {
+    // eslint-disable-next-line no-restricted-syntax
+    const paths = findOwnPaths(__dirname);
     const transformPath = relativePath(
       process.cwd(),
-      paths.resolveOwn('transforms', `${name}.js`),
+      paths.resolve('transforms', `${name}.js`),
     );
 
     const args = [

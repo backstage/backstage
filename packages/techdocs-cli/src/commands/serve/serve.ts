@@ -17,7 +17,7 @@
 import { OptionValues } from 'commander';
 import path from 'node:path';
 import openBrowser from 'react-dev-utils/openBrowser';
-import { findPaths, RunOnOutput } from '@backstage/cli-common';
+import { findOwnPaths, RunOnOutput } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { createLogger } from '../../lib/utility';
@@ -39,8 +39,7 @@ function findPreviewBundlePath(): string {
     // This can be tested by running `yarn pack` and extracting the resulting tarball into a directory.
     // Within the extracted directory, run `npm install --only=prod`.
     // Once that's done you can test the CLI in any directory using `node <tmp-dir>/package <command>`.
-    // eslint-disable-next-line no-restricted-syntax
-    return findPaths(__dirname).resolveOwn('dist/embedded-app');
+    return findOwnPaths(__dirname).resolve('dist/embedded-app');
   }
 }
 

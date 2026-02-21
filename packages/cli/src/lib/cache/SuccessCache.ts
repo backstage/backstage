@@ -16,7 +16,8 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
-import { paths } from '../paths';
+import { targetPaths } from '@backstage/cli-common';
+
 
 const DEFAULT_CACHE_BASE_PATH = 'node_modules/.cache/backstage-cli';
 
@@ -31,7 +32,7 @@ export class SuccessCache {
    * location.
    */
   static trimPaths(input: string) {
-    return input.replaceAll(paths.targetRoot, '');
+    return input.replaceAll(targetPaths.resolveRoot(), '');
   }
 
   constructor(name: string, basePath?: string) {

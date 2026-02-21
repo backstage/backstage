@@ -17,15 +17,16 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
-import { run } from '@backstage/cli-common';
+
+import { run, targetPaths } from '@backstage/cli-common';
+
 
 export async function command(): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();
 
-  await fs.remove(paths.resolveTargetRoot('dist'));
-  await fs.remove(paths.resolveTargetRoot('dist-types'));
-  await fs.remove(paths.resolveTargetRoot('coverage'));
+  await fs.remove(targetPaths.resolveRoot('dist'));
+  await fs.remove(targetPaths.resolveRoot('dist-types'));
+  await fs.remove(targetPaths.resolveRoot('coverage'));
 
   await Promise.all(
     Array.from(Array(10), async () => {

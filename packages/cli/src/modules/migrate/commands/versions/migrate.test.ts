@@ -37,10 +37,12 @@ jest.mock('@backstage/cli-common', () => {
   const actual = jest.requireActual('@backstage/cli-common');
   return {
     ...actual,
+    targetPaths: {
+      resolve: (...args: string[]) => mockDir.resolve(...args),
+      resolveRoot: (...args: string[]) => mockDir.resolve(...args),
+    },
     findPaths: () => ({
-      resolveTargetRoot(filename: string) {
-        return mockDir.resolve(filename);
-      },
+      resolveTargetRoot: (...args: string[]) => mockDir.resolve(...args),
       get targetDir() {
         return mockDir.path;
       },

@@ -18,10 +18,11 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageRoles } from '@backstage/cli-node';
-import { paths } from '../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 
 export default async () => {
-  const { packages } = await getPackages(paths.targetDir);
+  const { packages } = await getPackages(targetPaths.resolve());
 
   await Promise.all(
     packages.map(async ({ dir, packageJson: pkg }) => {

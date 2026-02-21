@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { npath, ppath } from '@yarnpkg/fslib';
-import { findPaths } from '@backstage/cli-common';
+import { npath } from '@yarnpkg/fslib';
+import { targetPaths } from '@backstage/cli-common';
 
 export const getWorkspaceRoot = () => {
-  return npath.toPortablePath(
-    findPaths(npath.fromPortablePath(ppath.cwd())).targetRoot,
-  );
+  return npath.toPortablePath(targetPaths.resolveRoot());
 };

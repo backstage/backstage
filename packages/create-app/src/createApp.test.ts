@@ -19,11 +19,35 @@ import path from 'node:path';
 import { Command } from 'commander';
 import * as tasks from './lib/tasks';
 import createApp from './createApp';
-import { findPaths } from '@backstage/cli-common';
+import { findOwnPaths, targetPaths } from '@backstage/cli-common';
 import { tmpdir } from 'node:os';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.mock('./lib/tasks');
+
+jest.mock('@backstage/cli-common', () => {
+  const pathModule = require('node:path');
+  const actual = jest.requireActual('@backstage/cli-common');
+  const MOCK_CREATE_APP_ROOT = '/mock/create-app-root';
+  const MOCK_TARGET_DIR = '/mock/target-dir';
+  const mockOwnPaths = {
+    resolve: (...paths: string[]) =>
+      pathModule.join(MOCK_CREATE_APP_ROOT, ...paths),
+    resolveRoot: (...paths: string[]) =>
+      pathModule.join('/mock/monorepo-root', ...paths),
+  };
+  return {
+    ...actual,
+    findPaths: jest.fn(),
+    findOwnPaths: () => mockOwnPaths,
+    targetPaths: {
+      resolve: (...paths: string[]) =>
+        pathModule.resolve(MOCK_TARGET_DIR, ...paths),
+      resolveRoot: (...paths: string[]) =>
+        pathModule.resolve('/mock/target-root', ...paths),
+    },
+  };
+});
 
 // By mocking this the filesystem mocks won't mess with reading all of the package.jsons
 jest.mock('./lib/versions', () => ({
@@ -64,12 +88,7 @@ describe('command entrypoint', () => {
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findPaths(__dirname).resolveTarget(
-        'packages',
-        'create-app',
-        'templates',
-        'default-app',
-      ),
+      findOwnPaths(__dirname).resolve('templates/default-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),
@@ -85,12 +104,7 @@ describe('command entrypoint', () => {
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findPaths(__dirname).resolveTarget(
-        'packages',
-        'create-app',
-        'templates',
-        'default-app',
-      ),
+      findOwnPaths(__dirname).resolve('templates/default-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
     expect(buildAppMock).toHaveBeenCalled();
@@ -103,12 +117,7 @@ describe('command entrypoint', () => {
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findPaths(__dirname).resolveTarget(
-        'packages',
-        'create-app',
-        'templates',
-        'next-app',
-      ),
+      findOwnPaths(__dirname).resolve('templates/next-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),
@@ -127,7 +136,7 @@ describe('command entrypoint', () => {
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findPaths(__dirname).resolveTarget('templateDirectory'),
+      targetPaths.resolve('templateDirectory'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
     expect(buildAppMock).toHaveBeenCalled();

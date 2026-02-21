@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { findPaths, Paths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 
 const setPlatform = (platform: string) => {
   Object.defineProperty(process, `platform`, {
@@ -37,7 +37,7 @@ describe('getWorkspaceRoot', () => {
   `('platform: $platform', ({ platform, native, portable }) => {
     let realPlatform: string;
     let getWorkspaceRoot: () => string;
-    let mockFindPaths: jest.MockedFunction<typeof findPaths>;
+    let mockResolveRoot: jest.MockedFunction<typeof targetPaths.resolveRoot>;
 
     beforeEach(() => {
       realPlatform = process.platform;
@@ -45,11 +45,13 @@ describe('getWorkspaceRoot', () => {
 
       jest.resetModules();
 
-      mockFindPaths = jest.fn();
+      mockResolveRoot = jest.fn();
 
       jest.doMock('@backstage/cli-common', () => ({
         ...jest.requireActual('@backstage/cli-common'),
-        findPaths: mockFindPaths,
+        targetPaths: {
+          resolveRoot: mockResolveRoot,
+        },
       }));
 
       getWorkspaceRoot = require('./getWorkspaceRoot').getWorkspaceRoot;
@@ -60,9 +62,7 @@ describe('getWorkspaceRoot', () => {
     });
 
     it('returns an appropriately-formatted workspace root path', () => {
-      mockFindPaths.mockReturnValue({
-        targetRoot: native,
-      } as Paths);
+      mockResolveRoot.mockReturnValue(native);
 
       expect(getWorkspaceRoot()).toEqual(portable);
     });

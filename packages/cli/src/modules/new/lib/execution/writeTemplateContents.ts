@@ -17,18 +17,19 @@
 import fs from 'fs-extra';
 import { dirname, resolve as resolvePath } from 'node:path';
 
-import { paths } from '../../../../lib/paths';
+
 import { PortableTemplate, PortableTemplateInput } from '../types';
 import { ForwardedError, InputError } from '@backstage/errors';
 import { isMonoRepo as getIsMonoRepo } from '@backstage/cli-node';
 import { PortableTemplater } from './PortableTemplater';
-import { isChildPath } from '@backstage/cli-common';
+import { isChildPath, targetPaths } from '@backstage/cli-common';
+
 
 export async function writeTemplateContents(
   template: PortableTemplate,
   input: PortableTemplateInput,
 ): Promise<{ targetDir: string }> {
-  const targetDir = paths.resolveTargetRoot(input.packagePath);
+  const targetDir = targetPaths.resolveRoot(input.packagePath);
 
   if (await fs.pathExists(targetDir)) {
     throw new InputError(`Package '${input.packagePath}' already exists`);

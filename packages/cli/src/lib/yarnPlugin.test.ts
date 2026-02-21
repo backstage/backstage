@@ -15,21 +15,21 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { targetPaths } from '@backstage/cli-common';
 import { getHasYarnPlugin } from './yarnPlugin';
 
 const mockDir = createMockDirectory();
 
-jest.mock('./paths', () => ({
-  paths: {
-    resolveTargetRoot(filename: string) {
-      return mockDir.resolve(filename);
-    },
-  },
-}));
-
 describe('getHasYarnPlugin', () => {
   beforeEach(() => {
     mockDir.clear();
+    jest
+      .spyOn(targetPaths, 'resolveRoot')
+      .mockImplementation((...args: string[]) => mockDir.resolve(...args));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('should return false when .yarnrc.yml does not exist', async () => {

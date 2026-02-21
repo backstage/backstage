@@ -18,23 +18,24 @@ import {
   productionPack,
   revertProductionPack,
 } from '../../../../modules/build/lib/packager/productionPack';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import fs from 'fs-extra';
 import { publishPreflightCheck } from '../../lib/publishing';
 import { createTypeDistProject } from '../../../../lib/typeDistProject';
 
 export const pre = async () => {
   publishPreflightCheck({
-    dir: paths.targetDir,
-    packageJson: await fs.readJson(paths.resolveTarget('package.json')),
+    dir: targetPaths.resolve(),
+    packageJson: await fs.readJson(targetPaths.resolve('package.json')),
   });
 
   await productionPack({
-    packageDir: paths.targetDir,
+    packageDir: targetPaths.resolve(),
     featureDetectionProject: await createTypeDistProject(),
   });
 };
 
 export const post = async () => {
-  await revertProductionPack(paths.targetDir);
+  await revertProductionPack(targetPaths.resolve());
 };

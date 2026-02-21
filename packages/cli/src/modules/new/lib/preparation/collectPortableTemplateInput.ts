@@ -16,7 +16,8 @@
 
 import inquirer, { DistinctQuestion } from 'inquirer';
 import { getCodeownersFilePath, parseOwnerIds } from '../codeowners';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import {
   PortableTemplateConfig,
   PortableTemplateInput,
@@ -38,7 +39,7 @@ export async function collectPortableTemplateInput(
 ): Promise<PortableTemplateInput> {
   const { config, template, prefilledParams } = options;
 
-  const codeOwnersFilePath = await getCodeownersFilePath(paths.targetRoot);
+  const codeOwnersFilePath = await getCodeownersFilePath(targetPaths.resolveRoot());
 
   const prompts = getPromptsForRole(template.role);
 

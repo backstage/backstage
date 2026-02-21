@@ -27,11 +27,8 @@ import { waitFor, print } from '../lib/helpers';
 import mysql from 'mysql2/promise';
 import pgtools from 'pgtools';
 
-import { findPaths, runOutput, run } from '@backstage/cli-common';
+import { findOwnPaths, runOutput, run } from '@backstage/cli-common';
 import { OptionValues } from 'commander';
-
-// eslint-disable-next-line no-restricted-syntax
-const paths = findPaths(__dirname);
 
 const templatePackagePaths = [
   'packages/cli/templates/frontend-plugin/package.json.hbs',
@@ -138,7 +135,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   }
 
   for (const pkgJsonPath of templatePackagePaths) {
-    const jsonPath = paths.resolveOwnRoot(pkgJsonPath);
+    const jsonPath = findOwnPaths(__dirname).resolveRoot(pkgJsonPath);
     const pkgTemplate = await fs.readFile(jsonPath, 'utf8');
     const pkg = JSON.parse(
       handlebars.compile(pkgTemplate)(
@@ -196,7 +193,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   print('Pinning yarn version in workspace');
   await pinYarnVersion(workspaceDir);
 
-  const yarnPatchesPath = paths.resolveOwnRoot('.yarn/patches');
+  const yarnPatchesPath = findOwnPaths(__dirname).resolveRoot('.yarn/patches');
   if (await fs.pathExists(yarnPatchesPath)) {
     print('Copying yarn patches');
     await fs.copy(yarnPatchesPath, resolvePath(workspaceDir, '.yarn/patches'));
@@ -214,7 +211,10 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
  * Pin the yarn version in a directory to the one we're using in the Backstage repo
  */
 async function pinYarnVersion(dir: string) {
-  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc.yml'), 'utf8');
+  const yarnRc = await fs.readFile(
+    findOwnPaths(__dirname).resolveRoot('.yarnrc.yml'),
+    'utf8',
+  );
   const yarnRcLines = yarnRc.split(/\r?\n/);
   const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarnPath:'));
   if (!yarnPathLine) {
@@ -225,8 +225,9 @@ async function pinYarnVersion(dir: string) {
     throw new Error(`Invalid 'yarnPath' in ${yarnRc}`);
   }
   const [, localYarnPath] = match;
-  const yarnPath = paths.resolveOwnRoot(localYarnPath);
-  const yarnPluginPath = paths.resolveOwnRoot(
+  const ownPaths = findOwnPaths(__dirname);
+  const yarnPath = ownPaths.resolveRoot(localYarnPath);
+  const yarnPluginPath = ownPaths.resolveRoot(
     localYarnPath,
     '../../plugins/@yarnpkg/plugin-workspace-tools.cjs',
   );
@@ -328,7 +329,7 @@ async function createApp(
  */
 async function overrideYarnLockSeed(appDir: string) {
   const content = await fs.readFile(
-    paths.resolveOwnRoot('packages/create-app/seed-yarn.lock'),
+    findOwnPaths(__dirname).resolveRoot('packages/create-app/seed-yarn.lock'),
     'utf8',
   );
   const trimmedContent = content

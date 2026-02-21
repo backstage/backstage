@@ -38,8 +38,33 @@ import { createSpecializedBackend } from '@backstage/backend-app-api';
 import { ConfigSources } from '@backstage/config-loader';
 import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';
 import { PluginScanner } from '../scanner/plugin-scanner';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+
+jest.mock('@backstage/cli-common', () => {
+  const path = require('path');
+  const actual = jest.requireActual<typeof import('@backstage/cli-common')>(
+    '@backstage/cli-common',
+  );
+  const mockRoot = path.resolve(__dirname, '..', '..', '..', '..');
+  return {
+    ...actual,
+    targetPaths: {
+      resolve: (...paths: string[]) => path.join(mockRoot, ...paths),
+      resolveRoot: (...paths: string[]) => path.join(mockRoot, ...paths),
+    },
+    findPaths: (searchDir: string) => ({
+      targetRoot: mockRoot,
+      targetDir: mockRoot,
+      ownDir: path.dirname(searchDir),
+      ownRoot: mockRoot,
+      resolveOwn: (...p: string[]) => path.join(path.dirname(searchDir), ...p),
+      resolveOwnRoot: (...p: string[]) => path.join(mockRoot, ...p),
+      resolveTarget: (...p: string[]) => path.join(mockRoot, ...p),
+      resolveTargetRoot: (...p: string[]) => path.join(mockRoot, ...p),
+    }),
+  };
+});
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { BackstagePackageJson, PackageRole } from '@backstage/cli-node';
 
@@ -956,7 +981,7 @@ describe('backend-dynamic-feature-service', () => {
 
       mockDir.setContent({
         'package.json': fs.readFileSync(
-          findPaths(__dirname).resolveTargetRoot('package.json'),
+          targetPaths.resolveRoot('package.json'),
         ),
         'dynamic-plugins-root': {},
         'dynamic-plugins-root/a-dynamic-plugin': ctx =>
@@ -1044,7 +1069,7 @@ describe('backend-dynamic-feature-service', () => {
         otherMockDir.resolve('a-dynamic-plugin'),
       );
       expect(mockedModuleLoader.bootstrap).toHaveBeenCalledWith(
-        findPaths(__dirname).targetRoot,
+        targetPaths.resolveRoot(),
         [realPath],
         new Map<string, ScannedPluginManifest>([
           [
