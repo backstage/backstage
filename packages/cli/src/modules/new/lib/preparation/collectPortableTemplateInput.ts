@@ -27,6 +27,34 @@ import {
 import { PortableTemplate } from '../types';
 import { resolvePackageParams } from './resolvePackageParams';
 
+const knownBackendPluginPackages: Record<string, string> = {
+  app: '@backstage/plugin-app-backend',
+  auth: '@backstage/plugin-auth-backend',
+  catalog: '@backstage/plugin-catalog-backend',
+  events: '@backstage/plugin-events-backend',
+  kubernetes: '@backstage/plugin-kubernetes-backend',
+  notifications: '@backstage/plugin-notifications-backend',
+  permission: '@backstage/plugin-permission-backend',
+  proxy: '@backstage/plugin-proxy-backend',
+  scaffolder: '@backstage/plugin-scaffolder-backend',
+  search: '@backstage/plugin-search-backend',
+  techdocs: '@backstage/plugin-techdocs-backend',
+};
+
+const knownFrontendPluginPackages: Record<string, string> = {
+  app: '@backstage/plugin-app',
+  auth: '@backstage/plugin-auth',
+  catalog: '@backstage/plugin-catalog',
+
+  kubernetes: '@backstage/plugin-kubernetes',
+  notifications: '@backstage/plugin-notifications',
+  permission: '@backstage/plugin-permission',
+  proxy: '@backstage/plugin-proxy',
+  scaffolder: '@backstage/plugin-scaffolder',
+  search: '@backstage/plugin-search',
+  techdocs: '@backstage/plugin-techdocs',
+};
+
 type CollectTemplateParamsOptions = {
   config: PortableTemplateConfig;
   template: PortableTemplate;
@@ -79,11 +107,27 @@ export async function collectPortableTemplateInput(
     ...promptAnswers,
   };
 
+  let pluginPackage: string | undefined;
+  if (
+    template.role === 'backend-plugin-module' ||
+    template.role === 'frontend-plugin-module'
+  ) {
+    const knownPackages =
+      template.role === 'backend-plugin-module'
+        ? knownBackendPluginPackages
+        : knownFrontendPluginPackages;
+
+    pluginPackage =
+      knownPackages[answers.pluginId as string] ??
+      (answers.pluginPackage as string);
+  }
+
   const roleParams = {
     role: template.role,
     name: answers.name,
     pluginId: answers.pluginId,
     moduleId: answers.moduleId,
+    pluginPackage,
   } as PortableTemplateInputRoleParams;
 
   const packageParams = resolvePackageParams({
@@ -152,6 +196,37 @@ export function moduleIdIdPrompt(): DistinctQuestion {
   };
 }
 
+export function pluginPackagePrompt(
+  role: 'backend-plugin-module' | 'frontend-plugin-module',
+): DistinctQuestion {
+  const knownPackages =
+    role === 'backend-plugin-module'
+      ? knownBackendPluginPackages
+      : knownFrontendPluginPackages;
+
+  const examplePackage =
+    role === 'backend-plugin-module'
+      ? '@backstage/plugin-catalog-backend'
+      : '@backstage/plugin-catalog';
+
+  return {
+    type: 'input',
+    name: 'pluginPackage',
+    message: `Enter the package name of the plugin this module extends (e.g. ${examplePackage}) [required]`,
+    validate: (value: string) => {
+      if (!value) {
+        return 'Please enter the package name of the plugin';
+      }
+      if (!isValidNpmPackageName(value)) {
+        return `Please enter a valid npm package name (e.g. ${examplePackage} or my-plugin)`;
+      }
+      return true;
+    },
+    when: (answers: PortableTemplateParams) =>
+      !knownPackages[answers.pluginId as string],
+  };
+}
+
 export function getPromptsForRole(
   role: PortableTemplateRole,
 ): Array<DistinctQuestion> {
@@ -168,7 +243,7 @@ export function getPromptsForRole(
       return [pluginIdPrompt()];
     case 'frontend-plugin-module':
     case 'backend-plugin-module':
-      return [pluginIdPrompt(), moduleIdIdPrompt()];
+      return [pluginIdPrompt(), moduleIdIdPrompt(), pluginPackagePrompt(role)];
     default:
       return [];
   }
@@ -192,4 +267,14 @@ export function ownerPrompt(): DistinctQuestion {
       return true;
     },
   };
+}
+
+// Reuses the same pattern as namePrompt/pluginIdPrompt but extended to support npm scopes
+// Matches: @scope/package-name, @scope/package, package-name, package
+const packageNamePattern = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const scopedPackageNamePattern =
+  /^@[a-z0-9]+(-[a-z0-9]+)*\/[a-z0-9]+(-[a-z0-9]+)*$/;
+
+function isValidNpmPackageName(name: string) {
+  return packageNamePattern.test(name) || scopedPackageNamePattern.test(name);
 }

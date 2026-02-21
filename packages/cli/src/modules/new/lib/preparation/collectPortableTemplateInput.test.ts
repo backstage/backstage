@@ -149,4 +149,136 @@ describe('collectTemplateParams', () => {
       ],
     });
   });
+
+  describe('backend-plugin-module with pluginPackage', () => {
+    const backendModuleOptions = {
+      ...baseOptions,
+      template: {
+        name: 'test-module',
+        role: 'backend-plugin-module' as const,
+        files: [],
+        values: {},
+      },
+    };
+
+    it('should auto-fill pluginPackage for catalog plugin without prompting', async () => {
+      await expect(
+        collectPortableTemplateInput({
+          ...backendModuleOptions,
+          prefilledParams: {
+            pluginId: 'catalog',
+            moduleId: 'my-module',
+          },
+        }),
+      ).resolves.toEqual({
+        roleParams: {
+          role: 'backend-plugin-module',
+          pluginId: 'catalog',
+          moduleId: 'my-module',
+          pluginPackage: '@backstage/plugin-catalog-backend',
+        },
+        owner: undefined,
+        version: '0.1.0',
+        license: 'Apache-2.0',
+        private: true,
+        packageName: '@internal/plugin-catalog-backend-module-my-module',
+        packagePath: 'plugins/catalog-backend-module-my-module',
+      });
+    });
+
+    it('should prompt for pluginPackage for unknown plugins', async () => {
+      jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
+        pluginPackage: '@mycompany/plugin-custom-backend',
+      });
+
+      await expect(
+        collectPortableTemplateInput({
+          ...backendModuleOptions,
+          prefilledParams: {
+            pluginId: 'custom',
+            moduleId: 'my-extension',
+          },
+        }),
+      ).resolves.toEqual({
+        roleParams: {
+          role: 'backend-plugin-module',
+          pluginId: 'custom',
+          moduleId: 'my-extension',
+          pluginPackage: '@mycompany/plugin-custom-backend',
+        },
+        owner: undefined,
+        version: '0.1.0',
+        license: 'Apache-2.0',
+        private: true,
+        packageName: '@internal/plugin-custom-backend-module-my-extension',
+        packagePath: 'plugins/custom-backend-module-my-extension',
+      });
+    });
+  });
+
+  describe('frontend-plugin-module with pluginPackage', () => {
+    const frontendModuleOptions = {
+      ...baseOptions,
+      template: {
+        name: 'test-module',
+        role: 'frontend-plugin-module' as const,
+        files: [],
+        values: {},
+      },
+    };
+
+    it('should auto-fill pluginPackage for catalog plugin without prompting', async () => {
+      await expect(
+        collectPortableTemplateInput({
+          ...frontendModuleOptions,
+          prefilledParams: {
+            pluginId: 'catalog',
+            moduleId: 'my-module',
+          },
+        }),
+      ).resolves.toEqual({
+        roleParams: {
+          role: 'frontend-plugin-module',
+          pluginId: 'catalog',
+          moduleId: 'my-module',
+          pluginPackage: '@backstage/plugin-catalog',
+        },
+        owner: undefined,
+        version: '0.1.0',
+        license: 'Apache-2.0',
+        private: true,
+        packageName: '@internal/plugin-catalog-module-my-module',
+        packagePath: 'plugins/catalog-module-my-module',
+      });
+    });
+
+    it('should prompt for pluginPackage for unknown plugins', async () => {
+      jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
+        pluginPackage: '@mycompany/plugin-custom',
+      });
+
+      await expect(
+        collectPortableTemplateInput({
+          ...frontendModuleOptions,
+          prefilledParams: {
+            pluginId: 'custom',
+            moduleId: 'my-extension',
+          },
+        }),
+      ).resolves.toEqual({
+        roleParams: {
+          role: 'frontend-plugin-module',
+          pluginId: 'custom',
+          moduleId: 'my-extension',
+          pluginPackage: '@mycompany/plugin-custom',
+        },
+        owner: undefined,
+        version: '0.1.0',
+        license: 'Apache-2.0',
+        private: true,
+        packageName: '@internal/plugin-custom-module-my-extension',
+        packagePath: 'plugins/custom-module-my-extension',
+      });
+    });
+  });
 });

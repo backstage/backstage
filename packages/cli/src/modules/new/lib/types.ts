@@ -93,9 +93,16 @@ export type PortableTemplateInputRoleParams =
       pluginId: string;
     }
   | {
-      role: 'frontend-plugin-module' | 'backend-plugin-module';
+      role: 'frontend-plugin-module';
       pluginId: string;
       moduleId: string;
+      pluginPackage: string;
+    }
+  | {
+      role: 'backend-plugin-module';
+      pluginId: string;
+      moduleId: string;
+      pluginPackage: string;
     };
 
 export type PortableTemplateInput = {
