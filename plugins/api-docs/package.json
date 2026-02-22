@@ -68,7 +68,6 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "graphiql": "^3.8.3",
     "graphql": "^16.0.0",
-    "graphql-config": "^5.0.2",
     "graphql-ws": "^5.4.1",
     "swagger-ui-react": "^5.27.1"
   },
