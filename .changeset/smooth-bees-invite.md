@@ -2,4 +2,5 @@
 '@backstage/plugin-api-docs': patch
 ---
 
-Upgrade graphiql to v3.9.0
+Updated dependency `graphiql` to `3.9.0`.
+Updated dependency `@graphiql/react` to `^0.29.0`.
