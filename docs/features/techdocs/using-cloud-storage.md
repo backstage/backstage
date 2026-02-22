@@ -207,7 +207,7 @@ If you need to migrate documentation objects from an older-style path
 format including case-sensitive entity metadata, you will need to add some
 additional permissions to be able to perform the migration, including:
 
-- `s3:PutBucketAcl` (for copying files,
+- `s3:PutObjectAcl` (for copying files,
   [more info here](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectAcl.html))
 - `s3:DeleteObject` and `s3:DeleteObjectVersion` (for deleting migrated files,
   [more info here](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html))
