@@ -917,4 +917,162 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20260215000000_move_stitch_queue.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      // Run migrations up to just before the target migration
+      await migrateUntilBefore(knex, '20260215000000_move_stitch_queue.js');
+
+      // Insert rows into refresh_state with stitch queue data
+      // Before migration, refresh_state has next_stitch_at and next_stitch_ticket columns
+      const stitchTime1 = new Date('2026-01-15T12:00:00.000Z');
+      const stitchTime3 = new Date('2026-01-16T12:00:00.000Z');
+
+      await knex('refresh_state').insert([
+        {
+          entity_id: 'id1',
+          entity_ref: 'component:default/with-stitch',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: stitchTime1,
+          next_stitch_ticket: 'ticket-1',
+        },
+        {
+          entity_id: 'id2',
+          entity_ref: 'component:default/no-stitch',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: null,
+          next_stitch_ticket: null,
+        },
+        {
+          entity_id: 'id3',
+          entity_ref: 'component:default/orphan-stitch',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: stitchTime3,
+          next_stitch_ticket: 'ticket-3',
+        },
+      ]);
+
+      // Insert final_entities rows - note id3 is NOT in final_entities (orphan stitch)
+      await knex('final_entities').insert([
+        {
+          entity_id: 'id1',
+          entity_ref: 'component:default/with-stitch',
+          hash: 'hash1',
+          stitch_ticket: 'old-ticket-1',
+          final_entity: '{}',
+        },
+        {
+          entity_id: 'id2',
+          entity_ref: 'component:default/no-stitch',
+          hash: 'hash2',
+          stitch_ticket: 'old-ticket-2',
+          final_entity: '{}',
+        },
+      ]);
+
+      // Verify initial state - final_entities should NOT have next_stitch_at column yet
+      const preColumnInfo = await knex('final_entities').columnInfo();
+      expect(preColumnInfo.next_stitch_at).toBeUndefined();
+
+      // Run the migration
+      await migrateUpOnce(knex);
+
+      // Verify next_stitch_at column was added to final_entities
+      const postColumnInfo = await knex('final_entities').columnInfo();
+      expect(postColumnInfo.next_stitch_at).not.toBeUndefined();
+
+      // Verify next_stitch_at and next_stitch_ticket columns were removed from refresh_state
+      const refreshStateColumnInfo = await knex('refresh_state').columnInfo();
+      expect(refreshStateColumnInfo.next_stitch_at).toBeUndefined();
+      expect(refreshStateColumnInfo.next_stitch_ticket).toBeUndefined();
+
+      // Verify data was migrated correctly to final_entities
+      const finalEntitiesAfterUp = await knex('final_entities')
+        .orderBy('entity_id')
+        .select('entity_id', 'entity_ref', 'stitch_ticket', 'next_stitch_at');
+
+      expect(finalEntitiesAfterUp).toEqual([
+        {
+          entity_id: 'id1',
+          entity_ref: 'component:default/with-stitch',
+          stitch_ticket: 'ticket-1', // Updated from refresh_state
+          next_stitch_at: expect.anything(), // Migrated from refresh_state
+        },
+        {
+          entity_id: 'id2',
+          entity_ref: 'component:default/no-stitch',
+          stitch_ticket: 'old-ticket-2', // Unchanged (no pending stitch)
+          next_stitch_at: null,
+        },
+        {
+          entity_id: 'id3',
+          entity_ref: 'component:default/orphan-stitch',
+          stitch_ticket: 'ticket-3', // Created for orphaned stitch request
+          next_stitch_at: expect.anything(), // Created for orphaned stitch request
+        },
+      ]);
+
+      // Verify the stitch time was actually migrated for id1
+      const id1Row = finalEntitiesAfterUp.find(r => r.entity_id === 'id1');
+      expect(id1Row?.next_stitch_at).not.toBeNull();
+
+      // Verify the orphan stitch request (id3) was created in final_entities
+      const id3Row = finalEntitiesAfterUp.find(r => r.entity_id === 'id3');
+      expect(id3Row?.next_stitch_at).not.toBeNull();
+
+      // Run the down migration
+      await migrateDownOnce(knex);
+
+      // Verify next_stitch_at column was removed from final_entities
+      const revertedFinalColumnInfo = await knex('final_entities').columnInfo();
+      expect(revertedFinalColumnInfo.next_stitch_at).toBeUndefined();
+
+      // Verify next_stitch_at and next_stitch_ticket columns were restored to refresh_state
+      const revertedRefreshColumnInfo = await knex(
+        'refresh_state',
+      ).columnInfo();
+      expect(revertedRefreshColumnInfo.next_stitch_at).not.toBeUndefined();
+      expect(revertedRefreshColumnInfo.next_stitch_ticket).not.toBeUndefined();
+
+      // Verify data was migrated back to refresh_state
+      const refreshStateAfterDown = await knex('refresh_state')
+        .orderBy('entity_id')
+        .select(
+          'entity_id',
+          'entity_ref',
+          'next_stitch_at',
+          'next_stitch_ticket',
+        );
+
+      // id1 should have stitch data restored
+      const id1RefreshRow = refreshStateAfterDown.find(
+        r => r.entity_id === 'id1',
+      );
+      expect(id1RefreshRow?.next_stitch_at).not.toBeNull();
+      expect(id1RefreshRow?.next_stitch_ticket).toBe('ticket-1');
+
+      // id2 should have no stitch data
+      const id2RefreshRow = refreshStateAfterDown.find(
+        r => r.entity_id === 'id2',
+      );
+      expect(id2RefreshRow?.next_stitch_at).toBeNull();
+
+      await knex.destroy();
+    },
+  );
 });
