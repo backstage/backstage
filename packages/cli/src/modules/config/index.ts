@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createCliPlugin } from '../../wiring/factory';
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { lazy } from '../../lib/lazy';
 
 export const configOption = [
@@ -65,10 +65,22 @@ export default createCliPlugin({
         const defaultCommand = command
           .option(...configOption)
           .option('--package <name>', 'Package to load config from')
-          .option('--lax', 'Load config in lax mode')
-          .option('--frontend', 'Load config for frontend')
-          .option('--with-secrets', 'Include secrets in the output')
-          .option('--format <type>', 'Output format')
+          .option('--lax', 'Assumes all environment variables are set')
+          .option(
+            '--frontend',
+            'Print only configuration with frontend visibility',
+          )
+          .addOption(
+            new Option(
+              '--with-secrets',
+              'Include secrets in the output',
+            ).conflicts(['frontend']),
+          )
+          .addOption(
+            new Option('--format <type>', 'Output format')
+              .choices(['json', 'yaml'])
+              .default('yaml'),
+          )
           .description('Print the app configuration for the current package')
           .action(lazy(() => import('./commands/print'), 'default'));
 
@@ -84,8 +96,11 @@ export default createCliPlugin({
         const defaultCommand = command
           .option(...configOption)
           .option('--package <name>', 'Package to load config from')
-          .option('--lax', 'Load config in lax mode')
-          .option('--frontend', 'Load config for frontend')
+          .option('--lax', 'Assumes all environment variables are set')
+          .option(
+            '--frontend',
+            'Print only configuration with frontend visibility',
+          )
           .option('--deprecated', 'Allow deprecated config keys')
           .option('--strict', 'Strict validation')
           .description(
@@ -104,8 +119,12 @@ export default createCliPlugin({
         const command = new Command();
         const defaultCommand = command
           .option('--package <name>', 'Package to load config from')
-          .option('--format <type>', 'Output format')
-          .option('--merge', 'Merge schemas')
+          .addOption(
+            new Option('--format <type>', 'Output format')
+              .choices(['json', 'yaml'])
+              .default('yaml'),
+          )
+          .option('--merge', 'Merge schemas', false)
           .description('Print the JSON schema for the given configuration')
           .action(lazy(() => import('./commands/schema'), 'default'));
 
@@ -120,8 +139,12 @@ export default createCliPlugin({
         const command = new Command();
         const defaultCommand = command
           .option('--package <name>', 'Package to load config from')
-          .option('--format <type>', 'Output format')
-          .option('--merge', 'Merge schemas')
+          .addOption(
+            new Option('--format <type>', 'Output format')
+              .choices(['json', 'yaml'])
+              .default('yaml'),
+          )
+          .option('--merge', 'Merge schemas', false)
           .description('Print the JSON schema for the given configuration')
           .action(lazy(() => import('./commands/schema'), 'default'));
 
