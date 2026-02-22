@@ -21,7 +21,7 @@ import { TranslationBlueprint } from '@backstage/plugin-app-react';
 import {
   appLanguageApiRef,
   translationApiRef,
-} from '@backstage/core-plugin-api/alpha';
+} from '@backstage/frontend-plugin-api';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../../packages/core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
