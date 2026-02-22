@@ -64,38 +64,44 @@ export async function performStitching(options: {
   let removeFromStitchQueueOnCompletion = options.strategy.mode === 'deferred';
 
   try {
-    const entityResult = await knex<DbRefreshStateRow>('refresh_state')
-      .where({ entity_ref: entityRef })
-      .limit(1)
-      .select('entity_id');
-    if (!entityResult.length) {
-      // Entity does no exist in refresh state table, no stitching required.
-      return 'abandoned';
-    }
-
-    // Insert stitching ticket that will be compared before inserting the final entity.
-    try {
-      await knex<DbFinalEntitiesRow>('final_entities')
-        .insert({
-          entity_id: entityResult[0].entity_id,
-          hash: '',
-          entity_ref: entityRef,
-          stitch_ticket: stitchTicket,
-        })
-        .onConflict('entity_id')
-        .merge(['stitch_ticket']);
-    } catch (error) {
-      // It's possible to hit a race where a refresh_state table delete + insert
-      // is done just after we read the entity_id from it. This conflict is safe
-      // to ignore because the current stitching operation will be triggered by
-      // the old entry, and the new entry will trigger it's own stitching that
-      // will update the entity.
-      if (isDatabaseConflictError(error)) {
-        logger.debug(`Skipping stitching of ${entityRef}, conflict`, error);
+    // In deferred mode, the entity is marked for stitching by the
+    // markForStitching function. At that point its ticket was already inserted
+    // in the first place. So there is no need for trying to do it again here
+    // then.
+    if (options.strategy.mode !== 'deferred') {
+      const entityResult = await knex<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: entityRef })
+        .limit(1)
+        .select('entity_id');
+      if (!entityResult.length) {
+        // Entity does no exist in refresh state table, no stitching required.
         return 'abandoned';
       }
 
-      throw error;
+      // Insert stitching ticket that will be compared before inserting the final entity.
+      try {
+        await knex<DbFinalEntitiesRow>('final_entities')
+          .insert({
+            entity_id: entityResult[0].entity_id,
+            hash: '',
+            entity_ref: entityRef,
+            stitch_ticket: stitchTicket,
+          })
+          .onConflict('entity_id')
+          .merge(['stitch_ticket']);
+      } catch (error) {
+        // It's possible to hit a race where a refresh_state table delete + insert
+        // is done just after we read the entity_id from it. This conflict is safe
+        // to ignore because the current stitching operation will be triggered by
+        // the old entry, and the new entry will trigger it's own stitching that
+        // will update the entity.
+        if (isDatabaseConflictError(error)) {
+          logger.debug(`Skipping stitching of ${entityRef}, conflict`, error);
+          return 'abandoned';
+        }
+
+        throw error;
+      }
     }
 
     // Selecting from refresh_state and final_entities should yield exactly

@@ -56,6 +56,7 @@ export async function markForStitching(options: {
   strategy: StitchingStrategy;
   entityRefs?: Iterable<string>;
   entityIds?: Iterable<string>;
+  stitchTicket?: string;
 }): Promise<void> {
   const entityRefs = sortSplit(options.entityRefs);
   const entityIds = sortSplit(options.entityIds);
@@ -106,7 +107,7 @@ export async function markForStitching(options: {
   } else if (mode === 'deferred') {
     // It's OK that this is shared across final_entities rows; it just needs to
     // be uniquely generated for every new stitch request.
-    const ticket = uuid();
+    const ticket = options.stitchTicket ?? uuid();
 
     // Use a single-pass upsert: look up entity info from refresh_state, then
     // insert into final_entities with ON CONFLICT merge. This handles both

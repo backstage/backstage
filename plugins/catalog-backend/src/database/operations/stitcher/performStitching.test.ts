@@ -25,6 +25,8 @@ import {
   DbSearchRow,
 } from '../../tables';
 import { performStitching } from './performStitching';
+import { markForStitching } from './markForStitching';
+import { StitchingStrategy } from '../../../stitching/types';
 
 jest.setTimeout(60_000);
 
@@ -38,6 +40,12 @@ describe('performStitching', () => {
     async databaseId => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
+
+      const strategy: StitchingStrategy = {
+        mode: 'deferred',
+        pollingInterval: { seconds: 1 },
+        stitchTimeout: { seconds: 1 },
+      };
 
       let entities: DbFinalEntitiesRow[];
       let entity: Entity;
@@ -82,15 +90,18 @@ describe('performStitching', () => {
         },
       ]);
 
+      await markForStitching({
+        knex,
+        strategy,
+        entityRefs: ['k:ns/n'],
+        stitchTicket: 'first-ticket',
+      });
       await performStitching({
         knex,
         logger,
-        strategy: {
-          mode: 'deferred',
-          pollingInterval: { seconds: 1 },
-          stitchTimeout: { seconds: 1 },
-        },
+        strategy,
         entityRef: 'k:ns/n',
+        stitchTicket: 'first-ticket',
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -171,15 +182,18 @@ describe('performStitching', () => {
       );
 
       // Re-stitch without any changes
+      await markForStitching({
+        knex,
+        strategy,
+        entityRefs: ['k:ns/n'],
+        stitchTicket: 'second-ticket',
+      });
       await performStitching({
         knex,
         logger,
-        strategy: {
-          mode: 'deferred',
-          pollingInterval: { seconds: 1 },
-          stitchTimeout: { seconds: 1 },
-        },
+        strategy,
         entityRef: 'k:ns/n',
+        stitchTicket: 'second-ticket',
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -198,15 +212,18 @@ describe('performStitching', () => {
         },
       ]);
 
+      await markForStitching({
+        knex,
+        strategy,
+        entityRefs: ['k:ns/n'],
+        stitchTicket: 'third-ticket',
+      });
       await performStitching({
         knex,
         logger,
-        strategy: {
-          mode: 'deferred',
-          pollingInterval: { seconds: 1 },
-          stitchTimeout: { seconds: 1 },
-        },
+        strategy,
         entityRef: 'k:ns/n',
+        stitchTicket: 'third-ticket',
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
