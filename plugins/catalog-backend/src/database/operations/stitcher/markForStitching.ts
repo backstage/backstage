@@ -104,30 +104,56 @@ export async function markForStitching(options: {
       }, knex);
     }
   } else if (mode === 'deferred') {
-    // It's OK that this is shared across refresh state rows; it just needs to
+    // It's OK that this is shared across final_entities rows; it just needs to
     // be uniquely generated for every new stitch request.
     const ticket = uuid();
 
-    // Update by primary key in deterministic order to avoid deadlocks
+    // Use a single-pass upsert: look up entity info from refresh_state, then
+    // insert into final_entities with ON CONFLICT merge. This handles both
+    // updating existing rows and inserting new ones in a single operation.
     for (const chunk of entityRefs) {
       await retryOnDeadlock(async () => {
-        await knex<DbRefreshStateRow>('refresh_state')
-          .update({
-            next_stitch_at: knex.fn.now(),
-            next_stitch_ticket: ticket,
-          })
+        const refreshStateRows = await knex<DbRefreshStateRow>('refresh_state')
+          .select('entity_id', 'entity_ref')
           .whereIn('entity_ref', chunk);
+
+        if (refreshStateRows.length > 0) {
+          await knex<DbFinalEntitiesRow>('final_entities')
+            .insert(
+              refreshStateRows.map(row => ({
+                entity_id: row.entity_id,
+                entity_ref: row.entity_ref,
+                hash: '',
+                stitch_ticket: ticket,
+                next_stitch_at: knex.fn.now(),
+              })),
+            )
+            .onConflict('entity_id')
+            .merge(['next_stitch_at', 'stitch_ticket']);
+        }
       }, knex);
     }
 
     for (const chunk of entityIds) {
       await retryOnDeadlock(async () => {
-        await knex<DbRefreshStateRow>('refresh_state')
-          .update({
-            next_stitch_at: knex.fn.now(),
-            next_stitch_ticket: ticket,
-          })
+        const refreshStateRows = await knex<DbRefreshStateRow>('refresh_state')
+          .select('entity_id', 'entity_ref')
           .whereIn('entity_id', chunk);
+
+        if (refreshStateRows.length > 0) {
+          await knex<DbFinalEntitiesRow>('final_entities')
+            .insert(
+              refreshStateRows.map(row => ({
+                entity_id: row.entity_id,
+                entity_ref: row.entity_ref,
+                hash: '',
+                stitch_ticket: ticket,
+                next_stitch_at: knex.fn.now(),
+              })),
+            )
+            .onConflict('entity_id')
+            .merge(['next_stitch_at', 'stitch_ticket']);
+        }
       }, knex);
     }
   } else {
