@@ -4150,7 +4150,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@graphiql/react": "npm:^0.29.0"
+    "@graphiql/react": "npm:0.28.2"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
@@ -4161,7 +4161,7 @@ __metadata:
     "@types/highlightjs": "npm:^10.1.0"
     "@types/react": "npm:^18.0.0"
     "@types/swagger-ui-react": "npm:^5.0.0"
-    graphiql: "npm:^3.8.3"
+    graphiql: "npm:3.8.3"
     graphql: "npm:^16.0.0"
     graphql-ws: "npm:^5.4.1"
     react: "npm:^18.0.2"
@@ -9474,11 +9474,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphiql/react@npm:^0.29.0":
-  version: 0.29.0
-  resolution: "@graphiql/react@npm:0.29.0"
+"@graphiql/react@npm:0.28.2, @graphiql/react@npm:^0.28.2":
+  version: 0.28.2
+  resolution: "@graphiql/react@npm:0.28.2"
   dependencies:
-    "@graphiql/toolkit": "npm:^0.11.2"
+    "@graphiql/toolkit": "npm:^0.11.0"
     "@headlessui/react": "npm:^1.7.15"
     "@radix-ui/react-dialog": "npm:^1.0.4"
     "@radix-ui/react-dropdown-menu": "npm:^2.0.5"
@@ -9487,23 +9487,23 @@ __metadata:
     "@types/codemirror": "npm:^5.60.8"
     clsx: "npm:^1.2.1"
     codemirror: "npm:^5.65.3"
-    codemirror-graphql: "npm:^2.2.1"
+    codemirror-graphql: "npm:^2.2.0"
     copy-to-clipboard: "npm:^3.2.0"
     framer-motion: "npm:^6.5.1"
     get-value: "npm:^3.0.1"
-    graphql-language-service: "npm:^5.3.1"
+    graphql-language-service: "npm:^5.3.0"
     markdown-it: "npm:^14.1.0"
-    react-compiler-runtime: "npm:19.1.0-rc.1"
+    react-compiler-runtime: "npm:19.0.0-beta-37ed2a7-20241206"
     set-value: "npm:^4.1.0"
   peerDependencies:
     graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
-  checksum: 10/c906bf3175ae042aaa035872015ea5d60991dba633e2e44f707faee9dad9f3b2b6896ca6fcef7f54e65a1b707db9a44538137e5e7037e132d0f8a456df641c49
+  checksum: 10/23b9d46c3453aff89f20735419e7a3baf4e6effd56a6df71e99ababe720bddf25a603a10cde49001dd3be4009ae79be320d855e9add605b860fa01425f83ca94
   languageName: node
   linkType: hard
 
-"@graphiql/toolkit@npm:^0.11.2":
+"@graphiql/toolkit@npm:^0.11.0":
   version: 0.11.3
   resolution: "@graphiql/toolkit@npm:0.11.3"
   dependencies:
@@ -27304,7 +27304,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codemirror-graphql@npm:^2.2.1":
+"codemirror-graphql@npm:^2.2.0":
   version: 2.2.4
   resolution: "codemirror-graphql@npm:2.2.4"
   dependencies:
@@ -33231,17 +33231,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:^3.8.3":
-  version: 3.9.0
-  resolution: "graphiql@npm:3.9.0"
+"graphiql@npm:3.8.3":
+  version: 3.8.3
+  resolution: "graphiql@npm:3.8.3"
   dependencies:
-    "@graphiql/react": "npm:^0.29.0"
-    react-compiler-runtime: "npm:19.1.0-rc.1"
+    "@graphiql/react": "npm:^0.28.2"
   peerDependencies:
     graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
-  checksum: 10/33a17064594fc883262de07e8cd3012563cf5965e401a8ab3e1aed9c38e69b4222a3cd1cefa58e3c0e5ba9e01dcd403d0452c4991814702da4d6fb37acc9a8ae
+  checksum: 10/caf880ae57e1d20b732b2e70c6a67ec6d7f7d055d7d5f23f64ccfdd9c37c06b2a1381a632eeeac8b9e1ee4591b75bad1c1a500fd424e1fa5cb62a978ed9fc24c
   languageName: node
   linkType: hard
 
@@ -33254,7 +33253,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-language-service@npm:5.5.0, graphql-language-service@npm:^5.3.1":
+"graphql-language-service@npm:5.5.0, graphql-language-service@npm:^5.3.0":
   version: 5.5.0
   resolution: "graphql-language-service@npm:5.5.0"
   dependencies:
@@ -43818,12 +43817,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-compiler-runtime@npm:19.1.0-rc.1":
-  version: 19.1.0-rc.1
-  resolution: "react-compiler-runtime@npm:19.1.0-rc.1"
+"react-compiler-runtime@npm:19.0.0-beta-37ed2a7-20241206":
+  version: 19.0.0-beta-37ed2a7-20241206
+  resolution: "react-compiler-runtime@npm:19.0.0-beta-37ed2a7-20241206"
   peerDependencies:
-    react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
-  checksum: 10/f64a63f8a6eacaebf87b2065dea9b2adc90d061c94361b31233284cbacc3fcf5f7dce6b5353ac8862ca5aa0a0d92240e3d6d695afa73d6bc5ce6d347b4c66870
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/d95b8f2f6897174911ebe77fd0247e85f06a5791c6e759cae0d961df217d6af5b822621e4dbab41acb0c69c006dbeec89cd874fe2af076bbade066f5ab4a741d
   languageName: node
   linkType: hard
 
