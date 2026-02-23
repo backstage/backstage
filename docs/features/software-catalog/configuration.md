@@ -366,3 +366,21 @@ Now install your module.
 ```ts title="packages/backend/src/index.ts"
 backend.add(eventsModuleCatalogErrors);
 ```
+
+## OpenAPI and $ref Support
+
+If you are using OpenAPI specifications that are split into multiple files using `$ref`, standard processing might not resolve them correctly. To fix this, you should install the **OpenAPI Catalog Backend Module**. This module helps resolve `$ref` pointers in your YAML documents, bundling them into a single specification for the catalog.
+
+### Installation
+
+1. Add the package to your backend:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-openapi
+```
+
+2. Register the module in your backend configuration:
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend-module-openapi'));
+```
