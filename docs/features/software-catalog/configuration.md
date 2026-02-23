@@ -367,9 +367,9 @@ Now install your module.
 backend.add(eventsModuleCatalogErrors);
 ```
 
-## OpenAPI and $ref Support
+## OpenAPI and AsyncAPI Placeholder Support
 
-If you are using OpenAPI specifications that are split into multiple files using `$ref`, standard processing might not resolve them correctly. To fix this, you should install the **OpenAPI Catalog Backend Module**. This module helps resolve `$ref` pointers in your YAML documents, bundling them into a single specification for the catalog.
+The **OpenAPI Catalog Backend Module** registers a JSON Schema placeholder resolver for the `openapi` (and `asyncapi`) placeholder keys. This enables you to use `$openapi` and `$asyncapi` references in your catalog entities, while having all underlying `$ref` pointers resolved and bundled as part of the schema processing.
 
 ### Installation
 
