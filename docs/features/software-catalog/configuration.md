@@ -408,3 +408,14 @@ spec:
   definition:
     $openapi: ./spec/openapi.yaml # by using $openapi Backstage will now resolve all $ref instances
 ```
+
+3. Add the configuration to your `app-config.yaml`:
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    backstageOpenapi:
+      plugins:
+        - catalog
+        - scaffolder
+```
