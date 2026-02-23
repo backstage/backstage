@@ -381,7 +381,7 @@ You can install the **Backstage OpenAPI Module** to easily expose the OpenAPI sp
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-backstage-openapi
 ```
 
-2. Register the module in your backend configuration:
+2. Register the module in your backend:
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(
