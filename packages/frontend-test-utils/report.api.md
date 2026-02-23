@@ -275,7 +275,7 @@ export namespace mockApis {
 
 // @public
 export class MockConfigApi implements ConfigApi {
-  constructor({ data }: { data: JsonObject });
+  constructor(input: { data: JsonObject });
   get<T = JsonValue>(key?: string): T;
   getBoolean(key: string): boolean;
   getConfig(key: string): Config;

@@ -556,9 +556,9 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
-export const EntityTableColumnTitle: ({
-  translationKey,
-}: EntityTableColumnTitleProps) =>
+export const EntityTableColumnTitle: (
+  input: EntityTableColumnTitleProps,
+) =>
   | 'System'
   | 'Title'
   | 'Domain'
