@@ -379,7 +379,7 @@ If you are using OpenAPI specifications that are split into multiple files using
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-openapi
 ```
 
-2. Register the module in your backend configuration:
+2. Register the module in your backend:
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend-module-openapi'));
