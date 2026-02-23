@@ -19,17 +19,18 @@ import {
   createApiRef,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  FormFieldBlueprint,
+  type FormField,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { OpaqueFormField } from '@internal/scaffolder';
 
-interface FormField {
-  readonly $$type: '@backstage/scaffolder/FormField';
-}
-
-interface ScaffolderFormFieldsApi {
+/** @alpha */
+export interface ScaffolderFormFieldsApi {
   loadFormFields(): Promise<FormField[]>;
 }
 
+/** @alpha */
 const formFieldsApiRef = createApiRef<ScaffolderFormFieldsApi>({
   id: 'plugin.scaffolder.form-fields-loader',
 });
