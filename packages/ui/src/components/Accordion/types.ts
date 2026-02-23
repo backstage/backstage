@@ -29,7 +29,7 @@ import type { ProviderBg } from '../../types';
  */
 export type AccordionOwnProps = {
   bg?: ProviderBg;
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
 };
 

@@ -70,6 +70,7 @@ const DecorativeBox = ({
         fontWeight: 'bold',
         color: '#2563eb',
       }}
+      children={null}
     />
   );
 };
