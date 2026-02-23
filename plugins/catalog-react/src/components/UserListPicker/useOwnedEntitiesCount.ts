@@ -25,6 +25,10 @@ import { CatalogFilters, reduceCatalogFilters } from '../../utils/filters';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import useDeepCompareEffect from 'react-use/esm/useDeepCompareEffect';
 
+/**
+ * Hook that returns the count of owned entities.
+ * @public
+ */
 export function useOwnedEntitiesCount() {
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
