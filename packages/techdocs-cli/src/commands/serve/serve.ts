@@ -16,7 +16,7 @@
 
 import { OptionValues } from 'commander';
 import path from 'node:path';
-import openBrowser from 'react-dev-utils/openBrowser';
+import { openBrowser } from '@backstage/cli-common';
 import { findPaths, RunOnOutput } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
