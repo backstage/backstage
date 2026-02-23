@@ -371,6 +371,12 @@ backend.add(eventsModuleCatalogErrors);
 
 The **OpenAPI Catalog Backend Module** registers a JSON Schema placeholder resolver for the `openapi` (and `asyncapi`) placeholder keys. This enables you to use `$openapi` and `$asyncapi` references in your catalog entities, while having all underlying `$ref` pointers resolved and bundled as part of the schema processing.
 
+## Backstage OpenAPI Module
+
+As Backstage increasingly uses OpenAPI to define its core APIs (such as the Catalog and Scaffolder), discovering and interacting with these APIs is essential for integrating external tools.
+
+You can install the **Backstage OpenAPI Module** to easily expose the OpenAPI specifications for your Backstage instance plugins directly into the catalog.
+
 ### Installation
 
 1. Add the package to your backend:
