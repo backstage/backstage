@@ -19,8 +19,9 @@ import { resolve as resolvePath, join as joinPath } from 'node:path';
 import { OptionValues } from 'commander';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
-import { runYarnInstall } from '../../lib/utils';
 import replace from 'replace-in-file';
+import { fetchPackageInfo } from '../../../../lib/versioning';
+import { getHasYarnPlugin, runYarnInstall } from '../../lib/utils';
 
 declare module 'replace-in-file' {
   export default function (config: {
@@ -56,6 +57,7 @@ export async function migrateMovedPackages(options?: {
   console.log(
     'Checking for moved packages to the @backstage-community namespace...',
   );
+  const hasYarnPlugin = await getHasYarnPlugin();
   const packages = await PackageGraph.listTargetPackages();
   let didAnythingChange = false;
 
@@ -94,20 +96,29 @@ export async function migrateMovedPackages(options?: {
         }
 
         const movedPackageName = packageInfo.backstage?.moved;
+        if (!movedPackageName) {
+          continue;
+        }
 
-        if (movedPackageName) {
-          movedPackages.set(depName, movedPackageName);
-          console.log(
-            chalk.yellow(
-              `Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
-            ),
-          );
+        movedPackages.set(depName, movedPackageName);
+        console.log(
+          chalk.yellow(
+            `Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
+          ),
+        );
 
-          didPackageChange = true;
-          didAnythingChange = true;
+        didPackageChange = true;
+        didAnythingChange = true;
 
-          depsObj[movedPackageName] = depsObj[depName];
-          delete depsObj[depName];
+        delete depsObj[depName];
+
+        if (hasYarnPlugin && movedPackageName.startsWith('@backstage/')) {
+          depsObj[movedPackageName] = 'backstage:^';
+        } else if (depVersion.startsWith('backstage:')) {
+          const info = await fetchPackageInfo(movedPackageName);
+          depsObj[movedPackageName] = `^${info['dist-tags'].latest}`;
+        } else {
+          depsObj[movedPackageName] = depVersion;
         }
       }
     }
