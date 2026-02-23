@@ -384,3 +384,21 @@ yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-openapi
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend-module-openapi'));
 ```
+
+### Usage
+
+To trigger the `$ref` resolution, use the `$openapi` (or `$asyncapi`) placeholder in your catalog entity definition:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: example
+  description: Example API
+spec:
+  type: openapi
+  lifecycle: production
+  owner: team
+  definition:
+    $openapi: ./spec/openapi.yaml # by using $openapi Backstage will now resolve all $ref instances
+```
