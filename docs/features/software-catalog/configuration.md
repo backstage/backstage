@@ -388,3 +388,14 @@ backend.add(
   import('@backstage/plugin-catalog-backend-module-backstage-openapi'),
 );
 ```
+
+3. Add the configuration to your `app-config.yaml`:
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    backstageOpenapi:
+      plugins:
+        - catalog
+        - scaffolder
+```
