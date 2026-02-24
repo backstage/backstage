@@ -15,7 +15,7 @@ export const HubSpotNewAdoptersForm = () => {
     script.src = 'https://js.hsforms.net/forms/v2.js';
     document.body.appendChild(script);
 
-    script.addEventListener('load', () => {
+    const handleLoad = () => {
       // @ts-ignore
       if (window.hbspt) {
 
@@ -51,7 +51,7 @@ export const HubSpotNewAdoptersForm = () => {
           }
           input.classList.remove('custom-invalid');
           
-           if (!value) {
+          if (!value) {
             return !requireMinLength;
           }
           
@@ -85,31 +85,35 @@ export const HubSpotNewAdoptersForm = () => {
             const firstNameInput = $form.querySelector('input[name="firstname"]') as HTMLInputElement | null;
             const lastNameInput = $form.querySelector('input[name="lastname"]') as HTMLInputElement | null;
             
-            const handleBlur = (
-              input: HTMLInputElement | null,
+            const createBlurHandler = (
+              input: HTMLInputElement,
               fieldName: string,
               requireMinLength: boolean,
             ) => {
-              if (!input) return;
-              
-              const blurHandler = () => {
+              return () => {
                 validateName(input, fieldName, requireMinLength);
               };
-              
-              input.addEventListener('blur', blurHandler);
             };
             
-            handleBlur(firstNameInput, 'First name', true);
-            handleBlur(lastNameInput, 'Last name', false);
+            if (firstNameInput) {
+              const firstNameHandler = createBlurHandler(firstNameInput, 'First name', true);
+              firstNameInput.addEventListener('blur', firstNameHandler);
+            }
+            
+            if (lastNameInput) {
+              const lastNameHandler = createBlurHandler(lastNameInput, 'Last name', false);
+              lastNameInput.addEventListener('blur', lastNameHandler);
+            }
           },
           onFormSubmit: function($form: HTMLFormElement) {
             const firstNameInput = $form.querySelector('input[name="firstname"]') as HTMLInputElement | null;
             const lastNameInput = $form.querySelector('input[name="lastname"]') as HTMLInputElement | null;
             
             let hasErrors = false;
+            let firstInvalidInput: HTMLInputElement | null = null;
             
             [firstNameInput, lastNameInput].forEach(input => {
-              if (!input || hasErrors) return;
+              if (!input) return;
               
               const isFirstName = input.name === 'firstname';
               const fieldName = isFirstName ? 'First name' : 'Last name';
@@ -118,15 +122,31 @@ export const HubSpotNewAdoptersForm = () => {
               const isValid = validateName(input, fieldName, requireMinLength);
               if (!isValid) {
                 hasErrors = true;
-                input.focus();
+                // Track the first invalid field to focus on it
+                if (!firstInvalidInput) {
+                  firstInvalidInput = input;
+                }
               }
             });
+            
+            if (firstInvalidInput) {
+              firstInvalidInput.focus();
+            }
             
             return !hasErrors;
           },
         });
       }
-    });
+    };
+
+    script.addEventListener('load', handleLoad);
+
+    return () => {
+      script.removeEventListener('load', handleLoad);
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
   }, []);
 
   return (
