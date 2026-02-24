@@ -1647,18 +1647,32 @@ export const Popover: ForwardRefExoticComponent<
 
 // @public
 export const PopoverDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Popover';
     readonly arrow: 'bui-PopoverArrow';
     readonly content: 'bui-PopoverContent';
   };
+  readonly propDefs: {
+    readonly children: {};
+    readonly hideArrow: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type PopoverOwnProps = {
+  children: React.ReactNode;
+  hideArrow?: boolean;
+  className?: string;
 };
 
 // @public
-export interface PopoverProps extends Omit<PopoverProps_2, 'children'> {
-  children: React.ReactNode;
-  hideArrow?: boolean;
-}
+export interface PopoverProps
+  extends Omit<PopoverProps_2, 'children' | 'className'>,
+    PopoverOwnProps {}
 
 // @public
 export type ProviderBg = 'neutral' | 'danger' | 'warning' | 'success';

@@ -61,7 +61,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
           </svg>
         </OverlayArrow>
         <BgReset>
-          <Box bg="neutral-1" className={classes.content}>
+          <Box bg="neutral" className={classes.content}>
             {children}
           </Box>
         </BgReset>
