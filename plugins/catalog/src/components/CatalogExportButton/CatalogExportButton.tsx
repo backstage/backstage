@@ -182,9 +182,9 @@ export const CatalogExportButton = ({
       <Button
         {...buttonProps}
         variant={buttonProps?.variant ?? 'contained'}
-        color={buttonProps?.color ?? 'primary'}
+        color={buttonProps?.color ?? 'secondary'}
         onClick={buttonProps?.onClick ?? (() => setOpen(true))}
-        endIcon={buttonProps?.endIcon ?? <GetAppIcon />}
+        startIcon={buttonProps?.startIcon ?? <GetAppIcon />}
       >
         {buttonProps?.children ?? 'Export selection'}
       </Button>
