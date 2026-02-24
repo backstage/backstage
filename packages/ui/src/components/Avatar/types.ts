@@ -16,17 +16,6 @@
 
 /** @public */
 export type AvatarOwnProps = {
-  size?: AvatarProps['size'];
-  purpose?: AvatarProps['purpose'];
-  src: string;
-  name: string;
-  children?: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
-};
-
-/** @public */
-export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
   /**
    * URL of the image to display
    */
@@ -50,4 +39,16 @@ export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
    * @defaultValue 'informative'
    */
   purpose?: 'decoration' | 'informative';
-}
+
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+/** @public */
+export interface AvatarProps
+  extends Omit<
+      React.ComponentPropsWithoutRef<'div'>,
+      'children' | 'className' | 'style'
+    >,
+    AvatarOwnProps {}

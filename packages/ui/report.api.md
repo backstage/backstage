@@ -281,12 +281,23 @@ export const AvatarDefinition: {
 };
 
 // @public (undocumented)
-export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
-  name: string;
-  purpose?: 'decoration' | 'informative';
-  size?: 'x-small' | 'small' | 'medium' | 'large' | 'x-large';
+export type AvatarOwnProps = {
   src: string;
-}
+  name: string;
+  size?: 'x-small' | 'small' | 'medium' | 'large' | 'x-large';
+  purpose?: 'decoration' | 'informative';
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export interface AvatarProps
+  extends Omit<
+      React.ComponentPropsWithoutRef<'div'>,
+      'children' | 'className' | 'style'
+    >,
+    AvatarOwnProps {}
 
 // @public (undocumented)
 export interface BgContextValue {
