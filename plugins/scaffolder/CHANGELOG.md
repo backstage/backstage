@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder
 
+## 1.35.4
+
+### Patch Changes
+
+- f7ebc0e: Added back the `formFieldsApiRef` and `ScaffolderFormFieldsApi` alpha exports that were unintentionally removed.
+
 ## 1.35.3
 
 ### Patch Changes

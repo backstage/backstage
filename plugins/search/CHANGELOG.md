@@ -1,5 +1,13 @@
 # @backstage/plugin-search
 
+## 1.6.1
+
+### Patch Changes
+
+- 7a42994: Fixes the search component not registering the first search on navigate to the search page.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.10.4
+
 ## 1.6.0
 
 ### Minor Changes
