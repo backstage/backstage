@@ -33,6 +33,5 @@ export const CheckboxDefinition = defineComponent<CheckboxOwnProps>()({
     indeterminate: { dataAttribute: true },
     children: {},
     className: {},
-    style: {},
   },
 });

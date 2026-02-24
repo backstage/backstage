@@ -21,10 +21,9 @@ export type CheckboxOwnProps = {
   indeterminate?: boolean;
   children: React.ReactNode;
   className?: string;
-  style?: React.CSSProperties;
 };
 
 /** @public */
 export interface CheckboxProps
-  extends Omit<RACheckboxProps, 'children' | 'className' | 'style'>,
+  extends Omit<RACheckboxProps, 'children' | 'className'>,
     CheckboxOwnProps {}

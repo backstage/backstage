@@ -36,6 +36,5 @@ export const AvatarDefinition = defineComponent<AvatarOwnProps>()({
     name: {},
     children: {},
     className: {},
-    style: {},
   },
 });

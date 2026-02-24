@@ -26,7 +26,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
     props,
   );
 
-  const { classes, size, src, name, purpose, style } = ownProps;
+  const { classes, size, src, name, purpose } = ownProps;
 
   const [imageStatus, setImageStatus] = useState<
     'loading' | 'loaded' | 'error'
@@ -61,7 +61,6 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
       aria-label={purpose === 'informative' ? name : undefined}
       aria-hidden={purpose === 'decoration' ? true : undefined}
       className={classes.root}
-      style={style}
       {...dataAttributes}
       {...restProps}
     >

@@ -42,13 +42,9 @@ export type AvatarOwnProps = {
 
   children?: React.ReactNode;
   className?: string;
-  style?: React.CSSProperties;
 };
 
 /** @public */
 export interface AvatarProps
-  extends Omit<
-      React.ComponentPropsWithoutRef<'div'>,
-      'children' | 'className' | 'style'
-    >,
+  extends Omit<React.ComponentPropsWithoutRef<'div'>, 'children' | 'className'>,
     AvatarOwnProps {}

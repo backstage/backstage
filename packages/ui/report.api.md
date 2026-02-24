@@ -276,7 +276,6 @@ export const AvatarDefinition: {
     readonly name: {};
     readonly children: {};
     readonly className: {};
-    readonly style: {};
   };
 };
 
@@ -288,15 +287,11 @@ export type AvatarOwnProps = {
   purpose?: 'decoration' | 'informative';
   children?: React.ReactNode;
   className?: string;
-  style?: React.CSSProperties;
 };
 
 // @public (undocumented)
 export interface AvatarProps
-  extends Omit<
-      React.ComponentPropsWithoutRef<'div'>,
-      'children' | 'className' | 'style'
-    >,
+  extends Omit<React.ComponentPropsWithoutRef<'div'>, 'children' | 'className'>,
     AvatarOwnProps {}
 
 // @public (undocumented)
@@ -757,7 +752,6 @@ export const CheckboxDefinition: {
     };
     readonly children: {};
     readonly className: {};
-    readonly style: {};
   };
 };
 
@@ -767,12 +761,11 @@ export type CheckboxOwnProps = {
   indeterminate?: boolean;
   children: React.ReactNode;
   className?: string;
-  style?: React.CSSProperties;
 };
 
 // @public (undocumented)
 export interface CheckboxProps
-  extends Omit<CheckboxProps_2, 'children' | 'className' | 'style'>,
+  extends Omit<CheckboxProps_2, 'children' | 'className'>,
     CheckboxOwnProps {}
 
 // @public
