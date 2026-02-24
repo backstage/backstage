@@ -20,20 +20,106 @@ import { OptionValues } from 'commander';
 import { relative as relativePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { targetPaths } from '@backstage/cli-common';
+import * as ts from 'typescript';
+
+// We import the deprecation plugin rule since we need to inject our custom context.report
+const deprecationPlugin = require('eslint-plugin-deprecation');
 
 export async function command(opts: OptionValues) {
   const packages = await PackageGraph.listTargetPackages();
 
+  // Create lookup for quickly finding which package a file belongs to
+  // Sort by length to match the most specific package dir first
+  const sortedPackages = [...packages].sort(
+    (a, b) => b.dir.length - a.dir.length,
+  );
+  const getPackageDir = (filePath: string) => {
+    // Basic backslash to forward slash normalization
+    const normalizedPath = filePath.replace(/\\/g, '/');
+    for (const pkg of sortedPackages) {
+      const pkgNormalized = pkg.dir.replace(/\\/g, '/');
+      if (
+        normalizedPath.startsWith(`${pkgNormalized}/`) ||
+        normalizedPath === pkgNormalized
+      ) {
+        return pkg.dir;
+      }
+    }
+    return undefined;
+  };
+
+  const deprecationFilterPlugin: ESLint.Plugin = {
+    rules: {
+      'filter-deprecation': {
+        meta: deprecationPlugin.rules.deprecation.meta,
+        create(context: any) {
+          const customContext = Object.create(context);
+          Object.defineProperty(customContext, 'report', {
+            value: function (descriptor: any) {
+              const services = context.parserServices;
+              if (services?.program) {
+                const tc = services.program.getTypeChecker();
+                const tsNode = services.esTreeNodeToTSNodeMap.get(
+                  descriptor.node,
+                );
+
+                if (tsNode) {
+                  let symbol = tc.getSymbolAtLocation(tsNode);
+                  if (symbol && (symbol.flags & ts.SymbolFlags.Alias) !== 0) {
+                    symbol = tc.getAliasedSymbol(symbol);
+                  }
+
+                  let declFile: string | undefined = undefined;
+                  if (symbol?.valueDeclaration) {
+                    declFile = symbol.valueDeclaration.getSourceFile().fileName;
+                  } else if (
+                    symbol?.declarations &&
+                    symbol.declarations.length > 0
+                  ) {
+                    declFile = symbol.declarations[0].getSourceFile().fileName;
+                  }
+
+                  if (declFile) {
+                    // Only list deprecations from imported code (outside the current package)
+                    const sourceFile = context.getPhysicalFilename
+                      ? context.getPhysicalFilename()
+                      : context.getFilename();
+
+                    const sourcePkg = getPackageDir(sourceFile);
+                    const declPkg = getPackageDir(declFile);
+
+                    // If they belong to the same package, it's local code - do not report
+                    if (sourcePkg && declPkg && sourcePkg === declPkg) {
+                      return;
+                    }
+                  }
+                }
+              }
+              context.report(descriptor);
+            },
+            writable: true,
+            configurable: true,
+          });
+
+          return deprecationPlugin.rules.deprecation.create(customContext);
+        },
+      },
+    },
+  };
+
   const eslint = new ESLint({
     cwd: targetPaths.dir,
     overrideConfig: {
-      plugins: ['deprecation'],
+      plugins: ['deprecation-filter'],
       rules: {
-        'deprecation/deprecation': 'error',
+        'deprecation-filter/filter-deprecation': 'error',
       },
       parserOptions: {
         project: [targetPaths.resolveRoot('tsconfig.json')],
       },
+    },
+    plugins: {
+      'deprecation-filter': deprecationFilterPlugin,
     },
     extensions: ['jsx', 'ts', 'tsx', 'mjs', 'cjs'],
   });
@@ -48,7 +134,7 @@ export async function command(opts: OptionValues) {
     const results = await eslint.lintFiles(pkg.dir);
     for (const result of results) {
       for (const message of result.messages) {
-        if (message.ruleId !== 'deprecation/deprecation') {
+        if (message.ruleId !== 'deprecation-filter/filter-deprecation') {
           continue;
         }
 
