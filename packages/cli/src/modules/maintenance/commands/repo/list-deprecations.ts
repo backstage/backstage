@@ -20,7 +20,7 @@ import { OptionValues } from 'commander';
 import { relative as relativePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { targetPaths } from '@backstage/cli-common';
-import * as ts from 'typescript';
+import { ts } from 'ts-morph';
 
 // We import the deprecation plugin rule since we need to inject our custom context.report
 const deprecationPlugin = require('eslint-plugin-deprecation');
@@ -55,7 +55,7 @@ export async function command(opts: OptionValues) {
         create(context: any) {
           const customContext = Object.create(context);
           Object.defineProperty(customContext, 'report', {
-            value: function (descriptor: any) {
+            value: function report(descriptor: any) {
               const services = context.parserServices;
               if (services?.program) {
                 const tc = services.program.getTypeChecker();
