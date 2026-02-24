@@ -15,5 +15,5 @@
  */
 
 export { buildBundle } from './bundle';
-export { getModuleFederationOptions } from './moduleFederation';
+export { getModuleFederationRemoteOptions } from './moduleFederation';
 export { serveBundle } from './server';

@@ -4,25 +4,6 @@ interface Page {
   status?: 'alpha' | 'beta' | 'stable' | 'deprecated' | 'inProgress' | 'new';
 }
 
-export const layoutComponents: Page[] = [
-  {
-    title: 'Box',
-    slug: 'box',
-  },
-  {
-    title: 'Container',
-    slug: 'container',
-  },
-  {
-    title: 'Grid',
-    slug: 'grid',
-  },
-  {
-    title: 'Flex',
-    slug: 'flex',
-  },
-];
-
 export const components: Page[] = [
   {
     title: 'Accordion',
@@ -35,6 +16,10 @@ export const components: Page[] = [
   {
     title: 'Avatar',
     slug: 'avatar',
+  },
+  {
+    title: 'Box',
+    slug: 'box',
   },
   {
     title: 'Button',
@@ -57,12 +42,24 @@ export const components: Page[] = [
     slug: 'checkbox',
   },
   {
+    title: 'Container',
+    slug: 'container',
+  },
+  {
     title: 'Dialog',
     slug: 'dialog',
   },
   {
-    title: 'Header',
-    slug: 'header',
+    title: 'Flex',
+    slug: 'flex',
+  },
+  {
+    title: 'Grid',
+    slug: 'grid',
+  },
+  {
+    title: 'PluginHeader',
+    slug: 'plugin-header',
   },
   {
     title: 'HeaderPage',
@@ -83,7 +80,6 @@ export const components: Page[] = [
   {
     title: 'Popover',
     slug: 'popover',
-    status: 'new',
   },
   {
     title: 'RadioGroup',

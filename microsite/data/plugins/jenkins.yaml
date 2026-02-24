@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://img.icons8.com/color/1600/jenkins.png
 npmPackageName: '@backstage-community/plugin-jenkins'
 addedDate: '2021-01-20'
+status: active

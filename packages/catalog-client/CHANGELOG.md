@@ -1,5 +1,17 @@
 # @backstage/catalog-client
 
+## 1.13.0
+
+### Minor Changes
+
+- b4e8249: Implemented support for the new `queryLocations` and `streamLocations` that allow paginated/streamed and filtered location queries
+
+### Patch Changes
+
+- 9cf6762: Improved the `InMemoryCatalogClient` test utility to support ordering, pagination, full-text search, and field projection for entity query methods. Also fixed `getEntityFacets` to correctly handle multi-valued fields.
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.0
+
 ## 1.12.2-next.0
 
 ### Patch Changes

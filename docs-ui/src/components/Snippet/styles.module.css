@@ -7,7 +7,7 @@
 .preview {
   border-radius: 8px;
   box-shadow: inset 0 0 0 1px var(--border);
-  background-color: var(--bui-bg-neutral-0);
+  background-color: var(--bui-bg-app);
   padding: 1px;
   position: relative;
 }
@@ -90,7 +90,7 @@
 .sideBySidePreview {
   border-radius: 8px;
   box-shadow: inset 0 0 0 1px var(--border);
-  background-color: var(--bui-bg-neutral-0);
+  background-color: var(--bui-bg-app);
   padding: 1px;
   min-width: 0;
   display: flex;

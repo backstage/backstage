@@ -156,6 +156,34 @@ notifications:
 Multiple instances can be added in the `slack` array, allowing you to have multiple configurations if you need to send
 messages to more than one Slack workspace. Org-Wide App installation is not currently supported.
 
+### Customize Slack Message Structure
+
+You can customize how notifications look in Slack by providing your own message layout through the `notificationsSlackBlockKitExtensionPoint`
+
+```ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { notificationsSlackBlockKitExtensionPoint } from '@backstage/plugin-notifications-backend-module-slack';
+
+export const notificationsSlackFormattingModule = createBackendModule({
+  pluginId: 'notifications',
+  moduleId: 'slack-formatting',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        slackBlockKit: notificationsSlackBlockKitExtensionPoint,
+      },
+      async init({ slackBlockKit }) {
+        slackBlockKit.setBlockKitRenderer(payload => [
+          // Custom block kit layout
+        ]);
+      },
+    });
+  },
+});
+```
+
+If you do not register a custom renderer, the default renderer is used.
+
 ### Broadcast Channel Routing
 
 For more granular control over where broadcast notifications are sent, you can use `broadcastRoutes` to route notifications to different Slack channels based on their origin and/or topic. This is useful when you want different types of notifications to go to different channels.

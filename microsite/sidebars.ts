@@ -438,7 +438,11 @@ export default {
         ),
         sidebarElementWithIndex(
           { label: 'Publishing', description: 'Publishing your plugins.' },
-          ['plugins/publish-private', 'plugins/add-to-directory'],
+          [
+            'plugins/publish-private',
+            'plugins/add-to-directory',
+            'plugins/plugin-directory-audit',
+          ],
         ),
         'plugins/observability',
       ],
@@ -556,6 +560,7 @@ export default {
                 'frontend-system/architecture/extensions',
                 'frontend-system/architecture/extension-blueprints',
                 'frontend-system/architecture/extension-overrides',
+                'frontend-system/architecture/sharing-extensions',
                 'frontend-system/architecture/references',
                 'frontend-system/architecture/utility-apis',
                 'frontend-system/architecture/routes',
@@ -586,6 +591,7 @@ export default {
                 'frontend-system/building-apps/configuring-extensions',
                 'frontend-system/building-apps/built-in-extensions',
                 'frontend-system/building-apps/plugin-conversion',
+                'frontend-system/building-apps/module-federation',
                 'frontend-system/building-apps/migrating',
               ],
             ),

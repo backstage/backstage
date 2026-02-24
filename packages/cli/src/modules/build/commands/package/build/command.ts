@@ -17,13 +17,14 @@
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import { buildPackage, Output } from '../../../lib/builder';
-import { findRoleFromCommand } from '../../../../../lib/role';
+import { findRoleFromCommand } from '../../../lib/role';
 import {
   BackstagePackageJson,
   PackageGraph,
   PackageRoles,
 } from '@backstage/cli-node';
-import { paths } from '../../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { buildFrontend } from '../../../lib/buildFrontend';
 import { buildBackend } from '../../../lib/buildBackend';
 import { isValidUrl } from '../../../lib/urls';
@@ -41,37 +42,45 @@ export async function command(opts: OptionValues): Promise<void> {
       if (isValidUrl(arg)) {
         return arg;
       }
-      return paths.resolveTarget(arg);
+      return targetPaths.resolve(arg);
     });
 
     if (role === 'frontend') {
       return buildFrontend({
-        targetDir: paths.targetDir,
+        targetDir: targetPaths.dir,
         configPaths,
         writeStats: Boolean(opts.stats),
         webpack,
       });
     }
     return buildBackend({
-      targetDir: paths.targetDir,
+      targetDir: targetPaths.dir,
       configPaths,
       skipBuildDependencies: Boolean(opts.skipBuildDependencies),
       minify: Boolean(opts.minify),
     });
   }
 
-  // experimental
+  let isModuleFederationRemote: boolean | undefined = undefined;
   if ((role as string) === 'frontend-dynamic-container') {
     console.log(
       chalk.yellow(
         `⚠️  WARNING: The 'frontend-dynamic-container' package role is experimental and will receive immediate breaking changes in the future.`,
       ),
     );
+    isModuleFederationRemote = true;
+  }
+  if (opts.moduleFederation) {
+    isModuleFederationRemote = true;
+  }
+
+  if (isModuleFederationRemote) {
+    console.log('Building package as a module federation remote');
     return buildFrontend({
-      targetDir: paths.targetDir,
+      targetDir: targetPaths.dir,
       configPaths: [],
       writeStats: Boolean(opts.stats),
-      isModuleFederationRemote: true,
+      isModuleFederationRemote,
       webpack,
     });
   }
@@ -91,7 +100,7 @@ export async function command(opts: OptionValues): Promise<void> {
   }
 
   const packageJson = (await fs.readJson(
-    paths.resolveTarget('package.json'),
+    targetPaths.resolve('package.json'),
   )) as BackstagePackageJson;
 
   return buildPackage({

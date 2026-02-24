@@ -4,7 +4,7 @@ export const customTheme = `:root {
   --bui-font-regular: system-ui;
   --bui-font-weight-regular: 400;
   --bui-font-weight-bold: 600;
-  --bui-bg-neutral-0: #f8f8f8;
+  --bui-bg-app: #f8f8f8;
   --bui-bg-neutral-1: #fff;
   /* ... other CSS variables */
 
@@ -19,7 +19,7 @@ export const customTheme = `:root {
   --bui-font-regular: system-ui;
   --bui-font-weight-regular: 400;
   --bui-font-weight-bold: 600;
-  --bui-bg-neutral-0: #f8f8f8;
+  --bui-bg-app: #f8f8f8;
   --bui-bg-neutral-1: #fff;
   /* ... other CSS variables */
 

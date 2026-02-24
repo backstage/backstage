@@ -1,5 +1,19 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.2
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- e9eb400: Allow configuring included topics for email notifications.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-notifications-node@0.2.23
+  - @backstage/plugin-signals-node@0.1.28
+
 ## 0.6.2-next.2
 
 ### Patch Changes

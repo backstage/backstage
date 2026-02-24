@@ -1,5 +1,45 @@
 # @backstage/plugin-catalog
 
+## 1.33.0
+
+### Minor Changes
+
+- 491a06c: Add the ability to show icons for the tabs on the entity page (new frontend)
+- 05aac34: Migrated `DeleteEntityDialog` and `EntityOrphanWarning` components to Backstage UI.
+
+  The `deleteEntity.description` translation key no longer includes "Click here to delete" text. A new `deleteEntity.actionButtonTitle` key was added for the action button.
+
+### Patch Changes
+
+- 220d6c3: Add missing translation entries for catalog UI text.
+
+  This change adds translation keys and updates relevant UI components to use the correct localized labels and text in the catalog plugin. It ensures that catalog screens such as entity layout, tabs, search result items, table labels, and other UI elements correctly reference the i18n system for translation.
+
+  No functional behavior is changed aside from the improved internationalization support.
+
+- 8d4c48b: Fixed vertical spacing between tags in the catalog table.
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 018ca87: Added `title` and `icon` to the plugin definition for the new frontend system.
+- e8258d0: The default entity content layout still supports rendering summary cards at runtime for backward compatibility, but logs a console warning when they are detected to help identify where migration is needed.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 75ac651: Migrated `EntityRelationWarning` and `EntityProcessingErrorsPanel` components from Material UI to Backstage UI.
+- Updated dependencies
+  - @backstage/ui@0.12.0
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/core-compat-api@0.5.8
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-techdocs-react@1.3.8
+  - @backstage/integration-react@1.2.15
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-search-react@1.10.3
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-scaffolder-common@1.7.6
+
 ## 1.33.0-next.2
 
 ### Minor Changes

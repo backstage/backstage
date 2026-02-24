@@ -32,7 +32,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@a3895cac2a515224a101c4a2b962b216ed0c9ac8 # v0.7.5
+        uses: backstage/actions/yarn-install@c4dd040f963edd226462b5f32efd319ffca12ac5 # v0.7.7
         with:
           cache-prefix: ${{ runner.os }}-v22.x
 

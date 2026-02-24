@@ -17,9 +17,9 @@
 import fs from 'fs-extra';
 import { join } from 'node:path';
 import chalk from 'chalk';
+import { findOwnPaths, targetPaths } from '@backstage/cli-common';
 import { runner } from '../../../../lib/runner';
 import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
-import { paths as cliPaths } from '../../../../lib/paths';
 import { exec } from '../../../../lib/exec';
 import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
 
@@ -42,7 +42,10 @@ async function test(
   let opticLocation = '';
   try {
     opticLocation = (
-      await exec(`yarn bin optic`, [], { cwd: cliPaths.ownRoot })
+      await exec(`yarn bin optic`, [], {
+        /* eslint-disable-next-line no-restricted-syntax */
+        cwd: findOwnPaths(__dirname).rootDir,
+      })
     ).stdout as string;
   } catch (err) {
     throw new Error(
@@ -79,7 +82,9 @@ async function test(
     throw err;
   }
   if (
-    (await cliPaths.resolveTargetRoot('node_modules/.bin/prettier')) &&
+    (await fs.pathExists(
+      targetPaths.resolveRoot('node_modules/.bin/prettier'),
+    )) &&
     options?.update
   ) {
     await exec(`yarn prettier`, ['--write', openapiPath]);

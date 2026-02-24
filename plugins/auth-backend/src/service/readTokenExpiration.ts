@@ -23,46 +23,22 @@ const TOKEN_EXP_MIN_S = 600;
 const TOKEN_EXP_MAX_S = 86400;
 
 export function readBackstageTokenExpiration(config: RootConfigService) {
-  return readTokenExpiration(config, {
-    configKey: 'auth.backstageTokenExpiration',
-  });
-}
+  const processingIntervalKey = 'auth.backstageTokenExpiration';
 
-export function readDcrTokenExpiration(config: RootConfigService) {
-  return readTokenExpiration(config, {
-    configKey: 'auth.experimentalDynamicClientRegistration.tokenExpiration',
-  });
-}
-
-export function readTokenExpiration(
-  config: RootConfigService,
-  options: {
-    configKey: string;
-    maxExpiration?: number;
-    minExpiration?: number;
-    defaultExpiration?: number;
-  },
-): number {
-  const {
-    configKey,
-    maxExpiration = TOKEN_EXP_MAX_S,
-    minExpiration = TOKEN_EXP_MIN_S,
-    defaultExpiration = TOKEN_EXP_DEFAULT_S,
-  } = options ?? {};
-  if (!config.has(configKey)) {
-    return defaultExpiration;
+  if (!config.has(processingIntervalKey)) {
+    return TOKEN_EXP_DEFAULT_S;
   }
 
   const duration = readDurationFromConfig(config, {
-    key: configKey,
+    key: processingIntervalKey,
   });
 
   const durationS = Math.round(durationToMilliseconds(duration) / 1000);
 
-  if (durationS < minExpiration) {
-    return minExpiration;
-  } else if (durationS > maxExpiration) {
-    return maxExpiration;
+  if (durationS < TOKEN_EXP_MIN_S) {
+    return TOKEN_EXP_MIN_S;
+  } else if (durationS > TOKEN_EXP_MAX_S) {
+    return TOKEN_EXP_MAX_S;
   }
   return durationS;
 }

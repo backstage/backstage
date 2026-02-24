@@ -19,9 +19,20 @@
 @layer components {
   .bui-Accordion {
     width: 100%;
-    background-color: var(--bui-bg-neutral-1);
     border-radius: var(--bui-radius-3);
     padding: var(--bui-space-3);
+
+    &[data-bg='neutral-1'] {
+      background-color: var(--bui-bg-neutral-1);
+    }
+
+    &[data-bg='neutral-2'] {
+      background-color: var(--bui-bg-neutral-2);
+    }
+
+    &[data-bg='neutral-3'] {
+      background-color: var(--bui-bg-neutral-3);
+    }
   }
 
   .bui-AccordionTrigger {

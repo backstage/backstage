@@ -16,7 +16,7 @@
 import chalk from 'chalk';
 import { exec } from '../../../../lib/exec';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
-import { paths as cliPaths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 import { OptionValues } from 'commander';
 import { env } from 'node:process';
 import { readFile, rm } from 'node:fs/promises';
@@ -53,7 +53,7 @@ async function check(opts: OptionValues) {
         baseRef,
       ],
       {
-        cwd: cliPaths.targetRoot,
+        cwd: targetPaths.rootDir,
         env: { CI: opts.json ? '1' : undefined, ...env },
       },
     );
@@ -65,7 +65,7 @@ async function check(opts: OptionValues) {
 
   if (opts.json) {
     const file = (
-      await readFile(resolve(cliPaths.targetRoot, 'ci-run-details.json'))
+      await readFile(resolve(targetPaths.rootDir, 'ci-run-details.json'))
     ).toString();
     const results = JSON.parse(file);
     console.log(file);
@@ -73,7 +73,7 @@ async function check(opts: OptionValues) {
       throw new Error('Some checks failed');
     }
 
-    await rm(resolve(cliPaths.targetRoot, 'ci-run-details.json'));
+    await rm(resolve(targetPaths.rootDir, 'ci-run-details.json'));
   } else {
     console.log(reduceOpticOutput(output));
     if (!opts.ignore && failed) {

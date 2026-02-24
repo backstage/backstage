@@ -26,34 +26,60 @@ import { dirname, resolve as resolvePath } from 'node:path';
 export type ResolveFunc = (...paths: string[]) => string;
 
 /**
+ * Resolved paths relative to the target project, based on `process.cwd()`.
+ * Lazily initialized on first property access. Re-resolves automatically
+ * when `process.cwd()` changes.
+ *
+ * @public
+ */
+export type TargetPaths = {
+  /** The target package directory. */
+  dir: string;
+
+  /** The target monorepo root directory. */
+  rootDir: string;
+
+  /** Resolve a path relative to the target package directory. */
+  resolve: ResolveFunc;
+
+  /** Resolve a path relative to the target repo root. */
+  resolveRoot: ResolveFunc;
+};
+
+/**
+ * Resolved paths relative to a specific package in the repository.
+ *
+ * @public
+ */
+export type OwnPaths = {
+  /** The package root directory. */
+  dir: string;
+
+  /** The monorepo root directory containing the package. */
+  rootDir: string;
+
+  /** Resolve a path relative to the package root. */
+  resolve: ResolveFunc;
+
+  /** Resolve a path relative to the monorepo root containing the package. */
+  resolveRoot: ResolveFunc;
+};
+
+/**
  * Common paths and resolve functions used by the cli.
  * Currently assumes it is being executed within a monorepo.
  *
  * @public
+ * @deprecated Use {@link targetPaths} and {@link findOwnPaths} instead.
  */
 export type Paths = {
-  // Root dir of the cli itself, containing package.json
   ownDir: string;
-
-  // Monorepo root dir of the cli itself. Only accessible when running inside Backstage repo.
   ownRoot: string;
-
-  // The location of the app that the cli is being executed in
   targetDir: string;
-
-  // The monorepo root package of the app that the cli is being executed in.
   targetRoot: string;
-
-  // Resolve a path relative to own repo
   resolveOwn: ResolveFunc;
-
-  // Resolve a path relative to own monorepo root. Only accessible when running inside Backstage repo.
   resolveOwnRoot: ResolveFunc;
-
-  // Resolve a path relative to the app
   resolveTarget: ResolveFunc;
-
-  // Resolve a path relative to the app repo root
   resolveTargetRoot: ResolveFunc;
 };
 
@@ -84,18 +110,7 @@ export function findRootPath(
   );
 }
 
-// Finds the root of a given package
-export function findOwnDir(searchDir: string) {
-  const path = findRootPath(searchDir, () => true);
-  if (!path) {
-    throw new Error(
-      `No package.json found while searching for package root of ${searchDir}`,
-    );
-  }
-  return path;
-}
-
-// Finds the root of the monorepo that the package exists in. Only accessible when running inside Backstage repo.
+// Finds the root of the monorepo that the package exists in.
 export function findOwnRootDir(ownDir: string) {
   const isLocal = fs.existsSync(resolvePath(ownDir, 'src'));
   if (!isLocal) {
@@ -107,64 +122,209 @@ export function findOwnRootDir(ownDir: string) {
   return resolvePath(ownDir, '../..');
 }
 
+// Hierarchical directory cache shared across all OwnPathsImpl instances.
+// When we resolve a searchDir to its package root, we also cache every
+// intermediate directory, so sibling directories share work.
+const dirCache = new Map<string, string>();
+
+class OwnPathsImpl implements OwnPaths {
+  static #instanceCache = new Map<string, OwnPathsImpl>();
+
+  static find(searchDir: string): OwnPathsImpl {
+    const dir = OwnPathsImpl.findDir(searchDir);
+    let instance = OwnPathsImpl.#instanceCache.get(dir);
+    if (!instance) {
+      instance = new OwnPathsImpl(dir);
+      OwnPathsImpl.#instanceCache.set(dir, instance);
+    }
+    return instance;
+  }
+
+  static findDir(searchDir: string): string {
+    const visited: string[] = [];
+    let dir = searchDir;
+
+    for (let i = 0; i < 1000; i++) {
+      const cached = dirCache.get(dir);
+      if (cached !== undefined) {
+        for (const d of visited) {
+          dirCache.set(d, cached);
+        }
+        return cached;
+      }
+
+      visited.push(dir);
+
+      if (fs.existsSync(resolvePath(dir, 'package.json'))) {
+        for (const d of visited) {
+          dirCache.set(d, dir);
+        }
+        return dir;
+      }
+
+      const newDir = dirname(dir);
+      if (newDir === dir) {
+        break;
+      }
+      dir = newDir;
+    }
+
+    throw new Error(
+      `No package.json found while searching for package root of ${searchDir}`,
+    );
+  }
+
+  #dir: string;
+  #rootDir: string | undefined;
+
+  private constructor(dir: string) {
+    this.#dir = dir;
+  }
+
+  get dir(): string {
+    return this.#dir;
+  }
+
+  get rootDir(): string {
+    this.#rootDir ??= findOwnRootDir(this.#dir);
+    return this.#rootDir;
+  }
+
+  resolve = (...paths: string[]): string => {
+    return resolvePath(this.#dir, ...paths);
+  };
+
+  resolveRoot = (...paths: string[]): string => {
+    return resolvePath(this.rootDir, ...paths);
+  };
+}
+
+// Finds the root of a given package
+export function findOwnDir(searchDir: string) {
+  return OwnPathsImpl.findDir(searchDir);
+}
+
+// Used by the test utility in testUtils.ts to override targetPaths
+export let targetPathsOverride: TargetPaths | undefined;
+
+/** @internal */
+export function setTargetPathsOverride(override: TargetPaths | undefined) {
+  targetPathsOverride = override;
+}
+
+class TargetPathsImpl implements TargetPaths {
+  #cwd: string | undefined;
+  #dir: string | undefined;
+  #rootDir: string | undefined;
+
+  get dir(): string {
+    if (targetPathsOverride) {
+      return targetPathsOverride.dir;
+    }
+    const cwd = process.cwd();
+    if (this.#dir !== undefined && this.#cwd === cwd) {
+      return this.#dir;
+    }
+    this.#cwd = cwd;
+    this.#rootDir = undefined;
+    // Drive letter can end up being lowercased here on Windows, bring back to uppercase for consistency
+    this.#dir = fs
+      .realpathSync(cwd)
+      .replace(/^[a-z]:/, str => str.toLocaleUpperCase('en-US'));
+    return this.#dir;
+  }
+
+  get rootDir(): string {
+    if (targetPathsOverride) {
+      return targetPathsOverride.rootDir;
+    }
+    // Access dir first to ensure cwd is fresh, which also invalidates rootDir on cwd change
+    const dir = this.dir;
+    if (this.#rootDir !== undefined) {
+      return this.#rootDir;
+    }
+    // Lazy init to only crash commands that require a monorepo when we're not in one
+    this.#rootDir =
+      findRootPath(dir, path => {
+        try {
+          const content = fs.readFileSync(path, 'utf8');
+          const data = JSON.parse(content);
+          return Boolean(data.workspaces);
+        } catch (error) {
+          throw new Error(
+            `Failed to parse package.json file while searching for root, ${error}`,
+          );
+        }
+      }) ?? dir;
+    return this.#rootDir;
+  }
+
+  resolve = (...paths: string[]): string => {
+    if (targetPathsOverride) {
+      return targetPathsOverride.resolve(...paths);
+    }
+    return resolvePath(this.dir, ...paths);
+  };
+
+  resolveRoot = (...paths: string[]): string => {
+    if (targetPathsOverride) {
+      return targetPathsOverride.resolveRoot(...paths);
+    }
+    return resolvePath(this.rootDir, ...paths);
+  };
+}
+
+/**
+ * Lazily resolved paths relative to the target project. Import this directly
+ * for cwd-based path resolution without needing `__dirname`.
+ *
+ * @public
+ */
+export const targetPaths: TargetPaths = new TargetPathsImpl();
+
+/**
+ * Find paths relative to the package that the calling code lives in.
+ *
+ * Results are cached per package root, and the package root lookup uses a
+ * hierarchical directory cache so that multiple calls from different
+ * subdirectories within the same package share work.
+ *
+ * @public
+ */
+export function findOwnPaths(searchDir: string): OwnPaths {
+  return OwnPathsImpl.find(searchDir);
+}
+
 /**
  * Find paths related to a package and its execution context.
  *
  * @public
+ * @deprecated Use {@link targetPaths} for cwd-based paths and
+ * {@link findOwnPaths} for package-relative paths instead.
+ *
  * @example
  *
  * const paths = findPaths(__dirname)
  */
 export function findPaths(searchDir: string): Paths {
-  const ownDir = findOwnDir(searchDir);
-  // Drive letter can end up being lowercased here on Windows, bring back to uppercase for consistency
-  const targetDir = fs
-    .realpathSync(process.cwd())
-    .replace(/^[a-z]:/, str => str.toLocaleUpperCase('en-US'));
-
-  // Lazy load this as it will throw an error if we're not inside the Backstage repo.
-  let ownRoot = '';
-  const getOwnRoot = () => {
-    if (!ownRoot) {
-      ownRoot = findOwnRootDir(ownDir);
-    }
-    return ownRoot;
-  };
-
-  // We're not always running in a monorepo, so we lazy init this to only crash commands
-  // that require a monorepo when we're not in one.
-  let targetRoot = '';
-  const getTargetRoot = () => {
-    if (!targetRoot) {
-      targetRoot =
-        findRootPath(targetDir, path => {
-          try {
-            const content = fs.readFileSync(path, 'utf8');
-            const data = JSON.parse(content);
-            return Boolean(data.workspaces);
-          } catch (error) {
-            throw new Error(
-              `Failed to parse package.json file while searching for root, ${error}`,
-            );
-          }
-        }) ?? targetDir; // We didn't find any root package.json, assume we're not in a monorepo
-    }
-    return targetRoot;
-  };
-
+  const own = findOwnPaths(searchDir);
   return {
-    ownDir,
+    get ownDir() {
+      return own.dir;
+    },
     get ownRoot() {
-      return getOwnRoot();
+      return own.rootDir;
     },
-    targetDir,
+    get targetDir() {
+      return targetPaths.dir;
+    },
     get targetRoot() {
-      return getTargetRoot();
+      return targetPaths.rootDir;
     },
-    resolveOwn: (...paths) => resolvePath(ownDir, ...paths),
-    resolveOwnRoot: (...paths) => resolvePath(getOwnRoot(), ...paths),
-    resolveTarget: (...paths) => resolvePath(targetDir, ...paths),
-    resolveTargetRoot: (...paths) => resolvePath(getTargetRoot(), ...paths),
+    resolveOwn: own.resolve,
+    resolveOwnRoot: own.resolveRoot,
+    resolveTarget: targetPaths.resolve,
+    resolveTargetRoot: targetPaths.resolveRoot,
   };
 }
 

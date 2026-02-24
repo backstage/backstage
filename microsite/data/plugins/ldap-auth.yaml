@@ -8,3 +8,5 @@ documentation: https://github.com/immobiliare/backstage-plugin-ldap-auth/blob/ma
 iconUrl: https://avatars.githubusercontent.com/u/10090828
 npmPackageName: '@immobiliarelabs/backstage-plugin-ldap-auth'
 addedDate: '2022-09-05'
+status: inactive
+staleSince: '2026-02-17'

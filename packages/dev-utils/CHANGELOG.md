@@ -1,5 +1,20 @@
 # @backstage/dev-utils
 
+## 1.1.20
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/ui@0.12.0
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/core-app-api@1.19.5
+  - @backstage/theme@0.7.2
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/integration-react@1.2.15
+  - @backstage/app-defaults@1.7.5
+
 ## 1.1.20-next.2
 
 ### Patch Changes

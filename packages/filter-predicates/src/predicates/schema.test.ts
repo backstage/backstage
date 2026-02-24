@@ -176,6 +176,7 @@ describe('parseFilterPredicate', () => {
       { $any: [{ x: { $exists: true } }] },
       { $not: { x: { $exists: true } } },
       { $not: { $all: [{ x: { $exists: true } }] } },
+      { kind: { $hasPrefix: 'Com' } },
     ];
 
     it.each(predicates)(
@@ -204,6 +205,7 @@ describe('parseFilterPredicate', () => {
       { $not: { x: { $unknown: true } } },
       { $not: { $all: [{ x: { $unknown: true } }] } },
       { $unknown: 'foo' },
+      { kind: { $hasPrefix: 1 } },
       { 'metadata.tags': ['foo', 'bar'] },
     ];
 

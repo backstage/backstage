@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
+import { ComponentType, JSX } from 'react';
 
 /**
  * IconComponent is the common icon type used throughout Backstage when
@@ -31,7 +31,19 @@ import { ComponentType } from 'react';
  * also describe your use-case and reasoning of the addition.
  *
  * @public
+ * @deprecated Use {@link IconElement} instead, passing `<MyIcon />` rather than `MyIcon`.
  */
 export type IconComponent = ComponentType<{
   fontSize?: 'medium' | 'large' | 'small' | 'inherit';
 }>;
+
+/**
+ * The type used for icon elements throughout Backstage.
+ *
+ * @remarks
+ *
+ * Icons should be exactly 24x24 pixels in size.
+ *
+ * @public
+ */
+export type IconElement = JSX.Element | null;

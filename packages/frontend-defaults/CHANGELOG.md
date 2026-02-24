@@ -1,5 +1,23 @@
 # @backstage/frontend-defaults
 
+## 0.4.0
+
+### Minor Changes
+
+- 55b2ef6: **BREAKING**: The `API_FACTORY_CONFLICT` warning is now treated as an error and will prevent the app from starting.
+
+### Patch Changes
+
+- 122d39c: Completely removed support for the deprecated `app.experimental.packages` configuration. Replace existing usage directly with `app.packages`.
+- c38b74d: Dependency update for tests.
+- 53b6549: Plugins in the new frontend system now have a `pluginId` field rather than `id` to better align with naming conventions used throughout the frontend and backend systems. The old field is still present but marked as deprecated. All internal code has been updated to prefer `pluginId` while maintaining backward compatibility by falling back to `id` when needed.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.15.0
+  - @backstage/core-components@0.18.7
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/plugin-app@0.4.0
+
 ## 0.4.0-next.2
 
 ### Patch Changes

@@ -8,3 +8,4 @@ documentation: https://github.com/nobl9/nobl9-backstage-plugin/blob/main/README.
 iconUrl: /img/nobl9.svg
 npmPackageName: '@nobl9/nobl9-backstage-plugin'
 addedDate: '2023-12-15'
+status: active

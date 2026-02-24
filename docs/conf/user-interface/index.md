@@ -103,13 +103,13 @@ Backstage UI is using light by default under `:root` but you can target it more 
 
 [data-theme-mode='light'] {
   /* Light theme specific styles */
-  --bui-bg-neutral-0: #f8f8f8;
+  --bui-bg-app: #f8f8f8;
   --bui-fg-primary: #000;
 }
 
 [data-theme-mode='dark'] {
   /* Dark theme specific styles */
-  --bui-bg-neutral-0: #333333;
+  --bui-bg-app: #333333;
   --bui-fg-primary: #fff;
 }
 ```
@@ -122,21 +122,22 @@ We recommend starting with a core set of CSS variables to quickly achieve a bran
 
 And if you’d like to go even further, you can target specific component class names for advanced customization.
 
-| Token Name           | Description                                                                                   |
-| -------------------- | --------------------------------------------------------------------------------------------- |
-| `--bui-bg-neutral-0` | This is used to define the background color of your app. It will only be used once.           |
-| `--bui-bg-neutral-1` | We ar using this color to sit on top of `--bui-bg-neutral-0` mostly for `Card`, `Dialog`, ... |
-| `--bui-bg-neutral-2` | This is for content inside elevated components. This colour is less common.                   |
-| `--bui-bg-solid`     | This is used for main actions like primary buttons.                                           |
-| `--bui-fg-solid`     | This is for texts or icons on top of a solid backgrounds.                                     |
-| `--bui-fg-primary`   | Your primary text or icon colours.                                                            |
-| `--bui-fg-secondary` | Your secondary text or icon colours.                                                          |
-| `--bui-fg-danger`    | Used for error states and destructive actions.                                                |
-| `--bui-fg-warning`   | Used for warning states and cautionary information.                                           |
-| `--bui-fg-success`   | Used for success states and positive feedback.                                                |
-| `--bui-fg-info`      | Used for informational content and neutral status.                                            |
-| `--bui-border`       | Main borders around surfaces like `Card`, `Dialog`, ...                                       |
-| `--bui-font-regular` | The main font of your app.                                                                    |
+| Token Name           | Description                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| `--bui-bg-app`       | This is used to define the background color of your app. It will only be used once.      |
+| `--bui-bg-neutral-1` | We are using this color to sit on top of `--bui-bg-app` mostly for `Card`, `Dialog`, ... |
+| `--bui-bg-neutral-2` | This is for content inside elevated components. This colour is less common.              |
+| `--bui-bg-solid`     | This is used for main actions like primary buttons.                                      |
+| `--bui-fg-solid`     | This is for texts or icons on top of a solid backgrounds.                                |
+| `--bui-fg-primary`   | Your primary text or icon colours.                                                       |
+| `--bui-fg-secondary` | Your secondary text or icon colours.                                                     |
+| `--bui-fg-danger`    | Used for error states and destructive actions.                                           |
+| `--bui-fg-warning`   | Used for warning states and cautionary information.                                      |
+| `--bui-fg-success`   | Used for success states and positive feedback.                                           |
+| `--bui-fg-info`      | Used for informational content and neutral status.                                       |
+| `--bui-border-1`     | Subtle borders for low-contrast separators.                                              |
+| `--bui-border-2`     | Main borders around surfaces like `Card`, `Dialog`, ...                                  |
+| `--bui-font-regular` | The main font of your app.                                                               |
 
 <details>
   <summary>All available CSS variables</summary>
@@ -150,11 +151,12 @@ And if you’d like to go even further, you can target specific component class 
 
 #### Neutral background colors
 
-These colors form a layered neutral scale for your application backgrounds. `--bui-bg-neutral-0` is the base background color. Each subsequent level (1 through 4) represents an elevated layer, with hover, pressed, and disabled variants for interactive states.
+These colors form a layered neutral scale for your application backgrounds. `--bui-bg-app` is the base background color. Each subsequent level (1 through 4) represents an elevated layer, with hover, pressed, and disabled variants for interactive states.
 
 | Token Name                    | Description                                                  |
 | ----------------------------- | ------------------------------------------------------------ |
-| `--bui-bg-neutral-0`          | The base background color of your Backstage instance.        |
+| `--bui-bg-app`                | The base background color of your Backstage instance.        |
+| `--bui-bg-popover`            | The background color used for popovers, tooltips, and menus. |
 | `--bui-bg-neutral-1`          | First elevated layer. Use for cards, dialogs, and panels.    |
 | `--bui-bg-neutral-1-hover`    | Hover state for elements on neutral-1.                       |
 | `--bui-bg-neutral-1-pressed`  | Pressed state for elements on neutral-1.                     |
@@ -213,15 +215,14 @@ Foreground colours are meant to work in pair with a background colours. Typicall
 
 These border colors are mostly meant to be used as borders on top of any components with low contrast to help as a separator with the different background colors.
 
-| Token Name              | Description                                         |
-| ----------------------- | --------------------------------------------------- |
-| `--bui-border`          | It should be used on top of `--bui-bg-neutral-1`.   |
-| `--bui-border-hover`    | Used when the component is interactive and hovered. |
-| `--bui-border-pressed`  | Used when the component is interactive and hovered. |
-| `--bui-border-disabled` | Used when the component is disabled.                |
-| `--bui-border-danger`   | It should be used on top of `--bui-bg-danger`.      |
-| `--bui-border-warning`  | It should be used on top of `--bui-bg-warning`.     |
-| `--bui-border-success`  | It should be used on top of `--bui-bg-success`.     |
+| Token Name             | Description                                       |
+| ---------------------- | ------------------------------------------------- |
+| `--bui-border-1`       | Subtle border for low-contrast separators.        |
+| `--bui-border-2`       | It should be used on top of `--bui-bg-neutral-1`. |
+| `--bui-border-danger`  | It should be used on top of `--bui-bg-danger`.    |
+| `--bui-border-warning` | It should be used on top of `--bui-bg-warning`.   |
+| `--bui-border-success` | It should be used on top of `--bui-bg-success`.   |
+| `--bui-border-info`    | It should be used on top of `--bui-bg-info`.      |
 
 #### Special colors
 

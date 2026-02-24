@@ -24,7 +24,7 @@ const meta = preview.meta({
 
 export const Default = meta.story({
   render: () => (
-    <div style={{ backgroundColor: 'var(--bui-bg-neutral-0)' }}>
+    <div style={{ backgroundColor: 'var(--bui-bg-app)' }}>
       <Box p="4" style={{ backgroundColor: 'var(--bui-bg-neutral-1)' }}>
         <Flex direction="row" gap="4" align="center">
           <Text>Neutral 1</Text>

@@ -16,7 +16,7 @@
 
 import { breakpoints } from '../useBreakpoint';
 import { utilityClassMap } from '../../utils/utilityClassMap';
-import type { UnwrapResponsive, UtilityStyle } from './types';
+import type { ComponentConfig, UnwrapResponsive, UtilityStyle } from './types';
 
 const namedBreakpoints = breakpoints.filter(b => b.id !== 'initial');
 
@@ -55,6 +55,42 @@ export function resolveResponsiveValue<T>(
   }
 
   return value as UnwrapResponsive<T>;
+}
+
+export function resolveDefinitionProps<D extends ComponentConfig<any, any>>(
+  definition: D,
+  props: Record<string, any>,
+  breakpoint: string,
+): {
+  ownPropsResolved: Record<string, any>;
+  restProps: Record<string, any>;
+} {
+  const ownPropKeys = new Set(Object.keys(definition.propDefs));
+  const utilityPropKeys = new Set(definition.utilityProps ?? []);
+
+  const ownPropsRaw: Record<string, any> = {};
+  const restProps: Record<string, any> = {};
+
+  for (const [key, value] of Object.entries(props)) {
+    if (ownPropKeys.has(key)) {
+      ownPropsRaw[key] = value;
+    } else if (!(utilityPropKeys as Set<string>).has(key)) {
+      restProps[key] = value;
+    }
+  }
+
+  const ownPropsResolved: Record<string, any> = {};
+
+  for (const [key, config] of Object.entries(definition.propDefs)) {
+    const rawValue = ownPropsRaw[key];
+    const resolvedValue = resolveResponsiveValue(rawValue, breakpoint);
+    const finalValue = resolvedValue ?? (config as any).default;
+    if (finalValue !== undefined) {
+      ownPropsResolved[key] = finalValue;
+    }
+  }
+
+  return { ownPropsResolved, restProps };
 }
 
 export function processUtilityProps<Keys extends string>(

@@ -17,8 +17,8 @@
 import { ReactNode } from 'react';
 import clsx from 'clsx';
 import { useBreakpoint } from '../useBreakpoint';
-import { useSurface, SurfaceProvider, UseSurfaceOptions } from '../useSurface';
-import { resolveResponsiveValue, processUtilityProps } from './helpers';
+import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
+import { resolveDefinitionProps, processUtilityProps } from './helpers';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -36,39 +36,21 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
-  const surfaceOptions: UseSurfaceOptions | undefined =
-    definition.surface === 'container'
-      ? { surface: props.surface }
-      : definition.surface === 'leaf'
-      ? { onSurface: props.onSurface }
-      : undefined;
+  // Resolve all props centrally — applies responsive values and defaults
+  const { ownPropsResolved, restProps } = resolveDefinitionProps(
+    definition,
+    props,
+    breakpoint,
+  );
 
-  const { surface: resolvedSurface } = useSurface(surfaceOptions);
-
-  const ownPropKeys = new Set(Object.keys(definition.propDefs));
-  const utilityPropKeys = new Set(definition.utilityProps ?? []);
-
-  const ownPropsRaw: Record<string, any> = {};
-  const restProps: Record<string, any> = {};
-
-  for (const [key, value] of Object.entries(props)) {
-    if (ownPropKeys.has(key)) {
-      ownPropsRaw[key] = value;
-    } else if (!(utilityPropKeys as Set<string>).has(key)) {
-      restProps[key] = value;
-    }
-  }
-
-  const ownPropsResolved: Record<string, any> = {};
   const dataAttributes: Record<string, string | undefined> = {};
 
   for (const [key, config] of Object.entries(definition.propDefs)) {
-    const rawValue = ownPropsRaw[key];
-    const resolvedValue = resolveResponsiveValue(rawValue, breakpoint);
-    const finalValue = resolvedValue ?? (config as any).default;
+    const finalValue = ownPropsResolved[key];
 
     if (finalValue !== undefined) {
-      ownPropsResolved[key] = finalValue;
+      // Skip data-bg for bg prop when the provider path handles it
+      if (key === 'bg' && definition.bg === 'provider') continue;
 
       if ((config as any).dataAttribute) {
         // eslint-disable-next-line no-restricted-syntax
@@ -77,16 +59,22 @@ export function useDefinition<
     }
   }
 
-  // Add data-on-surface for leaf components
-  if (definition.surface === 'leaf' && resolvedSurface !== undefined) {
-    // Handle responsive surface values - for data attributes, use the resolved string
-    const surfaceValue =
-      typeof resolvedSurface === 'object'
-        ? resolveResponsiveValue(resolvedSurface as any, breakpoint)
-        : resolvedSurface;
-    if (surfaceValue !== undefined) {
-      dataAttributes['data-on-surface'] = String(surfaceValue);
-    }
+  // Provider: resolve bg and provide context for children
+  const providerBg = useBgProvider(
+    definition.bg === 'provider' ? ownPropsResolved.bg : undefined,
+  );
+
+  // Consumer: read parent context bg
+  const consumerBg = useBgConsumer();
+
+  // Provider: set data-bg from the resolved provider bg
+  if (definition.bg === 'provider' && providerBg.bg !== undefined) {
+    dataAttributes['data-bg'] = String(providerBg.bg);
+  }
+
+  // Consumer: set data-on-bg from the parent context
+  if (definition.bg === 'consumer' && consumerBg.bg !== undefined) {
+    dataAttributes['data-on-bg'] = String(consumerBg.bg);
   }
 
   const { utilityClasses, utilityStyle } = processUtilityProps<UtilityKeys<D>>(
@@ -109,13 +97,11 @@ export function useDefinition<
   }
 
   let children: ReactNode | undefined;
-  let surfaceChildren: ReactNode | undefined;
+  let childrenWithBgProvider: ReactNode | undefined;
 
-  if (definition.surface === 'container') {
-    surfaceChildren = resolvedSurface ? (
-      <SurfaceProvider surface={resolvedSurface}>
-        {props.children}
-      </SurfaceProvider>
+  if (definition.bg === 'provider') {
+    childrenWithBgProvider = providerBg.bg ? (
+      <BgProvider bg={providerBg.bg}>{props.children}</BgProvider>
     ) : (
       props.children
     );
@@ -127,8 +113,8 @@ export function useDefinition<
     ownProps: {
       classes,
       ...ownPropsResolved,
-      ...(definition.surface === 'container'
-        ? { surfaceChildren }
+      ...(definition.bg === 'provider'
+        ? { childrenWithBgProvider }
         : { children }),
     },
     restProps,

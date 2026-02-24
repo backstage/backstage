@@ -112,8 +112,12 @@ import { entitiesResponseToObjects } from './response';
 import {
   catalogEntityPermissionResourceRef,
   CatalogPermissionRuleInput,
+  CatalogScmEventsService,
 } from '@backstage/plugin-catalog-node/alpha';
 import { filterAndSortProcessors, filterProviders } from './util';
+import { GenericScmEventRefreshProvider } from '../providers/GenericScmEventRefreshProvider';
+import { readScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -127,6 +131,8 @@ export type CatalogEnvironment = {
   httpAuth: HttpAuthService;
   auditor: AuditorService;
   events: EventsService;
+  catalogScmEvents: CatalogScmEventsService;
+  metrics: MetricsService;
 };
 
 /**
@@ -424,6 +430,8 @@ export class CatalogBuilder {
       auth,
       httpAuth,
       events,
+      catalogScmEvents,
+      metrics,
     } = this.env;
 
     const enableRelationsCompatibility = Boolean(
@@ -443,6 +451,7 @@ export class CatalogBuilder {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
       logger,
+      metrics,
     });
 
     const processingDatabase = new DefaultProcessingDatabase({
@@ -450,6 +459,7 @@ export class CatalogBuilder {
       logger,
       events,
       refreshInterval: this.processingInterval,
+      metrics,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
@@ -528,13 +538,25 @@ export class CatalogBuilder {
       });
     }
 
-    const locationStore = new DefaultLocationStore(dbClient);
+    const scmEventHandlingConfig = readScmEventHandlingConfig(config);
+    const locationStore = new DefaultLocationStore(
+      dbClient,
+      catalogScmEvents,
+      scmEventHandlingConfig,
+    );
     const configLocationProvider = new ConfigLocationEntityProvider(config);
+    const scmEvents = new GenericScmEventRefreshProvider(
+      dbClient,
+      catalogScmEvents,
+      scmEventHandlingConfig,
+    );
+
     const entityProviderEntries = lodash.uniqBy(
       [
         ...this.entityProviders,
         { provider: locationStore },
         { provider: configLocationProvider },
+        { provider: scmEvents },
       ],
       entry => entry.provider.getProviderName(),
     );
@@ -560,6 +582,7 @@ export class CatalogBuilder {
         this.onProcessingError?.(event);
       },
       events,
+      metrics,
     });
 
     const locationAnalyzer =

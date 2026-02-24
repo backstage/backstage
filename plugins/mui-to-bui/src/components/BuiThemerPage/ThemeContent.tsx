@@ -99,7 +99,7 @@ export function ThemeContent({
                 p="3"
                 style={{
                   backgroundColor: 'var(--bui-bg-neutral-2)',
-                  border: '1px solid var(--bui-border)',
+                  border: '1px solid var(--bui-border-2)',
                   borderRadius: 'var(--bui-radius-2)',
                   fontFamily: 'monospace',
                   fontSize: '14px',

@@ -15,13 +15,13 @@
  */
 
 import type { ReactNode, CSSProperties } from 'react';
-import type { Responsive, Surface, SpaceProps } from '../../types';
+import type { Responsive, ProviderBg, SpaceProps } from '../../types';
 
 /** @public */
 export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
-  surface?: Responsive<Surface>;
-  children?: ReactNode;
+  bg?: Responsive<ProviderBg>;
+  children: ReactNode;
   className?: string;
   style?: CSSProperties;
 };
@@ -45,4 +45,4 @@ export interface BoxProps
   extends SpaceProps,
     BoxOwnProps,
     BoxUtilityProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {}

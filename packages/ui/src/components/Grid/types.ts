@@ -19,7 +19,7 @@ import type {
   SpaceProps,
   Responsive,
   Columns,
-  Surface,
+  ProviderBg,
 } from '../../types';
 
 /** @public */
@@ -29,7 +29,7 @@ export interface GridProps extends SpaceProps {
   columns?: Responsive<Columns>;
   gap?: Responsive<Space>;
   style?: React.CSSProperties;
-  surface?: Responsive<Surface>;
+  bg?: Responsive<ProviderBg>;
 }
 
 /** @public */
@@ -41,5 +41,5 @@ export interface GridItemProps {
   colStart?: Responsive<Columns>;
   rowSpan?: Responsive<Columns>;
   style?: React.CSSProperties;
-  surface?: Responsive<Surface>;
+  bg?: Responsive<ProviderBg>;
 }

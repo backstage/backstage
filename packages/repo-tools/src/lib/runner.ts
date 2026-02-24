@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { targetPaths } from '@backstage/cli-common';
 import { resolvePackagePaths } from './paths';
 import pLimit from 'p-limit';
 import { relative as relativePath } from 'node:path';
-import { paths as cliPaths } from './paths';
 import portFinder from 'portfinder';
 
 export async function runner(
@@ -58,7 +58,7 @@ export async function runner(
         }
 
         return {
-          relativeDir: relativePath(cliPaths.targetRoot, pkg),
+          relativeDir: relativePath(targetPaths.rootDir, pkg),
           resultText,
         };
       }),

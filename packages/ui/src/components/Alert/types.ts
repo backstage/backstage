@@ -15,14 +15,10 @@
  */
 
 import type { ReactElement, ReactNode, CSSProperties } from 'react';
-import type {
-  ContainerSurfaceProps,
-  Responsive,
-  MarginProps,
-} from '../../types';
+import type { Responsive, MarginProps } from '../../types';
 
 /** @public */
-export type AlertOwnProps = ContainerSurfaceProps & {
+export type AlertOwnProps = {
   status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
   icon?: boolean | ReactElement;
   loading?: boolean;

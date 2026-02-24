@@ -211,8 +211,8 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
               <MemoryRouter
                 initialEntries={options?.initialRouteEntries}
                 future={{
-                  v7_relativeSplatPath: true,
-                  v7_startTransition: true,
+                  v7_relativeSplatPath: false,
+                  v7_startTransition: false,
                 }}
               >
                 {children}

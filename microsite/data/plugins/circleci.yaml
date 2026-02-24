@@ -8,3 +8,4 @@ documentation: https://github.com/CircleCI-Public/backstage-plugin/tree/main/plu
 iconUrl: /img/circleci.png
 npmPackageName: '@circleci/backstage-plugin'
 addedDate: '2021-04-28'
+status: active

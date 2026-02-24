@@ -322,6 +322,7 @@ openapi
 OpenSearch
 OpenShift
 openssl
+opentelemetry
 orgs
 overridable
 padding
@@ -422,6 +423,7 @@ SCM
 SCMs
 scrollable
 scrollbar
+scrollbars
 sdks
 seb
 semlas
@@ -547,6 +549,7 @@ validator
 validators
 Valkey
 varchar
+viewport
 vite
 VMware
 Vodafone

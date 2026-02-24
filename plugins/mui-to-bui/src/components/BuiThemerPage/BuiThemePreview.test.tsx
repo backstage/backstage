@@ -26,7 +26,7 @@ describe('BuiThemePreview', () => {
         mode="light"
         styleObject={{
           '--bui-bg-neutral-2': '#ffffff',
-          '--bui-border': '#cccccc',
+          '--bui-border-2': '#cccccc',
           '--bui-radius-2': '4px',
           '--bui-space-3': '12px',
           '--bui-fg-secondary': '#777777',

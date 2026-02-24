@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/ocm.svg
 npmPackageName: '@backstage-community/plugin-ocm'
 addedDate: '2023-05-15'
+status: active

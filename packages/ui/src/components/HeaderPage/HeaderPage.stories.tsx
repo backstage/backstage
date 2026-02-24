@@ -17,7 +17,7 @@
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { HeaderPage } from './HeaderPage';
-import type { HeaderTab } from '../Header/types';
+import type { HeaderTab } from '../PluginHeader/types';
 import { MemoryRouter } from 'react-router-dom';
 import {
   Button,

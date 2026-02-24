@@ -24,8 +24,9 @@ import {
 import { tmpdir } from 'node:os';
 import * as tar from 'tar';
 import partition from 'lodash/partition';
-import { paths } from '../../../../lib/paths';
-import { run } from '@backstage/cli-common';
+
+import { run, targetPaths } from '@backstage/cli-common';
+
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
@@ -41,8 +42,8 @@ import {
   PackageRoles,
   PackageGraph,
   PackageGraphNode,
+  runConcurrentTasks,
 } from '@backstage/cli-node';
-import { runParallelWorkers } from '../../../../lib/parallel';
 import { createTypeDistProject } from '../../../../lib/typeDistProject';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
@@ -85,11 +86,6 @@ type Options = {
    * When `buildDependencies` is set, this list of packages will not be built even if they are dependencies.
    */
   buildExcludes?: string[];
-
-  /**
-   * Controls amount of parallelism in some build steps.
-   */
-  parallelism?: number;
 
   /**
    * If set, creates a skeleton tarball that contains all package.json files
@@ -215,7 +211,9 @@ export async function createDistWorkspace(
           targetDir: pkg.dir,
           packageJson: pkg.packageJson,
           outputs: outputs,
-          logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
+          logPrefix: `${chalk.cyan(
+            relativePath(targetPaths.rootDir, pkg.dir),
+          )}: `,
           minify: options.minify,
           workspacePackages: packages,
         });
@@ -225,7 +223,7 @@ export async function createDistWorkspace(
     await buildPackages(standardBuilds);
 
     if (customBuild.length > 0) {
-      await runParallelWorkers({
+      await runConcurrentTasks({
         items: customBuild,
         worker: async ({ name, dir, args }) => {
           await run(['yarn', 'run', 'build', ...(args || [])], {
@@ -250,13 +248,13 @@ export async function createDistWorkspace(
   for (const file of files) {
     const src = typeof file === 'string' ? file : file.src;
     const dest = typeof file === 'string' ? file : file.dest;
-    await fs.copy(paths.resolveTargetRoot(src), resolvePath(targetDir, dest));
+    await fs.copy(targetPaths.resolveRoot(src), resolvePath(targetDir, dest));
   }
 
   if (options.skeleton) {
     const skeletonFiles = targets
       .map(target => {
-        const dir = relativePath(paths.targetRoot, target.dir);
+        const dir = relativePath(targetPaths.rootDir, target.dir);
         return joinPath(dir, 'package.json');
       })
       .sort();
@@ -305,7 +303,7 @@ async function moveToDistWorkspace(
     fastPackPackages.map(async target => {
       console.log(`Moving ${target.name} into dist workspace`);
 
-      const outputDir = relativePath(paths.targetRoot, target.dir);
+      const outputDir = relativePath(targetPaths.rootDir, target.dir);
       const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
       await productionPack({
         packageDir: target.dir,
@@ -325,7 +323,7 @@ async function moveToDistWorkspace(
       cwd: target.dir,
     }).waitForExit();
 
-    const outputDir = relativePath(paths.targetRoot, target.dir);
+    const outputDir = relativePath(targetPaths.rootDir, target.dir);
     const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
     await fs.ensureDir(absoluteOutputPath);
 
@@ -368,7 +366,7 @@ async function moveToDistWorkspace(
   }
 
   // Repacking in parallel is much faster and safe for all packages outside of the Backstage repo
-  await runParallelWorkers({
+  await runConcurrentTasks({
     items: safePackages.map((target, index) => ({ target, index })),
     worker: async ({ target, index }) => {
       await pack(target, `temp-package-${index}.tgz`);

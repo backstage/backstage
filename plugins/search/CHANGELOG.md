@@ -1,5 +1,24 @@
 # @backstage/plugin-search
 
+## 1.6.0
+
+### Minor Changes
+
+- feef8d9: Added support for configuring the default search type in the search page via the `search.defaultType` option in `app-config.yaml`. This applies to both the legacy and new frontend systems. If not set, the default is empty, which means searching for "all" types.
+
+### Patch Changes
+
+- 018ca87: Added `title` and `icon` to the plugin definition for the new frontend system.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-search-react@1.10.3
+
 ## 1.6.0-next.2
 
 ### Patch Changes

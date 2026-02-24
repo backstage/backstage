@@ -8,3 +8,4 @@ documentation: https://github.com/drodil/backstage-plugin-qeta
 iconUrl: /img/qeta-logo.png
 npmPackageName: '@drodil/backstage-plugin-qeta'
 addedDate: '2022-12-21'
+status: active

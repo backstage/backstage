@@ -589,6 +589,27 @@ components:
         - type
       description: Holds the entity location information.
       additionalProperties: false
+    LocationsQueryResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+          description: The list of locations paginated by a specific query.
+        totalItems:
+          type: number
+        pageInfo:
+          type: object
+          properties:
+            nextCursor:
+              type: string
+              description: The cursor for the next batch of locations.
+      required:
+        - items
+        - totalItems
+        - pageInfo
+      additionalProperties: false
     AnalyzeLocationExistingEntity:
       type: object
       properties:
@@ -1189,6 +1210,37 @@ paths:
         - {}
         - JWT: []
       parameters: []
+  /locations/by-query:
+    post:
+      operationId: GetLocationsByQuery
+      tags:
+        - Locations
+      description: Query for locations
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationsQueryResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cursor:
+                  type: string
+                limit:
+                  type: number
+                query:
+                  $ref: '#/components/schemas/JsonObject'
   /locations/{id}:
     get:
       operationId: GetLocation

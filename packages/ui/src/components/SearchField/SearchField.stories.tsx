@@ -23,7 +23,7 @@ import { FieldLabel } from '../FieldLabel';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiCactusLine, RiEBike2Line } from '@remixicon/react';
 import { Button } from '../Button';
-import { Header } from '../Header';
+import { PluginHeader } from '../PluginHeader';
 import { MemoryRouter } from 'react-router-dom';
 
 const meta = preview.meta({
@@ -192,7 +192,7 @@ export const InHeader = meta.story({
   ],
   render: args => (
     <>
-      <Header
+      <PluginHeader
         title="Title"
         customActions={
           <>
@@ -229,7 +229,7 @@ export const StartCollapsedInHeader = meta.story({
   ],
   render: args => (
     <>
-      <Header
+      <PluginHeader
         title="Title"
         customActions={
           <>

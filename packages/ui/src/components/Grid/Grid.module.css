@@ -21,38 +21,33 @@
     display: grid;
   }
 
-  .bui-Grid[data-surface='0'],
-  .bui-GridItem[data-surface='0'] {
-    background-color: var(--bui-bg-neutral-0);
-  }
-
-  .bui-Grid[data-surface='1'],
-  .bui-GridItem[data-surface='1'] {
+  .bui-Grid[data-bg='neutral-1'],
+  .bui-GridItem[data-bg='neutral-1'] {
     background-color: var(--bui-bg-neutral-1);
   }
 
-  .bui-Grid[data-surface='2'],
-  .bui-GridItem[data-surface='2'] {
+  .bui-Grid[data-bg='neutral-2'],
+  .bui-GridItem[data-bg='neutral-2'] {
     background-color: var(--bui-bg-neutral-2);
   }
 
-  .bui-Grid[data-surface='3'],
-  .bui-GridItem[data-surface='3'] {
+  .bui-Grid[data-bg='neutral-3'],
+  .bui-GridItem[data-bg='neutral-3'] {
     background-color: var(--bui-bg-neutral-3);
   }
 
-  .bui-Grid[data-surface='danger'],
-  .bui-GridItem[data-surface='danger'] {
+  .bui-Grid[data-bg='danger'],
+  .bui-GridItem[data-bg='danger'] {
     background-color: var(--bui-bg-danger);
   }
 
-  .bui-Grid[data-surface='warning'],
-  .bui-GridItem[data-surface='warning'] {
+  .bui-Grid[data-bg='warning'],
+  .bui-GridItem[data-bg='warning'] {
     background-color: var(--bui-bg-warning);
   }
 
-  .bui-Grid[data-surface='success'],
-  .bui-GridItem[data-surface='success'] {
+  .bui-Grid[data-bg='success'],
+  .bui-GridItem[data-bg='success'] {
     background-color: var(--bui-bg-success);
   }
 }

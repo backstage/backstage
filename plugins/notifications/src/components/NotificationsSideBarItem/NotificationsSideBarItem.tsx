@@ -100,6 +100,19 @@ export type NotificationSnackbarProperties = {
 };
 
 /**
+ * Props passed to the custom renderItem function
+ * @public
+ */
+export type NotificationsRenderItemProps = {
+  /** Current unread notification count */
+  unreadCount: number;
+  /** Route path to the notifications page */
+  to: string;
+  /** Click handler that requests web notification permission */
+  onClick: () => void;
+};
+
+/**
  * @public
  */
 export type NotificationsSideBarItemProps = {
@@ -119,6 +132,10 @@ export type NotificationsSideBarItemProps = {
   text?: string;
   disableHighlight?: boolean;
   noTrack?: boolean;
+  /**
+   * Optional render function to provide custom UI instead of the default SidebarItem.
+   */
+  renderItem?: (props: NotificationsRenderItemProps) => React.ReactNode;
 };
 
 /** @public */
@@ -304,6 +321,20 @@ export const NotificationsSidebarItem = (
 
   const count = !error && !!unreadCount ? unreadCount : undefined;
 
+  const handleClick = useCallback(() => {
+    requestUserPermission();
+  }, [requestUserPermission]);
+
+  // Props to pass to custom renderItem function
+  const renderItemProps: NotificationsRenderItemProps = useMemo(
+    () => ({
+      unreadCount,
+      to: notificationsRoute,
+      onClick: handleClick,
+    }),
+    [unreadCount, notificationsRoute, handleClick],
+  );
+
   return (
     <>
       {snackbarEnabled && (
@@ -336,17 +367,19 @@ export const NotificationsSidebarItem = (
           }}
         />
       )}
-      <SidebarItem
-        to={notificationsRoute}
-        onClick={() => {
-          requestUserPermission();
-        }}
-        text={text}
-        icon={icon}
-        {...restProps}
-      >
-        {count && <Chip size="small" label={count > 99 ? '99+' : count} />}
-      </SidebarItem>
+      {props?.renderItem ? (
+        props.renderItem(renderItemProps)
+      ) : (
+        <SidebarItem
+          to={notificationsRoute}
+          onClick={handleClick}
+          text={text}
+          icon={icon}
+          {...restProps}
+        >
+          {count && <Chip size="small" label={count > 99 ? '99+' : count} />}
+        </SidebarItem>
+      )}
     </>
   );
 };

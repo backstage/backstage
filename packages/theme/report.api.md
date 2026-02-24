@@ -185,7 +185,7 @@ export function createBaseThemeOptions<PaletteOptions>(
   palette: PaletteOptions;
   typography: BackstageTypography;
   page: PageTheme;
-  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
+  getPageTheme: (input: PageThemeSelector) => PageTheme;
 };
 
 // @public @deprecated

@@ -1,5 +1,21 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.1
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- ce3639c: Add PersistentVolume and PersistentVolumeClaims Rendering
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-kubernetes-node@0.4.1
+  - @backstage/plugin-kubernetes-common@0.9.10
+  - @backstage/catalog-client@1.13.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+
 ## 0.21.1-next.2
 
 ### Patch Changes

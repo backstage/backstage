@@ -18,7 +18,7 @@ import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import inquirer, { Answers } from 'inquirer';
 import { resolve as resolvePath } from 'node:path';
-import { findPaths } from '@backstage/cli-common';
+import { targetPaths, findOwnPaths } from '@backstage/cli-common';
 import os from 'node:os';
 import fs from 'fs-extra';
 import {
@@ -36,8 +36,6 @@ import {
 const DEFAULT_BRANCH = 'master';
 
 export default async (opts: OptionValues): Promise<void> => {
-  /* eslint-disable-next-line no-restricted-syntax */
-  const paths = findPaths(__dirname);
   const answers: Answers = await inquirer.prompt([
     {
       type: 'input',
@@ -66,20 +64,22 @@ export default async (opts: OptionValues): Promise<void> => {
   ]);
 
   // Pick the built-in template based on the --next flag
+  /* eslint-disable-next-line no-restricted-syntax */
+  const ownPaths = findOwnPaths(__dirname);
   const builtInTemplate = opts.next
-    ? paths.resolveOwn('templates/next-app')
-    : paths.resolveOwn('templates/default-app');
+    ? ownPaths.resolve('templates/next-app')
+    : ownPaths.resolve('templates/default-app');
 
   // Use `--template-path` argument as template when specified. Otherwise, use the default template.
   const templateDir = opts.templatePath
-    ? paths.resolveTarget(opts.templatePath)
+    ? targetPaths.resolve(opts.templatePath)
     : builtInTemplate;
 
   // Use `--path` argument as application directory when specified, otherwise
   // create a directory using `answers.name`
   const appDir = opts.path
-    ? resolvePath(paths.targetDir, opts.path)
-    : resolvePath(paths.targetDir, answers.name);
+    ? resolvePath(targetPaths.dir, opts.path)
+    : resolvePath(targetPaths.dir, answers.name);
 
   Task.log();
   Task.log('Creating the app...');
@@ -102,7 +102,7 @@ export default async (opts: OptionValues): Promise<void> => {
       // Template to temporary location, and then move files
 
       Task.section('Checking if the directory is available');
-      await checkAppExistsTask(paths.targetDir, answers.name);
+      await checkAppExistsTask(targetPaths.dir, answers.name);
 
       Task.section('Creating a temporary app directory');
       const tempDir = await fs.mkdtemp(resolvePath(os.tmpdir(), answers.name));

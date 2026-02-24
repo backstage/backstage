@@ -18,8 +18,8 @@ import Parser from '@apidevtools/swagger-parser';
 import fs, { pathExists } from 'fs-extra';
 import YAML from 'js-yaml';
 import { cloneDeep } from 'lodash';
+import { targetPaths } from '@backstage/cli-common';
 import { resolve } from 'node:path';
-import { paths } from '../paths';
 import { YAML_SCHEMA_PATH } from './constants';
 
 export const getPathToFile = async (directory: string, filename: string) => {
@@ -27,7 +27,7 @@ export const getPathToFile = async (directory: string, filename: string) => {
 };
 
 export const getRelativePathToFile = async (filename: string) => {
-  return await getPathToFile(paths.targetDir, filename);
+  return await getPathToFile(targetPaths.dir, filename);
 };
 
 export const assertExists = async (path: string) => {

@@ -1,5 +1,15 @@
 # @backstage/plugin-events-backend
 
+## 0.5.11
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.6
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-events-node@0.4.19
+
 ## 0.5.11-next.0
 
 ### Patch Changes

@@ -9,3 +9,4 @@ iconUrl: /img/backstage-software-templates.svg
 npmPackageName: '@backstage/plugin-scaffolder'
 order: 2
 addedDate: '2021-03-29'
+status: active

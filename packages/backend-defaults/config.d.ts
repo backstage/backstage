@@ -634,6 +634,10 @@ export interface Config {
           }
         | {
             /**
+             * The rest config for default, regular connections
+             */
+            type?: 'default';
+            /**
              * Password that belongs to the client User
              * @visibility secret
              */
@@ -1121,6 +1125,36 @@ export interface Config {
        * and set the `x-envoy-upstream-healthchecked-cluster` header to a matching value.
        */
       headers?: { [name: string]: string };
+    };
+
+    /**
+     * Options for the metrics service.
+     */
+    metrics?: {
+      /**
+       * Plugin-specific metrics configuration. Each plugin can override meter metadata.
+       */
+      plugin?: {
+        [pluginId: string]: {
+          /**
+           * Meter configuration for this plugin.
+           */
+          meter?: {
+            /**
+             * Custom meter name. If not set, defaults to backstage-plugin-{pluginId}.
+             */
+            name?: string;
+            /**
+             * Version for the meter.
+             */
+            version?: string;
+            /**
+             * Schema URL for the meter.
+             */
+            schemaUrl?: string;
+          };
+        };
+      };
     };
 
     /**

@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/octopus-deploy.svg
 npmPackageName: '@backstage-community/plugin-octopus-deploy'
 addedDate: '2023-02-24'
+status: active

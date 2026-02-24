@@ -208,6 +208,8 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
 
 export default createFrontendPlugin({
   pluginId: 'api-docs',
+  title: 'APIs',
+  icon: <AppIcon id="kind:api" />,
   info: { packageJson: () => import('../package.json') },
   routes: {
     root: rootRoute,

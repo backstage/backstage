@@ -1,5 +1,17 @@
 # @backstage/plugin-home-react
 
+## 0.1.35
+
+### Patch Changes
+
+- 90956a6: Support new frontend system in the homepage plugin
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/core-components@0.18.7
+  - @backstage/core-compat-api@0.5.8
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/core-plugin-api@1.12.3
+
 ## 0.1.35-next.1
 
 ### Patch Changes

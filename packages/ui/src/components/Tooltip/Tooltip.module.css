@@ -20,8 +20,8 @@
   .bui-Tooltip {
     box-shadow: var(--bui-shadow);
     border-radius: 4px;
-    background: var(--bui-bg-neutral-1);
-    border: 1px solid var(--bui-border);
+    background: var(--bui-bg-popover);
+    border: 1px solid var(--bui-border-1);
     forced-color-adjust: none;
     outline: none;
     padding: var(--bui-space-2) var(--bui-space-3);
@@ -74,11 +74,11 @@
       elements in order to guarantee that the stroke is
       always overlaying a consistent color. */
       path:nth-child(1) {
-        fill: var(--bui-bg-neutral-1);
+        fill: var(--bui-bg-popover);
       }
 
       path:nth-child(2) {
-        fill: var(--bui-fg-secondary);
+        fill: var(--bui-border-1);
       }
 
       /* The arrow svg overlaps the tooltip by 2px, so we
@@ -104,19 +104,5 @@
       margin-left: var(--tooltip-arrow-overlap);
       transform: rotate(-90deg);
     }
-  }
-
-  [data-theme='dark'] .bui-Tooltip {
-    background: var(--bui-bg-neutral-2);
-    box-shadow: none;
-    border: 1px solid var(--bui-border);
-  }
-
-  [data-theme='dark'] .bui-TooltipArrow svg path:nth-child(1) {
-    fill: var(--bui-bg-neutral-2);
-  }
-
-  [data-theme='dark'] .bui-TooltipArrow svg path:nth-child(2) {
-    fill: var(--bui-fg-secondary);
   }
 }

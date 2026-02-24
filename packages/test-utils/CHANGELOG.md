@@ -1,5 +1,18 @@
 # @backstage/test-utils
 
+## 1.7.15
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 68eb322: Added `@types/jest` as an optional peer dependency, since jest types are exposed in the public API surface.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.5
+  - @backstage/theme@0.7.2
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/plugin-permission-common@0.9.6
+
 ## 1.7.15-next.2
 
 ### Patch Changes

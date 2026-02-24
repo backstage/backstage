@@ -20,24 +20,20 @@ import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import { FlexDefinition } from './definition';
 import styles from './Flex.module.css';
-import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
+import { BgProvider, useBgProvider } from '../../hooks/useBg';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  // Resolve the surface this Flex creates for its children
-  // Using 'surface' parameter = container behavior (auto increments)
-  const { surface: resolvedSurface } = useSurface({
-    surface: props.surface,
-  });
+  const { bg: resolvedBg } = useBgProvider(props.bg);
 
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
     useStyles(FlexDefinition, {
       gap: '4',
       ...props,
-      surface: resolvedSurface, // Use resolved surface for data attribute
+      bg: resolvedBg, // Use resolved bg for data attribute
     });
 
-  const { className, surface, ...rest } = cleanedProps;
+  const { className, bg, ...rest } = cleanedProps;
 
   const content = (
     <div
@@ -54,8 +50,8 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
     />
   );
 
-  return resolvedSurface ? (
-    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
+  return resolvedBg ? (
+    <BgProvider bg={resolvedBg}>{content}</BgProvider>
   ) : (
     content
   );

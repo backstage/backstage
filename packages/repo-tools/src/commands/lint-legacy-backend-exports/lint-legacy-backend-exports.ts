@@ -16,11 +16,11 @@
 import { Project } from 'ts-morph';
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import fs from 'fs-extra';
-import { paths as cliPaths } from '../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 import path from 'node:path';
 
 const project = new Project({
-  tsConfigFilePath: cliPaths.resolveTargetRoot('tsconfig.json'),
+  tsConfigFilePath: targetPaths.resolveRoot('tsconfig.json'),
 });
 
 function readPackageJson(pkg: string) {

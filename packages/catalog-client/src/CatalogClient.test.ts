@@ -741,6 +741,184 @@ describe('CatalogClient', () => {
     });
   });
 
+  describe('queryLocations', () => {
+    it('should fetch locations from correct endpoint', async () => {
+      const defaultResponse = {
+        items: [
+          { id: '1', type: 'url', target: 'https://example.com/1' },
+          { id: '2', type: 'url', target: 'https://example.com/2' },
+        ],
+        totalItems: 3,
+        pageInfo: {
+          nextCursor: 'next',
+        },
+      };
+
+      server.use(
+        rest.post(`${mockBaseUrl}/locations/by-query`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+
+      const response = await client.queryLocations({}, { token });
+      expect(response).toEqual(defaultResponse);
+    });
+
+    it('should send request body correctly', async () => {
+      expect.assertions(2);
+
+      server.use(
+        rest.post(
+          `${mockBaseUrl}/locations/by-query`,
+          async (req, res, ctx) => {
+            const body = await req.json();
+            expect(body).toEqual({
+              limit: 50,
+              query: { type: 'url' },
+            });
+            return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
+          },
+        ),
+      );
+
+      const response = await client.queryLocations(
+        {
+          limit: 50,
+          query: { type: 'url' },
+        },
+        { token },
+      );
+
+      expect(response.items).toEqual([]);
+    });
+
+    it('should handle cursor-based pagination', async () => {
+      expect.assertions(3);
+
+      server.use(
+        rest.post(
+          `${mockBaseUrl}/locations/by-query`,
+          async (req, res, ctx) => {
+            const body = await req.json();
+            expect(body).toEqual({ cursor: 'mycursor' });
+            return res(
+              ctx.json({
+                items: [
+                  { id: '3', type: 'url', target: 'https://example.com/3' },
+                ],
+                totalItems: 10,
+                pageInfo: {
+                  nextCursor: 'nextcursor',
+                },
+              }),
+            );
+          },
+        ),
+      );
+
+      const response = await client.queryLocations({ cursor: 'mycursor' });
+
+      expect(response.items).toHaveLength(1);
+      expect(response.pageInfo.nextCursor).toBe('nextcursor');
+    });
+
+    it('should handle errors', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/locations/by-query`, (_req, res, ctx) =>
+          res(ctx.status(401)),
+        ),
+      );
+
+      await expect(() => client.queryLocations()).rejects.toThrow(
+        /Request failed with 401 Unauthorized/,
+      );
+    });
+
+    it('should forward token', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.post(`${mockBaseUrl}/locations/by-query`, (req, res, ctx) => {
+          expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
+          return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
+        }),
+      );
+
+      await client.queryLocations({}, { token });
+    });
+  });
+
+  describe('streamLocations', () => {
+    it('should stream locations through pagination', async () => {
+      const firstPage = {
+        items: [
+          { id: '1', type: 'url', target: 'https://example.com/1' },
+          { id: '2', type: 'url', target: 'https://example.com/2' },
+        ],
+        totalItems: 3,
+        pageInfo: { nextCursor: 'cursor2' },
+      };
+      const secondPage = {
+        items: [{ id: '3', type: 'url', target: 'https://example.com/3' }],
+        totalItems: 3,
+        pageInfo: {},
+      };
+
+      server.use(
+        rest.post(
+          `${mockBaseUrl}/locations/by-query`,
+          async (req, res, ctx) => {
+            const body = await req.json();
+            if (body.cursor === 'cursor2') {
+              return res(ctx.json(secondPage));
+            }
+            return res(ctx.json(firstPage));
+          },
+        ),
+      );
+
+      const stream = client.streamLocations({}, { token });
+      const results = [];
+      for await (const page of stream) {
+        results.push(page);
+      }
+
+      expect(results).toEqual([firstPage.items, secondPage.items]);
+    });
+
+    it('should handle empty results', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/locations/by-query`, (_req, res, ctx) => {
+          return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
+        }),
+      );
+
+      const stream = client.streamLocations({}, { token });
+      const results = [];
+      for await (const page of stream) {
+        results.push(page);
+      }
+
+      expect(results).toEqual([]);
+    });
+
+    it('should handle errors', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/locations/by-query`, (_req, res, ctx) =>
+          res(ctx.status(401)),
+        ),
+      );
+
+      const stream = client.streamLocations({}, { token });
+      await expect(async () => {
+        const results = [];
+        for await (const page of stream) {
+          results.push(page);
+        }
+      }).rejects.toThrow(/Request failed with 401 Unauthorized/);
+    });
+  });
+
   describe('getLocationById', () => {
     const defaultResponse = {
       data: {

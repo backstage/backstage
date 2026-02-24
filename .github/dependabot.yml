@@ -1,0 +1,15 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    ignore:
+      # These need to stay pinned to match the React/Node versions we support
+      - dependency-name: '@types/react'
+      - dependency-name: '@types/node'
+      # Ignored due to licensing issues. See #10992
+      - dependency-name: '@elastic/elasticsearch'
+      - dependency-name: 'event-source-polyfill'
+    # Disable version updates since we use Renovate for that
+    open-pull-requests-limit: 0

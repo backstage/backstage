@@ -7,3 +7,4 @@ documentation: https://github.com/TeraSky-OSS/backstage-plugins/tree/main/plugin
 iconUrl: https://avatars.githubusercontent.com/u/13629408
 npmPackageName: '@terasky/backstage-plugin-kubernetes-ingestor'
 addedDate: '2024-12-30'
+status: active

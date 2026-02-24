@@ -15,17 +15,11 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import { getHasYarnPlugin } from './yarnPlugin';
 
 const mockDir = createMockDirectory();
-
-jest.mock('./paths', () => ({
-  paths: {
-    resolveTargetRoot(filename: string) {
-      return mockDir.resolve(filename);
-    },
-  },
-}));
+overrideTargetPaths(mockDir.path);
 
 describe('getHasYarnPlugin', () => {
   beforeEach(() => {
