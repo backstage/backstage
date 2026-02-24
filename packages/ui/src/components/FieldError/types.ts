@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { FieldErrorProps as RAFieldErrorProps } from 'react-aria-components';
 
-import { defineComponent } from '../../hooks/useDefinition';
-import type { FieldErrorOwnProps } from './types';
-import styles from './FieldError.module.css';
+/** @public */
+export type FieldErrorOwnProps = {
+  className?: string;
+};
 
-/**
- * Component definition for FieldError
- * @public
- */
-export const FieldErrorDefinition = defineComponent<FieldErrorOwnProps>()({
-  styles,
-  classNames: {
-    root: 'bui-FieldError',
-  },
-  propDefs: {
-    className: {},
-  },
-});
+/** @public */
+export interface FieldErrorProps
+  extends Omit<RAFieldErrorProps, 'className'>,
+    FieldErrorOwnProps {}
