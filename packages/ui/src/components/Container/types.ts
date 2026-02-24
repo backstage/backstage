@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SpaceProps } from '../../types';
+import type { SpaceProps } from '../../types';
 
 /** @public */
-export interface ContainerProps {
+export type ContainerOwnProps = {
   children?: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
+};
+
+/** @public */
+export interface ContainerProps extends ContainerOwnProps {
   my?: SpaceProps['my'];
   mb?: SpaceProps['mb'];
   mt?: SpaceProps['mt'];
   py?: SpaceProps['py'];
   pb?: SpaceProps['pb'];
   pt?: SpaceProps['pt'];
-  style?: React.CSSProperties;
 }

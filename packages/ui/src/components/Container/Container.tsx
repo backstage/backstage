@@ -15,34 +15,28 @@
  */
 
 import { forwardRef } from 'react';
-import { ContainerProps } from './types';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
+import type { ContainerProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
 import { ContainerDefinition } from './definition';
-import styles from './Container.module.css';
 
 /** @public */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
-    const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+    const { ownProps, restProps, utilityStyle } = useDefinition(
       ContainerDefinition,
       props,
     );
-
-    const { className, ...rest } = cleanedProps;
+    const { classes, style } = ownProps;
 
     return (
       <div
         ref={ref}
-        className={clsx(
-          classNames.root,
-          utilityClasses,
-          styles[classNames.root],
-          className,
-        )}
-        style={style}
-        {...rest}
+        className={classes.root}
+        style={{ ...utilityStyle, ...style }}
+        {...restProps}
       />
     );
   },
 );
+
+Container.displayName = 'Container';
