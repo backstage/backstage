@@ -16,52 +16,22 @@
 
 import { forwardRef, useRef } from 'react';
 import { useLink } from 'react-aria';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
-import { LinkDefinition } from './definition';
 import type { LinkProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
+import { LinkDefinition } from './definition';
 import { InternalLinkProvider } from '../InternalLinkProvider';
-import styles from './Link.module.css';
 
 const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const { classNames, dataAttributes, cleanedProps } = useStyles(
+  const { ownProps, restProps, dataAttributes } = useDefinition(
     LinkDefinition,
-    {
-      variant: 'body',
-      weight: 'regular',
-      color: 'primary',
-      ...props,
-    },
+    props,
   );
-
-  const {
-    className,
-    href,
-    title,
-    children,
-    onPress,
-    variant,
-    weight,
-    color,
-    truncate,
-    standalone,
-    slot,
-    ...restProps
-  } = cleanedProps;
+  const { classes, title, children } = ownProps;
 
   const internalRef = useRef<HTMLAnchorElement>(null);
   const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
 
-  // Use useLink hook to get link props
-  // For internal links, this will use the RouterProvider's navigate function
-  const { linkProps } = useLink(
-    {
-      href,
-      onPress,
-      ...restProps,
-    },
-    linkRef,
-  );
+  const { linkProps } = useLink(restProps, linkRef);
 
   return (
     <a
@@ -69,9 +39,8 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       {...dataAttributes}
       {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       ref={linkRef}
-      href={href}
       title={title}
-      className={clsx(classNames.root, styles[classNames.root], className)}
+      className={classes.root}
     >
       {children}
     </a>
