@@ -184,7 +184,7 @@ describe('createListScaffolderTasksAction', () => {
     mockAuth.isPrincipal.mockImplementation(
       (creds, type) =>
         type === 'user' &&
-        creds?.principal?.type === 'user' &&
+        (creds?.principal as { type?: string })?.type === 'user' &&
         typeof (creds.principal as { userEntityRef?: string }).userEntityRef ===
           'string',
     );
