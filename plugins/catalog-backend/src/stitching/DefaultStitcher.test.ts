@@ -25,6 +25,7 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultStitcher } from './DefaultStitcher';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 jest.setTimeout(60_000);
 
@@ -42,6 +43,7 @@ describe('Stitcher', () => {
         knex: db,
         logger,
         strategy: { mode: 'immediate' },
+        metrics: metricsServiceMock.mock(),
       });
       let entities: DbFinalEntitiesRow[];
       let entity: Entity;
