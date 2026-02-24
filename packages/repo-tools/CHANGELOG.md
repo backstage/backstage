@@ -1,5 +1,11 @@
 # @backstage/repo-tools
 
+## 0.16.5
+
+### Patch Changes
+
+- e67d18a: Updated `@microsoft/api-extractor` to `7.57.3` and added tests for `getTsDocConfig`
+
 ## 0.16.4
 
 ### Patch Changes

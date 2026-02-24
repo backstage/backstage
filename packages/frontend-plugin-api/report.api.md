@@ -1938,9 +1938,7 @@ export type ResolvedExtensionInputs<
 
 // @public
 export type RouteFunc<TParams extends AnyRouteRefParams> = (
-  ...[params]: TParams extends undefined
-    ? readonly []
-    : readonly [params: TParams]
+  ...input: TParams extends undefined ? readonly [] : readonly [params: TParams]
 ) => string;
 
 // @public
@@ -2130,7 +2128,7 @@ export type TranslationFunction<
   ? {
       <TKey extends keyof IMessages>(
         key: TKey,
-        ...[args]: TranslationFunctionOptions<
+        ...input: TranslationFunctionOptions<
           NestedMessageKeys<TKey, IMessages>,
           PluralKeys<TMessages>,
           IMessages,
@@ -2139,7 +2137,7 @@ export type TranslationFunction<
       ): IMessages[TKey];
       <TKey extends keyof IMessages>(
         key: TKey,
-        ...[args]: TranslationFunctionOptions<
+        ...input: TranslationFunctionOptions<
           NestedMessageKeys<TKey, IMessages>,
           PluralKeys<TMessages>,
           IMessages,
