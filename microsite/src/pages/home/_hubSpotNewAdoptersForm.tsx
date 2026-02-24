@@ -3,6 +3,10 @@ import React, { useEffect, useState } from 'react';
 
 import hubSpotStyles from './hubSpotNewAdoptersForm.module.scss';
 
+const MIN_NAME_LENGTH = 2;
+const MAX_NAME_LENGTH = 50;
+const NAME_PATTERN = /^[a-zA-Z\s'-]+$/;
+
 export const HubSpotNewAdoptersForm = () => {
   const [isClosed, setClosed] = useState(true);
 
@@ -14,74 +18,103 @@ export const HubSpotNewAdoptersForm = () => {
     script.addEventListener('load', () => {
       // @ts-ignore
       if (window.hbspt) {
+
+        const getValidationError = (
+          value: string,
+          fieldName: string,
+          requireMinLength: boolean,
+        ): string => {
+          if (requireMinLength && value.length < MIN_NAME_LENGTH) {
+            return `${fieldName} must be at least ${MIN_NAME_LENGTH} characters`;
+          }
+          if (value.length > MAX_NAME_LENGTH) {
+            return `${fieldName} must be less than ${MAX_NAME_LENGTH} characters`;
+          }
+          if (!NAME_PATTERN.test(value)) {
+            return `${fieldName} can only contain letters, spaces, hyphens, and apostrophes`;
+          }
+          return '';
+        };
+        
+        const validateName = (
+          input: HTMLInputElement | null,
+          fieldName: string,
+          requireMinLength: boolean = true,
+        ): boolean => {
+          if (!input) return true;
+          
+          const value = input.value.trim();
+          
+          const existingError = input.parentElement?.querySelector('.hs-error-msgs.custom-validation');
+          if (existingError) {
+            existingError.remove();
+          }
+          input.classList.remove('custom-invalid');
+          
+          if (!value) return true;
+          
+          const errorMessage = getValidationError(value, fieldName, requireMinLength);
+          
+          if (errorMessage) {
+            const errorElement = document.createElement('ul');
+            errorElement.className = 'hs-error-msgs inputs-list custom-validation';
+            errorElement.setAttribute('role', 'alert');
+            const errorItem = document.createElement('li');
+            const errorLabel = document.createElement('label');
+            errorLabel.className = 'hs-error-msg';
+            errorLabel.textContent = errorMessage;
+            errorItem.appendChild(errorLabel);
+            errorElement.appendChild(errorItem);
+            input.parentElement?.appendChild(errorElement);
+            input.classList.add('custom-invalid');
+            return false;
+          }
+          
+          return true;
+        };
+        
         // @ts-ignore
         window.hbspt.forms.create({
           portalId: '21894833',
           formId: '9a5aa2af-87f3-4a44-819f-88ee243bb61e',
           target: `.${hubSpotStyles.hubSpotNewAdopterFormContent}`,
           pageId: '79735607665',
-          onFormReady: function($form) {
-            const firstNameInput = $form.querySelector('input[name="firstname"]');
-            const lastNameInput = $form.querySelector('input[name="lastname"]');
+          onFormReady: function($form: HTMLFormElement) {
+            const firstNameInput = $form.querySelector('input[name="firstname"]') as HTMLInputElement | null;
+            const lastNameInput = $form.querySelector('input[name="lastname"]') as HTMLInputElement | null;
             
-            const validateName = (input, fieldName, requireMinLength = true) => {
+            const handleBlur = (
+              input: HTMLInputElement | null,
+              fieldName: string,
+              requireMinLength: boolean,
+            ) => {
               if (!input) return;
               
-              input.addEventListener('blur', function() {
-                const value = this.value.trim();
-                const existingError = input.parentElement.querySelector('.hs-error-msgs.custom-validation');
-                if (existingError) {
-                  existingError.remove();
-                }
-                input.classList.remove('custom-invalid');
-                
-                if (!value) return;
-                
-                let errorMessage = '';
-                
-                if (requireMinLength && value.length < 2) {
-                  errorMessage = `${fieldName} must be at least 2 characters`;
-                } else if (value.length > 50) {
-                  errorMessage = `${fieldName} must be less than 50 characters`;
-                } else if (!/^[a-zA-Z\s'-]+$/.test(value)) {
-                  errorMessage = `${fieldName} can only contain letters, spaces, hyphens, and apostrophes`;
-                }
-                
-                if (errorMessage) {
-                  const errorElement = document.createElement('ul');
-                  errorElement.className = 'hs-error-msgs inputs-list custom-validation';
-                  errorElement.setAttribute('role', 'alert');
-                  const errorItem = document.createElement('li');
-                  const errorLabel = document.createElement('label');
-                  errorLabel.className = 'hs-error-msg';
-                  errorLabel.textContent = errorMessage;
-                  errorItem.appendChild(errorLabel);
-                  errorElement.appendChild(errorItem);
-                  input.parentElement.appendChild(errorElement);
-                  input.classList.add('custom-invalid');
-                }
-              });
+              const blurHandler = () => {
+                validateName(input, fieldName, requireMinLength);
+              };
+              
+              input.addEventListener('blur', blurHandler);
             };
             
-            validateName(firstNameInput, 'First name', true);
-            validateName(lastNameInput, 'Last name', false);
+            handleBlur(firstNameInput, 'First name', true);
+            handleBlur(lastNameInput, 'Last name', false);
           },
-          onFormSubmit: function($form) {
-            const firstNameInput = $form.querySelector('input[name="firstname"]');
-            const lastNameInput = $form.querySelector('input[name="lastname"]');
+          onFormSubmit: function($form: HTMLFormElement) {
+            const firstNameInput = $form.querySelector('input[name="firstname"]') as HTMLInputElement | null;
+            const lastNameInput = $form.querySelector('input[name="lastname"]') as HTMLInputElement | null;
             
             let hasErrors = false;
             
             [firstNameInput, lastNameInput].forEach(input => {
-              if (!input) return;
+              if (!input || hasErrors) return;
               
-              const value = input.value.trim();
               const isFirstName = input.name === 'firstname';
+              const fieldName = isFirstName ? 'First name' : 'Last name';
+              const requireMinLength = isFirstName;
               
-              if (value && (
-                  (isFirstName && value.length < 2) || 
-                  value.length > 50 || 
-                  !/^[a-zA-Z\s'-]+$/.test(value))) {
+              const isValid = validateName(input, fieldName, requireMinLength);
+              if (!isValid) {
                 hasErrors = true;
                 input.focus();
               }
