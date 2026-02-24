@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { AvatarOwnProps } from './types';
+import styles from './Avatar.module.css';
 
 /**
  * Component definition for Avatar
  * @public
  */
-export const AvatarDefinition = {
+export const AvatarDefinition = defineComponent<AvatarOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-AvatarRoot',
     image: 'bui-AvatarImage',
     fallback: 'bui-AvatarFallback',
   },
-  dataAttributes: {
-    size: ['small', 'medium', 'large'] as const,
+  propDefs: {
+    size: { dataAttribute: true, default: 'medium' },
+    purpose: { default: 'informative' },
+    src: {},
+    name: {},
+    children: {},
+    className: {},
+    style: {},
   },
-} as const satisfies ComponentDefinition;
+});

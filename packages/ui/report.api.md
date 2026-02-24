@@ -256,13 +256,27 @@ export const Avatar: ForwardRefExoticComponent<
 
 // @public
 export const AvatarDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-AvatarRoot';
     readonly image: 'bui-AvatarImage';
     readonly fallback: 'bui-AvatarFallback';
   };
-  readonly dataAttributes: {
-    readonly size: readonly ['small', 'medium', 'large'];
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'medium';
+    };
+    readonly purpose: {
+      readonly default: 'informative';
+    };
+    readonly src: {};
+    readonly name: {};
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
   };
 };
 

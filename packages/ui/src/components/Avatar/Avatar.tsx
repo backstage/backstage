@@ -15,24 +15,18 @@
  */
 
 import { forwardRef, useState, useEffect } from 'react';
-import clsx from 'clsx';
 import { AvatarProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { AvatarDefinition } from './definition';
-import styles from './Avatar.module.css';
 
 /** @public */
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
-  const { classNames, dataAttributes, cleanedProps } = useStyles(
+  const { ownProps, restProps, dataAttributes } = useDefinition(
     AvatarDefinition,
-    {
-      size: 'medium',
-      purpose: 'informative',
-      ...props,
-    },
+    props,
   );
 
-  const { className, src, name, purpose, ...rest } = cleanedProps;
+  const { classes, size, src, name, purpose, style } = ownProps;
 
   const [imageStatus, setImageStatus] = useState<
     'loading' | 'loaded' | 'error'
@@ -51,9 +45,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
     };
   }, [src]);
 
-  const initialsCount = ['x-small', 'small'].includes(cleanedProps.size)
-    ? 1
-    : 2;
+  const initialsCount = ['x-small', 'small'].includes(size) ? 1 : 2;
 
   const initials = name
     .split(' ')
@@ -68,21 +60,15 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
       role="img"
       aria-label={purpose === 'informative' ? name : undefined}
       aria-hidden={purpose === 'decoration' ? true : undefined}
-      className={clsx(classNames.root, styles[classNames.root], className)}
+      className={classes.root}
+      style={style}
       {...dataAttributes}
-      {...rest}
+      {...restProps}
     >
       {imageStatus === 'loaded' ? (
-        <img
-          src={src}
-          alt=""
-          className={clsx(classNames.image, styles[classNames.image])}
-        />
+        <img src={src} alt="" className={classes.image} />
       ) : (
-        <div
-          aria-hidden="true"
-          className={clsx(classNames.fallback, styles[classNames.fallback])}
-        >
+        <div aria-hidden="true" className={classes.fallback}>
           {initials}
         </div>
       )}
