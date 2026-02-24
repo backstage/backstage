@@ -69,6 +69,15 @@
     padding-inline: var(--bui-space-1);
     display: block;
 
+    &:focus-visible {
+      outline: none;
+    }
+
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: -2px;
+    }
+
     &[data-focused] .bui-MenuItemWrapper {
       background: var(--bui-bg-neutral-2);
       color: var(--bui-fg-primary);
