@@ -11,11 +11,7 @@ export const HubSpotNewAdoptersForm = () => {
   const [isClosed, setClosed] = useState(true);
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://js.hsforms.net/forms/v2.js';
-    document.body.appendChild(script);
-
-    const handleLoad = () => {
+    const initializeForm = () => {
       // @ts-ignore
       if (window.hbspt) {
 
@@ -36,6 +32,59 @@ export const HubSpotNewAdoptersForm = () => {
           return '';
         };
         
+        const clearValidationError = (input: HTMLInputElement) => {
+          const errorId = `${input.name}-validation-error`;
+          const existingError = input.parentElement?.querySelector('.hs-error-msgs.custom-validation');
+          if (existingError) {
+            existingError.remove();
+          }
+          
+          input.classList.remove('custom-invalid');
+          input.removeAttribute('aria-invalid');
+          
+          const describedBy = input.getAttribute('aria-describedby');
+          if (describedBy) {
+            const tokens = describedBy
+              .split(/\s+/)
+              .filter(token => token && token !== errorId);
+            if (tokens.length > 0) {
+              input.setAttribute('aria-describedby', tokens.join(' '));
+            } else {
+              input.removeAttribute('aria-describedby');
+            }
+          }
+        };
+        
+        const showValidationError = (
+          input: HTMLInputElement,
+          errorMessage: string,
+        ) => {
+          const errorId = `${input.name}-validation-error`;
+          const errorElement = document.createElement('ul');
+          errorElement.className = 'hs-error-msgs inputs-list custom-validation';
+          errorElement.setAttribute('role', 'alert');
+          const errorItem = document.createElement('li');
+          const errorSpan = document.createElement('span');
+          errorSpan.className = 'hs-error-msg';
+          errorSpan.id = errorId;
+          errorSpan.textContent = errorMessage;
+          errorItem.appendChild(errorSpan);
+          errorElement.appendChild(errorItem);
+          input.parentElement?.appendChild(errorElement);
+          
+          input.classList.add('custom-invalid');
+          input.setAttribute('aria-invalid', 'true');
+          
+          const describedBy = input.getAttribute('aria-describedby');
+          const tokens = describedBy
+            ? describedBy.split(/\s+/).filter(token => token)
+            : [];
+          if (!tokens.includes(errorId)) {
+            tokens.push(errorId);
+          }
+          input.setAttribute('aria-describedby', tokens.join(' '));
+        };
+        
         const validateName = (
           input: HTMLInputElement | null,
           fieldName: string,
@@ -45,30 +94,14 @@ export const HubSpotNewAdoptersForm = () => {
           
           const value = input.value.trim();
           
-          const existingError = input.parentElement?.querySelector('.hs-error-msgs.custom-validation');
-          if (existingError) {
-            existingError.remove();
-          }
-          input.classList.remove('custom-invalid');
+          clearValidationError(input);
           
-          if (!value) {
-            return !requireMinLength;
-          }
+          if (!value) return true;
           
           const errorMessage = getValidationError(value, fieldName, requireMinLength);
           
           if (errorMessage) {
-            const errorElement = document.createElement('ul');
-            errorElement.className = 'hs-error-msgs inputs-list custom-validation';
-            errorElement.setAttribute('role', 'alert');
-            const errorItem = document.createElement('li');
-            const errorLabel = document.createElement('label');
-            errorLabel.className = 'hs-error-msg';
-            errorLabel.textContent = errorMessage;
-            errorItem.appendChild(errorLabel);
-            errorElement.appendChild(errorItem);
-            input.parentElement?.appendChild(errorElement);
-            input.classList.add('custom-invalid');
+            showValidationError(input, errorMessage);
             return false;
           }
           
@@ -122,7 +155,6 @@ export const HubSpotNewAdoptersForm = () => {
               const isValid = validateName(input, fieldName, requireMinLength);
               if (!isValid) {
                 hasErrors = true;
-                // Track the first invalid field to focus on it
                 if (!firstInvalidInput) {
                   firstInvalidInput = input;
                 }
@@ -138,15 +170,32 @@ export const HubSpotNewAdoptersForm = () => {
         });
       }
     };
-
-    script.addEventListener('load', handleLoad);
-
-    return () => {
-      script.removeEventListener('load', handleLoad);
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
+    
+    const HUBSPOT_SCRIPT_ID = 'hubspot-forms-script';
+    
+    // @ts-ignore
+    if (window.hbspt) {
+      initializeForm();
+    } else {
+      let script = document.getElementById(HUBSPOT_SCRIPT_ID) as HTMLScriptElement | null;
+      
+      if (!script) {
+        script = document.createElement('script');
+        script.id = HUBSPOT_SCRIPT_ID;
+        script.src = 'https://js.hsforms.net/forms/v2.js';
+        document.body.appendChild(script);
       }
-    };
+      
+      const handleLoad = () => {
+        initializeForm();
+      };
+      
+      script.addEventListener('load', handleLoad);
+      
+      return () => {
+        script?.removeEventListener('load', handleLoad);
+      };
+    }
   }, []);
 
   return (
