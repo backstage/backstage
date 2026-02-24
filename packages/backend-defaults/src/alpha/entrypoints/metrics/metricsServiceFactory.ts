@@ -35,10 +35,13 @@ export const metricsServiceFactory = createServiceFactory({
   factory: ({ config, pluginMetadata }) => {
     const pluginId = pluginMetadata.getId();
 
-    const pluginConfig = config.getOptionalConfig(`${pluginId}.metrics`);
-    const name = pluginConfig?.getOptionalString('name') ?? pluginId;
-    const version = pluginConfig?.getOptionalString('version');
-    const schemaUrl = pluginConfig?.getOptionalString('schemaUrl');
+    const meterConfig = config.getOptionalConfig(
+      `backend.metrics.plugin.${pluginId}.meter`,
+    );
+    const scopeName = `backstage-plugin-${pluginId}`;
+    const name = meterConfig?.getOptionalString('name') ?? scopeName;
+    const version = meterConfig?.getOptionalString('version');
+    const schemaUrl = meterConfig?.getOptionalString('schemaUrl');
 
     return DefaultMetricsService.create({ name, version, schemaUrl });
   },

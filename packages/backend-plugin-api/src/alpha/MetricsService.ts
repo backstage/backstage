@@ -73,7 +73,7 @@ export interface MetricOptions {
  *
  * @alpha
  */
-export interface Counter<
+export interface MetricsServiceCounter<
   TAttributes extends MetricAttributes = MetricAttributes,
 > {
   add(value: number, attributes?: TAttributes): void;
@@ -84,7 +84,7 @@ export interface Counter<
  *
  * @alpha
  */
-export interface UpDownCounter<
+export interface MetricsServiceUpDownCounter<
   TAttributes extends MetricAttributes = MetricAttributes,
 > {
   add(value: number, attributes?: TAttributes): void;
@@ -95,7 +95,7 @@ export interface UpDownCounter<
  *
  * @alpha
  */
-export interface Histogram<
+export interface MetricsServiceHistogram<
   TAttributes extends MetricAttributes = MetricAttributes,
 > {
   record(value: number, attributes?: TAttributes): void;
@@ -106,7 +106,7 @@ export interface Histogram<
  *
  * @alpha
  */
-export interface Gauge<
+export interface MetricsServiceGauge<
   TAttributes extends MetricAttributes = MetricAttributes,
 > {
   record(value: number, attributes?: TAttributes): void;
@@ -117,7 +117,7 @@ export interface Gauge<
  *
  * @alpha
  */
-export interface ObservableResult<
+export interface MetricsServiceObservableResult<
   TAttributes extends MetricAttributes = MetricAttributes,
 > {
   observe(value: number, attributes?: TAttributes): void;
@@ -129,20 +129,22 @@ export interface ObservableResult<
  *
  * @alpha
  */
-export type ObservableCallback<
+export type MetricsServiceObservableCallback<
   TAttributes extends MetricAttributes = MetricAttributes,
-> = (observableResult: ObservableResult<TAttributes>) => void | Promise<void>;
+> = (
+  observableResult: MetricsServiceObservableResult<TAttributes>,
+) => void | Promise<void>;
 
 /**
  * An observable metric instrument that reports values via callbacks.
  *
  * @alpha
  */
-export interface Observable<
+export interface MetricsServiceObservable<
   TAttributes extends MetricAttributes = MetricAttributes,
 > {
-  addCallback(callback: ObservableCallback<TAttributes>): void;
-  removeCallback(callback: ObservableCallback<TAttributes>): void;
+  addCallback(callback: MetricsServiceObservableCallback<TAttributes>): void;
+  removeCallback(callback: MetricsServiceObservableCallback<TAttributes>): void;
 }
 
 /**
@@ -150,9 +152,9 @@ export interface Observable<
  *
  * @alpha
  */
-export type ObservableCounter<
+export type MetricsServiceObservableCounter<
   TAttributes extends MetricAttributes = MetricAttributes,
-> = Observable<TAttributes>;
+> = MetricsServiceObservable<TAttributes>;
 
 /**
  * An observable counter metric that reports sums that can go up or down
@@ -160,18 +162,18 @@ export type ObservableCounter<
  *
  * @alpha
  */
-export type ObservableUpDownCounter<
+export type MetricsServiceObservableUpDownCounter<
   TAttributes extends MetricAttributes = MetricAttributes,
-> = Observable<TAttributes>;
+> = MetricsServiceObservable<TAttributes>;
 
 /**
  * An observable gauge metric that reports instantaneous values via callbacks.
  *
  * @alpha
  */
-export type ObservableGauge<
+export type MetricsServiceObservableGauge<
   TAttributes extends MetricAttributes = MetricAttributes,
-> = Observable<TAttributes>;
+> = MetricsServiceObservable<TAttributes>;
 
 /**
  * A service that provides a facility for emitting metrics.
@@ -189,7 +191,7 @@ export interface MetricsService {
   createCounter<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
-  ): Counter<TAttributes>;
+  ): MetricsServiceCounter<TAttributes>;
 
   /**
    * Creates a new up-down counter metric.
@@ -201,7 +203,7 @@ export interface MetricsService {
   createUpDownCounter<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
-  ): UpDownCounter<TAttributes>;
+  ): MetricsServiceUpDownCounter<TAttributes>;
 
   /**
    * Creates a new histogram metric.
@@ -213,7 +215,7 @@ export interface MetricsService {
   createHistogram<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
-  ): Histogram<TAttributes>;
+  ): MetricsServiceHistogram<TAttributes>;
 
   /**
    * Creates a new gauge metric.
@@ -225,7 +227,7 @@ export interface MetricsService {
   createGauge<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
-  ): Gauge<TAttributes>;
+  ): MetricsServiceGauge<TAttributes>;
 
   /**
    * Creates a new observable counter metric.
@@ -239,7 +241,7 @@ export interface MetricsService {
   >(
     name: string,
     opts?: MetricOptions,
-  ): ObservableCounter<TAttributes>;
+  ): MetricsServiceObservableCounter<TAttributes>;
 
   /**
    * Creates a new observable up-down counter metric.
@@ -253,7 +255,7 @@ export interface MetricsService {
   >(
     name: string,
     opts?: MetricOptions,
-  ): ObservableUpDownCounter<TAttributes>;
+  ): MetricsServiceObservableUpDownCounter<TAttributes>;
 
   /**
    * Creates a new observable gauge metric.
@@ -267,5 +269,5 @@ export interface MetricsService {
   >(
     name: string,
     opts?: MetricOptions,
-  ): ObservableGauge<TAttributes>;
+  ): MetricsServiceObservableGauge<TAttributes>;
 }

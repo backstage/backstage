@@ -43,7 +43,6 @@ import {
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
-import { metrics } from '@opentelemetry/api';
 import { merge } from 'lodash';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
@@ -309,9 +308,7 @@ export const catalogPlugin = createBackendPlugin({
           actionsRegistry,
         });
 
-        // Track SCM event message counts as a metric
-        const meter = metrics.getMeter('default');
-        const scmEventsMessagesCounter = meter.createCounter<{
+        const scmEventsMessagesCounter = metrics.createCounter<{
           eventType: string;
         }>('catalog.events.scm.messages', {
           description:

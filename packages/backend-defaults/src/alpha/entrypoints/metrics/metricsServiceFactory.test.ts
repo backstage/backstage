@@ -18,30 +18,50 @@ import {
   ServiceFactoryTester,
 } from '@backstage/backend-test-utils';
 import { metricsServiceFactory } from './metricsServiceFactory';
+import { DefaultMetricsService } from './DefaultMetricsService';
 
 describe('metricsServiceFactory', () => {
+  let createSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    createSpy = jest.spyOn(DefaultMetricsService, 'create');
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   const defaultServices = [
     mockServices.rootConfig.factory(),
     metricsServiceFactory,
   ];
 
-  it('should use plugin id as meter name when no config is set', async () => {
-    const subject = await ServiceFactoryTester.from(metricsServiceFactory, {
+  it('should use backstage-plugin-{pluginId} as meter name when no config is set', async () => {
+    await ServiceFactoryTester.from(metricsServiceFactory, {
       dependencies: defaultServices,
     }).getSubject('my-plugin');
 
-    expect(subject).toBeDefined();
-    expect(subject.createCounter('test')).toBeDefined();
+    expect(createSpy).toHaveBeenCalledWith({
+      name: 'backstage-plugin-my-plugin',
+      version: undefined,
+      schemaUrl: undefined,
+    });
   });
 
   it('should use custom name from config', async () => {
-    const subject = await ServiceFactoryTester.from(metricsServiceFactory, {
+    await ServiceFactoryTester.from(metricsServiceFactory, {
       dependencies: [
         mockServices.rootConfig.factory({
           data: {
-            'my-plugin': {
+            backend: {
               metrics: {
-                name: 'custom-metrics-name',
+                plugin: {
+                  'my-plugin': {
+                    meter: {
+                      name: 'custom-metrics-name',
+                    },
+                  },
+                },
               },
             },
           },
@@ -50,19 +70,29 @@ describe('metricsServiceFactory', () => {
       ],
     }).getSubject('my-plugin');
 
-    expect(subject).toBeDefined();
+    expect(createSpy).toHaveBeenCalledWith({
+      name: 'custom-metrics-name',
+      version: undefined,
+      schemaUrl: undefined,
+    });
   });
 
   it('should accept version and schemaUrl from config', async () => {
-    const subject = await ServiceFactoryTester.from(metricsServiceFactory, {
+    await ServiceFactoryTester.from(metricsServiceFactory, {
       dependencies: [
         mockServices.rootConfig.factory({
           data: {
-            'my-plugin': {
+            backend: {
               metrics: {
-                name: 'my-plugin-metrics',
-                version: '1.2.3',
-                schemaUrl: 'https://example.com/schema',
+                plugin: {
+                  'my-plugin': {
+                    meter: {
+                      name: 'my-plugin-metrics',
+                      version: '1.2.3',
+                      schemaUrl: 'https://example.com/schema',
+                    },
+                  },
+                },
               },
             },
           },
@@ -71,10 +101,11 @@ describe('metricsServiceFactory', () => {
       ],
     }).getSubject('my-plugin');
 
-    expect(subject).toBeDefined();
-    expect(typeof subject.createCounter).toBe('function');
-    expect(typeof subject.createHistogram).toBe('function');
-    expect(typeof subject.createObservableGauge).toBe('function');
+    expect(createSpy).toHaveBeenCalledWith({
+      name: 'my-plugin-metrics',
+      version: '1.2.3',
+      schemaUrl: 'https://example.com/schema',
+    });
   });
 
   it('should implement the full MetricsService interface', async () => {
@@ -82,14 +113,18 @@ describe('metricsServiceFactory', () => {
       dependencies: defaultServices,
     }).getSubject('test-plugin');
 
-    expect(subject.createCounter('counter')).toBeDefined();
-    expect(subject.createUpDownCounter('updown')).toBeDefined();
-    expect(subject.createHistogram('histogram')).toBeDefined();
-    expect(subject.createGauge('gauge')).toBeDefined();
-    expect(subject.createObservableCounter('observable_counter')).toBeDefined();
-    expect(
-      subject.createObservableUpDownCounter('observable_updown'),
-    ).toBeDefined();
-    expect(subject.createObservableGauge('observable_gauge')).toBeDefined();
+    expect(createSpy).toHaveBeenCalledWith({
+      name: 'backstage-plugin-test-plugin',
+      version: undefined,
+      schemaUrl: undefined,
+    });
+
+    expect(subject.createCounter).toBeDefined();
+    expect(subject.createUpDownCounter).toBeDefined();
+    expect(subject.createHistogram).toBeDefined();
+    expect(subject.createGauge).toBeDefined();
+    expect(subject.createObservableCounter).toBeDefined();
+    expect(subject.createObservableUpDownCounter).toBeDefined();
+    expect(subject.createObservableGauge).toBeDefined();
   });
 });

@@ -104,30 +104,6 @@ export const actionsServiceRef: ServiceRef<
 >;
 
 // @alpha
-export interface Counter<
-  TAttributes extends MetricAttributes = MetricAttributes,
-> {
-  // (undocumented)
-  add(value: number, attributes?: TAttributes): void;
-}
-
-// @alpha
-export interface Gauge<
-  TAttributes extends MetricAttributes = MetricAttributes,
-> {
-  // (undocumented)
-  record(value: number, attributes?: TAttributes): void;
-}
-
-// @alpha
-export interface Histogram<
-  TAttributes extends MetricAttributes = MetricAttributes,
-> {
-  // (undocumented)
-  record(value: number, attributes?: TAttributes): void;
-}
-
-// @alpha
 export interface MetricAdvice {
   explicitBucketBoundaries?: number[];
 }
@@ -159,38 +135,102 @@ export interface MetricsService {
   createCounter<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
-  ): Counter<TAttributes>;
+  ): MetricsServiceCounter<TAttributes>;
   createGauge<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
-  ): Gauge<TAttributes>;
+  ): MetricsServiceGauge<TAttributes>;
   createHistogram<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
-  ): Histogram<TAttributes>;
+  ): MetricsServiceHistogram<TAttributes>;
   createObservableCounter<
     TAttributes extends MetricAttributes = MetricAttributes,
   >(
     name: string,
     opts?: MetricOptions,
-  ): ObservableCounter<TAttributes>;
+  ): MetricsServiceObservableCounter<TAttributes>;
   createObservableGauge<
     TAttributes extends MetricAttributes = MetricAttributes,
   >(
     name: string,
     opts?: MetricOptions,
-  ): ObservableGauge<TAttributes>;
+  ): MetricsServiceObservableGauge<TAttributes>;
   createObservableUpDownCounter<
     TAttributes extends MetricAttributes = MetricAttributes,
   >(
     name: string,
     opts?: MetricOptions,
-  ): ObservableUpDownCounter<TAttributes>;
+  ): MetricsServiceObservableUpDownCounter<TAttributes>;
   createUpDownCounter<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
-  ): UpDownCounter<TAttributes>;
+  ): MetricsServiceUpDownCounter<TAttributes>;
 }
+
+// @alpha
+export interface MetricsServiceCounter<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  add(value: number, attributes?: TAttributes): void;
+}
+
+// @alpha
+export interface MetricsServiceGauge<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  record(value: number, attributes?: TAttributes): void;
+}
+
+// @alpha
+export interface MetricsServiceHistogram<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  record(value: number, attributes?: TAttributes): void;
+}
+
+// @alpha
+export interface MetricsServiceObservable<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  addCallback(callback: MetricsServiceObservableCallback<TAttributes>): void;
+  // (undocumented)
+  removeCallback(callback: MetricsServiceObservableCallback<TAttributes>): void;
+}
+
+// @alpha
+export type MetricsServiceObservableCallback<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> = (
+  observableResult: MetricsServiceObservableResult<TAttributes>,
+) => void | Promise<void>;
+
+// @alpha
+export type MetricsServiceObservableCounter<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> = MetricsServiceObservable<TAttributes>;
+
+// @alpha
+export type MetricsServiceObservableGauge<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> = MetricsServiceObservable<TAttributes>;
+
+// @alpha
+export interface MetricsServiceObservableResult<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  observe(value: number, attributes?: TAttributes): void;
+}
+
+// @alpha
+export type MetricsServiceObservableUpDownCounter<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> = MetricsServiceObservable<TAttributes>;
 
 // @alpha
 export const metricsServiceRef: ServiceRef<
@@ -200,42 +240,12 @@ export const metricsServiceRef: ServiceRef<
 >;
 
 // @alpha
-export interface Observable<
+export interface MetricsServiceUpDownCounter<
   TAttributes extends MetricAttributes = MetricAttributes,
 > {
   // (undocumented)
-  addCallback(callback: ObservableCallback<TAttributes>): void;
-  // (undocumented)
-  removeCallback(callback: ObservableCallback<TAttributes>): void;
+  add(value: number, attributes?: TAttributes): void;
 }
-
-// @alpha
-export type ObservableCallback<
-  TAttributes extends MetricAttributes = MetricAttributes,
-> = (observableResult: ObservableResult<TAttributes>) => void | Promise<void>;
-
-// @alpha
-export type ObservableCounter<
-  TAttributes extends MetricAttributes = MetricAttributes,
-> = Observable<TAttributes>;
-
-// @alpha
-export type ObservableGauge<
-  TAttributes extends MetricAttributes = MetricAttributes,
-> = Observable<TAttributes>;
-
-// @alpha
-export interface ObservableResult<
-  TAttributes extends MetricAttributes = MetricAttributes,
-> {
-  // (undocumented)
-  observe(value: number, attributes?: TAttributes): void;
-}
-
-// @alpha
-export type ObservableUpDownCounter<
-  TAttributes extends MetricAttributes = MetricAttributes,
-> = Observable<TAttributes>;
 
 // @public (undocumented)
 export interface RootSystemMetadataService {
@@ -257,14 +267,6 @@ export const rootSystemMetadataServiceRef: ServiceRef<
   'root',
   'singleton'
 >;
-
-// @alpha
-export interface UpDownCounter<
-  TAttributes extends MetricAttributes = MetricAttributes,
-> {
-  // (undocumented)
-  add(value: number, attributes?: TAttributes): void;
-}
 
 // (No @packageDocumentation comment for this package)
 ```
