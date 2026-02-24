@@ -1904,16 +1904,29 @@ export const Switch: ForwardRefExoticComponent<
 
 // @public
 export const SwitchDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Switch';
     readonly indicator: 'bui-SwitchIndicator';
   };
+  readonly propDefs: {
+    readonly label: {};
+    readonly className: {};
+  };
 };
 
 // @public (undocumented)
-export interface SwitchProps extends SwitchProps_2 {
+export type SwitchOwnProps = {
   label?: string;
-}
+  className?: string;
+};
+
+// @public (undocumented)
+export interface SwitchProps
+  extends Omit<SwitchProps_2, 'className'>,
+    SwitchOwnProps {}
 
 // @public
 export const Tab: (props: TabProps) => JSX_2.Element;
