@@ -18,6 +18,7 @@ import fs from 'fs-extra';
 import { OptionValues } from 'commander';
 import { paths } from '../../../../lib/paths';
 import { ESLint } from 'eslint';
+import { lintConfigSchema } from '../../lintConfigSchema';
 
 export default async (directories: string[], opts: OptionValues) => {
   const eslint = new ESLint({
@@ -33,61 +34,33 @@ export default async (directories: string[], opts: OptionValues) => {
   const maxWarnings = opts.maxWarnings ?? -1;
   const ignoreWarnings = +maxWarnings === -1;
 
-  let schemaFailed = false;
-  if (directories.length === 0 || directories.includes('.')) {
-    const pkgJsonPath = paths.resolveTarget('package.json');
-    if (await fs.pathExists(pkgJsonPath)) {
-      const pkgJson = await fs.readJson(pkgJsonPath);
-      const hasConfigDts = await fs.pathExists(
-        paths.resolveTarget('config.d.ts'),
-      );
-      const configSchemaPath =
-        typeof pkgJson.configSchema === 'string'
-          ? pkgJson.configSchema
-          : undefined;
-      const configSchemaDefined = pkgJson.configSchema !== undefined;
-      const filesArray = Array.isArray(pkgJson.files) ? pkgJson.files : [];
-
-      if (hasConfigDts) {
-        if (!configSchemaDefined) {
-          console.error(
-            'Error: config.d.ts exists but is not referenced in package.json "configSchema".',
-          );
-          schemaFailed = true;
-        }
-        if (!filesArray.includes('config.d.ts')) {
-          console.error(
-            'Error: config.d.ts exists but is not included in package.json "files" array.',
-          );
-          schemaFailed = true;
-        }
-      }
-
-      if (configSchemaPath) {
-        const schemaFileExists = await fs.pathExists(
-          paths.resolveTarget(configSchemaPath),
-        );
-        if (!schemaFileExists) {
-          console.error(
-            `Error: "configSchema" references "${configSchemaPath}" but the file does not exist.`,
-          );
-          schemaFailed = true;
-        } else if (!filesArray.includes(configSchemaPath)) {
-          console.error(
-            `Error: "configSchema" file "${configSchemaPath}" is not included in package.json "files" array.`,
-          );
-          schemaFailed = true;
-        }
-      }
-    }
+  const schemaErrors = await lintConfigSchema(paths.targetDir);
+  if (schemaErrors.length > 0) {
+    results.push({
+      filePath: paths.resolveTarget('package.json'),
+      messages: schemaErrors.map(msg => ({
+        ruleId: 'config-schema',
+        severity: 2,
+        message: msg,
+        line: 1,
+        column: 1,
+        nodeType: 'Program',
+      })),
+      errorCount: schemaErrors.length,
+      warningCount: 0,
+      fatalErrorCount: schemaErrors.length,
+      fixableErrorCount: 0,
+      fixableWarningCount: 0,
+      usedDeprecatedRules: [],
+      suppressedMessages: [],
+    });
   }
 
   const failed =
-    schemaFailed ||
     results.some(r => r.errorCount > 0) ||
     (!ignoreWarnings &&
       results.reduce((current, next) => current + next.warningCount, 0) >
-        maxWarnings);
+      maxWarnings);
 
   if (opts.fix) {
     await ESLint.outputFixes(results);

@@ -43,9 +43,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   const cache = new SuccessCache('lint', opts.successCacheDir);
   const cacheContext = opts.successCache
     ? {
-        entries: await cache.read(),
-        lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
-      }
+      entries: await cache.read(),
+      lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
+    }
     : undefined;
 
   if (opts.since) {
@@ -129,6 +129,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       const { readFile } =
         require('node:fs/promises') as typeof import('fs/promises');
       const workerPath = require('node:path') as typeof import('path');
+      const {
+        lintConfigSchema,
+      } = require('../../lintConfigSchema') as typeof import('../../lintConfigSchema');
 
       return async ({
         fullDir,
@@ -196,6 +199,28 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         const time = ((Date.now() - start) / 1000).toFixed(2);
         console.log(`Checked ${count} files in ${relativeDir} ${time}s`);
 
+        const schemaErrors = await lintConfigSchema(fullDir);
+        if (schemaErrors.length > 0) {
+          results.push({
+            filePath: workerPath.resolve(fullDir, 'package.json'),
+            messages: schemaErrors.map(msg => ({
+              ruleId: 'config-schema',
+              severity: 2,
+              message: msg,
+              line: 1,
+              column: 1,
+              nodeType: 'Program',
+            })),
+            errorCount: schemaErrors.length,
+            warningCount: 0,
+            fatalErrorCount: schemaErrors.length,
+            fixableErrorCount: 0,
+            fixableWarningCount: 0,
+            usedDeprecatedRules: [],
+            suppressedMessages: [],
+          });
+        }
+
         if (fix) {
           await ESLint.outputFixes(results);
         }
@@ -207,7 +232,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           results.some(r => r.errorCount > 0) ||
           (!ignoreWarnings &&
             results.reduce((current, next) => current + next.warningCount, 0) >
-              maxWarnings);
+            maxWarnings);
 
         return {
           relativeDir,
