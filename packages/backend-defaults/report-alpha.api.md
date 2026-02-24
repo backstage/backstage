@@ -23,7 +23,7 @@ export const actionsServiceFactory: ServiceFactory<
   'singleton'
 >;
 
-// @alpha (undocumented)
+// @alpha
 export const metricsServiceFactory: ServiceFactory<
   MetricsService,
   'plugin',

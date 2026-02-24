@@ -15,16 +15,31 @@
  */
 
 import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { createServiceFactory } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import { DefaultMetricsService } from './DefaultMetricsService';
 
 /**
+ * Service factory for collecting plugin-scoped metrics.
+ *
  * @alpha
  */
 export const metricsServiceFactory = createServiceFactory({
   service: metricsServiceRef,
-  deps: {},
-  factory: () => {
-    return DefaultMetricsService.create();
+  deps: {
+    config: coreServices.rootConfig,
+    pluginMetadata: coreServices.pluginMetadata,
+  },
+  factory: ({ config, pluginMetadata }) => {
+    const pluginId = pluginMetadata.getId();
+
+    const pluginConfig = config.getOptionalConfig(`${pluginId}.metrics`);
+    const name = pluginConfig?.getOptionalString('name') ?? pluginId;
+    const version = pluginConfig?.getOptionalString('version');
+    const schemaUrl = pluginConfig?.getOptionalString('schemaUrl');
+
+    return DefaultMetricsService.create({ name, version, schemaUrl });
   },
 });

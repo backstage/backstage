@@ -68,9 +68,6 @@
     "luxon": "^3.0.0",
     "zod": "^3.25.76"
   },
-  "peerDependencies": {
-    "@opentelemetry/api": "^1.9.0"
-  },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"

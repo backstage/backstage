@@ -14,20 +14,30 @@
  * limitations under the License.
  */
 
+import { Meter, metrics } from '@opentelemetry/api';
 import {
-  Attributes,
-  Counter,
-  Gauge,
-  Histogram,
-  Meter,
+  MetricsService,
+  MetricAttributes,
   MetricOptions,
-  metrics,
+  Counter,
+  UpDownCounter,
+  Histogram,
+  Gauge,
   ObservableCounter,
   ObservableGauge,
   ObservableUpDownCounter,
-  UpDownCounter,
-} from '@opentelemetry/api';
-import { MetricsService } from '@backstage/backend-plugin-api/alpha';
+} from '@backstage/backend-plugin-api/alpha';
+
+/**
+ * Options for creating a {@link DefaultMetricsService}.
+ *
+ * @alpha
+ */
+export interface DefaultMetricsServiceOptions {
+  name: string;
+  version?: string;
+  schemaUrl?: string;
+}
 
 /**
  * Default implementation of the {@link MetricsService} interface.
@@ -39,65 +49,65 @@ import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 export class DefaultMetricsService implements MetricsService {
   private readonly meter: Meter;
 
-  private constructor() {
-    this.meter = metrics.getMeter('default');
+  private constructor(opts: DefaultMetricsServiceOptions) {
+    this.meter = metrics.getMeter(opts.name, opts.version, {
+      schemaUrl: opts.schemaUrl,
+    });
   }
 
   /**
    * Creates a new {@link MetricsService} instance.
    *
+   * @param opts - Options for configuring the meter scope
    * @returns A new MetricsService instance
    */
-  static create(): MetricsService {
-    return new DefaultMetricsService();
+  static create(opts: DefaultMetricsServiceOptions): MetricsService {
+    return new DefaultMetricsService(opts);
   }
 
-  createCounter<TAttributes extends Attributes = Attributes>(
+  createCounter<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
   ): Counter<TAttributes> {
-    return this.meter.createCounter<TAttributes>(name, opts);
+    return this.meter.createCounter(name, opts);
   }
 
-  createUpDownCounter<TAttributes extends Attributes = Attributes>(
+  createUpDownCounter<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
   ): UpDownCounter<TAttributes> {
-    return this.meter.createUpDownCounter<TAttributes>(name, opts);
+    return this.meter.createUpDownCounter(name, opts);
   }
 
-  createHistogram<TAttributes extends Attributes = Attributes>(
+  createHistogram<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
   ): Histogram<TAttributes> {
-    return this.meter.createHistogram<TAttributes>(name, opts);
+    return this.meter.createHistogram(name, opts);
   }
 
-  createGauge<TAttributes extends Attributes = Attributes>(
+  createGauge<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
   ): Gauge<TAttributes> {
-    return this.meter.createGauge<TAttributes>(name, opts);
+    return this.meter.createGauge(name, opts);
   }
 
-  createObservableCounter<TAttributes extends Attributes = Attributes>(
-    name: string,
-    opts?: MetricOptions,
-  ): ObservableCounter<TAttributes> {
-    return this.meter.createObservableCounter<TAttributes>(name, opts);
+  createObservableCounter<
+    TAttributes extends MetricAttributes = MetricAttributes,
+  >(name: string, opts?: MetricOptions): ObservableCounter<TAttributes> {
+    return this.meter.createObservableCounter(name, opts);
   }
 
-  createObservableUpDownCounter<TAttributes extends Attributes = Attributes>(
-    name: string,
-    opts?: MetricOptions,
-  ): ObservableUpDownCounter<TAttributes> {
-    return this.meter.createObservableUpDownCounter<TAttributes>(name, opts);
+  createObservableUpDownCounter<
+    TAttributes extends MetricAttributes = MetricAttributes,
+  >(name: string, opts?: MetricOptions): ObservableUpDownCounter<TAttributes> {
+    return this.meter.createObservableUpDownCounter(name, opts);
   }
 
-  createObservableGauge<TAttributes extends Attributes = Attributes>(
-    name: string,
-    opts?: MetricOptions,
-  ): ObservableGauge<TAttributes> {
-    return this.meter.createObservableGauge<TAttributes>(name, opts);
+  createObservableGauge<
+    TAttributes extends MetricAttributes = MetricAttributes,
+  >(name: string, opts?: MetricOptions): ObservableGauge<TAttributes> {
+    return this.meter.createObservableGauge(name, opts);
   }
 }

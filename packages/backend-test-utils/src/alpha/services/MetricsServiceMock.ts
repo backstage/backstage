@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { simpleMock } from './simpleMock';
+import { createServiceMock } from './alphaCreateServiceMock';
 import {
   MetricsService,
   metricsServiceRef,
@@ -27,30 +27,33 @@ import { metricsServiceFactory } from '@backstage/backend-defaults/alpha';
 export namespace metricsServiceMock {
   export const factory = () => metricsServiceFactory;
 
-  export const mock = simpleMock<MetricsService>(metricsServiceRef, () => ({
-    createCounter: jest.fn().mockImplementation(() => ({
-      add: jest.fn(),
-    })),
-    createUpDownCounter: jest.fn().mockImplementation(() => ({
-      add: jest.fn(),
-    })),
-    createHistogram: jest.fn().mockImplementation(() => ({
-      record: jest.fn(),
-    })),
-    createGauge: jest.fn().mockImplementation(() => ({
-      record: jest.fn(),
-    })),
-    createObservableCounter: jest.fn().mockImplementation(() => ({
-      addCallback: jest.fn(),
-      removeCallback: jest.fn(),
-    })),
-    createObservableUpDownCounter: jest.fn().mockImplementation(() => ({
-      addCallback: jest.fn(),
-      removeCallback: jest.fn(),
-    })),
-    createObservableGauge: jest.fn().mockImplementation(() => ({
-      addCallback: jest.fn(),
-      removeCallback: jest.fn(),
-    })),
-  }));
+  export const mock = createServiceMock<MetricsService>(
+    metricsServiceRef,
+    () => ({
+      createCounter: jest.fn().mockImplementation(() => ({
+        add: jest.fn(),
+      })),
+      createUpDownCounter: jest.fn().mockImplementation(() => ({
+        add: jest.fn(),
+      })),
+      createHistogram: jest.fn().mockImplementation(() => ({
+        record: jest.fn(),
+      })),
+      createGauge: jest.fn().mockImplementation(() => ({
+        record: jest.fn(),
+      })),
+      createObservableCounter: jest.fn().mockImplementation(() => ({
+        addCallback: jest.fn(),
+        removeCallback: jest.fn(),
+      })),
+      createObservableUpDownCounter: jest.fn().mockImplementation(() => ({
+        addCallback: jest.fn(),
+        removeCallback: jest.fn(),
+      })),
+      createObservableGauge: jest.fn().mockImplementation(() => ({
+        addCallback: jest.fn(),
+        removeCallback: jest.fn(),
+      })),
+    }),
+  );
 }
