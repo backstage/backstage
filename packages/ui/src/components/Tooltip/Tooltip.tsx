@@ -22,11 +22,9 @@ import {
   TooltipTrigger as AriaTooltipTrigger,
   TooltipTriggerComponentProps,
 } from 'react-aria-components';
-import clsx from 'clsx';
-import { TooltipProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import type { TooltipProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
 import { TooltipDefinition } from './definition';
-import styles from './Tooltip.module.css';
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
 
@@ -40,23 +38,13 @@ export const TooltipTrigger = (props: TooltipTriggerComponentProps) => {
 /** @public */
 export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles(TooltipDefinition, props);
-    const { className, children, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(TooltipDefinition, props);
+    const { classes, children } = ownProps;
     const svgPathId = useId();
 
     return (
-      <AriaTooltip
-        className={clsx(
-          classNames.tooltip,
-          styles[classNames.tooltip],
-          className,
-        )}
-        {...rest}
-        ref={ref}
-      >
-        <OverlayArrow
-          className={clsx(classNames.arrow, styles[classNames.arrow])}
-        >
+      <AriaTooltip className={classes.tooltip} {...restProps} ref={ref}>
+        <OverlayArrow className={classes.arrow}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <defs>
               <path
@@ -73,10 +61,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
           </svg>
         </OverlayArrow>
         <BgReset>
-          <Box
-            bg="neutral"
-            className={clsx(classNames.content, styles[classNames.content])}
-          >
+          <Box bg="neutral-1" className={classes.content}>
             {children}
           </Box>
         </BgReset>

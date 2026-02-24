@@ -56,7 +56,7 @@ import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import type { ToggleButtonGroupProps as ToggleButtonGroupProps_2 } from 'react-aria-components';
 import type { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-components';
-import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
+import type { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
 
 // @public (undocumented)
@@ -2311,18 +2311,30 @@ export const Tooltip: ForwardRefExoticComponent<
 
 // @public
 export const TooltipDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly tooltip: 'bui-Tooltip';
     readonly content: 'bui-TooltipContent';
     readonly arrow: 'bui-TooltipArrow';
   };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
 };
 
 // @public (undocumented)
-export interface TooltipProps extends Omit<TooltipProps_2, 'children'> {
-  // (undocumented)
+export type TooltipOwnProps = {
   children: React.ReactNode;
-}
+  className?: string;
+};
+
+// @public (undocumented)
+export interface TooltipProps
+  extends Omit<TooltipProps_2, 'children' | 'className'>,
+    TooltipOwnProps {}
 
 // @public (undocumented)
 export const TooltipTrigger: (
