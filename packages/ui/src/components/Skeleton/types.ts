@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 
 /** @public */
-export interface SkeletonProps extends ComponentProps<'div'> {
+export type SkeletonOwnProps = {
   width?: number | string;
   height?: number | string;
   rounded?: boolean;
-}
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+/** @public */
+export interface SkeletonProps
+  extends Omit<ComponentProps<'div'>, 'children' | 'className' | 'style'>,
+    SkeletonOwnProps {}

@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { SkeletonOwnProps } from './types';
+import styles from './Skeleton.module.css';
 
 /**
  * Component definition for Skeleton
  * @public
  */
-export const SkeletonDefinition = {
+export const SkeletonDefinition = defineComponent<SkeletonOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Skeleton',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    width: { default: 80 },
+    height: { default: 24 },
+    rounded: { dataAttribute: true, default: false },
+    children: {},
+    className: {},
+    style: {},
+  },
+});
