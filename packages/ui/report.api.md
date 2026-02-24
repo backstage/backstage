@@ -9,7 +9,7 @@ import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import type { ColumnSize } from '@react-types/table';
 import type { ColumnStaticSize } from '@react-types/table';
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { CSSProperties } from 'react';
 import { DetailedHTMLProps } from 'react';
@@ -2472,14 +2472,24 @@ export const VisuallyHidden: (props: VisuallyHiddenProps) => JSX_2.Element;
 
 // @public
 export const VisuallyHiddenDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-VisuallyHidden';
   };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type VisuallyHiddenOwnProps = {
+  className?: string;
 };
 
 // @public
-export interface VisuallyHiddenProps extends ComponentProps<'div'> {
-  // (undocumented)
-  children?: React.ReactNode;
-}
+export interface VisuallyHiddenProps
+  extends Omit<ComponentProps<'div'>, 'className'>,
+    VisuallyHiddenOwnProps {}
 ```
