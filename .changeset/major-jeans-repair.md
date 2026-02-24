@@ -2,6 +2,6 @@
 '@backstage/ui': patch
 ---
 
-Migrated Avatar, Checkbox, Accordion, and other components from `useStyles` to `useDefinition` hook. Exported `AvatarOwnProps` and restructured `AvatarProps` to extend it, consistent with the pattern used by other migrated components.
+Migrated Avatar, Checkbox, Container, FieldError, FieldLabel, Link, and Skeleton components from `useStyles` to `useDefinition` hook. Exported `OwnProps` types for each migrated component. Fixed Link variant default from `'body'` to `'body-medium'` to match actual CSS selectors.
 
-**Affected components:** Avatar, Checkbox, Accordion
+**Affected components:** Avatar, Checkbox, Container, FieldError, FieldLabel, Link, Skeleton

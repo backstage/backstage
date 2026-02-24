@@ -855,18 +855,37 @@ export type ContainerBg =
 
 // @public
 export const ContainerDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Container';
   };
-  readonly utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'];
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
+  };
+  readonly utilityProps: readonly [
+    'my',
+    'mt',
+    'mb',
+    'py',
+    'pt',
+    'pb',
+    'display',
+  ];
 };
 
 // @public (undocumented)
-export interface ContainerProps {
-  // (undocumented)
+export type ContainerOwnProps = {
   children?: React.ReactNode;
-  // (undocumented)
   className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export interface ContainerProps extends ContainerOwnProps {
   // (undocumented)
   mb?: SpaceProps['mb'];
   // (undocumented)
@@ -879,8 +898,6 @@ export interface ContainerProps {
   pt?: SpaceProps['pt'];
   // (undocumented)
   py?: SpaceProps['py'];
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public (undocumented)
@@ -998,23 +1015,37 @@ export const FieldLabel: ForwardRefExoticComponent<
 
 // @public
 export const FieldLabelDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-FieldLabelWrapper';
     readonly label: 'bui-FieldLabel';
     readonly secondaryLabel: 'bui-FieldSecondaryLabel';
     readonly description: 'bui-FieldDescription';
   };
+  readonly propDefs: {
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly htmlFor: {};
+    readonly id: {};
+    readonly className: {};
+  };
 };
 
 // @public (undocumented)
-export interface FieldLabelProps
-  extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
+export type FieldLabelOwnProps = {
+  label?: string | null;
+  secondaryLabel?: string | null;
   description?: string | null;
   htmlFor?: string;
   id?: string;
-  label?: string | null;
-  secondaryLabel?: string | null;
-}
+  className?: string;
+};
+
+// @public (undocumented)
+export interface FieldLabelProps extends FieldLabelOwnProps {}
 
 // @public (undocumented)
 export interface FilterState<TFilter> {
@@ -1246,45 +1277,56 @@ export const Link: ForwardRefExoticComponent<
 
 // @public
 export const LinkDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Link';
   };
-  readonly dataAttributes: {
-    readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
-    readonly weight: readonly ['regular', 'bold'];
-    readonly color: readonly [
-      'primary',
-      'secondary',
-      'danger',
-      'warning',
-      'success',
-      'info',
-    ];
-    readonly truncate: readonly [true, false];
-    readonly standalone: readonly [true, false];
+  readonly propDefs: {
+    readonly variant: {
+      readonly dataAttribute: true;
+      readonly default: 'body-medium';
+    };
+    readonly weight: {
+      readonly dataAttribute: true;
+      readonly default: 'regular';
+    };
+    readonly color: {
+      readonly dataAttribute: true;
+      readonly default: 'primary';
+    };
+    readonly truncate: {
+      readonly dataAttribute: true;
+    };
+    readonly standalone: {
+      readonly dataAttribute: true;
+    };
+    readonly title: {};
+    readonly children: {};
+    readonly className: {};
   };
 };
 
 // @public (undocumented)
-export interface LinkProps extends LinkProps_2 {
-  // (undocumented)
-  children?: ReactNode;
-  // (undocumented)
+export type LinkOwnProps = {
+  variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
+  weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
   color?:
     | TextColors
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
-  // (undocumented)
-  standalone?: boolean;
-  // (undocumented)
-  title?: string;
-  // (undocumented)
   truncate?: boolean;
-  // (undocumented)
-  variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
-  // (undocumented)
-  weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
-}
+  standalone?: boolean;
+  title?: string;
+  children?: ReactNode;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface LinkProps
+  extends Omit<LinkProps_2, 'children' | 'className'>,
+    LinkOwnProps {}
 
 // @public (undocumented)
 export interface MarginProps {
@@ -1784,20 +1826,43 @@ export const Skeleton: (props: SkeletonProps) => JSX_2.Element;
 
 // @public
 export const SkeletonDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Skeleton';
+  };
+  readonly propDefs: {
+    readonly width: {
+      readonly default: 80;
+    };
+    readonly height: {
+      readonly default: 24;
+    };
+    readonly rounded: {
+      readonly dataAttribute: true;
+      readonly default: false;
+    };
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
   };
 };
 
 // @public (undocumented)
-export interface SkeletonProps extends ComponentProps<'div'> {
-  // (undocumented)
-  height?: number | string;
-  // (undocumented)
-  rounded?: boolean;
-  // (undocumented)
+export type SkeletonOwnProps = {
   width?: number | string;
-}
+  height?: number | string;
+  rounded?: boolean;
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export interface SkeletonProps
+  extends Omit<ComponentProps<'div'>, 'children' | 'className' | 'style'>,
+    SkeletonOwnProps {}
 
 // @public (undocumented)
 export type SortDescriptor = SortDescriptor_2;
