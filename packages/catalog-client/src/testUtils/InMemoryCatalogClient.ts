@@ -17,6 +17,8 @@
 import {
   AddLocationRequest,
   AddLocationResponse,
+  CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS,
+  CATALOG_FILTER_CURRENT_USER_REF,
   CATALOG_FILTER_EXISTS,
   CatalogApi,
   EntityFilterQuery,
@@ -177,7 +179,19 @@ function createFilter(
         if (expectedValue === CATALOG_FILTER_EXISTS) {
           continue;
         }
+        if (
+          expectedValue === CATALOG_FILTER_CURRENT_USER_REF ||
+          expectedValue === CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS
+        ) {
+          continue;
+        }
         if (Array.isArray(expectedValue)) {
+          if (
+            expectedValue.includes(CATALOG_FILTER_CURRENT_USER_REF) ||
+            expectedValue.includes(CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS)
+          ) {
+            continue;
+          }
           return expectedValue.some(value =>
             searchValues?.includes(String(value).toLocaleLowerCase('en-US')),
           );

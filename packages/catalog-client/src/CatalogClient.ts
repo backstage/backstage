@@ -204,17 +204,19 @@ export class CatalogClient implements CatalogApi {
       }
     }
 
+    const query: Record<string, unknown> = {
+      fields,
+      limit,
+      filter: this.getFilterValue(filter),
+      offset,
+      after,
+      order: order ? encodedOrder : undefined,
+    };
+
     const entities = await this.requestRequired(
       await this.apiClient.getEntities(
         {
-          query: {
-            fields,
-            limit,
-            filter: this.getFilterValue(filter),
-            offset,
-            after,
-            order: order ? encodedOrder : undefined,
-          },
+          query,
         },
         options,
       ),

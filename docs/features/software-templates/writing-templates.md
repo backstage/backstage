@@ -640,6 +640,15 @@ catalogFilter:
     metadata.annotations.github.com/team-slug: { exists: true }
 ```
 
+You can restrict to the current user with `{ currentUser: true }`. Use `relations.ownedBy: { currentUser: true }` for entities owned by the current user, or `spec.owner: { currentUser: true }` for entities whose owner is the current user.
+
+To show only entities owned by the current user:
+
+```yaml
+catalogFilter:
+  - relations.ownedBy: { currentUser: true }
+```
+
 ### Custom validation messages
 
 You may specify custom JSON Schema validation messages as supported by the

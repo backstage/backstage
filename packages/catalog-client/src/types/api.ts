@@ -35,6 +35,26 @@ export const CATALOG_FILTER_EXISTS = Symbol.for(
 );
 
 /**
+ * Magic filter value. When used as a filter value (e.g.
+ * `filter: { 'spec.owner': CATALOG_FILTER_CURRENT_USER_REF }`), the backend
+ * expands it to the current user's entity ref. Use for filtering by the
+ * current user on any field.
+ *
+ * @public
+ */
+export { CATALOG_FILTER_CURRENT_USER_REF } from '../filterConstants';
+
+/**
+ * Magic filter value. When used as a filter value (e.g.
+ * `filter: { 'relations.ownedBy': CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS }`),
+ * the backend expands it to the current user's ownership refs (user + groups
+ * from UserInfoService). Use for filtering by "owned by me" on any field.
+ *
+ * @public
+ */
+export { CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS } from '../filterConstants';
+
+/**
  * A key-value based filter expression for entities.
  *
  * @remarks
@@ -46,6 +66,10 @@ export const CATALOG_FILTER_EXISTS = Symbol.for(
  * in the symbol `CATALOG_FILTER_EXISTS` (exported from this package), which
  * means that you assert on the existence of that key, no matter what its value
  * is.
+ *
+ * You can also pass the string constants `CATALOG_FILTER_CURRENT_USER_REF` or
+ * `CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS` as values; the backend expands
+ * them to the current user's ref(s) server-side.
  *
  * All matching of keys and values is case insensitive.
  *

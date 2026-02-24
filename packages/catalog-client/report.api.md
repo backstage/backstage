@@ -25,6 +25,13 @@ export type AddLocationResponse = {
 };
 
 // @public
+export const CATALOG_FILTER_CURRENT_USER_OWNERSHIP_REFS =
+  '__catalog:current_user_ownership_refs__';
+
+// @public
+export const CATALOG_FILTER_CURRENT_USER_REF = '__catalog:current_user_ref__';
+
+// @public
 export const CATALOG_FILTER_EXISTS: unique symbol;
 
 // @public
