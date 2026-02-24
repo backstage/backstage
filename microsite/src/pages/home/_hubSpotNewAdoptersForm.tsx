@@ -51,7 +51,9 @@ export const HubSpotNewAdoptersForm = () => {
           }
           input.classList.remove('custom-invalid');
           
-          if (!value) return true;
+           if (!value) {
+            return !requireMinLength;
+          }
           
           const errorMessage = getValidationError(value, fieldName, requireMinLength);
           
