@@ -43,4 +43,30 @@ $page-header-height: 44px;
   input[class*='hs-button'] {
     color: black;
   }
+  
+  input.custom-invalid {
+    border-color: #dc3545;
+    
+    &:focus {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+  }
+  
+  .hs-error-msgs.custom-validation {
+    list-style: none;
+    padding: 0;
+    margin: 0.25rem 0 0 0;
+    
+    li {
+      margin: 0;
+    }
+    
+    .hs-error-msg {
+      color: #dc3545;
+      font-size: 0.875rem;
+      display: block;
+      margin-top: 0.25rem;
+    }
+  }
 }
