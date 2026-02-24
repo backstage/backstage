@@ -5,7 +5,7 @@
 ```ts
 import type { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { CellProps as CellProps_2 } from 'react-aria-components';
-import { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
+import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import type { ColumnSize } from '@react-types/table';
 import type { ColumnStaticSize } from '@react-types/table';
@@ -730,21 +730,39 @@ export const Checkbox: ForwardRefExoticComponent<
 
 // @public
 export const CheckboxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Checkbox';
     readonly indicator: 'bui-CheckboxIndicator';
   };
-  readonly dataAttributes: {
-    readonly selected: readonly [true, false];
-    readonly indeterminate: readonly [true, false];
+  readonly propDefs: {
+    readonly selected: {
+      readonly dataAttribute: true;
+    };
+    readonly indeterminate: {
+      readonly dataAttribute: true;
+    };
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
   };
 };
 
 // @public (undocumented)
-export interface CheckboxProps extends CheckboxProps_2 {
-  // (undocumented)
+export type CheckboxOwnProps = {
+  selected?: boolean;
+  indeterminate?: boolean;
   children: React.ReactNode;
-}
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export interface CheckboxProps
+  extends Omit<CheckboxProps_2, 'children' | 'className' | 'style'>,
+    CheckboxOwnProps {}
 
 // @public
 export type ClassNamesMap = Record<string, string>;
