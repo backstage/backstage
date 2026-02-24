@@ -87,9 +87,7 @@ export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export const CatalogEntityPage: () => JSX.Element;
 
 // @public
-export const CatalogExportButton: ({
-  settings,
-}: {
+export const CatalogExportButton: (input: {
   settings?: CatalogExportSettings;
 }) => JSX_2.Element;
 
