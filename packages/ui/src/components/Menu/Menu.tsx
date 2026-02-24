@@ -58,6 +58,7 @@ import {
 } from '../InternalLinkProvider';
 import styles from './Menu.module.css';
 import clsx from 'clsx';
+import { Box } from '../Box';
 
 const { RoutingProvider, useRoutingRegistrationEffect } =
   createRoutingRegistration();
@@ -119,18 +120,23 @@ export const Menu = (props: MenuProps<object>) => {
         )}
         placement={placement}
       >
-        {virtualized ? (
-          <Virtualizer
-            layout={ListLayout}
-            layoutOptions={{
-              rowHeight,
-            }}
-          >
-            {menuContent}
-          </Virtualizer>
-        ) : (
-          menuContent
-        )}
+        <Box
+          bg="neutral-1"
+          className={clsx(classNames.inner, styles[classNames.inner])}
+        >
+          {virtualized ? (
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                rowHeight,
+              }}
+            >
+              {menuContent}
+            </Virtualizer>
+          ) : (
+            menuContent
+          )}
+        </Box>
       </RAPopover>
     </RoutingProvider>
   );
@@ -169,18 +175,23 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
       )}
       placement={placement}
     >
-      {virtualized ? (
-        <Virtualizer
-          layout={ListLayout}
-          layoutOptions={{
-            rowHeight,
-          }}
-        >
-          {listBoxContent}
-        </Virtualizer>
-      ) : (
-        listBoxContent
-      )}
+      <Box
+        bg="neutral-1"
+        className={clsx(classNames.inner, styles[classNames.inner])}
+      >
+        {virtualized ? (
+          <Virtualizer
+            layout={ListLayout}
+            layoutOptions={{
+              rowHeight,
+            }}
+          >
+            {listBoxContent}
+          </Virtualizer>
+        ) : (
+          listBoxContent
+        )}
+      </Box>
     </RAPopover>
   );
 };
@@ -219,43 +230,48 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
         )}
         placement={placement}
       >
-        <RAAutocomplete filter={contains}>
-          <RASearchField
-            className={clsx(
-              classNames.searchField,
-              styles[classNames.searchField],
+        <Box
+          bg="neutral-1"
+          className={clsx(classNames.inner, styles[classNames.inner])}
+        >
+          <RAAutocomplete filter={contains}>
+            <RASearchField
+              className={clsx(
+                classNames.searchField,
+                styles[classNames.searchField],
+              )}
+              aria-label={props.placeholder || 'Search'}
+            >
+              <RAInput
+                className={clsx(
+                  classNames.searchFieldInput,
+                  styles[classNames.searchFieldInput],
+                )}
+                placeholder={props.placeholder || 'Search...'}
+              />
+              <RAButton
+                className={clsx(
+                  classNames.searchFieldClear,
+                  styles[classNames.searchFieldClear],
+                )}
+              >
+                <RiCloseCircleLine />
+              </RAButton>
+            </RASearchField>
+            {virtualized ? (
+              <Virtualizer
+                layout={ListLayout}
+                layoutOptions={{
+                  rowHeight,
+                }}
+              >
+                {menuContent}
+              </Virtualizer>
+            ) : (
+              menuContent
             )}
-            aria-label={props.placeholder || 'Search'}
-          >
-            <RAInput
-              className={clsx(
-                classNames.searchFieldInput,
-                styles[classNames.searchFieldInput],
-              )}
-              placeholder={props.placeholder || 'Search...'}
-            />
-            <RAButton
-              className={clsx(
-                classNames.searchFieldClear,
-                styles[classNames.searchFieldClear],
-              )}
-            >
-              <RiCloseCircleLine />
-            </RAButton>
-          </RASearchField>
-          {virtualized ? (
-            <Virtualizer
-              layout={ListLayout}
-              layoutOptions={{
-                rowHeight,
-              }}
-            >
-              {menuContent}
-            </Virtualizer>
-          ) : (
-            menuContent
-          )}
-        </RAAutocomplete>
+          </RAAutocomplete>
+        </Box>
       </RAPopover>
     </RoutingProvider>
   );
@@ -298,43 +314,48 @@ export const MenuAutocompleteListbox = (
       )}
       placement={placement}
     >
-      <RAAutocomplete filter={contains}>
-        <RASearchField
-          className={clsx(
-            classNames.searchField,
-            styles[classNames.searchField],
+      <Box
+        bg="neutral-1"
+        className={clsx(classNames.inner, styles[classNames.inner])}
+      >
+        <RAAutocomplete filter={contains}>
+          <RASearchField
+            className={clsx(
+              classNames.searchField,
+              styles[classNames.searchField],
+            )}
+            aria-label={props.placeholder || 'Search'}
+          >
+            <RAInput
+              className={clsx(
+                classNames.searchFieldInput,
+                styles[classNames.searchFieldInput],
+              )}
+              placeholder={props.placeholder || 'Search...'}
+            />
+            <RAButton
+              className={clsx(
+                classNames.searchFieldClear,
+                styles[classNames.searchFieldClear],
+              )}
+            >
+              <RiCloseCircleLine />
+            </RAButton>
+          </RASearchField>
+          {virtualized ? (
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                rowHeight,
+              }}
+            >
+              {listBoxContent}
+            </Virtualizer>
+          ) : (
+            listBoxContent
           )}
-          aria-label={props.placeholder || 'Search'}
-        >
-          <RAInput
-            className={clsx(
-              classNames.searchFieldInput,
-              styles[classNames.searchFieldInput],
-            )}
-            placeholder={props.placeholder || 'Search...'}
-          />
-          <RAButton
-            className={clsx(
-              classNames.searchFieldClear,
-              styles[classNames.searchFieldClear],
-            )}
-          >
-            <RiCloseCircleLine />
-          </RAButton>
-        </RASearchField>
-        {virtualized ? (
-          <Virtualizer
-            layout={ListLayout}
-            layoutOptions={{
-              rowHeight,
-            }}
-          >
-            {listBoxContent}
-          </Virtualizer>
-        ) : (
-          listBoxContent
-        )}
-      </RAAutocomplete>
+        </RAAutocomplete>
+      </Box>
     </RAPopover>
   );
 };

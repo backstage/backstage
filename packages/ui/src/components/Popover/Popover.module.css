@@ -18,9 +18,10 @@
 
 @layer components {
   .bui-Popover {
+    --popover-border-radius: var(--bui-radius-3);
     box-shadow: var(--bui-shadow);
-    border-radius: var(--bui-radius-3);
-    background: var(--bui-bg-popover);
+    border-radius: var(--popover-border-radius);
+    background: var(--bui-bg-app);
     border: 1px solid var(--bui-border-1);
     forced-color-adjust: none;
     outline: none;
@@ -76,6 +77,7 @@
     padding: var(--bui-space-4);
     flex: 1 1 auto;
     min-height: 0;
+    border-radius: var(--popover-border-radius);
   }
 
   .bui-PopoverArrow {
@@ -89,11 +91,14 @@
       we split the stroke and fill across separate
       elements in order to guarantee that the stroke is
       always overlaying a consistent color. */
-      path:nth-child(1) {
-        fill: var(--bui-bg-popover);
+      use:nth-of-type(1) {
+        fill: var(--bui-bg-app);
+      }
+      use:nth-of-type(2) {
+        fill: var(--bui-bg-neutral-1);
       }
 
-      path:nth-child(2) {
+      path {
         fill: var(--bui-border-1);
       }
 

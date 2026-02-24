@@ -18,12 +18,13 @@
 
 @layer components {
   .bui-MenuPopover {
+    --menu-border-radius: var(--bui-radius-2);
     display: flex;
     flex-direction: column;
     box-shadow: var(--bui-shadow);
     border: 1px solid var(--bui-border-1);
-    border-radius: var(--bui-radius-2);
-    background: var(--bui-bg-popover);
+    border-radius: var(--menu-border-radius);
+    background: var(--bui-bg-app);
     color: var(--bui-fg-primary);
     outline: none;
     transition: transform 200ms, opacity 200ms;
@@ -53,6 +54,10 @@
     &[data-placement='left'] {
       --origin: translateX(8px);
     }
+  }
+
+  .bui-MenuInner {
+    border-radius: var(--menu-border-radius);
   }
 
   .bui-MenuContent {

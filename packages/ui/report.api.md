@@ -897,6 +897,7 @@ export const DialogDefinition: {
   readonly classNames: {
     readonly overlay: 'bui-DialogOverlay';
     readonly dialog: 'bui-Dialog';
+    readonly content: 'bui-DialogContent';
     readonly header: 'bui-DialogHeader';
     readonly headerTitle: 'bui-DialogHeaderTitle';
     readonly body: 'bui-DialogBody';
@@ -1331,6 +1332,7 @@ export const MenuDefinition: {
   readonly classNames: {
     readonly root: 'bui-Menu';
     readonly popover: 'bui-MenuPopover';
+    readonly inner: 'bui-MenuInner';
     readonly content: 'bui-MenuContent';
     readonly section: 'bui-MenuSection';
     readonly sectionHeader: 'bui-MenuSectionHeader';
@@ -2218,6 +2220,7 @@ export const Tooltip: ForwardRefExoticComponent<
 export const TooltipDefinition: {
   readonly classNames: {
     readonly tooltip: 'bui-Tooltip';
+    readonly content: 'bui-TooltipContent';
     readonly arrow: 'bui-TooltipArrow';
   };
 };

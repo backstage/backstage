@@ -23,6 +23,7 @@ import type { ComponentDefinition } from '../../types';
 export const TooltipDefinition = {
   classNames: {
     tooltip: 'bui-Tooltip',
+    content: 'bui-TooltipContent',
     arrow: 'bui-TooltipArrow',
   },
 } as const satisfies ComponentDefinition;
