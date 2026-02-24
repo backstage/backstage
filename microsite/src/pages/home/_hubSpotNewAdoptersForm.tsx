@@ -28,7 +28,7 @@ export const HubSpotNewAdoptersForm = () => {
             return `${fieldName} must be at least ${MIN_NAME_LENGTH} characters`;
           }
           if (value.length > MAX_NAME_LENGTH) {
-            return `${fieldName} must be less than ${MAX_NAME_LENGTH} characters`;
+            return `${fieldName} must be ${MAX_NAME_LENGTH} characters or fewer`;
           }
           if (!NAME_PATTERN.test(value)) {
             return `${fieldName} can only contain letters, spaces, hyphens, and apostrophes`;

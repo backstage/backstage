@@ -44,7 +44,7 @@ $page-header-height: 44px;
     color: black;
   }
   
-  input.custom-invalid {
+  :global(input.custom-invalid) {
     border-color: #dc3545;
     
     &:focus {
@@ -53,7 +53,7 @@ $page-header-height: 44px;
     }
   }
   
-  .hs-error-msgs.custom-validation {
+  :global(.hs-error-msgs.custom-validation) {
     list-style: none;
     padding: 0;
     margin: 0.25rem 0 0 0;
@@ -62,7 +62,7 @@ $page-header-height: 44px;
       margin: 0;
     }
     
-    .hs-error-msg {
+    :global(.hs-error-msg) {
       color: #dc3545;
       font-size: 0.875rem;
       display: block;
