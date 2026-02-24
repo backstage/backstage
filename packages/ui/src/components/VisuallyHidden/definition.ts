@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { VisuallyHiddenOwnProps } from './types';
+import styles from './VisuallyHidden.module.css';
 
 /**
  * Component definition for VisuallyHidden
  * @public
  */
-export const VisuallyHiddenDefinition = {
-  classNames: {
-    root: 'bui-VisuallyHidden',
+export const VisuallyHiddenDefinition = defineComponent<VisuallyHiddenOwnProps>()(
+  {
+    styles,
+    classNames: {
+      root: 'bui-VisuallyHidden',
+    },
+    propDefs: {
+      className: {},
+    },
   },
-} as const satisfies ComponentDefinition;
+);
