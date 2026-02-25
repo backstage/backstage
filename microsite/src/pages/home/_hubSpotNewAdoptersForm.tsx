@@ -3,6 +3,27 @@ import React, { useEffect, useState } from 'react';
 
 import hubSpotStyles from './hubSpotNewAdoptersForm.module.scss';
 
+interface HubSpotFormOptions {
+  portalId: string;
+  formId: string;
+  target: string;
+  pageId: string;
+  onFormReady?: (form: HTMLFormElement) => void;
+  onFormSubmit?: (form: HTMLFormElement) => boolean;
+}
+
+interface HubSpot {
+  forms: {
+    create: (options: HubSpotFormOptions) => void;
+  };
+}
+
+declare global {
+  interface Window {
+    hbspt?: HubSpot;
+  }
+}
+
 const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 50;
 const NAME_PATTERN = /^[a-zA-Z\s'-]+$/;
@@ -17,7 +38,6 @@ export const HubSpotNewAdoptersForm = () => {
     const eventListeners: Array<{ element: HTMLInputElement; handler: EventListener }> = [];
     
     const initializeForm = () => {
-      // @ts-ignore
       if (window.hbspt && !isFormInitialized) {
         isFormInitialized = true;
 
@@ -45,8 +65,10 @@ export const HubSpotNewAdoptersForm = () => {
             existingError.remove();
           }
           
-          input.classList.remove('custom-invalid');
-          input.removeAttribute('aria-invalid');
+          if (input.classList.contains('custom-invalid')) {
+            input.classList.remove('custom-invalid');
+            input.removeAttribute('aria-invalid');
+          }
           
           const describedBy = input.getAttribute('aria-describedby');
           if (describedBy) {
@@ -123,7 +145,6 @@ export const HubSpotNewAdoptersForm = () => {
           return true;
         };
         
-        // @ts-ignore
         window.hbspt.forms.create({
           portalId: '21894833',
           formId: '9a5aa2af-87f3-4a44-819f-88ee243bb61e',
@@ -185,7 +206,6 @@ export const HubSpotNewAdoptersForm = () => {
     let script: HTMLScriptElement | null = null;
     let handleLoad: (() => void) | null = null;
     
-    // @ts-ignore
     if (window.hbspt) {
       initializeForm();
     } else {
