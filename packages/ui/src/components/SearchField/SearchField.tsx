@@ -20,53 +20,39 @@ import {
   SearchField as AriaSearchField,
   Button,
 } from 'react-aria-components';
-import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { SearchFieldDefinition } from './definition';
-import styles from './SearchField.module.css';
 
 import type { SearchFieldProps } from './types';
 
 /** @public */
 export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
   (props, ref) => {
-    const {
-      label,
-      'aria-label': ariaLabel,
-      'aria-labelledby': ariaLabelledBy,
-    } = props;
-
-    useEffect(() => {
-      if (!label && !ariaLabel && !ariaLabelledBy) {
-        console.warn(
-          'SearchField requires either a visible label, aria-label, or aria-labelledby for accessibility',
-        );
-      }
-    }, [label, ariaLabel, ariaLabelledBy]);
-
-    const { classNames, dataAttributes, style, cleanedProps } = useStyles(
+    const { ownProps, restProps, dataAttributes } = useDefinition(
       SearchFieldDefinition,
-      {
-        size: 'small',
-        placeholder: 'Search',
-        startCollapsed: false,
-        ...props,
-      },
+      props,
     );
-
     const {
-      className,
-      description,
+      classes,
+      label,
       icon,
       isRequired,
       secondaryLabel,
       placeholder,
       startCollapsed,
-      ...rest
-    } = cleanedProps;
+      description,
+    } = ownProps;
+
+    useEffect(() => {
+      if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {
+        console.warn(
+          'SearchField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [label, restProps['aria-label'], restProps['aria-labelledby']]);
 
     const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -76,7 +62,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       secondaryLabel || (isRequired ? 'Required' : null);
 
     const handleFocusChange = (isFocused: boolean) => {
-      props.onFocusChange?.(isFocused);
+      restProps.onFocusChange?.(isFocused);
       setIsFocused(isFocused);
     };
 
@@ -89,17 +75,17 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
 
     const isCollapsed = hasInputRef
       ? startCollapsed && !hasValue && !isFocused
-      : startCollapsed && !rest.value && !rest.defaultValue && !isFocused;
+      : startCollapsed &&
+        !restProps.value &&
+        !restProps.defaultValue &&
+        !isFocused;
 
     return (
       <AriaSearchField
-        className={clsx(classNames.root, styles[classNames.root], className)}
+        className={classes.root}
         {...dataAttributes}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
         data-collapsed={isCollapsed}
-        style={style}
-        {...rest}
+        {...restProps}
         onFocusChange={handleFocusChange}
         ref={ref}
       >
@@ -109,19 +95,13 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
           description={description}
         />
         <div
-          className={clsx(
-            classNames.inputWrapper,
-            styles[classNames.inputWrapper],
-          )}
+          className={classes.inputWrapper}
           data-size={dataAttributes['data-size']}
           onClick={handleContainerClick}
         >
           {icon !== false && (
             <div
-              className={clsx(
-                classNames.inputIcon,
-                styles[classNames.inputIcon],
-              )}
+              className={classes.inputIcon}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
@@ -130,12 +110,12 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
           )}
           <Input
             ref={inputRef}
-            className={clsx(classNames.input, styles[classNames.input])}
+            className={classes.input}
             {...(icon !== false && { 'data-icon': true })}
             placeholder={placeholder}
           />
           <Button
-            className={clsx(classNames.clear, styles[classNames.clear])}
+            className={classes.clear}
             data-size={dataAttributes['data-size']}
           >
             <RiCloseCircleLine />

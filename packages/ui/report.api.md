@@ -1793,6 +1793,9 @@ export const SearchField: ForwardRefExoticComponent<
 
 // @public
 export const SearchFieldDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-SearchField';
     readonly clear: 'bui-SearchFieldClear';
@@ -1800,21 +1803,44 @@ export const SearchFieldDefinition: {
     readonly input: 'bui-SearchFieldInput';
     readonly inputIcon: 'bui-SearchFieldInputIcon';
   };
-  readonly dataAttributes: {
-    readonly startCollapsed: readonly [true, false];
-    readonly size: readonly ['small', 'medium'];
+  readonly propDefs: {
+    readonly startCollapsed: {
+      readonly dataAttribute: true;
+      readonly default: false;
+    };
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly icon: {};
+    readonly placeholder: {
+      readonly default: 'Search';
+    };
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
+    readonly isRequired: {};
   };
 };
 
 // @public (undocumented)
-export interface SearchFieldProps
-  extends SearchFieldProps_2,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type SearchFieldOwnProps = {
   icon?: ReactNode | false;
-  placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  placeholder?: string;
   startCollapsed?: boolean;
-}
+  className?: string;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  isRequired?: boolean;
+};
+
+// @public (undocumented)
+export interface SearchFieldProps
+  extends Omit<SearchFieldProps_2, 'className' | 'isRequired' | 'description'>,
+    SearchFieldOwnProps {}
 
 // @public (undocumented)
 export interface SearchState {

@@ -15,14 +15,12 @@
  */
 
 import type { SearchFieldProps as AriaSearchFieldProps } from 'react-aria-components';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
 import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
-export interface SearchFieldProps
-  extends AriaSearchFieldProps,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type SearchFieldOwnProps = {
   /**
    * An icon to render before the input
    */
@@ -43,4 +41,19 @@ export interface SearchFieldProps
    * Controls whether the SearchField starts in a collapsed state.
    */
   startCollapsed?: boolean;
-}
+
+  className?: string;
+
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  isRequired?: boolean;
+};
+
+/** @public */
+export interface SearchFieldProps
+  extends Omit<
+      AriaSearchFieldProps,
+      'className' | 'isRequired' | 'description'
+    >,
+    SearchFieldOwnProps {}

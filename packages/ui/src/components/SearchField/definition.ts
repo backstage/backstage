@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { SearchFieldOwnProps } from './types';
+import styles from './SearchField.module.css';
 
 /**
  * Component definition for SearchField
  * @public
  */
-export const SearchFieldDefinition = {
+export const SearchFieldDefinition = defineComponent<SearchFieldOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-SearchField',
     clear: 'bui-SearchFieldClear',
@@ -28,8 +31,15 @@ export const SearchFieldDefinition = {
     input: 'bui-SearchFieldInput',
     inputIcon: 'bui-SearchFieldInputIcon',
   },
-  dataAttributes: {
-    startCollapsed: [true, false] as const,
-    size: ['small', 'medium'] as const,
+  propDefs: {
+    startCollapsed: { dataAttribute: true, default: false },
+    size: { dataAttribute: true, default: 'small' },
+    className: {},
+    icon: {},
+    placeholder: { default: 'Search' },
+    label: {},
+    description: {},
+    secondaryLabel: {},
+    isRequired: {},
   },
-} as const satisfies ComponentDefinition;
+});
