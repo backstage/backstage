@@ -16,48 +16,36 @@
 
 import { forwardRef, useEffect } from 'react';
 import { Input, TextField as AriaTextField } from 'react-aria-components';
-import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import type { TextFieldProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { TextFieldDefinition } from './definition';
-import styles from './TextField.module.css';
 
 /** @public */
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
   (props, ref) => {
-    const {
-      label,
-      'aria-label': ariaLabel,
-      'aria-labelledby': ariaLabelledBy,
-    } = props;
-
-    useEffect(() => {
-      if (!label && !ariaLabel && !ariaLabelledBy) {
-        console.warn(
-          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
-        );
-      }
-    }, [label, ariaLabel, ariaLabelledBy]);
-
-    const { classNames, dataAttributes, style, cleanedProps } = useStyles(
+    const { ownProps, restProps, dataAttributes } = useDefinition(
       TextFieldDefinition,
-      {
-        size: 'small',
-        ...props,
-      },
+      props,
     );
-
     const {
-      className,
-      description,
+      classes,
+      label,
       icon,
       isRequired,
       secondaryLabel,
       placeholder,
-      ...rest
-    } = cleanedProps;
+      description,
+    } = ownProps;
+
+    useEffect(() => {
+      if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {
+        console.warn(
+          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [label, restProps['aria-label'], restProps['aria-labelledby']]);
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -65,12 +53,9 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
 
     return (
       <AriaTextField
-        className={clsx(classNames.root, styles[classNames.root], className)}
+        className={classes.root}
         {...dataAttributes}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        style={style}
-        {...rest}
+        {...restProps}
         ref={ref}
       >
         <FieldLabel
@@ -79,18 +64,12 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           description={description}
         />
         <div
-          className={clsx(
-            classNames.inputWrapper,
-            styles[classNames.inputWrapper],
-          )}
+          className={classes.inputWrapper}
           data-size={dataAttributes['data-size']}
         >
           {icon && (
             <div
-              className={clsx(
-                classNames.inputIcon,
-                styles[classNames.inputIcon],
-              )}
+              className={classes.inputIcon}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
@@ -98,7 +77,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
             </div>
           )}
           <Input
-            className={clsx(classNames.input, styles[classNames.input])}
+            className={classes.input}
             {...(icon && { 'data-icon': true })}
             placeholder={placeholder}
           />

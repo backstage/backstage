@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { TextFieldOwnProps } from './types';
+import styles from './TextField.module.css';
 
 /**
  * Component definition for TextField
  * @public
  */
-export const TextFieldDefinition = {
+export const TextFieldDefinition = defineComponent<TextFieldOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-TextField',
     inputWrapper: 'bui-InputWrapper',
@@ -28,9 +31,14 @@ export const TextFieldDefinition = {
     inputIcon: 'bui-InputIcon',
     inputAction: 'bui-InputAction',
   },
-  dataAttributes: {
-    invalid: [true, false] as const,
-    disabled: [true, false] as const,
-    size: ['small', 'medium'] as const,
+  propDefs: {
+    size: { dataAttribute: true, default: 'small' },
+    className: {},
+    icon: {},
+    placeholder: {},
+    label: {},
+    description: {},
+    secondaryLabel: {},
+    isRequired: {},
   },
-} as const satisfies ComponentDefinition;
+});
