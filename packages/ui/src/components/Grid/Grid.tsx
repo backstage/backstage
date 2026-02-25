@@ -15,78 +15,47 @@
  */
 
 import { forwardRef } from 'react';
-import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { GridDefinition, GridItemDefinition } from './definition';
-import styles from './Grid.module.css';
-import { BgProvider, useBgProvider } from '../../hooks/useBg';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const { bg: resolvedBg } = useBgProvider(props.bg);
+  const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
+    GridDefinition,
+    { columns: 'auto', gap: '4', ...props },
+  );
+  const { classes, childrenWithBgProvider } = ownProps;
 
-  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
-    useStyles(GridDefinition, {
-      columns: 'auto',
-      gap: '4',
-      ...props,
-      bg: resolvedBg, // Use resolved bg for data attribute
-    });
-
-  const { className, bg, ...rest } = cleanedProps;
-
-  const content = (
+  return (
     <div
       ref={ref}
-      className={clsx(
-        classNames.root,
-        utilityClasses,
-        styles[classNames.root],
-        className,
-      )}
-      style={style}
+      className={classes.root}
+      style={{ ...utilityStyle, ...ownProps.style }}
       {...dataAttributes}
-      {...rest}
-    />
-  );
-
-  return resolvedBg ? (
-    <BgProvider bg={resolvedBg}>{content}</BgProvider>
-  ) : (
-    content
+      {...restProps}
+    >
+      {childrenWithBgProvider}
+    </div>
   );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const { bg: resolvedBg } = useBgProvider(props.bg);
+  const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
+    GridItemDefinition,
+    props,
+  );
+  const { classes, childrenWithBgProvider } = ownProps;
 
-  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
-    useStyles(GridItemDefinition, {
-      ...props,
-      bg: resolvedBg, // Use resolved bg for data attribute
-    });
-
-  const { className, bg, ...rest } = cleanedProps;
-
-  const content = (
+  return (
     <div
       ref={ref}
-      className={clsx(
-        classNames.root,
-        utilityClasses,
-        styles[classNames.root],
-        className,
-      )}
-      style={style}
+      className={classes.root}
+      style={{ ...utilityStyle, ...ownProps.style }}
       {...dataAttributes}
-      {...rest}
-    />
-  );
-
-  return resolvedBg ? (
-    <BgProvider bg={resolvedBg}>{content}</BgProvider>
-  ) : (
-    content
+      {...restProps}
+    >
+      {childrenWithBgProvider}
+    </div>
   );
 });
 

@@ -1157,10 +1157,22 @@ export const Grid: {
 
 // @public
 export const GridDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Grid';
   };
-  readonly utilityProps: [
+  readonly bg: 'provider';
+  readonly propDefs: {
+    readonly bg: {
+      readonly dataAttribute: true;
+    };
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
+  };
+  readonly utilityProps: readonly [
     'columns',
     'gap',
     'm',
@@ -1178,44 +1190,38 @@ export const GridDefinition: {
     'px',
     'py',
   ];
-  readonly dataAttributes: {
-    readonly bg: readonly [
-      'neutral-1',
-      'neutral-2',
-      'neutral-3',
-      'danger',
-      'warning',
-      'success',
-    ];
-  };
 };
 
 // @public
 export const GridItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-GridItem';
   };
-  readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
-  readonly dataAttributes: {
-    readonly bg: readonly [
-      'neutral-1',
-      'neutral-2',
-      'neutral-3',
-      'danger',
-      'warning',
-      'success',
-    ];
+  readonly bg: 'provider';
+  readonly propDefs: {
+    readonly bg: {
+      readonly dataAttribute: true;
+    };
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
   };
+  readonly utilityProps: readonly ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
 };
 
 // @public (undocumented)
-export interface GridItemProps {
-  // (undocumented)
-  bg?: Responsive<ProviderBg>;
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export type GridItemOwnProps = {
+  children?: ReactNode;
   className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+// @public (undocumented)
+export interface GridItemProps extends GridItemOwnProps {
   // (undocumented)
   colEnd?: Responsive<Columns>;
   // (undocumented)
@@ -1224,24 +1230,22 @@ export interface GridItemProps {
   colStart?: Responsive<Columns>;
   // (undocumented)
   rowSpan?: Responsive<Columns>;
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public (undocumented)
-export interface GridProps extends SpaceProps {
-  // (undocumented)
-  bg?: Responsive<ProviderBg>;
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export type GridOwnProps = {
+  children?: ReactNode;
   className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+// @public (undocumented)
+export interface GridProps extends SpaceProps, GridOwnProps {
   // (undocumented)
   columns?: Responsive<Columns>;
   // (undocumented)
   gap?: Responsive<Space>;
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public

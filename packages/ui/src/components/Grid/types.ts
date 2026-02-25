@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ReactNode, CSSProperties } from 'react';
 import type {
   Space,
   SpaceProps,
@@ -23,23 +24,31 @@ import type {
 } from '../../types';
 
 /** @public */
-export interface GridProps extends SpaceProps {
-  children?: React.ReactNode;
+export type GridOwnProps = {
+  children?: ReactNode;
   className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+/** @public */
+export interface GridProps extends SpaceProps, GridOwnProps {
   columns?: Responsive<Columns>;
   gap?: Responsive<Space>;
-  style?: React.CSSProperties;
-  bg?: Responsive<ProviderBg>;
 }
 
 /** @public */
-export interface GridItemProps {
-  children?: React.ReactNode;
+export type GridItemOwnProps = {
+  children?: ReactNode;
   className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+/** @public */
+export interface GridItemProps extends GridItemOwnProps {
   colSpan?: Responsive<Columns>;
   colEnd?: Responsive<Columns>;
   colStart?: Responsive<Columns>;
   rowSpan?: Responsive<Columns>;
-  style?: React.CSSProperties;
-  bg?: Responsive<ProviderBg>;
 }
