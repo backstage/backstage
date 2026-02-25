@@ -78,11 +78,22 @@ export type EntityLayoutRouteProps = {
   tabProps?: TabProps<ElementType, { component?: ElementType }>;
 };
 
+/** @public */
+export type EntityLayoutGroupProps = {
+  title: string;
+  children: ReactNode;
+  if?: (entity: Entity) => boolean;
+};
+
 const dataKey = 'plugin.catalog.entityLayoutRoute';
+const groupDataKey = 'plugin.catalog.entityLayoutGroup';
 
 const Route: (props: EntityLayoutRouteProps) => null = () => null;
 attachComponentData(Route, dataKey, true);
 attachComponentData(Route, 'core.gatherMountPoints', true); // This causes all mount points that are discovered within this route to use the path of the route itself
+
+const Group: (props: EntityLayoutGroupProps) => null = () => null;
+attachComponentData(Group, groupDataKey, true);
 
 function EntityLayoutTitle(props: {
   title: string;
@@ -439,3 +450,4 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 };
 
 EntityLayout.Route = Route;
+EntityLayout.Group = Group;

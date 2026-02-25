@@ -29,6 +29,7 @@ import { normalizeRoutePath } from './normalizeRoutePath';
 
 const ENTITY_SWITCH_KEY = 'core.backstage.entitySwitch';
 const ENTITY_ROUTE_KEY = 'plugin.catalog.entityLayoutRoute';
+const ENTITY_GROUP_KEY = 'plugin.catalog.entityLayoutGroup';
 
 // Placeholder to make sure internal types here are consistent
 type Entity = { apiVersion: string; kind: string };
@@ -84,8 +85,23 @@ export function collectEntityPageContents(
   let cardCounter = 1;
   let routeCounter = 1;
 
-  function traverse(element: ReactNode, parentFilter?: EntityFilter) {
+  function traverse(
+    element: ReactNode,
+    parentFilter?: EntityFilter,
+    parentGroup?: string,
+  ) {
     if (!isValidElement(element)) {
+      return;
+    }
+
+    if (getComponentData(element, ENTITY_GROUP_KEY)) {
+      const groupTitle = element.props?.title;
+      const groupIf = element.props?.if;
+      const groupId = groupTitle?.toLowerCase().replace(/\s+/g, '-');
+      const mergedIf = allFilters(parentFilter, groupIf);
+      Children.forEach(element.props?.children, child => {
+        traverse(child, mergedIf, groupId);
+      });
       return;
     }
 
@@ -117,6 +133,7 @@ export function collectEntityPageContents(
                 return originalFactory({
                   path: normalizeRoutePath(pageNode.path),
                   title: pageNode.title,
+                  group: parentGroup,
                   filter: mergedIf && (entity => mergedIf(entity, { apis })),
                   loader: () => Promise.resolve(pageNode.children),
                 });
@@ -135,6 +152,7 @@ export function collectEntityPageContents(
             traverse(
               entityCase.children,
               allFilters(parentFilter, entityCase.if),
+              parentGroup,
             );
           }
         } else {
@@ -144,6 +162,7 @@ export function collectEntityPageContents(
             traverse(
               entityCase.children,
               allFilters(parentFilter, entityCase.if, didNotMatchEarlier),
+              parentGroup,
             );
             previousIf = anyFilters(previousIf, entityCase.if)!;
           }
@@ -155,7 +174,7 @@ export function collectEntityPageContents(
     Children.forEach(
       (element.props as { children?: ReactNode })?.children,
       child => {
-        traverse(child, parentFilter);
+        traverse(child, parentFilter, parentGroup);
       },
     );
   }
