@@ -39425,7 +39425,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:10.2.1, minimatch@npm:^10.1.1, minimatch@npm:^10.2.0, minimatch@npm:^10.2.1":
+"minimatch@npm:10.2.1":
   version: 10.2.1
   resolution: "minimatch@npm:10.2.1"
   dependencies:
@@ -39449,6 +39449,15 @@ __metadata:
   dependencies:
     brace-expansion: "npm:^2.0.1"
   checksum: 10/c81b47d28153e77521877649f4bab48348d10938df9e8147a58111fe00ef89559a2938de9f6632910c4f7bf7bb5cd81191a546167e58d357f0cfb1e18cecc1c5
+  languageName: node
+  linkType: hard
+
+"minimatch@npm:^10.1.1, minimatch@npm:^10.2.0, minimatch@npm:^10.2.1":
+  version: 10.2.2
+  resolution: "minimatch@npm:10.2.2"
+  dependencies:
+    brace-expansion: "npm:^5.0.2"
+  checksum: 10/e135be7b502ac97c02bcee42ccc1c55dc26dbac036c0f4acde69e42fe339d7fb53fae711e57b3546cb533426382ea492c73a073c7f78832e0453d120d48dd015
   languageName: node
   linkType: hard
 
