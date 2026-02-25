@@ -201,7 +201,7 @@ export namespace mockApis {
   }
 
   /**
-   * Fake implementation of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+   * Fake implementation of {@link @backstage/frontend-plugin-api#TranslationApi}.
    * By default returns the default translation.
    *
    * @public
@@ -216,14 +216,14 @@ export namespace mockApis {
   }
 
   /**
-   * Mock helpers for {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+   * Mock helpers for {@link @backstage/frontend-plugin-api#TranslationApi}.
    *
    * @see {@link @backstage/frontend-plugin-api#mockApis.translation}
    * @public
    */
   export namespace translation {
     /**
-     * Creates a mock of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+     * Creates a mock of {@link @backstage/frontend-plugin-api#TranslationApi}.
      *
      * @public
      */

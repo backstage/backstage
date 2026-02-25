@@ -8,3 +8,4 @@ documentation: https://roadie.io/backstage/plugins/aws-lambda/?utm_source=backst
 iconUrl: https://roadie.io/images/logos/lambda.png
 npmPackageName: '@roadiehq/backstage-plugin-aws-lambda'
 addedDate: '2021-04-20'
+status: active

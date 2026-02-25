@@ -106,6 +106,8 @@ When filling these out, you have 2 choices,
 
 If you opt for the second option of replacing the entire string, take care to not commit your `app-config.yaml` to source control. It may contain passwords that you don't want leaked.
 
+:::
+
 ## Passwordless PostgreSQL in the Cloud
 
 If you want to host your PostgreSQL server in the cloud with passwordless authentication, you can use Azure Database for PostgreSQL with Microsoft Entra authentication or Google Cloud SQL for PostgreSQL with Cloud IAM.
@@ -187,8 +189,6 @@ backend:
       password: ${POSTGRES_PASSWORD}
       # highlight-remove-end
 ```
-
-:::
 
 [Start the Backstage app](../index.md#2-run-the-backstage-app):
 

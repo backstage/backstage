@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/backstage/blob/master/plugins/devtoo
 iconUrl: /img/devtools.svg
 npmPackageName: '@backstage/plugin-devtools'
 addedDate: '2023-06-17'
+status: active

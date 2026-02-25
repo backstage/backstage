@@ -169,20 +169,9 @@ export type NotificationsSideBarItemProps = {
 };
 
 // @public (undocumented)
-export const NotificationsTable: ({
-  title,
-  markAsReadOnLinkOpen,
-  isLoading,
-  notifications,
-  isUnread,
-  onUpdate,
-  setContainsText,
-  onPageChange,
-  onRowsPerPageChange,
-  page,
-  pageSize,
-  totalCount,
-}: NotificationsTableProps) => JSX_2.Element;
+export const NotificationsTable: (
+  input: NotificationsTableProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type NotificationsTableProps = Pick<

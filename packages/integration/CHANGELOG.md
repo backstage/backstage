@@ -1,5 +1,28 @@
 # @backstage/integration
 
+## 1.21.0-next.0
+
+### Minor Changes
+
+- d933f62: Add configurable throttling and retry mechanism for GitLab integration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.20.0
+
+### Minor Changes
+
+- 6999f6d: The AzureUrl class in the @backstage/integration package is now able to process BOTH git branches and git tags. Initially this class only processed git branches and threw an error when non-branch Azure URLs were passed in.
+
+### Patch Changes
+
+- cc6206e: Added support for `{org}.visualstudio.com` domains used by Azure DevOps
+- 7455dae: Use node prefix on native imports
+
 ## 1.20.0-next.2
 
 ### Patch Changes

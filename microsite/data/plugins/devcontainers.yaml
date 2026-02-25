@@ -8,3 +8,4 @@ documentation: https://github.com/coder/backstage-plugins/blob/main/plugins/back
 iconUrl: /img/devcontainers.png
 npmPackageName: '@coder/backstage-plugin-devcontainers-react'
 addedDate: '2024-03-15'
+status: active

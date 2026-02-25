@@ -1,5 +1,26 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.53-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-search-backend-node@1.4.2-next.0
+  - @backstage/plugin-search-common@1.2.22
+
+## 0.5.52
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 2ee354a: Return `numberOfResults` count with search query responses
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-search-backend-node@1.4.1
+  - @backstage/plugin-search-common@1.2.22
+
 ## 0.5.52-next.1
 
 ### Patch Changes

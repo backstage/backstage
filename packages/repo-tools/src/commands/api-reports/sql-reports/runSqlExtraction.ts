@@ -16,7 +16,7 @@
 
 import fs, { readJson } from 'fs-extra';
 import { relative as relativePath } from 'node:path';
-import { paths as cliPaths } from '../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 import { diff as justDiff } from 'just-diff';
 import { SchemaInfo } from './types';
 import { getPgSchemaInfo } from './getPgSchemaInfo';
@@ -43,14 +43,14 @@ export async function runSqlExtraction(options: SqlExtractionOptions) {
   let dbIndex = 1;
 
   for (const packageDir of options.packageDirs) {
-    const migrationDir = cliPaths.resolveTargetRoot(packageDir, 'migrations');
+    const migrationDir = targetPaths.resolveRoot(packageDir, 'migrations');
     if (!(await fs.pathExists(migrationDir))) {
       console.log(`No SQL migrations found in ${packageDir}`);
       continue;
     }
 
     const { name: pkgName } = await readJson(
-      cliPaths.resolveTargetRoot(packageDir, 'package.json'),
+      targetPaths.resolveRoot(packageDir, 'package.json'),
     );
 
     const migrationFiles = await fs.readdir(migrationDir, {
@@ -95,7 +95,7 @@ async function runSingleSqlExtraction(
   knex: Knex,
   options: SqlExtractionOptions,
 ) {
-  const migrationDir = cliPaths.resolveTargetRoot(
+  const migrationDir = targetPaths.resolveRoot(
     targetDir,
     'migrations',
     migrationTarget,
@@ -152,7 +152,7 @@ async function runSingleSqlExtraction(
       break;
     }
   }
-  const reportPath = cliPaths.resolveTargetRoot(
+  const reportPath = targetPaths.resolveRoot(
     targetDir,
     `report${migrationTarget === '.' ? '' : `-${migrationTarget}`}.sql.md`,
   );
@@ -182,7 +182,7 @@ async function runSingleSqlExtraction(
         console.log('');
         console.log(
           `The conflicting file is ${relativePath(
-            cliPaths.targetRoot,
+            targetPaths.rootDir,
             reportPath,
           )}, expecting the following content:`,
         );

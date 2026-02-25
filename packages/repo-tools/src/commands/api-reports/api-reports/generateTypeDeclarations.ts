@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { run, ExitCodeError } from '@backstage/cli-common';
-import { paths as cliPaths } from '../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 
 /**
  * Generates the TypeScript declaration files for the specified project, using the provided `tsconfig.json` file.
@@ -29,7 +29,7 @@ import { paths as cliPaths } from '../../../lib/paths';
  * @returns {Promise<void>} A promise that resolves when the declaration files have been generated.
  */
 export async function generateTypeDeclarations(tsconfigFilePath: string) {
-  await fs.remove(cliPaths.resolveTargetRoot('dist-types'));
+  await fs.remove(targetPaths.resolveRoot('dist-types'));
   try {
     await run(
       [
@@ -43,7 +43,7 @@ export async function generateTypeDeclarations(tsconfigFilePath: string) {
         'false',
       ],
       {
-        cwd: cliPaths.targetRoot,
+        cwd: targetPaths.rootDir,
       },
     ).waitForExit();
   } catch (error) {

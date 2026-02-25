@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/backstage/blob/master/plugins/api-do
 iconUrl: https://raw.githubusercontent.com/vscode-icons/vscode-icons/master/icons/file_type_swagger.svg
 npmPackageName: '@backstage/plugin-api-docs'
 addedDate: '2020-11-19'
+status: active

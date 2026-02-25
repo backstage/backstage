@@ -81,8 +81,13 @@ export const AccordionDefinition: {
     readonly panel: 'bui-AccordionPanel';
     readonly group: 'bui-AccordionGroup';
   };
-  readonly bg: 'consumer';
+  readonly bg: 'provider';
   readonly propDefs: {
+    readonly bg: {
+      readonly dataAttribute: true;
+      readonly default: 'neutral-auto';
+    };
+    readonly children: {};
     readonly className: {};
   };
 };
@@ -121,6 +126,8 @@ export interface AccordionGroupProps
 
 // @public
 export type AccordionOwnProps = {
+  bg?: ProviderBg;
+  children: ReactNode;
   className?: string;
 };
 
@@ -154,7 +161,7 @@ export interface AccordionPanelProps
 
 // @public
 export interface AccordionProps
-  extends Omit<DisclosureProps, 'className'>,
+  extends Omit<DisclosureProps, 'children' | 'className'>,
     AccordionOwnProps {}
 
 // @public (undocumented)
@@ -285,7 +292,7 @@ export interface BgContextValue {
 }
 
 // @public
-export const BgProvider: ({ bg, children }: BgProviderProps) => JSX_2.Element;
+export const BgProvider: (input: BgProviderProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface BgProviderProps {
@@ -364,7 +371,7 @@ export const BoxDefinition: {
 export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
   bg?: Responsive<ProviderBg>;
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
   style?: CSSProperties;
 };
@@ -374,7 +381,7 @@ export interface BoxProps
   extends SpaceProps,
     BoxOwnProps,
     BoxUtilityProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {}
 
 // @public (undocumented)
 export type BoxUtilityProps = {
@@ -901,6 +908,7 @@ export const DialogDefinition: {
   readonly classNames: {
     readonly overlay: 'bui-DialogOverlay';
     readonly dialog: 'bui-Dialog';
+    readonly content: 'bui-DialogContent';
     readonly header: 'bui-DialogHeader';
     readonly headerTitle: 'bui-DialogHeaderTitle';
     readonly body: 'bui-DialogBody';
@@ -1335,6 +1343,7 @@ export const MenuDefinition: {
   readonly classNames: {
     readonly root: 'bui-Menu';
     readonly popover: 'bui-MenuPopover';
+    readonly inner: 'bui-MenuInner';
     readonly content: 'bui-MenuContent';
     readonly section: 'bui-MenuSection';
     readonly sectionHeader: 'bui-MenuSectionHeader';
@@ -1841,20 +1850,7 @@ export interface SwitchProps extends SwitchProps_2 {
 export const Tab: (props: TabProps) => JSX_2.Element;
 
 // @public (undocumented)
-export function Table<T extends TableItem>({
-  columnConfig,
-  data,
-  loading,
-  isStale,
-  error,
-  pagination,
-  sort,
-  rowConfig,
-  selection,
-  emptyState,
-  className,
-  style,
-}: TableProps<T>): JSX_2.Element;
+export function Table<T extends TableItem>(input: TableProps<T>): JSX_2.Element;
 
 // @public (undocumented)
 export const TableBody: <T extends object>(
@@ -1901,19 +1897,7 @@ export interface TableItem {
 }
 
 // @public
-export function TablePagination({
-  pageSize,
-  pageSizeOptions,
-  offset,
-  totalCount,
-  hasNextPage,
-  hasPreviousPage,
-  onNextPage,
-  onPreviousPage,
-  onPageSizeChange,
-  showPageSizeOptions,
-  getLabel,
-}: TablePaginationProps): JSX_2.Element;
+export function TablePagination(input: TablePaginationProps): JSX_2.Element;
 
 // @public
 export const TablePaginationDefinition: {
@@ -2247,6 +2231,7 @@ export const Tooltip: ForwardRefExoticComponent<
 export const TooltipDefinition: {
   readonly classNames: {
     readonly tooltip: 'bui-Tooltip';
+    readonly content: 'bui-TooltipContent';
     readonly arrow: 'bui-TooltipArrow';
   };
 };

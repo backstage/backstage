@@ -125,6 +125,7 @@ export type CatalogScmEventContext = {
 
 // @alpha
 export interface CatalogScmEventsService {
+  markEventActionTaken(options: { count?: number; action: string }): void;
   publish(events: CatalogScmEvent[]): Promise<void>;
   subscribe(subscriber: CatalogScmEventsServiceSubscriber): {
     unsubscribe: () => void;

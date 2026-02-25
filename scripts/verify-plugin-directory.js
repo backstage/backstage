@@ -31,6 +31,8 @@ const configSchema = z.object({
   npmPackageName: z.string(),
   addedDate: z.coerce.date(),
   order: z.number().optional(),
+  status: z.enum(['active', 'inactive', 'archived']),
+  staleSince: z.coerce.date().optional(),
 });
 
 async function main() {
@@ -71,6 +73,7 @@ async function main() {
           error,
         );
       }
+      hasErrors = true;
     }
   }
   if (hasErrors) {

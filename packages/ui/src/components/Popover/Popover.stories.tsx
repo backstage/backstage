@@ -19,6 +19,7 @@ import { Button } from '../Button/Button';
 import { DialogTrigger } from '../Dialog/Dialog';
 import { Text } from '../Text/Text';
 import { Flex } from '../Flex/Flex';
+import { Box } from '../Box';
 
 const meta = preview.meta({
   title: 'Backstage UI/Popover',
@@ -74,6 +75,24 @@ export const Default = meta.story({
 });
 
 export const IsOpen = Default.extend({
+  parameters: { layout: 'fullscreen' },
+  decorators: [
+    Story => (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundImage:
+            'radial-gradient(circle, var(--bui-border-1) 1px, transparent 1px)',
+          backgroundSize: '16px 16px',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     isOpen: true,
   },
@@ -189,6 +208,9 @@ export const WithRichContent = Default.extend({
             This is a popover with rich content. It can contain multiple
             elements and formatted text.
           </Text>
+          <Box bg="neutral-auto" p="2">
+            <Text>You can also use the automatic bg system inside it.</Text>
+          </Box>
           <Flex gap="2" justify="end">
             <Button variant="tertiary" size="small">
               Cancel

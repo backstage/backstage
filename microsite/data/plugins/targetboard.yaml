@@ -8,3 +8,4 @@ documentation: https://github.com/targetboard/backstage-plugin/blob/main/README.
 iconUrl: https://app.targetboard.ai/assets/TargetBoard-Backstage-logo.svg
 npmPackageName: '@targetboard/backstage-plugin'
 addedDate: '2025-11-02'
+status: active

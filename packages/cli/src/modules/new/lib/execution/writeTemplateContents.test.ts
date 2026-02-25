@@ -17,7 +17,10 @@
 import { relative as relativePath } from 'node:path';
 import { writeTemplateContents } from './writeTemplateContents';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { paths } from '../../../../lib/paths';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
+
+const mockDir = createMockDirectory();
+overrideTargetPaths(mockDir.path);
 
 const baseConfig = {
   version: '0.1.0',
@@ -26,14 +29,14 @@ const baseConfig = {
 };
 
 describe('writeTemplateContents', () => {
-  const mockDir = createMockDirectory();
-
   beforeEach(() => {
     mockDir.clear();
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        workspaces: { packages: ['packages/*', 'plugins/*'] },
+      }),
+    });
     jest.resetAllMocks();
-    jest
-      .spyOn(paths, 'resolveTargetRoot')
-      .mockImplementation((...args) => mockDir.resolve(...args));
   });
 
   it('should write an empty template', async () => {
@@ -53,7 +56,11 @@ describe('writeTemplateContents', () => {
     );
 
     expect(relativePath(mockDir.path, targetDir)).toBe('plugins/plugin-test');
-    expect(mockDir.content()).toEqual({});
+    expect(mockDir.content()).toEqual({
+      'package.json': JSON.stringify({
+        workspaces: { packages: ['packages/*', 'plugins/*'] },
+      }),
+    });
   });
 
   it('should write template with various files', async () => {
@@ -87,6 +94,9 @@ describe('writeTemplateContents', () => {
     );
 
     expect(mockDir.content()).toEqual({
+      'package.json': JSON.stringify({
+        workspaces: { packages: ['packages/*', 'plugins/*'] },
+      }),
       out: {
         'test.txt': 'test',
         'plugin.txt': 'id=test',

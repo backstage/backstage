@@ -87,6 +87,13 @@ export interface BackstagePackageJson {
 }
 
 // @public
+export type ConcurrentTasksOptions<TItem> = {
+  concurrencyFactor?: number;
+  items: Iterable<TItem>;
+  worker: (item: TItem) => Promise<void>;
+};
+
+// @public
 export class GitUtils {
   static listChangedFiles(ref: string): Promise<string[]>;
   static readFileAtRef(path: string, ref: string): Promise<string>;
@@ -200,4 +207,27 @@ export class PackageRoles {
   static getRoleFromPackage(pkgJson: unknown): PackageRole | undefined;
   static getRoleInfo(role: string): PackageRoleInfo;
 }
+
+// @public
+export function runConcurrentTasks<TItem>(
+  options: ConcurrentTasksOptions<TItem>,
+): Promise<void>;
+
+// @public
+export function runWorkerQueueThreads<TItem, TResult, TContext>(
+  options: WorkerQueueThreadsOptions<TItem, TResult, TContext>,
+): Promise<{
+  results: TResult[];
+}>;
+
+// @public
+export type WorkerQueueThreadsOptions<TItem, TResult, TContext> = {
+  items: Iterable<TItem>;
+  workerFactory: (
+    context: TContext,
+  ) =>
+    | ((item: TItem) => Promise<TResult>)
+    | Promise<(item: TItem) => Promise<TResult>>;
+  context?: TContext;
+};
 ```

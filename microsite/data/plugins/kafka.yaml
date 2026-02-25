@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://kafka.apache.org/images/apache-kafka.png
 npmPackageName: '@backstage-community/plugin-kafka'
 addedDate: '2021-01-21'
+status: active

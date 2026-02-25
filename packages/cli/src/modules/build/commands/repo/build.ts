@@ -18,13 +18,14 @@ import chalk from 'chalk';
 import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'node:path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import {
   BackstagePackage,
   PackageGraph,
   PackageRoles,
+  runConcurrentTasks,
 } from '@backstage/cli-node';
-import { runParallelWorkers } from '../../../../lib/parallel';
 import { buildFrontend } from '../../lib/buildFrontend';
 import { buildBackend } from '../../lib/buildBackend';
 import { createScriptOptionsParser } from '../../../../lib/optionsParser';
@@ -89,7 +90,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       targetDir: pkg.dir,
       packageJson: pkg.packageJson,
       outputs,
-      logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
+      logPrefix: `${chalk.cyan(relativePath(targetPaths.rootDir, pkg.dir))}: `,
       workspacePackages: packages,
       minify: opts.minify ?? buildOptions.minify,
     };
@@ -100,9 +101,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
   if (opts.all) {
     console.log('Building apps');
-    await runParallelWorkers({
+    await runConcurrentTasks({
       items: apps,
-      parallelismFactor: 1 / 2,
+      concurrencyFactor: 1 / 2,
       worker: async pkg => {
         const buildOptions = parseBuildScript(pkg.packageJson.scripts?.build);
         if (!buildOptions) {
@@ -121,9 +122,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     });
 
     console.log('Building backends');
-    await runParallelWorkers({
+    await runConcurrentTasks({
       items: backends,
-      parallelismFactor: 1 / 2,
+      concurrencyFactor: 1 / 2,
       worker: async pkg => {
         const buildOptions = parseBuildScript(pkg.packageJson.scripts?.build);
         if (!buildOptions) {

@@ -78,7 +78,6 @@
 
     /* Neutral background colors */
     --bui-bg-app: #f8f8f8;
-    --bui-bg-popover: #ffffff;
 
     --bui-bg-neutral-1: #fff;
     --bui-bg-neutral-1-hover: oklch(0% 0 0 / 12%);
@@ -153,7 +152,6 @@
 
     /* Neutral background colors */
     --bui-bg-app: #333333;
-    --bui-bg-popover: #1a1a1a;
 
     --bui-bg-neutral-1: oklch(100% 0 0 / 10%);
     --bui-bg-neutral-1-hover: oklch(100% 0 0 / 14%);

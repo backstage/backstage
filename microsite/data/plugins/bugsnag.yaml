@@ -8,3 +8,4 @@ documentation: https://roadie.io/backstage/plugins/bugsnag/?utm_source=backstage
 iconUrl: https://roadie.io/images/logos/bugsnag.png
 npmPackageName: '@roadiehq/backstage-plugin-bugsnag'
 addedDate: '2021-09-24'
+status: active

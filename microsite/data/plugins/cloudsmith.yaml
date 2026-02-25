@@ -8,3 +8,4 @@ documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/tree/main/pl
 iconUrl: https://cloudsmith.com/img/cloudsmith-mini-dark.svg
 npmPackageName: '@roadiehq/backstage-plugin-cloudsmith'
 addedDate: '2022-11-18'
+status: active

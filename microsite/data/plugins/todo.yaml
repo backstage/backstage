@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://backstage.io/img/todo-logo.png
 npmPackageName: '@backstage-community/plugin-todo'
 addedDate: '2021-03-16'
+status: active

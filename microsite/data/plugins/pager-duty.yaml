@@ -8,3 +8,4 @@ documentation: https://pagerduty.github.io/backstage-plugin-docs/index.html
 iconUrl: https://avatars2.githubusercontent.com/u/766800?s=200&v=4
 npmPackageName: '@pagerduty/backstage-plugin'
 addedDate: '2020-12-22'
+status: active

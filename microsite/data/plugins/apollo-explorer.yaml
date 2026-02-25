@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/apollo-explorer.png
 npmPackageName: '@backstage-community/plugin-apollo-explorer'
 addedDate: '2022-07-20'
+status: active

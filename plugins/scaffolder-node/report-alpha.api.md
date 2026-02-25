@@ -11,11 +11,7 @@ import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder
 import { z } from 'zod';
 
 // @alpha
-export type AutocompleteHandler = ({
-  resource,
-  token,
-  context,
-}: {
+export type AutocompleteHandler = (input: {
   resource: string;
   token: string;
   context: Record<string, string>;
@@ -125,10 +121,7 @@ export const restoreWorkspace: (opts: {
 // @alpha
 export interface ScaffolderAutocompleteExtensionPoint {
   // (undocumented)
-  addAutocompleteProvider({
-    id,
-    handler,
-  }: {
+  addAutocompleteProvider(input: {
     id: string;
     handler: AutocompleteHandler;
   }): void;
@@ -217,13 +210,7 @@ export interface WorkspaceProvider {
     targetPath: string;
   }): Promise<void>;
   // (undocumented)
-  serializeWorkspace({
-    path,
-    taskId,
-  }: {
-    path: string;
-    taskId: string;
-  }): Promise<void>;
+  serializeWorkspace(input: { path: string; taskId: string }): Promise<void>;
 }
 
 // @alpha (undocumented)

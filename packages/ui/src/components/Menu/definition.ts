@@ -24,6 +24,7 @@ export const MenuDefinition = {
   classNames: {
     root: 'bui-Menu',
     popover: 'bui-MenuPopover',
+    inner: 'bui-MenuInner',
     content: 'bui-MenuContent',
     section: 'bui-MenuSection',
     sectionHeader: 'bui-MenuSectionHeader',

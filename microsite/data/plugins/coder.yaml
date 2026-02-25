@@ -8,3 +8,4 @@ documentation: https://github.com/coder/backstage-plugins/blob/main/plugins/back
 iconUrl: /img/coder.png
 npmPackageName: '@coder/backstage-plugin-coder'
 addedDate: '2024-03-15'
+status: active

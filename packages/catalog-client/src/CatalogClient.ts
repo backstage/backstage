@@ -535,9 +535,7 @@ export class CatalogClient implements CatalogApi {
     } while (cursor);
   }
 
-  //
-  // Private methods
-  //
+  // #region Private methods
 
   private async requestIgnored(response: Response): Promise<void> {
     if (!response.ok) {
@@ -588,4 +586,6 @@ export class CatalogClient implements CatalogApi {
     }
     return filters;
   }
+
+  // #endregion
 }

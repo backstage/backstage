@@ -143,6 +143,11 @@
     gap: var(--bui-space-2);
     outline: none;
 
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: 2px;
+    }
+
     &[data-focused]::before {
       content: '';
       position: absolute;

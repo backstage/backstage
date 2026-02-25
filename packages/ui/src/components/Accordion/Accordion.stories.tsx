@@ -21,6 +21,7 @@ import {
   AccordionGroup,
 } from './Accordion';
 import { Box } from '../Box';
+import { Button } from '../Button';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import {
@@ -260,6 +261,10 @@ export const AutoBg = meta.story({
           <AccordionTrigger title="Toggle Panel" />
           <AccordionPanel>
             <Content />
+            <Flex mt="3" gap="2">
+              <Button>Action</Button>
+              <Button variant="secondary">Cancel</Button>
+            </Flex>
           </AccordionPanel>
         </Accordion>
       </Flex>
@@ -270,6 +275,10 @@ export const AutoBg = meta.story({
             <AccordionTrigger title="Auto (neutral-2)" />
             <AccordionPanel>
               <Content />
+              <Flex mt="3" gap="2">
+                <Button>Action</Button>
+                <Button variant="secondary">Cancel</Button>
+              </Flex>
             </AccordionPanel>
           </Accordion>
         </Flex>
@@ -281,6 +290,10 @@ export const AutoBg = meta.story({
             <AccordionTrigger title="Auto (neutral-3)" />
             <AccordionPanel>
               <Content />
+              <Flex mt="3" gap="2">
+                <Button>Action</Button>
+                <Button variant="secondary">Cancel</Button>
+              </Flex>
             </AccordionPanel>
           </Accordion>
         </Flex>
@@ -289,9 +302,13 @@ export const AutoBg = meta.story({
         <Text>Neutral 3 container</Text>
         <Flex mt="2">
           <Accordion defaultExpanded>
-            <AccordionTrigger title="Auto (neutral-4)" />
+            <AccordionTrigger title="Auto (neutral-3)" />
             <AccordionPanel>
               <Content />
+              <Flex mt="3" gap="2">
+                <Button>Action</Button>
+                <Button variant="secondary">Cancel</Button>
+              </Flex>
             </AccordionPanel>
           </Accordion>
         </Flex>

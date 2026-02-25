@@ -17,9 +17,8 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { buildBundle, getModuleFederationRemoteOptions } from './bundler';
-import { getEnvironmentParallelism } from '../../../lib/parallel';
-import { loadCliConfig } from '../../config/lib/config';
 import { BackstagePackageJson } from '@backstage/cli-node';
+import { loadCliConfig } from '../../config/lib/config';
 
 interface BuildAppOptions {
   targetDir: string;
@@ -37,7 +36,6 @@ export async function buildFrontend(options: BuildAppOptions) {
   await buildBundle({
     targetDir,
     entry: 'src/index',
-    parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
     moduleFederationRemote: options.isModuleFederationRemote
       ? await getModuleFederationRemoteOptions(

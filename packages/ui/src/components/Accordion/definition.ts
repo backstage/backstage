@@ -41,8 +41,10 @@ export const AccordionDefinition = defineComponent<AccordionOwnProps>()({
     panel: 'bui-AccordionPanel',
     group: 'bui-AccordionGroup',
   },
-  bg: 'consumer',
+  bg: 'provider',
   propDefs: {
+    bg: { dataAttribute: true, default: 'neutral-auto' },
+    children: {},
     className: {},
   },
 });

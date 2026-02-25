@@ -480,6 +480,9 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
 // @alpha (undocumented)
 export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi>;
 
+// @alpha (undocumented)
+export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi>;
+
 // @alpha @deprecated
 export type FormProps = Pick<
   FormProps_2,
@@ -497,6 +500,12 @@ export type ScaffolderCustomFieldExplorerClassKey =
 export interface ScaffolderFormDecoratorsApi {
   // (undocumented)
   getFormDecorators(): Promise<ScaffolderFormDecorator[]>;
+}
+
+// @alpha (undocumented)
+export interface ScaffolderFormFieldsApi {
+  // (undocumented)
+  loadFormFields(): Promise<FormField[]>;
 }
 
 // @public (undocumented)

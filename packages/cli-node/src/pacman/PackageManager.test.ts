@@ -15,16 +15,13 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import { detectPackageManager } from './PackageManager';
 import { Yarn } from './yarn';
 import { withLogCollector } from '@backstage/test-utils';
 
 const mockDir = createMockDirectory();
-
-jest.mock('../paths', () => ({
-  ...jest.requireActual('../paths'),
-  paths: { resolveTargetRoot: (...args: string[]) => mockDir.resolve(...args) },
-}));
+overrideTargetPaths(mockDir.path);
 
 const mockYarnCreate = jest.spyOn(Yarn, 'create');
 
