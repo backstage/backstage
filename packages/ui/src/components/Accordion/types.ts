@@ -20,6 +20,7 @@ import type {
   DisclosurePanelProps as RADisclosurePanelProps,
   DisclosureGroupProps as RADisclosureGroupProps,
 } from 'react-aria-components';
+import type { ReactElement, ReactNode } from 'react';
 
 /**
  * Own props for the Accordion component.
@@ -45,17 +46,17 @@ export type AccordionTriggerOwnProps = {
   className?: string;
   title?: string;
   subtitle?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   /**
    * Icon to display at the start of the trigger.
    * @defaultValue undefined
    */
-  iconStart?: React.ReactElement;
+  iconStart?: ReactElement;
   /**
    * Icon to display at the end of the trigger.
    * @defaultValue undefined
    */
-  iconEnd?: React.ReactElement;
+  iconEnd?: ReactElement;
 };
 
 /**
