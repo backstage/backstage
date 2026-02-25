@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import hubSpotStyles from './hubSpotNewAdoptersForm.module.scss';
 
@@ -26,20 +26,23 @@ declare global {
 
 const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 50;
-const NAME_PATTERN = /^[a-zA-Z\s'-]+$/;
+const NAME_PATTERN = /^[\p{L}\p{M}\s''-]+$/u;
 
 const HUBSPOT_SCRIPT_ID = 'hubspot-forms-script';
-let isFormInitialized = false;
 
 export const HubSpotNewAdoptersForm = () => {
   const [isClosed, setClosed] = useState(true);
+  const isFormInitializedRef = useRef(false);
 
   useEffect(() => {
     const eventListeners: Array<{ element: HTMLInputElement; handler: EventListener }> = [];
     
     const initializeForm = () => {
-      if (window.hbspt && !isFormInitialized) {
-        isFormInitialized = true;
+      const formContainer = document.querySelector(`.${hubSpotStyles.hubSpotNewAdopterFormContent}`);
+      const hasExistingForm = formContainer?.querySelector('form');
+      
+      if (window.hbspt && !isFormInitializedRef.current && !hasExistingForm) {
+        isFormInitializedRef.current = true;
 
         const getValidationError = (
           value: string,
@@ -232,7 +235,7 @@ export const HubSpotNewAdoptersForm = () => {
       eventListeners.forEach(({ element, handler }) => {
         element.removeEventListener('blur', handler as EventListener);
       });
-      isFormInitialized = false;
+      isFormInitializedRef.current = false;
     };
   }, []);
 
