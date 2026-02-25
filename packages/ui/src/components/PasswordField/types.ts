@@ -39,6 +39,7 @@ export type PasswordFieldOwnProps = {
    */
   placeholder?: string;
 
+  label?: FieldLabelProps['label'];
   description?: FieldLabelProps['description'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   isRequired?: boolean;
@@ -47,8 +48,4 @@ export type PasswordFieldOwnProps = {
 /** @public */
 export interface PasswordFieldProps
   extends Omit<AriaTextFieldProps, 'className' | 'isRequired' | 'description'>,
-    Omit<
-      FieldLabelProps,
-      'htmlFor' | 'id' | 'className' | 'description' | 'secondaryLabel'
-    >,
     PasswordFieldOwnProps {}

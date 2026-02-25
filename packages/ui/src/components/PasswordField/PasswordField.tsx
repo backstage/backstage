@@ -31,32 +31,27 @@ import { RiEyeLine, RiEyeOffLine } from '@remixicon/react';
 /** @public */
 export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
   (props, ref) => {
-    const {
-      label,
-      'aria-label': ariaLabel,
-      'aria-labelledby': ariaLabelledBy,
-    } = props;
-
-    useEffect(() => {
-      if (!label && !ariaLabel && !ariaLabelledBy) {
-        console.warn(
-          'PasswordField requires either a visible label, aria-label, or aria-labelledby for accessibility',
-        );
-      }
-    }, [label, ariaLabel, ariaLabelledBy]);
-
     const { ownProps, restProps, dataAttributes } = useDefinition(
       PasswordFieldDefinition,
       props,
     );
     const {
       classes,
+      label,
       icon,
       isRequired,
       secondaryLabel,
       placeholder,
       description,
     } = ownProps;
+
+    useEffect(() => {
+      if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {
+        console.warn(
+          'PasswordField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [label, restProps['aria-label'], restProps['aria-labelledby']]);
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -69,8 +64,6 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
       <AriaTextField
         className={classes.root}
         {...dataAttributes}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
         type="password"
         {...restProps}
         ref={ref}

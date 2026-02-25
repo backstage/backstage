@@ -37,6 +37,7 @@ export const PasswordFieldDefinition = defineComponent<PasswordFieldOwnProps>()(
       className: {},
       icon: {},
       placeholder: {},
+      label: {},
       description: {},
       secondaryLabel: {},
       isRequired: {},

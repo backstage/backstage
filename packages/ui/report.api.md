@@ -1616,6 +1616,7 @@ export const PasswordFieldDefinition: {
     readonly className: {};
     readonly icon: {};
     readonly placeholder: {};
+    readonly label: {};
     readonly description: {};
     readonly secondaryLabel: {};
     readonly isRequired: {};
@@ -1628,6 +1629,7 @@ export type PasswordFieldOwnProps = {
   className?: string;
   icon?: ReactNode;
   placeholder?: string;
+  label?: FieldLabelProps['label'];
   description?: FieldLabelProps['description'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   isRequired?: boolean;
@@ -1636,10 +1638,6 @@ export type PasswordFieldOwnProps = {
 // @public (undocumented)
 export interface PasswordFieldProps
   extends Omit<TextFieldProps_2, 'className' | 'isRequired' | 'description'>,
-    Omit<
-      FieldLabelProps,
-      'htmlFor' | 'id' | 'className' | 'description' | 'secondaryLabel'
-    >,
     PasswordFieldOwnProps {}
 
 // @public
