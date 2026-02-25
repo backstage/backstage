@@ -19,10 +19,16 @@ import { createPlugin } from '@backstage/core-plugin-api';
 
 export const examplePlugin = createPlugin({
   // ...
-  featureFlags: [{ name: 'show-example-feature' }],
+  featureFlags: [
+    {
+      name: 'show-example-feature',
+      description: 'Enables the new beta dashboard view',
+    },
   // ...
 });
 ```
+
+Note that the `description` property is optional. If not provided, the default "Registered in {pluginId} plugin" message is shown.
 
 ### In the application
 
