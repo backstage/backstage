@@ -8856,7 +8856,7 @@ hideArrow?: boolean</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Button, DialogTrigger, Flex, Popover, Text } from "@backstage/ui";</code></pre>
+                <pre><code>import { Box, Button, DialogTrigger, Flex, Popover, Text } from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -9078,6 +9078,9 @@ hideArrow?: boolean</code></pre>
           This is a popover with rich content. It can contain multiple
           elements and formatted text.
         &lt;/Text&gt;
+        &lt;Box bg=&quot;neutral-auto&quot; p=&quot;2&quot;&gt;
+          &lt;Text&gt;You can also use the automatic bg system inside it.&lt;/Text&gt;
+        &lt;/Box&gt;
         &lt;Flex gap=&quot;2&quot; justify=&quot;end&quot;&gt;
           &lt;Button variant=&quot;tertiary&quot; size=&quot;small&quot;&gt;
             Cancel
