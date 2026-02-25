@@ -14,21 +14,32 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { PasswordFieldOwnProps } from './types';
+import styles from './PasswordField.module.css';
 
 /**
  * Component definition for PasswordField
  * @public
  */
-export const PasswordFieldDefinition = {
-  classNames: {
-    root: 'bui-PasswordField',
-    inputWrapper: 'bui-PasswordFieldInputWrapper',
-    input: 'bui-PasswordFieldInput',
-    inputIcon: 'bui-PasswordFieldIcon',
-    inputVisibility: 'bui-PasswordFieldVisibility',
+export const PasswordFieldDefinition = defineComponent<PasswordFieldOwnProps>()(
+  {
+    styles,
+    classNames: {
+      root: 'bui-PasswordField',
+      inputWrapper: 'bui-PasswordFieldInputWrapper',
+      input: 'bui-PasswordFieldInput',
+      inputIcon: 'bui-PasswordFieldIcon',
+      inputVisibility: 'bui-PasswordFieldVisibility',
+    },
+    propDefs: {
+      size: { dataAttribute: true, default: 'small' },
+      className: {},
+      icon: {},
+      placeholder: {},
+      description: {},
+      secondaryLabel: {},
+      isRequired: {},
+    },
   },
-  dataAttributes: {
-    size: ['small', 'medium'] as const,
-  },
-} as const satisfies ComponentDefinition;
+);

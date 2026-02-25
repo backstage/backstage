@@ -15,27 +15,40 @@
  */
 
 import type { TextFieldProps as AriaTextFieldProps } from 'react-aria-components';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
 import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
-export interface PasswordFieldProps
-  extends AriaTextFieldProps,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
-  /**
-   * An icon to render before the input
-   */
-  icon?: ReactNode;
-
+export type PasswordFieldOwnProps = {
   /**
    * The size of the password field
    * @defaultValue 'medium'
    */
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 
+  className?: string;
+
+  /**
+   * An icon to render before the input
+   */
+  icon?: ReactNode;
+
   /**
    * Text to display in the input when it has no value
    */
   placeholder?: string;
-}
+
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  isRequired?: boolean;
+};
+
+/** @public */
+export interface PasswordFieldProps
+  extends Omit<AriaTextFieldProps, 'className' | 'isRequired' | 'description'>,
+    Omit<
+      FieldLabelProps,
+      'htmlFor' | 'id' | 'className' | 'description' | 'secondaryLabel'
+    >,
+    PasswordFieldOwnProps {}
