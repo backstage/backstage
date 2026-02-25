@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog
 
+## 1.33.1
+
+### Patch Changes
+
+- c1c8277: Fixed entity page tab groups not respecting the ordering from the `groups` configuration.
+
 ## 1.33.0
 
 ### Minor Changes
