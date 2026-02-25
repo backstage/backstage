@@ -40,6 +40,5 @@ export const SearchFieldDefinition = defineComponent<SearchFieldOwnProps>()({
     label: {},
     description: {},
     secondaryLabel: {},
-    isRequired: {},
   },
 });

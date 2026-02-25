@@ -1642,7 +1642,6 @@ export const PasswordFieldDefinition: {
     readonly label: {};
     readonly description: {};
     readonly secondaryLabel: {};
-    readonly isRequired: {};
   };
 };
 
@@ -1655,12 +1654,11 @@ export type PasswordFieldOwnProps = {
   label?: FieldLabelProps['label'];
   description?: FieldLabelProps['description'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
-  isRequired?: boolean;
 };
 
 // @public (undocumented)
 export interface PasswordFieldProps
-  extends Omit<TextFieldProps_2, 'className' | 'isRequired' | 'description'>,
+  extends Omit<TextFieldProps_2, 'className' | 'description'>,
     PasswordFieldOwnProps {}
 
 // @public
@@ -1843,7 +1841,6 @@ export const SearchFieldDefinition: {
     readonly label: {};
     readonly description: {};
     readonly secondaryLabel: {};
-    readonly isRequired: {};
   };
 };
 
@@ -1857,12 +1854,11 @@ export type SearchFieldOwnProps = {
   label?: FieldLabelProps['label'];
   description?: FieldLabelProps['description'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
-  isRequired?: boolean;
 };
 
 // @public (undocumented)
 export interface SearchFieldProps
-  extends Omit<SearchFieldProps_2, 'className' | 'isRequired' | 'description'>,
+  extends Omit<SearchFieldProps_2, 'className' | 'description'>,
     SearchFieldOwnProps {}
 
 // @public (undocumented)
@@ -2318,7 +2314,6 @@ export const TextFieldDefinition: {
     readonly label: {};
     readonly description: {};
     readonly secondaryLabel: {};
-    readonly isRequired: {};
   };
 };
 
@@ -2331,12 +2326,11 @@ export type TextFieldOwnProps = {
   label?: FieldLabelProps['label'];
   description?: FieldLabelProps['description'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
-  isRequired?: boolean;
 };
 
 // @public (undocumented)
 export interface TextFieldProps
-  extends Omit<TextFieldProps_2, 'className' | 'isRequired' | 'description'>,
+  extends Omit<TextFieldProps_2, 'className' | 'description'>,
     TextFieldOwnProps {
   type?: 'text' | 'email' | 'tel' | 'url';
 }

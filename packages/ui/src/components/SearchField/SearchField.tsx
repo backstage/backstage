@@ -39,7 +39,6 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       classes,
       label,
       icon,
-      isRequired,
       secondaryLabel,
       placeholder,
       startCollapsed,
@@ -59,7 +58,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
-      secondaryLabel || (isRequired ? 'Required' : null);
+      secondaryLabel || (restProps.isRequired ? 'Required' : null);
 
     const handleFocusChange = (isFocused: boolean) => {
       restProps.onFocusChange?.(isFocused);

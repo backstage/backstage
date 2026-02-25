@@ -47,13 +47,9 @@ export type SearchFieldOwnProps = {
   label?: FieldLabelProps['label'];
   description?: FieldLabelProps['description'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
-  isRequired?: boolean;
 };
 
 /** @public */
 export interface SearchFieldProps
-  extends Omit<
-      AriaSearchFieldProps,
-      'className' | 'isRequired' | 'description'
-    >,
+  extends Omit<AriaSearchFieldProps, 'className' | 'description'>,
     SearchFieldOwnProps {}

@@ -29,15 +29,8 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       TextFieldDefinition,
       props,
     );
-    const {
-      classes,
-      label,
-      icon,
-      isRequired,
-      secondaryLabel,
-      placeholder,
-      description,
-    } = ownProps;
+    const { classes, label, icon, secondaryLabel, placeholder, description } =
+      ownProps;
 
     useEffect(() => {
       if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {
@@ -49,7 +42,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
-      secondaryLabel || (isRequired ? 'Required' : null);
+      secondaryLabel || (restProps.isRequired ? 'Required' : null);
 
     return (
       <AriaTextField

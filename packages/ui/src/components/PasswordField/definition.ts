@@ -40,7 +40,6 @@ export const PasswordFieldDefinition = defineComponent<PasswordFieldOwnProps>()(
       label: {},
       description: {},
       secondaryLabel: {},
-      isRequired: {},
     },
   },
 );

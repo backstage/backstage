@@ -35,15 +35,8 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
       PasswordFieldDefinition,
       props,
     );
-    const {
-      classes,
-      label,
-      icon,
-      isRequired,
-      secondaryLabel,
-      placeholder,
-      description,
-    } = ownProps;
+    const { classes, label, icon, secondaryLabel, placeholder, description } =
+      ownProps;
 
     useEffect(() => {
       if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {
@@ -55,7 +48,7 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
-      secondaryLabel || (isRequired ? 'Required' : null);
+      secondaryLabel || (restProps.isRequired ? 'Required' : null);
 
     // Manage secret visibility toggle
     const [isVisible, setIsVisible] = useState(false);

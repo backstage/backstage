@@ -42,12 +42,11 @@ export type TextFieldOwnProps = {
   label?: FieldLabelProps['label'];
   description?: FieldLabelProps['description'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
-  isRequired?: boolean;
 };
 
 /** @public */
 export interface TextFieldProps
-  extends Omit<AriaTextFieldProps, 'className' | 'isRequired' | 'description'>,
+  extends Omit<AriaTextFieldProps, 'className' | 'description'>,
     TextFieldOwnProps {
   /**
    * The HTML input type for the text field
