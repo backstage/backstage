@@ -18,13 +18,11 @@ import type { HeaderPageProps } from './types';
 import { Text } from '../Text';
 import { RiArrowRightSLine } from '@remixicon/react';
 import { Tabs, TabList, Tab } from '../Tabs';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { HeaderPageDefinition } from './definition';
 import { Container } from '../Container';
 import { Link } from '../Link';
 import { Fragment } from 'react/jsx-runtime';
-import styles from './HeaderPage.module.css';
-import clsx from 'clsx';
 
 /**
  * A component that renders a header page.
@@ -32,20 +30,13 @@ import clsx from 'clsx';
  * @public
  */
 export const HeaderPage = (props: HeaderPageProps) => {
-  const { classNames, cleanedProps } = useStyles(HeaderPageDefinition, props);
-  const { className, title, tabs, customActions, breadcrumbs } = cleanedProps;
+  const { ownProps } = useDefinition(HeaderPageDefinition, props);
+  const { classes, title, tabs, customActions, breadcrumbs } = ownProps;
 
   return (
-    <Container
-      className={clsx(classNames.root, styles[classNames.root], className)}
-    >
-      <div className={clsx(classNames.content, styles[classNames.content])}>
-        <div
-          className={clsx(
-            classNames.breadcrumbs,
-            styles[classNames.breadcrumbs],
-          )}
-        >
+    <Container className={classes.root}>
+      <div className={classes.content}>
+        <div className={classes.breadcrumbs}>
           {breadcrumbs &&
             breadcrumbs.map(breadcrumb => (
               <Fragment key={breadcrumb.label}>
@@ -67,17 +58,10 @@ export const HeaderPage = (props: HeaderPageProps) => {
             {title}
           </Text>
         </div>
-        <div className={clsx(classNames.controls, styles[classNames.controls])}>
-          {customActions}
-        </div>
+        <div className={classes.controls}>{customActions}</div>
       </div>
       {tabs && (
-        <div
-          className={clsx(
-            classNames.tabsWrapper,
-            styles[classNames.tabsWrapper],
-          )}
-        >
+        <div className={classes.tabsWrapper}>
           <Tabs>
             <TabList>
               {tabs.map(tab => (

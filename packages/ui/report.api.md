@@ -1321,6 +1321,9 @@ export interface HeaderPageBreadcrumb {
 
 // @public
 export const HeaderPageDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-HeaderPage';
     readonly content: 'bui-HeaderPageContent';
@@ -1328,10 +1331,17 @@ export const HeaderPageDefinition: {
     readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
     readonly controls: 'bui-HeaderPageControls';
   };
+  readonly propDefs: {
+    readonly title: {};
+    readonly customActions: {};
+    readonly tabs: {};
+    readonly breadcrumbs: {};
+    readonly className: {};
+  };
 };
 
 // @public
-export interface HeaderPageProps {
+export interface HeaderPageOwnProps {
   // (undocumented)
   breadcrumbs?: HeaderPageBreadcrumb[];
   // (undocumented)
@@ -1343,6 +1353,9 @@ export interface HeaderPageProps {
   // (undocumented)
   title?: string;
 }
+
+// @public
+export interface HeaderPageProps extends HeaderPageOwnProps {}
 
 // @public
 export interface HeaderTab {
