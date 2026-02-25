@@ -194,9 +194,9 @@ export type AccordionTriggerOwnProps = {
   className?: string;
   title?: string;
   subtitle?: string;
-  children?: React.ReactNode;
-  iconStart?: React.ReactElement;
-  iconEnd?: React.ReactElement;
+  children?: ReactNode;
+  iconStart?: ReactElement;
+  iconEnd?: ReactElement;
 };
 
 // @public
