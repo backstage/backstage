@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { createCliPlugin } from '../../wiring/factory';
-import yargs from 'yargs';
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { lazy } from '../../lib/lazy';
 
 export const configOption = [
@@ -61,20 +60,31 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['config:print'],
       description: 'Print the app configuration for the current package',
-      execute: async ({ args, info }) => {
-        const argv = await yargs()
-          .options({
-            package: { type: 'string' },
-            lax: { type: 'boolean' },
-            frontend: { type: 'boolean' },
-            'with-secrets': { type: 'boolean' },
-            format: { type: 'string' },
-            config: { type: 'string', array: true, default: [] },
-          })
-          .usage('$0', info.description)
-          .help()
-          .parse(args);
-        await lazy(() => import('./commands/print'), 'default')(argv);
+      execute: async ({ args }) => {
+        const command = new Command();
+        const defaultCommand = command
+          .option(...configOption)
+          .option('--package <name>', 'Package to load config from')
+          .option('--lax', 'Assumes all environment variables are set')
+          .option(
+            '--frontend',
+            'Print only configuration with frontend visibility',
+          )
+          .addOption(
+            new Option(
+              '--with-secrets',
+              'Include secrets in the output',
+            ).conflicts(['frontend']),
+          )
+          .addOption(
+            new Option('--format <type>', 'Output format')
+              .choices(['json', 'yaml'])
+              .default('yaml'),
+          )
+          .description('Print the app configuration for the current package')
+          .action(lazy(() => import('./commands/print'), 'default'));
+
+        await defaultCommand.parseAsync(args, { from: 'user' });
       },
     });
     reg.addCommand({
@@ -82,22 +92,23 @@ export default createCliPlugin({
       description:
         'Validate that the given configuration loads and matches schema',
       execute: async ({ args }) => {
-        const argv = await yargs()
-          .options({
-            package: { type: 'string' },
-            lax: { type: 'boolean' },
-            frontend: { type: 'boolean' },
-            deprecated: { type: 'boolean' },
-            strict: { type: 'boolean' },
-            config: {
-              type: 'string',
-              array: true,
-              default: [],
-            },
-          })
-          .help()
-          .parse(args);
-        await lazy(() => import('./commands/validate'), 'default')(argv);
+        const command = new Command();
+        const defaultCommand = command
+          .option(...configOption)
+          .option('--package <name>', 'Package to load config from')
+          .option('--lax', 'Assumes all environment variables are set')
+          .option(
+            '--frontend',
+            'Print only configuration with frontend visibility',
+          )
+          .option('--deprecated', 'Allow deprecated config keys')
+          .option('--strict', 'Strict validation')
+          .description(
+            'Validate that the given configuration loads and matches schema',
+          )
+          .action(lazy(() => import('./commands/validate'), 'default'));
+
+        await defaultCommand.parseAsync(args, { from: 'user' });
       },
     });
 
@@ -105,16 +116,19 @@ export default createCliPlugin({
       path: ['config:schema'],
       description: 'Print the JSON schema for the given configuration',
       execute: async ({ args }) => {
-        const argv = await yargs()
-          .options({
-            package: { type: 'string' },
-            format: { type: 'string' },
-            merge: { type: 'boolean' },
-            'no-merge': { type: 'boolean' },
-          })
-          .help()
-          .parse(args);
-        await lazy(() => import('./commands/schema'), 'default')(argv);
+        const command = new Command();
+        const defaultCommand = command
+          .option('--package <name>', 'Package to load config from')
+          .addOption(
+            new Option('--format <type>', 'Output format')
+              .choices(['json', 'yaml'])
+              .default('yaml'),
+          )
+          .option('--merge', 'Merge schemas', false)
+          .description('Print the JSON schema for the given configuration')
+          .action(lazy(() => import('./commands/schema'), 'default'));
+
+        await defaultCommand.parseAsync(args, { from: 'user' });
       },
     });
 
@@ -122,16 +136,19 @@ export default createCliPlugin({
       path: ['config', 'schema'],
       description: 'Print the JSON schema for the given configuration',
       execute: async ({ args }) => {
-        const argv = await yargs()
-          .options({
-            package: { type: 'string' },
-            format: { type: 'string' },
-            merge: { type: 'boolean' },
-            'no-merge': { type: 'boolean' },
-          })
-          .help()
-          .parse(args);
-        await lazy(() => import('./commands/schema'), 'default')(argv);
+        const command = new Command();
+        const defaultCommand = command
+          .option('--package <name>', 'Package to load config from')
+          .addOption(
+            new Option('--format <type>', 'Output format')
+              .choices(['json', 'yaml'])
+              .default('yaml'),
+          )
+          .option('--merge', 'Merge schemas', false)
+          .description('Print the JSON schema for the given configuration')
+          .action(lazy(() => import('./commands/schema'), 'default'));
+
+        await defaultCommand.parseAsync(args, { from: 'user' });
       },
     });
   },
