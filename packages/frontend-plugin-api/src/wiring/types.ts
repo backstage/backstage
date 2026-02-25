@@ -29,6 +29,7 @@ import { FrontendPlugin } from './createFrontendPlugin';
 export type FeatureFlagConfig = {
   /** Feature flag name */
   name: string;
+  description?: string;
 };
 
 /** @public */

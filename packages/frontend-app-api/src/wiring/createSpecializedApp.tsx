@@ -357,6 +357,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
         OpaqueFrontendPlugin.toInternal(feature).featureFlags.forEach(flag =>
           featureFlagApi.registerFlag({
             name: flag.name,
+            description: flag.description,
             pluginId: feature.id,
           }),
         );
@@ -365,6 +366,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
         toInternalFrontendModule(feature).featureFlags.forEach(flag =>
           featureFlagApi.registerFlag({
             name: flag.name,
+            description: flag.description,
             pluginId: feature.pluginId,
           }),
         );
