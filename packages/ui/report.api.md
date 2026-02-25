@@ -13,7 +13,6 @@ import type { ComponentProps } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { CSSProperties } from 'react';
-import { DetailedHTMLProps } from 'react';
 import type { DialogTriggerProps as DialogTriggerProps_2 } from 'react-aria-components';
 import type { DisclosureGroupProps } from 'react-aria-components';
 import type { DisclosurePanelProps } from 'react-aria-components';
@@ -21,7 +20,6 @@ import type { DisclosureProps } from 'react-aria-components';
 import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import type { HeadingProps } from 'react-aria-components';
-import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import type { LinkProps as LinkProps_2 } from 'react-aria-components';
 import type { ListBoxItemProps } from 'react-aria-components';
@@ -939,34 +937,76 @@ export const DialogBody: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface DialogBodyProps {
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export const DialogBodyDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DialogBody';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type DialogBodyOwnProps = {
+  children?: ReactNode;
   className?: string;
-}
+};
+
+// @public
+export interface DialogBodyProps extends DialogBodyOwnProps {}
 
 // @public
 export const DialogDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
-    readonly overlay: 'bui-DialogOverlay';
+    readonly root: 'bui-DialogOverlay';
     readonly dialog: 'bui-Dialog';
     readonly content: 'bui-DialogContent';
-    readonly header: 'bui-DialogHeader';
-    readonly headerTitle: 'bui-DialogHeaderTitle';
-    readonly body: 'bui-DialogBody';
-    readonly footer: 'bui-DialogFooter';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+    readonly width: {};
+    readonly height: {};
+    readonly style: {};
   };
 };
 
 // @public (undocumented)
 export const DialogFooter: ForwardRefExoticComponent<
-  Omit<
-    DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
-    'ref'
-  > &
-    RefAttributes<HTMLDivElement>
+  DialogFooterProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export const DialogFooterDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DialogFooter';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type DialogFooterOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
+// @public
+export interface DialogFooterProps
+  extends DialogFooterOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof DialogFooterOwnProps> {}
 
 // @public (undocumented)
 export const DialogHeader: ForwardRefExoticComponent<
@@ -974,24 +1014,44 @@ export const DialogHeader: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface DialogHeaderProps extends HeadingProps {
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export const DialogHeaderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DialogHeader';
+    readonly title: 'bui-DialogHeaderTitle';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type DialogHeaderOwnProps = {
+  children?: ReactNode;
   className?: string;
-}
+};
 
 // @public
-export interface DialogProps extends ModalOverlayProps {
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export interface DialogHeaderProps
+  extends DialogHeaderOwnProps,
+    Omit<HeadingProps, keyof DialogHeaderOwnProps> {}
+
+// @public (undocumented)
+export type DialogOwnProps = {
+  children?: ReactNode;
   className?: string;
-  // (undocumented)
-  height?: number | string;
-  // (undocumented)
   width?: number | string;
-}
+  height?: number | string;
+  style?: React.CSSProperties;
+};
+
+// @public
+export interface DialogProps
+  extends DialogOwnProps,
+    Omit<ModalOverlayProps, keyof DialogOwnProps> {}
 
 // @public (undocumented)
 export const DialogTrigger: (props: DialogTriggerProps) => JSX_2.Element;
@@ -1098,7 +1158,7 @@ export type FlexDirection = 'row' | 'column';
 
 // @public (undocumented)
 export type FlexOwnProps = {
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
   style?: CSSProperties;
   bg?: Responsive<ProviderBg>;
@@ -1214,7 +1274,7 @@ export const GridItemDefinition: {
 
 // @public (undocumented)
 export type GridItemOwnProps = {
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
   style?: CSSProperties;
   bg?: Responsive<ProviderBg>;
@@ -1234,7 +1294,7 @@ export interface GridItemProps extends GridItemOwnProps {
 
 // @public (undocumented)
 export type GridOwnProps = {
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
   style?: CSSProperties;
   bg?: Responsive<ProviderBg>;

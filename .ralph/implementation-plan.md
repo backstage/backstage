@@ -2,8 +2,8 @@
 
 ## Status Overview
 
-- **Migrated (9):** Accordion, Alert, Avatar, Box, Button, ButtonIcon, ButtonLink, Card, Checkbox
-- **Remaining (28):** see tasks below
+- **Migrated (28):** Accordion, Alert, Avatar, Box, Button, ButtonIcon, ButtonLink, Card, Checkbox, Container, Dialog, FieldError, FieldLabel, Flex, FullPage, Grid, Link, PasswordField, Popover, SearchField, Skeleton, Switch, Text, TextField, ToggleButton, ToggleButtonGroup, Tooltip, VisuallyHidden
+- **Remaining (9 component tasks + 3 cleanup):** see tasks below
 - **Final cleanup:** delete useStyles + legacy types
 
 ## Reference Patterns
@@ -48,37 +48,37 @@ These are the simplest migrations — single component, no bg, no utility props.
 - [x] **Task 1: Migrate Avatar** — Single component, has dataAttributes for `size` and `variant`. See `Avatar/definition.ts` and `Avatar/Avatar.tsx`.
 - [x] **Task 1.5: Fix Avatar types** — `types.ts` is not according to the qa criteria. See `Avatar/types.ts`.
 - [x] **Task 2: Migrate Checkbox** — Single component, dataAttributes for `selected` and `indeterminate`. See `Checkbox/definition.ts` and `Checkbox/Checkbox.tsx`.
-- [ ] **Task 3: Migrate Container** — Single component, dataAttributes for `maxWidth`. See `Container/definition.ts` and `Container/Container.tsx`.
-- [ ] **Task 4: Migrate FieldError** — Single component, no dataAttributes. See `FieldError/definition.ts` and `FieldError/FieldError.tsx`.
-- [ ] **Task 5: Migrate FieldLabel** — Single component, dataAttributes for `size` and `disabled`. See `FieldLabel/definition.ts` and `FieldLabel/FieldLabel.tsx`.
-- [ ] **Task 6: Migrate Link** — Single component, dataAttributes for `variant`. See `Link/definition.ts` and `Link/Link.tsx`.
-- [ ] **Task 7: Migrate Skeleton** — Single component, dataAttributes for `variant`. See `Skeleton/definition.ts` and `Skeleton/Skeleton.tsx`.
-- [ ] **Task 8: Migrate Switch** — Single component, dataAttributes for `labelPosition`. See `Switch/definition.ts` and `Switch/Switch.tsx`.
-- [ ] **Task 9: Migrate Tooltip** — Single component, no dataAttributes. See `Tooltip/definition.ts` and `Tooltip/Tooltip.tsx`.
-- [ ] **Task 10: Migrate VisuallyHidden** — Single component, no dataAttributes. See `VisuallyHidden/definition.ts` and `VisuallyHidden/VisuallyHidden.tsx`.
-- [ ] **Task 11: Migrate Popover** — Single component, dataAttributes for `placement` and `triggerAction`. See `Popover/definition.ts` and `Popover/Popover.tsx`.
-- [ ] **Task 12: Migrate FullPage** — Single component, no dataAttributes. See `FullPage/definition.ts` and `FullPage/FullPage.tsx`.
-- [ ] **Task 13: Migrate ToggleButton** — Single component, dataAttributes for `size` and `variant`. See `ToggleButton/definition.ts` and `ToggleButton/ToggleButton.tsx`.
-- [ ] **Task 14: Migrate ToggleButtonGroup** — Single component, dataAttributes for `orientation`. See `ToggleButtonGroup/definition.ts` and `ToggleButtonGroup/ToggleButtonGroup.tsx`.
+- [x] **Task 3: Migrate Container** — Has utilityProps, no dataAttributes. User style overrides utilityStyle.
+- [x] **Task 4: Migrate FieldError** — React Aria wrapper. OwnProps only has className (style/children via restProps).
+- [x] **Task 5: Migrate FieldLabel** — Multiple classNames, no children prop, no style (would break downstream types).
+- [x] **Task 6: Migrate Link** — Fixed variant default from 'body' to 'body-medium'. Defaults in definition.ts.
+- [x] **Task 7: Migrate Skeleton** — dataAttribute for rounded, width/height as inline styles with defaults.
+- [x] **Task 8: Migrate Switch** — Single component, no custom dataAttributes (plan incorrectly mentioned labelPosition). See `Switch/definition.ts` and `Switch/Switch.tsx`.
+- [x] **Task 9: Migrate Tooltip** — Single component, no custom dataAttributes (CSS uses React Aria built-in ones). See `Tooltip/definition.ts` and `Tooltip/Tooltip.tsx`.
+- [x] **Task 10: Migrate VisuallyHidden** — Single component, no dataAttributes. Only className in OwnProps (children/style pass through restProps). See `VisuallyHidden/definition.ts` and `VisuallyHidden/VisuallyHidden.tsx`.
+- [x] **Task 11: Migrate Popover** — Single component, no custom dataAttributes (plan incorrectly mentioned placement/triggerAction — those are React Aria built-in). See `Popover/definition.ts` and `Popover/Popover.tsx`.
+- [x] **Task 12: Migrate FullPage** — Single component, no dataAttributes. See `FullPage/definition.ts` and `FullPage/FullPage.tsx`.
+- [x] **Task 13: Migrate ToggleButton** — Single component, dataAttributes for `size` and `variant`. See `ToggleButton/definition.ts` and `ToggleButton/ToggleButton.tsx`.
+- [x] **Task 14: Migrate ToggleButtonGroup** — Single component, dataAttributes for `orientation`. See `ToggleButtonGroup/definition.ts` and `ToggleButtonGroup/ToggleButtonGroup.tsx`.
 
 ### Batch 2: Form components (single-file, no bg, no utility props)
 
-- [ ] **Task 15: Migrate PasswordField** — Single component, dataAttributes for `size`. See `PasswordField/definition.ts` and `PasswordField/PasswordField.tsx`.
-- [ ] **Task 16: Migrate SearchField** — Single component, dataAttributes for `size`. See `SearchField/definition.ts` and `SearchField/SearchField.tsx`.
-- [ ] **Task 17: Migrate TextField** — Single component, dataAttributes for `size`. See `TextField/definition.ts` and `TextField/TextField.tsx`.
+- [x] **Task 15: Migrate PasswordField** — Single component, dataAttributes for `size`. See `PasswordField/definition.ts` and `PasswordField/PasswordField.tsx`.
+- [x] **Task 16: Migrate SearchField** — Single component, dataAttributes for `size` and `startCollapsed`. See `SearchField/definition.ts` and `SearchField/SearchField.tsx`.
+- [x] **Task 17: Migrate TextField** — Single component, dataAttributes for `size`. `invalid`/`disabled` are React Aria built-ins, not custom dataAttributes. See `TextField/definition.ts` and `TextField/TextField.tsx`.
 
 ### Batch 3: Components with utility props (no bg)
 
-- [ ] **Task 18: Migrate Text** — Has utilityProps. dataAttributes for `variant`, `color`, `weight`, `truncate`, `align`. See `Text/definition.ts` and `Text/Text.tsx`.
+- [x] **Task 18: Migrate Text** — Polymorphic component (no utilityProps despite plan). dataAttributes for `variant`, `color`, `weight`, `truncate`. Added `className` to existing `TextOwnProps`. See `Text/definition.ts` and `Text/Text.tsx`.
 
 ### Batch 4: Components with bg: 'provider' + utility props
 
-- [ ] **Task 19: Migrate Flex** — bg provider with utilityProps. Currently manually calls useBgProvider and wraps in BgProvider. See `Flex/definition.ts` and `Flex/Flex.tsx`.
-- [ ] **Task 20: Migrate Grid** — bg provider with utilityProps. Has two sub-components: GridRoot and GridItem, both use useBgProvider. See `Grid/definition.ts` and `Grid/Grid.tsx`.
+- [x] **Task 19: Migrate Flex** — bg provider with utilityProps. Uses `childrenWithBgProvider` pattern from Box. Gap default handled via `{ gap: '4', ...props }` since utility prop defaults not supported in defineComponent. See `Flex/definition.ts` and `Flex/Flex.tsx`.
+- [x] **Task 20: Migrate Grid** — bg provider with utilityProps. Two sub-components (GridRoot, GridItem), both bg providers. Uses `childrenWithBgProvider` pattern. GridRoot defaults `columns: 'auto'` and `gap: '4'` via spread pattern. See `Grid/definition.ts` and `Grid/Grid.tsx`.
 
 ### Batch 5: Multi-sub-component directories
 
-- [ ] **Task 21: Migrate Dialog** — Multiple sub-components (Dialog, DialogHeader, DialogBody, DialogFooter, DialogCloseButton). See `Dialog/definition.ts` and `Dialog/Dialog.tsx`.
+- [x] **Task 21: Migrate Dialog** — Multiple sub-components (Dialog, DialogHeader, DialogBody, DialogFooter). Split monolithic definition into 4 per-sub-component definitions. Used `classNameTarget: 'dialog'` for Dialog since className targets inner RADialog, not Modal overlay. Added `style` to DialogOwnProps for manual merging with CSS custom properties. Added DialogFooterProps/OwnProps (was inline type). DialogTrigger unchanged (no useStyles usage).
 - [ ] **Task 22: Migrate HeaderPage** — Multiple sub-components (HeaderPage, HeaderPageContent). See `HeaderPage/definition.ts` and `HeaderPage/HeaderPage.tsx`.
 - [ ] **Task 23: Migrate PluginHeader** — Multiple sub-components (PluginHeader, PluginHeaderToolbar). See `PluginHeader/definition.ts` and `PluginHeader/PluginHeader.tsx` + `PluginHeaderToolbar.tsx`.
 - [ ] **Task 24: Migrate RadioGroup** — Multiple sub-components (RadioGroup, Radio). See `RadioGroup/definition.ts` and `RadioGroup/RadioGroup.tsx`.
@@ -97,7 +97,22 @@ These are the simplest migrations — single component, no bg, no utility props.
 
 ## Discoveries / Notes
 
-- 7 of 37 styled components already migrated (~19%)
+- 20 of 31 component tasks complete (~65%), plus 3 cleanup tasks remaining. 26 unique components migrated.
 - Only 3 sub-components need bg: 'provider' (Flex, GridRoot, GridItem). No unmigrated components use useBgConsumer.
 - InternalLinkProvider is a context provider, not a styled component — no migration needed.
 - useStyles.ts already imports helpers from useDefinition (resolveResponsiveValue, processUtilityProps), confirming shared infrastructure.
+- Link had pre-existing type mismatch: variant default 'body' didn't match TextVariants type. Old dataAttributes listed ['subtitle','body','caption','label'] but CSS uses TextVariants. Fixed default to 'body-medium'.
+- Rule 5 ("add style: {} to propDefs") only applies when the component uses style directly. For React Aria wrappers (FieldError) and components where style would break downstream types (FieldLabel), let style pass through restProps instead.
+- useDefinition auto-merges className into classes (line 109) but does NOT auto-merge style. Components with utilityProps must merge manually: `{...utilityStyle, ...style}` (user style wins).
+- docs-ui Link props-definition.tsx was missing 'info' from color values — fixed.
+- Several task descriptions incorrectly claimed custom dataAttributes (Switch: "labelPosition", Popover: "placement"/"triggerAction") that are actually React Aria built-in data attributes. Always verify dataAttributes against the old `definition.ts` `dataAttributes` map, not CSS selectors — CSS `data-*` selectors are often React Aria built-ins.
+- Each migrated component's `index.ts` needs `OwnProps` added to type exports.
+- `useDefinition` must be the FIRST line in the component. Never access raw `props` after that — use `ownProps` and `restProps` exclusively. Props not in OwnProps (e.g. `aria-label`) can be read from `restProps` when needed (e.g. for effects) and still pass through via `{...restProps}`.
+- Only extend another component's full prop type (e.g. FieldLabelProps) if you also spread `restProps` onto that component. If you only use specific props from it in the implementation, declare those individually in OwnProps (using `FieldLabelProps['key']` syntax) instead.
+- Components using `export * from './types'` in index.ts auto-export OwnProps — no index.ts change needed for those.
+- TextField's old `dataAttributes` included `invalid` and `disabled`, but these are React Aria built-in data attributes applied automatically by `AriaTextField`. Only `size` needed `dataAttribute: true` in propDefs. Same pattern applies to all React Aria field components.
+- Text has NO utilityProps despite the plan claiming otherwise. Always verify against the actual old `definition.ts`, not the plan description.
+- When a component applies `className` to an element other than the root (e.g. Dialog applies `className` to the inner `<RADialog>` rather than the `<Modal>` overlay), use the `classNameTarget` option: `useDefinition(def, props, { classNameTarget: 'dialog' })`. This tells `useDefinition` to merge the user's `className` into `classes.dialog` instead of `classes.root`.
+- For utility prop defaults (e.g. Flex's `gap: '4'`), `defineComponent` has no mechanism. Pass the default in the props spread to useDefinition: `useDefinition(def, { gap: '4', ...props })`. This is the same pattern the old useStyles code used.
+- For bg providers with style: merge order should be `{ ...utilityStyle, ...ownProps.style }` (user style wins). Note Box uses the opposite order `{ ...ownProps.style, ...utilityStyle }` — this is a pre-existing inconsistency, not something to fix during migration.
+- Only spread `restProps` when the component actually inherits props it needs to pass through (e.g. HTML attributes from extending `React.HTMLAttributes`, or React Aria props). If all props are consumed by `propDefs` and `utilityProps`, omit `restProps` entirely — don't spread an empty object for consistency's sake.

@@ -25,7 +25,7 @@ import type {
 
 /** @public */
 export type GridOwnProps = {
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
   style?: CSSProperties;
   bg?: Responsive<ProviderBg>;
@@ -39,7 +39,7 @@ export interface GridProps extends SpaceProps, GridOwnProps {
 
 /** @public */
 export type GridItemOwnProps = {
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
   style?: CSSProperties;
   bg?: Responsive<ProviderBg>;

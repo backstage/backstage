@@ -19,7 +19,7 @@ import type { Responsive, Space, SpaceProps, ProviderBg } from '../../types';
 
 /** @public */
 export type FlexOwnProps = {
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
   style?: CSSProperties;
   bg?: Responsive<ProviderBg>;

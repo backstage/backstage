@@ -21,21 +21,25 @@ import {
   Modal,
   Heading,
 } from 'react-aria-components';
-import clsx from 'clsx';
 import type {
   DialogTriggerProps,
   DialogHeaderProps,
   DialogProps,
   DialogBodyProps,
+  DialogFooterProps,
 } from './types';
 import { RiCloseLine } from '@remixicon/react';
 import { Button } from '../Button';
-import { useStyles } from '../../hooks/useStyles';
-import { DialogDefinition } from './definition';
-import { Flex } from '../Flex';
+import { useDefinition } from '../../hooks/useDefinition';
+import {
+  DialogDefinition,
+  DialogHeaderDefinition,
+  DialogBodyDefinition,
+  DialogFooterDefinition,
+} from './definition';
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
-import styles from './Dialog.module.css';
+import { Flex } from '../Flex';
 
 /** @public */
 export const DialogTrigger = (props: DialogTriggerProps) => {
@@ -45,23 +49,21 @@ export const DialogTrigger = (props: DialogTriggerProps) => {
 /** @public */
 export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
-    const { className, children, width, height, style, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(DialogDefinition, props, {
+      classNameTarget: 'dialog',
+    });
+    const { classes, children, width, height, style } = ownProps;
 
     return (
       <Modal
         ref={ref}
-        className={clsx(classNames.overlay, styles[classNames.overlay])}
+        className={classes.root}
         isDismissable
         isKeyboardDismissDisabled={false}
-        {...rest}
+        {...restProps}
       >
         <RADialog
-          className={clsx(
-            classNames.dialog,
-            styles[classNames.dialog],
-            className,
-          )}
+          className={classes.dialog}
           style={{
             ['--bui-dialog-min-width' as keyof React.CSSProperties]:
               typeof width === 'number' ? `${width}px` : width || '400px',
@@ -74,10 +76,7 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
           }}
         >
           <BgReset>
-            <Box
-              bg="neutral"
-              className={clsx(classNames.content, styles[classNames.content])}
-            >
+            <Box bg="neutral" className={classes.content}>
               {children}
             </Box>
           </BgReset>
@@ -94,19 +93,12 @@ export const DialogHeader = forwardRef<
   React.ElementRef<'div'>,
   DialogHeaderProps
 >((props, ref) => {
-  const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
-  const { className, children, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(DialogHeaderDefinition, props);
+  const { classes, children } = ownProps;
 
   return (
-    <Flex
-      ref={ref}
-      className={clsx(classNames.header, styles[classNames.header], className)}
-      {...rest}
-    >
-      <Heading
-        slot="title"
-        className={clsx(classNames.headerTitle, styles[classNames.headerTitle])}
-      >
+    <Flex ref={ref} className={classes.root} {...restProps}>
+      <Heading slot="title" className={classes.title}>
         {children}
       </Heading>
       <Button name="close" aria-label="Close" variant="tertiary" slot="close">
@@ -120,15 +112,11 @@ DialogHeader.displayName = 'DialogHeader';
 /** @public */
 export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
-    const { className, children, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(DialogBodyDefinition, props);
+    const { classes, children } = ownProps;
 
     return (
-      <div
-        className={clsx(classNames.body, styles[classNames.body], className)}
-        ref={ref}
-        {...rest}
-      >
+      <div className={classes.root} ref={ref} {...restProps}>
         {children}
       </div>
     );
@@ -140,17 +128,13 @@ DialogBody.displayName = 'DialogBody';
 /** @public */
 export const DialogFooter = forwardRef<
   React.ElementRef<'div'>,
-  React.ComponentPropsWithoutRef<'div'>
+  DialogFooterProps
 >((props, ref) => {
-  const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
-  const { className, children, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(DialogFooterDefinition, props);
+  const { classes, children } = ownProps;
 
   return (
-    <div
-      ref={ref}
-      className={clsx(classNames.footer, styles[classNames.footer], className)}
-      {...rest}
-    >
+    <div ref={ref} className={classes.root} {...restProps}>
       {children}
     </div>
   );

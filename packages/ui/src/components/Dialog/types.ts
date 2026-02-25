@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ReactNode } from 'react';
 import type {
   DialogTriggerProps as RADialogTriggerProps,
   ModalOverlayProps as RAModalProps,
@@ -26,31 +27,59 @@ import type {
  */
 export interface DialogTriggerProps extends RADialogTriggerProps {}
 
+/** @public */
+export type DialogOwnProps = {
+  children?: ReactNode;
+  className?: string;
+  width?: number | string;
+  height?: number | string;
+  style?: React.CSSProperties;
+};
+
 /**
  * Props for the Dialog component.
  * @public
  */
-export interface DialogProps extends RAModalProps {
+export interface DialogProps
+  extends DialogOwnProps,
+    Omit<RAModalProps, keyof DialogOwnProps> {}
+
+/** @public */
+export type DialogHeaderOwnProps = {
+  children?: ReactNode;
   className?: string;
-  children?: React.ReactNode;
-  width?: number | string;
-  height?: number | string;
-}
+};
 
 /**
  * Props for the DialogHeader component.
  * @public
  */
-export interface DialogHeaderProps extends RAHeadingProps {
-  children?: React.ReactNode;
+export interface DialogHeaderProps
+  extends DialogHeaderOwnProps,
+    Omit<RAHeadingProps, keyof DialogHeaderOwnProps> {}
+
+/** @public */
+export type DialogBodyOwnProps = {
+  children?: ReactNode;
   className?: string;
-}
+};
 
 /**
  * Props for the DialogBody component.
  * @public
  */
-export interface DialogBodyProps {
-  children?: React.ReactNode;
+export interface DialogBodyProps extends DialogBodyOwnProps {}
+
+/** @public */
+export type DialogFooterOwnProps = {
+  children?: ReactNode;
   className?: string;
-}
+};
+
+/**
+ * Props for the DialogFooter component.
+ * @public
+ */
+export interface DialogFooterProps
+  extends DialogFooterOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof DialogFooterOwnProps> {}
