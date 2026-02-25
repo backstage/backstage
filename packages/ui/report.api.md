@@ -1598,6 +1598,9 @@ export const PasswordField: ForwardRefExoticComponent<
 
 // @public
 export const PasswordFieldDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-PasswordField';
     readonly inputWrapper: 'bui-PasswordFieldInputWrapper';
@@ -1605,19 +1608,39 @@ export const PasswordFieldDefinition: {
     readonly inputIcon: 'bui-PasswordFieldIcon';
     readonly inputVisibility: 'bui-PasswordFieldVisibility';
   };
-  readonly dataAttributes: {
-    readonly size: readonly ['small', 'medium'];
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly icon: {};
+    readonly placeholder: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
+    readonly isRequired: {};
   };
 };
 
 // @public (undocumented)
-export interface PasswordFieldProps
-  extends TextFieldProps_2,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type PasswordFieldOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
   icon?: ReactNode;
   placeholder?: string;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-}
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  isRequired?: boolean;
+};
+
+// @public (undocumented)
+export interface PasswordFieldProps
+  extends Omit<TextFieldProps_2, 'className' | 'isRequired' | 'description'>,
+    Omit<
+      FieldLabelProps,
+      'htmlFor' | 'id' | 'className' | 'description' | 'secondaryLabel'
+    >,
+    PasswordFieldOwnProps {}
 
 // @public
 export const PluginHeader: (props: PluginHeaderProps) => JSX_2.Element;
@@ -2291,12 +2314,22 @@ export const ToggleButton: ForwardRefExoticComponent<
 
 // @public
 export const ToggleButtonDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-ToggleButton';
     readonly content: 'bui-ToggleButtonContent';
   };
-  readonly dataAttributes: {
-    readonly size: readonly ['small', 'medium'];
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly iconStart: {};
+    readonly iconEnd: {};
+    readonly children: {};
+    readonly className: {};
   };
 };
 
@@ -2307,30 +2340,49 @@ export const ToggleButtonGroup: ForwardRefExoticComponent<
 
 // @public
 export const ToggleButtonGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-ToggleButtonGroup';
   };
-  readonly dataAttributes: {
-    readonly orientation: readonly ['horizontal', 'vertical'];
+  readonly propDefs: {
+    readonly orientation: {
+      readonly dataAttribute: true;
+    };
+    readonly className: {};
+    readonly children: {};
   };
 };
 
 // @public (undocumented)
-export interface ToggleButtonGroupProps
-  extends Omit<ToggleButtonGroupProps_2, 'orientation'> {
-  // (undocumented)
+export type ToggleButtonGroupOwnProps = {
   orientation?: NonNullable<ToggleButtonGroupProps_2['orientation']>;
-}
+  className?: string;
+  children?: ReactNode;
+};
+
+// @public (undocumented)
+export interface ToggleButtonGroupProps
+  extends Omit<
+      ToggleButtonGroupProps_2,
+      'orientation' | 'className' | 'children'
+    >,
+    ToggleButtonGroupOwnProps {}
+
+// @public (undocumented)
+export type ToggleButtonOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  iconStart?: ReactElement;
+  iconEnd?: ReactElement;
+  children?: ToggleButtonProps_2['children'];
+  className?: string;
+};
 
 // @public
-export interface ToggleButtonProps extends ToggleButtonProps_2 {
-  // (undocumented)
-  iconEnd?: ReactElement;
-  // (undocumented)
-  iconStart?: ReactElement;
-  // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-}
+export interface ToggleButtonProps
+  extends Omit<ToggleButtonProps_2, 'children' | 'className'>,
+    ToggleButtonOwnProps {}
 
 // @public (undocumented)
 export const Tooltip: ForwardRefExoticComponent<
