@@ -7,13 +7,19 @@ const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 50;
 const NAME_PATTERN = /^[a-zA-Z\s'-]+$/;
 
+const HUBSPOT_SCRIPT_ID = 'hubspot-forms-script';
+let isFormInitialized = false;
+
 export const HubSpotNewAdoptersForm = () => {
   const [isClosed, setClosed] = useState(true);
 
   useEffect(() => {
+    const eventListeners: Array<{ element: HTMLInputElement; handler: EventListener }> = [];
+    
     const initializeForm = () => {
       // @ts-ignore
-      if (window.hbspt) {
+      if (window.hbspt && !isFormInitialized) {
+        isFormInitialized = true;
 
         const getValidationError = (
           value: string,
@@ -94,17 +100,26 @@ export const HubSpotNewAdoptersForm = () => {
           
           const value = input.value.trim();
           
-          clearValidationError(input);
-          
-          if (!value) return true;
+          if (!value) {
+            clearValidationError(input);
+            return true;
+          }
           
           const errorMessage = getValidationError(value, fieldName, requireMinLength);
+          const existingError = input.parentElement?.querySelector(
+            '.hs-error-msgs.custom-validation .hs-error-msg'
+          );
+          const currentErrorText = existingError?.textContent;
           
           if (errorMessage) {
-            showValidationError(input, errorMessage);
+            if (currentErrorText !== errorMessage) {
+              clearValidationError(input);
+              showValidationError(input, errorMessage);
+            }
             return false;
           }
           
+          clearValidationError(input);
           return true;
         };
         
@@ -118,24 +133,20 @@ export const HubSpotNewAdoptersForm = () => {
             const firstNameInput = $form.querySelector('input[name="firstname"]') as HTMLInputElement | null;
             const lastNameInput = $form.querySelector('input[name="lastname"]') as HTMLInputElement | null;
             
-            const createBlurHandler = (
-              input: HTMLInputElement,
-              fieldName: string,
-              requireMinLength: boolean,
-            ) => {
-              return () => {
-                validateName(input, fieldName, requireMinLength);
-              };
-            };
-            
             if (firstNameInput) {
-              const firstNameHandler = createBlurHandler(firstNameInput, 'First name', true);
+              const firstNameHandler = () => {
+                validateName(firstNameInput, 'First name', true);
+              };
               firstNameInput.addEventListener('blur', firstNameHandler);
+              eventListeners.push({ element: firstNameInput, handler: firstNameHandler });
             }
             
             if (lastNameInput) {
-              const lastNameHandler = createBlurHandler(lastNameInput, 'Last name', false);
+              const lastNameHandler = () => {
+                validateName(lastNameInput, 'Last name', false);
+              };
               lastNameInput.addEventListener('blur', lastNameHandler);
+              eventListeners.push({ element: lastNameInput, handler: lastNameHandler });
             }
           },
           onFormSubmit: function($form: HTMLFormElement) {
@@ -171,13 +182,14 @@ export const HubSpotNewAdoptersForm = () => {
       }
     };
     
-    const HUBSPOT_SCRIPT_ID = 'hubspot-forms-script';
+    let script: HTMLScriptElement | null = null;
+    let handleLoad: (() => void) | null = null;
     
     // @ts-ignore
     if (window.hbspt) {
       initializeForm();
     } else {
-      let script = document.getElementById(HUBSPOT_SCRIPT_ID) as HTMLScriptElement | null;
+      script = document.getElementById(HUBSPOT_SCRIPT_ID) as HTMLScriptElement | null;
       
       if (!script) {
         script = document.createElement('script');
@@ -186,16 +198,22 @@ export const HubSpotNewAdoptersForm = () => {
         document.body.appendChild(script);
       }
       
-      const handleLoad = () => {
+      handleLoad = () => {
         initializeForm();
       };
       
       script.addEventListener('load', handleLoad);
-      
-      return () => {
-        script?.removeEventListener('load', handleLoad);
-      };
     }
+    
+    return () => {
+      if (script && handleLoad) {
+        script.removeEventListener('load', handleLoad);
+      }
+      eventListeners.forEach(({ element, handler }) => {
+        element.removeEventListener('blur', handler as EventListener);
+      });
+      isFormInitialized = false;
+    };
   }, []);
 
   return (
