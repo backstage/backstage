@@ -1,0 +1,10 @@
+---
+title: Advanced Cluster Security
+author: Red Hat
+authorUrl: https://redhat.com
+category: Security
+description: Integrates Red Hat Advanced Cluster Security into Backstage, displaying security vulnerability and policy data on entity pages.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/acs/plugins/acs/README.md
+npmPackageName: '@backstage-community/plugin-acs'
+addedDate: '2026-02-21'
+status: active

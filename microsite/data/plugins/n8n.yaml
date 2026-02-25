@@ -1,0 +1,10 @@
+---
+title: n8n
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Orchestration
+description: Embeds n8n workflow automation management in entity pages, showing workflow status, execution history, and success rates.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/n8n/plugins/n8n/README.md
+npmPackageName: '@backstage-community/plugin-n8n'
+addedDate: '2026-02-21'
+status: active

@@ -1,0 +1,10 @@
+---
+title: Scaffolder Backend Module Annotator
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Scaffolder
+description: Scaffolder backend module providing actions to add timestamps, annotations, labels, and spec properties to catalog entities during templating.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-annotator/plugins/scaffolder-backend-module-annotator/README.md
+npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-annotator'
+addedDate: '2026-02-21'
+status: active

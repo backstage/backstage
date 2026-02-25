@@ -1,0 +1,10 @@
+---
+title: Ping Identity Entity Provider
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Authentication/Authorization
+description: Synchronizes users and groups from Ping Identity into the Backstage software catalog.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/pingidentity/plugins/catalog-backend-module-pingidentity/README.md
+npmPackageName: '@backstage-community/plugin-catalog-backend-module-pingidentity'
+addedDate: '2026-02-21'
+status: active

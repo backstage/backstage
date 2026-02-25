@@ -1,0 +1,10 @@
+---
+title: Code Coverage
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Quality
+description: Displays code coverage summaries for catalog entities, requiring the code-coverage backend plugin.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/code-coverage/plugins/code-coverage/README.md
+npmPackageName: '@backstage-community/plugin-code-coverage'
+addedDate: '2026-02-21'
+status: active

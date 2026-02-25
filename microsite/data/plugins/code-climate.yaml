@@ -1,0 +1,10 @@
+---
+title: Code Climate
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Quality
+description: Displays code quality metrics and test coverage stats from Code Climate in Backstage entity pages.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/code-climate/plugins/code-climate/README.md
+npmPackageName: '@backstage-community/plugin-code-climate'
+addedDate: '2026-02-21'
+status: active

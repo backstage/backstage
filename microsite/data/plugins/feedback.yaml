@@ -3,9 +3,9 @@ title: Feedback
 author: Red Hat
 authorUrl: https://redhat.com
 category: Quality
-description: A plugin for collecting user feedbacks for your application. # Max 170 characters
-documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/entity-feedback/plugins/entity-feedback/README.md
+description: A plugin for collecting user feedbacks for your application.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/feedback/plugins/feedback/README.md
 iconUrl: /img/plugin-feedback-logo.svg
-npmPackageName: '@backstage-community/plugin-entity-feedback'
+npmPackageName: '@backstage-community/plugin-feedback'
 addedDate: '2024-04-09'
 status: active
