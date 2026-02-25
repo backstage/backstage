@@ -16,10 +16,8 @@
 
 import { forwardRef } from 'react';
 import type { FullPageProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { FullPageDefinition } from './definition';
-import styles from './FullPage.module.css';
-import clsx from 'clsx';
 
 /**
  * A component that fills the remaining viewport height below the Header.
@@ -32,14 +30,8 @@ import clsx from 'clsx';
  * @public
  */
 export const FullPage = forwardRef<HTMLElement, FullPageProps>((props, ref) => {
-  const { classNames, cleanedProps } = useStyles(FullPageDefinition, props);
-  const { className, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(FullPageDefinition, props);
+  const { classes } = ownProps;
 
-  return (
-    <main
-      ref={ref}
-      className={clsx(classNames.root, styles[classNames.root], className)}
-      {...rest}
-    />
-  );
+  return <main ref={ref} className={classes.root} {...restProps} />;
 });

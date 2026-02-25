@@ -10,6 +10,7 @@ import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import type { ColumnSize } from '@react-types/table';
 import type { ColumnStaticSize } from '@react-types/table';
 import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { CSSProperties } from 'react';
 import { DetailedHTMLProps } from 'react';
@@ -1116,13 +1117,26 @@ export const FullPage: ForwardRefExoticComponent<
 
 // @public
 export const FullPageDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-FullPage';
   };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type FullPageOwnProps = {
+  className?: string;
 };
 
 // @public
-export interface FullPageProps extends React.ComponentPropsWithoutRef<'main'> {}
+export interface FullPageProps
+  extends Omit<ComponentPropsWithoutRef<'main'>, 'className'>,
+    FullPageOwnProps {}
 
 // @public (undocumented)
 export const Grid: {
