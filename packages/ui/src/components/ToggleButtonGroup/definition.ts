@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { ToggleButtonGroupOwnProps } from './types';
+import styles from './ToggleButtonGroup.module.css';
 
 /**
  * Component definition for ToggleButtonGroup
  * @public
  */
-export const ToggleButtonGroupDefinition = {
-  classNames: {
-    root: 'bui-ToggleButtonGroup',
-  },
-  dataAttributes: {
-    orientation: ['horizontal', 'vertical'] as const,
-  },
-} as const satisfies ComponentDefinition;
+export const ToggleButtonGroupDefinition =
+  defineComponent<ToggleButtonGroupOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-ToggleButtonGroup',
+    },
+    propDefs: {
+      orientation: { dataAttribute: true },
+      className: {},
+      children: {},
+    },
+  });
