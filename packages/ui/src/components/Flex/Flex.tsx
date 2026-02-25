@@ -21,7 +21,7 @@ import { FlexDefinition } from './definition';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
+  const { ownProps, dataAttributes, utilityStyle } = useDefinition(
     FlexDefinition,
     { gap: '4', ...props },
   );
@@ -33,7 +33,6 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
       className={classes.root}
       style={{ ...utilityStyle, ...ownProps.style }}
       {...dataAttributes}
-      {...restProps}
     >
       {childrenWithBgProvider}
     </div>
