@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
+import type { ReactNode, CSSProperties } from 'react';
 import type { Responsive, Space, SpaceProps, ProviderBg } from '../../types';
 
 /** @public */
-export interface FlexProps extends SpaceProps {
-  children?: React.ReactNode;
+export type FlexOwnProps = {
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+/** @public */
+export interface FlexProps extends SpaceProps, FlexOwnProps {
   gap?: Responsive<Space>;
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
   direction?: Responsive<'row' | 'column' | 'row-reverse' | 'column-reverse'>;
-  className?: string;
-  style?: React.CSSProperties;
-  bg?: Responsive<ProviderBg>;
 }

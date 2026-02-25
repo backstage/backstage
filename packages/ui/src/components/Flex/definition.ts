@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { FlexOwnProps } from './types';
+import styles from './Flex.module.css';
 
 /**
  * Component definition for Flex
  * @public
  */
-export const FlexDefinition = {
+export const FlexDefinition = defineComponent<FlexOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Flex',
+  },
+  bg: 'provider',
+  propDefs: {
+    bg: { dataAttribute: true },
+    children: {},
+    className: {},
+    style: {},
   },
   utilityProps: [
     'm',
@@ -44,7 +54,4 @@ export const FlexDefinition = {
     'justify',
     'direction',
   ],
-  dataAttributes: {
-    bg: ['neutral', 'danger', 'warning', 'success'] as const,
-  },
-} as const satisfies ComponentDefinition;
+});

@@ -15,44 +15,29 @@
  */
 
 import { forwardRef } from 'react';
-import { FlexProps } from './types';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
+import type { FlexProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
 import { FlexDefinition } from './definition';
-import styles from './Flex.module.css';
-import { BgProvider, useBgProvider } from '../../hooks/useBg';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  const { bg: resolvedBg } = useBgProvider(props.bg);
+  const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
+    FlexDefinition,
+    { gap: '4', ...props },
+  );
+  const { classes, childrenWithBgProvider } = ownProps;
 
-  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
-    useStyles(FlexDefinition, {
-      gap: '4',
-      ...props,
-      bg: resolvedBg, // Use resolved bg for data attribute
-    });
-
-  const { className, bg, ...rest } = cleanedProps;
-
-  const content = (
+  return (
     <div
       ref={ref}
-      className={clsx(
-        classNames.root,
-        utilityClasses,
-        styles[classNames.root],
-        className,
-      )}
-      style={style}
+      className={classes.root}
+      style={{ ...utilityStyle, ...ownProps.style }}
       {...dataAttributes}
-      {...rest}
-    />
-  );
-
-  return resolvedBg ? (
-    <BgProvider bg={resolvedBg}>{content}</BgProvider>
-  ) : (
-    content
+      {...restProps}
+    >
+      {childrenWithBgProvider}
+    </div>
   );
 });
+
+Flex.displayName = 'Flex';
