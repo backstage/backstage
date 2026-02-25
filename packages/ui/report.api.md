@@ -77,7 +77,7 @@ export const AccordionDefinition: {
   readonly propDefs: {
     readonly bg: {
       readonly dataAttribute: true;
-      readonly default: 'neutral';
+      readonly default: 'neutral-auto';
     };
     readonly children: {};
     readonly className: {};
@@ -1056,10 +1056,22 @@ export const Flex: ForwardRefExoticComponent<
 
 // @public
 export const FlexDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Flex';
   };
-  readonly utilityProps: [
+  readonly bg: 'provider';
+  readonly propDefs: {
+    readonly bg: {
+      readonly dataAttribute: true;
+    };
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
+  };
+  readonly utilityProps: readonly [
     'm',
     'mb',
     'ml',
@@ -1079,32 +1091,29 @@ export const FlexDefinition: {
     'justify',
     'direction',
   ];
-  readonly dataAttributes: {
-    readonly bg: readonly ['neutral', 'danger', 'warning', 'success'];
-  };
 };
 
 // @public (undocumented)
 export type FlexDirection = 'row' | 'column';
 
 // @public (undocumented)
-export interface FlexProps extends SpaceProps {
+export type FlexOwnProps = {
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+// @public (undocumented)
+export interface FlexProps extends SpaceProps, FlexOwnProps {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
-  // (undocumented)
-  bg?: Responsive<ProviderBg>;
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
-  className?: string;
   // (undocumented)
   direction?: Responsive<'row' | 'column' | 'row-reverse' | 'column-reverse'>;
   // (undocumented)
   gap?: Responsive<Space>;
   // (undocumented)
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public (undocumented)
@@ -1170,7 +1179,14 @@ export const GridDefinition: {
     'py',
   ];
   readonly dataAttributes: {
-    readonly bg: readonly ['neutral', 'danger', 'warning', 'success'];
+    readonly bg: readonly [
+      'neutral-1',
+      'neutral-2',
+      'neutral-3',
+      'danger',
+      'warning',
+      'success',
+    ];
   };
 };
 
@@ -1181,7 +1197,14 @@ export const GridItemDefinition: {
   };
   readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
   readonly dataAttributes: {
-    readonly bg: readonly ['neutral', 'danger', 'warning', 'success'];
+    readonly bg: readonly [
+      'neutral-1',
+      'neutral-2',
+      'neutral-3',
+      'danger',
+      'warning',
+      'success',
+    ];
   };
 };
 
@@ -1710,7 +1733,7 @@ export interface PopoverProps
     PopoverOwnProps {}
 
 // @public
-export type ProviderBg = 'neutral' | 'danger' | 'warning' | 'success';
+export type ProviderBg = ContainerBg | 'neutral-auto';
 
 // @public (undocumented)
 export interface QueryOptions<TFilter> {
@@ -2238,21 +2261,32 @@ export type TextColorStatus = 'danger' | 'warning' | 'success' | 'info';
 
 // @public
 export const TextDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Text';
   };
-  readonly dataAttributes: {
-    readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
-    readonly weight: readonly ['regular', 'bold'];
-    readonly color: readonly [
-      'primary',
-      'secondary',
-      'danger',
-      'warning',
-      'success',
-      'info',
-    ];
-    readonly truncate: readonly [true, false];
+  readonly propDefs: {
+    readonly as: {
+      readonly default: 'span';
+    };
+    readonly variant: {
+      readonly dataAttribute: true;
+      readonly default: 'body-medium';
+    };
+    readonly weight: {
+      readonly dataAttribute: true;
+      readonly default: 'regular';
+    };
+    readonly color: {
+      readonly dataAttribute: true;
+      readonly default: 'primary';
+    };
+    readonly truncate: {
+      readonly dataAttribute: true;
+    };
+    readonly className: {};
   };
 };
 
@@ -2263,6 +2297,9 @@ export const TextField: ForwardRefExoticComponent<
 
 // @public
 export const TextFieldDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-TextField';
     readonly inputWrapper: 'bui-InputWrapper';
@@ -2270,20 +2307,37 @@ export const TextFieldDefinition: {
     readonly inputIcon: 'bui-InputIcon';
     readonly inputAction: 'bui-InputAction';
   };
-  readonly dataAttributes: {
-    readonly invalid: readonly [true, false];
-    readonly disabled: readonly [true, false];
-    readonly size: readonly ['small', 'medium'];
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly icon: {};
+    readonly placeholder: {};
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
+    readonly isRequired: {};
   };
 };
 
 // @public (undocumented)
-export interface TextFieldProps
-  extends TextFieldProps_2,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type TextFieldOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
   icon?: ReactNode;
   placeholder?: string;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  isRequired?: boolean;
+};
+
+// @public (undocumented)
+export interface TextFieldProps
+  extends Omit<TextFieldProps_2, 'className' | 'isRequired' | 'description'>,
+    TextFieldOwnProps {
   type?: 'text' | 'email' | 'tel' | 'url';
 }
 
@@ -2311,6 +2365,7 @@ export type TextOwnProps = {
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
+  className?: string;
 };
 
 // @public (undocumented)
