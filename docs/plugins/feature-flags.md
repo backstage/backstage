@@ -24,6 +24,7 @@ export const examplePlugin = createPlugin({
       name: 'show-example-feature',
       description: 'Enables the new beta dashboard view',
     },
+  ],
   // ...
 });
 ```
