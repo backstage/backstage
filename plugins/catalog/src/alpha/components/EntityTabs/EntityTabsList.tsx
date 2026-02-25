@@ -88,20 +88,34 @@ export function EntityTabsList(props: EntityTabsListProps) {
 
   const { tabs: items, selectedIndex = 0, showIcons, groupDefinitions } = props;
 
-  const groups = useMemo(
-    () =>
-      items.reduce((result, tab) => {
-        const group = tab.group ? groupDefinitions[tab.group] : undefined;
-        const groupOrId = group && tab.group ? tab.group : tab.id;
-        result[groupOrId] = result[groupOrId] ?? {
-          group,
-          items: [],
-        };
-        result[groupOrId].items.push(tab);
-        return result;
-      }, {} as Record<string, TabGroup>),
-    [items, groupDefinitions],
-  );
+  const groups = useMemo(() => {
+    const byKey = items.reduce((result, tab) => {
+      const group = tab.group ? groupDefinitions[tab.group] : undefined;
+      const groupOrId = group && tab.group ? tab.group : tab.id;
+      result[groupOrId] = result[groupOrId] ?? {
+        group,
+        items: [],
+      };
+      result[groupOrId].items.push(tab);
+      return result;
+    }, {} as Record<string, TabGroup>);
+
+    const groupOrder = Object.keys(groupDefinitions);
+    return Object.entries(byKey).sort(([a], [b]) => {
+      const ai = groupOrder.indexOf(a);
+      const bi = groupOrder.indexOf(b);
+      if (ai !== -1 && bi !== -1) {
+        return ai - bi;
+      }
+      if (ai !== -1) {
+        return -1;
+      }
+      if (bi !== -1) {
+        return 1;
+      }
+      return 0;
+    });
+  }, [items, groupDefinitions]);
 
   const selectedItem = items[selectedIndex];
   return (
@@ -115,7 +129,7 @@ export function EntityTabsList(props: EntityTabsListProps) {
         aria-label={t('entityTabs.tabsAriaLabel')}
         value={selectedItem?.group ?? selectedItem?.id}
       >
-        {Object.entries(groups).map(([id, tabGroup]) => (
+        {groups.map(([id, tabGroup]) => (
           <EntityTabsGroup
             data-testid={`header-tab-${id}`}
             className={styles.defaultTab}
