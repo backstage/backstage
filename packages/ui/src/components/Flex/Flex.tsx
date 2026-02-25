@@ -20,17 +20,22 @@ import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import { FlexDefinition } from './definition';
 import styles from './Flex.module.css';
+import { BgProvider, useBgProvider } from '../../hooks/useBg';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    FlexDefinition,
-    { gap: '4', ...props },
-  );
+  const { bg: resolvedBg } = useBgProvider(props.bg);
 
-  const { className, ...rest } = cleanedProps;
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles(FlexDefinition, {
+      gap: '4',
+      ...props,
+      bg: resolvedBg, // Use resolved bg for data attribute
+    });
 
-  return (
+  const { className, bg, ...rest } = cleanedProps;
+
+  const content = (
     <div
       ref={ref}
       className={clsx(
@@ -40,7 +45,14 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
         className,
       )}
       style={style}
+      {...dataAttributes}
       {...rest}
     />
+  );
+
+  return resolvedBg ? (
+    <BgProvider bg={resolvedBg}>{content}</BgProvider>
+  ) : (
+    content
   );
 });

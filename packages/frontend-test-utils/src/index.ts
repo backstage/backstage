@@ -23,9 +23,6 @@
 export * from './apis';
 export * from './app';
 
-export { TestApiProvider, TestApiRegistry } from '@backstage/test-utils';
-export type { TestApiProviderProps } from '@backstage/test-utils';
-
 export { withLogCollector } from '@backstage/test-utils';
 
 export { registerMswTestHooks } from '@backstage/test-utils';

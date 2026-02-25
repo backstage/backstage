@@ -5,11 +5,13 @@
 
 Team: @backstage/maintainers
 
-| Maintainer      | Organization | GitHub                                          | Discord       |
-| --------------- | ------------ | ----------------------------------------------- | ------------- |
-| Patrik Oldsberg | Spotify      | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019` |
-| Fredrik Adelöw  | Spotify      | [freben](https://github.com/freben)             | `freben#3926` |
-| Ben Lambert     | Spotify      | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`   |
+| Maintainer      | Organization | GitHub                                                | Discord       |
+| --------------- | ------------ | ----------------------------------------------------- | ------------- |
+| André Wanlin    | Spotify      | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| Aramis Sennyey  | DoorDash     | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Ben Lambert     | Spotify      | [benjdlambert](https://github.com/benjdlambert)       | `blam#2159`   |
+| Fredrik Adelöw  | Spotify      | [freben](https://github.com/freben)                   | `freben#3926` |
+| Patrik Oldsberg | Spotify      | [Rugvip](https://github.com/Rugvip)                   | `Rugvip#0019` |
 
 ## Project Areas
 
@@ -17,7 +19,7 @@ These are the separate project areas of Backstage, each with their own project a
 
 ### Auth
 
-Team: @backstage/auth-maintainers
+Team: @backstage/auth-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Aauth-maintainers)
 
 Scope: The Backstage auth plugin and modules, as well as client-side implementations.
 
@@ -32,7 +34,7 @@ Scope: The Backstage auth plugin and modules, as well as client-side implementat
 
 ### Catalog
 
-Team: @backstage/catalog-maintainers
+Team: @backstage/catalog-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Acatalog-maintainers)
 
 Scope: The catalog plugin and catalog model
 
@@ -61,7 +63,7 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 
 ### Design System
 
-Team: @backstage/design-system-maintainers
+Team: @backstage/design-system-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Adesign-system-maintainers)
 
 Scope: The Backstage design system, component library, as well as surrounding tooling such as Storybook.
 
@@ -69,22 +71,23 @@ Scope: The Backstage design system, component library, as well as surrounding to
 | ------------------- | ------------ | ------------- | --------------------------------------------- | ------------- |
 | Charles de Dreuille | Spotify      |               | [cdedreuille](https://github.com/cdedreuille) | `cdedreuille` |
 | Patrik Oldsberg     | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)           | `Rugvip`      |
+| Johan Persson       | Spotify      |               | [Naycon](https://github.com/Naycon)           | `naycon`      |
 
 ### Documentation
 
-Team: @backstage/documentation-maintainers
+Team: @backstage/documentation-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Adocumentation-maintainers)
 
 Scope: The Backstage Documentation and Microsite, excluding the plugins listing
 
 | Name            | Organization  | GitHub                                                | Discord       |
 | --------------- | ------------- | ----------------------------------------------------- | ------------- |
-| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| André Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
 | Aramis Sennyey  | DoorDash      | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
 | Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
 
 ### Framework
 
-Team: @backstage/framework-maintainers
+Team: @backstage/framework-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Aframework-maintainers)
 
 Scope: The Backstage core framework, including all revisions of the frontend and backend systems, as well as the App plugin.
 
@@ -111,7 +114,7 @@ Scope: The Backstage [Helm Chart(s)](https://github.com/backstage/charts).
 
 ### Home
 
-Team: @backstage/home-maintainers
+Team: @backstage/home-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Ahome-maintainers)
 
 Scope: The Backstage home page and information architecture
 
@@ -126,7 +129,7 @@ Scope: The Backstage home page and information architecture
 
 ### Kubernetes
 
-Team: @backstage/kubernetes-maintainers
+Team: @backstage/kubernetes-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Akubernetes-maintainers)
 
 Scope: The Kubernetes plugin and the base it provides for other plugins to build upon.
 
@@ -136,7 +139,7 @@ Scope: The Kubernetes plugin and the base it provides for other plugins to build
 
 ### Operations
 
-Team: @backstage/operations-maintainers
+Team: @backstage/operations-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Aoperations-maintainers)
 
 Scope: The management and operation of the main Backstage repository and release process, along with the surrounding tooling.
 
@@ -151,7 +154,7 @@ Scope: The management and operation of the main Backstage repository and release
 
 ### Permission Framework
 
-Team: @backstage/permission-maintainers
+Team: @backstage/permission-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Apermission-maintainers)
 
 Scope: The Permission Framework and plugins integrating with the permission framework
 
@@ -166,7 +169,7 @@ Scope: The Permission Framework and plugins integrating with the permission fram
 
 ### Search
 
-Team: @backstage/search-maintainers
+Team: @backstage/search-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Asearch-maintainers)
 
 Scope: The Backstage Search plugin
 
@@ -178,7 +181,7 @@ Scope: The Backstage Search plugin
 
 ### TechDocs
 
-Team: @backstage/techdocs-maintainers
+Team: @backstage/techdocs-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Atechdocs-maintainers)
 
 Scope: The TechDocs plugin and related tooling
 
@@ -192,7 +195,7 @@ Scope: The TechDocs plugin and related tooling
 
 ### Tooling
 
-Team: @backstage/tooling-maintainers
+Team: @backstage/tooling-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Atooling-maintainers)
 
 Scope: All published Backstage CLI tools in the main `backstage` repository that do not belong to other areas, including `@backstage/cli` and `@backstage/repo-tools`.
 
@@ -212,7 +215,7 @@ These incubating project areas have shared ownership with @backstage/maintainers
 
 ### Auditor
 
-Team: @backstage/auditor-maintainers
+Team: @backstage/auditor-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Aauditor-maintainers)
 
 Scope: The auditor core service, along with auditor usage in the main repository
 
@@ -222,7 +225,7 @@ Scope: The auditor core service, along with auditor usage in the main repository
 
 ### Events
 
-Team: @backstage/events-maintainers
+Team: @backstage/events-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Aevents-maintainers)
 
 Scope: The Events plugin and library, along with events modules in the main repository
 
@@ -232,7 +235,7 @@ Scope: The Events plugin and library, along with events modules in the main repo
 
 ### Notifications
 
-Team: @backstage/notifications-maintainers
+Team: @backstage/notifications-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Anotifications-maintainers)
 
 Scope: The Notifications and Signals plugins and libraries
 
@@ -242,7 +245,7 @@ Scope: The Notifications and Signals plugins and libraries
 
 ### OpenAPI Tooling
 
-Team: @backstage/openapi-tooling-maintainers
+Team: @backstage/openapi-tooling-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Aopenapi-tooling-maintainers)
 
 Scope: Tooling for frontend and backend schema-first OpenAPI development.
 
@@ -252,7 +255,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 
 ### Scaffolder
 
-Team: @backstage/scaffolder-maintainers
+Team: @backstage/scaffolder-maintainers — [Review board](https://github.com/orgs/backstage/projects/14/views/1?filterQuery=no%3Aassignee+reviewers%3Ascaffolder-maintainers)
 
 Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
@@ -267,6 +270,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | <ngn@spotify.com>   |
 | Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | <dzolo@spotify.com> |
 | Pia Nilsson       | Spotify      | [pianilsson](https://github.com/pianilsson) | <pia@spotify.com>   |
+| Stefan Särne      | Spotify      | [ssarne](https://github.com/ssarne)         | <ssa@spotify.com>   |
 
 ## Organization Members
 
@@ -274,13 +278,12 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | ------------------------------ | ------------------------- | ----------------------------------------------------- | ------------------------------ |
 | Adam Harvey                    | Okta                      | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
-| Andre Wanlin                   | Spotify                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
-| Aramis Sennyey                 | DoorDash                  | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`                  |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
 | Deepankumar Loganathan         |                           | [deepan10](https://github.com/deepan10)               | `deepan10`                     |
+| Gabriel Dugny                  | Believe                   | [GabDug](https://github.com/GabDug)                   | `GabDug`                       |
 | Heikki Hellgren                | OP Financial Group        | [drodil](https://github.com/drodil)                   | `deathammer`                   |
 | Himanshu Mishra                | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)           | `OrkoHunter#1520`              |
 | Irma Solakovic                 | Roadie.io                 | [Irma12](https://github.com/Irma12)                   | `Irma#7629`                    |

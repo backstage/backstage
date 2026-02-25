@@ -53,7 +53,15 @@ class ApiRefImpl<T> implements ApiRef<T> {
 }
 
 /**
- * Creates a reference to an API.
+ * Creates a reference to an API. The provided `id` is a stable identifier for
+ * the API implementation.
+ *
+ * @remarks
+ *
+ * The frontend system infers the owning plugin for an API from the `id`. The
+ * recommended pattern is `plugin.<plugin-id>.*` (for example,
+ * `plugin.catalog.entity-presentation`). This ensures that other plugins can't
+ * mistakenly override your API implementation.
  *
  * @param config - The descriptor of the API to reference.
  * @returns An API reference.

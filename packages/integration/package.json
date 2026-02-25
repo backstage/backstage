@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration",
-  "version": "1.18.3-next.0",
+  "version": "1.20.0",
   "description": "Helpers for managing integrations towards external systems",
   "backstage": {
     "role": "common-library"
@@ -46,7 +46,8 @@
     "cross-fetch": "^4.0.0",
     "git-url-parse": "^15.0.0",
     "lodash": "^4.17.21",
-    "luxon": "^3.0.0"
+    "luxon": "^3.0.0",
+    "p-throttle": "^4.1.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

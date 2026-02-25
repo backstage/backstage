@@ -28,7 +28,7 @@ import { JsonObject } from '@backstage/types';
 import { findPaths } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
 import ping from 'ping';
-import os from 'os';
+import os from 'node:os';
 import fs from 'fs-extra';
 import { Lockfile } from '../util/Lockfile';
 import { memoize } from 'lodash';

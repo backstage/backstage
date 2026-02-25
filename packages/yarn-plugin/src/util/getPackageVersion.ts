@@ -25,7 +25,7 @@ import { getManifestByVersion } from '@backstage/release-manifests';
 
 import { PROTOCOL } from '../constants';
 import { getCurrentBackstageVersion } from './getCurrentBackstageVersion';
-import { env } from 'process';
+import { env } from 'node:process';
 
 export const getPackageVersion = async (
   descriptor: Descriptor,

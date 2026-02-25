@@ -33,6 +33,11 @@ export const oktaAuthenticator = createOAuthAuthenticator({
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
     const audience = config.getOptionalString('audience') || 'https://okta.com';
+    if (!audience.match(/^https?:\/\//)) {
+      throw new Error(
+        `The provided audience "${audience}" is not a valid URL. It must start with "https://" or "http://".`,
+      );
+    }
     const authServerId = config.getOptionalString('authServerId');
     const idp = config.getOptionalString('idp');
 

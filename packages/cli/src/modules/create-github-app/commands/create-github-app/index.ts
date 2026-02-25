@@ -18,7 +18,8 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { stringify as stringifyYaml } from 'yaml';
 import inquirer, { Question, Answers } from 'inquirer';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import openBrowser from 'react-dev-utils/openBrowser';
 
@@ -62,7 +63,7 @@ export default async (org: string) => {
 
   const fileName = `github-app-${slug}-credentials.yaml`;
   const content = `# Name: ${name}\n${stringifyYaml(config)}`;
-  await fs.writeFile(paths.resolveTargetRoot(fileName), content);
+  await fs.writeFile(targetPaths.resolveRoot(fileName), content);
   console.log(`GitHub App configuration written to ${chalk.cyan(fileName)}`);
   console.log(
     chalk.yellow(

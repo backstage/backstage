@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Text } from './Text';
 import { Flex } from '../Flex';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Text',
   component: Text,
   args: {
     children: 'Text',
   },
-} satisfies Meta<typeof Text>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children:
       "A man looks at a painting in a museum and says, “Brothers and sisters I have none, but that man's father is my father's son.” Who is in the painting?",
   },
-};
+});
 
-export const AllVariants: Story = {
+export const AllVariants = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="6" direction="column">
@@ -52,9 +49,9 @@ export const AllVariants: Story = {
       <Text {...args} variant="body-x-small" style={{ maxWidth: '224px' }} />
     </Flex>
   ),
-};
+});
 
-export const AllWeights: Story = {
+export const AllWeights = meta.story({
   render: () => (
     <Flex gap="4" direction="column">
       <Flex>
@@ -91,11 +88,11 @@ export const AllWeights: Story = {
       </Flex>
     </Flex>
   ),
-};
+});
 
-export const AllColors: Story = {
+export const AllColors = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="4" direction="column">
@@ -104,32 +101,33 @@ export const AllColors: Story = {
       <Text {...args} color="danger" children="I am danger" />
       <Text {...args} color="warning" children="I am warning" />
       <Text {...args} color="success" children="I am success" />
+      <Text {...args} color="info" children="I am info" />
     </Flex>
   ),
-};
+});
 
-export const Truncate: Story = {
+export const Truncate = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     truncate: true,
     as: 'p',
     style: { width: '480px' },
   },
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     variant: {
       xs: 'title-x-small',
       md: 'body-large',
     },
   },
-};
+});
 
-export const WrappedInLink: Story = {
+export const WrappedInLink = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   decorators: [
     Story => (
@@ -138,16 +136,16 @@ export const WrappedInLink: Story = {
       </a>
     ),
   ],
-};
+});
 
-export const CustomRender: Story = {
+export const CustomRender = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     as: 'label',
   },
-};
+});
 
-export const Playground: Story = {
+export const Playground = meta.story({
   render: () => (
     <Flex gap="4" direction="column">
       <Text>Subtitle</Text>
@@ -176,4 +174,4 @@ export const Playground: Story = {
       </Text>
     </Flex>
   ),
-};
+});

@@ -135,7 +135,6 @@ nav:
           - Org Data: 'integrations/ldap/org.md'
   - Plugins:
       - Intro to plugins: 'plugins/index.md'
-      - Existing plugins: 'plugins/existing-plugins.md'
       - Create a Backstage Plugin: 'plugins/create-a-plugin.md'
       - Plugin Development: 'plugins/plugin-development.md'
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
@@ -143,6 +142,7 @@ nav:
       - Composability System: 'plugins/composability.md'
       - Plugin Analytics: 'plugins/analytics.md'
       - Feature Flags: 'plugins/feature-flags.md'
+      - Internationalization (i18n): 'plugins/internationalization.md'
       - OpenAPI:
           - Schema-first plugins with OpenAPI (Experimental): 'openapi/01-getting-started.md'
           - Generate a client from your OpenAPI spec: 'openapi/generate-client.md'

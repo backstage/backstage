@@ -200,6 +200,47 @@ However a system-assigned managed identity is the most secure option because:
 
 :::
 
+### Legacy `{org}.visualstudio.com` Domains
+
+Backstage supports the legacy `{org}.visualstudio.com` domains along with all the previously mentioned authentication options, the caveat is that each Azure DevOps Organization will need to be defined in your configuration along with a single credential.
+
+For example, this will work:
+
+```yaml
+integrations:
+  azure:
+    - host: my-org.visualstudio.com
+      credentials:
+        - clientId: ${AZURE_CLIENT_ID}
+          clientSecret: ${AZURE_CLIENT_SECRET}
+          tenantId: ${AZURE_TENANT_ID}
+```
+
+As will this:
+
+```yaml
+integrations:
+  azure:
+    - host: my-other-org.visualstudio.com
+      credentials:
+        - personalAccessToken: ${PERSONAL_ACCESS_TOKEN}
+```
+
+But this will NOT work:
+
+```yaml
+integrations:
+  azure:
+    - host: my-org.visualstudio.com
+      credentials:
+        - organizations:
+            - my-org
+            - my-other-org
+          clientId: ${AZURE_CLIENT_ID}
+          clientSecret: ${AZURE_CLIENT_SECRET}
+          tenantId: ${AZURE_TENANT_ID}
+```
+
 ## Configuration schema
 
 The configuration is a structure with these elements:

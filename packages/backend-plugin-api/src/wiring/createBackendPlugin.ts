@@ -17,9 +17,12 @@
 import { BackendFeature } from '../types';
 import {
   BackendPluginRegistrationPoints,
-  InternalBackendPluginRegistration,
+  ExtensionPoint,
+  ExtensionPointFactoryContext,
+  InternalBackendPluginRegistrationV1_1,
   InternalBackendRegistrations,
 } from './types';
+import { ID_PATTERN, ID_PATTERN_OLD } from './constants';
 
 /**
  * The configuration options passed to {@link createBackendPlugin}.
@@ -48,17 +51,55 @@ export interface CreateBackendPluginOptions {
 export function createBackendPlugin(
   options: CreateBackendPluginOptions,
 ): BackendFeature {
+  if (!ID_PATTERN.test(options.pluginId)) {
+    console.warn(
+      `WARNING: The pluginId '${options.pluginId}' will be invalid soon, please change it to match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
+  if (!ID_PATTERN_OLD.test(options.pluginId)) {
+    throw new Error(
+      `Invalid pluginId '${options.pluginId}', must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
+
   function getRegistrations() {
-    const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
+    const extensionPoints: InternalBackendPluginRegistrationV1_1['extensionPoints'] =
       [];
-    let init: InternalBackendPluginRegistration['init'] | undefined = undefined;
+    let init: InternalBackendPluginRegistrationV1_1['init'] | undefined =
+      undefined;
 
     options.register({
-      registerExtensionPoint(ext, impl) {
+      registerExtensionPoint<TExtensionPoint>(
+        extOrOpts:
+          | ExtensionPoint<TExtensionPoint>
+          | {
+              extensionPoint: ExtensionPoint<TExtensionPoint>;
+              factory: (
+                context: ExtensionPointFactoryContext,
+              ) => TExtensionPoint;
+            },
+        impl?: TExtensionPoint,
+      ) {
         if (init) {
           throw new Error('registerExtensionPoint called after registerInit');
         }
-        extensionPoints.push([ext, impl]);
+        if (
+          typeof extOrOpts === 'object' &&
+          extOrOpts !== null &&
+          'extensionPoint' in extOrOpts
+        ) {
+          extensionPoints.push({
+            extensionPoint: extOrOpts.extensionPoint,
+            factory: extOrOpts.factory as (
+              context: ExtensionPointFactoryContext,
+            ) => unknown,
+          });
+        } else {
+          extensionPoints.push({
+            extensionPoint: extOrOpts,
+            factory: () => impl,
+          });
+        }
       },
       registerInit(regInit) {
         if (init) {
@@ -79,7 +120,7 @@ export function createBackendPlugin(
 
     return [
       {
-        type: 'plugin',
+        type: 'plugin-v1.1',
         pluginId: options.pluginId,
         extensionPoints,
         init,

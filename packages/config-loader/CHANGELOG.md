@@ -1,5 +1,43 @@
 # @backstage/config-loader
 
+## 1.10.8
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/cli-common@0.1.18
+
+## 1.10.8-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/cli-common@0.1.18-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.7
+
+### Patch Changes
+
+- 741c47a: Updated dependency `typescript-json-schema` to `^0.67.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 1.10.7-next.1
+
+### Patch Changes
+
+- 741c47a: Updated dependency `typescript-json-schema` to `^0.67.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 1.10.7-next.0
 
 ### Patch Changes

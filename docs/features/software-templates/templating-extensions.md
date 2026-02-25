@@ -517,8 +517,8 @@ specifying options to the scaffolder backend plugin's `createRouter` function
 [nunjucks]: https://mozilla.github.io/nunjucks
 [filter]: https://mozilla.github.io/nunjucks/templating.html#filters
 [global-fn]: https://mozilla.github.io/nunjucks/templating.html#global-functions
-[parseRepoUrl]: https://backstage.io/docs/reference/plugin-scaffolder-node.parserepourl
-[CompoundEntityRef]: https://backstage.io/docs/reference/catalog-model.compoundentityref
+[parseRepoUrl]: https://backstage.io/api/stable/functions/_backstage_plugin-scaffolder-node.index.parseRepoUrl.html
+[CompoundEntityRef]: https://backstage.io/api/stable/types/_backstage_catalog-model.index.CompoundEntityRef.html
 [Zod]: https://zod.dev/
 [zod-fn]: https://zod.dev/?id=functions
 [piped]: https://en.wikipedia.org/wiki/Pipeline_(Unix)#Pipelines_in_command_line_interfaces

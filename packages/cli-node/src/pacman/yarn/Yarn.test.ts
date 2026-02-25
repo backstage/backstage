@@ -15,14 +15,11 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import { Yarn } from './Yarn';
 
 const mockDir = createMockDirectory();
-
-jest.mock('../../paths', () => ({
-  ...jest.requireActual('../../paths'),
-  paths: { resolveTargetRoot: (...args: string[]) => mockDir.resolve(...args) },
-}));
+overrideTargetPaths(mockDir.path);
 
 const yarnClassic = new Yarn({ version: '1.0.0', codename: 'classic' });
 const yarnBerry = new Yarn({ version: '3.0.0', codename: 'berry' });

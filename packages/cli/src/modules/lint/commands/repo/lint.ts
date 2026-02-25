@@ -17,15 +17,16 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { Command, OptionValues } from 'commander';
-import { createHash } from 'crypto';
-import { relative as relativePath } from 'path';
+import { createHash } from 'node:crypto';
+import { relative as relativePath } from 'node:path';
 import {
   PackageGraph,
   BackstagePackageJson,
   Lockfile,
+  runWorkerQueueThreads,
 } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
-import { runWorkerQueueThreads } from '../../../../lib/parallel';
+import { targetPaths } from '@backstage/cli-common';
+
 import { createScriptOptionsParser } from '../../../../lib/optionsParser';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
@@ -44,7 +45,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   const cacheContext = opts.successCache
     ? {
         entries: await cache.read(),
-        lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
+        lockfile: await Lockfile.load(targetPaths.resolveRoot('yarn.lock')),
       }
     : undefined;
 
@@ -62,7 +63,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
   if (opts.format === 'eslint-formatter-friendly') {
-    process.chdir(paths.targetRoot);
+    process.chdir(targetPaths.rootDir);
   }
 
   // Make sure lint output is colored unless the user explicitly disabled it
@@ -77,7 +78,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       const lintOptions = parseLintScript(pkg.packageJson.scripts?.lint);
       const base = {
         fullDir: pkg.dir,
-        relativeDir: relativePath(paths.targetRoot, pkg.dir),
+        relativeDir: relativePath(targetPaths.rootDir, pkg.dir),
         lintOptions,
         parentHash: undefined,
       };
@@ -105,15 +106,15 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     }),
   );
 
-  const resultsList = await runWorkerQueueThreads({
+  const { results: resultsList } = await runWorkerQueueThreads({
     items: items.filter(item => item.lintOptions), // Filter out packages without lint script
-    workerData: {
+    context: {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
       shouldCache: Boolean(cacheContext),
       maxWarnings: opts.maxWarnings ?? -1,
       successCache: cacheContext?.entries,
-      rootDir: paths.targetRoot,
+      rootDir: targetPaths.rootDir,
     },
     workerFactory: async ({
       fix,
@@ -124,11 +125,11 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       maxWarnings,
     }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');
-      const crypto = require('crypto') as typeof import('crypto');
+      const crypto = require('node:crypto') as typeof import('crypto');
       const globby = require('globby') as typeof import('globby');
       const { readFile } =
-        require('fs/promises') as typeof import('fs/promises');
-      const workerPath = require('path') as typeof import('path');
+        require('node:fs/promises') as typeof import('fs/promises');
+      const workerPath = require('node:path') as typeof import('path');
 
       return async ({
         fullDir,
@@ -263,7 +264,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   if (opts.outputFile && errorOutput) {
-    await fs.writeFile(paths.resolveTargetRoot(opts.outputFile), errorOutput);
+    await fs.writeFile(targetPaths.resolveRoot(opts.outputFile), errorOutput);
   }
 
   if (cacheContext) {

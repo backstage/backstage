@@ -21,21 +21,13 @@ import { screen } from '@testing-library/react';
 describe('handleMetaRedirects', () => {
   const navigate = jest.fn();
 
-  const setUpNewTestShadowDom = async (
-    html: string,
-    rootHref: string,
-    rootPath: string,
-  ) => {
+  const setUpNewTestShadowDom = async (html: string, rootHref: string) => {
     const entityName = 'testEntity';
-    // Mock window.location.href for each test
-    Object.defineProperty(window, 'location', {
-      value: {
-        href: rootHref,
-        pathname: rootPath,
-        hostname: 'localhost',
-      },
-      writable: true,
-    });
+    // Use history.replaceState to change location (jsdom 27+ doesn't allow redefining location)
+    // Jest's jsdom starts at http://localhost/, so replaceState updates the pathname while
+    // keeping hostname and origin as 'localhost'.
+    const url = new URL(rootHref);
+    history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
     return await createTestShadowDom(html, {
       preTransformers: [],
       postTransformers: [handleMetaRedirects(navigate, entityName)],
@@ -55,7 +47,6 @@ describe('handleMetaRedirects', () => {
     await setUpNewTestShadowDom(
       `<meta http-equiv="refresh" content="0; url=../anotherPage">`,
       'http://localhost/docs/default/component/testEntity/subpath',
-      '/docs/default/component/testEntity/subpath',
     );
 
     expect(
@@ -73,7 +64,6 @@ describe('handleMetaRedirects', () => {
     await setUpNewTestShadowDom(
       `<meta http-equiv="refresh" content="0; url=http://external.com/test">`,
       'http://localhost/docs/default/component/testEntity/subpath',
-      '/docs/default/component/testEntity/subpath',
     );
 
     expect(
@@ -91,7 +81,6 @@ describe('handleMetaRedirects', () => {
     await setUpNewTestShadowDom(
       `<meta http-equiv="refresh" content="0; url=http://localhost/test">`,
       'http://localhost/docs/default/component/testEntity/subpath',
-      '/docs/default/component/testEntity/subpath',
     );
 
     expect(
@@ -107,7 +96,6 @@ describe('handleMetaRedirects', () => {
     await setUpNewTestShadowDom(
       `<meta name="keywords" content="TechDocs, Example">`,
       'http://localhost/docs/default/component/testEntity/subpath',
-      '/docs/default/component/testEntity/subpath',
     );
 
     jest.runAllTimers();

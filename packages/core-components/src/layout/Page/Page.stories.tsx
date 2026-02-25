@@ -40,6 +40,7 @@ import { Page } from '../Page';
 export default {
   title: 'Plugins/Examples',
   component: Page,
+  tags: ['!manifest'],
 };
 
 interface TableData {

@@ -17,12 +17,15 @@
 import { Config, ConfigReader } from '@backstage/config';
 import {
   buildPgDatabaseConfig,
+  computePgPluginConfig,
   createPgDatabaseClient,
   getPgConnectionConfig,
   parsePgConnectionString,
 } from './postgres';
+import { type Knex } from 'knex';
 
 jest.mock('@google-cloud/cloud-sql-connector');
+jest.mock('@azure/identity');
 
 describe('postgres', () => {
   const createMockConnection = () => ({
@@ -138,6 +141,271 @@ describe('postgres', () => {
       });
     });
 
+    it('should default to using default azure credentials when type is azure with no credentials', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'some-user@domain.com',
+            port: 5423,
+            database: 'other_db',
+          },
+        }),
+      );
+
+      expect(DefaultAzureCredential).toHaveBeenCalled();
+      expect(configResult).toMatchObject({
+        client: 'pg',
+        connection: expect.any(Function),
+        useNullAsDefault: true,
+      });
+
+      const connectionResult = await configResult.connection();
+
+      expect(connectionResult).toMatchObject({
+        user: 'some-user@domain.com',
+        password: 'afaketoken',
+        port: 5423,
+        expirationChecker: expect.any(Function),
+      });
+      expect(connectionResult).not.toHaveProperty('allowedClockSkewMs');
+      expect(connectionResult).not.toHaveProperty('type');
+      expect(connectionResult).not.toHaveProperty('tokenCredential');
+    });
+
+    it('uses the correct config when using azure managed identity', async () => {
+      const { ManagedIdentityCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+
+      ManagedIdentityCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'some-user@domain.com',
+            port: 5423,
+            database: 'other_db',
+            tokenCredential: {
+              clientId: 'my-client-id',
+            },
+          },
+        }),
+      );
+
+      expect(ManagedIdentityCredential).toHaveBeenCalledWith('my-client-id');
+      expect(configResult).toMatchObject({
+        client: 'pg',
+        connection: expect.any(Function),
+        useNullAsDefault: true,
+      });
+
+      const connectionResult = await configResult.connection();
+
+      expect(connectionResult).toMatchObject({
+        user: 'some-user@domain.com',
+        password: 'afaketoken',
+        port: 5423,
+        expirationChecker: expect.any(Function),
+      });
+      expect(connectionResult).not.toHaveProperty('type');
+      expect(connectionResult).not.toHaveProperty('tokenCredential');
+    });
+
+    it('uses the correct config when using azure client secret credentials', async () => {
+      const { ClientSecretCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+
+      ClientSecretCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'some-user@domain.com',
+            port: 5423,
+            database: 'other_db',
+            tokenCredential: {
+              clientId: 'my-client-id',
+              tenantId: 'my-tenant-id',
+              clientSecret: 'my-client-secret',
+            },
+          },
+        }),
+      );
+
+      expect(ClientSecretCredential).toHaveBeenCalledWith(
+        'my-tenant-id',
+        'my-client-id',
+        'my-client-secret',
+      );
+      expect(configResult).toMatchObject({
+        client: 'pg',
+        connection: expect.any(Function),
+        useNullAsDefault: true,
+      });
+
+      const connectionResult = await configResult.connection();
+
+      expect(connectionResult).toMatchObject({
+        user: 'some-user@domain.com',
+        password: 'afaketoken',
+        port: 5423,
+        expirationChecker: expect.any(Function),
+      });
+      expect(connectionResult).not.toHaveProperty('type');
+      expect(connectionResult).not.toHaveProperty('tokenCredential');
+    });
+
+    it('removes tokenCredential from the final connection', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue({
+        token: 't',
+        expiresOnTimestamp: Date.now() + 1000,
+      });
+
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: {
+          type: 'azure',
+          instance: 'unused',
+          tokenCredential: { clientId: 'x' },
+        },
+      });
+
+      const configResult = await buildPgDatabaseConfig(config);
+      const connection = await configResult.connection();
+
+      expect(connection).not.toHaveProperty('tokenCredential');
+    });
+
+    it('instructs knex to get a new connection object when the old azure token expires', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      const tokenExpirationTimestamp = new Date(
+        '2025-01-01T12:34:56.789',
+      ).valueOf();
+
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue({
+        token: 'afaketoken',
+        expiresOnTimestamp: tokenExpirationTimestamp,
+      });
+
+      let configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            tokenCredential: {
+              tokenRenewableOffsetTime: '1 minute',
+            },
+            user: 'some-user@domain.com',
+            database: 'other_db',
+            port: 5423,
+          },
+        }),
+      );
+
+      let connectionResult = await configResult.connection();
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 90_000 });
+      let expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(false);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 60_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+
+      // Check the default tokenRenewableOffsetTime of 5 minutes
+      configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'user@contoso.com',
+            database: 'other_db',
+            port: 5423,
+          },
+        }),
+      );
+
+      connectionResult = await configResult.connection();
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 450_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(false);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp - 300_000 });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+
+      jest.useFakeTimers({ now: tokenExpirationTimestamp });
+      expirationResult = await connectionResult.expirationChecker();
+      expect(expirationResult).toBe(true);
+    });
+
+    it('throws an error when Azure token acquisition fails', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue(null as any);
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'some-user@domain.com',
+            database: 'other_db',
+          },
+        }),
+      );
+
+      await expect(configResult.connection()).rejects.toThrow(
+        'Failed to acquire Azure access token for database authentication',
+      );
+    });
+
     it('uses the correct config when using cloudsql', async () => {
       expect(
         await buildPgDatabaseConfig(
@@ -247,6 +515,47 @@ describe('postgres', () => {
         instanceConnectionName: 'project:region:instance',
         ipType: 'PUBLIC',
       });
+    });
+
+    it('passes configured ipType to connector.getOptions', async () => {
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+
+      const mockStream = (): any => {};
+      Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
+
+      await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'cloudsql',
+            instance: 'proj:region:inst',
+            ipAddressType: 'PUBLIC',
+          },
+        }),
+      );
+
+      expect(Connector.prototype.getOptions).toHaveBeenCalledWith({
+        authType: 'IAM',
+        instanceConnectionName: 'proj:region:inst',
+        ipType: 'PUBLIC',
+      });
+    });
+
+    it('throws when connection.ipAddressType is invalid', async () => {
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'cloudsql',
+              instance: 'proj:region:inst',
+              ipAddressType: 'INVALID',
+            },
+          }),
+        ),
+      ).rejects.toThrow(/Invalid connection.ipAddressType/);
     });
 
     it('passes ip settings to cloud-sql-connector', async () => {
@@ -391,6 +700,496 @@ describe('postgres', () => {
         database: 'dbname',
         ssl: true,
       });
+    });
+  });
+});
+
+describe('computePgPluginConfig', () => {
+  const prefix = 'backstage_plugin_';
+
+  describe('client', () => {
+    it('uses base client when no plugin client specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.client).toBe('pg');
+      expect(result.clientOverridden).toBe(false);
+    });
+
+    it('uses plugin client when specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        plugin: {
+          catalog: {
+            client: 'better-sqlite3',
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.client).toBe('better-sqlite3');
+      expect(result.clientOverridden).toBe(true);
+    });
+  });
+
+  describe('role', () => {
+    it('returns undefined when no role specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.role).toBeUndefined();
+    });
+
+    it('uses base role when no plugin role specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        role: 'base_role',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.role).toBe('base_role');
+    });
+
+    it('uses plugin role when specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        role: 'base_role',
+        plugin: {
+          catalog: {
+            role: 'plugin_role',
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.role).toBe('plugin_role');
+    });
+  });
+
+  describe('additionalKnexConfig', () => {
+    it('returns empty object when no knexConfig specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.additionalKnexConfig).toEqual({});
+    });
+
+    it('uses base knexConfig when no plugin config', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        knexConfig: { debug: true },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.additionalKnexConfig).toEqual({ debug: true });
+    });
+
+    it('merges base and plugin knexConfig', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        knexConfig: { debug: true, pool: { min: 0 } },
+        plugin: {
+          catalog: {
+            knexConfig: { pool: { max: 10 } },
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.additionalKnexConfig).toEqual({
+        debug: true,
+        pool: { min: 0, max: 10 },
+      });
+    });
+  });
+
+  describe('ensureExists', () => {
+    it('defaults to true when not specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.ensureExists).toBe(true);
+    });
+
+    it('uses base ensureExists when no plugin setting', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        ensureExists: false,
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.ensureExists).toBe(false);
+    });
+
+    it('uses plugin ensureExists when specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        ensureExists: true,
+        plugin: {
+          catalog: {
+            ensureExists: false,
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.ensureExists).toBe(false);
+    });
+  });
+
+  describe('ensureSchemaExists', () => {
+    it('defaults to false when not specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.ensureSchemaExists).toBe(false);
+    });
+
+    it('uses base ensureSchemaExists when no plugin setting', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        ensureSchemaExists: true,
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.ensureSchemaExists).toBe(true);
+    });
+  });
+
+  describe('pluginDivisionMode', () => {
+    it('defaults to database when not specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.pluginDivisionMode).toBe('database');
+    });
+
+    it('uses specified pluginDivisionMode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        pluginDivisionMode: 'schema',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.pluginDivisionMode).toBe('schema');
+    });
+  });
+
+  describe('connection', () => {
+    it('sets application_name to plugin id', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.connection).toMatchObject({
+        application_name: 'backstage_plugin_catalog',
+      });
+    });
+
+    it('preserves existing application_name', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', application_name: 'custom_name' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.connection).toMatchObject({
+        application_name: 'custom_name',
+      });
+    });
+
+    it('omits database from base connection when pluginDivisionMode is database', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', database: 'shared_db' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.connection.database).toBeUndefined();
+    });
+
+    it('keeps database from base connection when pluginDivisionMode is schema', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', database: 'shared_db' },
+        pluginDivisionMode: 'schema',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.connection.database).toBe('shared_db');
+    });
+
+    it('merges plugin connection with base connection', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', user: 'base_user' },
+        plugin: {
+          catalog: {
+            connection: { password: 'plugin_pass' },
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.connection).toMatchObject({
+        host: 'localhost',
+        user: 'base_user',
+        password: 'plugin_pass',
+      });
+    });
+
+    it('excludes base connection when client is overridden', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', user: 'base_user' },
+        plugin: {
+          catalog: {
+            client: 'better-sqlite3',
+            connection: { filename: ':memory:' },
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.connection.host).toBeUndefined();
+      expect(result.connection.user).toBeUndefined();
+      expect(
+        (result.connection as Knex.BetterSqlite3ConnectionConfig).filename,
+      ).toBe(':memory:');
+    });
+
+    it('parses connection string in base config', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: 'postgresql://user:pass@localhost:5432/mydb',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.connection).toMatchObject({
+        host: 'localhost',
+        user: 'user',
+        password: 'pass',
+        port: '5432',
+      });
+    });
+
+    it('parses connection string in plugin config', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'base-host' },
+        plugin: {
+          catalog: {
+            connection: 'postgresql://plugin:pass@plugin-host:5432/plugindb',
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.connection).toMatchObject({
+        host: 'plugin-host',
+        user: 'plugin',
+        password: 'pass',
+        port: '5432',
+      });
+    });
+  });
+
+  describe('databaseName', () => {
+    it('auto-generates database name with prefix in database mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.databaseName).toBe('backstage_plugin_catalog');
+    });
+
+    it('uses connection database when specified in database mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        plugin: {
+          catalog: {
+            connection: { database: 'custom_db' },
+          },
+        },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.databaseName).toBe('custom_db');
+    });
+
+    it('uses connection database in schema mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', database: 'shared_db' },
+        pluginDivisionMode: 'schema',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.databaseName).toBe('shared_db');
+    });
+
+    it('returns undefined when no database in schema mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        pluginDivisionMode: 'schema',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.databaseName).toBeUndefined();
+    });
+  });
+
+  describe('databaseClientOverrides', () => {
+    it('sets connection.database when databaseName exists', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.databaseClientOverrides).toEqual({
+        connection: { database: 'backstage_plugin_catalog' },
+      });
+    });
+
+    it('adds searchPath when in schema mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', database: 'shared_db' },
+        pluginDivisionMode: 'schema',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.databaseClientOverrides).toEqual({
+        connection: { database: 'shared_db' },
+        searchPath: ['catalog'],
+      });
+    });
+
+    it('returns empty object when no databaseName in schema mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        pluginDivisionMode: 'schema',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.databaseClientOverrides).toEqual({
+        searchPath: ['catalog'],
+      });
+    });
+  });
+
+  describe('knexConfig', () => {
+    it('includes client and connection', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.knexConfig.client).toBe('pg');
+      expect(result.knexConfig.connection).toBeDefined();
+    });
+
+    it('includes role when specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        role: 'my_role',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect((result.knexConfig as any).role).toBe('my_role');
+    });
+
+    it('does not include role when not specified', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect((result.knexConfig as any).role).toBeUndefined();
+    });
+
+    it('includes additionalKnexConfig properties', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        knexConfig: { debug: true, pool: { min: 2 } },
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix);
+
+      expect(result.knexConfig.debug).toBe(true);
+      expect(result.knexConfig.pool).toEqual({ min: 2 });
     });
   });
 });

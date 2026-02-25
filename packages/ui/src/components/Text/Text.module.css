@@ -91,6 +91,10 @@
     color: var(--bui-fg-success);
   }
 
+  .bui-Text[data-color='info'] {
+    color: var(--bui-fg-info);
+  }
+
   .bui-Text[data-truncate] {
     overflow: hidden;
     text-overflow: ellipsis;

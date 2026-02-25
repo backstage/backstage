@@ -1,5 +1,79 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.2
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- e9eb400: Allow configuring included topics for email notifications.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-notifications-node@0.2.23
+  - @backstage/plugin-signals-node@0.1.28
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-notifications-node@0.2.23-next.1
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 5e3ef57: Added `peerModules` metadata declaring recommended modules for cross-plugin integrations.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-notifications-node@0.2.23-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/plugin-signals-node@0.1.28-next.0
+
+## 0.6.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-signals-node@0.1.27
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-notifications-node@0.2.22
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-signals-node@0.1.27-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/plugin-notifications-node@0.2.22-next.1
+
 ## 0.6.1-next.0
 
 ### Patch Changes

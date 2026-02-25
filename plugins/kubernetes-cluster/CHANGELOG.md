@@ -1,5 +1,105 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.34
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/plugin-kubernetes-react@0.5.16
+  - @backstage/plugin-kubernetes-common@0.9.10
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-permission-react@0.4.40
+
+## 0.0.34-next.2
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.0.0-next.2
+  - @backstage/plugin-kubernetes-react@0.5.16-next.2
+  - @backstage/core-components@0.18.7-next.2
+  - @backstage/core-plugin-api@1.12.3-next.1
+  - @backstage/plugin-permission-react@0.4.40-next.1
+
+## 0.0.34-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.22.0-next.1
+  - @backstage/plugin-kubernetes-common@0.9.10-next.1
+  - @backstage/plugin-kubernetes-react@0.5.16-next.1
+  - @backstage/core-components@0.18.7-next.1
+
+## 0.0.34-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.6-next.0
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/plugin-kubernetes-react@0.5.16-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-kubernetes-common@0.9.10-next.0
+  - @backstage/plugin-permission-react@0.4.40-next.0
+
+## 0.0.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-kubernetes-react@0.5.15
+
+## 0.0.33-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+  - @backstage/plugin-kubernetes-react@0.5.15-next.0
+
+## 0.0.33-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+
+## 0.0.32
+
+### Patch Changes
+
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.14
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/plugin-kubernetes-common@0.9.9
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/plugin-permission-react@0.4.39
+
+## 0.0.32-next.2
+
+### Patch Changes
+
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.4-next.2
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-kubernetes-common@0.9.9-next.0
+  - @backstage/plugin-kubernetes-react@0.5.14-next.1
+  - @backstage/plugin-permission-react@0.4.39-next.0
+
 ## 0.0.32-next.1
 
 ### Patch Changes

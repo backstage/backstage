@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/git-release-manager-logo.svg
 npmPackageName: '@backstage-community/plugin-git-release-manager'
 addedDate: '2021-10-04'
+status: active

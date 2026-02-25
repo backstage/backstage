@@ -74,6 +74,7 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
@@ -103,6 +104,7 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldSchema: FieldSchema_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
@@ -249,6 +251,7 @@ export type MyGroupsPickerUiOptions = NonNullable<
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
@@ -278,6 +281,7 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnedEntityPickerFieldSchema: FieldSchema_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
@@ -388,6 +392,30 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
             | undefined;
         }
       | undefined;
+  }
+>;
+
+// @public
+export const RepoOwnerPickerFieldExtension: FieldExtensionComponent_2<
+  string,
+  {
+    host?: string | undefined;
+    requestUserCredentials?:
+      | {
+          secretsKey: string;
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+                gitea?: string[] | undefined;
+              }
+            | undefined;
+        }
+      | undefined;
+    excludedOwners?: string[] | undefined;
   }
 >;
 

@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BACKSTAGE_JSON, bootstrapEnvProxyAgents } from '@backstage/cli-common';
+import {
+  BACKSTAGE_JSON,
+  bootstrapEnvProxyAgents,
+  targetPaths,
+} from '@backstage/cli-common';
 
 bootstrapEnvProxyAgents();
 
-import { env } from 'process';
+import { env } from 'node:process';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import semver from 'semver';
 import { OptionValues } from 'commander';
 import { isError, NotFoundError } from '@backstage/errors';
-import { resolve as resolvePath } from 'path';
-import { paths } from '../../../../lib/paths';
+import { resolve as resolvePath } from 'node:path';
+
 import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 import {
   fetchPackageInfo,
@@ -33,7 +37,7 @@ import {
   mapDependencies,
   YarnInfoInspectData,
 } from '../../../../lib/versioning';
-import { runParallelWorkers } from '../../../../lib/parallel';
+import { runConcurrentTasks } from '@backstage/cli-node';
 import {
   getManifestByReleaseLine,
   getManifestByVersion,
@@ -68,7 +72,7 @@ function extendsDefaultPattern(pattern: string): boolean {
 }
 
 export default async (opts: OptionValues) => {
-  const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+  const lockfilePath = targetPaths.resolveRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
   const hasYarnPlugin = await getHasYarnPlugin();
 
@@ -140,13 +144,13 @@ export default async (opts: OptionValues) => {
   }
 
   // First we discover all Backstage dependencies within our own repo
-  const dependencyMap = await mapDependencies(paths.targetDir, pattern);
+  const dependencyMap = await mapDependencies(targetPaths.dir, pattern);
 
   // Next check with the package registry to see which dependency ranges we need to bump
   const versionBumps = new Map<string, PkgVersionInfo[]>();
 
-  await runParallelWorkers({
-    parallelismFactor: 4,
+  await runConcurrentTasks({
+    concurrencyFactor: 4,
     items: dependencyMap.entries(),
     async worker([name, pkgs]) {
       let target: string;
@@ -182,8 +186,8 @@ export default async (opts: OptionValues) => {
     console.log();
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();
-    await runParallelWorkers({
-      parallelismFactor: 4,
+    await runConcurrentTasks({
+      concurrencyFactor: 4,
       items: versionBumps.entries(),
       async worker([name, deps]) {
         const pkgPath = resolvePath(deps[0].location, 'package.json');
@@ -417,7 +421,7 @@ export function createVersionFinder(options: {
 }
 
 function getBackstageJsonPath() {
-  return paths.resolveTargetRoot(BACKSTAGE_JSON);
+  return targetPaths.resolveRoot(BACKSTAGE_JSON);
 }
 
 async function getBackstageJson() {

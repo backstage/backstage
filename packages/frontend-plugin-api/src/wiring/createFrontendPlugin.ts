@@ -29,7 +29,9 @@ import {
 import { FeatureFlagConfig } from './types';
 import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
 import { JsonObject } from '@backstage/types';
+import { IconElement } from '../icons/types';
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
+import { ID_PATTERN } from './constants';
 
 /**
  * Information about the plugin.
@@ -111,7 +113,17 @@ export interface OverridableFrontendPlugin<
     id: TId,
   ): OverridableExtensionDefinition<TExtensionMap[TId]['T']>;
   withOverrides(options: {
-    extensions: Array<ExtensionDefinition>;
+    extensions?: Array<ExtensionDefinition>;
+
+    /**
+     * Overrides the display title of the plugin.
+     */
+    title?: string;
+
+    /**
+     * Overrides the display icon of the plugin.
+     */
+    icon?: IconElement;
 
     /**
      * Overrides the original info loaders of the plugin one by one.
@@ -130,7 +142,25 @@ export interface FrontendPlugin<
   },
 > {
   readonly $$type: '@backstage/FrontendPlugin';
+  /**
+   * The plugin ID.
+   */
+  readonly pluginId: string;
+  /**
+   * Deprecated alias for `pluginId`.
+   *
+   * @deprecated Use `pluginId` instead.
+   */
   readonly id: string;
+  /**
+   * The display title of the plugin, used in page headers and navigation.
+   * Falls back to the plugin ID if not provided.
+   */
+  readonly title?: string;
+  /**
+   * The display icon of the plugin, used in page headers and navigation.
+   */
+  readonly icon?: IconElement;
   readonly routes: TRoutes;
   readonly externalRoutes: TExternalRoutes;
 
@@ -148,6 +178,15 @@ export interface PluginOptions<
   TExtensions extends readonly ExtensionDefinition[],
 > {
   pluginId: TId;
+  /**
+   * The display title of the plugin, used in page headers and navigation.
+   * Falls back to the plugin ID if not provided.
+   */
+  title?: string;
+  /**
+   * The display icon of the plugin, used in page headers and navigation.
+   */
+  icon?: IconElement;
   routes?: TRoutes;
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
@@ -199,6 +238,13 @@ export function createFrontendPlugin<
 > {
   const pluginId = options.pluginId;
 
+  if (!ID_PATTERN.test(pluginId)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `WARNING: The pluginId '${pluginId}' will be invalid soon, please change it to match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
+
   const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
     string,
@@ -231,7 +277,10 @@ export function createFrontendPlugin<
   }
 
   return OpaqueFrontendPlugin.createInstance('v1', {
+    pluginId,
     id: pluginId,
+    title: options.title,
+    icon: options.icon,
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],
@@ -257,8 +306,9 @@ export function createFrontendPlugin<
       return `Plugin{id=${pluginId}}`;
     },
     withOverrides(overrides) {
+      const overrideExtensions = overrides.extensions ?? [];
       const overriddenExtensionIds = new Set(
-        overrides.extensions.map(
+        overrideExtensions.map(
           e => resolveExtensionDefinition(e, { namespace: pluginId }).id,
         ),
       );
@@ -271,7 +321,9 @@ export function createFrontendPlugin<
       return createFrontendPlugin({
         ...options,
         pluginId,
-        extensions: [...nonOverriddenExtensions, ...overrides.extensions],
+        title: overrides.title ?? options.title,
+        icon: overrides.icon ?? options.icon,
+        extensions: [...nonOverriddenExtensions, ...overrideExtensions],
         info: {
           ...options.info,
           ...overrides.info,

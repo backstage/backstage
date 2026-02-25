@@ -14,71 +14,39 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
 import { Button as RAButton, ProgressBar } from 'react-aria-components';
 import { RiLoader4Line } from '@remixicon/react';
 import type { ButtonIconProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
-import { ButtonDefinition } from '../Button/definition';
+import { useDefinition } from '../../hooks/useDefinition';
 import { ButtonIconDefinition } from './definition';
-import stylesButtonIcon from './ButtonIcon.module.css';
-import stylesButton from '../Button/Button.module.css';
 
 /** @public */
 export const ButtonIcon = forwardRef(
   (props: ButtonIconProps, ref: Ref<HTMLButtonElement>) => {
-    const { classNames, dataAttributes, cleanedProps } = useStyles(
-      ButtonDefinition,
-      {
-        size: 'small',
-        variant: 'primary',
-        ...props,
-      },
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      ButtonIconDefinition,
+      props,
     );
-
-    const { classNames: classNamesButtonIcon } =
-      useStyles(ButtonIconDefinition);
-
-    const { className, icon, loading, ...rest } = cleanedProps;
+    const { classes, icon, loading } = ownProps;
 
     return (
       <RAButton
-        className={clsx(
-          classNames.root,
-          classNamesButtonIcon.root,
-          stylesButton[classNames.root],
-          stylesButtonIcon[classNamesButtonIcon.root],
-          className,
-        )}
+        className={classes.root}
         ref={ref}
         isPending={loading}
         {...dataAttributes}
-        {...rest}
+        {...restProps}
       >
         {({ isPending }) => (
           <>
-            <span
-              className={clsx(
-                classNames.content,
-                classNamesButtonIcon.content,
-                stylesButton[classNames.content],
-                stylesButtonIcon[classNamesButtonIcon.content],
-              )}
-            >
-              {icon}
-            </span>
+            <span className={classes.content}>{icon}</span>
 
             {isPending && (
               <ProgressBar
                 aria-label="Loading"
                 isIndeterminate
-                className={clsx(
-                  classNames.spinner,
-                  classNamesButtonIcon.spinner,
-                  stylesButton[classNames.spinner],
-                  stylesButtonIcon[classNamesButtonIcon.spinner],
-                )}
+                className={classes.spinner}
               >
                 <RiLoader4Line aria-hidden="true" />
               </ProgressBar>

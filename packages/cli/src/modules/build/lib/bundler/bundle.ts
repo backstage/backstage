@@ -16,7 +16,7 @@
 
 import yn from 'yn';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { rspack, Configuration, MultiStats } from '@rspack/core';
 import {
   measureFileSizesBeforeBuild,
@@ -28,6 +28,7 @@ import { BuildOptions } from './types';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import chalk from 'chalk';
 import { createDetectedModulesEntryPoint } from './packageDetection';
+import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
@@ -55,8 +56,7 @@ export async function buildBundle(options: BuildOptions) {
   };
 
   const configs: Configuration[] = [];
-
-  if (options.moduleFederation?.mode === 'remote') {
+  if (options.moduleFederationRemote) {
     // Package detection is disabled for remote bundles
     configs.push(await createConfig(paths, commonConfigOptions));
   } else {
@@ -65,10 +65,18 @@ export async function buildBundle(options: BuildOptions) {
       targetPath: paths.targetPath,
     });
 
+    const moduleFederationSharedDependenciesEntryPoint =
+      await createRuntimeSharedDependenciesEntryPoint({
+        targetPath: paths.targetPath,
+      });
+
     configs.push(
       await createConfig(paths, {
         ...commonConfigOptions,
-        additionalEntryPoints: detectedModulesEntryPoint,
+        additionalEntryPoints: [
+          ...detectedModulesEntryPoint,
+          ...moduleFederationSharedDependenciesEntryPoint,
+        ],
         appMode: publicPaths ? 'protected' : 'public',
       }),
     );

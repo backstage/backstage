@@ -1,0 +1,91 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import {
+  Default,
+  WithLink,
+  WithIcon,
+  Sizes,
+  RemovingTags,
+  Disabled,
+} from './components';
+import { tagGroupPropDefs, tagPropDefs } from './props-definition';
+import {
+  usage,
+  preview,
+  withLink,
+  disabled,
+  withIcons,
+  sizes,
+  removingTags,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TagGroupDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+export const reactAriaUrls = {
+  tagGroup: 'https://react-aria.adobe.com/TagGroup',
+};
+
+<PageTitle
+  title="TagGroup"
+  description="A collection of tags for labeling, categorizing, or filtering content."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={preview} />
+
+## Usage
+
+<CodeBlock code={usage} />
+
+## API reference
+
+### TagGroup
+
+Container for a collection of tags.
+
+<PropsTable data={tagGroupPropDefs} />
+
+<ReactAriaLink component="TagGroup" href={reactAriaUrls.tagGroup} />
+
+### Tag
+
+Individual tag item within a group.
+
+<PropsTable data={tagPropDefs} />
+
+<ReactAriaLink component="Tag" href={reactAriaUrls.tagGroup} />
+
+## Examples
+
+### With links
+
+<Snippet align="center" py={4} open preview={<WithLink />} code={withLink} />
+
+### With icons
+
+<Snippet align="center" py={4} open preview={<WithIcon />} code={withIcons} />
+
+### Sizes
+
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizes} />
+
+### Removable
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<RemovingTags />}
+  code={removingTags}
+/>
+
+### Disabled
+
+<Snippet align="center" py={4} open preview={<Disabled />} code={disabled} />
+
+<Theming definition={TagGroupDefinition} />
+
+<ChangelogComponent component="tag-group" />

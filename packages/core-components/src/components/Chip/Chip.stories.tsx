@@ -53,6 +53,7 @@ export default {
       },
     },
   },
+  tags: ['!manifest'],
 };
 
 export const Default = (args: ChipProps) => <Chip {...args} />;

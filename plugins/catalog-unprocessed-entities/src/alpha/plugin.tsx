@@ -68,6 +68,8 @@ export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog-unprocessed-entities',
+  title: 'Unprocessed Entities',
+  icon: <QueueIcon />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
     root: rootRouteRef,

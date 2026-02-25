@@ -1,6 +1,13 @@
-import type { StorybookConfig } from '@storybook/react-vite';
+// This file has been automatically migrated to valid ESM format by Storybook.
+import { defineMain } from '@storybook/react-vite/node';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
 import { join, dirname, posix } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
 
 const isChromatic = process.env.STORYBOOK_STORY_SET === 'chromatic';
 
@@ -19,33 +26,37 @@ const allStories = isChromatic
     ];
 
 const rootPath = '../';
-const storiesSrcMdx = 'src/**/*.mdx';
 const storiesSrcGlob = 'src/**/*.stories.@(js|jsx|mjs|ts|tsx)';
 
 const getStoriesPath = (element: string, pattern: string) =>
   posix.join(rootPath, element, pattern);
 
-const stories = allStories.flatMap(element => [
-  getStoriesPath(element, storiesSrcMdx),
+const stories = allStories.map(element =>
   getStoriesPath(element, storiesSrcGlob),
-]);
+);
 
 // Resolve absolute path of a package. Needed in monorepos.
 function getAbsolutePath(value: string): any {
   return dirname(require.resolve(join(value, 'package.json')));
 }
 
-const config: StorybookConfig = {
+export default defineMain({
   stories,
   addons: [
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@storybook/addon-themes'),
     getAbsolutePath('@storybook/addon-docs'),
     getAbsolutePath('@storybook/addon-a11y'),
+    getAbsolutePath('@storybook/addon-vitest'),
+    getAbsolutePath('@storybook/addon-mcp'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {},
+  },
+  features: {
+    experimentalComponentsManifest: true,
+    experimentalCodeExamples: true, // optional
   },
   viteFinal: async (config, { configType }) => {
     // Add Node.js polyfills for browser compatibility
@@ -122,6 +133,4 @@ const config: StorybookConfig = {
 
     return config;
   },
-};
-
-export default config;
+});

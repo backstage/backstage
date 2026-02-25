@@ -28,11 +28,8 @@ export default ({ theme }: RuleOptions) => `
   /* FONT */
   --md-default-fg-color: ${theme.palette.text.primary};
   --md-default-fg-color--light: ${theme.palette.text.secondary};
-  --md-default-fg-color--lighter: ${lighten(theme.palette.text.secondary, 0.7)};
-  --md-default-fg-color--lightest: ${lighten(
-    theme.palette.text.secondary,
-    0.3,
-  )};
+  --md-default-fg-color--lighter: ${alpha(theme.palette.text.secondary, 0.3)};
+  --md-default-fg-color--lightest: ${alpha(theme.palette.text.secondary, 0.15)};
 
   /* BACKGROUND */
   --md-default-bg-color:${theme.palette.background.default};
@@ -146,7 +143,7 @@ export default ({ theme }: RuleOptions) => `
   --md-typeset-font-size: 1rem;
   --md-typeset-color: var(--md-default-fg-color);
   --md-typeset-a-color: ${theme.palette.link};
-  --md-typeset-table-color: ${theme.palette.text.primary};
+  --md-typeset-table-color: ${alpha(theme.palette.text.primary, 0.15)};
   --md-typeset-table-color--light: ${alpha(theme.palette.text.primary, 0.05)};
   --md-typeset-del-color: ${
     theme.palette.type === 'dark'

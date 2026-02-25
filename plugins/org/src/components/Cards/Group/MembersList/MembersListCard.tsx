@@ -31,7 +31,7 @@ import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
-import { useState, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
 import {
@@ -50,6 +50,7 @@ import {
 import { EntityRelationAggregation } from '../../types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
+import TextField from '@material-ui/core/TextField';
 
 /** @public */
 export type MemberComponentClassKey = 'card' | 'avatar';
@@ -190,6 +191,12 @@ export const MembersListCard = (props: {
     relationAggregation === 'aggregated',
   );
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm]);
+
   const { loading: loadingDescendantMembers, value: descendantMembers } =
     useAsync(async () => {
       if (!showAggregateMembers) {
@@ -257,13 +264,31 @@ export const MembersListCard = (props: {
     />
   );
 
+  const filteredMembers = members.filter(member => {
+    const fields = [
+      member.metadata.name,
+      member.metadata.title,
+      member.spec?.profile?.displayName,
+      member.spec?.profile?.email,
+    ];
+    return fields.some(val =>
+      val
+        ?.toLocaleLowerCase('en-US')
+        .includes(searchTerm.toLocaleLowerCase('en-US')),
+    );
+  });
+
+  const membersToRender = searchTerm ? filteredMembers : members;
+
   let memberList: JSX.Element;
-  if (members && members.length > 0) {
+  if (membersToRender && membersToRender.length > 0) {
     memberList = (
       <Box className={classes.memberList}>
-        {members.slice(pageSize * (page - 1), pageSize * page).map(member => (
-          <MemberComponent member={member} key={stringifyEntityRef(member)} />
-        ))}
+        {membersToRender
+          .slice(pageSize * (page - 1), pageSize * page)
+          .map(member => (
+            <MemberComponent member={member} key={stringifyEntityRef(member)} />
+          ))}
       </Box>
     );
   } else {
@@ -277,9 +302,7 @@ export const MembersListCard = (props: {
   return (
     <Grid item className={classes.root}>
       <InfoCard
-        title={`${memberDisplayTitle} (${
-          members?.length || 0
-        }${paginationLabel})`}
+        title={`${memberDisplayTitle} (${filteredMembers.length} of ${members.length}${paginationLabel})`}
         subheader={t('membersListCard.subtitle', {
           groupName: displayName,
         })}
@@ -308,7 +331,18 @@ export const MembersListCard = (props: {
         {showAggregateMembers && loadingDescendantMembers ? (
           <Progress />
         ) : (
-          memberList
+          <>
+            <TextField
+              fullWidth
+              margin="dense"
+              placeholder="Search members..."
+              value={searchTerm}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearchTerm(e.target.value)
+              }
+            />
+            <Box sx={{ mt: 2 }}>{memberList}</Box>
+          </>
         )}
       </InfoCard>
     </Grid>

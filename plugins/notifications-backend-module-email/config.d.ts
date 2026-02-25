@@ -137,10 +137,6 @@ export interface Config {
          */
         sesConfig?: {
           /**
-           * ARN of the identity to use as the source of the email
-           */
-          sourceArn?: string;
-          /**
            * ARN of the identity to use for the "From"/sender address of the email
            */
           fromArn?: string;
@@ -165,9 +161,14 @@ export interface Config {
            */
           maxSeverity?: NotificationSeverity;
           /**
-           * A notification who's topic is in this array will not be emailed
+           * A notification with topic is in this array will not be emailed
            */
           excludedTopics?: string[];
+          /**
+           * A notification with topic in this array will be emailed. If not defined, only
+           * excludedTopics takes effect.
+           */
+          includedTopics?: string[];
         };
         /**
          * White list of addresses to send email to

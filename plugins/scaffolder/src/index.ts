@@ -31,6 +31,7 @@ export {
   RepoUrlPickerFieldExtension,
   MultiEntityPickerFieldExtension,
   RepoBranchPickerFieldExtension,
+  RepoOwnerPickerFieldExtension,
   ScaffolderPage,
   scaffolderPlugin,
 } from './plugin';

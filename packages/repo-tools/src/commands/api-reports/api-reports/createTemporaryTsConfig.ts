@@ -15,11 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import { join } from 'path';
-import { paths as cliPaths } from '../../../lib/paths';
+import { join } from 'node:path';
+import { targetPaths } from '@backstage/cli-common';
 
 export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
-  const path = cliPaths.resolveTargetRoot('tsconfig.tmp.json');
+  const path = targetPaths.resolveRoot('tsconfig.tmp.json');
 
   process.once('exit', () => {
     fs.removeSync(path);

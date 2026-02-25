@@ -25,7 +25,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Base64Decode } from 'base64-stream';
 import fetch, { Response } from 'node-fetch';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import {
   GerritIntegration,
   ScmIntegrations,

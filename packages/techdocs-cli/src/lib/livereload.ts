@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import http from 'http';
+import http from 'node:http';
 import httpProxy from 'http-proxy';
 
 /**

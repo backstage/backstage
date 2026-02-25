@@ -27,7 +27,7 @@ title: Adding Custom Plugin to Existing Monorepo App
 > here >
 > [simple-backstage-app-plugin](https://github.com/johnson-jesse/simple-backstage-app-plugin).
 
-# The Skeleton Plugin
+## The Skeleton Plugin
 
 1. Start by using the built-in creator. From the terminal and root of your
    project run: `yarn new` and select `frontend-plugin`.
@@ -45,7 +45,7 @@ title: Adding Custom Plugin to Existing Monorepo App
 1. You should see successful verbiage for this endpoint,
    `Welcome to github-playground!`
 
-# The Shortcut
+## The Shortcut
 
 Let's add a shortcut.
 
@@ -62,7 +62,7 @@ Simple! The App will reload with your changes automatically. You should now see
 a GitHub icon displayed in the sidebar. Clicking that will link to our new
 plugin. And now, the API fun begins.
 
-# The Identity
+## The Identity
 
 Our first modification will be to extract information from the Identity API.
 
@@ -124,7 +124,7 @@ https://github.com/backstage/backstage/tree/master/contrib
 6. Here is the entire file for reference
    [ExampleComponent.tsx](https://github.com/backstage/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md)
 
-# The Wipe
+## The Wipe
 
 The last file we will touch is ExampleFetchComponent. Because of the number of
 changes, let's start by wiping this component clean.
@@ -150,7 +150,7 @@ export const ExampleFetchComponent = () => {
 
 ###### We will add a lot to this file for the sake of ease. Please don't do this in productional code!
 
-# The Graph Model
+## The Graph Model
 
 GitHub has a GraphQL API available for interacting. Let's start by adding our
 basic repository query
@@ -202,7 +202,7 @@ type Viewer = {
 };
 ```
 
-# The Table Model
+## The Table Model
 
 Using Backstage's own component library, let's define a custom table. This
 component will get used if we have data to display.
@@ -234,7 +234,7 @@ export const DenseTable = ({ viewer }: DenseTableProps) => {
 };
 ```
 
-# The Fetch
+## The Fetch
 
 We're ready to flush out our fetch component
 
@@ -299,11 +299,10 @@ return (
     that backs this document,
     [simple-backstage-app-plugin](https://github.com/johnson-jesse/simple-backstage-app-plugin)
 
-# Where to go from here
+## Where to go from here
 
 > Break apart ExampleFetchComponent into smaller logical parts contained in
 > their own files. Rename your components to something other than ExampleXxx.
 >
-> You might be really proud of a plugin you develop. Follow this next tutorial
-> for an in-depth look at publishing and including that for the entire Backstage
-> community. [TODO](#).
+> You might be really proud of a plugin you develop. Consider sharing it with
+> the Backstage community by contributing to the [community-plugins repository](https://github.com/backstage/community-plugins).

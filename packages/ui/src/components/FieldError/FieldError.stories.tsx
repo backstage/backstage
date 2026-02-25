@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { TextField, Input, Form } from 'react-aria-components';
 import { FieldError } from './FieldError';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/FieldError',
   component: FieldError,
-} satisfies Meta<typeof FieldError>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 // Show error with server validation using Form component
-export const WithServerValidation: Story = {
+export const WithServerValidation = meta.story({
   render: () => (
     <Form validationErrors={{ demo: 'This is a server validation error.' }}>
       <TextField
@@ -43,10 +39,10 @@ export const WithServerValidation: Story = {
       </TextField>
     </Form>
   ),
-};
+});
 
 // Show error using children
-export const WithCustomMessage: Story = {
+export const WithCustomMessage = meta.story({
   render: () => (
     <TextField
       isInvalid
@@ -61,10 +57,10 @@ export const WithCustomMessage: Story = {
       <FieldError>This is a custom error message.</FieldError>
     </TextField>
   ),
-};
+});
 
 // Show error with render prop function
-export const WithRenderProp: Story = {
+export const WithRenderProp = meta.story({
   render: () => (
     <TextField
       isInvalid
@@ -84,4 +80,4 @@ export const WithRenderProp: Story = {
       </FieldError>
     </TextField>
   ),
-};
+});

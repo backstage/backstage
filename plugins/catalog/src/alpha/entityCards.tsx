@@ -41,12 +41,14 @@ export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
       // The "useProps" functions may be calling other hooks, so we need to
       // call them in a component function to avoid breaking the rules of hooks.
       const links = inputs.iconLinks.reduce((rest, iconLink) => {
-        const props = iconLink.get(EntityIconLinkBlueprint.dataRefs.useProps)();
         const filter = buildFilterFn(
           iconLink.get(EntityIconLinkBlueprint.dataRefs.filterFunction),
           iconLink.get(EntityIconLinkBlueprint.dataRefs.filterExpression),
         );
         if (filter(entity)) {
+          const props = iconLink.get(
+            EntityIconLinkBlueprint.dataRefs.useProps,
+          )();
           return [...rest, props];
         }
         return rest;

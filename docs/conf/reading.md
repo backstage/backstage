@@ -7,7 +7,7 @@ description: Documentation on Reading Backstage Configuration
 ## Config API
 
 There's a common configuration API for by both frontend and backend plugins. An
-API reference can be found [here](../reference/config.config.md).
+API reference can be found [here](https://backstage.io/api/stable/types/_backstage_config.Config.html).
 
 The configuration API is tailored towards failing fast in case of missing or bad
 config. That's because configuration errors can always be considered programming
@@ -115,7 +115,7 @@ example `getString`. These will throw an error if there is no value available.
 
 ## Accessing ConfigApi in Frontend Plugins
 
-The [ConfigApi](../reference/frontend-plugin-api.configapi.md) in the frontend is a
+The [ConfigApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ConfigApi.html) in the frontend is a
 [UtilityApi](../api/utility-apis.md). It's accessible as usual via the
 `configApiRef` exported from `@backstage/core-plugin-api`:
 
@@ -131,7 +131,7 @@ const MyReactComponent = (...) => {
 Depending on the config api in another API is slightly different though, as the
 `ConfigApi` implementation is supplied via the App itself and not instantiated
 like other APIs. See
-[packages/app/src/apis.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/app/src/apis.ts#L66)
+[packages/app-legacy/src/apis.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/app-legacy/src/apis.ts#L66)
 for an example of how this wiring is done.
 
 For standalone plugin setups in `dev/index.ts`, register a factory with a

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { rspack } from '@rspack/core';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 
 /**
  * This returns of collection of plugins that links a separate workspace into
@@ -52,7 +52,7 @@ export async function createWorkspaceLinkingPlugins(
       /^react(?:-router)?(?:-dom)?$/,
       resource => {
         if (!relativePath(linkedRoot.dir, resource.context).startsWith('..')) {
-          resource.context = paths.targetDir;
+          resource.context = targetPaths.dir;
         }
       },
     ),

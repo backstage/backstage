@@ -1,0 +1,295 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  HeroExample,
+  SortingExample,
+  SearchExample,
+  SelectionExample,
+  RowActionsExample,
+  EmptyStateExample,
+  CombinedExample,
+  CustomRowExample,
+  PrimitivesExample,
+} from './components';
+import {
+  tableReturnColumns,
+  useTableOptionsPropDefs,
+  useTableReturnPropDefs,
+  tablePropDefs,
+  tablePaginationPropDefs,
+  columnConfigPropDefs,
+  cellTextPropDefs,
+  cellProfilePropDefs,
+  tableRootPropDefs,
+  columnPropDefs,
+  rowPropDefs,
+} from './props-definition';
+import {
+  tableUsageSnippet,
+  tableHeroSnippet,
+  tableConceptsSnippet,
+  tableSortingSnippet,
+  tablePaginationSnippet,
+  tableSearchSnippet,
+  tableSelectionSnippet,
+  tableRowActionsHrefSnippet,
+  tableRowActionsClickSnippet,
+  tableRowActionsDisabledSnippet,
+  tableEmptyStateSnippet,
+  tableOffsetPaginationSnippet,
+  tableCursorPaginationSnippet,
+  tableCombinedSnippet,
+  tableCustomRowSnippet,
+  tablePrimitivesSnippet,
+} from './snippets';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { TableDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  table: 'https://react-aria.adobe.com/Table#table',
+  tableHeader: 'https://react-aria.adobe.com/Table#tableheader',
+  tableBody: 'https://react-aria.adobe.com/Table#tablebody',
+  column: 'https://react-aria.adobe.com/Table#column',
+  row: 'https://react-aria.adobe.com/Table#row',
+  cell: 'https://react-aria.adobe.com/Table#cell',
+};
+
+<PageTitle
+  title="Table"
+  description="A data table component with built-in pagination, sorting, and selection."
+/>
+
+<Snippet py={4} preview={<HeroExample />} code={tableHeroSnippet} />
+
+## Usage
+
+<CodeBlock code={tableUsageSnippet} />
+
+## Core Concepts
+
+The Table component is designed around a hook + component pattern:
+
+- **`useTable`** manages data fetching, pagination state, sorting, and filtering. It returns `tableProps` that you spread onto the Table component.
+- **`Table`** handles rendering - columns, rows, cells, and interactions.
+
+The hook supports three modes for different data scenarios:
+
+- **`complete`** - You have all data available upfront (client-side)
+- **`offset`** - Your API uses offset/limit pagination
+- **`cursor`** - Your API uses cursor-based pagination
+
+<CodeBlock code={tableConceptsSnippet} />
+
+**Controlled vs uncontrolled state**
+
+By default, `useTable` manages sort, search, and filter state internally. Pass `initialSort`, `initialSearch`, or `initialFilter` to set starting values.
+
+For full control over state, use the controlled props instead:
+
+- `sort` / `onSortChange`
+- `search` / `onSearchChange`
+- `filter` / `onFilterChange`
+
+## Common Patterns
+
+### Sorting
+
+Columns can be made sortable by adding `isSortable: true` to the column configuration. When sortable, clicking a column header cycles through ascending, descending, and unsorted states. A visual indicator shows the current sort direction.
+
+With `mode: 'complete'`, sorting happens client-side. Provide a `sortFn` that receives the full dataset and the current sort descriptor, and returns the sorted array. You can also set an `initialSort` to define the default sort when the table first renders. For server-side sorting with `offset` or `cursor` modes, see [Server-Side Data](#server-side-data).
+
+<Snippet preview={<SortingExample />} code={tableSortingSnippet} />
+
+### Pagination
+
+Configure page size and available options through `paginationOptions`. The table displays navigation controls automatically.
+
+<CodeBlock code={tablePaginationSnippet} />
+
+### Search
+
+The `useTable` hook returns a `search` object with `value` and `onChange` properties, ready to connect to a search input. With `mode: 'complete'`, provide a `searchFn` that filters the dataset based on the search query.
+
+The search state is debounced internally, so rapid typing doesn't trigger excessive re-filtering. When the search query changes, pagination resets to the first page automatically.
+
+For server-side search with `offset` or `cursor` modes, the search query is passed to your `getData` function. See [Server-Side Data](#server-side-data).
+
+<Snippet preview={<SearchExample />} code={tableSearchSnippet} />
+
+### Row Selection
+
+Tables support row selection with two configuration options: `mode` and `behavior`.
+
+Selection mode controls how many rows can be selected:
+
+- `single` - Only one row can be selected at a time
+- `multiple` - Any number of rows can be selected, with a header checkbox for select-all
+
+Selection behavior controls the interaction style:
+
+- `toggle` - Checkboxes appear for selection. Click a checkbox to select/deselect.
+- `replace` - No checkboxes. Click a row to select it (replacing previous selection). Use Cmd/Ctrl+click to select multiple rows.
+
+Selection state can be managed in two ways:
+
+- **Controlled** - Pass both `selected` and `onSelectionChange` to fully manage state externally
+- **Uncontrolled** - Pass only `onSelectionChange` to let the Table manage state while receiving change notifications
+
+<Snippet preview={<SelectionExample />} code={tableSelectionSnippet} />
+
+### Row Actions
+
+Rows can respond to user interaction in two ways: navigating to a URL or triggering a callback.
+
+Use `getHref` when rows should link to detail pages. The entire row becomes clickable and navigates on click. Links within cells remain independently clickable.
+
+<CodeBlock code={tableRowActionsHrefSnippet} />
+
+Use `onClick` for custom actions like opening a panel or triggering a dialog.
+
+<CodeBlock code={tableRowActionsClickSnippet} />
+
+When combining row actions with selection, the interaction depends on selection behavior:
+
+- **`toggle`**: Clicking a row triggers its action when nothing is selected. Once any row is selected, clicking anywhere on the row toggles selection instead.
+- **`replace`**: Single click selects the row. Double-click triggers the row action.
+
+You can also disable specific rows from being clicked using `getIsDisabled`:
+
+<CodeBlock code={tableRowActionsDisabledSnippet} />
+
+<Snippet preview={<RowActionsExample />} code={tableRowActionsHrefSnippet} />
+
+### Empty State
+
+When the table has no data to display, provide an `emptyState` to show a helpful message instead of an empty table body. Consider providing different messages depending on context - an empty search result is different from a table with no data at all.
+
+<Snippet preview={<EmptyStateExample />} code={tableEmptyStateSnippet} />
+
+## Server-Side Data
+
+When your data comes from an API with server-side pagination, use `offset` or `cursor` mode instead of `complete`. The key difference: instead of providing all data upfront, you provide a `getData` function that fetches data for the current page.
+
+### Offset Pagination
+
+Use `mode: 'offset'` when your API accepts `offset` and `limit` (or `skip` and `take`) parameters.
+
+<CodeBlock code={tableOffsetPaginationSnippet} />
+
+The `signal` parameter is an `AbortSignal` - pass it to `fetch` so in-flight requests are cancelled when the user navigates away or triggers a new query.
+
+### Cursor Pagination
+
+Use `mode: 'cursor'` when your API uses cursor-based pagination (common with GraphQL or APIs that return `nextCursor`/`prevCursor` tokens).
+
+<CodeBlock code={tableCursorPaginationSnippet} />
+
+### Loading States
+
+When fetching data, the table shows a loading state. If the user triggers a new query (by paginating, sorting, or searching) while previous data is displayed, the table enters a "stale" state where it continues showing the previous data until new data arrives. This prevents jarring layout shifts.
+
+You can access these states via `tableProps.loading` and `tableProps.isStale` if you need to render additional loading indicators.
+
+## Combining Features
+
+Real-world tables often combine multiple features. Here's an example with search, sorting, pagination, and row selection working together.
+
+<Snippet preview={<CombinedExample />} code={tableCombinedSnippet} />
+
+## Custom Tables
+
+For most use cases, `useTable` + `Table` provides everything you need. When you need more control, there are several ways you can customize your table.
+
+### Custom Row and Header Rendering
+
+Use a render function for `rowConfig` when you need to customize individual rows based on their data - for example, highlighting rows that require attention. Use `header` in column config to customize header cell content.
+
+<Snippet preview={<CustomRowExample />} code={tableCustomRowSnippet} />
+
+### Using Primitives Directly
+
+When the `Table` component doesn't support your use case, you can compose with the lower-level primitives: `TableRoot`, `TableHeader`, `TableBody`, `Column`, and `Row`.
+
+<Snippet preview={<PrimitivesExample />} code={tablePrimitivesSnippet} />
+
+## API Reference
+
+### useTable
+
+The `useTable` hook manages data fetching, pagination, sorting, and filtering.
+
+**Options**
+
+<PropsTable data={useTableOptionsPropDefs} />
+
+**Return Value**
+
+<PropsTable data={useTableReturnPropDefs} columns={tableReturnColumns} />
+
+### Table
+
+The main table component.
+
+<PropsTable data={tablePropDefs} />
+
+### ColumnConfig
+
+<PropsTable data={columnConfigPropDefs} />
+
+### CellText
+
+<PropsTable data={cellTextPropDefs} />
+
+<ReactAriaLink component="Cell" href={reactAriaUrls.cell} />
+
+### CellProfile
+
+<PropsTable data={cellProfilePropDefs} />
+
+<ReactAriaLink component="Cell" href={reactAriaUrls.cell} />
+
+### TablePagination
+
+<PropsTable data={tablePaginationPropDefs} />
+
+### Primitives
+
+Low-level components for building custom table layouts.
+
+#### TableRoot
+
+<PropsTable data={tableRootPropDefs} />
+
+<ReactAriaLink component="Table" href={reactAriaUrls.table} />
+
+#### TableHeader
+
+<ReactAriaLink component="TableHeader" href={reactAriaUrls.tableHeader} />
+
+#### TableBody
+
+<ReactAriaLink component="TableBody" href={reactAriaUrls.tableBody} />
+
+#### Column
+
+<PropsTable data={columnPropDefs} />
+
+<ReactAriaLink component="Column" href={reactAriaUrls.column} />
+
+#### Row
+
+<PropsTable data={rowPropDefs} />
+
+<ReactAriaLink component="Row" href={reactAriaUrls.row} />
+
+#### Cell
+
+<ReactAriaLink component="Cell" href={reactAriaUrls.cell} />
+
+<Theming definition={TableDefinition} />
+
+<ChangelogComponent component="table" />

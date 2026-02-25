@@ -16,9 +16,8 @@
 
 import { PropsWithChildren } from 'react';
 import { createPlugin } from '@backstage/core-plugin-api';
-import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
-import { renderHook, waitFor } from '@testing-library/react';
-import { ScaffolderFormFieldsApi, formFieldsApiRef } from '../alpha';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { renderHook } from '@testing-library/react';
 import { useCustomFieldExtensions } from './useCustomFieldExtensions';
 import {
   ScaffolderFieldExtensions,
@@ -33,22 +32,10 @@ const plugin = createPlugin({
 });
 
 describe('useCustomFieldExtensions', () => {
-  const mockFormFieldsApi: jest.Mocked<ScaffolderFormFieldsApi> = {
-    getFormFields: jest.fn(),
-  };
   const wrapper = ({ children }: PropsWithChildren<{}>) =>
-    wrapInTestApp(
-      <TestApiProvider apis={[[formFieldsApiRef, mockFormFieldsApi]]}>
-        {children}
-      </TestApiProvider>,
-    );
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
+    wrapInTestApp(<>{children}</>);
 
   it('should return field extensions from the React tree', async () => {
-    mockFormFieldsApi.getFormFields.mockResolvedValue([]);
     const CustomFieldExtension = plugin.provide(
       createScaffolderFieldExtension({
         name: 'test',
@@ -69,61 +56,5 @@ describe('useCustomFieldExtensions', () => {
     );
 
     expect(result.current).toEqual([expect.objectContaining({ name: 'test' })]);
-  });
-
-  it('should return field extensions from formFieldsApi', async () => {
-    mockFormFieldsApi.getFormFields.mockResolvedValue([
-      {
-        name: 'blueprint',
-        component: () => <div>Test</div>,
-      },
-    ]);
-
-    const { result } = renderHook(() => useCustomFieldExtensions(<div />), {
-      wrapper,
-    });
-
-    await waitFor(() => {
-      expect(result.current.length).toBeGreaterThan(0);
-    });
-
-    expect(result.current).toEqual([
-      expect.objectContaining({ name: 'blueprint' }),
-    ]);
-  });
-
-  it('should return field extensions from both sources', async () => {
-    mockFormFieldsApi.getFormFields.mockResolvedValue([
-      {
-        name: 'blueprint',
-        component: () => <div>Test</div>,
-      },
-    ]);
-
-    const CustomFieldExtension = plugin.provide(
-      createScaffolderFieldExtension({
-        name: 'test',
-        component: () => <div>Test</div>,
-      }),
-    );
-
-    const { result } = renderHook(
-      () =>
-        useCustomFieldExtensions(
-          <ScaffolderFieldExtensions>
-            <CustomFieldExtension />
-          </ScaffolderFieldExtensions>,
-        ),
-      {
-        wrapper,
-      },
-    );
-
-    await waitFor(() => {
-      expect(result.current).toHaveLength(2);
-    });
-
-    const fieldNames = result.current.map(field => field.name);
-    expect(fieldNames).toEqual(expect.arrayContaining(['test', 'blueprint']));
   });
 });

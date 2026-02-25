@@ -17,7 +17,7 @@
 
 const fs = require('fs-extra');
 const { getPackages } = require('@manypkg/get-packages');
-const { resolve: resolvePath, join: joinPath } = require('path');
+const { resolve: resolvePath, join: joinPath } = require('node:path');
 
 /**
  * This script checks that all local package dependencies within the repo

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { simpleMock } from './simpleMock';
-import {
-  ActionsService,
-  actionsServiceRef,
-} from '@backstage/backend-plugin-api/alpha';
+import { createServiceMock } from './alphaCreateServiceMock';
+import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { actionsServiceFactory } from '@backstage/backend-defaults/alpha';
 
 /**
@@ -27,7 +24,7 @@ import { actionsServiceFactory } from '@backstage/backend-defaults/alpha';
 export namespace actionsServiceMock {
   export const factory = () => actionsServiceFactory;
 
-  export const mock = simpleMock<ActionsService>(actionsServiceRef, () => ({
+  export const mock = createServiceMock(actionsServiceRef, () => ({
     invoke: jest.fn(),
     list: jest.fn(),
   }));

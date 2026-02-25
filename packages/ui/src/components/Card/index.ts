@@ -15,11 +15,10 @@
  */
 
 export { Card, CardHeader, CardBody, CardFooter } from './Card';
-export { CardDefinition } from './definition';
-
-export type {
-  CardProps,
-  CardHeaderProps,
-  CardBodyProps,
-  CardFooterProps,
-} from './types';
+export {
+  CardDefinition,
+  CardHeaderDefinition,
+  CardBodyDefinition,
+  CardFooterDefinition,
+} from './definition';
+export type * from './types';

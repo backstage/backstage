@@ -25,6 +25,7 @@ Commands:
   new
   package [command]
   repo [command]
+  translations [command]
   versions:bump
   versions:migrate
 ```
@@ -148,7 +149,9 @@ Options:
 Usage: <none>
 
 Options:
+  --format
   --help
+  --include
   --version
 ```
 
@@ -258,6 +261,7 @@ Usage: program [options]
 Options:
   --config <path>
   --minify
+  --module-federation
   --role <name>
   --skip-build-dependencies
   --stats
@@ -324,7 +328,7 @@ Options:
 ### `backstage-cli package test`
 
 ```
-Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPattern]
+Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPatterns]
 
 Options:
   --all
@@ -349,7 +353,6 @@ Options:
   --debug
   --detectLeaks
   --detectOpenHandles
-  --env
   --errorOnDeprecated
   --filter
   --findRelatedTests
@@ -359,7 +362,6 @@ Options:
   --globals
   --haste
   --ignoreProjects
-  --init
   --injectGlobals
   --json
   --lastCommit
@@ -400,13 +402,13 @@ Options:
   --silent
   --skipFilter
   --snapshotSerializers
-  --testEnvironment
+  --testEnvironment, --env
   --testEnvironmentOptions
   --testFailureExitCode
   --testLocationInResults
   --testMatch
   --testPathIgnorePatterns
-  --testPathPattern
+  --testPathPatterns
   --testRegex
   --testResultsProcessor
   --testRunner
@@ -418,6 +420,7 @@ Options:
   --useStderr
   --verbose
   --version
+  --waitForUnhandledRejections
   --watch
   --watchAll
   --watchPathIgnorePatterns
@@ -538,6 +541,44 @@ Options:
   --successCache
   --successCacheDir <path>
   -h, --help
+```
+
+### `backstage-cli translations`
+
+```
+Usage: backstage-cli translations [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  export
+  help [command]
+  import
+```
+
+### `backstage-cli translations export`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --output
+  --pattern
+  --version
+```
+
+### `backstage-cli translations import`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --input
+  --output
+  --version
 ```
 
 ### `backstage-cli versions:bump`

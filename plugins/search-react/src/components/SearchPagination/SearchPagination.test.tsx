@@ -69,7 +69,7 @@ describe('SearchPagination', () => {
     expect(screen.getByText('Results per page:')).toBeInTheDocument();
     expect(screen.getByText('25')).toBeInTheDocument();
     expect(screen.getByText('1-25')).toBeInTheDocument();
-    expect(screen.getByLabelText('Next page')).toBeEnabled();
+    expect(screen.getByLabelText('Next page')).toBeDisabled();
     expect(screen.getByLabelText('Previous page')).toBeDisabled();
   });
 
@@ -176,6 +176,12 @@ describe('SearchPagination', () => {
   });
 
   it('Set page limit in the context', async () => {
+    const initialState = {
+      term: 'a',
+      types: [],
+      filters: {},
+    };
+
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -183,7 +189,7 @@ describe('SearchPagination', () => {
           [configApiRef, configApiMock],
         ]}
       >
-        <SearchContextProvider>
+        <SearchContextProvider initialState={initialState}>
           <SearchPagination />
         </SearchContextProvider>
       </TestApiProvider>,
@@ -205,7 +211,7 @@ describe('SearchPagination', () => {
 
   it('Set page cursor in the context', async () => {
     const initialState = {
-      term: '',
+      term: 'a',
       types: [],
       filters: {},
       pageCursor: 'MQ==', // page: 1
@@ -253,7 +259,7 @@ describe('SearchPagination', () => {
 
   it('Resets page cursor when page limit changes', async () => {
     const initialState = {
-      term: '',
+      term: 'a',
       types: [],
       filters: {},
       pageCursor: 'Mg==', // page: 2
@@ -280,9 +286,7 @@ describe('SearchPagination', () => {
         pageCursor: undefined,
         pageLimit: 10,
       }),
-      {
-        signal: expect.any(AbortSignal),
-      },
+      { signal: expect.any(AbortSignal) },
     );
   });
 });

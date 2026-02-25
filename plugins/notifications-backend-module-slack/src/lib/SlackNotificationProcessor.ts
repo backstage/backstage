@@ -21,7 +21,7 @@ import {
   parseEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { Notification } from '@backstage/plugin-notifications-common';
 import {
@@ -34,8 +34,10 @@ import { ChatPostMessageArguments, WebClient } from '@slack/web-api';
 import DataLoader from 'dataloader';
 import pThrottle from 'p-throttle';
 import { ANNOTATION_SLACK_BOT_NOTIFY } from './constants';
+import { BroadcastRoute } from './types';
 import { ExpiryMap, toChatPostMessageArgs } from './util';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { SlackBlockKitRenderer } from '../extensions';
 
 export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly logger: LoggerService;
@@ -48,8 +50,12 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly messagesSent: Counter;
   private readonly messagesFailed: Counter;
   private readonly broadcastChannels?: string[];
+  private readonly broadcastRoutes?: BroadcastRoute[];
   private readonly entityLoader: DataLoader<string, Entity | undefined>;
   private readonly username?: string;
+  private readonly concurrencyLimit: number;
+  private readonly throttleInterval: number;
+  private readonly blockKitRenderer?: SlackBlockKitRenderer;
 
   static fromConfig(
     config: Config,
@@ -59,6 +65,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       catalog: CatalogService;
       slack?: WebClient;
       broadcastChannels?: string[];
+      blockKitRenderer?: SlackBlockKitRenderer;
     },
   ): SlackNotificationProcessor[] {
     const slackConfig =
@@ -68,10 +75,23 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       const slack = options.slack ?? new WebClient(token);
       const broadcastChannels = c.getOptionalStringArray('broadcastChannels');
       const username = c.getOptionalString('username');
+      const broadcastRoutesConfig = c.getOptionalConfigArray('broadcastRoutes');
+      const broadcastRoutes = broadcastRoutesConfig?.map(route =>
+        this.parseBroadcastRoute(route),
+      );
+      const concurrencyLimit = c.getOptionalNumber('concurrencyLimit') ?? 10;
+      const throttleInterval = c.has('throttleInterval')
+        ? durationToMilliseconds(
+            readDurationFromConfig(c, { key: 'throttleInterval' }),
+          )
+        : durationToMilliseconds({ minutes: 1 });
       return new SlackNotificationProcessor({
         slack,
         broadcastChannels,
+        broadcastRoutes,
         username,
+        concurrencyLimit,
+        throttleInterval,
         ...options,
       });
     });
@@ -83,16 +103,35 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     logger: LoggerService;
     catalog: CatalogService;
     broadcastChannels?: string[];
+    broadcastRoutes?: BroadcastRoute[];
     username?: string;
+    concurrencyLimit?: number;
+    throttleInterval?: number;
+    blockKitRenderer?: SlackBlockKitRenderer;
   }) {
-    const { auth, catalog, logger, slack, broadcastChannels, username } =
-      options;
+    const {
+      auth,
+      catalog,
+      logger,
+      slack,
+      broadcastChannels,
+      broadcastRoutes,
+      username,
+      concurrencyLimit,
+      throttleInterval,
+      blockKitRenderer,
+    } = options;
     this.logger = logger;
     this.catalog = catalog;
     this.auth = auth;
     this.slack = slack;
     this.broadcastChannels = broadcastChannels;
+    this.broadcastRoutes = broadcastRoutes;
     this.username = username;
+    this.concurrencyLimit = concurrencyLimit ?? 10;
+    this.throttleInterval =
+      throttleInterval ?? durationToMilliseconds({ minutes: 1 });
+    this.blockKitRenderer = blockKitRenderer;
 
     this.entityLoader = new DataLoader<string, Entity | undefined>(
       async entityRefs => {
@@ -134,8 +173,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     );
 
     const throttle = pThrottle({
-      limit: 10,
-      interval: durationToMilliseconds({ minutes: 1 }),
+      limit: this.concurrencyLimit,
+      interval: this.throttleInterval,
     });
     const throttled = throttle((opts: ChatPostMessageArguments) =>
       this.sendNotification(opts),
@@ -213,6 +252,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
           channel,
           payload: options.payload,
           username: this.username,
+          blockKitRenderer: this.blockKitRenderer,
         });
 
         this.logger.debug(
@@ -235,7 +275,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
     // Handle broadcast case
     if (notification.user === null) {
-      destinations.push(...(this.broadcastChannels ?? []));
+      const routedChannels = this.getBroadcastDestinations(notification);
+      destinations.push(...routedChannels);
     } else if (options.recipients.type === 'entity') {
       // Handle user-specific notification
       const entityRefs = [options.recipients.entityRef].flat();
@@ -272,6 +313,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         channel,
         payload: formattedPayload,
         username: this.username,
+        blockKitRenderer: this.blockKitRenderer,
       }),
     );
 
@@ -383,5 +425,89 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     if (!response.ok) {
       throw new Error(`Failed to send notification: ${response.error}`);
     }
+  }
+
+  private static parseBroadcastRoute(route: Config): BroadcastRoute {
+    const channelValue = route.getOptional('channel');
+    let channels: string[];
+
+    if (typeof channelValue === 'string') {
+      channels = [channelValue];
+    } else if (Array.isArray(channelValue)) {
+      channels = channelValue as string[];
+    } else {
+      throw new Error(
+        'broadcastRoutes entry must have a channel property (string or string[])',
+      );
+    }
+
+    return {
+      origin: route.getOptionalString('origin'),
+      topic: route.getOptionalString('topic'),
+      channels,
+    };
+  }
+
+  /**
+   * Gets the destination channels for a broadcast notification based on
+   * configured routes. Routes are matched by origin and/or topic.
+   *
+   * Matching precedence:
+   * 1. Routes with both origin AND topic matching (most specific)
+   * 2. Routes with only origin matching
+   * 3. Routes with only topic matching
+   * 4. Default broadcastChannels (least specific fallback)
+   *
+   * The first matching route wins within each precedence level.
+   */
+  private getBroadcastDestinations(notification: Notification): string[] {
+    const { origin } = notification;
+    const { topic } = notification.payload;
+
+    if (!this.broadcastRoutes || this.broadcastRoutes.length === 0) {
+      // Fall back to legacy broadcastChannels config
+      return this.broadcastChannels ?? [];
+    }
+
+    // Find most specific match
+    // Priority 1: origin AND topic match
+    const originAndTopicMatch = this.broadcastRoutes.find(
+      route =>
+        route.origin !== undefined &&
+        route.topic !== undefined &&
+        route.origin === origin &&
+        route.topic === topic,
+    );
+
+    if (originAndTopicMatch) {
+      return originAndTopicMatch.channels;
+    }
+
+    // Priority 2: origin-only match (no topic specified in route)
+    const originOnlyMatch = this.broadcastRoutes.find(
+      route =>
+        route.origin !== undefined &&
+        route.topic === undefined &&
+        route.origin === origin,
+    );
+
+    if (originOnlyMatch) {
+      return originOnlyMatch.channels;
+    }
+
+    // Priority 3: topic-only match (no origin specified in route)
+    const topicOnlyMatch = this.broadcastRoutes.find(
+      route =>
+        route.topic !== undefined &&
+        route.origin === undefined &&
+        route.topic === topic,
+    );
+
+    if (topicOnlyMatch) {
+      return topicOnlyMatch.channels;
+    }
+
+    // No match found, fall back to legacy broadcastChannels
+    return this.broadcastChannels ?? [];
   }
 }

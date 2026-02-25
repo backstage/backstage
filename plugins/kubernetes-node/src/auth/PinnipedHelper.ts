@@ -15,7 +15,7 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
-import * as https from 'https';
+import * as https from 'node:https';
 import fetch, { RequestInit } from 'node-fetch';
 import { ClusterDetails } from '../types/types';
 

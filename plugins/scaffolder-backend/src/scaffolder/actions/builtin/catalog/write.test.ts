@@ -20,11 +20,11 @@ jest.mock('fs-extra');
 
 const fsMock = fs as jest.Mocked<typeof fs>;
 
-import os from 'os';
+import os from 'node:os';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { createCatalogWriteAction } from './write';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import * as yaml from 'yaml';
 
 describe('catalog:write', () => {

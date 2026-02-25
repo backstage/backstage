@@ -15,7 +15,7 @@
  */
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { range } from 'lodash';
-import { Transform } from 'stream';
+import { Transform } from 'node:stream';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 import { DatabaseStore } from '../database';
 

@@ -17,18 +17,18 @@
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { exec } from '../../../../../lib/exec';
 import {
   OPENAPI_IGNORE_FILES,
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { targetPaths } from '@backstage/cli-common';
 import {
   getPathToCurrentOpenApiSpec,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
-import { paths as cliPaths } from '../../../../../lib/paths';
 
 async function generate(
   outputDirectory: string,
@@ -36,7 +36,7 @@ async function generate(
   abortSignal?: AbortController,
 ) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-  const resolvedOutputDirectory = cliPaths.resolveTargetRoot(
+  const resolvedOutputDirectory = targetPaths.resolveRoot(
     outputDirectory,
     OUTPUT_PATH,
   );
@@ -87,7 +87,7 @@ async function generate(
 
   await fs.writeFile(
     resolve(parentDirectory, 'index.ts'),
-    `// 
+    `//
     export * from './generated';`,
   );
 
@@ -95,8 +95,8 @@ async function generate(
     signal: abortSignal?.signal,
   });
 
-  const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
-  if (prettier) {
+  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
+  if (await fs.pathExists(prettier)) {
     await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
     });

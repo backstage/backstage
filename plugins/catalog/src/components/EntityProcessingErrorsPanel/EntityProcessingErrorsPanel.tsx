@@ -21,7 +21,6 @@ import {
   EntityRefLink,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import Box from '@material-ui/core/Box';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import {
   CatalogApi,
@@ -32,6 +31,7 @@ import useAsync from 'react-use/esm/useAsync';
 import { SerializedError } from '@backstage/errors';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { Box } from '@backstage/ui';
 
 const errorFilter = (i: EntityStatusItem) =>
   i.error &&
@@ -100,7 +100,7 @@ export function EntityProcessingErrorsPanel() {
 
   if (error) {
     return (
-      <Box mb={1}>
+      <Box mb="2">
         <ResponseErrorPanel error={error} />
       </Box>
     );
@@ -113,10 +113,10 @@ export function EntityProcessingErrorsPanel() {
   return (
     <>
       {value.items.map((ancestorError, index) => (
-        <Box key={index} mb={1}>
+        <Box key={index} mb="2">
           {stringifyEntityRef(entity) !==
             stringifyEntityRef(ancestorError.entity) && (
-            <Box p={1}>
+            <Box p="2">
               {t('entityProcessingErrorsDescription')}{' '}
               <EntityRefLink entityRef={ancestorError.entity} />
             </Box>

@@ -17,10 +17,11 @@
 import { z } from 'zod';
 import fs from 'fs-extra';
 import recursiveReaddir from 'recursive-readdir';
-import { resolve as resolvePath, relative as relativePath } from 'path';
+import { resolve as resolvePath, relative as relativePath } from 'node:path';
 import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import {
   PortableTemplateFile,
   PortableTemplatePointer,
@@ -28,7 +29,7 @@ import {
 } from '../types';
 import { PortableTemplate } from '../types';
 import { ForwardedError } from '@backstage/errors';
-import { fromZodError } from 'zod-validation-error';
+import { fromZodError } from 'zod-validation-error/v3';
 
 const templateDefinitionSchema = z
   .object({
@@ -46,7 +47,7 @@ export async function loadPortableTemplate(
     throw new Error('Remote templates are not supported yet');
   }
   const templateContent = await fs
-    .readFile(paths.resolveTargetRoot(pointer.target), 'utf-8')
+    .readFile(targetPaths.resolveRoot(pointer.target), 'utf-8')
     .catch(error => {
       throw new ForwardedError(
         `Failed to load template definition from '${pointer.target}'`,

@@ -19,7 +19,13 @@
  * @packageDocumentation
  */
 
-export { AccordionDefinition } from './components/Accordion/definition';
+export {
+  AccordionDefinition,
+  AccordionTriggerDefinition,
+  AccordionPanelDefinition,
+  AccordionGroupDefinition,
+} from './components/Accordion/definition';
+export { AlertDefinition } from './components/Alert/definition';
 export { AvatarDefinition } from './components/Avatar/definition';
 export { BoxDefinition } from './components/Box/definition';
 export { ButtonDefinition } from './components/Button/definition';
@@ -36,7 +42,7 @@ export {
   GridDefinition,
   GridItemDefinition,
 } from './components/Grid/definition';
-export { HeaderDefinition } from './components/Header/definition';
+export { PluginHeaderDefinition } from './components/PluginHeader/definition';
 export { HeaderPageDefinition } from './components/HeaderPage/definition';
 export { LinkDefinition } from './components/Link/definition';
 export { MenuDefinition } from './components/Menu/definition';
@@ -47,6 +53,8 @@ export { SearchFieldDefinition } from './components/SearchField/definition';
 export { SelectDefinition } from './components/Select/definition';
 export { SkeletonDefinition } from './components/Skeleton/definition';
 export { SwitchDefinition } from './components/Switch/definition';
+export { ToggleButtonDefinition } from './components/ToggleButton/definition';
+export { ToggleButtonGroupDefinition } from './components/ToggleButtonGroup/definition';
 export { TableDefinition } from './components/Table/definition';
 export { TablePaginationDefinition } from './components/TablePagination/definition';
 export { TabsDefinition } from './components/Tabs/definition';

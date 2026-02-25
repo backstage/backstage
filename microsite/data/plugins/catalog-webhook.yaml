@@ -8,3 +8,4 @@ documentation: https://github.com/ForgedApps/backstage-catalog-webhook-plugin/bl
 iconUrl: /img/forgedapps.jpg
 npmPackageName: '@forgedapps/backstage-catalog-webhook-plugin'
 addedDate: '2024-10-28'
+status: active

@@ -174,7 +174,7 @@ export interface Config {
        * The username to use for authenticated requests.
        * @visibility secret
        */
-      username: string;
+      username?: string;
       /**
        * Token used to authenticate requests.
        * @visibility secret
@@ -186,6 +186,16 @@ export interface Config {
        * @deprecated Use `token` instead.
        */
       appPassword?: string;
+      /**
+       * OAuth client ID for Bitbucket Cloud.
+       * @visibility secret
+       */
+      clientId?: string;
+      /**
+       * OAuth client secret for Bitbucket Cloud.
+       * @visibility secret
+       */
+      clientSecret?: string;
       /**
        * PGP signing key for signing commits.
        * @visibility secret
@@ -330,6 +340,10 @@ export interface Config {
          * https://docs.github.com/en/rest/reference/apps#list-installations-for-the-authenticated-app--code-samples
          */
         allowedInstallationOwners?: string[];
+        /**
+         * If true, then an installation token will be issued for access when no other token is available.
+         */
+        publicAccess?: boolean;
       }>;
     }>;
 
@@ -372,6 +386,28 @@ export interface Config {
        * @visibility secret
        */
       commitSigningKey?: string;
+
+      /**
+       * Retry configuration for requests.
+       * @visibility frontend
+       */
+      retry?: {
+        /**
+         * Maximum number of retries for failed requests.
+         * @visibility frontend
+         */
+        maxRetries?: number;
+        /**
+         * HTTP status codes that should trigger a retry.
+         * @visibility frontend
+         */
+        retryStatusCodes?: number[];
+        /**
+         * Maximum number of API requests allowed per minute. Set to -1 to disable rate limiting.
+         * @visibility frontend
+         */
+        maxApiRequestsPerMinute?: number;
+      };
     }>;
 
     /** Integration configuration for Google Cloud Storage */

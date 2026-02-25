@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { HeaderTab } from '../Header/types';
+import type { HeaderTab } from '../PluginHeader/types';
 
 /**
  * Props for the main HeaderPage component.

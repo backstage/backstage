@@ -1,5 +1,49 @@
 # @backstage/plugin-signals-backend
 
+## 0.3.12
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-events-node@0.4.19
+  - @backstage/plugin-signals-node@0.1.28
+
+## 0.3.12-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-node@0.1.28-next.0
+
+## 0.3.11
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-signals-node@0.1.27
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.3.11-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/plugin-signals-node@0.1.27-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
 ## 0.3.11-next.0
 
 ### Patch Changes

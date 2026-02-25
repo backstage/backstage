@@ -19,7 +19,7 @@ import {
   matchFile as matchCodeowner,
   parse as parseCodeowners,
 } from 'codeowners-utils';
-import { relative as relativePath, resolve as resolvePath } from 'path';
+import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import { readFile } from './utils';
 
 export async function loadCodeowners(): Promise<CodeOwnersEntry[]> {

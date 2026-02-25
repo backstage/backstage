@@ -26,6 +26,8 @@ import {
   ActionsService,
   ActionsServiceAction,
 } from '@backstage/backend-plugin-api/alpha';
+import { Minimatch } from 'minimatch';
+import { Config } from '@backstage/config';
 
 export class DefaultActionsService implements ActionsService {
   private readonly discovery: DiscoveryService;
@@ -86,7 +88,7 @@ export class DefaultActionsService implements ActionsService {
       }),
     );
 
-    return { actions: remoteActionsList.flat() };
+    return { actions: this.applyFilters(remoteActionsList.flat()) };
   }
 
   async invoke(opts: {
@@ -147,5 +149,107 @@ export class DefaultActionsService implements ActionsService {
       throw new Error(`Invalid action id: ${id}`);
     }
     return id.substring(0, colonIndex);
+  }
+
+  private applyFilters(
+    actions: ActionsServiceAction[],
+  ): ActionsServiceAction[] {
+    const filterConfig = this.config.getOptionalConfig(
+      'backend.actions.filter',
+    );
+
+    if (!filterConfig) {
+      return actions;
+    }
+
+    const includeRules = this.parseFilterRules(
+      filterConfig.getOptionalConfigArray('include') ?? [],
+    );
+    const excludeRules = this.parseFilterRules(
+      filterConfig.getOptionalConfigArray('exclude') ?? [],
+    );
+
+    return actions.filter(action => {
+      const excluded = excludeRules.some(rule =>
+        this.matchesRule(action, rule),
+      );
+
+      if (excluded) {
+        return false;
+      }
+
+      // If no include rules, include by default
+      if (includeRules.length === 0) {
+        return true;
+      }
+
+      // Must match at least one include rule
+      return includeRules.some(rule => this.matchesRule(action, rule));
+    });
+  }
+
+  private parseFilterRules(configArray: Array<Config>): Array<{
+    idMatcher?: Minimatch;
+    attributes?: Partial<
+      Record<'destructive' | 'readOnly' | 'idempotent', boolean>
+    >;
+  }> {
+    return configArray.map(ruleConfig => {
+      const idPattern = ruleConfig.getOptionalString('id');
+      const attributesConfig = ruleConfig.getOptionalConfig('attributes');
+
+      const rule: {
+        idMatcher?: Minimatch;
+        attributes?: Partial<
+          Record<'destructive' | 'readOnly' | 'idempotent', boolean>
+        >;
+      } = {};
+
+      if (idPattern) {
+        rule.idMatcher = new Minimatch(idPattern);
+      }
+
+      if (attributesConfig) {
+        rule.attributes = {};
+        for (const key of ['destructive', 'readOnly', 'idempotent'] as const) {
+          const value = attributesConfig.getOptionalBoolean(key);
+          if (value !== undefined) {
+            rule.attributes[key] = value;
+          }
+        }
+      }
+
+      return rule;
+    });
+  }
+
+  private matchesRule(
+    action: ActionsServiceAction,
+    rule: {
+      idMatcher?: Minimatch;
+      attributes?: Partial<
+        Record<'destructive' | 'readOnly' | 'idempotent', boolean>
+      >;
+    },
+  ): boolean {
+    // If id pattern is specified, it must match
+    if (rule.idMatcher && !rule.idMatcher.match(action.id)) {
+      return false;
+    }
+
+    // If attributes are specified, all must match
+    if (rule.attributes) {
+      for (const [key, value] of Object.entries(rule.attributes)) {
+        if (
+          action.attributes[
+            key as 'destructive' | 'readOnly' | 'idempotent'
+          ] !== value
+        ) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }

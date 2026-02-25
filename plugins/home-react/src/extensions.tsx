@@ -121,7 +121,7 @@ type CardExtensionComponentProps<T> = CardExtensionProps<T> &
     overrideTitle?: string;
   };
 
-function CardExtension<T>(props: CardExtensionComponentProps<T>) {
+export function CardExtension<T>(props: CardExtensionComponentProps<T>) {
   const {
     Renderer,
     Content,

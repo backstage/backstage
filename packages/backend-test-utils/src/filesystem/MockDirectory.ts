@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import os from 'os';
+import os from 'node:os';
 import { isChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs-extra';
 import textextensions from 'text-extensions';
@@ -26,7 +26,7 @@ import {
   relative as relativePath,
   win32,
   posix,
-} from 'path';
+} from 'node:path';
 
 const tmpdirMarker = Symbol('os-tmpdir-mock');
 

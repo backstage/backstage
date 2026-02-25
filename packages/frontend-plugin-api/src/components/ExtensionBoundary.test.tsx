@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useEffect, ReactNode } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
-import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
+import { withLogCollector } from '@backstage/test-utils';
 import { ExtensionBoundary } from './ExtensionBoundary';
 import { coreExtensionData, createExtension } from '../wiring';
 import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
@@ -26,6 +26,11 @@ import {
   createExtensionTester,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
+import {
+  pluginWrapperApiRef,
+  PluginWrapperApi,
+} from '../apis/definitions/PluginWrapperApi';
+import { useAppNode } from '@backstage/frontend-plugin-api';
 
 const wrapInBoundaryExtension = (element?: JSX.Element) => {
   const routeRef = createRouteRef();
@@ -101,11 +106,12 @@ describe('ExtensionBoundary', () => {
     };
 
     renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
-        {createExtensionTester(
-          wrapInBoundaryExtension(<AnalyticsComponent />),
-        ).reactElement()}
-      </TestApiProvider>,
+      createExtensionTester(
+        wrapInBoundaryExtension(<AnalyticsComponent />),
+      ).reactElement(),
+      {
+        apis: [[analyticsApiRef, analyticsApiMock]],
+      },
     );
 
     await waitFor(() => {
@@ -121,9 +127,91 @@ describe('ExtensionBoundary', () => {
     });
   });
 
-  // TODO(Rugvip): Need a way to be able to override APIs in the app to be able to test this properly
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('should emit analytics events if routable', async () => {
+  it('should wrap children with PluginWrapper when provided', async () => {
+    const text = 'Wrapped Content';
+    const TextComponent = () => {
+      return <p>{text}</p>;
+    };
+
+    const WrapperComponent = ({ children }: { children: ReactNode }) => {
+      const node = useAppNode();
+      return (
+        <div data-testid="plugin-wrapper">
+          <span>Wrapper for {node?.spec.id}</span>
+          {children}
+        </div>
+      );
+    };
+
+    const pluginWrapperApi: PluginWrapperApi = {
+      getPluginWrapper: jest.fn((pluginId: string) => {
+        if (pluginId === 'app') {
+          return WrapperComponent;
+        }
+        return undefined;
+      }),
+    };
+
+    renderInTestApp(
+      createExtensionTester(
+        wrapInBoundaryExtension(<TextComponent />),
+      ).reactElement(),
+      {
+        apis: [[pluginWrapperApiRef, pluginWrapperApi]],
+      },
+    );
+
+    const wrappers = await screen.findAllByTestId('plugin-wrapper');
+    expect(wrappers.length).toBeGreaterThan(1);
+    expect(screen.getByText('Wrapper for app')).toBeInTheDocument();
+    expect(screen.getByText('Wrapper for test')).toBeInTheDocument();
+    expect(screen.getByText(text)).toBeInTheDocument();
+    expect(pluginWrapperApi.getPluginWrapper).toHaveBeenCalledWith('app');
+  });
+
+  it('should handle errors thrown by PluginWrapper with ErrorDisplayBoundary', async () => {
+    const errorMsg = 'PluginWrapper error';
+    const TextComponent = () => {
+      return <p>Content</p>;
+    };
+
+    const ThrowingWrapper = () => {
+      throw new Error(errorMsg);
+    };
+
+    const pluginWrapperApi: PluginWrapperApi = {
+      getPluginWrapper: jest.fn((pluginId: string) => {
+        if (pluginId === 'app') {
+          return ThrowingWrapper;
+        }
+        return undefined;
+      }),
+    };
+
+    const { error } = await withLogCollector(['error'], async () => {
+      renderInTestApp(
+        createExtensionTester(
+          wrapInBoundaryExtension(<TextComponent />),
+        ).reactElement(),
+        {
+          apis: [[pluginWrapperApiRef, pluginWrapperApi]],
+        },
+      );
+      await waitFor(() =>
+        expect(screen.getByText(errorMsg)).toBeInTheDocument(),
+      );
+    });
+
+    expect(error).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringContaining(errorMsg),
+        }),
+      ]),
+    );
+  });
+
+  it('should emit analytics events if routable', async () => {
     const Emitter = () => {
       const analytics = useAnalytics();
       useEffect(() => {
@@ -138,22 +226,25 @@ describe('ExtensionBoundary', () => {
         createExtensionTester(
           wrapInBoundaryExtension(<Emitter />),
         ).reactElement(),
-        // { apis: [[analyticsApiRef, analyticsApiMock]] },
+        { apis: [[analyticsApiRef, analyticsApiMock]] },
       );
     });
 
+    // The navigate event is emitted by the app's routing, with app context
     expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'navigate',
         subject: '/',
+      }),
+    );
+    // The dummy event from our test extension has the correct extension context
+    expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'dummy',
         context: expect.objectContaining({
-          pluginId: 'root',
           extensionId: 'test',
         }),
       }),
-    );
-    expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ action: 'dummy' }),
     );
   });
 });

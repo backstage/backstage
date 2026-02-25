@@ -16,3 +16,4 @@
 
 export { readGoogleGcsIntegrationConfig } from './config';
 export type { GoogleGcsIntegrationConfig } from './config';
+export { GoogleGcsIntegration } from './GoogleGcsIntegration';

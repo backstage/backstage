@@ -44,6 +44,7 @@ export default {
       </TestApiProvider>
     ),
   ],
+  tags: ['!manifest'],
 };
 
 const values = ['value-1', 'value-2', 'value-3'];

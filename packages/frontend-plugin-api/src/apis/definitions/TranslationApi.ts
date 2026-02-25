@@ -22,7 +22,7 @@ import { JSX } from 'react';
 /**
  * Base translation options.
  *
- * @alpha
+ * @ignore
  */
 interface BaseOptions {
   interpolation?: {

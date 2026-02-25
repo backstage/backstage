@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { SignJWT, importJWK } from 'jose';
 import { DateTime } from 'luxon';
 import { legacyTokenHandler } from './legacy';

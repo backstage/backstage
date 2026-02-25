@@ -25,8 +25,6 @@ import { setupServer } from 'msw/node';
 import { FetchUrlReader } from './FetchUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 
-const fetchUrlReader = new FetchUrlReader();
-
 describe('FetchUrlReader', () => {
   const worker = setupServer();
 
@@ -188,6 +186,16 @@ describe('FetchUrlReader', () => {
 
   describe('read', () => {
     it('should return etag from the response', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       const { buffer } = await fetchUrlReader.readUrl(
         'https://backstage.io/some-resource',
       );
@@ -196,12 +204,32 @@ describe('FetchUrlReader', () => {
     });
 
     it('should throw NotFound if server responds with 404', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       await expect(
         fetchUrlReader.readUrl('https://backstage.io/not-exists'),
       ).rejects.toThrow(NotFoundError);
     });
 
     it('should throw Error if server responds with 500', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       await expect(
         fetchUrlReader.readUrl('https://backstage.io/error'),
       ).rejects.toThrow(Error);
@@ -210,6 +238,16 @@ describe('FetchUrlReader', () => {
 
   describe('readUrl', () => {
     it('should throw NotModified if server responds with 304 from etag', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       await expect(
         fetchUrlReader.readUrl('https://backstage.io/some-resource', {
           etag: 'foo',
@@ -218,6 +256,16 @@ describe('FetchUrlReader', () => {
     });
 
     it('should throw NotModified if server responds with 304 from lastModifiedAfter', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       await expect(
         fetchUrlReader.readUrl('https://backstage.io/some-resource', {
           lastModifiedAfter: new Date('2020-01-01T00:00:00Z'),
@@ -238,6 +286,16 @@ describe('FetchUrlReader', () => {
         ),
       );
 
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       await fetchUrlReader.readUrl(
         'https://backstage.io/requires-authentication',
         {
@@ -247,6 +305,16 @@ describe('FetchUrlReader', () => {
     });
 
     it('should return etag from the response', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       const response = await fetchUrlReader.readUrl(
         'https://backstage.io/some-resource',
       );
@@ -255,20 +323,300 @@ describe('FetchUrlReader', () => {
     });
 
     it('should throw NotFound if server responds with 404', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       await expect(
         fetchUrlReader.readUrl('https://backstage.io/not-exists'),
       ).rejects.toThrow(NotFoundError);
     });
 
     it('should throw Error if server responds with 500', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       await expect(
         fetchUrlReader.readUrl('https://backstage.io/error'),
       ).rejects.toThrow(Error);
+    });
+
+    it('should block redirects to disallowed hosts to prevent SSRF', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
+      worker.use(
+        rest.get('https://backstage.io/redirect', (_req, res, ctx) => {
+          return res(
+            ctx.status(302),
+            ctx.set('location', 'https://evil.com/steal-data'),
+          );
+        }),
+      );
+
+      await expect(
+        reader.readUrl('https://backstage.io/redirect'),
+      ).rejects.toThrow(/not allowed/);
+    });
+
+    it('should allow redirects to allowed hosts', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
+      worker.use(
+        rest.get('https://backstage.io/redirect', (_req, res, ctx) => {
+          return res(
+            ctx.status(302),
+            ctx.set('location', 'https://backstage.io/some-resource'),
+          );
+        }),
+      );
+
+      const response = await reader.readUrl('https://backstage.io/redirect');
+      expect((await response.buffer()).toString()).toBe('content foo');
+    });
+
+    it('should block initial requests to disallowed hosts', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
+      await expect(
+        reader.readUrl('https://evil.com/steal-data'),
+      ).rejects.toThrow(/not allowed/);
+    });
+
+    it('should handle relative redirect locations', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
+      worker.use(
+        rest.get('https://backstage.io/old-path', (_req, res, ctx) => {
+          return res(ctx.status(301), ctx.set('location', '/some-resource'));
+        }),
+      );
+
+      const response = await reader.readUrl('https://backstage.io/old-path');
+      expect((await response.buffer()).toString()).toBe('content foo');
+    });
+
+    it('should handle relative redirect locations with ../', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
+      worker.use(
+        rest.get('https://backstage.io/deep/nested/path', (_req, res, ctx) => {
+          return res(
+            ctx.status(302),
+            ctx.set('location', '../../some-resource'),
+          );
+        }),
+      );
+
+      const response = await reader.readUrl(
+        'https://backstage.io/deep/nested/path',
+      );
+      expect((await response.buffer()).toString()).toBe('content foo');
+    });
+
+    it('should follow multiple redirect hops', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
+      worker.use(
+        rest.get('https://backstage.io/hop1', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/hop2'));
+        }),
+        rest.get('https://backstage.io/hop2', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/hop3'));
+        }),
+        rest.get('https://backstage.io/hop3', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/some-resource'));
+        }),
+      );
+
+      const response = await reader.readUrl('https://backstage.io/hop1');
+      expect((await response.buffer()).toString()).toBe('content foo');
+    });
+
+    it('should reject when max redirects exceeded', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
+      // Create a chain of 6 redirects (exceeds MAX_REDIRECTS of 5)
+      worker.use(
+        rest.get('https://backstage.io/loop0', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/loop1'));
+        }),
+        rest.get('https://backstage.io/loop1', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/loop2'));
+        }),
+        rest.get('https://backstage.io/loop2', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/loop3'));
+        }),
+        rest.get('https://backstage.io/loop3', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/loop4'));
+        }),
+        rest.get('https://backstage.io/loop4', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/loop5'));
+        }),
+        rest.get('https://backstage.io/loop5', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/loop6'));
+        }),
+      );
+
+      await expect(
+        reader.readUrl('https://backstage.io/loop0'),
+      ).rejects.toThrow(/Too many redirects/);
+    });
+
+    it('should block redirect to disallowed host mid-chain', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
+      worker.use(
+        rest.get('https://backstage.io/hop1', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/hop2'));
+        }),
+        rest.get('https://backstage.io/hop2', (_req, res, ctx) => {
+          return res(
+            ctx.status(302),
+            ctx.set('location', 'https://evil.com/steal'),
+          );
+        }),
+      );
+
+      await expect(reader.readUrl('https://backstage.io/hop1')).rejects.toThrow(
+        /not allowed/,
+      );
+    });
+
+    it('should handle 307 and 308 redirects', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
+      worker.use(
+        rest.get('https://backstage.io/temp-redirect', (_req, res, ctx) => {
+          return res(ctx.status(307), ctx.set('location', '/some-resource'));
+        }),
+      );
+
+      const response = await reader.readUrl(
+        'https://backstage.io/temp-redirect',
+      );
+      expect((await response.buffer()).toString()).toBe('content foo');
+    });
+
+    it('should validate paths in redirect targets', async () => {
+      const reader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io', paths: ['/allowed/'] }],
+            },
+          },
+        }),
+      );
+
+      worker.use(
+        rest.get('https://backstage.io/allowed/start', (_req, res, ctx) => {
+          return res(ctx.status(302), ctx.set('location', '/forbidden/path'));
+        }),
+      );
+
+      await expect(
+        reader.readUrl('https://backstage.io/allowed/start'),
+      ).rejects.toThrow(/not allowed/);
     });
   });
 
   describe('search', () => {
     it('should return a file', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       const data = await fetchUrlReader.search(
         `https://backstage.io/some-resource`,
         { etag: 'etag' },
@@ -280,6 +628,16 @@ describe('FetchUrlReader', () => {
     });
 
     it('should return an empty list of file if not found', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       const data = await fetchUrlReader.search(
         `https://backstage.io/not-exists`,
         { etag: 'etag' },
@@ -289,6 +647,16 @@ describe('FetchUrlReader', () => {
     });
 
     it('throws if given URL with wildcard', async () => {
+      const fetchUrlReader = FetchUrlReader.fromConfig(
+        new ConfigReader({
+          backend: {
+            reading: {
+              allow: [{ host: 'backstage.io' }],
+            },
+          },
+        }),
+      );
+
       await expect(
         fetchUrlReader.search(`https://backstage.io/some-resource*`, {
           etag: 'etag',

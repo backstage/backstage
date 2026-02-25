@@ -1,5 +1,57 @@
 # @backstage/plugin-auth-backend-module-auth0-provider
 
+## 0.3.0
+
+### Minor Changes
+
+- 36804fe: feat: Added organization option to authorization params of the strategy
+
+### Patch Changes
+
+- 867c905: Add support for organizational invites in auth0 strategy
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-auth-node@0.6.13
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- 867c905: Add support for organizational invites in auth0 strategy
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/plugin-auth-node@0.6.13-next.1
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 36804fe: feat: Added organization option to authorization params of the strategy
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+
+## 0.2.10
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.2.10-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+
 ## 0.2.10-next.0
 
 ### Patch Changes

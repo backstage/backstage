@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-filter-predicates
+  title: '@backstage/filter-predicates'
+  description: A library for expressing filter predicates and evaluating them against values
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: framework-maintainers

@@ -27,7 +27,7 @@
   }
 
   body {
-    background-color: var(--bui-bg);
+    background-color: var(--bui-bg-app);
 
     /* Text defaults */
     color: var(--bui-fg-primary);

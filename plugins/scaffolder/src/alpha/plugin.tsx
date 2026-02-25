@@ -15,6 +15,7 @@
  */
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -35,13 +36,14 @@ import {
   ownedEntityPickerFormField,
   ownerPickerFormField,
   repoBranchPickerFormField,
+  repoOwnerPickerFormField,
   repoUrlPickerFormField,
   scaffolderApi,
   scaffolderNavItem,
   scaffolderPage,
 } from './extensions';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { formFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
+import { formFieldsApi } from './formFieldsApi';
 import { formDecoratorsApi } from './api';
 import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { useScaffolderTemplateIconLinkProps } from './hooks/useScaffolderTemplateIconLinkProps';
@@ -58,6 +60,8 @@ const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'scaffolder',
+  title: 'Create',
+  icon: <CreateComponentIcon />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
     root: rootRouteRef,
@@ -88,5 +92,6 @@ export default createFrontendPlugin({
     myGroupsPickerFormField,
     ownedEntityPickerFormField,
     repoBranchPickerFormField,
+    repoOwnerPickerFormField,
   ],
 });

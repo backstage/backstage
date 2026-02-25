@@ -33,6 +33,7 @@ export interface LinkProps extends AriaLinkProps {
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
+  standalone?: boolean;
 
   // This is used to set the title attribute on the link
   title?: string;

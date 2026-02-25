@@ -195,11 +195,11 @@ strategy.
 
 This method can be quite helpful when used in combination with an ingestion
 procedure like the
-[`GkeEntityProvider`](https://backstage.io/docs/reference/plugin-catalog-backend-module-gcp.gkeentityprovider/)
+[`GkeEntityProvider`](https://backstage.io/api/stable/classes/_backstage_plugin-catalog-backend-module-gcp.index.GkeEntityProvider.html)
 (installation documented
 [here](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-gcp#installation))
 or the
-[`AwsEKSClusterProcessor`](https://backstage.io/docs/reference/plugin-catalog-backend-module-aws.awseksclusterprocessor/)
+[`AwsEKSClusterProcessor`](https://backstage.io/api/stable/classes/_backstage_plugin-catalog-backend-module-aws.index.AwsEKSClusterProcessor.html)
 to automatically update the set of clusters tracked by Backstage.
 
 For this method to work any entity that would be using this `Resource` to help drive the Kubernetes details in the Catalog's Entity pages needs to have a `dependsOn` relationship setup. Here's a quick example:

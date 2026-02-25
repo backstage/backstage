@@ -19,8 +19,10 @@ import {
   createRouteRef,
   NavItemBlueprint,
   PageBlueprint,
+  PluginHeaderActionBlueprint,
+  SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { RiEyeLine as VisualizerIcon } from '@remixicon/react';
+import { RiEyeLine } from '@remixicon/react';
 
 const rootRouteRef = createRouteRef();
 
@@ -28,17 +30,63 @@ const appVisualizerPage = PageBlueprint.make({
   params: {
     path: '/visualizer',
     routeRef: rootRouteRef,
+    title: 'Visualizer',
+  },
+});
+
+const treeRouteRef = createRouteRef();
+const detailedRouteRef = createRouteRef();
+const textRouteRef = createRouteRef();
+
+const appVisualizerTreePage = SubPageBlueprint.make({
+  name: 'tree',
+  params: {
+    path: 'tree',
+    routeRef: treeRouteRef,
+    title: 'Tree',
     loader: () =>
-      import('./components/AppVisualizerPage').then(m => (
-        <m.AppVisualizerPage />
+      import('./components/AppVisualizerPage/TreeVisualizer').then(m => (
+        <m.TreeVisualizer />
       )),
   },
+});
+const appVisualizerDetailedPage = SubPageBlueprint.make({
+  name: 'details',
+  params: {
+    path: 'details',
+    routeRef: detailedRouteRef,
+    title: 'Detailed',
+    loader: () =>
+      import('./components/AppVisualizerPage/DetailedVisualizer').then(m => (
+        <m.DetailedVisualizer />
+      )),
+  },
+});
+const appVisualizerTextPage = SubPageBlueprint.make({
+  name: 'text',
+  params: {
+    path: 'text',
+    routeRef: textRouteRef,
+    title: 'Text',
+    loader: () =>
+      import('./components/AppVisualizerPage/TextVisualizer').then(m => (
+        <m.TextVisualizer />
+      )),
+  },
+});
+
+const copyTreeAsJson = PluginHeaderActionBlueprint.make({
+  params: defineParams =>
+    defineParams({
+      loader: () =>
+        import('./components/CopyTreeButton').then(m => <m.CopyTreeButton />),
+    }),
 });
 
 export const appVisualizerNavItem = NavItemBlueprint.make({
   params: {
     title: 'Visualizer',
-    icon: () => <VisualizerIcon />,
+    icon: () => <RiEyeLine />,
     routeRef: rootRouteRef,
   },
 });
@@ -46,6 +94,15 @@ export const appVisualizerNavItem = NavItemBlueprint.make({
 /** @public */
 export const visualizerPlugin = createFrontendPlugin({
   pluginId: 'app-visualizer',
+  title: 'App Visualizer',
+  icon: <RiEyeLine />,
   info: { packageJson: () => import('../package.json') },
-  extensions: [appVisualizerPage, appVisualizerNavItem],
+  extensions: [
+    appVisualizerPage,
+    appVisualizerTreePage,
+    appVisualizerDetailedPage,
+    appVisualizerTextPage,
+    appVisualizerNavItem,
+    copyTreeAsJson,
+  ],
 });

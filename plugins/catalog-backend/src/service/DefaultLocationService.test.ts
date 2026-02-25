@@ -27,6 +27,7 @@ describe('DefaultLocationServiceTest', () => {
     deleteLocation: jest.fn(),
     createLocation: jest.fn(),
     listLocations: jest.fn(),
+    queryLocations: jest.fn(),
     getLocation: jest.fn(),
     getLocationByEntity: jest.fn(),
   };
@@ -332,6 +333,22 @@ describe('DefaultLocationServiceTest', () => {
     it('should call locationStore.deleteLocation', async () => {
       await locationService.listLocations();
       expect(store.listLocations).toHaveBeenCalled();
+    });
+  });
+
+  describe('queryLocations', () => {
+    it('should call locationStore.queryLocations', async () => {
+      await locationService.queryLocations({
+        limit: 10,
+        afterId: '123',
+        query: { type: 'url' },
+        credentials: null as any,
+      });
+      expect(store.queryLocations).toHaveBeenCalledWith({
+        limit: 10,
+        afterId: '123',
+        query: { type: 'url' },
+      });
     });
   });
 

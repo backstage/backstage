@@ -39,6 +39,9 @@ describe('readHelmetOptions', () => {
       crossOriginOpenerPolicy: false,
       crossOriginResourcePolicy: false,
       originAgentCluster: false,
+      referrerPolicy: {
+        policy: ['no-referrer'],
+      },
     });
   });
 
@@ -49,6 +52,9 @@ describe('readHelmetOptions', () => {
         'img-src': false,
         scriptSrcAttr: ['custom'],
         'object-src': ['asd'],
+      },
+      referrer: {
+        policy: ['foo', 'bar'],
       },
     });
     expect(readHelmetOptions(config)).toEqual({
@@ -71,6 +77,9 @@ describe('readHelmetOptions', () => {
       crossOriginOpenerPolicy: false,
       crossOriginResourcePolicy: false,
       originAgentCluster: false,
+      referrerPolicy: {
+        policy: ['foo', 'bar'],
+      },
     });
   });
 

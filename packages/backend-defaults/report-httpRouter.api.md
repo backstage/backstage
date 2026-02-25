@@ -40,6 +40,12 @@ export function createLifecycleMiddleware(
 ): RequestHandler;
 
 // @public
+export const createRateLimitMiddleware: (options: {
+  pluginId: string;
+  config: RootConfigService;
+}) => RequestHandler;
+
+// @public
 export const httpRouterServiceFactory: ServiceFactory<
   HttpRouterService,
   'plugin',

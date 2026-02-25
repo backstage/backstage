@@ -16,9 +16,25 @@
 
 import {
   CellProps as ReactAriaCellProps,
-  ColumnProps as AriaColumnProps,
+  ColumnProps as ReactAriaColumnProps,
+  TableProps as ReactAriaTableProps,
 } from 'react-aria-components';
+import type { ReactElement, ReactNode } from 'react';
+import type { SortDescriptor as ReactStatelySortDescriptor } from 'react-stately';
+import type { ColumnSize, ColumnStaticSize } from '@react-types/table';
 import type { TextColors } from '../../types';
+import { TablePaginationProps } from '../TablePagination';
+
+/**
+ * @public
+ */
+export type SortDescriptor = ReactStatelySortDescriptor;
+
+/** @public */
+export interface SortState {
+  descriptor: SortDescriptor | null;
+  onSortChange: (descriptor: SortDescriptor) => void;
+}
 
 /** @public */
 export interface CellProps extends ReactAriaCellProps {}
@@ -42,6 +58,81 @@ export interface CellProfileProps extends ReactAriaCellProps {
 }
 
 /** @public */
-export interface ColumnProps extends Omit<AriaColumnProps, 'children'> {
+export interface ColumnProps extends Omit<ReactAriaColumnProps, 'children'> {
   children?: React.ReactNode;
+}
+
+/** @public */
+export interface TableRootProps extends ReactAriaTableProps {
+  stale?: boolean;
+}
+
+/** @public */
+export interface TableItem {
+  id: string | number;
+}
+
+/** @public */
+export interface NoPagination {
+  type: 'none';
+}
+
+/** @public */
+export interface PagePagination extends TablePaginationProps {
+  type: 'page';
+}
+
+/** @public */
+export type TablePaginationType = NoPagination | PagePagination;
+
+/** @public */
+export interface ColumnConfig<T extends TableItem> {
+  id: string;
+  label: string;
+  cell: (item: T) => ReactElement;
+  header?: () => ReactElement;
+  isSortable?: boolean;
+  isHidden?: boolean;
+  width?: ColumnSize | null;
+  defaultWidth?: ColumnSize | null;
+  minWidth?: ColumnStaticSize | null;
+  maxWidth?: ColumnStaticSize | null;
+  isRowHeader?: boolean;
+}
+
+/** @public */
+export interface RowConfig<T extends TableItem> {
+  getHref?: (item: T) => string | undefined;
+  onClick?: (item: T) => void;
+  getIsDisabled?: (item: T) => boolean;
+}
+
+/** @public */
+export type RowRenderFn<T extends TableItem> = (params: {
+  item: T;
+  index: number;
+}) => ReactNode;
+
+/** @public */
+export interface TableSelection {
+  mode?: ReactAriaTableProps['selectionMode'];
+  behavior?: ReactAriaTableProps['selectionBehavior'];
+  selected?: ReactAriaTableProps['selectedKeys'];
+  onSelectionChange?: ReactAriaTableProps['onSelectionChange'];
+}
+
+/** @public */
+export interface TableProps<T extends TableItem> {
+  columnConfig: readonly ColumnConfig<T>[];
+  data: T[] | undefined;
+  loading?: boolean;
+  isStale?: boolean;
+  error?: Error;
+  pagination: TablePaginationType;
+  sort?: SortState;
+  rowConfig?: RowConfig<T> | RowRenderFn<T>;
+  selection?: TableSelection;
+  emptyState?: ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
 }

@@ -24,10 +24,9 @@ export {
 
 export { scaffolderTranslationRef } from '../translation';
 export * from './api';
-
 export {
   formFieldsApiRef,
   type ScaffolderFormFieldsApi,
-} from '@backstage/plugin-scaffolder-react/alpha';
+} from './formFieldsApi';
 
 export { default } from './plugin';

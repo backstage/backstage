@@ -112,6 +112,7 @@ export type GithubOrg = {
  */
 export type GithubUser = {
   login: string;
+  id?: string;
   bio?: string;
   avatarUrl?: string;
   email?: string;
@@ -202,6 +203,7 @@ export async function getOrganizationUsers(
             avatarUrl,
             bio,
             email @include(if: $email),
+            id,
             login,
             name,
             ${suspendedAtField}
@@ -268,6 +270,7 @@ export async function getOrganizationTeams(
                 avatarUrl,
                 bio,
                 email,
+                id,
                 login,
                 name,
                 organizationVerifiedDomainEmails(login: $org)
@@ -362,6 +365,7 @@ export async function getOrganizationTeamsFromUsers(
             avatarUrl,
             bio,
             email,
+            id,
             login,
             name,
             organizationVerifiedDomainEmails(login: $org)

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// 'jest-runtime' is included with jest and should be kept in sync with the installed jest version
+// eslint-disable-next-line @backstage/no-undeclared-imports
 const { default: JestRuntime } = require('jest-runtime');
 
 module.exports = class CachingJestRuntime extends JestRuntime {

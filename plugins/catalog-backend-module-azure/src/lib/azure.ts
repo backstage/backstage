@@ -75,12 +75,16 @@ export async function codeSearch(
     : `https://${azureConfig.host}`;
   const searchUrl = `${searchBaseUrl}/${org}/_apis/search/codesearchresults?api-version=6.0-preview.1`;
 
+  const url = azureConfig.host.endsWith('.visualstudio.com')
+    ? `https://${azureConfig.host}`
+    : `https://${azureConfig.host}/${org}`;
+
   let items: CodeSearchResultItem[] = [];
   let hasMorePages = true;
 
   do {
     const credentials = await credentialsProvider.getCredentials({
-      url: `https://${azureConfig.host}/${org}`,
+      url,
     });
 
     const searchRequestBody: CodeSearchRequest = {

@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import Stream, { PassThrough } from 'stream';
+import Stream, { PassThrough } from 'node:stream';
 import { DockerContainerRunner, UserOptions } from './DockerContainerRunner';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 

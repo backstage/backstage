@@ -50,7 +50,7 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 // Since React 18 react-dom/server eagerly uses TextEncoder, so lazy load and make it available globally first
 if (!global.TextEncoder) {
-  global.TextEncoder = require('util').TextEncoder;
+  global.TextEncoder = require('node:util').TextEncoder;
 }
 const { renderToStaticMarkup } =
   require('react-dom/server') as typeof import('react-dom/server');

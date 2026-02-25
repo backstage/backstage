@@ -28,7 +28,7 @@ import PQueue from 'p-queue';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
-import { setTimeout } from 'timers/promises';
+import { setTimeout } from 'node:timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
 
@@ -134,6 +134,7 @@ export class TaskWorker {
       additionalTemplateFilters,
       additionalTemplateGlobals,
       permissions,
+      config,
     });
 
     return new TaskWorker({

@@ -16,11 +16,13 @@
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { createHash } from 'node:crypto';
 import {
+  basename,
   extname,
   relative as relativePath,
   resolve as resolvePath,
-} from 'path';
+} from 'node:path';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
@@ -35,11 +37,12 @@ import {
   OutputPlugin,
 } from 'rollup';
 
-import { forwardFileImports } from './plugins';
+import { forwardFileImports, cssEntryPoints } from './plugins';
 import { BuildOptions, Output } from './types';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { readEntryPoints } from '../../../../lib/entryPoints';
+import { readEntryPoints } from '../entryPoints';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -114,7 +117,7 @@ export async function makeRollupConfigs(
   options: BuildOptions,
 ): Promise<RollupOptions[]> {
   const configs = new Array<RollupOptions>();
-  const targetDir = options.targetDir ?? paths.targetDir;
+  const targetDir = options.targetDir ?? targetPaths.dir;
 
   let targetPkg = options.packageJson;
   if (!targetPkg) {
@@ -239,7 +242,18 @@ export async function makeRollupConfigs(
           include: /node_modules/,
           exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
         }),
-        postcss(),
+        postcss({
+          modules: {
+            generateScopedName(name: string, filename: string, css: string) {
+              const hash = createHash('md5')
+                .update(css)
+                .digest('hex')
+                .slice(0, 10);
+              const file = basename(filename, '.module.css');
+              return `${file}_${name}__${hash}`;
+            },
+          },
+        }),
         forwardFileImports({
           exclude: /\.icon\.svg$/,
           include: [
@@ -262,6 +276,7 @@ export async function makeRollupConfigs(
           target: 'ES2023',
           minify: options.minify,
         }),
+        cssEntryPoints({ entryPoints, targetDir }),
       ],
     });
   }
@@ -270,9 +285,9 @@ export async function makeRollupConfigs(
     const input = Object.fromEntries(
       scriptEntryPoints.map(e => [
         e.name,
-        paths.resolveTargetRoot(
+        targetPaths.resolveRoot(
           'dist-types',
-          relativePath(paths.targetRoot, targetDir),
+          relativePath(targetPaths.rootDir, targetDir),
           e.path.replace(/\.(?:ts|tsx)$/, '.d.ts'),
         ),
       ]),

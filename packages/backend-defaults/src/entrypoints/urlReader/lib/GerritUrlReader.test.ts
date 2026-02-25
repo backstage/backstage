@@ -29,7 +29,7 @@ import { JsonObject } from '@backstage/types';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { GerritUrlReader } from './GerritUrlReader';

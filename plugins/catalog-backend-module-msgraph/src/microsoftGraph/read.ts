@@ -511,7 +511,7 @@ async function transformUsers(
             );
           }
         } catch (e) {
-          logger.warn(`Unable to load user photo for`, {
+          logger.debug(`Unable to load user photo for`, {
             user: user.id,
             error: e,
           });

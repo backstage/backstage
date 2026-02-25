@@ -28,7 +28,7 @@ import {
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
 import pLimit, { Limit } from 'p-limit';
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
 import {

@@ -20,7 +20,7 @@ import {
   mockServices,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { createDeferred } from '@backstage/types';
 import { Knex } from 'knex';
 import { default as catalogPlugin } from '../..';

@@ -25,7 +25,7 @@ import { ScannedPluginPackage } from '../scanner';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { ModuleLoader } from '../loader';
 import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
-import * as url from 'url';
+import * as url from 'node:url';
 import {
   BackendFeature,
   LoggerService,
@@ -35,8 +35,8 @@ import {
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { PackageRole, PackageRoles } from '@backstage/cli-node';
-import { findPaths } from '@backstage/cli-common';
-import * as fs from 'fs';
+import { targetPaths } from '@backstage/cli-common';
+import * as fs from 'node:fs';
 
 /**
  * @public
@@ -56,7 +56,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
     options: DynamicPluginManagerOptions,
   ): Promise<DynamicPluginManager> {
     /* eslint-disable-next-line no-restricted-syntax */
-    const backstageRoot = findPaths(__dirname).targetRoot;
+    const backstageRoot = targetPaths.rootDir;
     const scanner = PluginScanner.create({
       config: options.config,
       logger: options.logger,

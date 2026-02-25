@@ -46,12 +46,7 @@ describe('<HomePageSearchBar/>', () => {
       },
     );
 
-    expect(searchApiMock.query).toHaveBeenCalledWith(
-      expect.objectContaining({ term: '' }),
-      {
-        signal: expect.any(AbortSignal),
-      },
-    );
+    expect(searchApiMock.query).not.toHaveBeenCalled();
 
     await userEvent.type(screen.getByLabelText('Search'), 'term{enter}');
 

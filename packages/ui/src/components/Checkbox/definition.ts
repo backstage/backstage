@@ -27,5 +27,6 @@ export const CheckboxDefinition = {
   },
   dataAttributes: {
     selected: [true, false] as const,
+    indeterminate: [true, false] as const,
   },
 } as const satisfies ComponentDefinition;

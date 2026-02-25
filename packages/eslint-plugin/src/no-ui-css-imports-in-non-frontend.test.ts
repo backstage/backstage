@@ -15,7 +15,7 @@
  */
 
 import { RuleTester } from 'eslint';
-import path from 'path';
+import path from 'node:path';
 import rule from '../rules/no-ui-css-imports-in-non-frontend';
 
 const RULE = 'no-ui-css-imports-in-non-frontend';

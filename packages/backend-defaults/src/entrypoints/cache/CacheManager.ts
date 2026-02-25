@@ -29,6 +29,7 @@ import {
   RedisCacheStoreOptions,
   InfinispanClientBehaviorOptions,
   InfinispanServerConfig,
+  ValkeyCacheStoreOptions,
 } from './types';
 import { InfinispanOptionsMapper } from './providers/infinispan/InfinispanOptionsMapper';
 import { durationToMilliseconds } from '@backstage/types';
@@ -134,43 +135,38 @@ export class CacheManager {
   ): CacheStoreOptions | undefined {
     const storeConfigPath = `backend.cache.${store}`;
 
-    if (!config.has(storeConfigPath)) {
+    if (store !== 'memory' && !config.has(storeConfigPath)) {
       logger?.warn(
         `No configuration found for cache store '${store}' at '${storeConfigPath}'.`,
       );
     }
 
-    if (store === 'redis' || store === 'valkey') {
-      return CacheManager.parseRedisOptions(
-        store,
-        storeConfigPath,
-        config,
-        logger,
-      );
+    switch (store) {
+      case 'redis':
+        return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+      case 'valkey':
+        return CacheManager.parseValkeyOptions(storeConfigPath, config, logger);
+      case 'infinispan':
+        return InfinispanOptionsMapper.parseInfinispanOptions(
+          storeConfigPath,
+          config,
+          logger,
+        );
+      default:
+        return undefined;
     }
-
-    if (store === 'infinispan') {
-      return InfinispanOptionsMapper.parseInfinispanOptions(
-        storeConfigPath,
-        config,
-        logger,
-      );
-    }
-
-    return undefined;
   }
 
   /**
    * Parse Redis-specific options from configuration.
    */
   private static parseRedisOptions(
-    store: string,
     storeConfigPath: string,
     config: RootConfigService,
     logger?: LoggerService,
   ): RedisCacheStoreOptions {
     const redisOptions: RedisCacheStoreOptions = {
-      type: store as 'redis' | 'valkey',
+      type: 'redis',
     };
 
     const redisConfig =
@@ -214,6 +210,51 @@ export class CacheManager {
   }
 
   /**
+   * Parse Valkey-specific options from configuration.
+   */
+  private static parseValkeyOptions(
+    storeConfigPath: string,
+    config: RootConfigService,
+    logger?: LoggerService,
+  ): ValkeyCacheStoreOptions {
+    const valkeyOptions: ValkeyCacheStoreOptions = {
+      type: 'valkey',
+    };
+
+    const valkeyConfig =
+      config.getOptionalConfig(storeConfigPath) ?? new ConfigReader({});
+
+    valkeyOptions.client = {
+      keyPrefix: valkeyConfig.getOptionalString('client.keyPrefix'),
+    };
+
+    if (valkeyConfig.has('cluster')) {
+      const clusterConfig = valkeyConfig.getConfig('cluster');
+
+      if (!clusterConfig.has('rootNodes')) {
+        logger?.warn(
+          `Valkey cluster config has no 'rootNodes' key, defaulting to non-clustered mode`,
+        );
+        return valkeyOptions;
+      }
+
+      valkeyOptions.cluster = {
+        rootNodes: clusterConfig.get('rootNodes'),
+        defaults: clusterConfig.getOptional('defaults'),
+        minimizeConnections: clusterConfig.getOptionalBoolean(
+          'minimizeConnections',
+        ),
+        useReplicas: clusterConfig.getOptionalBoolean('useReplicas'),
+        maxCommandRedirections: clusterConfig.getOptionalNumber(
+          'maxCommandRedirections',
+        ),
+      };
+    }
+
+    return valkeyOptions;
+  }
+
+  /**
    * Construct the full namespace based on the options and pluginId.
    *
    * @param pluginId - The plugin ID to namespace
@@ -222,13 +263,23 @@ export class CacheManager {
    */
   private static constructNamespace(
     pluginId: string,
-    storeOptions: RedisCacheStoreOptions | undefined,
+    storeOptions: RedisCacheStoreOptions | ValkeyCacheStoreOptions | undefined,
   ): string {
-    const prefix = storeOptions?.client?.namespace
-      ? `${storeOptions.client.namespace}${
-          storeOptions.client.keyPrefixSeparator ?? ':'
-        }`
-      : '';
+    let prefix: string;
+    switch (storeOptions?.type) {
+      case 'redis':
+        prefix = storeOptions?.client?.namespace
+          ? `${storeOptions.client.namespace}${
+              storeOptions.client.keyPrefixSeparator ?? ':'
+            }`
+          : '';
+        break;
+      case 'valkey':
+        prefix = storeOptions.client?.keyPrefix ?? '';
+        break;
+      default:
+        prefix = '';
+    }
 
     return `${prefix}${pluginId}`;
   }
@@ -317,7 +368,9 @@ export class CacheManager {
 
   private createValkeyStoreFactory(): StoreFactory {
     const KeyvValkey = require('@keyv/valkey').default;
-    const { createCluster } = require('@keyv/valkey');
+    // `@keyv/valkey` doesn't export a `createCluster` function, but is compatible with the one from `@keyv/redis`
+    // See https://keyv.org/docs/storage-adapters/valkey
+    const { createCluster } = require('@keyv/redis');
     const stores: Record<string, typeof KeyvValkey> = {};
 
     return (pluginId, defaultTtl) => {
@@ -327,9 +380,7 @@ export class CacheManager {
         );
       }
       if (!stores[pluginId]) {
-        const valkeyOptions = this.storeOptions?.client || {
-          keyPrefixSeparator: ':',
-        };
+        const valkeyOptions = this.storeOptions?.client;
         if (this.storeOptions?.cluster) {
           // Create a Valkey cluster (Redis cluster under the hood)
           const cluster = createCluster(this.storeOptions?.cluster);

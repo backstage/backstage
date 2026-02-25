@@ -20,9 +20,9 @@
 const _ = require('lodash');
 const fs = require('fs-extra');
 const globby = require('globby');
-const { resolve: resolvePath, relative: relativePath } = require('path');
-const { execFile: execFileCb } = require('child_process');
-const { promisify } = require('util');
+const { resolve: resolvePath, relative: relativePath } = require('node:path');
+const { execFile: execFileCb } = require('node:child_process');
+const { promisify } = require('node:util');
 
 const execFile = promisify(execFileCb);
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ApiRef, createApiRef } from '../system';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 
 /**
  * The Config API is used to provide a mechanism to access the

@@ -22,9 +22,6 @@ import {
   JSX,
 } from 'react';
 import {
-  AppRootWrapperBlueprint,
-  RouterBlueprint,
-  SignInPageBlueprint,
   coreExtensionData,
   discoveryApiRef,
   fetchApiRef,
@@ -33,6 +30,11 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
+import {
+  AppRootWrapperBlueprint,
+  RouterBlueprint,
+  SignInPageBlueprint,
+} from '@backstage/plugin-app-react';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -59,18 +61,23 @@ export const AppRoot = createExtension({
     router: createExtensionInput([RouterBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
+      internal: true,
     }),
     signInPage: createExtensionInput([SignInPageBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
+      internal: true,
     }),
     children: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
     }),
     elements: createExtensionInput([coreExtensionData.reactElement]),
-    wrappers: createExtensionInput([
-      AppRootWrapperBlueprint.dataRefs.component,
-    ]),
+    wrappers: createExtensionInput(
+      [AppRootWrapperBlueprint.dataRefs.component],
+      {
+        internal: true,
+      },
+    ),
   },
   output: [coreExtensionData.reactElement],
   factory({ inputs, apis }) {
@@ -101,7 +108,9 @@ export const AppRoot = createExtension({
 
     for (const wrapper of inputs.wrappers) {
       const Component = wrapper.get(AppRootWrapperBlueprint.dataRefs.component);
-      content = <Component>{content}</Component>;
+      if (Component) {
+        content = <Component>{content}</Component>;
+      }
     }
 
     return [
@@ -189,7 +198,17 @@ export interface AppRouterProps {
 function DefaultRouter(props: PropsWithChildren<{}>) {
   const configApi = useApi(configApiRef);
   const basePath = getBasePath(configApi);
-  return <BrowserRouter basename={basePath}>{props.children}</BrowserRouter>;
+  return (
+    <BrowserRouter
+      basename={basePath}
+      future={{
+        v7_relativeSplatPath: false,
+        v7_startTransition: false,
+      }}
+    >
+      {props.children}
+    </BrowserRouter>
+  );
 }
 
 /**

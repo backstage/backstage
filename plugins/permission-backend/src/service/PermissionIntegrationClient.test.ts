@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { AddressInfo } from 'net';
-import { Server } from 'http';
+import { AddressInfo } from 'node:net';
+import { Server } from 'node:http';
 import express, { Router, RequestHandler } from 'express';
 import { RestContext, rest } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
@@ -148,9 +148,7 @@ describe('PermissionIntegrationClient', () => {
         ],
       );
 
-      expect(response).toEqual(
-        expect.objectContaining([{ id: '123', result: AuthorizeResult.ALLOW }]),
-      );
+      expect(response).toEqual([{ id: '123', result: AuthorizeResult.ALLOW }]);
     });
 
     it('should not include authorization headers if no token is supplied', async () => {

@@ -16,6 +16,9 @@
 import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
 /**
+ * Translation reference for the home plugin.
+ * Contains localized text strings for home page components and widgets.
+ *
  * @alpha
  */
 export const homeTranslationRef = createTranslationRef({
@@ -30,6 +33,7 @@ export const homeTranslationRef = createTranslationRef({
       clearAll: 'Clear all',
       addWidget: 'Add widget',
       save: 'Save',
+      cancel: 'Cancel',
     },
     customHomepage: {
       noWidgets: "No widgets added. Start by clicking the 'Add widget' button.",

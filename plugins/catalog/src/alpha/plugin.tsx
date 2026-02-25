@@ -15,8 +15,8 @@
  */
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import CategoryIcon from '@material-ui/icons/Category';
 
 import {
   createComponentRouteRef,
@@ -39,7 +39,11 @@ import contextMenuItems from './contextMenuItems';
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog',
-  info: { packageJson: () => import('../../package.json') },
+  title: 'Catalog',
+  icon: <CategoryIcon />,
+  info: {
+    packageJson: () => import('../../package.json'),
+  },
   routes: {
     catalogIndex: rootRouteRef,
     catalogEntity: entityRouteRef,

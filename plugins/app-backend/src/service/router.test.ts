@@ -17,7 +17,7 @@
 import { AppConfig } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import request from 'supertest';
 import { createRouter } from './router';
 import { loadConfigSchema } from '@backstage/config-loader';

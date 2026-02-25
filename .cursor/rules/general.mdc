@@ -1,0 +1,7 @@
+---
+description: General project guidelines for Backstage development
+globs:
+alwaysApply: true
+---
+
+Follow the instructions at /.github/copilot-instructions.md

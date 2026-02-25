@@ -33,7 +33,7 @@ const users = await response.json();
 ```
 
 Frontend plugins and packages should prefer to use the
-[`fetchApiRef`](https://backstage.io/docs/reference/core-plugin-api.fetchapiref).
+[`fetchApiRef`](https://backstage.io/api/stable/variables/_backstage_core-plugin-api.index.fetchApiRef.html).
 
 ```ts
 import { useApi } from '@backstage/core-plugin-api';

@@ -14,38 +14,64 @@
  * limitations under the License.
  */
 
+import type { ReactNode } from 'react';
+
+/** @public */
+export type CardOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
 /**
  * Props for the Card component.
  *
  * @public
  */
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children?: React.ReactNode;
-}
+export interface CardProps
+  extends CardOwnProps,
+    React.HTMLAttributes<HTMLDivElement> {}
+
+/** @public */
+export type CardHeaderOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
 
 /**
  * Props for the CardHeader component.
  *
  * @public
  */
-export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  children?: React.ReactNode;
-}
+export interface CardHeaderProps
+  extends CardHeaderOwnProps,
+    React.HTMLAttributes<HTMLDivElement> {}
+
+/** @public */
+export type CardBodyOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
 
 /**
  * Props for the CardBody component.
  *
  * @public
  */
-export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
-  children?: React.ReactNode;
-}
+export interface CardBodyProps
+  extends CardBodyOwnProps,
+    React.HTMLAttributes<HTMLDivElement> {}
+
+/** @public */
+export type CardFooterOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
 
 /**
  * Props for the CardFooter component.
  *
  * @public
  */
-export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
-  children?: React.ReactNode;
-}
+export interface CardFooterProps
+  extends CardFooterOwnProps,
+    React.HTMLAttributes<HTMLDivElement> {}

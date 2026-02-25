@@ -17,3 +17,4 @@
 export * from './ConfigContent';
 export * from './InfoContent';
 export * from './ExternalDependenciesContent';
+export * from './ScheduledTasksContent';

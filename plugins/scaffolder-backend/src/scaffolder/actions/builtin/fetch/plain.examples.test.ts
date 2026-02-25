@@ -16,7 +16,7 @@
 
 import yaml from 'yaml';
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createFetchPlainAction } from './plain';

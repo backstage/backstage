@@ -22,8 +22,13 @@
     padding: 0;
     margin: 0;
     cursor: pointer;
-    text-decoration-line: none;
     display: inline-block;
+
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-thickness: min(2px, max(1px, 0.05em));
+    text-underline-offset: calc(0.025em + 2px);
+    text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
 
     &:hover {
       text-decoration-line: underline;
@@ -102,9 +107,25 @@
     color: var(--bui-fg-success);
   }
 
+  .bui-Link[data-color='info'] {
+    color: var(--bui-fg-info);
+  }
+
   .bui-Link[data-truncate] {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .bui-Link[data-standalone] {
+    text-decoration-line: none;
+
+    &:hover {
+      text-decoration-line: underline;
+      text-decoration-style: solid;
+      text-decoration-thickness: min(2px, max(1px, 0.05em));
+      text-underline-offset: calc(0.025em + 2px);
+      text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+    }
   }
 }

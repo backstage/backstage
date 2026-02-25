@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import { ResponseError, ConflictError } from '@backstage/errors';
 import fs from 'fs-extra';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 interface Links {
   webui: string;

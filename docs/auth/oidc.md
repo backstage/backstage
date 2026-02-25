@@ -136,7 +136,15 @@ auth:
             - resolver: emailMatchingUserEntityProfileEmail
 ```
 
-If none of the built-in resolvers are suitable, you can alternatively write a custom resolver. See an example below:
+If none of the built-in resolvers are suitable, you can alternatively write a custom resolver.
+
+First, install the OIDC provider module:
+
+```bash
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-oidc-provider
+```
+
+Then create a custom resolver as shown below:
 
 ```ts title="in packages/backend/src/index.ts"
 /* highlight-add-start */
@@ -146,6 +154,10 @@ import {
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
 import { oidcAuthenticator } from '@backstage/plugin-auth-backend-module-oidc-provider';
+import {
+  stringifyEntityRef,
+  DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 
 const myAuthProviderModule = createBackendModule({
   // This ID must be exactly "auth" because that's the plugin it targets
@@ -168,7 +180,7 @@ const myAuthProviderModule = createBackendModule({
             async signInResolver(info, ctx) {
               const userRef = stringifyEntityRef({
                 kind: 'User',
-                name: info.result.userinfo.sub,
+                name: info.result.fullProfile.userinfo.sub,
                 namespace: DEFAULT_NAMESPACE,
               });
               return ctx.issueToken({
@@ -241,6 +253,12 @@ These parameters have implicit default values. Don't override them unless you kn
 - `prompt`: Recommended to use `auto` so the browser will request sign-in to the IDP if the
   user has no active session.
 - `sessionDuration`: Lifespan of the user session.
+- `startUrlSearchParams`: This is a dictionary of search (query) parameters for the OIDC
+  authorization start URL. Don't define it unless you want to change the identity
+  provider's behavior. (For example, you could set the `organization` parameter to guide
+  users towards a particular sign-in option that your organization prefers.) **Note:** the
+  start URL is controlled by the browser, so this feature is only for improving the
+  Backstage user experience.
 
 :::note Config Reloading
 Backstage does not yet support hot reloading of auth provider configuration. Any changes to this YAML file require a restart of Backstage.

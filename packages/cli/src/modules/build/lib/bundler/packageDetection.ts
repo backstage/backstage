@@ -19,8 +19,8 @@ import { Config, ConfigReader } from '@backstage/config';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import PQueue from 'p-queue';
-import { dirname, join as joinPath, resolve as resolvePath } from 'path';
-import { paths as cliPaths } from '../../../../lib/paths';
+import { dirname, join as joinPath, resolve as resolvePath } from 'node:path';
+import { targetPaths } from '@backstage/cli-common';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
 
@@ -32,10 +32,7 @@ interface PackageDetectionConfig {
 function readPackageDetectionConfig(
   config: Config,
 ): PackageDetectionConfig | undefined {
-  // The experimental key is deprecated, but supported still for backwards compatibility
-  const packages =
-    config.getOptional('app.packages') ??
-    config.getOptional('app.experimental.packages');
+  const packages = config.getOptional('app.packages');
   if (packages === undefined || packages === null) {
     return undefined;
   }
@@ -149,7 +146,7 @@ export async function createDetectedModulesEntryPoint(options: {
   // Previous versions of the CLI would write the detected modules file to the
   // root `node_modules`, this makes sure that doesn't exist to minimize risk of conflicts
   const legacyDetectedModulesPath = joinPath(
-    cliPaths.targetRoot,
+    targetPaths.rootDir,
     'node_modules',
     `${DETECTED_MODULES_MODULE_NAME}.js`,
   );

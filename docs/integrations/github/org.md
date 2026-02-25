@@ -98,7 +98,7 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 - `id`: A stable id for this provider. Entities from this provider will be associated with this ID, so you should take care not to change it over time since that may lead to orphaned entities and/or conflicts.
 - `githubUrl`: The target that this provider should consume
 - `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
-- `schedule`: The refresh schedule to use, matches the structure of [`SchedulerServiceTaskScheduleDefinitionConfig`](https://backstage.io/docs/reference/backend-plugin-api.schedulerservicetaskscheduledefinitionconfig/)
+- `schedule`: The refresh schedule to use, matches the structure of [`SchedulerServiceTaskScheduleDefinitionConfig`](https://backstage.io/api/stable/interfaces/_backstage_backend-plugin-api.index.SchedulerServiceTaskScheduleDefinition.html)
 - `pageSizes` (optional): Configure page sizes for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors. You can configure the following page sizes:
 
   - `teams`: Number of teams to fetch per page when querying organization teams (default: 25)
@@ -132,6 +132,8 @@ You can decide between the following options (extensible):
 
 - [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+- [via Google Pub/Sub](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-google-pubsub/README.md)
+- [via a Kafka topic](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-kafka/README.md)
 
 You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
 The webhook will need to be configured to forward `organization`,`team` and `membership` events.

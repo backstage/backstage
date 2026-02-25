@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ToolDocumentCollatorFactory } from './ToolDocumentCollatorFactory';
 
 const logger = mockServices.logger.mock();

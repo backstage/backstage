@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { InfinispanPutOptions } from '../../types';
 

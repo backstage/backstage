@@ -77,12 +77,14 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
        - entity-card:api-docs/providing-components:
            config:
              # Presenting the card only for entities of kind api
-             filter: kind:api
+             filter:
+               kind: api
        # Shows a table of components that consumes a particular api
        - entity-card:api-docs/consuming-components:
            config:
              # Presenting the card only for entities of kind api
-             filter: kind:api
+             filter:
+               kind: api
        # Enabling some contents
        # The contents will be displayed in the same order it appears in this setting list
        # Shows a "Definition" tab for entities of kind api
@@ -352,7 +354,8 @@ app:
           # The default value is a function that verifies it is a components has api pat of relations
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
-          filter: 'kind:component'
+          filter:
+            kind: component
 ```
 
 ###### Override
@@ -361,17 +364,19 @@ Use extension overrides for completely re-implementing the has apis entity card 
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'has-apis' entity card extension provided by the 'api-docs' plugin
       name: 'has-apis',
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomHasApisEntityCard />),
+      params: {
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => <m.MyCustomHasApisEntityCard />),
+      },
     }),
   ],
 });
@@ -422,29 +427,34 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/definition:
         config:
-          # Default to 'kind:api'
+          # Default to { kind: 'api' }
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
-          filter: 'kind:component'
+          filter:
+            kind: component
 ```
 
 ###### Override
 
-Use extension overrides for completely re-implementing the has apis entity card extension:
+Use extension overrides for completely re-implementing the definition entity card extension:
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'definition' entity card extension provided by the 'api-docs' plugin
       name: 'definition',
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomApiDefinitionEntityCard />),
+      params: {
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => (
+            <m.MyCustomApiDefinitionEntityCard />
+          )),
+      },
     }),
   ],
 });
@@ -495,29 +505,34 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/provided-apis:
         config:
-          # Default to 'kind:component'
+          # Default to { kind: 'component' }
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
-          filter: 'kind:component'
+          filter:
+            kind: component
 ```
 
 ###### Override
 
-Use extension overrides for completely re-implementing the has apis entity card extension:
+Use extension overrides for completely re-implementing the provided-apis entity card extension:
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'provided-apis' entity card extension provided by the 'api-docs' plugin
       name: 'provided-apis',
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomProvidedApisEntityCard />),
+      params: {
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => (
+            <m.MyCustomProvidedApisEntityCard />
+          )),
+      },
     }),
   ],
 });
@@ -568,29 +583,34 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/consumed-apis:
         config:
-          # Default to 'kind:component'
+          # Default to { kind: 'component' }
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
-          filter: 'kind:component'
+          filter:
+            kind: component
 ```
 
 ###### Override
 
-Use extension overrides for completely re-implementing the has apis entity card extension:
+Use extension overrides for completely re-implementing the consumed-apis entity card extension:
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'consumed-apis' entity card extension provided by the 'api-docs' plugin
       name: 'consumed-apis',
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomConsumedApisEntityCard />),
+      params: {
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => (
+            <m.MyCustomConsumedApisEntityCard />
+          )),
+      },
     }),
   ],
 });
@@ -641,31 +661,34 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/providing-components:
         config:
-          # Default to 'kind:api'
+          # Default to { kind: 'api' }
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
-          filter: 'kind:component'
+          filter:
+            kind: component
 ```
 
 ###### Override
 
-Use extension overrides for completely re-implementing the has apis entity card extension:
+Use extension overrides for completely re-implementing the providing-components entity card extension:
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'providing-components' entity card extension provided by the 'api-docs' plugin
       name: 'providing-components',
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => (
-          <m.MyCustomProvidingComponentsEntityCard />
-        )),
+      params: {
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => (
+            <m.MyCustomProvidingComponentsEntityCard />
+          )),
+      },
     }),
   ],
 });
@@ -716,31 +739,34 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/consuming-components:
         config:
-          # Default to 'kind:api'
+          # Default to { kind: 'api' }
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
-          filter: 'kind:component'
+          filter:
+            kind: component
 ```
 
 ###### Override
 
-Use extension overrides for completely re-implementing the has apis entity card extension:
+Use extension overrides for completely re-implementing the consuming-components entity card extension:
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createEntityCardExtension({
+    EntityCardBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'consuming-components' entity card extension provided by the 'api-docs' plugin
       name: 'consuming-components',
-      // Returning a custom card component
-      loader: () =>
-        import('./components').then(m => (
-          <m.MyCustomConsumingComponentsEntityCard />
-        )),
+      params: {
+        // Returning a custom card component
+        loader: () =>
+          import('./components').then(m => (
+            <m.MyCustomConsumingComponentsEntityCard />
+          )),
+      },
     }),
   ],
 });
@@ -798,11 +824,12 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-content:api-docs/definition:
         config:
-          # A text-based query used to filter whether the entity contentextension should be rendered or not.
+          # An entity predicate used to filter whether the entity content extension should be rendered or not.
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
-          # defaults to 'kind:api'
-          filter: 'kind:api'
+          # defaults to { kind: 'api' }
+          filter:
+            kind: api
           # The entity content table title
           # defaults to 'Definition'
           title: 'Definition'
@@ -813,23 +840,25 @@ app:
 
 ###### Override
 
-Use extension overrides for completely re-implementing the has apis entity card extension:
+Use extension overrides for completely re-implementing the definition entity content extension:
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createEntityContentExtension({
+    EntityContentBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'definition' entity content extension provided by the 'api-docs' plugin
       name: 'definition',
-      // Returning a custom content component
-      loader: () =>
-        import('./components').then(m => (
-          <m.MyCustomApiDefinitionEntityContent />
-        )),
+      params: {
+        // Returning a custom content component
+        loader: () =>
+          import('./components').then(m => (
+            <m.MyCustomApiDefinitionEntityContent />
+          )),
+      },
     }),
   ],
 });
@@ -878,11 +907,12 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-content:api-docs/apis:
         config:
-          # A text-based query used to filter whether the entity contentextension should be rendered or not.
+          # An entity predicate used to filter whether the entity content extension should be rendered or not.
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
-          # defaults to 'kind:component'
-          filter: 'kind:component'
+          # defaults to { kind: 'component' }
+          filter:
+            kind: component
           # The entity content table title
           # defaults to 'Definition'
           title: 'Definition'
@@ -897,17 +927,19 @@ Use extension overrides for completely re-implementing the apis entity content e
 
 ```tsx
 import { createFrontendModule } from '@backstage/backstage-plugin-api';
-import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createEntityContentExtension({
+    EntityContentBlueprint.make({
       // Name is necessary so the system knows that this extension will override the default 'apis' entity content extension provided by the 'api-docs' plugin
       name: 'apis',
-      // Returning a custom content component
-      loader: () =>
-        import('./components').then(m => <m.MyCustomApisEntityContent />),
+      params: {
+        // Returning a custom content component
+        loader: () =>
+          import('./components').then(m => <m.MyCustomApisEntityContent />),
+      },
     }),
   ],
 });

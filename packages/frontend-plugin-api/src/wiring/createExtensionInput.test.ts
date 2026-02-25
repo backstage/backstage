@@ -29,28 +29,28 @@ describe('createExtensionInput', () => {
     expect(input).toEqual({
       $$type: '@backstage/ExtensionInput',
       extensionData: [stringDataRef, numberDataRef],
-      config: { singleton: false, optional: false },
+      config: { singleton: false, optional: false, internal: false },
       withContext: expect.any(Function),
     });
 
     const x1: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      { singleton: false; optional: false }
+      { singleton: false; optional: false; internal: false }
     > = input;
     // @ts-expect-error
     const x2: ExtensionInput<
       typeof stringDataRef,
-      { singleton: false; optional: false }
+      { singleton: false; optional: false; internal: false }
     > = input;
     // @ts-expect-error
     const x3: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      { singleton: true; optional: false }
+      { singleton: true; optional: false; internal: false }
     > = input;
     // @ts-expect-error
     const x4: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      { singleton: false; optional: true }
+      { singleton: false; optional: true; internal: false }
     > = input;
 
     unused(x1, x2, x3, x4);
@@ -64,7 +64,7 @@ describe('createExtensionInput', () => {
     expect(inputWithContext).toEqual({
       $$type: '@backstage/ExtensionInput',
       extensionData: [stringDataRef, numberDataRef],
-      config: { singleton: false, optional: false },
+      config: { singleton: false, optional: false, internal: false },
       withContext: expect.any(Function),
       context,
     });
@@ -77,28 +77,28 @@ describe('createExtensionInput', () => {
     expect(input).toEqual({
       $$type: '@backstage/ExtensionInput',
       extensionData: [stringDataRef, numberDataRef],
-      config: { singleton: true, optional: false },
+      config: { singleton: true, optional: false, internal: false },
       withContext: expect.any(Function),
     });
 
     const x1: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      { singleton: true; optional: false }
+      { singleton: true; optional: false; internal: false }
     > = input;
     // @ts-expect-error
     const x2: ExtensionInput<
       typeof stringDataRef,
-      { singleton: true; optional: false }
+      { singleton: true; optional: false; internal: false }
     > = input;
     // @ts-expect-error
     const x3: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      { singleton: false; optional: false }
+      { singleton: false; optional: false; internal: false }
     > = input;
     // @ts-expect-error
     const x4: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      { singleton: false; optional: true }
+      { singleton: false; optional: true; internal: false }
     > = input;
 
     unused(x1, x2, x3, x4);
@@ -112,28 +112,28 @@ describe('createExtensionInput', () => {
     expect(input).toEqual({
       $$type: '@backstage/ExtensionInput',
       extensionData: [stringDataRef, numberDataRef],
-      config: { singleton: true, optional: true },
+      config: { singleton: true, optional: true, internal: false },
       withContext: expect.any(Function),
     });
 
     const x1: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      { singleton: true; optional: true }
+      { singleton: true; optional: true; internal: false }
     > = input;
     // @ts-expect-error
     const x2: ExtensionInput<
       typeof stringDataRef,
-      { singleton: true; optional: true }
+      { singleton: true; optional: true; internal: false }
     > = input;
     // @ts-expect-error
     const x3: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      { singleton: false; optional: false }
+      { singleton: false; optional: false; internal: false }
     > = input;
     // @ts-expect-error
     const x4: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      { singleton: false; optional: true }
+      { singleton: false; optional: true; internal: false }
     > = input;
 
     unused(x1, x2, x3, x4);
@@ -143,5 +143,15 @@ describe('createExtensionInput', () => {
     expect(() =>
       createExtensionInput([stringDataRef, stringDataRef], { singleton: true }),
     ).toThrow("ExtensionInput may not have duplicate data refs: 'str'");
+  });
+
+  it('should create an internal input', () => {
+    const input = createExtensionInput([stringDataRef], { internal: true });
+    expect(input).toEqual({
+      $$type: '@backstage/ExtensionInput',
+      extensionData: [stringDataRef],
+      config: { singleton: false, optional: false, internal: true },
+      withContext: expect.any(Function),
+    });
   });
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ export const spec = {
     title: 'catalog',
     version: '1',
     description:
-      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n:::note Note \n  This page only describes some of the most commonly used parts of the API, and is a work in progress.\n:::\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your catalog installation. For example, if the path given in a\nsection below is `/entities`, and the catalog is located at\n`http://localhost:7007/api/catalog` during local development, the full URL would\nbe `http://localhost:7007/api/catalog/entities`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/catalog` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
+      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n:::note Note\n  This page only describes some of the most commonly used parts of the API, and is a work in progress.\n:::\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your catalog installation. For example, if the path given in a\nsection below is `/entities`, and the catalog is located at\n`http://localhost:7007/api/catalog` during local development, the full URL would\nbe `http://localhost:7007/api/catalog/entities`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/catalog` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/api/stable/variables/_backstage_core-plugin-api.index.identityApiRef.html).\n',
     license: {
       name: 'Apache-2.0',
       url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
@@ -536,6 +536,32 @@ export const spec = {
         },
         required: ['target', 'type'],
         description: 'Holds the entity location information.',
+        additionalProperties: false,
+      },
+      LocationsQueryResponse: {
+        type: 'object',
+        properties: {
+          items: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/Location',
+            },
+            description: 'The list of locations paginated by a specific query.',
+          },
+          totalItems: {
+            type: 'number',
+          },
+          pageInfo: {
+            type: 'object',
+            properties: {
+              nextCursor: {
+                type: 'string',
+                description: 'The cursor for the next batch of locations.',
+              },
+            },
+          },
+        },
+        required: ['items', 'totalItems', 'pageInfo'],
         additionalProperties: false,
       },
       AnalyzeLocationExistingEntity: {
@@ -1369,6 +1395,55 @@ export const spec = {
           },
         ],
         parameters: [],
+      },
+    },
+    '/locations/by-query': {
+      post: {
+        operationId: 'GetLocationsByQuery',
+        tags: ['Locations'],
+        description: 'Query for locations',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/LocationsQueryResponse',
+                },
+              },
+            },
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        requestBody: {
+          required: false,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  cursor: {
+                    type: 'string',
+                  },
+                  limit: {
+                    type: 'number',
+                  },
+                  query: {
+                    $ref: '#/components/schemas/JsonObject',
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
     '/locations/{id}': {

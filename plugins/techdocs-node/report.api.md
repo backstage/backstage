@@ -16,7 +16,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { StorageOptions } from '@google-cloud/storage';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 // @public
 export class DirectoryPreparer implements PreparerBase {
@@ -309,7 +309,7 @@ export class TechdocsGenerator implements GeneratorBase {
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });
-  static readonly defaultDockerImage = 'spotify/techdocs:v1.2.6';
+  static readonly defaultDockerImage = 'spotify/techdocs:v1.2.8';
   static fromConfig(
     config: Config,
     options: GeneratorOptions,

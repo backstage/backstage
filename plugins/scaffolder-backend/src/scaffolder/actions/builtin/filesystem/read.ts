@@ -15,8 +15,8 @@
  */
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import fs from 'fs/promises';
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { z as zod } from 'zod';
 import { examples } from './read.examples';
 

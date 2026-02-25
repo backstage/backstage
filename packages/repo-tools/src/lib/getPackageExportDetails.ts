@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { extname } from 'path';
+import { extname } from 'node:path';
 import type { JsonObject } from '@backstage/types';
 
 export function getPackageExportDetails(pkg: JsonObject): Array<{

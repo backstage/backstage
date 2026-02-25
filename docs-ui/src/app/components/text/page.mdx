@@ -1,0 +1,56 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { textPropDefs } from './props-definition';
+import {
+  textUsageSnippet,
+  defaultSnippet,
+  variantsSnippet,
+  weightsSnippet,
+  colorsSnippet,
+  truncateSnippet,
+} from './snippets';
+import { Default, Variants, Weights, Colors, Truncate } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TextDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Text"
+  description="Typography component with variants, weights, colors, and semantic elements."
+/>
+
+<Snippet py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={textUsageSnippet} />
+
+## API reference
+
+<PropsTable data={textPropDefs} />
+
+## Examples
+
+### Variants
+
+<Snippet preview={<Variants />} code={variantsSnippet} />
+
+### Weights
+
+<Snippet preview={<Weights />} code={weightsSnippet} />
+
+### Colors
+
+Status colors for contextual messaging.
+
+<Snippet preview={<Colors />} code={colorsSnippet} />
+
+### Truncate
+
+<Snippet preview={<Truncate />} code={truncateSnippet} />
+
+<Theming definition={TextDefinition} />
+
+<ChangelogComponent component="text" />

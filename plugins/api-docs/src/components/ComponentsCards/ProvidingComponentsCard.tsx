@@ -31,6 +31,7 @@ import {
   Link,
   Progress,
   TableColumn,
+  TableOptions,
   WarningPanel,
 } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -39,19 +40,25 @@ import { apiDocsTranslationRef } from '../../translation';
 /** @public */
 export const ProvidingComponentsCard = (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ComponentEntity>[];
+  tableOptions?: TableOptions;
 }) => {
-  const { variant = 'gridItem', columns = EntityTable.componentEntityColumns } =
-    props;
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const {
+    variant = 'gridItem',
+    title = t('providingComponentsCard.title'),
+    columns = EntityTable.componentEntityColumns,
+    tableOptions = {},
+  } = props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_API_PROVIDED_BY,
   });
-  const { t } = useTranslationRef(apiDocsTranslationRef);
 
   if (loading) {
     return (
-      <InfoCard variant={variant} title={t('providingComponentsCard.title')}>
+      <InfoCard variant={variant} title={title}>
         <Progress />
       </InfoCard>
     );
@@ -59,7 +66,7 @@ export const ProvidingComponentsCard = (props: {
 
   if (error || !entities) {
     return (
-      <InfoCard variant={variant} title={t('providingComponentsCard.title')}>
+      <InfoCard variant={variant} title={title}>
         <WarningPanel
           severity="error"
           title={t('providingComponentsCard.error.title')}
@@ -71,7 +78,7 @@ export const ProvidingComponentsCard = (props: {
 
   return (
     <EntityTable
-      title={t('providingComponentsCard.title')}
+      title={title}
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
@@ -86,6 +93,7 @@ export const ProvidingComponentsCard = (props: {
         </div>
       }
       columns={columns}
+      tableOptions={tableOptions}
       entities={entities as ComponentEntity[]}
     />
   );

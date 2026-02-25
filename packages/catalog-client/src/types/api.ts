@@ -20,10 +20,11 @@ import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
- * {@link CatalogClient.getEntities}, to signify that you want to filter on the
+ * {@link CatalogApi.getEntities}, to signify that you want to filter on the
  * presence of that key no matter what its value is.
  *
  * @public
@@ -145,7 +146,7 @@ export type EntityOrderQuery =
     }>;
 
 /**
- * The request type for {@link CatalogClient.getEntities}.
+ * The request type for {@link CatalogApi.getEntities}.
  *
  * @public
  */
@@ -179,7 +180,7 @@ export interface GetEntitiesRequest {
 }
 
 /**
- * The response type for {@link CatalogClient.getEntities}.
+ * The response type for {@link CatalogApi.getEntities}.
  *
  * @public
  */
@@ -188,7 +189,7 @@ export interface GetEntitiesResponse {
 }
 
 /**
- * The request type for {@link CatalogClient.getEntitiesByRefs}.
+ * The request type for {@link CatalogApi.getEntitiesByRefs}.
  *
  * @public
  */
@@ -199,7 +200,7 @@ export interface GetEntitiesByRefsRequest {
    * @remarks
    *
    * The returned list of entities will be in the same order as the refs, and
-   * null will be returned in those positions that were not found.
+   * undefined will be returned in those positions that were not found.
    */
   entityRefs: string[];
   /**
@@ -214,7 +215,7 @@ export interface GetEntitiesByRefsRequest {
 }
 
 /**
- * The response type for {@link CatalogClient.getEntitiesByRefs}.
+ * The response type for {@link CatalogApi.getEntitiesByRefs}.
  *
  * @public
  */
@@ -225,13 +226,13 @@ export interface GetEntitiesByRefsResponse {
    * @remarks
    *
    * The list will be in the same order as the refs given in the request, and
-   * null will be returned in those positions that were not found.
+   * undefined will be returned in those positions that were not found.
    */
   items: Array<Entity | undefined>;
 }
 
 /**
- * The request type for {@link CatalogClient.getEntityAncestors}.
+ * The request type for {@link CatalogApi.getEntityAncestors}.
  *
  * @public
  */
@@ -240,7 +241,7 @@ export interface GetEntityAncestorsRequest {
 }
 
 /**
- * The response type for {@link CatalogClient.getEntityAncestors}.
+ * The response type for {@link CatalogApi.getEntityAncestors}.
  *
  * @public
  */
@@ -253,7 +254,7 @@ export interface GetEntityAncestorsResponse {
 }
 
 /**
- * The request type for {@link CatalogClient.getEntityFacets}.
+ * The request type for {@link CatalogApi.getEntityFacets}.
  *
  * @public
  */
@@ -322,7 +323,7 @@ export interface GetEntityFacetsRequest {
 }
 
 /**
- * The response type for {@link CatalogClient.getEntityFacets}.
+ * The response type for {@link CatalogApi.getEntityFacets}.
  *
  * @public
  */
@@ -354,7 +355,7 @@ export type Location = {
 };
 
 /**
- * The response type for {@link CatalogClient.getLocations}
+ * The response type for {@link CatalogApi.getLocations}
  *
  * @public
  */
@@ -363,7 +364,7 @@ export interface GetLocationsResponse {
 }
 
 /**
- * The request type for {@link CatalogClient.addLocation}.
+ * The request type for {@link CatalogApi.addLocation}.
  *
  * @public
  */
@@ -378,7 +379,7 @@ export type AddLocationRequest = {
 };
 
 /**
- * The response type for {@link CatalogClient.addLocation}.
+ * The response type for {@link CatalogApi.addLocation}.
  *
  * @public
  */
@@ -395,7 +396,7 @@ export type AddLocationResponse = {
 };
 
 /**
- * The response type for {@link CatalogClient.validateEntity}
+ * The response type for {@link CatalogApi.validateEntity}
  *
  * @public
  */
@@ -404,7 +405,7 @@ export type ValidateEntityResponse =
   | { valid: false; errors: SerializedError[] };
 
 /**
- * The request type for {@link CatalogClient.queryEntities}.
+ * The request type for {@link CatalogApi.queryEntities}.
  *
  * @public
  */
@@ -413,7 +414,7 @@ export type QueryEntitiesRequest =
   | QueryEntitiesCursorRequest;
 
 /**
- * A request type for {@link CatalogClient.queryEntities}.
+ * A request type for {@link CatalogApi.queryEntities}.
  * The method takes this type in an initial pagination request,
  * when requesting the first batch of entities.
  *
@@ -435,7 +436,7 @@ export type QueryEntitiesInitialRequest = {
 };
 
 /**
- * A request type for {@link CatalogClient.queryEntities}.
+ * A request type for {@link CatalogApi.queryEntities}.
  * The method takes this type in a pagination request, following
  * the initial request.
  *
@@ -448,7 +449,7 @@ export type QueryEntitiesCursorRequest = {
 };
 
 /**
- * The response type for {@link CatalogClient.queryEntities}.
+ * The response type for {@link CatalogApi.queryEntities}.
  *
  * @public
  */
@@ -466,7 +467,7 @@ export type QueryEntitiesResponse = {
 };
 
 /**
- * Stream entities request for {@link CatalogClient.streamEntities}.
+ * Stream entities request for {@link CatalogApi.streamEntities}.
  *
  * @public
  */
@@ -479,6 +480,47 @@ export type StreamEntitiesRequest = Omit<
    */
   pageSize?: number;
 };
+
+/**
+ * The request type for {@link CatalogApi.queryLocations}.
+ *
+ * @public
+ */
+export type QueryLocationsRequest =
+  | QueryLocationsInitialRequest
+  | QueryLocationsCursorRequest;
+
+/**
+ * The request type for initial requests to {@link CatalogApi.queryLocations}.
+ *
+ * @public
+ */
+export interface QueryLocationsInitialRequest {
+  limit?: number;
+  query?: FilterPredicate;
+}
+
+/**
+ * The request type for cursor requests to {@link CatalogApi.queryLocations}.
+ *
+ * @public
+ */
+export interface QueryLocationsCursorRequest {
+  cursor: string;
+}
+
+/**
+ * The response type for {@link CatalogApi.queryLocations}.
+ *
+ * @public
+ */
+export interface QueryLocationsResponse {
+  items: Location[];
+  totalItems: number;
+  pageInfo: {
+    nextCursor?: string;
+  };
+}
 
 /**
  * A client for interacting with the Backstage software catalog through its API.
@@ -504,7 +546,7 @@ export interface CatalogApi {
    *
    * The output list of entities is of the same size and in the same order as
    * the requested list of entity refs. Entries that are not found are returned
-   * as null.
+   * as undefined.
    *
    * @param request - Request parameters
    * @param options - Additional options
@@ -628,6 +670,62 @@ export interface CatalogApi {
     request?: {},
     options?: CatalogRequestOptions,
   ): Promise<GetLocationsResponse>;
+
+  /**
+   * Gets paginated locations from the catalog.
+   *
+   * @remarks
+   *
+   * @example
+   *
+   * ```
+   * const response = await catalogClient.queryLocations({
+   *   limit: 20,
+   *   query: {
+   *     type: 'url',
+   *     target: { $hasPrefix: 'https://github.com/backstage/backstage' },
+   *   },
+   * });
+   * ```
+   *
+   * This will match all locations of type `url` having a target starting
+   * with `https://github.com/backstage/backstage`.
+   *
+   * The response will contain a maximum of 20 locations. In case
+   * more than 20 locations exist, the response will contain a `nextCursor`
+   * property that can be used to fetch the next batch of locations.
+   *
+   * ```
+   * const secondBatchResponse = await catalogClient
+   *  .queryLocations({ cursor: response.pageInfo.nextCursor });
+   * ```
+   *
+   * `secondBatchResponse` will contain the next batch of (maximum) 20 locations,
+   * again together with a `nextCursor` property if there is more data to fetch.
+   *
+   * @public
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  queryLocations(
+    request?: QueryLocationsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryLocationsResponse>;
+
+  /**
+   * Asynchronously streams locations from the catalog. Uses `queryLocations`
+   * to fetch locations in batches, and yields them one page at a time.
+   *
+   * @public
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  streamLocations(
+    request?: QueryLocationsInitialRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Location[]>;
 
   /**
    * Gets a registered location by its ID.
