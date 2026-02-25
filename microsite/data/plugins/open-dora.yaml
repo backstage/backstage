@@ -8,3 +8,5 @@ documentation: https://github.com/DevoteamNL/opendora/tree/main/backstage-plugin
 iconUrl: /img/open-dora-icon.png
 npmPackageName: '@devoteam-nl/open-dora-backstage-plugin'
 addedDate: '2023-11-29'
+status: inactive
+staleSince: '2026-02-17'

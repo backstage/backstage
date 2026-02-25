@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: https://newrelic.com/themes/custom/erno/assets/mediakit/new_relic_logo_vertical_white.svg
 npmPackageName: '@backstage-community/plugin-newrelic-dashboard'
 addedDate: '2021-12-23'
+status: active

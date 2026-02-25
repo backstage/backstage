@@ -24,8 +24,9 @@ import startCase from 'lodash/startCase';
 import upperCase from 'lodash/upperCase';
 import upperFirst from 'lodash/upperFirst';
 import lowerFirst from 'lodash/lowerFirst';
-import { Lockfile } from '../../../../lib/versioning';
-import { paths } from '../../../../lib/paths';
+import { Lockfile } from '@backstage/cli-node';
+import { targetPaths } from '@backstage/cli-common';
+
 import { createPackageVersionProvider } from '../../../../lib/version';
 import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 
@@ -49,7 +50,7 @@ export class PortableTemplater {
   static async create(options: CreatePortableTemplaterOptions = {}) {
     let lockfile: Lockfile | undefined;
     try {
-      lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
+      lockfile = await Lockfile.load(targetPaths.resolveRoot('yarn.lock'));
     } catch {
       /* ignored */
     }

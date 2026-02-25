@@ -35,6 +35,7 @@ describe('DefaultLocationStore', () => {
   const mockScmEvents = {
     subscribe: jest.fn(),
     publish: jest.fn(),
+    markEventActionTaken: jest.fn(),
   };
   let subscriber: CatalogScmEventsServiceSubscriber | undefined;
 
@@ -362,6 +363,11 @@ describe('DefaultLocationStore', () => {
               },
             ],
           });
+
+          expect(mockScmEvents.markEventActionTaken).toHaveBeenCalledWith({
+            count: 1,
+            action: 'delete',
+          });
         });
       });
 
@@ -483,6 +489,15 @@ describe('DefaultLocationStore', () => {
             ],
             removed: [],
           });
+
+          expect(mockScmEvents.markEventActionTaken).toHaveBeenCalledWith({
+            count: 1,
+            action: 'delete',
+          });
+          expect(mockScmEvents.markEventActionTaken).toHaveBeenCalledWith({
+            count: 1,
+            action: 'create',
+          });
         });
       });
 
@@ -588,6 +603,11 @@ describe('DefaultLocationStore', () => {
                 }),
               },
             ],
+          });
+
+          expect(mockScmEvents.markEventActionTaken).toHaveBeenCalledWith({
+            count: 1,
+            action: 'delete',
           });
         });
       });
@@ -708,6 +728,11 @@ describe('DefaultLocationStore', () => {
               },
             ],
             removed: [],
+          });
+
+          expect(mockScmEvents.markEventActionTaken).toHaveBeenCalledWith({
+            count: 1,
+            action: 'move',
           });
         });
       });

@@ -16,7 +16,7 @@
 import { createCliPlugin } from '../../wiring/factory';
 import yargs from 'yargs';
 import { Command } from 'commander';
-import { lazy } from '../../lib/lazy';
+import { lazy } from '../../wiring/lazy';
 
 export const configOption = [
   '--config <path>',

@@ -1,5 +1,36 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.10-next.0
+
+### Patch Changes
+
+- dc81af1: Adds two new metrics to track MCP server operations and sessions.
+
+  - `mcp.server.operation.duration`: The duration taken to process an individual MCP operation
+  - `mcp.server.session.duration`: The duration of the MCP session from the perspective of the server
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.1.9
+
+### Patch Changes
+
+- 31de2c9: Added OAuth Protected Resource Metadata endpoint (`/.well-known/oauth-protected-resource`) per RFC 9728. This allows MCP clients to discover the authorization server for the resource.
+
+  Also enabled OAuth well-known endpoints when CIMD (Client ID Metadata Documents) is configured, not just when DCR is enabled.
+
+- 8148621: Moved `@backstage/backend-defaults` from `dependencies` to `devDependencies`.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.0.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-client@1.13.0
+
 ## 0.1.9-next.1
 
 ### Patch Changes

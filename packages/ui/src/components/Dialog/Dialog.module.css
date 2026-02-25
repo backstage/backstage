@@ -43,8 +43,10 @@
   }
 
   .bui-Dialog {
-    background: var(--bui-bg-popover);
-    border-radius: 0.5rem;
+    --dialog-border-radius: 0.5rem;
+    background: var(--bui-bg-app);
+    box-shadow: var(--bui-shadow);
+    border-radius: var(--dialog-border-radius);
     border: 1px solid var(--bui-border-1);
     color: var(--bui-fg-primary);
     position: relative;
@@ -52,9 +54,14 @@
     max-width: calc(100vw - 3rem);
     height: min(var(--bui-dialog-min-height, auto), calc(100vh - 3rem));
     max-height: calc(100vh - 3rem);
+    outline: none;
+  }
+
+  .bui-DialogContent {
     display: flex;
     flex-direction: column;
-    outline: none;
+    border-radius: var(--dialog-border-radius);
+    height: 100%;
   }
 
   /* Dialog entering animation */

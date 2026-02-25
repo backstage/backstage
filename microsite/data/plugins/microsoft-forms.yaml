@@ -7,3 +7,4 @@ documentation: https://github.com/zcmander/backstage-plugin-msforms
 iconUrl: /img/microsoft-forms.png
 npmPackageName: '@zcmander/backstage-plugin-msforms'
 addedDate: '2023-04-11'
+status: active

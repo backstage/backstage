@@ -2054,6 +2054,38 @@ describe('DefaultEntitiesCatalog', () => {
         ]);
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should apply both filter and query when both are given, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        // Add entities with different kinds and names
+        await addEntityToSearch(entityFrom('A', { kind: 'component' }));
+        await addEntityToSearch(entityFrom('B', { kind: 'component' }));
+        await addEntityToSearch(entityFrom('C', { kind: 'api' }));
+        await addEntityToSearch(entityFrom('D', { kind: 'api' }));
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        // Use filter to restrict to kind=component, and query to restrict to name=A
+        const response = await catalog.queryEntities({
+          filter: { key: 'kind', values: ['component'] },
+          query: { 'metadata.name': 'a' },
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
+          credentials: mockCredentials.none(),
+        });
+
+        const resultEntities = entitiesResponseToObjects(response.items);
+        expect(resultEntities).toEqual([
+          entityFrom('A', { kind: 'component' }),
+        ]);
+      },
+    );
   });
 
   describe('removeEntityByUid', () => {

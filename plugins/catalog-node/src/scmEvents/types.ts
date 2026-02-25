@@ -55,6 +55,26 @@ export interface CatalogScmEventsService {
    * guarantees.
    */
   publish(events: CatalogScmEvent[]): Promise<void>;
+
+  /**
+   * As a consumer of SCM events, mark that you have taken an action as a result
+   * of an SCM event.
+   *
+   * This is typically used to record metrics or other observability signals
+   * about how SCM events are handled, for example counting how many refresh,
+   * delete, create, or move operations are triggered by incoming events.
+   */
+  markEventActionTaken(options: {
+    /**
+     * The number of actions taken of the given type. Defaults to 1.
+     */
+    count?: number;
+    /**
+     * The type of action taken - typically "refresh", "delete",
+     * "create", or "move".
+     */
+    action: string;
+  }): void;
 }
 
 /**

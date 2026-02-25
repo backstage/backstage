@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/tech-radar.svg
 npmPackageName: '@backstage-community/plugin-tech-radar'
 addedDate: '2020-11-03'
+status: active

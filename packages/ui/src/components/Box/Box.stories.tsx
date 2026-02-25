@@ -60,6 +60,7 @@ export const Default = meta.story({
       fontWeight: 'bold',
       color: '#2563eb',
     },
+    children: null,
   },
 });
 
@@ -326,6 +327,7 @@ const CardDisplay = ({ children }: { children?: ReactNode }) => {
 };
 
 export const Display = meta.story({
+  args: { children: null },
   render: args => (
     <Flex direction="column" align="center">
       <Flex>
@@ -347,7 +349,7 @@ export const Display = meta.story({
 });
 
 export const BackgroundColors = meta.story({
-  args: { px: '6', py: '4' },
+  args: { px: '6', py: '4', children: null },
   render: args => (
     <Flex align="center" style={{ flexWrap: 'wrap' }}>
       <Box {...args}>Default</Box>
@@ -377,7 +379,7 @@ export const BackgroundColors = meta.story({
 });
 
 export const NestedNeutralColors = meta.story({
-  args: { px: '6', py: '4' },
+  args: { px: '6', py: '4', children: null },
   render: args => (
     <Box {...args} bg="neutral-1">
       <Button variant="secondary">Button (on neutral-1)</Button>

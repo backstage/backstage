@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 
 export function hasReactDomClient() {
   try {
     require.resolve('react-dom/client', {
-      paths: [paths.targetDir],
+      paths: [targetPaths.dir],
     });
     return true;
   } catch {

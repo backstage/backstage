@@ -117,6 +117,7 @@ import {
 import { filterAndSortProcessors, filterProviders } from './util';
 import { GenericScmEventRefreshProvider } from '../providers/GenericScmEventRefreshProvider';
 import { readScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -131,6 +132,7 @@ export type CatalogEnvironment = {
   auditor: AuditorService;
   events: EventsService;
   catalogScmEvents: CatalogScmEventsService;
+  metrics: MetricsService;
 };
 
 /**
@@ -429,6 +431,7 @@ export class CatalogBuilder {
       httpAuth,
       events,
       catalogScmEvents,
+      metrics,
     } = this.env;
 
     const enableRelationsCompatibility = Boolean(
@@ -448,6 +451,7 @@ export class CatalogBuilder {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
       logger,
+      metrics,
     });
 
     const processingDatabase = new DefaultProcessingDatabase({
@@ -455,6 +459,7 @@ export class CatalogBuilder {
       logger,
       events,
       refreshInterval: this.processingInterval,
+      metrics,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
@@ -577,6 +582,7 @@ export class CatalogBuilder {
         this.onProcessingError?.(event);
       },
       events,
+      metrics,
     });
 
     const locationAnalyzer =

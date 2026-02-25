@@ -95,7 +95,6 @@ export interface Config {
 
     /**
      * The backstage token expiration.
-     * Defaults to 1 hour (3600s). Maximum allowed is 24 hours.
      */
     backstageTokenExpiration?: HumanDuration | string;
 
@@ -150,12 +149,37 @@ export interface Config {
        * dynamic client registration. Defaults to '[*]' which allows any redirect URI.
        */
       allowedRedirectUriPatterns?: string[];
+    };
+
+    /**
+     * Configuration for Client ID Metadata Documents (CIMD)
+     *
+     * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
+     */
+    experimentalClientIdMetadataDocuments?: {
+      /**
+       * Whether to enable Client ID Metadata Documents support
+       * Defaults to false
+       */
+      enabled?: boolean;
 
       /**
-       * The expiration time for the client registration access tokens.
-       * Defaults to 1 hour (3600s). Maximum allowed is 24 hours.
+       * A list of allowed URI patterns for client_id URLs.
+       * Uses glob-style pattern matching where `*` matches any characters.
+       * Defaults to ['*'] which allows any client_id URL.
+       *
+       * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
        */
-      tokenExpiration?: HumanDuration | string;
+      allowedClientIdPatterns?: string[];
+
+      /**
+       * A list of allowed URI patterns for redirect URIs.
+       * Uses glob-style pattern matching where `*` matches any characters.
+       * Defaults to ['*'] which allows any redirect URI.
+       *
+       * @example ['http://localhost:*', 'http://127.0.0.1:*\/callback']
+       */
+      allowedRedirectUriPatterns?: string[];
     };
   };
 }

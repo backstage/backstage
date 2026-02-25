@@ -1228,6 +1228,95 @@ export const spec = {
           },
         ],
       },
+      post: {
+        operationId: 'QueryEntitiesByPredicate',
+        tags: ['Entity'],
+        description: 'Query entities using predicate-based filters.',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/EntitiesQueryResponse',
+                },
+              },
+            },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        requestBody: {
+          required: false,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  cursor: {
+                    type: 'string',
+                  },
+                  limit: {
+                    type: 'number',
+                  },
+                  offset: {
+                    type: 'number',
+                  },
+                  orderBy: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['field', 'order'],
+                      properties: {
+                        field: {
+                          type: 'string',
+                        },
+                        order: {
+                          type: 'string',
+                          enum: ['asc', 'desc'],
+                        },
+                      },
+                    },
+                  },
+                  fullTextFilter: {
+                    type: 'object',
+                    properties: {
+                      term: {
+                        type: 'string',
+                      },
+                      fields: {
+                        type: 'array',
+                        items: {
+                          type: 'string',
+                        },
+                      },
+                    },
+                  },
+                  fields: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                  },
+                  query: {
+                    $ref: '#/components/schemas/JsonObject',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
     '/entity-facets': {
       get: {

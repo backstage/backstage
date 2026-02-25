@@ -24,6 +24,7 @@ export const DialogDefinition = {
   classNames: {
     overlay: 'bui-DialogOverlay',
     dialog: 'bui-Dialog',
+    content: 'bui-DialogContent',
     header: 'bui-DialogHeader',
     headerTitle: 'bui-DialogHeaderTitle',
     body: 'bui-DialogBody',

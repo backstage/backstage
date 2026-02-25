@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://avatars2.githubusercontent.com/u/38220399?s=400&v=4
 npmPackageName: '@backstage-community/plugin-cloudbuild'
 addedDate: '2021-01-20'
+status: active

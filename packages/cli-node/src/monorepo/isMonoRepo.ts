@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { paths } from '../paths';
+import { targetPaths } from '@backstage/cli-common';
 import fs from 'fs-extra';
 
 /**
@@ -23,7 +23,7 @@ import fs from 'fs-extra';
  * @public
  */
 export async function isMonoRepo(): Promise<boolean> {
-  const rootPackageJsonPath = paths.resolveTargetRoot('package.json');
+  const rootPackageJsonPath = targetPaths.resolveRoot('package.json');
   try {
     const pkg = await fs.readJson(rootPackageJsonPath);
     return Boolean(pkg?.workspaces?.packages);

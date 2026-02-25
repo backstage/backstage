@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.3.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/backend-test-utils@1.11.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node@0.12.6-next.0
+
+## 0.3.8
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-scaffolder-node@0.12.5
+
 ## 0.3.8-next.1
 
 ### Patch Changes

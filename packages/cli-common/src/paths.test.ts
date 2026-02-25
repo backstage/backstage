@@ -16,18 +16,18 @@
 
 /* eslint-disable no-restricted-syntax */
 import { resolve as resolvePath } from 'node:path';
-import { findPaths, findRootPath, findOwnDir, findOwnRootDir } from './paths';
+import { findPaths, findRootPath, findOwnRootDir, findOwnPaths } from './paths';
 
 describe('paths', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  it('findOwnDir and findOwnRootDir should find owns paths', () => {
-    const dir = findOwnDir(__dirname);
-    const root = findOwnRootDir(dir);
+  it('findOwnPaths and findOwnRootDir should find own paths', () => {
+    const own = findOwnPaths(__dirname);
+    const root = findOwnRootDir(own.dir);
 
-    expect(dir).toBe(resolvePath(__dirname, '..'));
+    expect(own.dir).toBe(resolvePath(__dirname, '..'));
     expect(root).toBe(resolvePath(__dirname, '../../..'));
   });
 

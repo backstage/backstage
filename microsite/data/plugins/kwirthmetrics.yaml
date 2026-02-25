@@ -8,3 +8,4 @@ documentation: https://github.com/jfvilas/plugin-kwirth-metrics
 iconUrl: https://raw.githubusercontent.com/jfvilas/plugin-kwirth-metrics/master/src/assets/kwirthmetrics-logo.png
 npmPackageName: '@jfvilas/plugin-kwirth-metrics'
 addedDate: '2025-09-14'
+status: active

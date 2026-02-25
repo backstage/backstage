@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { mcpPlugin } from './plugin';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
@@ -21,6 +22,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
+import request from 'supertest';
 
 describe('Mcp Backend', () => {
   const mockPluginWithActions = createBackendPlugin({
@@ -51,6 +53,7 @@ describe('Mcp Backend', () => {
       features: [
         mcpPlugin,
         mockPluginWithActions,
+        metricsServiceMock.mock().factory,
         mockServices.rootConfig.factory({
           data: {
             backend: {
@@ -161,5 +164,92 @@ describe('Mcp Backend', () => {
         name: 'make-greeting',
       },
     ]);
+  });
+
+  describe('OAuth well-known endpoints', () => {
+    it('should not expose oauth endpoints when neither DCR nor CIMD is enabled', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const response = await request(server).get(
+        '/.well-known/oauth-protected-resource',
+      );
+      expect(response.status).toBe(404);
+    });
+
+    it('should expose oauth-protected-resource when DCR is enabled', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+              auth: {
+                experimentalDynamicClientRegistration: {
+                  enabled: true,
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const response = await request(server).get(
+        '/.well-known/oauth-protected-resource',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body.resource).toMatch(/\/api\/mcp-actions$/);
+      expect(response.body.authorization_servers).toHaveLength(1);
+      expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+    });
+
+    it('should expose oauth-protected-resource when CIMD is enabled', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const response = await request(server).get(
+        '/.well-known/oauth-protected-resource',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body.resource).toMatch(/\/api\/mcp-actions$/);
+      expect(response.body.authorization_servers).toHaveLength(1);
+      expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+    });
   });
 });

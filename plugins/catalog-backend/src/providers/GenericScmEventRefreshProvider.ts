@@ -150,6 +150,8 @@ export class GenericScmEventRefreshProvider implements EntityProvider {
 
       count += Number(result);
     }
+
+    this.#scmEvents.markEventActionTaken({ count, action: 'refresh' });
   }
 }
 

@@ -15,50 +15,11 @@
  */
 import { Command } from 'commander';
 import { createCliPlugin } from '../../wiring/factory';
-import { lazy } from '../../lib/lazy';
+import { lazy } from '../../wiring/lazy';
 
 export default createCliPlugin({
   pluginId: 'maintenance',
   init: async reg => {
-    reg.addCommand({
-      path: ['package', 'clean'],
-      description: 'Delete cache directories',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command.action(
-          lazy(() => import('./commands/package/clean'), 'default'),
-        );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
-    });
-
-    reg.addCommand({
-      path: ['package', 'prepack'],
-      description: 'Prepares a package for packaging before publishing',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command.action(
-          lazy(() => import('./commands/package/pack'), 'pre'),
-        );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
-    });
-
-    reg.addCommand({
-      path: ['package', 'postpack'],
-      description: 'Restores the changes made by the prepack command',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command.action(
-          lazy(() => import('./commands/package/pack'), 'post'),
-        );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
-    });
-
     reg.addCommand({
       path: ['repo', 'fix'],
       description: 'Automatically fix packages in the project',
@@ -74,19 +35,6 @@ export default createCliPlugin({
             'Fail if any packages would have been changed by the command',
           )
           .action(lazy(() => import('./commands/repo/fix'), 'command'));
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
-    });
-
-    reg.addCommand({
-      path: ['repo', 'clean'],
-      description: 'Delete cache and output directories',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command.action(
-          lazy(() => import('./commands/repo/clean'), 'command'),
-        );
 
         await defaultCommand.parseAsync(args, { from: 'user' });
       },

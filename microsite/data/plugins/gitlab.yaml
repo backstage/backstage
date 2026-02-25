@@ -8,3 +8,4 @@ documentation: https://github.com/immobiliare/backstage-plugin-gitlab
 iconUrl: https://about.gitlab.com/images/press/logo/png/gitlab-icon-rgb.png
 npmPackageName: '@immobiliarelabs/backstage-plugin-gitlab'
 addedDate: '2021-08-17'
+status: active

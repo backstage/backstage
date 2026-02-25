@@ -1,5 +1,12 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.6
+
 ## 0.1.22-next.0
 
 ### Patch Changes

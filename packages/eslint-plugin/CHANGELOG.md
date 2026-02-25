@@ -1,5 +1,17 @@
 # @backstage/eslint-plugin
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+
+## 0.2.1
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+
 ## 0.2.1-next.0
 
 ### Patch Changes

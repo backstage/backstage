@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/shortcuts.svg
 npmPackageName: '@backstage-community/plugin-shortcuts'
 addedDate: '2021-10-06'
+status: active

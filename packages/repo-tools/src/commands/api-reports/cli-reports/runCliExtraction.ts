@@ -22,7 +22,7 @@ import {
 import fs from 'fs-extra';
 import { createBinRunner } from '../../util';
 import { CliHelpPage, CliModel } from './types';
-import { paths as cliPaths } from '../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 import { generateCliReport } from './generateCliReport';
 import { logApiReportInstructions } from '../common';
 
@@ -115,7 +115,7 @@ export async function runCliExtraction({
 }: CliExtractionOptions) {
   for (const packageDir of packageDirs) {
     console.log(`## Processing ${packageDir}`);
-    const fullDir = cliPaths.resolveTargetRoot(packageDir);
+    const fullDir = targetPaths.resolveRoot(packageDir);
     const pkgJson = await fs.readJson(resolvePath(fullDir, 'package.json'));
 
     if (!pkgJson.bin) {
@@ -162,7 +162,7 @@ export async function runCliExtraction({
             console.log('');
             console.log(
               `The conflicting file is ${relativePath(
-                cliPaths.targetRoot,
+                targetPaths.rootDir,
                 reportPath,
               )}, expecting the following content:`,
             );

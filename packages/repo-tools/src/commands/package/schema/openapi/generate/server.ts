@@ -27,23 +27,23 @@ import {
   TS_SCHEMA_PATH,
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { targetPaths } from '@backstage/cli-common';
 import {
   getPathToCurrentOpenApiSpec,
   getRelativePathToFile,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
-import { paths as cliPaths } from '../../../../../lib/paths';
 
 async function generateSpecFile() {
   const openapiPath = await getPathToCurrentOpenApiSpec();
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
 
-  const tsPath = cliPaths.resolveTarget(TS_SCHEMA_PATH);
+  const tsPath = targetPaths.resolve(TS_SCHEMA_PATH);
 
   const schemaDir = dirname(tsPath);
   await fs.mkdirp(schemaDir);
 
-  const oldTsPath = cliPaths.resolveTarget(OLD_SCHEMA_PATH);
+  const oldTsPath = targetPaths.resolve(OLD_SCHEMA_PATH);
   if (fs.existsSync(oldTsPath)) {
     console.warn(`Removing old schema file at ${oldTsPath}`);
     fs.removeSync(oldTsPath);
@@ -77,9 +77,11 @@ export const createOpenApiRouter = async (
   );
 
   await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
-  if (await cliPaths.resolveTargetRoot('node_modules/.bin/prettier')) {
+  if (
+    await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
+  ) {
     await exec(`yarn prettier`, ['--write', tsPath, indexFile], {
-      cwd: cliPaths.targetRoot,
+      cwd: targetPaths.rootDir,
     });
   }
 }
@@ -150,7 +152,7 @@ async function generate(
     },
   );
 
-  const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
+  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
   if (prettier) {
     await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
       signal: abortSignal?.signal,

@@ -15,7 +15,7 @@
  */
 
 import { packageVersions, createPackageVersionProvider } from './version';
-import { Lockfile } from './versioning';
+import { Lockfile } from '@backstage/cli-node';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 

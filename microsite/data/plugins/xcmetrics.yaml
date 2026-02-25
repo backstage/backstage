@@ -8,3 +8,4 @@ documentation: https://xcmetrics.io/
 iconUrl: /img/xcmetrics-icon.png
 npmPackageName: '@backstage-community/plugin-xcmetrics'
 addedDate: '2021-08-06'
+status: active

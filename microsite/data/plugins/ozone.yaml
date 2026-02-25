@@ -9,3 +9,5 @@ documentation: https://docs.ozone.one/ozone-end-user-guide/~/changes/7YIrhOgqbpK
 iconUrl: /img/ozone-logo.png
 npmPackageName: '@ozonecloud/plugin-ozone'
 addedDate: '2023-06-14'
+status: inactive
+staleSince: '2026-02-17'

@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import { findOwnPaths } from '@backstage/cli-common';
 import fs from 'fs-extra';
-import { paths as cliPaths } from '../../lib/paths';
 
 export async function createTemporaryTsConfig(dir: string) {
-  const path = cliPaths.resolveOwnRoot(dir, 'tsconfig.typedoc.tmp.json');
+  /* eslint-disable-next-line no-restricted-syntax */
+  const path = findOwnPaths(__dirname).resolveRoot(
+    dir,
+    'tsconfig.typedoc.tmp.json',
+  );
 
   process.once('exit', () => {
     fs.removeSync(path);

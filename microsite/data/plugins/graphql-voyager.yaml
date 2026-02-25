@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://res.cloudinary.com/apideck/image/upload/v1612724234/icons/graphql-voyager.png
 npmPackageName: '@backstage-community/plugin-graphql-voyager'
 addedDate: '2023-01-27'
+status: active

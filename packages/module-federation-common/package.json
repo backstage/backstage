@@ -1,6 +1,6 @@
 {
   "name": "@backstage/module-federation-common",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Helper library for module federation",
   "backstage": {
     "role": "common-library"
