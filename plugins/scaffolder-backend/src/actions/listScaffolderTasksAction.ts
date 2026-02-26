@@ -38,7 +38,7 @@ export const createListScaffolderTasksAction = ({
     description: `
 This allows you to list scaffolder tasks that have been created.
 Each task has a unique id, specification, and status (one of open, processing, completed, failed, cancelled, stale).
-Each task also has timestamps relating to when the task was created and updated.
+Each task includes a timestamp for when it was created, and an optional last heartbeat timestamp indicating the most recent activity.
 Set owned to true to return only tasks created by the current user; omit or set to false for all tasks the credentials can see.
 Pagination is supported via limit and offset.
     `,
