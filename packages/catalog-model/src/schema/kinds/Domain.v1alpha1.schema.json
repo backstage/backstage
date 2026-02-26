@@ -39,13 +39,27 @@
               "type": "string",
               "description": "An entity reference to the owner of the component.",
               "examples": ["artist-relations-team", "user:john.johnson"],
-              "minLength": 1
+              "minLength": 1,
+              "relation": {
+                "defaultKind": "Group",
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["Group", "User"],
+                "outgoingType": "ownedBy",
+                "incomingType": "ownerOf"
+              }
             },
             "subdomainOf": {
               "type": "string",
               "description": "An entity reference to another domain of which the domain is a part.",
               "examples": ["audio"],
-              "minLength": 1
+              "minLength": 1,
+              "relation": {
+                "defaultKind": "Domain",
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["Domain"],
+                "outgoingType": "partOf",
+                "incomingType": "hasPart"
+              }
             },
             "type": {
               "type": "string",

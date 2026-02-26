@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
-export type {
-  EntityStatus,
-  EntityStatusItem,
-  EntityStatusLevel,
-} from './entity/EntityStatus';
-export type { AlphaEntity } from './entity/AlphaEntity';
-export type { CatalogModelExtension, CatalogModelBuilder } from './extension';
-export { createCatalogModelExtension } from './extension';
+import {
+  CatalogModel,
+  CatalogModelExtension,
+  OpaqueCatalogModelExtension,
+} from './types';
+
+/**
+ * Compiles a set of catalog model extensions into a single catalog model.
+ *
+ * @param extensions - The extensions to compile.
+ * @returns The compiled catalog model.
+ */
+export function compileCatalogModel(
+  extensions: Iterable<CatalogModelExtension>,
+): CatalogModel {
+  for (const externalExtension of extensions) {
+    OpaqueCatalogModelExtension.toInternal(externalExtension);
+  }
+
+  return {};
+}

@@ -16,6 +16,7 @@
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { Entity, Validators } from '@backstage/catalog-model';
+import { CatalogModelExtension } from '@backstage/catalog-model/alpha';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
@@ -109,10 +110,18 @@ export interface CatalogModelExtensionPoint {
   setFieldValidators(validators: Partial<Validators>): void;
 
   /**
-   * Sets the entity data parser which is used to read raw data from locations
+   * Sets the entity data parser which is used to read raw data from locations.
+   *
    * @param parser - Parser which will used to extract entities from raw data
    */
   setEntityDataParser(parser: CatalogProcessorParser): void;
+
+  /**
+   * Adds an extension to the catalog entity model.
+   *
+   * @param extension - The extension to add
+   */
+  addModelExtension(extension: CatalogModelExtension): void;
 }
 
 /**
@@ -140,8 +149,8 @@ export interface CatalogAnalysisExtensionPoint {
     analyzerOrFactory:
       | LocationAnalyzer
       | ((options: {
-          scmLocationAnalyzers: ScmLocationAnalyzer[];
-        }) => Promise<{ locationAnalyzer: LocationAnalyzer }>),
+        scmLocationAnalyzers: ScmLocationAnalyzer[];
+      }) => Promise<{ locationAnalyzer: LocationAnalyzer }>),
   ): void;
 
   /**
