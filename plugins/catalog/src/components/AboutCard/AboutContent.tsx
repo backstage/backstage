@@ -26,8 +26,8 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { JsonArray } from '@backstage/types';
 import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
+import { Grid } from '@backstage/ui';
 import { MarkdownContent } from '@backstage/core-components';
 import { AboutField } from './AboutField';
 import { LinksGridList } from '../EntityLinksCard/LinksGridList';
@@ -115,10 +115,10 @@ export function AboutContent(props: AboutContentProps) {
   }
 
   return (
-    <Grid container>
+    <Grid columns={{ initial: '1', sm: '2', lg: '3' }} gap="3">
       <AboutField
         label={t('aboutCard.descriptionField.label')}
-        gridSizes={{ xs: 12 }}
+        style={{ gridColumn: '1 / -1' }}
       >
         <MarkdownContent
           className={classes.description}
@@ -215,7 +215,7 @@ export function AboutContent(props: AboutContentProps) {
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (
         <AboutField
           label={t('aboutCard.targetsField.label')}
-          gridSizes={{ xs: 12 }}
+          style={{ gridColumn: '1 / -1' }}
         >
           <LinksGridList
             cols={1}
