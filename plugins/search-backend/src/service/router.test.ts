@@ -23,8 +23,6 @@ import {
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
-import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
-import { Server } from 'node:http';
 import {
   mockCredentials,
   mockErrorHandler,
@@ -42,7 +40,7 @@ const mockPermissionEvaluator: PermissionEvaluator = {
 };
 
 describe('createRouter', () => {
-  let app: express.Express | Server;
+  let app: express.Express;
   let mockSearchEngine: jest.Mocked<SearchEngine>;
 
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
@@ -87,7 +85,7 @@ describe('createRouter', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
     });
-    app = await wrapServer(express().use(router).use(mockErrorHandler()));
+    app = express().use(router).use(mockErrorHandler());
   });
 
   beforeEach(() => {
@@ -259,6 +257,8 @@ describe('createRouter', () => {
     });
 
     describe('search result filtering', () => {
+      let filterApp: express.Express;
+
       beforeAll(async () => {
         const logger = mockServices.logger.mock();
         mockSearchEngine = {
@@ -266,14 +266,10 @@ describe('createRouter', () => {
           setTranslator: jest.fn(),
           query: jest.fn(),
         };
-        const indexBuilder = new IndexBuilder({
-          logger,
-          searchEngine: mockSearchEngine,
-        });
 
         const router = await createRouter({
-          engine: indexBuilder.getSearchEngine(),
-          types: indexBuilder.getDocumentTypes(),
+          engine: mockSearchEngine,
+          types: {},
           config: new ConfigReader({ permissions: { enabled: false } }),
           permissions: mockPermissionEvaluator,
           discovery,
@@ -281,7 +277,7 @@ describe('createRouter', () => {
           auth: mockServices.auth(),
           httpAuth: mockServices.httpAuth(),
         });
-        app = express().use(router);
+        filterApp = express().use(router);
       });
 
       describe('where the search result set includes unsafe results', () => {
@@ -314,7 +310,7 @@ describe('createRouter', () => {
         });
 
         it('removes the unsafe results', async () => {
-          const response = await request(app).get('/query');
+          const response = await request(filterApp).get('/query');
 
           expect(response.status).toEqual(200);
           expect(response.body).toMatchObject({ results: [safeResult] });
