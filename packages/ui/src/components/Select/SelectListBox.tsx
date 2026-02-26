@@ -16,10 +16,8 @@
 
 import { ListBox, ListBoxItem, Text } from 'react-aria-components';
 import { RiCheckLine } from '@remixicon/react';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
-import { SelectDefinition } from './definition';
-import styles from './Select.module.css';
+import { useDefinition } from '../../hooks/useDefinition';
+import { SelectListBoxDefinition } from './definition';
 import type { Option } from './types';
 
 interface SelectListBoxProps {
@@ -27,42 +25,30 @@ interface SelectListBoxProps {
 }
 
 const NoResults = () => {
-  const { classNames } = useStyles(SelectDefinition);
+  const { ownProps } = useDefinition(SelectListBoxDefinition, {});
+  const { classes } = ownProps;
 
-  return (
-    <div className={clsx(classNames.noResults, styles[classNames.noResults])}>
-      No results found.
-    </div>
-  );
+  return <div className={classes.noResults}>No results found.</div>;
 };
 
-export function SelectListBox({ options, ...props }: SelectListBoxProps) {
-  const { classNames } = useStyles(SelectDefinition, props);
+export function SelectListBox(props: SelectListBoxProps) {
+  const { ownProps } = useDefinition(SelectListBoxDefinition, props);
+  const { classes, options } = ownProps;
+
   return (
-    <ListBox
-      className={clsx(classNames.list, styles[classNames.list])}
-      renderEmptyState={() => <NoResults />}
-    >
+    <ListBox className={classes.root} renderEmptyState={() => <NoResults />}>
       {options?.map(option => (
         <ListBoxItem
           key={option.value}
           id={option.value}
           textValue={option.label}
-          className={clsx(classNames.item, styles[classNames.item])}
+          className={classes.item}
           isDisabled={option.disabled}
         >
-          <div
-            className={clsx(
-              classNames.itemIndicator,
-              styles[classNames.itemIndicator],
-            )}
-          >
+          <div className={classes.itemIndicator}>
             <RiCheckLine />
           </div>
-          <Text
-            slot="label"
-            className={clsx(classNames.itemLabel, styles[classNames.itemLabel])}
-          >
+          <Text slot="label" className={classes.itemLabel}>
             {option.label}
           </Text>
         </ListBoxItem>

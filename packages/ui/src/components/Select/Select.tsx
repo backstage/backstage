@@ -18,13 +18,11 @@ import { forwardRef, useEffect } from 'react';
 import { Select as AriaSelect, Popover } from 'react-aria-components';
 import clsx from 'clsx';
 import { SelectProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { SelectDefinition } from './definition';
 import { PopoverDefinition } from '../Popover/definition';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
-import styles from './Select.module.css';
-import stylesPopover from '../Popover/Popover.module.css';
 import { SelectTrigger } from './SelectTrigger';
 import { SelectContent } from './SelectContent';
 
@@ -33,30 +31,28 @@ export const Select = forwardRef<
   HTMLDivElement,
   SelectProps<'single' | 'multiple'>
 >((props, ref) => {
-  const { classNames: popoverClassNames } = useStyles(PopoverDefinition);
-  const { classNames, dataAttributes, cleanedProps } = useStyles(
+  const { ownProps, restProps, dataAttributes } = useDefinition(
     SelectDefinition,
     {
-      size: 'small',
       placeholder: 'Select an option',
       ...props,
     },
   );
 
   const {
-    className,
+    classes,
     label,
     description,
     options,
     icon,
     searchable,
     searchPlaceholder,
-    'aria-label': ariaLabel,
-    'aria-labelledby': ariaLabelledBy,
     isRequired,
     secondaryLabel,
-    ...rest
-  } = cleanedProps;
+  } = ownProps;
+
+  const ariaLabel = restProps['aria-label'];
+  const ariaLabelledBy = restProps['aria-labelledby'];
 
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -70,12 +66,10 @@ export const Select = forwardRef<
 
   return (
     <AriaSelect
-      className={clsx(classNames.root, styles[classNames.root], className)}
+      className={classes.root}
       {...dataAttributes}
       ref={ref}
-      aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledBy}
-      {...rest}
+      {...restProps}
     >
       <FieldLabel
         label={label}
@@ -86,10 +80,9 @@ export const Select = forwardRef<
       <FieldError />
       <Popover
         className={clsx(
-          popoverClassNames.root,
-          stylesPopover[popoverClassNames.root],
-          classNames.popover,
-          styles[classNames.popover],
+          PopoverDefinition.classNames.root,
+          PopoverDefinition.styles[PopoverDefinition.classNames.root],
+          classes.popover,
         )}
         {...dataAttributes}
       >

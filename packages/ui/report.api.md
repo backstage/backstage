@@ -1962,36 +1962,49 @@ export const Select: ForwardRefExoticComponent<
 
 // @public
 export const SelectDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Select';
     readonly popover: 'bui-SelectPopover';
-    readonly trigger: 'bui-SelectTrigger';
-    readonly chevron: 'bui-SelectTriggerChevron';
-    readonly value: 'bui-SelectValue';
-    readonly list: 'bui-SelectList';
-    readonly item: 'bui-SelectItem';
-    readonly itemIndicator: 'bui-SelectItemIndicator';
-    readonly itemLabel: 'bui-SelectItemLabel';
-    readonly searchWrapper: 'bui-SelectSearchWrapper';
-    readonly search: 'bui-SelectSearch';
-    readonly searchClear: 'bui-SelectSearchClear';
-    readonly noResults: 'bui-SelectNoResults';
   };
-  readonly dataAttributes: {
-    readonly size: readonly ['small', 'medium'];
+  readonly propDefs: {
+    readonly icon: {};
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly options: {};
+    readonly searchable: {};
+    readonly searchPlaceholder: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
+    readonly className: {};
   };
 };
 
 // @public (undocumented)
-export interface SelectProps<T extends 'single' | 'multiple'>
-  extends SelectProps_2<Option_2, T>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type SelectOwnProps = {
   icon?: ReactNode;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   options?: Array<Option_2>;
   searchable?: boolean;
   searchPlaceholder?: string;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: boolean;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface SelectProps<T extends 'single' | 'multiple'>
+  extends SelectOwnProps,
+    Omit<SelectProps_2<Option_2, T>, keyof SelectOwnProps> {
   selectionMode?: T;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
 // @public (undocumented)
