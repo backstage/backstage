@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useEntity, EntityInfoCard } from '@backstage/plugin-catalog-react';
 import LanguageIcon from '@material-ui/icons/Language';
 import { EntityLinksEmptyState } from './EntityLinksEmptyState';
 import { LinksGridList } from './LinksGridList';
 import { ColumnBreakpoints } from './types';
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
-import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 
 /** @public */
 export interface EntityLinksCardProps {
   cols?: ColumnBreakpoints | number;
-  variant?: InfoCardVariants;
+  // Accepted for API compatibility but not applied.
+  // The new entity page layout handles card sizing.
+  // TODO: Discuss removal in code review.
+  variant?: string;
 }
 
 export const EntityLinksCard = (props: EntityLinksCardProps) => {
-  const { cols = undefined, variant } = props;
+  const { cols = undefined, variant: _variant } = props;
   const { entity } = useEntity();
   const app = useApp();
   const { t } = useTranslationRef(catalogTranslationRef);
@@ -42,7 +44,7 @@ export const EntityLinksCard = (props: EntityLinksCardProps) => {
   const links = entity?.metadata?.links;
 
   return (
-    <InfoCard title={t('entityLinksCard.title')} variant={variant}>
+    <EntityInfoCard title={t('entityLinksCard.title')}>
       {!links || links.length === 0 ? (
         <EntityLinksEmptyState />
       ) : (
@@ -55,6 +57,6 @@ export const EntityLinksCard = (props: EntityLinksCardProps) => {
           }))}
         />
       )}
-    </InfoCard>
+    </EntityInfoCard>
   );
 };
