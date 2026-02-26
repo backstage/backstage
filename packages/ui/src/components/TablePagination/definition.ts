@@ -14,17 +14,34 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { TablePaginationOwnProps } from './types';
+import styles from './TablePagination.module.css';
 
 /**
  * Component definition for TablePagination
  * @public
  */
-export const TablePaginationDefinition = {
-  classNames: {
-    root: 'bui-TablePagination',
-    left: 'bui-TablePaginationLeft',
-    right: 'bui-TablePaginationRight',
-    select: 'bui-TablePaginationSelect',
-  },
-} as const satisfies ComponentDefinition;
+export const TablePaginationDefinition =
+  defineComponent<TablePaginationOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-TablePagination',
+      left: 'bui-TablePaginationLeft',
+      right: 'bui-TablePaginationRight',
+      select: 'bui-TablePaginationSelect',
+    },
+    propDefs: {
+      pageSize: {},
+      pageSizeOptions: {},
+      offset: {},
+      totalCount: {},
+      hasNextPage: {},
+      hasPreviousPage: {},
+      onNextPage: {},
+      onPreviousPage: {},
+      onPageSizeChange: {},
+      showPageSizeOptions: {},
+      getLabel: {},
+    },
+  });
