@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import ImageList from '@material-ui/core/ImageList';
-import ImageListItem from '@material-ui/core/ImageListItem';
+import { Grid } from '@backstage/ui';
 import { IconLink } from './IconLink';
 import { ColumnBreakpoints } from './types';
 import { useDynamicColumns } from './useDynamicColumns';
@@ -37,12 +36,10 @@ export function LinksGridList(props: LinksGridListProps) {
   const numOfCols = useDynamicColumns(cols);
 
   return (
-    <ImageList rowHeight="auto" cols={numOfCols}>
+    <Grid columns={String(numOfCols) as any} gap="2">
       {items.map(({ text, href, Icon }, i) => (
-        <ImageListItem key={i}>
-          <IconLink href={href} text={text ?? href} Icon={Icon} />
-        </ImageListItem>
+        <IconLink key={i} href={href} text={text ?? href} Icon={Icon} />
       ))}
-    </ImageList>
+    </Grid>
   );
 }
