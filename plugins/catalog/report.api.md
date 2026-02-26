@@ -42,7 +42,7 @@ import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public
 export type AboutCardProps = {
-  variant?: InfoCardVariants;
+  variant?: string;
 };
 
 // @public (undocumented)
@@ -385,7 +385,7 @@ export interface EntityLabelsCardProps {
   // (undocumented)
   title?: string;
   // (undocumented)
-  variant?: InfoCardVariants;
+  variant?: string;
 }
 
 // @public (undocumented)
@@ -436,7 +436,7 @@ export interface EntityLinksCardProps {
   // (undocumented)
   cols?: ColumnBreakpoints | number;
   // (undocumented)
-  variant?: InfoCardVariants;
+  variant?: string;
 }
 
 // @public (undocumented)
