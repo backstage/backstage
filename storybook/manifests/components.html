@@ -634,7 +634,7 @@
             </div>
             <pre><code>Component: packages/ui/src/components/Accordion/Accordion.tsx::Accordion</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>bg?: ContainerBg | &#39;neutral-auto&#39;
+            <pre><code>bg?: &#39;neutral&#39; | &#39;danger&#39; | &#39;warning&#39; | &#39;success&#39;
 
 children: ReactNode
 
@@ -852,7 +852,7 @@ className?: string</code></pre>
         &lt;/AccordionPanel&gt;
       &lt;/Accordion&gt;
     &lt;/Flex&gt;
-    &lt;Box bg=&quot;neutral-1&quot; p=&quot;4&quot;&gt;
+    &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
       &lt;Text&gt;Neutral 1 container&lt;/Text&gt;
       &lt;Flex mt=&quot;2&quot;&gt;
         &lt;Accordion defaultExpanded&gt;
@@ -867,35 +867,41 @@ className?: string</code></pre>
         &lt;/Accordion&gt;
       &lt;/Flex&gt;
     &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-2&quot; p=&quot;4&quot;&gt;
-      &lt;Text&gt;Neutral 2 container&lt;/Text&gt;
-      &lt;Flex mt=&quot;2&quot;&gt;
-        &lt;Accordion defaultExpanded&gt;
-          &lt;AccordionTrigger title=&quot;Auto (neutral-3)&quot; /&gt;
-          &lt;AccordionPanel&gt;
-            &lt;Content /&gt;
-            &lt;Flex mt=&quot;3&quot; gap=&quot;2&quot;&gt;
-              &lt;Button&gt;Action&lt;/Button&gt;
-              &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;
-            &lt;/Flex&gt;
-          &lt;/AccordionPanel&gt;
-        &lt;/Accordion&gt;
-      &lt;/Flex&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+        &lt;Text&gt;Neutral 2 container&lt;/Text&gt;
+        &lt;Flex mt=&quot;2&quot;&gt;
+          &lt;Accordion defaultExpanded&gt;
+            &lt;AccordionTrigger title=&quot;Auto (neutral-3)&quot; /&gt;
+            &lt;AccordionPanel&gt;
+              &lt;Content /&gt;
+              &lt;Flex mt=&quot;3&quot; gap=&quot;2&quot;&gt;
+                &lt;Button&gt;Action&lt;/Button&gt;
+                &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;
+              &lt;/Flex&gt;
+            &lt;/AccordionPanel&gt;
+          &lt;/Accordion&gt;
+        &lt;/Flex&gt;
+      &lt;/Box&gt;
     &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-3&quot; p=&quot;4&quot;&gt;
-      &lt;Text&gt;Neutral 3 container&lt;/Text&gt;
-      &lt;Flex mt=&quot;2&quot;&gt;
-        &lt;Accordion defaultExpanded&gt;
-          &lt;AccordionTrigger title=&quot;Auto (neutral-3)&quot; /&gt;
-          &lt;AccordionPanel&gt;
-            &lt;Content /&gt;
-            &lt;Flex mt=&quot;3&quot; gap=&quot;2&quot;&gt;
-              &lt;Button&gt;Action&lt;/Button&gt;
-              &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;
-            &lt;/Flex&gt;
-          &lt;/AccordionPanel&gt;
-        &lt;/Accordion&gt;
-      &lt;/Flex&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+          &lt;Text&gt;Neutral 3 container&lt;/Text&gt;
+          &lt;Flex mt=&quot;2&quot;&gt;
+            &lt;Accordion defaultExpanded&gt;
+              &lt;AccordionTrigger title=&quot;Auto (neutral-3)&quot; /&gt;
+              &lt;AccordionPanel&gt;
+                &lt;Content /&gt;
+                &lt;Flex mt=&quot;3&quot; gap=&quot;2&quot;&gt;
+                  &lt;Button&gt;Action&lt;/Button&gt;
+                  &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;
+                &lt;/Flex&gt;
+              &lt;/AccordionPanel&gt;
+            &lt;/Accordion&gt;
+          &lt;/Flex&gt;
+        &lt;/Box&gt;
+      &lt;/Box&gt;
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
@@ -1284,7 +1290,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
 
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
       &lt;Text&gt;On Neutral 1&lt;/Text&gt;
-      &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot; bg=&quot;neutral-1&quot; p=&quot;4&quot;&gt;
+      &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot; bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
         &lt;Alert status=&quot;info&quot; icon={true} title=&quot;Alert on neutral-1&quot; /&gt;
         &lt;Alert status=&quot;success&quot; icon={true} title=&quot;Alert on neutral-1&quot; /&gt;
       &lt;/Flex&gt;
@@ -1292,18 +1298,24 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
 
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
       &lt;Text&gt;On Neutral 2&lt;/Text&gt;
-      &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot; bg=&quot;neutral-2&quot; p=&quot;4&quot;&gt;
-        &lt;Alert status=&quot;info&quot; icon={true} title=&quot;Alert on neutral-2&quot; /&gt;
-        &lt;Alert status=&quot;success&quot; icon={true} title=&quot;Alert on neutral-2&quot; /&gt;
-      &lt;/Flex&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot; bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+          &lt;Alert status=&quot;info&quot; icon={true} title=&quot;Alert on neutral-2&quot; /&gt;
+          &lt;Alert status=&quot;success&quot; icon={true} title=&quot;Alert on neutral-2&quot; /&gt;
+        &lt;/Flex&gt;
+      &lt;/Box&gt;
     &lt;/Flex&gt;
 
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
       &lt;Text&gt;On Neutral 3&lt;/Text&gt;
-      &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot; bg=&quot;neutral-3&quot; p=&quot;4&quot;&gt;
-        &lt;Alert status=&quot;info&quot; icon={true} title=&quot;Alert on neutral-3&quot; /&gt;
-        &lt;Alert status=&quot;success&quot; icon={true} title=&quot;Alert on neutral-3&quot; /&gt;
-      &lt;/Flex&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot;&gt;
+          &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot; bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+            &lt;Alert status=&quot;info&quot; icon={true} title=&quot;Alert on neutral-3&quot; /&gt;
+            &lt;Alert status=&quot;success&quot; icon={true} title=&quot;Alert on neutral-3&quot; /&gt;
+          &lt;/Flex&gt;
+        &lt;/Box&gt;
+      &lt;/Box&gt;
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
@@ -1333,7 +1345,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithUtilityProps = () =&gt; (
-  &lt;Box bg=&quot;neutral-1&quot; py=&quot;4&quot;&gt;
+  &lt;Box bg=&quot;neutral&quot; py=&quot;4&quot;&gt;
     &lt;Alert
       status=&quot;success&quot;
       icon={true}
@@ -1940,14 +1952,18 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
               
               <pre><code>const BackgroundColors = () =&gt; &lt;Flex align=&quot;center&quot; style={{ flexWrap: &#39;wrap&#39; }}&gt;
     &lt;Box px=&quot;6&quot; py=&quot;4&quot;&gt;Default&lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-1&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral 1
+    &lt;Box bg=&quot;neutral&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral (level 1)
               &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-2&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral 2
-              &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-3&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral 3
-              &lt;/Box&gt;
-    &lt;Box bg={{ initial: &#39;neutral-1&#39;, sm: &#39;neutral-2&#39; }} px=&quot;6&quot; py=&quot;4&quot;&gt;Responsive Neutral
-              &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral (level 2)
+                    &lt;/Box&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot;&gt;
+            &lt;Box bg=&quot;neutral&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral (level 3)
+                          &lt;/Box&gt;
+        &lt;/Box&gt;
+    &lt;/Box&gt;
     &lt;Box bg=&quot;danger&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Danger
               &lt;/Box&gt;
     &lt;Box bg=&quot;warning&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Warning
@@ -1963,11 +1979,11 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
               </div>
               
               
-              <pre><code>const NestedNeutralColors = () =&gt; &lt;Box px=&quot;6&quot; py=&quot;4&quot; bg=&quot;neutral-1&quot;&gt;
+              <pre><code>const NestedNeutralColors = () =&gt; &lt;Box px=&quot;6&quot; py=&quot;4&quot; bg=&quot;neutral&quot;&gt;
     &lt;Button variant=&quot;secondary&quot;&gt;Button (on neutral-1)&lt;/Button&gt;
-    &lt;Box px=&quot;6&quot; py=&quot;4&quot; bg=&quot;neutral-2&quot; mt=&quot;4&quot;&gt;
+    &lt;Box px=&quot;6&quot; py=&quot;4&quot; bg=&quot;neutral&quot; mt=&quot;4&quot;&gt;
         &lt;Button variant=&quot;secondary&quot;&gt;Button (on neutral-2)&lt;/Button&gt;
-        &lt;Box px=&quot;6&quot; py=&quot;4&quot; bg=&quot;neutral-3&quot; mt=&quot;4&quot;&gt;
+        &lt;Box px=&quot;6&quot; py=&quot;4&quot; bg=&quot;neutral&quot; mt=&quot;4&quot;&gt;
             &lt;Button variant=&quot;secondary&quot;&gt;Button (on neutral-3)&lt;/Button&gt;
         &lt;/Box&gt;
     &lt;/Box&gt;
@@ -2384,26 +2400,32 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
       neutral level by 1. No prop is needed on the button -- it&#39;s fully
       automatic.
     &lt;/div&gt;
-    &lt;Box bg=&quot;neutral-1&quot; p=&quot;4&quot;&gt;
+    &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
       &lt;Text&gt;Neutral 1 container&lt;/Text&gt;
       &lt;Flex gap=&quot;2&quot; mt=&quot;2&quot;&gt;
         &lt;Button variant=&quot;secondary&quot;&gt;Auto (neutral-2)&lt;/Button&gt;
         &lt;Button variant=&quot;tertiary&quot;&gt;Auto (neutral-2)&lt;/Button&gt;
       &lt;/Flex&gt;
     &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-2&quot; p=&quot;4&quot;&gt;
-      &lt;Text&gt;Neutral 2 container&lt;/Text&gt;
-      &lt;Flex gap=&quot;2&quot; mt=&quot;2&quot;&gt;
-        &lt;Button variant=&quot;secondary&quot;&gt;Auto (neutral-3)&lt;/Button&gt;
-        &lt;Button variant=&quot;tertiary&quot;&gt;Auto (neutral-3)&lt;/Button&gt;
-      &lt;/Flex&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+        &lt;Text&gt;Neutral 2 container&lt;/Text&gt;
+        &lt;Flex gap=&quot;2&quot; mt=&quot;2&quot;&gt;
+          &lt;Button variant=&quot;secondary&quot;&gt;Auto (neutral-3)&lt;/Button&gt;
+          &lt;Button variant=&quot;tertiary&quot;&gt;Auto (neutral-3)&lt;/Button&gt;
+        &lt;/Flex&gt;
+      &lt;/Box&gt;
     &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-3&quot; p=&quot;4&quot;&gt;
-      &lt;Text&gt;Neutral 3 container&lt;/Text&gt;
-      &lt;Flex gap=&quot;2&quot; mt=&quot;2&quot;&gt;
-        &lt;Button variant=&quot;secondary&quot;&gt;Auto (neutral-4)&lt;/Button&gt;
-        &lt;Button variant=&quot;tertiary&quot;&gt;Auto (neutral-4)&lt;/Button&gt;
-      &lt;/Flex&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+          &lt;Text&gt;Neutral 3 container&lt;/Text&gt;
+          &lt;Flex gap=&quot;2&quot; mt=&quot;2&quot;&gt;
+            &lt;Button variant=&quot;secondary&quot;&gt;Auto (neutral-4)&lt;/Button&gt;
+            &lt;Button variant=&quot;tertiary&quot;&gt;Auto (neutral-4)&lt;/Button&gt;
+          &lt;/Flex&gt;
+        &lt;/Box&gt;
+      &lt;/Box&gt;
     &lt;/Box&gt;
   &lt;/Flex&gt;
 );</code></pre>
@@ -3045,23 +3067,29 @@ className?: string</code></pre>
         &lt;CardHeader&gt;No parent&lt;/CardHeader&gt;
         &lt;CardBody&gt;Defaults to neutral-1&lt;/CardBody&gt;
     &lt;/Card&gt;
-    &lt;Box bg=&quot;neutral-1&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
+    &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
         &lt;Card style={{ width: &#39;200px&#39; }}&gt;
             &lt;CardHeader&gt;On neutral-1&lt;/CardHeader&gt;
             &lt;CardBody&gt;Auto-increments to neutral-2&lt;/CardBody&gt;
         &lt;/Card&gt;
     &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-2&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
-        &lt;Card style={{ width: &#39;200px&#39; }}&gt;
-            &lt;CardHeader&gt;On neutral-2&lt;/CardHeader&gt;
-            &lt;CardBody&gt;Auto-increments to neutral-3&lt;/CardBody&gt;
-        &lt;/Card&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
+            &lt;Card style={{ width: &#39;200px&#39; }}&gt;
+                &lt;CardHeader&gt;On neutral-2&lt;/CardHeader&gt;
+                &lt;CardBody&gt;Auto-increments to neutral-3&lt;/CardBody&gt;
+            &lt;/Card&gt;
+        &lt;/Box&gt;
     &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-3&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
-        &lt;Card style={{ width: &#39;200px&#39; }}&gt;
-            &lt;CardHeader&gt;On neutral-3&lt;/CardHeader&gt;
-            &lt;CardBody&gt;Steps up to neutral-4&lt;/CardBody&gt;
-        &lt;/Card&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot;&gt;
+            &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
+                &lt;Card style={{ width: &#39;200px&#39; }}&gt;
+                    &lt;CardHeader&gt;On neutral-3&lt;/CardHeader&gt;
+                    &lt;CardBody&gt;Steps up to neutral-4&lt;/CardBody&gt;
+                &lt;/Card&gt;
+            &lt;/Box&gt;
+        &lt;/Box&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
             </div>
@@ -3110,23 +3138,29 @@ className?: string</code></pre>
         &lt;CardHeader&gt;No provider&lt;/CardHeader&gt;
         &lt;CardBody&gt;Card defaults to neutral-1&lt;/CardBody&gt;
     &lt;/Card&gt;
-    &lt;Box bg=&quot;neutral-1&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
+    &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
         &lt;Card style={{ width: &#39;200px&#39; }}&gt;
             &lt;CardHeader&gt;On neutral-1&lt;/CardHeader&gt;
             &lt;CardBody&gt;Card auto-increments to neutral-2&lt;/CardBody&gt;
         &lt;/Card&gt;
     &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-2&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
-        &lt;Card style={{ width: &#39;200px&#39; }}&gt;
-            &lt;CardHeader&gt;On neutral-2&lt;/CardHeader&gt;
-            &lt;CardBody&gt;Card auto-increments to neutral-3&lt;/CardBody&gt;
-        &lt;/Card&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
+            &lt;Card style={{ width: &#39;200px&#39; }}&gt;
+                &lt;CardHeader&gt;On neutral-2&lt;/CardHeader&gt;
+                &lt;CardBody&gt;Card auto-increments to neutral-3&lt;/CardBody&gt;
+            &lt;/Card&gt;
+        &lt;/Box&gt;
     &lt;/Box&gt;
-    &lt;Box bg=&quot;neutral-3&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
-        &lt;Card style={{ width: &#39;200px&#39; }}&gt;
-            &lt;CardHeader&gt;On neutral-3&lt;/CardHeader&gt;
-            &lt;CardBody&gt;Card visually at neutral-4&lt;/CardBody&gt;
-        &lt;/Card&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot;&gt;
+            &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39; }}&gt;
+                &lt;Card style={{ width: &#39;200px&#39; }}&gt;
+                    &lt;CardHeader&gt;On neutral-3&lt;/CardHeader&gt;
+                    &lt;CardBody&gt;Card visually at neutral-4&lt;/CardBody&gt;
+                &lt;/Card&gt;
+            &lt;/Box&gt;
+        &lt;/Box&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
             </div>
@@ -3143,11 +3177,7 @@ className?: string</code></pre>
       A custom card built with Box. Use Box with an explicit bg prop to create
       a card-like container that participates in the bg system as a provider.
     &lt;/Box&gt;
-    &lt;Box
-      bg=&quot;neutral-auto&quot;
-      p=&quot;4&quot;
-      style={{ borderRadius: &#39;8px&#39;, width: &#39;300px&#39; }}
-    &gt;
+    &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39;, width: &#39;300px&#39; }}&gt;
       &lt;Button variant=&quot;secondary&quot; style={{ marginTop: &#39;8px&#39; }}&gt;
         Button (on neutral-1)
       &lt;/Button&gt;
@@ -6123,14 +6153,18 @@ style?: React.CSSProperties</code></pre>
               
               <pre><code>const Backgrounds = () =&gt; &lt;Flex align=&quot;center&quot; style={{ flexWrap: &#39;wrap&#39; }}&gt;
     &lt;Flex px=&quot;6&quot; py=&quot;4&quot;&gt;Default&lt;/Flex&gt;
-    &lt;Flex bg=&quot;neutral-1&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral 1
+    &lt;Flex bg=&quot;neutral&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral (level 1)
               &lt;/Flex&gt;
-    &lt;Flex bg=&quot;neutral-2&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral 2
-              &lt;/Flex&gt;
-    &lt;Flex bg=&quot;neutral-3&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral 3
-              &lt;/Flex&gt;
-    &lt;Flex bg={{ initial: &#39;neutral-1&#39;, sm: &#39;neutral-2&#39; }} px=&quot;6&quot; py=&quot;4&quot;&gt;Responsive Bg
-              &lt;/Flex&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Flex bg=&quot;neutral&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral (level 2)
+                    &lt;/Flex&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot;&gt;
+            &lt;Flex bg=&quot;neutral&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Neutral (level 3)
+                          &lt;/Flex&gt;
+        &lt;/Box&gt;
+    &lt;/Box&gt;
     &lt;Flex bg=&quot;danger&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Danger
               &lt;/Flex&gt;
     &lt;Flex bg=&quot;warning&quot; px=&quot;6&quot; py=&quot;4&quot;&gt;Warning
@@ -6141,21 +6175,21 @@ style?: React.CSSProperties</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">BgNeutralAuto</span>
+                <span class="ex-name">BgNeutral</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const BgNeutralAuto = () =&gt; &lt;Flex direction=&quot;column&quot;&gt;
-    &lt;div style={{ maxWidth: &#39;600px&#39;, marginBottom: &#39;16px&#39; }}&gt;Using bg=&quot;neutral-auto&quot; on Flex auto-increments from the parent context.
-                The first Flex defaults to neutral-1 (no parent), then each nested Flex
+              <pre><code>const BgNeutral = () =&gt; &lt;Flex direction=&quot;column&quot;&gt;
+    &lt;div style={{ maxWidth: &#39;600px&#39;, marginBottom: &#39;16px&#39; }}&gt;Using bg=&quot;neutral&quot; on Flex auto-increments from the parent context. The
+                first Flex defaults to neutral-1 (no parent), then each nested Flex
                 increments by one, capping at neutral-3.
               &lt;/div&gt;
-    &lt;Flex px=&quot;6&quot; py=&quot;4&quot; gap=&quot;4&quot; bg=&quot;neutral-auto&quot; direction=&quot;column&quot;&gt;
-        &lt;div&gt;Neutral 1 (auto, no parent)&lt;/div&gt;
-        &lt;Flex px=&quot;6&quot; py=&quot;4&quot; gap=&quot;4&quot; bg=&quot;neutral-auto&quot; direction=&quot;column&quot;&gt;
+    &lt;Flex px=&quot;6&quot; py=&quot;4&quot; gap=&quot;4&quot; bg=&quot;neutral&quot; direction=&quot;column&quot;&gt;
+        &lt;div&gt;Neutral 1 (no parent)&lt;/div&gt;
+        &lt;Flex px=&quot;6&quot; py=&quot;4&quot; gap=&quot;4&quot; bg=&quot;neutral&quot; direction=&quot;column&quot;&gt;
             &lt;div&gt;Neutral 2 (auto-incremented)&lt;/div&gt;
-            &lt;Flex px=&quot;6&quot; py=&quot;4&quot; gap=&quot;4&quot; bg=&quot;neutral-auto&quot; direction=&quot;column&quot;&gt;
+            &lt;Flex px=&quot;6&quot; py=&quot;4&quot; gap=&quot;4&quot; bg=&quot;neutral&quot; direction=&quot;column&quot;&gt;
                 &lt;div&gt;Neutral 3 (auto-incremented, capped)&lt;/div&gt;
             &lt;/Flex&gt;
         &lt;/Flex&gt;
@@ -9083,7 +9117,7 @@ hideArrow?: boolean</code></pre>
           This is a popover with rich content. It can contain multiple
           elements and formatted text.
         &lt;/Text&gt;
-        &lt;Box bg=&quot;neutral-auto&quot; p=&quot;2&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot; p=&quot;2&quot;&gt;
           &lt;Text&gt;You can also use the automatic bg system inside it.&lt;/Text&gt;
         &lt;/Box&gt;
         &lt;Flex gap=&quot;2&quot; justify=&quot;end&quot;&gt;
@@ -11890,7 +11924,7 @@ size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#3
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Flex, Text, ToggleButton } from "@backstage/ui";
+                <pre><code>import { Box, Flex, Text, ToggleButton } from "@backstage/ui";
 import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixicon/react";</code></pre>
               </div>
           
@@ -11921,21 +11955,27 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     &lt;/Flex&gt;
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
       &lt;Text&gt;On Neutral 1&lt;/Text&gt;
-      &lt;Flex align=&quot;center&quot; bg=&quot;neutral-1&quot; p=&quot;4&quot;&gt;
+      &lt;Flex align=&quot;center&quot; bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
         &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
       &lt;/Flex&gt;
     &lt;/Flex&gt;
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
       &lt;Text&gt;On Neutral 2&lt;/Text&gt;
-      &lt;Flex align=&quot;center&quot; bg=&quot;neutral-2&quot; p=&quot;4&quot;&gt;
-        &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
-      &lt;/Flex&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Flex align=&quot;center&quot; bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+          &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
+        &lt;/Flex&gt;
+      &lt;/Box&gt;
     &lt;/Flex&gt;
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
       &lt;Text&gt;On Neutral 3&lt;/Text&gt;
-      &lt;Flex align=&quot;center&quot; bg=&quot;neutral-3&quot; p=&quot;4&quot;&gt;
-        &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
-      &lt;/Flex&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot;&gt;
+          &lt;Flex align=&quot;center&quot; bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+            &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
+          &lt;/Flex&gt;
+        &lt;/Box&gt;
+      &lt;/Box&gt;
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
@@ -12244,7 +12284,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Flex, Text, ToggleButton, ToggleButtonGroup } from "@backstage/ui";
+                <pre><code>import { Box, Flex, Text, ToggleButton, ToggleButtonGroup } from "@backstage/ui";
 import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixicon/react";</code></pre>
               </div>
           
@@ -12299,7 +12339,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;/Flex&gt;
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
       &lt;Text&gt;On Neutral 1&lt;/Text&gt;
-      &lt;Flex align=&quot;center&quot; bg=&quot;neutral-1&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+      &lt;Flex align=&quot;center&quot; bg=&quot;neutral&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
         &lt;ToggleButtonGroup
           selectionMode=&quot;single&quot;
           defaultSelectedKeys={[&#39;option1&#39;]}
@@ -12312,29 +12352,35 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     &lt;/Flex&gt;
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
       &lt;Text&gt;On Neutral 2&lt;/Text&gt;
-      &lt;Flex align=&quot;center&quot; bg=&quot;neutral-2&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
-        &lt;ToggleButtonGroup
-          selectionMode=&quot;single&quot;
-          defaultSelectedKeys={[&#39;option1&#39;]}
-        &gt;
-          &lt;ToggleButton id=&quot;option1&quot;&gt;Option 1&lt;/ToggleButton&gt;
-          &lt;ToggleButton id=&quot;option2&quot;&gt;Option 2&lt;/ToggleButton&gt;
-          &lt;ToggleButton id=&quot;option3&quot;&gt;Option 3&lt;/ToggleButton&gt;
-        &lt;/ToggleButtonGroup&gt;
-      &lt;/Flex&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Flex align=&quot;center&quot; bg=&quot;neutral&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+          &lt;ToggleButtonGroup
+            selectionMode=&quot;single&quot;
+            defaultSelectedKeys={[&#39;option1&#39;]}
+          &gt;
+            &lt;ToggleButton id=&quot;option1&quot;&gt;Option 1&lt;/ToggleButton&gt;
+            &lt;ToggleButton id=&quot;option2&quot;&gt;Option 2&lt;/ToggleButton&gt;
+            &lt;ToggleButton id=&quot;option3&quot;&gt;Option 3&lt;/ToggleButton&gt;
+          &lt;/ToggleButtonGroup&gt;
+        &lt;/Flex&gt;
+      &lt;/Box&gt;
     &lt;/Flex&gt;
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
       &lt;Text&gt;On Neutral 3&lt;/Text&gt;
-      &lt;Flex align=&quot;center&quot; bg=&quot;neutral-3&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
-        &lt;ToggleButtonGroup
-          selectionMode=&quot;single&quot;
-          defaultSelectedKeys={[&#39;option1&#39;]}
-        &gt;
-          &lt;ToggleButton id=&quot;option1&quot;&gt;Option 1&lt;/ToggleButton&gt;
-          &lt;ToggleButton id=&quot;option2&quot;&gt;Option 2&lt;/ToggleButton&gt;
-          &lt;ToggleButton id=&quot;option3&quot;&gt;Option 3&lt;/ToggleButton&gt;
-        &lt;/ToggleButtonGroup&gt;
-      &lt;/Flex&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot;&gt;
+          &lt;Flex align=&quot;center&quot; bg=&quot;neutral&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+            &lt;ToggleButtonGroup
+              selectionMode=&quot;single&quot;
+              defaultSelectedKeys={[&#39;option1&#39;]}
+            &gt;
+              &lt;ToggleButton id=&quot;option1&quot;&gt;Option 1&lt;/ToggleButton&gt;
+              &lt;ToggleButton id=&quot;option2&quot;&gt;Option 2&lt;/ToggleButton&gt;
+              &lt;ToggleButton id=&quot;option3&quot;&gt;Option 3&lt;/ToggleButton&gt;
+            &lt;/ToggleButtonGroup&gt;
+          &lt;/Flex&gt;
+        &lt;/Box&gt;
+      &lt;/Box&gt;
     &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
