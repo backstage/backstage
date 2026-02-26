@@ -115,7 +115,7 @@ export function AboutContent(props: AboutContentProps) {
   }
 
   return (
-    <Grid columns={{ initial: '1', sm: '2', lg: '3' }} gap="3">
+    <Grid.Root columns={{ initial: '1', sm: '2', lg: '3' }} gap="3">
       <AboutField
         label={t('aboutCard.descriptionField.label')}
         style={{ gridColumn: '1 / -1' }}
@@ -232,6 +232,6 @@ export function AboutContent(props: AboutContentProps) {
           />
         </AboutField>
       )}
-    </Grid>
+    </Grid.Root>
   );
 }

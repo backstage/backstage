@@ -36,10 +36,10 @@ export function LinksGridList(props: LinksGridListProps) {
   const numOfCols = useDynamicColumns(cols);
 
   return (
-    <Grid columns={String(numOfCols) as any} gap="2">
+    <Grid.Root columns={String(numOfCols) as any} gap="2">
       {items.map(({ text, href, Icon }, i) => (
         <IconLink key={i} href={href} text={text ?? href} Icon={Icon} />
       ))}
-    </Grid>
+    </Grid.Root>
   );
 }
