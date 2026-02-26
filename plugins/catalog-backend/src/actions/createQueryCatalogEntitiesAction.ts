@@ -16,6 +16,7 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
+import { InputError } from '@backstage/errors';
 
 export const createQueryCatalogEntitiesAction = ({
   catalog,
@@ -188,7 +189,12 @@ Pagination: Use limit (e.g. 20) and the returned nextPageCursor for subsequent r
         }),
     },
     action: async ({ input, credentials }) => {
-      console.log('input', input);
+      if (input.cursor && (input.filter || input.offset !== undefined)) {
+        throw new InputError(
+          'Cannot combine cursor with filter or offset. Use cursor alone for pagination.',
+        );
+      }
+
       const response = await catalog.queryEntities(
         input.cursor
           ? {
