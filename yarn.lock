@@ -2778,12 +2778,16 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/json-schema": "npm:^7.0.5"
     "@types/lodash": "npm:^4.14.151"
     ajv: "npm:^8.10.0"
+    ajv-errors: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
     yaml: "npm:^2.0.0"
+    zod: "npm:^3.25.76"
+    zod-validation-error: "npm:^4.0.2"
   languageName: unknown
   linkType: soft
 

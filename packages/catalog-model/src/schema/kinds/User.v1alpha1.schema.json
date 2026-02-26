@@ -70,6 +70,13 @@
                 "type": "string",
                 "examples": ["team-b", "employees"],
                 "minLength": 1
+              },
+              "relation": {
+                "defaultKind": "Group",
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["Group"],
+                "outgoingType": "memberOf",
+                "incomingType": "hasMember"
               }
             }
           }

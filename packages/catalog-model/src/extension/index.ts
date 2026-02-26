@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+export { compileCatalogModel } from './compileCatalogModel';
+export { createCatalogModelExtension } from './createCatalogModelExtension';
 export type {
-  EntityStatus,
-  EntityStatusItem,
-  EntityStatusLevel,
-} from './entity/EntityStatus';
-export type { AlphaEntity } from './entity/AlphaEntity';
-export type { CatalogModelExtension, CatalogModelBuilder } from './extension';
-export { createCatalogModelExtension } from './extension';
+  CatalogModel,
+  CatalogModelBuilder,
+  CatalogModelExtension,
+} from './types';

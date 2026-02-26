@@ -57,17 +57,38 @@
               "type": "string",
               "description": "An entity reference to the owner of the component.",
               "examples": ["artist-relations-team", "user:john.johnson"],
-              "minLength": 1
+              "minLength": 1,
+              "relation": {
+                "defaultKind": "Group",
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["Group", "User"],
+                "outgoingType": "ownedBy",
+                "incomingType": "ownerOf"
+              }
             },
             "system": {
               "type": "string",
               "description": "An entity reference to the system that the component belongs to.",
-              "minLength": 1
+              "minLength": 1,
+              "relation": {
+                "defaultKind": "System",
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["System"],
+                "outgoingType": "partOf",
+                "incomingType": "hasPart"
+              }
             },
             "subcomponentOf": {
               "type": "string",
               "description": "An entity reference to another component of which the component is a part.",
-              "minLength": 1
+              "minLength": 1,
+              "relation": {
+                "defaultKind": "Component",
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["Component"],
+                "outgoingType": "partOf",
+                "incomingType": "hasPart"
+              }
             },
             "providesApis": {
               "type": "array",
@@ -75,6 +96,13 @@
               "items": {
                 "type": "string",
                 "minLength": 1
+              },
+              "relation": {
+                "defaultKind": "API",
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["API"],
+                "outgoingType": "providesApi",
+                "incomingType": "apiProvidedBy"
               }
             },
             "consumesApis": {
@@ -83,6 +111,13 @@
               "items": {
                 "type": "string",
                 "minLength": 1
+              },
+              "relation": {
+                "defaultKind": "API",
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["API"],
+                "outgoingType": "consumesApi",
+                "incomingType": "apiConsumedBy"
               }
             },
             "dependsOn": {
@@ -91,6 +126,26 @@
               "items": {
                 "type": "string",
                 "minLength": 1
+              },
+              "relation": {
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["Component", "Resource"],
+                "outgoingType": "dependsOn",
+                "incomingType": "dependencyOf"
+              }
+            },
+            "dependencyOf": {
+              "type": "array",
+              "description": "An array of references to other entities that the component is a dependency of.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "relation": {
+                "defaultNamespace": "inherit",
+                "allowedKinds": ["Component", "Resource"],
+                "outgoingType": "dependencyOf",
+                "incomingType": "dependsOn"
               }
             }
           }
