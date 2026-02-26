@@ -1846,6 +1846,19 @@ export const Radio: ForwardRefExoticComponent<
   RadioProps & RefAttributes<HTMLLabelElement>
 >;
 
+// @public
+export const RadioDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Radio';
+  };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
 // @public (undocumented)
 export const RadioGroup: ForwardRefExoticComponent<
   RadioGroupProps & RefAttributes<HTMLDivElement>
@@ -1853,23 +1866,47 @@ export const RadioGroup: ForwardRefExoticComponent<
 
 // @public
 export const RadioGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-RadioGroup';
     readonly content: 'bui-RadioGroupContent';
-    readonly radio: 'bui-Radio';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
   };
 };
 
 // @public (undocumented)
-export interface RadioGroupProps
-  extends Omit<RadioGroupProps_2, 'children'>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
-  // (undocumented)
+export type RadioGroupOwnProps = {
   children?: ReactNode;
-}
+  className?: string;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: RadioGroupProps_2['isRequired'];
+};
 
 // @public (undocumented)
-export interface RadioProps extends RadioProps_2 {}
+export interface RadioGroupProps
+  extends RadioGroupOwnProps,
+    Omit<RadioGroupProps_2, 'children' | keyof RadioGroupOwnProps> {}
+
+// @public (undocumented)
+export type RadioOwnProps = {
+  className?: string;
+};
+
+// @public (undocumented)
+export interface RadioProps
+  extends RadioOwnProps,
+    Omit<RadioProps_2, keyof RadioOwnProps> {}
 
 // @public (undocumented)
 export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
@@ -2172,47 +2209,55 @@ export interface TableItem {
 }
 
 // @public
-export function TablePagination(input: TablePaginationProps): JSX_2.Element;
+export function TablePagination(props: TablePaginationProps): JSX_2.Element;
 
 // @public
 export const TablePaginationDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-TablePagination';
     readonly left: 'bui-TablePaginationLeft';
     readonly right: 'bui-TablePaginationRight';
     readonly select: 'bui-TablePaginationSelect';
   };
+  readonly propDefs: {
+    readonly pageSize: {};
+    readonly pageSizeOptions: {};
+    readonly offset: {};
+    readonly totalCount: {};
+    readonly hasNextPage: {};
+    readonly hasPreviousPage: {};
+    readonly onNextPage: {};
+    readonly onPreviousPage: {};
+    readonly onPageSizeChange: {};
+    readonly showPageSizeOptions: {};
+    readonly getLabel: {};
+  };
 };
 
 // @public (undocumented)
-export interface TablePaginationProps {
-  // (undocumented)
+export type TablePaginationOwnProps = {
+  pageSize: number;
+  pageSizeOptions?: number[] | PageSizeOption[];
+  offset?: number;
+  totalCount?: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  onNextPage: () => void;
+  onPreviousPage: () => void;
+  onPageSizeChange?: (size: number) => void;
+  showPageSizeOptions?: boolean;
   getLabel?: (params: {
     pageSize: number;
     offset?: number;
     totalCount?: number;
   }) => string;
-  // (undocumented)
-  hasNextPage: boolean;
-  // (undocumented)
-  hasPreviousPage: boolean;
-  // (undocumented)
-  offset?: number;
-  // (undocumented)
-  onNextPage: () => void;
-  // (undocumented)
-  onPageSizeChange?: (size: number) => void;
-  // (undocumented)
-  onPreviousPage: () => void;
-  // (undocumented)
-  pageSize: number;
-  // (undocumented)
-  pageSizeOptions?: number[] | PageSizeOption[];
-  // (undocumented)
-  showPageSizeOptions?: boolean;
-  // (undocumented)
-  totalCount?: number;
-}
+};
+
+// @public (undocumented)
+export interface TablePaginationProps extends TablePaginationOwnProps {}
 
 // @public (undocumented)
 export type TablePaginationType = NoPagination | PagePagination;
