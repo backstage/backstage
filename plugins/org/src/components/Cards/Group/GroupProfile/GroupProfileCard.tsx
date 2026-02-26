@@ -22,12 +22,7 @@ import {
   RELATION_PARENT_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  Avatar,
-  InfoCard,
-  InfoCardVariants,
-  Link,
-} from '@backstage/core-components';
+import { Avatar, Link } from '@backstage/core-components';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
@@ -36,6 +31,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Tooltip from '@material-ui/core/Tooltip';
 import {
+  EntityInfoCard,
   EntityRefLinks,
   catalogApiRef,
   getEntityRelations,
@@ -57,6 +53,7 @@ import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
 import { makeStyles } from '@material-ui/core/styles';
+import { Flex, Text } from '@backstage/ui';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -72,17 +69,21 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CardTitle = (props: { title: string }) => (
-  <Box display="flex" alignItems="center">
+  <Flex align="center" gap="1">
     <GroupIcon fontSize="inherit" />
-    <Box ml={1}>{props.title}</Box>
-  </Box>
+    {props.title}
+  </Flex>
 );
 
 /** @public */
 export const GroupProfileCard = (props: {
-  variant?: InfoCardVariants;
+  // Accepted for API compatibility but not applied.
+  // The new entity page layout handles card sizing.
+  // TODO: Discuss removal in code review.
+  variant?: string;
   showLinks?: boolean;
 }) => {
+  const { variant: _variant } = props;
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const { entity: group } = useEntity<GroupEntity>();
@@ -148,11 +149,9 @@ export const GroupProfileCard = (props: {
   );
 
   return (
-    <InfoCard
+    <EntityInfoCard
       title={<CardTitle title={displayName} />}
-      subheader={description}
-      variant={props.variant}
-      action={
+      headerActions={
         <>
           {allowRefresh && canRefresh && (
             <IconButton
@@ -167,6 +166,7 @@ export const GroupProfileCard = (props: {
         </>
       }
     >
+      {description && <Text color="secondary">{description}</Text>}
       <Box className={classes.container}>
         <Avatar displayName={displayName} picture={profile?.picture} />
         <List className={classes.list}>
@@ -237,6 +237,6 @@ export const GroupProfileCard = (props: {
           {props?.showLinks && <LinksGroup links={links} />}
         </List>
       </Box>
-    </InfoCard>
+    </EntityInfoCard>
   );
 };
