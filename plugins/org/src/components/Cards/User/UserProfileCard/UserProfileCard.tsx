@@ -19,14 +19,10 @@ import {
   RELATION_MEMBER_OF,
   UserEntity,
 } from '@backstage/catalog-model';
-import {
-  Avatar,
-  InfoCard,
-  InfoCardVariants,
-  Link,
-} from '@backstage/core-components';
+import { Avatar, Link } from '@backstage/core-components';
+import { EntityInfoCard } from '@backstage/plugin-catalog-react';
+import { Flex, Text } from '@backstage/ui';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import BaseButton from '@material-ui/core/ButtonBase';
 import IconButton from '@material-ui/core/IconButton';
@@ -86,20 +82,23 @@ const useStyles = makeStyles(
 
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
-    <Box display="flex" alignItems="center">
+    <Flex align="center" gap="1">
       <PersonIcon fontSize="inherit" />
-      <Box ml={1}>{props.title}</Box>
-    </Box>
+      {props.title}
+    </Flex>
   ) : null;
 
 /** @public */
 export const UserProfileCard = (props: {
-  variant?: InfoCardVariants;
+  // Accepted for API compatibility but not applied.
+  // The new entity page layout handles card sizing.
+  // TODO: Discuss removal in code review.
+  variant?: string;
   showLinks?: boolean;
   maxRelations?: number;
   hideIcons?: boolean;
 }) => {
-  const { maxRelations, hideIcons } = props;
+  const { maxRelations, hideIcons, variant: _variant } = props;
 
   const classes = useStyles();
   const { entity: user } = useEntity<UserEntity>();
@@ -132,11 +131,9 @@ export const UserProfileCard = (props: {
   });
 
   return (
-    <InfoCard
+    <EntityInfoCard
       title={<CardTitle title={displayName} />}
-      subheader={description}
-      variant={props.variant}
-      action={
+      headerActions={
         <>
           {entityMetadataEditUrl && (
             <IconButton
@@ -151,6 +148,7 @@ export const UserProfileCard = (props: {
         </>
       }
     >
+      {description && <Text color="secondary">{description}</Text>}
       <Grid container spacing={3} alignItems="flex-start">
         <Grid item xs={12} sm={2} xl={1}>
           <Avatar displayName={displayName} picture={profile?.picture} />
@@ -238,6 +236,6 @@ export const UserProfileCard = (props: {
           </Button>
         </DialogActions>
       </Dialog>
-    </InfoCard>
+    </EntityInfoCard>
   );
 };

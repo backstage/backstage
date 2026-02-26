@@ -16,11 +16,6 @@
 
 import { useCallback } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import CachedIcon from '@material-ui/icons/Cached';
 import EditIcon from '@material-ui/icons/Edit';
@@ -31,9 +26,9 @@ import {
   AppIcon,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
-  InfoCardVariants,
   Link,
 } from '@backstage/core-components';
+import { EntityInfoCard } from '@backstage/plugin-catalog-react';
 import {
   alertApiRef,
   errorApiRef,
@@ -152,42 +147,25 @@ function DefaultAboutCardSubheader() {
   return <HeaderIconLinkRow links={links} />;
 }
 
-const useStyles = makeStyles({
-  gridItemCard: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: 'calc(100% - 10px)', // for pages without content header
-    marginBottom: '10px',
-  },
-  fullHeightCard: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-  },
-  gridItemCardContent: {
-    flex: 1,
-  },
-  fullHeightCardContent: {
-    flex: 1,
-  },
-});
-
 /**
  * Props for {@link EntityAboutCard}.
  *
  * @public
  */
 export type AboutCardProps = {
-  variant?: InfoCardVariants;
+  // Accepted for API compatibility but not applied.
+  // The new entity page layout handles card sizing.
+  // TODO: Discuss removal in code review.
+  variant?: string;
 };
 
 export interface InternalAboutCardProps extends AboutCardProps {
-  subheader?: JSX.Element;
+  /** Icon link row rendered at the top of the card body. */
+  iconLinks?: JSX.Element;
 }
 
 export function InternalAboutCard(props: InternalAboutCardProps) {
-  const { variant, subheader } = props;
-  const classes = useStyles();
+  const { variant: _variant, iconLinks } = props;
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
@@ -201,20 +179,6 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
 
   const entityMetadataEditUrl =
     entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
-
-  let cardClass = '';
-  if (variant === 'gridItem') {
-    cardClass = classes.gridItemCard;
-  } else if (variant === 'fullHeight') {
-    cardClass = classes.fullHeightCard;
-  }
-
-  let cardContentClass = '';
-  if (variant === 'gridItem') {
-    cardContentClass = classes.gridItemCardContent;
-  } else if (variant === 'fullHeight') {
-    cardContentClass = classes.fullHeightCardContent;
-  }
 
   const entityLocation = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   // Limiting the ability to manually refresh to the less expensive locations
@@ -234,50 +198,46 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
   }, [catalogApi, entity, alertApi, t, errorApi]);
 
   return (
-    <Card className={cardClass}>
-      <CardHeader
-        title={t('aboutCard.title')}
-        action={
-          <>
-            {allowRefresh && canRefresh && (
-              <IconButton
-                aria-label={t('aboutCard.refreshButtonAriaLabel')}
-                title={t('aboutCard.refreshButtonTitle')}
-                onClick={refreshEntity}
-              >
-                <CachedIcon />
-              </IconButton>
-            )}
+    <EntityInfoCard
+      title={t('aboutCard.title')}
+      headerActions={
+        <>
+          {allowRefresh && canRefresh && (
+            <IconButton
+              aria-label={t('aboutCard.refreshButtonAriaLabel')}
+              title={t('aboutCard.refreshButtonTitle')}
+              onClick={refreshEntity}
+            >
+              <CachedIcon />
+            </IconButton>
+          )}
+          <IconButton
+            component={Link}
+            aria-label={t('aboutCard.editButtonAriaLabel')}
+            disabled={!entityMetadataEditUrl}
+            title={t('aboutCard.editButtonTitle')}
+            to={entityMetadataEditUrl ?? '#'}
+          >
+            <EditIcon />
+          </IconButton>
+          {sourceTemplateRef && templateRoute && (
             <IconButton
               component={Link}
-              aria-label={t('aboutCard.editButtonAriaLabel')}
-              disabled={!entityMetadataEditUrl}
-              title={t('aboutCard.editButtonTitle')}
-              to={entityMetadataEditUrl ?? '#'}
+              title={t('aboutCard.createSimilarButtonTitle')}
+              to={templateRoute({
+                namespace: sourceTemplateRef.namespace,
+                templateName: sourceTemplateRef.name,
+              })}
             >
-              <EditIcon />
+              <AppIcon id="scaffolder" />
             </IconButton>
-            {sourceTemplateRef && templateRoute && (
-              <IconButton
-                component={Link}
-                title={t('aboutCard.createSimilarButtonTitle')}
-                to={templateRoute({
-                  namespace: sourceTemplateRef.namespace,
-                  templateName: sourceTemplateRef.name,
-                })}
-              >
-                <AppIcon id="scaffolder" />
-              </IconButton>
-            )}
-          </>
-        }
-        subheader={subheader ?? <DefaultAboutCardSubheader />}
-      />
-      <Divider />
-      <CardContent className={cardContentClass}>
-        <AboutContent entity={entity} />
-      </CardContent>
-    </Card>
+          )}
+        </>
+      }
+    >
+      {iconLinks ?? <DefaultAboutCardSubheader />}
+      <AboutContent entity={entity} />
+    </EntityInfoCard>
   );
 }
 
