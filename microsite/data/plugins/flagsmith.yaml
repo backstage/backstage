@@ -2,7 +2,7 @@
 title: Flagsmith
 author: flagsmith.com
 authorUrl: https://www.flagsmith.com
-category: CI/CD
+category: Feature Flags
 description: View Flagsmith feature flags and usage statistics inside Backstage.
 documentation: https://docs.flagsmith.com/third-party-integrations/backstage
 iconUrl: '/img/flagsmith.svg'
