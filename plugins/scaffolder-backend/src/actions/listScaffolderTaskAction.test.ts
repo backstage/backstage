@@ -218,7 +218,7 @@ describe('createListScaffolderTasksAction', () => {
   });
 });
 
-// Return an mocked ListTasksResponse that contains a number of different mocked tasks
+// Return a mocked ListTasksResponse that contains a number of different mocked tasks
 function generateMockTasks(): ListTasksResponse {
   return {
     tasks: [
