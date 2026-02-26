@@ -35,6 +35,7 @@ import {
   ConflictError,
   ErrorResponseBody,
   InputError,
+  isError,
   NotAllowedError,
   NotFoundError,
   NotImplementedError,
@@ -366,6 +367,10 @@ function getStatusCode(error: Error): number {
       break;
   }
 
-  // Fall back to internal server error
+  // Check the cause chain before falling back to 500
+  if (isError(error.cause)) {
+    return getStatusCode(error.cause as Error);
+  }
+
   return 500;
 }

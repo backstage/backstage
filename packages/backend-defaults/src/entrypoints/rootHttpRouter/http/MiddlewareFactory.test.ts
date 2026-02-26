@@ -216,6 +216,25 @@ describe('MiddlewareFactory', () => {
       );
     });
 
+    it('resolves status code from the cause when the wrapper is unrecognized', async () => {
+      const app = express();
+      app.use('/wrapped-input-error', () => {
+        const wrapper = new Error('wrapper');
+        wrapper.cause = new InputError('bad value');
+        throw wrapper;
+      });
+      app.use('/wrapped-not-found', () => {
+        const wrapper = new Error('wrapper');
+        wrapper.cause = new NotFoundError('missing');
+        throw wrapper;
+      });
+      app.use(middleware.error());
+
+      const r = request(app);
+      expect((await r.get('/wrapped-input-error')).status).toBe(400);
+      expect((await r.get('/wrapped-not-found')).status).toBe(404);
+    });
+
     it('does not log 400 errors', async () => {
       const app = express();
 
