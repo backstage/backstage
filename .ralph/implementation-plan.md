@@ -79,8 +79,8 @@ These are the simplest migrations — single component, no bg, no utility props.
 ### Batch 5: Multi-sub-component directories
 
 - [x] **Task 21: Migrate Dialog** — Multiple sub-components (Dialog, DialogHeader, DialogBody, DialogFooter). Split monolithic definition into 4 per-sub-component definitions. Used `classNameTarget: 'dialog'` for Dialog since className targets inner RADialog, not Modal overlay. Added `style` to DialogOwnProps for manual merging with CSS custom properties. Added DialogFooterProps/OwnProps (was inline type). DialogTrigger unchanged (no useStyles usage).
-- [ ] **Task 22: Migrate HeaderPage** — Multiple sub-components (HeaderPage, HeaderPageContent). See `HeaderPage/definition.ts` and `HeaderPage/HeaderPage.tsx`.
-- [ ] **Task 23: Migrate PluginHeader** — Multiple sub-components (PluginHeader, PluginHeaderToolbar). See `PluginHeader/definition.ts` and `PluginHeader/PluginHeader.tsx` + `PluginHeaderToolbar.tsx`.
+- [x] **Task 22: Migrate HeaderPage** — Single component (not multi-sub-component as originally described — `content`, `breadcrumbs`, `tabsWrapper`, `controls` are just classNames for inner divs). No bg, no dataAttributes, no utilityProps. See `HeaderPage/definition.ts` and `HeaderPage/HeaderPage.tsx`.
+- [x] **Task 23: Migrate PluginHeader** — Two sub-components (PluginHeader, PluginHeaderToolbar) sharing one old definition, split into two `defineComponent` calls following the Dialog pattern. Toolbar definition is `@internal` and not exported. No bg, no utilityProps, no dataAttributes. Manual `data-has-tabs` preserved as-is. Toolbar classNames removed from public `PluginHeaderDefinition` (breaking API surface change to be documented in Task 33 changeset).
 - [ ] **Task 24: Migrate RadioGroup** — Multiple sub-components (RadioGroup, Radio). See `RadioGroup/definition.ts` and `RadioGroup/RadioGroup.tsx`.
 - [ ] **Task 25: Migrate Select** — Multiple sub-components (Select, SelectContent, SelectTrigger, SelectListBox). See `Select/definition.ts` and `Select/Select.tsx` + sub-files.
 - [ ] **Task 26: Migrate Table** — Many sub-components (TableRoot, TableHeader, TableBody, Row, Column, Cell, CellText, CellProfile). See `Table/definition.ts` and multiple .tsx files.
@@ -97,7 +97,7 @@ These are the simplest migrations — single component, no bg, no utility props.
 
 ## Discoveries / Notes
 
-- 20 of 31 component tasks complete (~65%), plus 3 cleanup tasks remaining. 26 unique components migrated.
+- 22 of 31 component tasks complete (~71%), plus 3 cleanup tasks remaining. 28 unique components migrated (PluginHeader + PluginHeaderToolbar).
 - Only 3 sub-components need bg: 'provider' (Flex, GridRoot, GridItem). No unmigrated components use useBgConsumer.
 - InternalLinkProvider is a context provider, not a styled component — no migration needed.
 - useStyles.ts already imports helpers from useDefinition (resolveResponsiveValue, processUtilityProps), confirming shared infrastructure.

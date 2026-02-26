@@ -1743,20 +1743,26 @@ export const PluginHeader: (props: PluginHeaderProps) => JSX_2.Element;
 
 // @public
 export const PluginHeaderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-PluginHeader';
-    readonly toolbar: 'bui-PluginHeaderToolbar';
-    readonly toolbarWrapper: 'bui-PluginHeaderToolbarWrapper';
-    readonly toolbarContent: 'bui-PluginHeaderToolbarContent';
-    readonly toolbarControls: 'bui-PluginHeaderToolbarControls';
-    readonly toolbarIcon: 'bui-PluginHeaderToolbarIcon';
-    readonly toolbarName: 'bui-PluginHeaderToolbarName';
     readonly tabsWrapper: 'bui-PluginHeaderTabsWrapper';
+  };
+  readonly propDefs: {
+    readonly icon: {};
+    readonly title: {};
+    readonly titleLink: {};
+    readonly customActions: {};
+    readonly tabs: {};
+    readonly onTabSelectionChange: {};
+    readonly className: {};
   };
 };
 
 // @public
-export interface PluginHeaderProps {
+export interface PluginHeaderOwnProps {
   // (undocumented)
   className?: string;
   // (undocumented)
@@ -1772,6 +1778,9 @@ export interface PluginHeaderProps {
   // (undocumented)
   titleLink?: string;
 }
+
+// @public
+export interface PluginHeaderProps extends PluginHeaderOwnProps {}
 
 // @public
 export const Popover: ForwardRefExoticComponent<
