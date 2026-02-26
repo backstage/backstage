@@ -324,6 +324,32 @@ describe('createQueryCatalogEntitiesAction', () => {
     expect(kinds).toEqual(['API', 'Component', 'Component', 'Group']);
   });
 
+  it('should reject cursor combined with filter', async () => {
+    const { invoke } = createCatalogQueryAction();
+    await expect(
+      invoke({
+        id: 'test:query-catalog-entities',
+        input: {
+          cursor: 'some-cursor',
+          filter: { kind: 'Component' },
+        },
+      }),
+    ).rejects.toThrow('Cannot combine cursor with filter or offset');
+  });
+
+  it('should reject cursor combined with offset', async () => {
+    const { invoke } = createCatalogQueryAction();
+    await expect(
+      invoke({
+        id: 'test:query-catalog-entities',
+        input: {
+          cursor: 'some-cursor',
+          offset: 10,
+        },
+      }),
+    ).rejects.toThrow('Cannot combine cursor with filter or offset');
+  });
+
   it('should support fields projection', async () => {
     const { invoke } = createCatalogQueryAction();
     const result = await invoke({
