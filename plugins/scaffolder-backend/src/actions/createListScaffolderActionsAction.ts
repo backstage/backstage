@@ -40,35 +40,40 @@ Each action includes:
     schema: {
       input: z => z.object({}).describe('No input is required'),
       output: z =>
-        z
-          .object({})
-          .passthrough()
-          .describe(
-            'JSON schema representing the output parameter for the action',
+        z.object({
+          actions: z.array(
+            z.object({
+              id: z.string(),
+              description: z.string(),
+              schema: z.object({
+                input: z
+                  .object({})
+                  .passthrough()
+                  .describe('JSON Schema for input of Action'),
+                output: z
+                  .object({})
+                  .passthrough()
+                  .describe('JSON Schema for output of Action'),
+              }),
+              examples: z.array(z.any()).optional(),
+            }),
           ),
+        }),
     },
     action: async ({ credentials }) => {
-      let actionsList: Array<{
-        id: string;
-        description: string;
-        schema: any;
-        examples?: any[];
-      }> = [];
-
-      // Use the TemplateActionRegistry to get all template actions
       const actionsMap = await templateActionRegistry.list({ credentials });
-      actionsList = Array.from(actionsMap.values()).map(action => ({
+      const scaffolderActions = Array.from(actionsMap.values()).map(action => ({
         id: action.id,
-        description: action.description || '',
-        schema: action.schema || { input: {}, output: {} },
-        examples: action.examples || [],
+        description: action.description ?? '',
+        schema: {
+          input: { ...(action.schema?.input ?? {}) },
+          output: { ...(action.schema?.output ?? {}) },
+        },
+        examples: action.examples ?? [],
       }));
-      // Sort by id for consistency with /api/scaffolder/v2/actions
-      actionsList.sort((a, b) => a.id.localeCompare(b.id));
-
       return {
         output: {
-          actions: actionsList,
+          actions: scaffolderActions.sort((a, b) => a.id.localeCompare(b.id)),
         },
       };
     },
