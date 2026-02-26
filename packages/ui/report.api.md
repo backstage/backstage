@@ -35,15 +35,15 @@ import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import type { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
-import { RowProps } from 'react-aria-components';
+import { RowProps as RowProps_2 } from 'react-aria-components';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
 import type { SortDescriptor as SortDescriptor_2 } from 'react-stately';
 import type { SubmenuTriggerProps as SubmenuTriggerProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
-import { TableBodyProps } from 'react-aria-components';
-import { TableHeaderProps } from 'react-aria-components';
+import { TableBodyProps as TableBodyProps_2 } from 'react-aria-components';
+import { TableHeaderProps as TableHeaderProps_2 } from 'react-aria-components';
 import { TableProps as TableProps_2 } from 'react-aria-components';
 import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
@@ -689,24 +689,32 @@ export const Cell: {
 };
 
 // @public (undocumented)
+export type CellOwnProps = {
+  className?: string;
+};
+
+// @public (undocumented)
 export const CellProfile: (props: CellProfileProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface CellProfileProps extends CellProps_2 {
-  // (undocumented)
-  color?: TextColors;
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  href?: string;
-  // (undocumented)
-  name?: string;
-  // (undocumented)
+export type CellProfileOwnProps = {
   src?: string;
-}
+  name?: string;
+  href?: string;
+  description?: string;
+  color?: TextColors;
+  className?: string;
+};
 
 // @public (undocumented)
-export interface CellProps extends CellProps_2 {}
+export interface CellProfileProps
+  extends CellProfileOwnProps,
+    Omit<CellProps_2, keyof CellProfileOwnProps> {}
+
+// @public (undocumented)
+export interface CellProps
+  extends CellOwnProps,
+    Omit<CellProps_2, keyof CellOwnProps> {}
 
 // @public (undocumented)
 export const CellText: {
@@ -715,18 +723,19 @@ export const CellText: {
 };
 
 // @public (undocumented)
-export interface CellTextProps extends CellProps_2 {
-  // (undocumented)
-  color?: TextColors;
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  href?: string;
-  // (undocumented)
-  leadingIcon?: React.ReactNode | null;
-  // (undocumented)
+export type CellTextOwnProps = {
   title: string;
-}
+  description?: string;
+  color?: TextColors;
+  leadingIcon?: React.ReactNode | null;
+  href?: string;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface CellTextProps
+  extends CellTextOwnProps,
+    Omit<CellProps_2, keyof CellTextOwnProps> {}
 
 // @public (undocumented)
 export const Checkbox: ForwardRefExoticComponent<
@@ -800,10 +809,15 @@ export interface ColumnConfig<T extends TableItem> {
 }
 
 // @public (undocumented)
-export interface ColumnProps extends Omit<ColumnProps_2, 'children'> {
-  // (undocumented)
+export type ColumnOwnProps = {
   children?: React.ReactNode;
-}
+  className?: string;
+};
+
+// @public (undocumented)
+export interface ColumnProps
+  extends ColumnOwnProps,
+    Omit<ColumnProps_2, keyof ColumnOwnProps> {}
 
 // @public (undocumented)
 export type Columns =
@@ -1925,6 +1939,18 @@ export interface RowConfig<T extends TableItem> {
 }
 
 // @public (undocumented)
+export type RowOwnProps<T = object> = {
+  columns?: RowProps_2<T>['columns'];
+  children?: RowProps_2<T>['children'];
+  href?: string;
+};
+
+// @public (undocumented)
+export interface RowProps<T>
+  extends RowOwnProps<T>,
+    Omit<RowProps_2<T>, keyof RowOwnProps> {}
+
+// @public (undocumented)
 export type RowRenderFn<T extends TableItem> = (params: {
   item: T;
   index: number;
@@ -2169,31 +2195,26 @@ export const TableBody: <T extends object>(
   props: TableBodyProps<T>,
 ) => JSX_2.Element;
 
+// @public (undocumented)
+export type TableBodyOwnProps = {};
+
+// @public (undocumented)
+export interface TableBodyProps<T extends object>
+  extends TableBodyOwnProps,
+    Omit<TableBodyProps_2<T>, keyof TableBodyOwnProps> {}
+
 // @public
 export const TableDefinition: {
-  readonly classNames: {
-    readonly table: 'bui-Table';
-    readonly header: 'bui-TableHeader';
-    readonly body: 'bui-TableBody';
-    readonly row: 'bui-TableRow';
-    readonly head: 'bui-TableHead';
-    readonly headContent: 'bui-TableHeadContent';
-    readonly headSortButton: 'bui-TableHeadSortButton';
-    readonly caption: 'bui-TableCaption';
-    readonly cell: 'bui-TableCell';
-    readonly cellContentWrapper: 'bui-TableCellContentWrapper';
-    readonly cellContent: 'bui-TableCellContent';
-    readonly cellIcon: 'bui-TableCellIcon';
-    readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
-    readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
-    readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
-    readonly cellProfileName: 'bui-TableCellProfileName';
-    readonly cellProfileLink: 'bui-TableCellProfileLink';
-    readonly headSelection: 'bui-TableHeadSelection';
-    readonly cellSelection: 'bui-TableCellSelection';
+  readonly styles: {
+    readonly [key: string]: string;
   };
-  readonly dataAttributes: {
-    readonly stale: readonly [true, false];
+  readonly classNames: {
+    readonly root: 'bui-Table';
+  };
+  readonly propDefs: {
+    readonly stale: {
+      readonly dataAttribute: true;
+    };
   };
 };
 
@@ -2201,6 +2222,17 @@ export const TableDefinition: {
 export const TableHeader: <T extends object>(
   props: TableHeaderProps<T>,
 ) => JSX_2.Element;
+
+// @public (undocumented)
+export type TableHeaderOwnProps<T = object> = {
+  columns?: TableHeaderProps_2<T>['columns'];
+  children?: TableHeaderProps_2<T>['children'];
+};
+
+// @public (undocumented)
+export interface TableHeaderProps<T>
+  extends TableHeaderOwnProps<T>,
+    Omit<TableHeaderProps_2<T>, keyof TableHeaderOwnProps> {}
 
 // @public (undocumented)
 export interface TableItem {
@@ -2298,10 +2330,14 @@ export interface TableProps<T extends TableItem> {
 export const TableRoot: (props: TableRootProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface TableRootProps extends TableProps_2 {
-  // (undocumented)
+export type TableRootOwnProps = {
   stale?: boolean;
-}
+};
+
+// @public (undocumented)
+export interface TableRootProps
+  extends TableRootOwnProps,
+    Omit<TableProps_2, keyof TableRootOwnProps> {}
 
 // @public (undocumented)
 export interface TableSelection {
