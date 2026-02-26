@@ -24,15 +24,6 @@ import { TablePaginationDefinition } from './definition';
 import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
 import { useMemo } from 'react';
 
-const DEFAULT_PAGE_SIZE_OPTIONS: PageSizeOption[] = [
-  { label: 'Show 5 results', value: 5 },
-  { label: 'Show 10 results', value: 10 },
-  { label: 'Show 20 results', value: 20 },
-  { label: 'Show 30 results', value: 30 },
-  { label: 'Show 40 results', value: 40 },
-  { label: 'Show 50 results', value: 50 },
-];
-
 function getOptionValue(option: number | PageSizeOption): number {
   return typeof option === 'number' ? option : option.value;
 }
@@ -65,7 +56,7 @@ export function TablePagination(props: TablePaginationProps) {
   const {
     classes,
     pageSize,
-    pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
+    pageSizeOptions,
     offset,
     totalCount,
     hasNextPage,
@@ -73,7 +64,7 @@ export function TablePagination(props: TablePaginationProps) {
     onNextPage,
     onPreviousPage,
     onPageSizeChange,
-    showPageSizeOptions = true,
+    showPageSizeOptions,
     getLabel,
   } = ownProps;
 

@@ -70,3 +70,20 @@ export interface SelectProps<T extends 'single' | 'multiple'>
    */
   selectionMode?: T;
 }
+
+/** @internal */
+export interface SelectTriggerOwnProps {
+  icon?: SelectOwnProps['icon'];
+}
+
+/** @internal */
+export interface SelectContentOwnProps {
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  options?: SelectOwnProps['options'];
+}
+
+/** @internal */
+export interface SelectListBoxOwnProps {
+  options?: SelectOwnProps['options'];
+}

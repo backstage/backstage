@@ -15,8 +15,17 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
-import type { TablePaginationOwnProps } from './types';
+import type { TablePaginationOwnProps, PageSizeOption } from './types';
 import styles from './TablePagination.module.css';
+
+const DEFAULT_PAGE_SIZE_OPTIONS: PageSizeOption[] = [
+  { label: 'Show 5 results', value: 5 },
+  { label: 'Show 10 results', value: 10 },
+  { label: 'Show 20 results', value: 20 },
+  { label: 'Show 30 results', value: 30 },
+  { label: 'Show 40 results', value: 40 },
+  { label: 'Show 50 results', value: 50 },
+];
 
 /**
  * Component definition for TablePagination
@@ -33,7 +42,7 @@ export const TablePaginationDefinition =
     },
     propDefs: {
       pageSize: {},
-      pageSizeOptions: {},
+      pageSizeOptions: { default: DEFAULT_PAGE_SIZE_OPTIONS },
       offset: {},
       totalCount: {},
       hasNextPage: {},
@@ -41,7 +50,7 @@ export const TablePaginationDefinition =
       onNextPage: {},
       onPreviousPage: {},
       onPageSizeChange: {},
-      showPageSizeOptions: {},
+      showPageSizeOptions: { default: true },
       getLabel: {},
     },
   });

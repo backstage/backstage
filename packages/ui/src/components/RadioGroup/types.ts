@@ -34,7 +34,7 @@ export type RadioGroupOwnProps = {
 /** @public */
 export interface RadioGroupProps
   extends RadioGroupOwnProps,
-    Omit<AriaRadioGroupProps, 'children' | keyof RadioGroupOwnProps> {}
+    Omit<AriaRadioGroupProps, keyof RadioGroupOwnProps> {}
 
 /** @public */
 export type RadioOwnProps = {

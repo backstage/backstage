@@ -1896,7 +1896,7 @@ export type RadioGroupOwnProps = {
 // @public (undocumented)
 export interface RadioGroupProps
   extends RadioGroupOwnProps,
-    Omit<RadioGroupProps_2, 'children' | keyof RadioGroupOwnProps> {}
+    Omit<RadioGroupProps_2, keyof RadioGroupOwnProps> {}
 
 // @public (undocumented)
 export type RadioOwnProps = {
@@ -2224,7 +2224,9 @@ export const TablePaginationDefinition: {
   };
   readonly propDefs: {
     readonly pageSize: {};
-    readonly pageSizeOptions: {};
+    readonly pageSizeOptions: {
+      readonly default: PageSizeOption[];
+    };
     readonly offset: {};
     readonly totalCount: {};
     readonly hasNextPage: {};
@@ -2232,7 +2234,9 @@ export const TablePaginationDefinition: {
     readonly onNextPage: {};
     readonly onPreviousPage: {};
     readonly onPageSizeChange: {};
-    readonly showPageSizeOptions: {};
+    readonly showPageSizeOptions: {
+      readonly default: true;
+    };
     readonly getLabel: {};
   };
 };

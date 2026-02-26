@@ -16,11 +16,11 @@
 
 import { forwardRef, useEffect } from 'react';
 import { Select as AriaSelect, Popover } from 'react-aria-components';
-import clsx from 'clsx';
 import { SelectProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SelectDefinition } from './definition';
 import { PopoverDefinition } from '../Popover/definition';
+import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { SelectTrigger } from './SelectTrigger';
@@ -38,6 +38,7 @@ export const Select = forwardRef<
       ...props,
     },
   );
+  const { ownProps: popoverOwnProps } = useDefinition(PopoverDefinition, {});
 
   const {
     classes,
@@ -79,11 +80,7 @@ export const Select = forwardRef<
       <SelectTrigger icon={icon} />
       <FieldError />
       <Popover
-        className={clsx(
-          PopoverDefinition.classNames.root,
-          PopoverDefinition.styles[PopoverDefinition.classNames.root],
-          classes.popover,
-        )}
+        className={clsx(popoverOwnProps.classes.root, classes.popover)}
         {...dataAttributes}
       >
         <SelectContent

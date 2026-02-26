@@ -15,7 +15,12 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
-import type { SelectOwnProps } from './types';
+import type {
+  SelectOwnProps,
+  SelectTriggerOwnProps,
+  SelectContentOwnProps,
+  SelectListBoxOwnProps,
+} from './types';
 import styles from './Select.module.css';
 
 /**
@@ -42,11 +47,6 @@ export const SelectDefinition = defineComponent<SelectOwnProps>()({
   },
 });
 
-/** @internal */
-interface SelectTriggerOwnProps {
-  icon?: SelectOwnProps['icon'];
-}
-
 /**
  * Component definition for SelectTrigger
  * @internal
@@ -64,13 +64,6 @@ export const SelectTriggerDefinition = defineComponent<SelectTriggerOwnProps>()(
     },
   },
 );
-
-/** @internal */
-interface SelectContentOwnProps {
-  searchable?: boolean;
-  searchPlaceholder?: string;
-  options?: SelectOwnProps['options'];
-}
 
 /**
  * Component definition for SelectContent
@@ -91,11 +84,6 @@ export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
     },
   },
 );
-
-/** @internal */
-interface SelectListBoxOwnProps {
-  options?: SelectOwnProps['options'];
-}
 
 /**
  * Component definition for SelectListBox
