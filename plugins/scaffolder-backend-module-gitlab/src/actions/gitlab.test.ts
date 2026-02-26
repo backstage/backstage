@@ -900,4 +900,44 @@ describe('publish:gitlab', () => {
     );
     expect(mockGitlabClient.ProjectMembers.add).not.toHaveBeenCalled();
   });
+
+  it('should warn and continue when adding ownerUsername as project member fails', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({
+      id: 1234,
+      kind: 'group',
+    });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      id: 123456,
+      http_url_to_repo: 'http://mockurl.git',
+    });
+    mockGitlabClient.Users.all.mockResolvedValue([{ id: 99999 }]);
+    mockGitlabClient.ProjectMembers.add.mockRejectedValue(
+      new Error('Forbidden'),
+    );
+
+    const ctx = {
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        ownerUsername: 'target-owner',
+      },
+    };
+    ctx.logger.warn = jest.fn();
+
+    await action.handler(ctx);
+
+    expect(mockGitlabClient.ProjectMembers.add).toHaveBeenCalledWith(
+      123456,
+      50,
+      { userId: 99999 },
+    );
+    expect(ctx.logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to add user'),
+    );
+    expect(ctx.logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Forbidden'),
+    );
+  });
 });
