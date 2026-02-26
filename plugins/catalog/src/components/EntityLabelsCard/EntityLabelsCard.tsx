@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  InfoCard,
-  InfoCardVariants,
-  Table,
-  TableColumn,
-} from '@backstage/core-components';
+import { useEntity, EntityInfoCard } from '@backstage/plugin-catalog-react';
+import { Table, TableColumn } from '@backstage/core-components';
 import { EntityLabelsEmptyState } from './EntityLabelsEmptyState';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -29,7 +24,10 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface EntityLabelsCardProps {
-  variant?: InfoCardVariants;
+  // Accepted for API compatibility but not applied.
+  // The new entity page layout handles card sizing.
+  // TODO: Discuss removal in code review.
+  variant?: string;
   title?: string;
 }
 
@@ -40,7 +38,7 @@ const useStyles = makeStyles(_ => ({
 }));
 
 export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
-  const { variant, title } = props;
+  const { variant: _variant, title } = props;
   const { entity } = useEntity();
   const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
@@ -63,7 +61,7 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
   const labels = entity?.metadata?.labels;
 
   return (
-    <InfoCard title={title || t('entityLabelsCard.title')} variant={variant}>
+    <EntityInfoCard title={title || t('entityLabelsCard.title')}>
       {!labels || Object.keys(labels).length === 0 ? (
         <EntityLabelsEmptyState />
       ) : (
@@ -85,6 +83,6 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
           }}
         />
       )}
-    </InfoCard>
+    </EntityInfoCard>
   );
 };
