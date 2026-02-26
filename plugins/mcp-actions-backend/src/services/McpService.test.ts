@@ -26,6 +26,7 @@ import {
   CallToolResultSchema,
   ListToolsResultSchema,
 } from '@modelcontextprotocol/sdk/types.js';
+import { InputError, NotFoundError } from '@backstage/errors';
 
 describe('McpService', () => {
   it('should list the available actions as tools in the mcp backend', async () => {
@@ -342,5 +343,117 @@ describe('McpService', () => {
         'error.type': 'CustomError',
       }),
     );
+  });
+
+  it('should forward the original InputError when an action throws one', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockActionsRegistry.register({
+      name: 'failing-action',
+      title: 'Failing',
+      description: 'An action that throws InputError',
+      schema: {
+        input: z => z.object({ value: z.string() }),
+        output: z => z.object({}),
+      },
+      action: async () => {
+        throw new InputError('the value was invalid');
+      },
+    });
+
+    const mcpService = await McpService.create({
+      actions: mockActionsRegistry,
+      metrics: metricsServiceMock.mock(),
+    });
+
+    const server = mcpService.getServer({
+      credentials: mockCredentials.user(),
+    });
+
+    const client = new Client({
+      name: 'test client',
+      version: '1.0',
+    });
+
+    const [clientTransport, serverTransport] =
+      InMemoryTransport.createLinkedPair();
+
+    await Promise.all([
+      client.connect(clientTransport),
+      server.connect(serverTransport),
+    ]);
+
+    const result = await client.request(
+      {
+        method: 'tools/call',
+        params: { name: 'failing-action', arguments: { value: 'test' } },
+      },
+      CallToolResultSchema,
+    );
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: 'InputError: the value was invalid',
+        },
+      ],
+      isError: true,
+    });
+  });
+
+  it('should forward the original NotFoundError when an action throws one', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockActionsRegistry.register({
+      name: 'not-found-action',
+      title: 'Not Found',
+      description: 'An action that throws NotFoundError',
+      schema: {
+        input: z => z.object({ id: z.string() }),
+        output: z => z.object({}),
+      },
+      action: async () => {
+        throw new NotFoundError('entity does not exist');
+      },
+    });
+
+    const mcpService = await McpService.create({
+      actions: mockActionsRegistry,
+      metrics: metricsServiceMock.mock(),
+    });
+
+    const server = mcpService.getServer({
+      credentials: mockCredentials.user(),
+    });
+
+    const client = new Client({
+      name: 'test client',
+      version: '1.0',
+    });
+
+    const [clientTransport, serverTransport] =
+      InMemoryTransport.createLinkedPair();
+
+    await Promise.all([
+      client.connect(clientTransport),
+      server.connect(serverTransport),
+    ]);
+
+    const result = await client.request(
+      {
+        method: 'tools/call',
+        params: { name: 'not-found-action', arguments: { id: 'abc' } },
+      },
+      CallToolResultSchema,
+    );
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: 'NotFoundError: entity does not exist',
+        },
+      ],
+      isError: true,
+    });
   });
 });

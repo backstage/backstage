@@ -17,7 +17,7 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { z, AnyZodObject } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
@@ -126,31 +126,24 @@ export class MockActionsRegistry
       throw new InputError(`Invalid input to action "${opts.id}"`, input.error);
     }
 
-    try {
-      const result = await action.action({
-        input: input.data,
-        credentials: opts.credentials ?? mockCredentials.none(),
-        logger: this.logger,
-      });
+    const result = await action.action({
+      input: input.data,
+      credentials: opts.credentials ?? mockCredentials.none(),
+      logger: this.logger,
+    });
 
-      const output = action.schema?.output
-        ? action.schema.output(z).safeParse(result?.output)
-        : ({ success: true, data: result?.output } as const);
+    const output = action.schema?.output
+      ? action.schema.output(z).safeParse(result?.output)
+      : ({ success: true, data: result?.output } as const);
 
-      if (!output.success) {
-        throw new InputError(
-          `Invalid output from action "${opts.id}"`,
-          output.error,
-        );
-      }
-
-      return { output: output.data };
-    } catch (error) {
-      throw new ForwardedError(
-        `Failed execution of action "${opts.id}"`,
-        error,
+    if (!output.success) {
+      throw new InputError(
+        `Invalid output from action "${opts.id}"`,
+        output.error,
       );
     }
+
+    return { output: output.data };
   }
 
   register<
