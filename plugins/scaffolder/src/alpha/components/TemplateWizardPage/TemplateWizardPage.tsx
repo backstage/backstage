@@ -53,6 +53,7 @@ import { scaffolderTranslationRef } from '../../../translation';
 
 import { TemplateWizardPageContextMenu } from './TemplateWizardPageContextMenu';
 import { useFormDecorators } from '../../hooks';
+import { useFormState } from '../../../hooks/useFormState';
 
 /**
  * @alpha
@@ -98,6 +99,17 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     return data?.metadata.annotations?.[ANNOTATION_EDIT_URL];
   }, [templateRef, catalogApi]);
 
+  const [draftState, setDraftState] = useState<Record<string, JsonValue>>();
+  const {
+    loading: draftLoading,
+    persistFormState,
+    cleanupFormState,
+  } = useFormState<Record<string, JsonValue>>({
+    id: `scaffolder/drafts/${templateRef}`,
+    onLoad: (state: Record<string, JsonValue> | null) =>
+      setDraftState(state || undefined),
+  });
+
   const onCreate = useCallback(
     async (initialValues: Record<string, JsonValue>) => {
       if (isCreating) {
@@ -118,6 +130,8 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
         secrets,
       });
 
+      cleanupFormState();
+
       navigate(taskRoute({ taskId }));
     },
     [
@@ -129,10 +143,24 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
       scaffolderApi,
       taskRoute,
       templateRef,
+      cleanupFormState,
     ],
   );
 
   const onError = useCallback(() => <Navigate to={rootRef()} />, [rootRef]);
+
+  const mergedFormProps = {
+    ...props.formProps,
+    onChange: (e: any) => {
+      if (e.formData) {
+        persistFormState(e.formData);
+      }
+      const originalOnChange = (props.formProps as any)?.onChange;
+      if (originalOnChange) {
+        originalOnChange(e);
+      }
+    },
+  };
 
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
@@ -151,17 +179,22 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
         >
           <TemplateWizardPageContextMenu editUrl={editUrl} />
         </Header>
-        {isCreating && <Progress />}
-        <Workflow
-          namespace={namespace}
-          templateName={templateName}
-          onCreate={onCreate}
-          components={props.components}
-          onError={onError}
-          extensions={props.customFieldExtensions}
-          formProps={props.formProps}
-          layouts={props.layouts}
-        />
+
+        {(isCreating || draftLoading) && <Progress />}
+
+        {!draftLoading && (
+          <Workflow
+            namespace={namespace}
+            templateName={templateName}
+            onCreate={onCreate}
+            components={props.components}
+            onError={onError}
+            extensions={props.customFieldExtensions}
+            formProps={mergedFormProps}
+            layouts={props.layouts}
+            initialState={draftState}
+          />
+        )}
       </Page>
     </AnalyticsContext>
   );

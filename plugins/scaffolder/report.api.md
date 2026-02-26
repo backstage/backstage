@@ -74,9 +74,9 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -104,9 +104,9 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldSchema: FieldSchema_2<
   string,
   {
-    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -251,9 +251,9 @@ export type MyGroupsPickerUiOptions = NonNullable<
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -281,9 +281,9 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnedEntityPickerFieldSchema: FieldSchema_2<
   string,
   {
-    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -384,9 +384,9 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -407,9 +407,9 @@ export const RepoOwnerPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -444,9 +444,9 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -471,9 +471,9 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -632,6 +632,37 @@ export type TemplateParameterSchema = TemplateParameterSchema_2;
 
 // @public
 export const TemplateTypePicker: () => JSX_2.Element | null;
+
+// Warning: (ae-missing-release-tag) "useFormState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const useFormState: <T extends unknown>(
+  options: UseFormStateOptions<T>,
+) => UseFormStateResult<T>;
+
+// Warning: (ae-missing-release-tag) "UseFormStateOptions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface UseFormStateOptions<T> {
+  // (undocumented)
+  debounceTime?: number;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  onLoad: (value: T | null) => void;
+}
+
+// Warning: (ae-missing-release-tag) "UseFormStateResult" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface UseFormStateResult<T> {
+  // (undocumented)
+  cleanupFormState: () => void;
+  // (undocumented)
+  loading: boolean;
+  // (undocumented)
+  persistFormState: (value: T) => void;
+}
 
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
