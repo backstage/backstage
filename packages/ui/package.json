@@ -50,12 +50,14 @@
     "@remixicon/react": "^4.6.0",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
-    "react-aria-components": "^1.14.0"
+    "react-aria-components": "^1.14.0",
+    "use-sync-external-store": "^1.4.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "@types/use-sync-external-store": "^0.0.6",
     "eslint-plugin-storybook": "^10.3.0-alpha.1",
     "glob": "^11.0.1",
     "globals": "^15.11.0",
