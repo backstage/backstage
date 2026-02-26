@@ -22,11 +22,26 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 import { ReactNode } from 'react';
 
 /** @public */
-export interface RadioGroupProps
-  extends Omit<AriaRadioGroupProps, 'children'>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type RadioGroupOwnProps = {
   children?: ReactNode;
-}
+  className?: string;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: AriaRadioGroupProps['isRequired'];
+};
 
 /** @public */
-export interface RadioProps extends AriaRadioProps {}
+export interface RadioGroupProps
+  extends RadioGroupOwnProps,
+    Omit<AriaRadioGroupProps, 'children' | keyof RadioGroupOwnProps> {}
+
+/** @public */
+export type RadioOwnProps = {
+  className?: string;
+};
+
+/** @public */
+export interface RadioProps
+  extends RadioOwnProps,
+    Omit<AriaRadioProps, keyof RadioOwnProps> {}

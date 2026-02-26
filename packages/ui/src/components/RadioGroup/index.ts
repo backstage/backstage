@@ -16,4 +16,4 @@
 
 export * from './RadioGroup';
 export * from './types';
-export { RadioGroupDefinition } from './definition';
+export { RadioGroupDefinition, RadioDefinition } from './definition';
