@@ -1,5 +1,11 @@
 # @backstage/module-federation-common
 
+## 0.1.1
+
+### Patch Changes
+
+- 0dfed89: Fixed the `@mui/material/styles` shared dependency key by removing a trailing slash that caused module resolution failures with MUI package exports.
+
 ## 0.1.0
 
 ### Minor Changes
