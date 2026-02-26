@@ -16,7 +16,6 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
-import { InputError } from '@backstage/errors';
 
 export const createQueryCatalogEntitiesAction = ({
   catalog,
@@ -74,34 +73,35 @@ Entity references use the format "kind:namespace/name", e.g. "component:default/
 
 Entities have bidirectional relations stored in the "relations" array. Common relation types: ownedBy/ownerOf, dependsOn/dependencyOf, providesApi/apiProvidedBy, consumesApi/apiConsumedBy, parentOf/childOf, memberOf/hasMember, partOf/hasPart.
 
-Relations can be queried via "relations.<type>" e.g. "relations.ownedby".
+Relations can be queried via "relations.<type>" e.g. "relations.ownedby: user:default/jane-doe". The value there must always be a valid entity reference.
 
-## Filter Syntax
+When querying for entity relationships, prefer using relations over spec fields. For example, use "relations.ownedby" instead of "spec.owner" to find entities owned by a particular group or user.
 
-The filter uses predicate expressions with dot-notation field paths.
+## Query Syntax
+
+The query uses predicate expressions with dot-notation field paths.
 
 Simple matching:
-  { filter: { kind: "Component" } }
-  { filter: { kind: "Component", "spec.type": "service" } }
+  { query: { kind: "Component" } }
+  { query: { kind: "Component", "spec.type": "service" } }
 
 Value operators:
-  { filter: { kind: { "$in": ["API", "Component"] } } }
-  { filter: { "metadata.annotations.backstage.io/techdocs-ref": { "$exists": true } } }
-  { filter: { "spec.dependsOn": { "$contains": "component:default/shared-lib" } } }
-  { filter: { "metadata.name": { "$hasPrefix": "team-" } } }
+  { query: { kind: { "$in": ["API", "Component"] } } }
+  { query: { "metadata.annotations.backstage.io/techdocs-ref": { "$exists": true } } }
+  { query: { "metadata.tags": { "$contains": "java" } } }
+  { query: { "metadata.name": { "$hasPrefix": "team-" } } }
 
 Logical operators:
-  { filter: { "$all": [{ kind: "Component" }, { "spec.lifecycle": "production" }] } }
-  { filter: { "$any": [{ "spec.type": "service" }, { "spec.type": "website" }] } }
-  { filter: { "$not": { kind: "Group" } } }
+  { query: { "$all": [{ kind: "Component" }, { "spec.lifecycle": "production" }] } }
+  { query: { "$any": [{ "spec.type": "service" }, { "spec.type": "website" }] } }
+  { query: { "$not": { kind: "Group" } } }
 
 Querying relations - find all entities owned by a specific group:
-  { filter: { "relations.ownedby": "group:default/team-alpha" } }
+  { query: { "relations.ownedby": "group:default/team-alpha" } }
 
 Combined example - find production services or websites with TechDocs:
-  { filter: { "$all": [
-    { kind: "Component" },
-    { "spec.lifecycle": "production" },
+  { query: { "$all": [
+    { kind: "Component", "spec.lifecycle": "production" },
     { "$any": [{ "spec.type": "service" }, { "spec.type": "website" }] },
     { "metadata.annotations.backstage.io/techdocs-ref": { "$exists": true } }
   ] } }
@@ -110,29 +110,29 @@ Combined example - find production services or websites with TechDocs:
 
 Limit returned fields: { fields: ["kind", "metadata.name", "metadata.namespace"] }
 Sort results: { orderFields: { field: "metadata.name", order: "asc" } }
-Full text search: { fullTextFilter: { term: "auth" } }
+Full text search: { fullTextFilter: { term: "auth", fields: ["metadata.name", "metadata.title"] } }
 Pagination: Use limit (e.g. 20) and the returned nextPageCursor for subsequent requests via cursor.
     `,
     schema: {
       input: z =>
         z.object({
-          filter: createZodV3FilterPredicateSchema(z)
+          query: createZodV3FilterPredicateSchema(z)
             .optional()
             .describe(
-              'Entity predicate filter. Supports field matching, $all, $any, $not, $exists, $in, $contains, and $hasPrefix operators.',
+              'Entity predicate query. Supports field matching, $all, $any, $not, $exists, $in, $contains, and $hasPrefix operators.',
             ),
           fields: z
             .array(z.string())
             .optional()
             .describe(
-              'Specific fields to include in the response. If not provided, all fields are returned.',
+              'Specific fields to include in the response. If not provided, all fields are returned. Each entry is a dot separated path into an entity, e.g. `spec.type`.',
             ),
           limit: z
             .number()
             .int()
             .positive()
             .optional()
-            .describe('Maximum number of entities to return.'),
+            .describe('Maximum number of entities to return at a time.'),
           offset: z
             .number()
             .int()
@@ -142,12 +142,20 @@ Pagination: Use limit (e.g. 20) and the returned nextPageCursor for subsequent r
           orderFields: z
             .union([
               z.object({
-                field: z.string().describe('Field to order by'),
+                field: z
+                  .string()
+                  .describe(
+                    'Field to order by. The format is a dot separated path into an entity, e.g. `spec.type`.',
+                  ),
                 order: z.enum(['asc', 'desc']).describe('Sort order'),
               }),
               z.array(
                 z.object({
-                  field: z.string().describe('Field to order by'),
+                  field: z
+                    .string()
+                    .describe(
+                      'Field to order by. The format is a dot separated path into an entity, e.g. `spec.type`.',
+                    ),
                   order: z.enum(['asc', 'desc']).describe('Sort order'),
                 }),
               ),
@@ -162,7 +170,9 @@ Pagination: Use limit (e.g. 20) and the returned nextPageCursor for subsequent r
               fields: z
                 .array(z.string())
                 .optional()
-                .describe('Fields to search within'),
+                .describe(
+                  'Fields to search within. Each entry is a dot separated path into an entity, e.g. `spec.type`.',
+                ),
             })
             .optional()
             .describe('Full text search criteria'),
@@ -170,7 +180,7 @@ Pagination: Use limit (e.g. 20) and the returned nextPageCursor for subsequent r
             .string()
             .optional()
             .describe(
-              'Cursor for pagination. This can be used only after first request with response containing a cursor',
+              'Cursor for pagination. This can be used only after the first request with a response containing a cursor. If a cursor is given it takes precedence over `offset`.',
             ),
         }),
       output: z =>
@@ -189,27 +199,11 @@ Pagination: Use limit (e.g. 20) and the returned nextPageCursor for subsequent r
         }),
     },
     action: async ({ input, credentials }) => {
-      if (input.cursor && (input.filter || input.offset !== undefined)) {
-        throw new InputError(
-          'Cannot combine cursor with filter or offset. Use cursor alone for pagination.',
-        );
-      }
-
       const response = await catalog.queryEntities(
-        input.cursor
-          ? {
-              cursor: input.cursor,
-              fields: input.fields,
-              limit: input.limit,
-            }
-          : {
-              query: input.filter,
-              fields: input.fields,
-              limit: input.limit,
-              offset: input.offset,
-              orderFields: input.orderFields,
-              fullTextFilter: input.fullTextFilter,
-            },
+        {
+          ...input,
+          query: input.query,
+        },
         { credentials },
       );
 

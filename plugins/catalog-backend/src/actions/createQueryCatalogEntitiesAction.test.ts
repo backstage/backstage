@@ -84,7 +84,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const { invoke } = createCatalogQueryAction();
     const result = await invoke({
       id: 'test:query-catalog-entities',
-      input: { filter: { kind: 'NonExistent' } },
+      input: { query: { kind: 'NonExistent' } },
     });
 
     expect(result.output).toEqual({
@@ -99,7 +99,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const { invoke } = createCatalogQueryAction();
     const result = await invoke({
       id: 'test:query-catalog-entities',
-      input: { filter: { kind: 'Component' } },
+      input: { query: { kind: 'Component' } },
     });
 
     expect(result.output).toMatchObject({
@@ -124,7 +124,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const result = await invoke({
       id: 'test:query-catalog-entities',
       input: {
-        filter: { kind: 'Component', 'spec.type': 'service' },
+        query: { kind: 'Component', 'spec.type': 'service' },
       },
     });
 
@@ -142,7 +142,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const { invoke } = createCatalogQueryAction();
     const result = await invoke({
       id: 'test:query-catalog-entities',
-      input: { filter: { $not: { kind: 'Group' } } },
+      input: { query: { $not: { kind: 'Group' } } },
     });
 
     expect(result.output).toMatchObject({ totalItems: 3 });
@@ -155,7 +155,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const result = await invoke({
       id: 'test:query-catalog-entities',
       input: {
-        filter: {
+        query: {
           $all: [{ kind: 'Component' }, { 'spec.type': 'service' }],
         },
       },
@@ -176,7 +176,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const result = await invoke({
       id: 'test:query-catalog-entities',
       input: {
-        filter: {
+        query: {
           $any: [{ kind: 'API' }, { kind: 'Group' }],
         },
       },
@@ -194,7 +194,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const result = await invoke({
       id: 'test:query-catalog-entities',
       input: {
-        filter: {
+        query: {
           'metadata.annotations.backstage.io/techdocs-ref': { $exists: true },
         },
       },
@@ -215,7 +215,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const result = await invoke({
       id: 'test:query-catalog-entities',
       input: {
-        filter: {
+        query: {
           'metadata.annotations.backstage.io/techdocs-ref': { $exists: false },
         },
       },
@@ -231,7 +231,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const result = await invoke({
       id: 'test:query-catalog-entities',
       input: {
-        filter: { 'spec.type': { $in: ['service', 'openapi'] } },
+        query: { 'spec.type': { $in: ['service', 'openapi'] } },
       },
     });
 
@@ -245,7 +245,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const result = await invoke({
       id: 'test:query-catalog-entities',
       input: {
-        filter: {
+        query: {
           'spec.dependsOn': { $contains: 'component:default/shared-lib' },
         },
       },
@@ -299,7 +299,7 @@ describe('createQueryCatalogEntitiesAction', () => {
     const result = await invoke({
       id: 'test:query-catalog-entities',
       input: {
-        filter: { kind: 'Component' },
+        query: { kind: 'Component' },
         orderFields: { field: 'metadata.name', order: 'desc' },
       },
     });
@@ -324,38 +324,12 @@ describe('createQueryCatalogEntitiesAction', () => {
     expect(kinds).toEqual(['API', 'Component', 'Component', 'Group']);
   });
 
-  it('should reject cursor combined with filter', async () => {
-    const { invoke } = createCatalogQueryAction();
-    await expect(
-      invoke({
-        id: 'test:query-catalog-entities',
-        input: {
-          cursor: 'some-cursor',
-          filter: { kind: 'Component' },
-        },
-      }),
-    ).rejects.toThrow('Cannot combine cursor with filter or offset');
-  });
-
-  it('should reject cursor combined with offset', async () => {
-    const { invoke } = createCatalogQueryAction();
-    await expect(
-      invoke({
-        id: 'test:query-catalog-entities',
-        input: {
-          cursor: 'some-cursor',
-          offset: 10,
-        },
-      }),
-    ).rejects.toThrow('Cannot combine cursor with filter or offset');
-  });
-
   it('should support fields projection', async () => {
     const { invoke } = createCatalogQueryAction();
     const result = await invoke({
       id: 'test:query-catalog-entities',
       input: {
-        filter: { kind: 'Component', 'spec.type': 'service' },
+        query: { kind: 'Component', 'spec.type': 'service' },
         fields: ['kind', 'metadata.name'],
       },
     });

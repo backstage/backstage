@@ -19,7 +19,7 @@ import { createGetCatalogEntityAction } from './createGetCatalogEntityAction.ts'
 import { createValidateEntityAction } from './createValidateEntityAction.ts';
 import { createRegisterCatalogEntitiesAction } from './createRegisterCatalogEntitiesAction.ts';
 import { createUnregisterCatalogEntitiesAction } from './createUnregisterCatalogEntitiesAction.ts';
-import { createQueryCatalogEntitiesAction } from './createQueryCatalogEntitiesAction';
+import { createQueryCatalogEntitiesAction } from './createQueryCatalogEntitiesAction.ts';
 
 export const createCatalogActions = (options: {
   actionsRegistry: ActionsRegistryService;
