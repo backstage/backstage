@@ -1,0 +1,61 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { skeletonPropDefs } from './props-definition';
+import {
+  skeletonUsageSnippet,
+  cardPlaceholderSnippet,
+  avatarWithTextSnippet,
+  roundedSnippet,
+} from './snippets';
+import { CardPlaceholder, AvatarWithText, Rounded } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { SkeletonDefinition } from '../../../utils/definitions';
+
+<PageTitle
+  title="Skeleton"
+  description="Use to show a placeholder while content is loading."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CardPlaceholder />}
+  code={cardPlaceholderSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={skeletonUsageSnippet} />
+
+## API reference
+
+Skeleton extends standard HTML div attributes.
+
+<PropsTable data={skeletonPropDefs} />
+
+## Examples
+
+### Rounded
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Rounded />}
+  code={roundedSnippet}
+/>
+
+### Avatar with text
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<AvatarWithText />}
+  code={avatarWithTextSnippet}
+/>
+
+<Theming definition={SkeletonDefinition} />
+
+<ChangelogComponent component="skeleton" />

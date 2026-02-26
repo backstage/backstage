@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, Ref } from 'react';
 import {
   Disclosure as RADisclosure,
   Button as RAButton,
@@ -23,132 +23,128 @@ import {
   Heading as RAHeading,
 } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
-import clsx from 'clsx';
 import type {
   AccordionProps,
   AccordionTriggerProps,
   AccordionPanelProps,
   AccordionGroupProps,
 } from './types';
-import { useStyles } from '../../hooks/useStyles';
-import { AccordionDefinition } from './definition';
-import styles from './Accordion.module.css';
+import { useDefinition } from '../../hooks/useDefinition';
+import {
+  AccordionDefinition,
+  AccordionTriggerDefinition,
+  AccordionPanelDefinition,
+  AccordionGroupDefinition,
+} from './definition';
 import { Flex } from '../Flex';
 
 /** @public */
-export const Accordion = forwardRef<
-  React.ElementRef<typeof RADisclosure>,
-  AccordionProps
->(({ className, ...props }, ref) => {
-  const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
+export const Accordion = forwardRef(
+  (props: AccordionProps, ref: Ref<React.ElementRef<typeof RADisclosure>>) => {
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      AccordionDefinition,
+      props,
+    );
+    const { classes } = ownProps;
 
-  return (
-    <RADisclosure
-      ref={ref}
-      className={clsx(classNames.root, styles[classNames.root], className)}
-      {...cleanedProps}
-    />
-  );
-});
+    return (
+      <RADisclosure
+        ref={ref}
+        className={classes.root}
+        {...dataAttributes}
+        {...restProps}
+      />
+    );
+  },
+);
 
 Accordion.displayName = 'Accordion';
 
 /** @public */
-export const AccordionTrigger = forwardRef<
-  React.ElementRef<typeof RAHeading>,
-  AccordionTriggerProps
->(({ className, title, subtitle, children, ...props }, ref) => {
-  const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
+export const AccordionTrigger = forwardRef(
+  (
+    props: AccordionTriggerProps,
+    ref: Ref<React.ElementRef<typeof RAHeading>>,
+  ) => {
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      AccordionTriggerDefinition,
+      props,
+    );
+    const { classes, title, subtitle, children } = ownProps;
 
-  return (
-    <RAHeading
-      ref={ref}
-      className={clsx(
-        classNames.trigger,
-        styles[classNames.trigger],
-        className,
-      )}
-      {...cleanedProps}
-    >
-      <RAButton
-        slot="trigger"
-        className={clsx(
-          classNames.triggerButton,
-          styles[classNames.triggerButton],
-        )}
+    return (
+      <RAHeading
+        ref={ref}
+        className={classes.root}
+        {...dataAttributes}
+        {...restProps}
       >
-        {children ? (
-          children
-        ) : (
-          <Flex gap="2" align="center">
-            <span
-              className={clsx(
-                classNames.triggerTitle,
-                styles[classNames.triggerTitle],
-              )}
-            >
-              {title}
-            </span>
-            {subtitle && (
-              <span
-                className={clsx(
-                  classNames.triggerSubtitle,
-                  styles[classNames.triggerSubtitle],
-                )}
-              >
-                {subtitle}
-              </span>
-            )}
-          </Flex>
-        )}
-
-        <RiArrowDownSLine
-          className={clsx(
-            classNames.triggerIcon,
-            styles[classNames.triggerIcon],
+        <RAButton slot="trigger" className={classes.button}>
+          {children ? (
+            children
+          ) : (
+            <Flex gap="2" align="center">
+              <span className={classes.title}>{title}</span>
+              {subtitle && <span className={classes.subtitle}>{subtitle}</span>}
+            </Flex>
           )}
-          size={16}
-        />
-      </RAButton>
-    </RAHeading>
-  );
-});
+
+          <RiArrowDownSLine className={classes.icon} size={16} />
+        </RAButton>
+      </RAHeading>
+    );
+  },
+);
 
 AccordionTrigger.displayName = 'AccordionTrigger';
 
 /** @public */
-export const AccordionPanel = forwardRef<
-  React.ElementRef<typeof RADisclosurePanel>,
-  AccordionPanelProps
->(({ className, ...props }, ref) => {
-  const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
+export const AccordionPanel = forwardRef(
+  (
+    props: AccordionPanelProps,
+    ref: Ref<React.ElementRef<typeof RADisclosurePanel>>,
+  ) => {
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      AccordionPanelDefinition,
+      props,
+    );
+    const { classes } = ownProps;
 
-  return (
-    <RADisclosurePanel
-      ref={ref}
-      className={clsx(classNames.panel, styles[classNames.panel], className)}
-      {...cleanedProps}
-    />
-  );
-});
+    return (
+      <RADisclosurePanel
+        ref={ref}
+        className={classes.root}
+        {...dataAttributes}
+        {...restProps}
+      />
+    );
+  },
+);
 
 AccordionPanel.displayName = 'AccordionPanel';
 
 /** @public */
-export const AccordionGroup = forwardRef<
-  React.ElementRef<typeof RADisclosureGroup>,
-  AccordionGroupProps
->(({ className, allowsMultiple = false, ...props }, ref) => {
-  const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
+export const AccordionGroup = forwardRef(
+  (
+    props: AccordionGroupProps,
+    ref: Ref<React.ElementRef<typeof RADisclosureGroup>>,
+  ) => {
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      AccordionGroupDefinition,
+      props,
+    );
+    const { classes, allowsMultiple } = ownProps;
 
-  return (
-    <RADisclosureGroup
-      ref={ref}
-      allowsMultipleExpanded={allowsMultiple}
-      className={clsx(classNames.group, styles[classNames.group], className)}
-      {...cleanedProps}
-    />
-  );
-});
+    return (
+      <RADisclosureGroup
+        ref={ref}
+        allowsMultipleExpanded={allowsMultiple}
+        className={classes.root}
+        {...dataAttributes}
+        {...restProps}
+      />
+    );
+  },
+);
 
 AccordionGroup.displayName = 'AccordionGroup';

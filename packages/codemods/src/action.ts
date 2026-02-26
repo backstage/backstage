@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { OptionValues } from 'commander';
 import { findPaths, run } from '@backstage/cli-common';
-import { platform } from 'os';
+import { platform } from 'node:os';
 
 // eslint-disable-next-line no-restricted-syntax
 const paths = findPaths(__dirname);

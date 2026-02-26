@@ -94,7 +94,7 @@ description: Documentation landing page.
         <li><a href='https://backstage.io/docs/architecture-decisions/'>Architecture Decision Records (ADRs)</a></li>
         <li><a href='https://backstage.io/docs/api/deprecations'>Deprecations</a></li>
         <li><a href='https://backstage.io/docs/api/utility-apis'>Utility APIs</a></li>
-        <li><a href='https://backstage.io/docs/reference/'>Package Index</a></li>
+        <li><a href='https://backstage.io/api/stable/'>API References</a></li>
         <li><a href='https://backstage.io/docs/faq/'>FAQ</a></li>
       </ul>
     </td>

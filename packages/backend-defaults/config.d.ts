@@ -154,6 +154,104 @@ export interface Config {
        * List of plugin sources to load actions from.
        */
       pluginSources?: string[];
+
+      /**
+       * Filter configuration for actions. Allows controlling which actions
+       * are exposed to consumers based on patterns and attributes.
+       */
+      filter?: {
+        /**
+         * Rules for actions to include. An action must match at least one rule to be included.
+         * Each rule can specify an id pattern and/or attribute constraints.
+         * If no include rules are specified, all actions are included by default.
+         *
+         * @example
+         * ```yaml
+         * include:
+         *   - id: 'catalog:*'
+         *     attributes:
+         *       destructive: false
+         *   - id: 'scaffolder:*'
+         * ```
+         */
+        include?: Array<{
+          /**
+           * Glob pattern for action IDs to match.
+           * Action IDs have the format `{pluginId}:{actionName}`.
+           * @example 'catalog:*'
+           */
+          id?: string;
+
+          /**
+           * Attribute constraints. All specified attributes must match.
+           * Actions are compared against their resolved attributes (with defaults applied).
+           */
+          attributes?: {
+            /**
+             * If specified, only match actions where destructive matches this value.
+             * Actions default to destructive: true if not explicitly set.
+             */
+            destructive?: boolean;
+
+            /**
+             * If specified, only match actions where readOnly matches this value.
+             * Actions default to readOnly: false if not explicitly set.
+             */
+            readOnly?: boolean;
+
+            /**
+             * If specified, only match actions where idempotent matches this value.
+             * Actions default to idempotent: false if not explicitly set.
+             */
+            idempotent?: boolean;
+          };
+        }>;
+
+        /**
+         * Rules for actions to exclude. Exclusions take precedence over inclusions.
+         * Each rule can specify an id pattern and/or attribute constraints.
+         *
+         * @example
+         * ```yaml
+         * exclude:
+         *   - id: '*:delete-*'
+         *   - attributes:
+         *       readOnly: false
+         * ```
+         */
+        exclude?: Array<{
+          /**
+           * Glob pattern for action IDs to match.
+           * Action IDs have the format `{pluginId}:{actionName}`.
+           * @example '*:delete-*'
+           */
+          id?: string;
+
+          /**
+           * Attribute constraints. All specified attributes must match.
+           * Actions are compared against their resolved attributes (with defaults applied).
+           */
+          attributes?: {
+            /**
+             * If specified, only match actions where destructive matches this value.
+             * Actions default to destructive: true if not explicitly set.
+             */
+            destructive?: boolean;
+
+            /**
+             * If specified, only match actions where readOnly matches this value.
+             * Actions default to readOnly: false if not explicitly set.
+             */
+            readOnly?: boolean;
+
+            /**
+             * If specified, only match actions where idempotent matches this value.
+             * Actions default to idempotent: false if not explicitly set.
+             */
+            idempotent?: boolean;
+          };
+        }>;
+      };
     };
 
     /**
@@ -494,6 +592,32 @@ export interface Config {
        */
       connection:
         | string
+        | {
+            /**
+             * The specific config for Azure database for PostgreSQL connections with Entra authentication
+             */
+            type: 'azure';
+            /**
+             * Optional Azure token credential configuration
+             */
+            tokenCredential?: {
+              /**
+               * How early before an access token expires to refresh it with a new one.
+               * Defaults to 5 minutes
+               * Supported formats:
+               * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library.
+               * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+               * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+               */
+              tokenRenewableOffsetTime?: string | HumanDuration;
+              clientId?: string;
+              /**
+               * @visibility secret
+               */
+              clientSecret?: string;
+              tenantId?: string;
+            };
+          }
         | {
             /**
              * The specific config for cloudsql connections

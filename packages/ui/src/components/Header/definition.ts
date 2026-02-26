@@ -22,6 +22,7 @@ import type { ComponentDefinition } from '../../types';
  */
 export const HeaderDefinition = {
   classNames: {
+    root: 'bui-Header',
     toolbar: 'bui-HeaderToolbar',
     toolbarWrapper: 'bui-HeaderToolbarWrapper',
     toolbarContent: 'bui-HeaderToolbarContent',

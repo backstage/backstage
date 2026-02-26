@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Fragment } from 'react';
 import clsx from 'clsx';
 import {
   RiCollageLine,
@@ -12,25 +11,12 @@ import {
   RiServiceLine,
   RiStackLine,
 } from '@remixicon/react';
-import { components, layoutComponents } from '@/utils/data';
+import { components } from '@/utils/data';
 import styles from './Navigation.module.css';
 
 interface NavigationProps {
   onLinkClick?: () => void;
 }
-
-const data = [
-  {
-    title: 'Layout Components',
-    content: layoutComponents,
-    url: '/components',
-  },
-  {
-    title: 'Components',
-    content: components,
-    url: '/components',
-  },
-];
 
 export const Navigation = ({ onLinkClick }: NavigationProps) => {
   const pathname = usePathname();
@@ -53,16 +39,6 @@ export const Navigation = ({ onLinkClick }: NavigationProps) => {
             >
               <RiPaletteLine size={20} />
               Tokens
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/components"
-              data-active={pathname.startsWith('/components')}
-              onClick={onLinkClick}
-            >
-              <RiCollageLine size={20} />
-              Components
             </Link>
           </li>
           <li>
@@ -89,35 +65,31 @@ export const Navigation = ({ onLinkClick }: NavigationProps) => {
           </li>
         </ul>
       </nav>
-      {data.map(section => {
+      <div className={styles.sectionTitle}>
+        <RiCollageLine size={20} />
+        <span>Components</span>
+      </div>
+      {components.map(item => {
+        const isActive = pathname === `/components/${item.slug}`;
+
         return (
-          <Fragment key={section.title}>
-            <div className={styles.sectionTitle}>{section.title}</div>
-
-            {section.content.map(item => {
-              const isActive = pathname === `${section.url}/${item.slug}`;
-
-              return (
-                <Link
-                  href={`${section.url}/${item.slug}`}
-                  key={item.slug}
-                  className={clsx(styles.line, {
-                    [styles.active]: isActive,
-                  })}
-                  onClick={onLinkClick}
-                >
-                  <div className={styles.lineTitle}>{item.title}</div>
-                  <div className={styles.lineStatus}>
-                    {item.status === 'alpha' && 'Alpha'}
-                    {item.status === 'beta' && 'Beta'}
-                    {item.status === 'inProgress' && 'In Progress'}
-                    {item.status === 'stable' && 'Stable'}
-                    {item.status === 'deprecated' && 'Deprecated'}
-                  </div>
-                </Link>
-              );
+          <Link
+            href={`/components/${item.slug}`}
+            key={item.slug}
+            className={clsx(styles.line, {
+              [styles.active]: isActive,
             })}
-          </Fragment>
+            onClick={onLinkClick}
+          >
+            <div className={styles.lineTitle}>{item.title}</div>
+            <div className={styles.lineStatus}>
+              {item.status === 'alpha' && 'Alpha'}
+              {item.status === 'beta' && 'Beta'}
+              {item.status === 'inProgress' && 'In Progress'}
+              {item.status === 'stable' && 'Stable'}
+              {item.status === 'deprecated' && 'Deprecated'}
+            </div>
+          </Link>
         );
       })}
     </>

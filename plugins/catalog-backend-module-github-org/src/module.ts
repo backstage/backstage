@@ -27,7 +27,7 @@ import {
   TeamTransformer,
   UserTransformer,
 } from '@backstage/plugin-catalog-backend-module-github';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GithubOrgEntityCleanerProvider } from './GithubOrgEntityCleanerProvider';
 

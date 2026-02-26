@@ -22,7 +22,7 @@ import {
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
 import { InternalBackstageCredentials } from './types';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 
 export function createCredentialsWithServicePrincipal(
   sub: string,

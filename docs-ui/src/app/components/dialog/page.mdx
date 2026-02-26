@@ -1,0 +1,128 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  Default,
+  PreviewFixedWidthAndHeight,
+  PreviewWithForm,
+} from './components';
+import {
+  dialogPropDefs,
+  dialogTriggerPropDefs,
+  dialogHeaderPropDefs,
+  dialogBodyPropDefs,
+  dialogFooterPropDefs,
+} from './props-definition';
+import {
+  dialogUsageSnippet,
+  dialogDefaultSnippet,
+  dialogFixedWidthAndHeightSnippet,
+  dialogWithFormSnippet,
+  dialogWithNoTriggerSnippet,
+  dialogCloseSnippet,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { DialogDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  dialogTrigger: 'https://react-aria.adobe.com/Modal#dialogtrigger',
+  modal: 'https://react-aria.adobe.com/Modal',
+};
+
+<PageTitle
+  title="Dialog"
+  description="A modal dialog with header, body, and footer sections supporting controlled state."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Default />}
+  code={dialogDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={dialogUsageSnippet} />
+
+## API reference
+
+### DialogTrigger
+
+Wraps a trigger element and the dialog content to handle open/close state.
+
+<PropsTable data={dialogTriggerPropDefs} />
+
+<ReactAriaLink component="DialogTrigger" href={reactAriaUrls.dialogTrigger} />
+
+### Dialog
+
+The main dialog container that renders as a modal overlay.
+
+<PropsTable data={dialogPropDefs} />
+
+<ReactAriaLink component="Modal" href={reactAriaUrls.modal} />
+
+### DialogHeader
+
+Displays the dialog title with a built-in close button.
+
+<PropsTable data={dialogHeaderPropDefs} />
+
+<ReactAriaLink
+  component="Heading"
+  href="https://react-aria.adobe.com/Heading"
+/>
+
+### DialogBody
+
+The main content area of the dialog with optional scrolling.
+
+<PropsTable data={dialogBodyPropDefs} />
+
+### DialogFooter
+
+Contains action buttons or other footer content.
+
+<PropsTable data={dialogFooterPropDefs} />
+
+If you want to close the dialog while pressing a button, you can use the `slot="close"` prop on the button.
+
+<CodeBlock code={dialogCloseSnippet} />
+
+## Examples
+
+### Fixed Width and Height
+
+Dialog with a fixed height body that scrolls when content overflows.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<PreviewFixedWidthAndHeight />}
+  code={dialogFixedWidthAndHeightSnippet}
+/>
+
+### Dialog with Form
+
+Forms can be embedded in the dialog body.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<PreviewWithForm />}
+  code={dialogWithFormSnippet}
+/>
+
+### Dialog with no trigger and controlled by props
+
+You can also control the dialog using your own states.
+
+<CodeBlock code={dialogWithNoTriggerSnippet} />
+
+<Theming definition={DialogDefinition} />
+
+<ChangelogComponent component="dialog" />

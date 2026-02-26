@@ -1,0 +1,12 @@
+# This file uses duplicate merge keys (<<) which causes parser differential:
+# - js-yaml: hooks: null (first merge key wins)
+# - PyYAML: hooks: [hello.py] (last merge key wins)
+site_name: Test
+plugins:
+  - techdocs-core
+array_base: &array_base
+  hooks: [hello.py]
+null_base: &null_base
+  hooks: null
+<<: *null_base
+<<: *array_base

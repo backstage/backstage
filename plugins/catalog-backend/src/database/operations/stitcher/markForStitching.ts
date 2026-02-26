@@ -19,7 +19,7 @@ import splitToChunks from 'lodash/chunk';
 import { v4 as uuid } from 'uuid';
 import { ErrorLike, isError } from '@backstage/errors';
 import { StitchingStrategy } from '../../../stitching/types';
-import { setTimeout as sleep } from 'timers/promises';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
 
 const UPDATE_CHUNK_SIZE = 100; // Smaller chunks reduce contention

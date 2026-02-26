@@ -25,7 +25,7 @@ import {
 } from '../types';
 import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
-import { fromZodError } from 'zod-validation-error';
+import { fromZodError } from 'zod-validation-error/v3';
 import { ForwardedError } from '@backstage/errors';
 
 const defaults = {

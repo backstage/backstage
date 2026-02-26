@@ -63,6 +63,7 @@ export default {
         { mountedRoutes: { '/hello': routeRef } },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response, RequestHandler } from 'express';
 import { RateLimitStoreFactory } from '../../../lib/RateLimitStoreFactory.ts';
-import { Config } from '@backstage/config';
+import { RootConfigService } from '@backstage/backend-plugin-api';
+
 import { rateLimitMiddleware } from '../../../lib/rateLimitMiddleware.ts';
 
+/**
+ * @public
+ * Creates a middleware that applies rate limiting to requests based on the provided configuration.
+ */
 export const createRateLimitMiddleware = (options: {
   pluginId: string;
-  config: Config;
-}) => {
+  config: RootConfigService;
+}): RequestHandler => {
   const { pluginId, config } = options;
   const configKey = `backend.rateLimit.plugin.${pluginId}`;
   const enabled = config.has(configKey);

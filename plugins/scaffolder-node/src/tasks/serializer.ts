@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import tar from 'tar';
+import * as tar from 'tar';
 import concatStream from 'concat-stream';
-import { promisify } from 'util';
-import { pipeline as pipelineCb, Readable } from 'stream';
+import { promisify } from 'node:util';
+import { pipeline as pipelineCb, Readable } from 'node:stream';
 
 const pipeline = promisify(pipelineCb);
 /**

@@ -1,5 +1,32 @@
 # @backstage/plugin-events-backend-module-kafka
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+
+## 0.3.0
+
+### Minor Changes
+
+- ef5bbd8: Add support for Kafka offset configuration (`fromBeginning`) and `autoCommit`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- ef5bbd8: Add support for Kafka offset configuration (`fromBeginning`) and `autoCommit`
+
 ## 0.2.0
 
 ### Minor Changes

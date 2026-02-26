@@ -16,7 +16,7 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { Request, Response } from 'express';
-import * as http from 'http';
+import * as http from 'node:http';
 import {
   createProxyMiddleware,
   fixRequestBody,

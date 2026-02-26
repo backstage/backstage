@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { spawn } from 'child_process';
-import { PassThrough, Writable } from 'stream';
+import { spawn } from 'node:child_process';
+import { PassThrough, Writable } from 'node:stream';
 import { executeShellCommand } from './executeShellCommand';
 
 jest.mock('child_process', () => ({

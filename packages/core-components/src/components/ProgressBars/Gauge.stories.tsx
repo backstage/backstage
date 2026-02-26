@@ -21,6 +21,7 @@ const containerStyle = { width: 300 };
 export default {
   title: 'Data Display/Gauge',
   component: Gauge,
+  tags: ['!manifest'],
 };
 
 export const Default = () => (

@@ -23,6 +23,7 @@ import { InfoCard, Props } from './InfoCard';
 export default {
   title: 'Layout/Information Card',
   component: InfoCard,
+  tags: ['!manifest'],
 };
 
 const text = (

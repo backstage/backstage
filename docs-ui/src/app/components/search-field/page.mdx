@@ -1,0 +1,91 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { searchFieldPropDefs } from './props-definition';
+import {
+  searchFieldUsageSnippet,
+  withLabelSnippet,
+  sizesSnippet,
+  withDescriptionSnippet,
+  startCollapsedSnippet,
+} from './snippets';
+import {
+  WithLabel,
+  Sizes,
+  WithDescription,
+  StartCollapsed,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+import { SearchFieldDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  searchField: 'https://react-aria.adobe.com/SearchField',
+};
+
+<PageTitle
+  title="SearchField"
+  description="A text input for search queries with collapsible and icon support."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithLabel />}
+  code={withLabelSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={searchFieldUsageSnippet} />
+
+## API reference
+
+<PropsTable data={searchFieldPropDefs} />
+
+<ReactAriaLink component="SearchField" href={reactAriaUrls.searchField} />
+
+## Examples
+
+### Sizes
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Sizes />}
+  code={sizesSnippet}
+  layout="side-by-side"
+/>
+
+### With description
+
+Add context below the input with the `description` prop.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithDescription />}
+  code={withDescriptionSnippet}
+  layout="side-by-side"
+/>
+
+### Collapsible
+
+Use `startCollapsed` for space-constrained layouts where the field expands on focus.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<StartCollapsed />}
+  code={startCollapsedSnippet}
+  layout="side-by-side"
+/>
+
+<Theming definition={SearchFieldDefinition} />
+
+<ChangelogComponent component="search-field" />

@@ -32,3 +32,4 @@ export {
   alertDisplayAppRootElement,
 } from './elements';
 export { Progress, NotFoundErrorPage, ErrorDisplay } from './components';
+export { PluginWrapperApi } from './PluginWrapperApi';

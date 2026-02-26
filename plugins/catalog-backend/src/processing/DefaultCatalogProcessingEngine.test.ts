@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Hash } from 'crypto';
+import { Hash } from 'node:crypto';
 import { DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';

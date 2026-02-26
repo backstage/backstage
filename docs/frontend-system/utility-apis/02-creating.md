@@ -36,6 +36,9 @@ export const workApiRef = createApiRef<WorkApi>({
 
 Both of these are properly exported publicly from the package, so that consumers can reach them.
 
+The frontend system infers the owning plugin for an API from the `ApiRef` id, so
+use the pattern `plugin.<plugin-id>.*` to make ownership explicit. This ensures that other plugins can't mistakenly override your API.
+
 ## Providing an extension through your plugin
 
 The plugin itself now wants to provide this API and its default implementation, in the form of an API extension. Doing so means that when users install the Example plugin, an instance of the Work utility API will also be automatically available in their apps - both to the Example plugin itself, and to others. We do this in the main plugin package, not the `-react` package.

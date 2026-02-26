@@ -18,6 +18,7 @@ import { Lifecycle } from './Lifecycle';
 export default {
   title: 'Feedback/Lifecycle',
   component: Lifecycle,
+  tags: ['!manifest'],
 };
 
 export const AlphaDefault = () => (

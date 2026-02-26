@@ -17,9 +17,12 @@
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { Message } from '@google-cloud/pubsub';
+import {
+  readOptionalFilterPredicateFromConfig,
+  filterPredicateToFilterFunction,
+} from '@backstage/filter-predicates';
 import { createPatternResolver } from '../util/createPatternResolver';
-import { SubscriptionTask } from './types';
+import { MessageContext, SubscriptionTask } from './types';
 
 export function readSubscriptionTasksFromConfig(
   rootConfig: RootConfigService,
@@ -40,6 +43,7 @@ export function readSubscriptionTasksFromConfig(
 
     const config = subscriptionsConfig.getConfig(subscriptionId);
     const { project, subscription } = readSubscriptionName(config);
+    const filter = readFilter(config);
     const mapToTopic = readTopicMapper(config);
     const mapToMetadata = readMetadataMapper(config);
 
@@ -47,10 +51,22 @@ export function readSubscriptionTasksFromConfig(
       id: subscriptionId,
       project,
       subscription,
+      filter,
       mapToTopic,
       mapToMetadata,
     };
   });
+}
+
+function readFilter(config: Config): (message: MessageContext) => boolean {
+  const predicate = readOptionalFilterPredicateFromConfig(config, {
+    key: 'filter',
+  });
+  if (!predicate) {
+    return () => true;
+  }
+
+  return filterPredicateToFilterFunction(predicate);
 }
 
 function readSubscriptionName(config: Config): {
@@ -77,12 +93,12 @@ function readSubscriptionName(config: Config): {
  */
 function readTopicMapper(
   config: Config,
-): (message: Message) => string | undefined {
+): (message: MessageContext) => string | undefined {
   const targetTopicPattern = config.getString('targetTopic');
   const patternResolver = createPatternResolver(targetTopicPattern);
   return message => {
     try {
-      return patternResolver({ message });
+      return patternResolver(message);
     } catch {
       // could not map to a topic
       return undefined;
@@ -95,9 +111,12 @@ function readTopicMapper(
  */
 function readMetadataMapper(
   config: Config,
-): (message: Message) => Record<string, string> {
+): (message: MessageContext) => Record<string, string> {
   const setters = new Array<
-    (options: { message: Message; metadata: Record<string, string> }) => void
+    (options: {
+      context: MessageContext;
+      metadata: Record<string, string>;
+    }) => void
   >();
 
   const eventMetadata = config.getOptionalConfig('eventMetadata');
@@ -105,9 +124,9 @@ function readMetadataMapper(
     for (const key of eventMetadata?.keys() ?? []) {
       const valuePattern = eventMetadata.getString(key);
       const patternResolver = createPatternResolver(valuePattern);
-      setters.push(({ message, metadata }) => {
+      setters.push(({ context, metadata }) => {
         try {
-          const value = patternResolver({ message });
+          const value = patternResolver(context);
           if (value) {
             metadata[key] = value;
           }
@@ -118,12 +137,12 @@ function readMetadataMapper(
     }
   }
 
-  return message => {
+  return context => {
     const result: Record<string, string> = {
-      ...message.attributes,
+      ...context.message.attributes,
     };
     for (const setter of setters) {
-      setter({ message, metadata: result });
+      setter({ context, metadata: result });
     }
     return result;
   };

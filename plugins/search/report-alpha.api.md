@@ -97,6 +97,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         resultTypes: ExtensionInput<
@@ -112,6 +113,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         searchFilters: ExtensionInput<
@@ -125,6 +127,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -215,6 +218,7 @@ export const searchPage: OverridableExtensionDefinition<{
       {
         singleton: false;
         optional: false;
+        internal: false;
       }
     >;
     resultTypes: ExtensionInput<
@@ -230,6 +234,7 @@ export const searchPage: OverridableExtensionDefinition<{
       {
         singleton: false;
         optional: false;
+        internal: false;
       }
     >;
     searchFilters: ExtensionInput<
@@ -243,6 +248,7 @@ export const searchPage: OverridableExtensionDefinition<{
       {
         singleton: false;
         optional: false;
+        internal: false;
       }
     >;
   };

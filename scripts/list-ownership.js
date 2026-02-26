@@ -19,7 +19,7 @@ const fs = require('fs-extra');
 const globby = require('globby');
 const sloc = require('sloc');
 const codeownersUtils = require('codeowners-utils');
-const { resolve: resolvePath } = require('path');
+const { resolve: resolvePath } = require('node:path');
 
 async function loadOwners(rootDir) {
   const codeowners = await codeownersUtils.loadOwners(rootDir);

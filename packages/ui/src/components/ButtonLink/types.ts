@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '../..';
-import { ReactElement, ReactNode } from 'react';
-import { LinkProps as RALinkProps } from 'react-aria-components';
+import type { ReactElement, ReactNode, CSSProperties } from 'react';
+import type { LinkProps as RALinkProps } from 'react-aria-components';
+import type { Responsive } from '../../types';
+
+/** @public */
+export type ButtonLinkOwnProps = {
+  size?: Responsive<'small' | 'medium'>;
+  variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
+  iconStart?: ReactElement;
+  iconEnd?: ReactElement;
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+};
 
 /**
  * Properties for {@link ButtonLink}
  *
  * @public
  */
-export interface ButtonLinkProps extends RALinkProps {
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | 'tertiary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
-  iconStart?: ReactElement;
-  iconEnd?: ReactElement;
-  children?: ReactNode;
-}
+export interface ButtonLinkProps
+  extends Omit<RALinkProps, 'children' | 'className' | 'style'>,
+    ButtonLinkOwnProps {}

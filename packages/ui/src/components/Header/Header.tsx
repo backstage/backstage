@@ -20,6 +20,8 @@ import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
 import { HeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
+import { useRef } from 'react';
+import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
 import styles from './Header.module.css';
 import clsx from 'clsx';
 
@@ -47,9 +49,45 @@ export const Header = (props: HeaderProps) => {
   } = cleanedProps;
 
   const hasTabs = tabs && tabs.length > 0;
+  const headerRef = useRef<HTMLElement>(null);
+
+  useIsomorphicLayoutEffect(() => {
+    const el = headerRef.current;
+    if (!el) return undefined;
+
+    const updateHeight = () => {
+      const height = el.offsetHeight;
+      document.documentElement.style.setProperty(
+        '--bui-header-height',
+        `${height}px`,
+      );
+    };
+
+    // Set height once immediately
+    updateHeight();
+
+    // Observe for resize changes if ResizeObserver is available
+    // (not present in Jest/jsdom by default)
+    if (typeof ResizeObserver === 'undefined') {
+      return () => {
+        document.documentElement.style.removeProperty('--bui-header-height');
+      };
+    }
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty('--bui-header-height');
+    };
+  }, []);
 
   return (
-    <>
+    <header
+      ref={headerRef}
+      className={clsx(classNames.root, styles[classNames.root], className)}
+    >
       <HeaderToolbar
         icon={icon}
         title={title}
@@ -62,7 +100,6 @@ export const Header = (props: HeaderProps) => {
           className={clsx(
             classNames.tabsWrapper,
             styles[classNames.tabsWrapper],
-            className,
           )}
         >
           <Tabs onSelectionChange={onTabSelectionChange}>
@@ -81,6 +118,6 @@ export const Header = (props: HeaderProps) => {
           </Tabs>
         </div>
       )}
-    </>
+    </header>
   );
 };

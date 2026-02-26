@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Permission } from '@backstage/plugin-permission-common';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { parse as parseNdjson } from 'ndjson';
 import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 

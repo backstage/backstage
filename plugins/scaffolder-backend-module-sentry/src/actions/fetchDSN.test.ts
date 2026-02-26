@@ -20,7 +20,7 @@ import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { setupServer } from 'msw/node';
 import { HttpResponse, http } from 'msw';
 import { createSentryFetchDSNAction } from './fetchDSN';
@@ -41,6 +41,7 @@ describe('sentry:fetch:dsn action', () => {
     organizationSlug: string;
     projectSlug: string;
     authToken?: string;
+    apiBaseUrl?: string;
   }> =>
     createMockActionContext({
       workspacePath: './dev/proj',
@@ -195,5 +196,67 @@ describe('sentry:fetch:dsn action', () => {
     await expect(() => action.handler(actionContext)).rejects.toThrow(
       new InputError('No public DSN found in project keys'),
     );
+  });
+
+  it('should fetch DSN with custom apiBaseUrl.', async () => {
+    expect.assertions(3);
+
+    const action = createSentryFetchDSNAction(createScaffolderConfig());
+    const actionContext = getActionContext();
+    actionContext.input = {
+      ...actionContext.input,
+      apiBaseUrl: 'https://custom.sentry.io/api/0',
+    };
+    const mockDSN = 'https://test@sentry.io/123';
+
+    worker.use(
+      http.get(
+        `https://custom.sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            `Bearer ${actionContext.input.authToken}`,
+          );
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          return HttpResponse.json([{ dsn: { public: mockDSN } }], {
+            status: 200,
+          });
+        },
+      ),
+    );
+
+    await action.handler(actionContext);
+    expect(actionContext.output).toHaveBeenCalledWith('dsn', mockDSN);
+  });
+
+  it('should fetch DSN with apiBaseUrl from config.', async () => {
+    expect.assertions(3);
+
+    const action = createSentryFetchDSNAction(
+      createScaffolderConfig({
+        sentry: {
+          apiBaseUrl: 'https://config.sentry.io/api/0',
+        },
+      }),
+    );
+    const actionContext = getActionContext();
+    const mockDSN = 'https://test@sentry.io/123';
+
+    worker.use(
+      http.get(
+        `https://config.sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            `Bearer ${actionContext.input.authToken}`,
+          );
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          return HttpResponse.json([{ dsn: { public: mockDSN } }], {
+            status: 200,
+          });
+        },
+      ),
+    );
+
+    await action.handler(actionContext);
+    expect(actionContext.output).toHaveBeenCalledWith('dsn', mockDSN);
   });
 });

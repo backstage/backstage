@@ -24,8 +24,8 @@ import {
 } from '@google-cloud/storage';
 import express from 'express';
 import JSON5 from 'json5';
-import path from 'path';
-import { Readable } from 'stream';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import {
   getFileTreeRecursively,
   getHeadersForFileExtension,

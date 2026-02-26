@@ -21,7 +21,7 @@ import { useStyles } from '../../hooks/useStyles';
 import { CheckboxDefinition } from './definition';
 import clsx from 'clsx';
 import styles from './Checkbox.module.css';
-import { RiCheckLine } from '@remixicon/react';
+import { RiCheckLine, RiSubtractLine } from '@remixicon/react';
 
 /** @public */
 export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
@@ -35,12 +35,23 @@ export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
         className={clsx(classNames.root, styles[classNames.root], className)}
         {...rest}
       >
-        <div
-          className={clsx(classNames.indicator, styles[classNames.indicator])}
-        >
-          <RiCheckLine size={12} />
-        </div>
-        {children}
+        {({ isIndeterminate }) => (
+          <>
+            <div
+              className={clsx(
+                classNames.indicator,
+                styles[classNames.indicator],
+              )}
+            >
+              {isIndeterminate ? (
+                <RiSubtractLine size={12} />
+              ) : (
+                <RiCheckLine size={12} />
+              )}
+            </div>
+            {children}
+          </>
+        )}
       </RACheckbox>
     );
   },

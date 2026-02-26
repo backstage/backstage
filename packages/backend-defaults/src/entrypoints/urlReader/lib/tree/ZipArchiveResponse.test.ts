@@ -15,9 +15,9 @@
  */
 
 import fs from 'fs-extra';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { create as createArchive } from 'archiver';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
@@ -270,5 +270,48 @@ describe('ZipArchiveResponse', () => {
     await expect(res.dir()).rejects.toThrow(
       'invalid relative path: ../side.txt',
     );
+  });
+
+  describe('symlink handling', () => {
+    it('should extract symlink entries as regular files', async () => {
+      const externalPath = targetDir.resolve('external.txt');
+      await fs.writeFile(externalPath, 'external content');
+
+      const zipPath = targetDir.resolve('test.zip');
+      await new Promise<void>((resolve, reject) => {
+        const output = fs.createWriteStream(zipPath);
+        const archive = createArchive('zip');
+
+        output.on('close', () => resolve());
+        archive.on('error', reject);
+        archive.pipe(output);
+
+        archive.append('file content', { name: 'file.txt' });
+        archive.symlink('link', externalPath);
+
+        archive.finalize();
+      });
+
+      const stream = createReadStream(zipPath);
+      const res = new ZipArchiveResponse(stream, '', targetDir.path, 'etag');
+
+      targetDir.addContent({ out: {} });
+      const outDir = targetDir.resolve('out');
+      const dir = await res.dir({ targetDir: outDir });
+
+      await expect(
+        fs.readFile(resolvePath(dir, 'file.txt'), 'utf8'),
+      ).resolves.toBe('file content');
+
+      const entryPath = resolvePath(dir, 'link');
+      const stats = await fs.lstat(entryPath);
+
+      // yauzl extracts symlink entries as regular files
+      expect(stats.isSymbolicLink()).toBe(false);
+      expect(stats.isFile()).toBe(true);
+
+      const content = await fs.readFile(entryPath, 'utf8');
+      expect(content).toBe(externalPath);
+    });
   });
 });

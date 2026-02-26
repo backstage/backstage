@@ -1,0 +1,70 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { textFieldPropDefs } from './props-definition';
+import {
+  textFieldUsageSnippet,
+  withLabelSnippet,
+  sizesSnippet,
+  withDescriptionSnippet,
+} from './snippets';
+import { WithLabel, Sizes, WithDescription } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TextFieldDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  textField: 'https://react-aria.adobe.com/TextField',
+};
+
+<PageTitle
+  title="TextField"
+  description="A text input with label, description, icon, and validation support."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithLabel />}
+  code={withLabelSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={textFieldUsageSnippet} />
+
+## API reference
+
+<PropsTable data={textFieldPropDefs} />
+
+<ReactAriaLink component="TextField" href={reactAriaUrls.textField} />
+
+## Examples
+
+### Sizes
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Sizes />}
+  code={sizesSnippet}
+  layout="side-by-side"
+/>
+
+### With description
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithDescription />}
+  code={withDescriptionSnippet}
+  layout="side-by-side"
+/>
+
+<Theming definition={TextFieldDefinition} />
+
+<ChangelogComponent component="text-field" />

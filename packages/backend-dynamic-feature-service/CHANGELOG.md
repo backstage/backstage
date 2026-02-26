@@ -1,5 +1,72 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.9-next.1
+
+### Patch Changes
+
+- 9b4c414: Updated README for backend-dynamic-feature-service
+- Updated dependencies
+  - @backstage/cli-node@0.2.18-next.1
+  - @backstage/plugin-catalog-backend@3.4.0-next.1
+  - @backstage/backend-plugin-api@1.7.0-next.1
+  - @backstage/backend-defaults@0.15.2-next.1
+  - @backstage/plugin-scaffolder-node@0.12.5-next.1
+
+## 0.7.9-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.4.0-next.0
+  - @backstage/backend-openapi-utils@0.6.6-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-search-backend-node@1.4.1-next.0
+  - @backstage/backend-defaults@0.15.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/config-loader@1.10.8-next.0
+  - @backstage/plugin-events-backend@0.5.11-next.0
+  - @backstage/plugin-search-common@1.2.22-next.0
+  - @backstage/cli-common@0.1.18-next.0
+  - @backstage/cli-node@0.2.17-next.0
+  - @backstage/plugin-auth-node@0.6.12-next.0
+  - @backstage/plugin-app-node@0.1.42-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/plugin-events-node@0.4.19-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.7.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/cli-common@0.1.17
+  - @backstage/plugin-app-node@0.1.41
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+  - @backstage/plugin-catalog-backend@3.3.1
+  - @backstage/plugin-events-backend@0.5.10
+
+## 0.7.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-catalog-backend@3.3.1-next.1
+  - @backstage/plugin-events-backend@0.5.10-next.0
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-search-backend-node@1.4.0
+
 ## 0.7.8-next.1
 
 ### Patch Changes

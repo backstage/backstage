@@ -27,7 +27,7 @@ import WS from 'jest-websocket-mock';
 import './matchMedia.mock';
 import { PodExecTerminal } from './PodExecTerminal';
 
-global.TextEncoder = require('util').TextEncoder;
+global.TextEncoder = require('node:util').TextEncoder;
 
 const textEncoder = new TextEncoder();
 

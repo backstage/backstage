@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath, sep } from 'path';
+import { resolve as resolvePath, sep } from 'node:path';
 import { resolvePackagePaths } from './paths';
 
 describe('resolvePackages', () => {

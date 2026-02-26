@@ -19,6 +19,11 @@
 @layer components {
   .bui-Button {
     --loading-duration: 200ms;
+    --bg: transparent;
+    --bg-hover: transparent;
+    --bg-active: transparent;
+    --fg: inherit;
+
     position: relative;
     display: inline-flex;
     border: none;
@@ -32,6 +37,19 @@
     transition: background-color var(--loading-duration) ease-out,
       box-shadow var(--loading-duration) ease-out;
 
+    /* Apply variables */
+    color: var(--fg);
+    background-color: var(--bg);
+
+    &:hover {
+      background-color: var(--bg-hover);
+      transition: background-color 150ms ease;
+    }
+
+    &:active {
+      background-color: var(--bg-active);
+    }
+
     &[data-disabled='true'] {
       cursor: not-allowed;
     }
@@ -42,42 +60,87 @@
   }
 
   .bui-Button[data-variant='primary'] {
-    background-color: var(--bui-bg-solid);
-    color: var(--bui-fg-solid);
+    --bg: var(--bui-bg-solid);
+    --bg-hover: var(--bui-bg-solid-hover);
+    --bg-active: var(--bui-bg-solid-pressed);
+    --fg: var(--bui-fg-solid);
 
-    &:hover {
-      background-color: var(--bui-bg-solid-hover);
-      transition: background-color 150ms ease;
-    }
-
-    &:active {
-      background-color: var(--bui-bg-solid-pressed);
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg: var(--bui-bg-solid-disabled);
+      --bg-hover: var(--bui-bg-solid-disabled);
+      --bg-active: var(--bui-bg-solid-disabled);
+      --fg: var(--bui-fg-solid-disabled);
     }
 
     &:focus-visible {
       outline: 2px solid var(--bui-ring);
       outline-offset: 2px;
     }
+  }
+
+  .bui-Button[data-variant='primary'][data-destructive='true'] {
+    /* Custom properties matching future token names (without bui- prefix) */
+    --bg-solid-danger: #dc2626;
+    --bg-solid-danger-hover: #b91c1c;
+    --bg-solid-danger-pressed: #991b1b;
+    --bg-solid-danger-disabled: #fca5a5;
+    --fg-solid-danger: var(--bui-white);
+
+    [data-theme-mode='dark'] & {
+      --bg-solid-danger: #ef4444;
+      --bg-solid-danger-hover: #dc2626;
+      --bg-solid-danger-pressed: #b91c1c;
+      --bg-solid-danger-disabled: #7f1d1d;
+    }
+
+    --bg: var(--bg-solid-danger);
+    --bg-hover: var(--bg-solid-danger-hover);
+    --bg-active: var(--bg-solid-danger-pressed);
+    --fg: var(--fg-solid-danger);
 
     &[data-disabled='true'],
     &[data-loading='true'] {
-      background-color: var(--bui-bg-solid-disabled);
-      color: var(--bui-fg-solid-disabled);
+      --bg: var(--bg-solid-danger-disabled);
+      --bg-hover: var(--bg-solid-danger-disabled);
+      --bg-active: var(--bg-solid-danger-disabled);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--bui-border-danger);
+      outline-offset: 2px;
     }
   }
 
   .bui-Button[data-variant='secondary'] {
-    background-color: var(--bui-bg-surface-1);
-    box-shadow: inset 0 0 0 1px var(--bui-border);
-    color: var(--bui-fg-primary);
+    --bg: var(--bui-bg-neutral-1);
+    --bg-hover: var(--bui-bg-neutral-1-hover);
+    --bg-active: var(--bui-bg-neutral-1-pressed);
+    --fg: var(--bui-fg-primary);
 
-    &:hover {
-      box-shadow: inset 0 0 0 1px var(--bui-border-hover);
-      transition: box-shadow 150ms ease;
+    &[data-on-bg='neutral-1'] {
+      --bg: var(--bui-bg-neutral-2);
+      --bg-hover: var(--bui-bg-neutral-2-hover);
+      --bg-active: var(--bui-bg-neutral-2-pressed);
     }
 
-    &:active {
-      box-shadow: inset 0 0 0 1px var(--bui-border-pressed);
+    &[data-on-bg='neutral-2'] {
+      --bg: var(--bui-bg-neutral-3);
+      --bg-hover: var(--bui-bg-neutral-3-hover);
+      --bg-active: var(--bui-bg-neutral-3-pressed);
+    }
+
+    &[data-on-bg='neutral-3'] {
+      --bg: var(--bui-bg-neutral-4);
+      --bg-hover: var(--bui-bg-neutral-4-hover);
+      --bg-active: var(--bui-bg-neutral-4-pressed);
+    }
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
     }
 
     &:focus-visible {
@@ -85,25 +148,60 @@
       transition: none;
       box-shadow: inset 0 0 0 2px var(--bui-ring);
     }
+  }
+
+  .bui-Button[data-variant='secondary'][data-destructive='true'] {
+    /* Custom properties for hover/active states (no tokens exist yet) */
+    --bg-danger-hover: #fecaca;
+    --bg-danger-pressed: #fca5a5;
+
+    [data-theme-mode='dark'] & {
+      --bg-danger-hover: #450a0a;
+      --bg-danger-pressed: #7f1d1d;
+    }
+
+    --bg: var(--bui-bg-danger);
+    --bg-hover: var(--bg-danger-hover);
+    --bg-active: var(--bg-danger-pressed);
+    --fg: var(--bui-fg-danger);
 
     &[data-disabled='true'],
     &[data-loading='true'] {
-      box-shadow: inset 0 0 0 1px var(--bui-border-disabled);
-      color: var(--bui-fg-disabled);
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--bui-border-danger);
     }
   }
 
   .bui-Button[data-variant='tertiary'] {
-    background-color: transparent;
-    color: var(--bui-fg-primary);
+    --bg-hover: var(--bui-bg-neutral-1-hover);
+    --bg-active: var(--bui-bg-neutral-1-pressed);
+    --fg: var(--bui-fg-primary);
 
-    &:hover {
-      background-color: var(--bui-bg-surface-1);
-      transition: background-color 200ms ease;
+    &[data-on-bg='neutral-1'] {
+      --bg-hover: var(--bui-bg-neutral-2-hover);
+      --bg-active: var(--bui-bg-neutral-2-pressed);
     }
 
-    &:active {
-      background-color: var(--bui-bg-surface-2);
+    &[data-on-bg='neutral-2'] {
+      --bg-hover: var(--bui-bg-neutral-3-hover);
+      --bg-active: var(--bui-bg-neutral-3-pressed);
+    }
+
+    &[data-on-bg='neutral-3'] {
+      --bg-hover: var(--bui-bg-neutral-4-hover);
+      --bg-active: var(--bui-bg-neutral-4-pressed);
+    }
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
     }
 
     &:focus-visible {
@@ -111,11 +209,31 @@
       transition: none;
       box-shadow: inset 0 0 0 2px var(--bui-ring);
     }
+  }
+
+  .bui-Button[data-variant='tertiary'][data-destructive='true'] {
+    /* Custom properties for hover/active states (no tokens exist yet) */
+    --bg-danger-hover: #fecaca;
+    --bg-danger-pressed: #fca5a5;
+
+    [data-theme-mode='dark'] & {
+      --bg-danger-hover: #450a0a;
+      --bg-danger-pressed: #7f1d1d;
+    }
+
+    --bg-hover: var(--bui-bg-danger);
+    --bg-active: var(--bg-danger-pressed);
+    --fg: var(--bui-fg-danger);
 
     &[data-disabled='true'],
     &[data-loading='true'] {
-      background-color: transparent;
-      color: var(--bui-fg-disabled);
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--bui-border-danger);
     }
   }
 

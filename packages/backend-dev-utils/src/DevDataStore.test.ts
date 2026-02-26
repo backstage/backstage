@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Serializable, spawn } from 'child_process';
+import { Serializable, spawn } from 'node:child_process';
 import { DevDataStore } from './DevDataStore';
 import { BackstageIpcClient } from './ipcClient';
 

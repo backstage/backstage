@@ -1,5 +1,21 @@
 # @backstage/plugin-permission-common
 
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.9.4
+
+### Patch Changes
+
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+
 ## 0.9.3
 
 ### Patch Changes

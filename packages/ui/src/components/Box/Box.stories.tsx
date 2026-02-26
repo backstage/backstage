@@ -18,6 +18,7 @@ import preview from '../../../../../.storybook/preview';
 import { ReactNode } from 'react';
 import { Box } from './Box';
 import { Flex } from '../Flex';
+import { Button } from '../Button';
 
 const meta = preview.meta({
   title: 'Backstage UI/Box',
@@ -342,5 +343,50 @@ export const Display = meta.story({
         <CardDisplay>Responsive</CardDisplay>
       </Box>
     </Flex>
+  ),
+});
+
+export const BackgroundColors = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex align="center" style={{ flexWrap: 'wrap' }}>
+      <Box {...args}>Default</Box>
+      <Box bg="neutral-1" {...args}>
+        Neutral 1
+      </Box>
+      <Box bg="neutral-2" {...args}>
+        Neutral 2
+      </Box>
+      <Box bg="neutral-3" {...args}>
+        Neutral 3
+      </Box>
+      <Box bg={{ initial: 'neutral-1', sm: 'neutral-2' }} {...args}>
+        Responsive Neutral
+      </Box>
+      <Box bg="danger" {...args}>
+        Danger
+      </Box>
+      <Box bg="warning" {...args}>
+        Warning
+      </Box>
+      <Box bg="success" {...args}>
+        Success
+      </Box>
+    </Flex>
+  ),
+});
+
+export const NestedNeutralColors = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Box {...args} bg="neutral-1">
+      <Button variant="secondary">Button (on neutral-1)</Button>
+      <Box {...args} bg="neutral-2" mt="4">
+        <Button variant="secondary">Button (on neutral-2)</Button>
+        <Box {...args} bg="neutral-3" mt="4">
+          <Button variant="secondary">Button (on neutral-3)</Button>
+        </Box>
+      </Box>
+    </Box>
   ),
 });

@@ -20,9 +20,9 @@ import {
   join as joinPath,
   resolve as resolvePath,
   relative as relativePath,
-} from 'path';
-import { tmpdir } from 'os';
-import tar, { CreateOptions, FileOptions } from 'tar';
+} from 'node:path';
+import { tmpdir } from 'node:os';
+import * as tar from 'tar';
 import partition from 'lodash/partition';
 import { paths } from '../../../../lib/paths';
 import { run } from '@backstage/cli-common';
@@ -268,7 +268,7 @@ export async function createDistWorkspace(
         portable: true,
         noMtime: true,
         gzip: options.skeleton.endsWith('.gz'),
-      } as CreateOptions & FileOptions & { noMtime: boolean },
+      },
       skeletonFiles,
     );
   }

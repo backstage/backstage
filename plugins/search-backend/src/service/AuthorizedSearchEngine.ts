@@ -38,7 +38,7 @@ import {
 } from '@backstage/plugin-search-backend-node';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 import { AuthService, PermissionsService } from '@backstage/backend-plugin-api';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {

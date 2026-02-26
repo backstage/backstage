@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  SignInPageBlueprint,
-  createFrontendModule,
-} from '@backstage/frontend-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { useEffect } from 'react';
 import { appModulePublicSignIn } from './appModulePublicSignIn';

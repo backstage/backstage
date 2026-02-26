@@ -23,7 +23,6 @@ import {
   CatalogProcessor,
   CatalogProcessorParser,
   catalogServiceRef,
-  EntityProvider,
   LocationAnalyzer,
   PlaceholderResolver,
   ScmLocationAnalyzer,
@@ -32,13 +31,15 @@ import {
   catalogAnalysisExtensionPoint,
   CatalogLocationsExtensionPoint,
   catalogLocationsExtensionPoint,
+  catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node';
+import {
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
   CatalogPermissionRuleInput,
-  CatalogProcessingExtensionPoint,
-  catalogProcessingExtensionPoint,
+  catalogScmEventsServiceRef,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
@@ -46,6 +47,7 @@ import { merge } from 'lodash';
 import { CatalogBuilder } from './CatalogBuilder';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createCatalogActions } from '../actions';
+import type { EntityProviderEntry } from '../processing/connectEntityProviders';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -58,63 +60,6 @@ class CatalogLocationsExtensionPointImpl
 
   get allowedLocationTypes() {
     return this.#locationTypes;
-  }
-}
-
-class CatalogProcessingExtensionPointImpl
-  implements CatalogProcessingExtensionPoint
-{
-  #processors = new Array<CatalogProcessor>();
-  #entityProviders = new Array<EntityProvider>();
-  #placeholderResolvers: Record<string, PlaceholderResolver> = {};
-  #onProcessingErrorHandler?: (event: {
-    unprocessedEntity: Entity;
-    errors: Error[];
-  }) => Promise<void> | void;
-
-  addProcessor(
-    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
-  ): void {
-    this.#processors.push(...processors.flat());
-  }
-
-  addEntityProvider(
-    ...providers: Array<EntityProvider | Array<EntityProvider>>
-  ): void {
-    this.#entityProviders.push(...providers.flat());
-  }
-
-  addPlaceholderResolver(key: string, resolver: PlaceholderResolver) {
-    if (key in this.#placeholderResolvers)
-      throw new Error(
-        `A placeholder resolver for '${key}' has already been set up, please check your config.`,
-      );
-    this.#placeholderResolvers[key] = resolver;
-  }
-
-  setOnProcessingErrorHandler(
-    handler: (event: {
-      unprocessedEntity: Entity;
-      errors: Error[];
-    }) => Promise<void> | void,
-  ) {
-    this.#onProcessingErrorHandler = handler;
-  }
-
-  get processors() {
-    return this.#processors;
-  }
-
-  get entityProviders() {
-    return this.#entityProviders;
-  }
-
-  get placeholderResolvers() {
-    return this.#placeholderResolvers;
-  }
-
-  get onProcessingErrorHandler() {
-    return this.#onProcessingErrorHandler;
   }
 }
 
@@ -179,12 +124,43 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
 export const catalogPlugin = createBackendPlugin({
   pluginId: 'catalog',
   register(env) {
-    const processingExtensions = new CatalogProcessingExtensionPointImpl();
-    // plugins depending on this API will be initialized before this plugins init method is executed.
-    env.registerExtensionPoint(
-      catalogProcessingExtensionPoint,
-      processingExtensions,
-    );
+    const processors = new Array<CatalogProcessor>();
+    const entityProviders = new Array<EntityProviderEntry>();
+    const placeholderResolvers: Record<string, PlaceholderResolver> = {};
+    let onProcessingError:
+      | ((event: {
+          unprocessedEntity: Entity;
+          errors: Error[];
+        }) => Promise<void> | void)
+      | undefined = undefined;
+
+    env.registerExtensionPoint({
+      extensionPoint: catalogProcessingExtensionPoint,
+      factory: context => ({
+        addProcessor: (...newProcessors) => {
+          processors.push(...newProcessors.flat());
+        },
+        addEntityProvider: (...providers) => {
+          entityProviders.push(
+            ...providers.flat().map(provider => ({
+              provider,
+              context,
+            })),
+          );
+        },
+        addPlaceholderResolver: (key, resolver) => {
+          if (key in placeholderResolvers) {
+            throw new Error(
+              `A placeholder resolver for '${key}' has already been set up, please check your config.`,
+            );
+          }
+          placeholderResolvers[key] = resolver;
+        },
+        setOnProcessingErrorHandler: handler => {
+          onProcessingError = handler;
+        },
+      }),
+    });
 
     let locationAnalyzerFactory:
       | ((options: {
@@ -242,6 +218,7 @@ export const catalogPlugin = createBackendPlugin({
         events: eventsServiceRef,
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
+        catalogScmEvents: catalogScmEventsServiceRef,
       },
       async init({
         logger,
@@ -259,6 +236,7 @@ export const catalogPlugin = createBackendPlugin({
         actionsRegistry,
         auditor,
         events,
+        catalogScmEvents,
       }) {
         const builder = await CatalogBuilder.create({
           config,
@@ -272,22 +250,21 @@ export const catalogPlugin = createBackendPlugin({
           httpAuth,
           auditor,
           events,
+          catalogScmEvents,
         });
 
-        if (processingExtensions.onProcessingErrorHandler) {
-          builder.subscribe({
-            onProcessingError: processingExtensions.onProcessingErrorHandler,
-          });
+        if (onProcessingError) {
+          builder.subscribe({ onProcessingError });
         }
-        builder.addProcessor(...processingExtensions.processors);
-        builder.addEntityProvider(...processingExtensions.entityProviders);
+        builder.addProcessor(...processors);
+        builder.addEntityProvider(...entityProviders);
 
         if (modelExtensions.entityDataParser) {
           builder.setEntityDataParser(modelExtensions.entityDataParser);
         }
 
-        Object.entries(processingExtensions.placeholderResolvers).forEach(
-          ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
+        Object.entries(placeholderResolvers).forEach(([key, resolver]) =>
+          builder.setPlaceholderResolver(key, resolver),
         );
         if (locationAnalyzerFactory) {
           const { locationAnalyzer } = await locationAnalyzerFactory({

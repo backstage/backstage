@@ -142,6 +142,36 @@ function createV1Extension(opts: {
   return ext;
 }
 
+function mirrorInputs(ctx: {
+  inputs: {
+    [name in string]:
+      | undefined
+      | ResolvedExtensionInput<ExtensionInput>
+      | Array<ResolvedExtensionInput<ExtensionInput>>;
+  };
+}) {
+  return [
+    inputMirrorDataRef(
+      Object.fromEntries(
+        Object.entries(ctx.inputs).map(([k, v]) => [
+          k,
+          Array.isArray(v)
+            ? v.map(vi => ({
+                node: vi.node,
+                test: vi.get(testDataRef),
+                other: vi.get(otherDataRef),
+              }))
+            : {
+                node: v?.node,
+                test: v?.get(testDataRef),
+                other: v?.get(otherDataRef),
+              },
+        ]),
+      ),
+    ),
+  ];
+}
+
 describe('instantiateAppNodeTree', () => {
   describe('v1', () => {
     const simpleExtension = createV1Extension({
@@ -235,6 +265,60 @@ describe('instantiateAppNodeTree', () => {
       instantiateAppNodeTree(tree.root, testApis, collector);
       expect(tree.root.instance).toBeDefined();
       expect(childNode?.instance).toBeDefined();
+    });
+
+    it('should ignore non-matching plugin attachments for internal inputs', () => {
+      const otherPlugin = createFrontendPlugin({ pluginId: 'other' });
+      const tree = resolveAppTree(
+        'root-node',
+        [
+          makeSpec(
+            resolveExtensionDefinition(
+              createExtension({
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  test: createExtensionInput([testDataRef], {
+                    singleton: true,
+                    internal: true,
+                  }),
+                },
+                output: [inputMirrorDataRef],
+                factory: mirrorInputs,
+              }),
+              { namespace: 'root-node' },
+            ),
+          ),
+          makeSpec(simpleExtension, {
+            id: 'child-node-app',
+            attachTo: { id: 'root-node', input: 'test' },
+          }),
+          makeSpec(simpleExtension, {
+            id: 'child-node-other',
+            attachTo: { id: 'root-node', input: 'test' },
+            plugin: otherPlugin,
+          }),
+        ],
+        collector,
+      );
+
+      instantiateAppNodeTree(tree.root, testApis, collector);
+
+      expect(tree.root.instance?.getData(inputMirrorDataRef)).toMatchObject({
+        test: { node: { spec: { id: 'child-node-app' } }, test: 'test' },
+      });
+      expect(collector.collectErrors()).toEqual([
+        {
+          code: 'EXTENSION_INPUT_INTERNAL_IGNORED',
+          message:
+            "extension 'child-node-other' from plugin 'other' attached to input 'test' on 'root-node' was ignored, the input is marked as internal and attached extensions must therefore be provided via an override or a module for the 'app' plugin, not the 'other' plugin",
+          context: {
+            node: tree.root,
+            inputName: 'test',
+            extensionId: 'child-node-other',
+            plugin: otherPlugin,
+          },
+        },
+      ]);
     });
 
     it('should not instantiate disabled attachments', () => {
@@ -782,36 +866,6 @@ describe('instantiateAppNodeTree', () => {
       }),
       { namespace: 'app' },
     );
-
-    function mirrorInputs(ctx: {
-      inputs: {
-        [name in string]:
-          | undefined
-          | ResolvedExtensionInput<ExtensionInput>
-          | Array<ResolvedExtensionInput<ExtensionInput>>;
-      };
-    }) {
-      return [
-        inputMirrorDataRef(
-          Object.fromEntries(
-            Object.entries(ctx.inputs).map(([k, v]) => [
-              k,
-              Array.isArray(v)
-                ? v.map(vi => ({
-                    node: vi.node,
-                    test: vi.get(testDataRef),
-                    other: vi.get(otherDataRef),
-                  }))
-                : {
-                    node: v?.node,
-                    test: v?.get(testDataRef),
-                    other: v?.get(otherDataRef),
-                  },
-            ]),
-          ),
-        ),
-      ];
-    }
 
     it('should instantiate a single node', () => {
       const tree = resolveAppTree(
@@ -1574,41 +1628,158 @@ describe('instantiateAppNodeTree', () => {
         ]);
       });
 
-      it('should refuse to create an instance with multiple inputs that did not provide required data', () => {
-        const node = makeNode(
-          resolveExtensionDefinition(
-            createExtension({
-              name: 'test',
-              attachTo: { id: 'ignored', input: 'ignored' },
-              inputs: {
-                singleton: createExtensionInput([otherDataRef], {
-                  singleton: true,
-                }),
-              },
-              output: [],
-              factory: () => [],
-            }),
-            { namespace: 'app' },
-          ),
+      describe('with attachment failures', () => {
+        const inputCountRef = createExtensionDataRef<number>().with({
+          id: 'input-count',
+        });
+
+        const attachmentWithoutRequiredData = makeInstanceWithId(
+          simpleExtension,
+          undefined,
         );
-        expect(
-          createAppNodeInstance({
-            apis: testApis,
-            attachments: new Map([
-              ['singleton', [makeInstanceWithId(simpleExtension, undefined)]],
-            ]),
-            node,
-            collector,
-          }),
-        ).toBeUndefined();
-        expect(collector.collectErrors()).toEqual([
-          {
-            code: 'EXTENSION_INPUT_DATA_MISSING',
-            message:
-              "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')",
-            context: { node, inputName: 'singleton' },
-          },
-        ]);
+
+        it('should proceed if input is optional', () => {
+          const node = makeNode(
+            resolveExtensionDefinition(
+              createExtension({
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  singleton: createExtensionInput([otherDataRef], {
+                    singleton: true,
+                    optional: true,
+                  }),
+                },
+                output: [inputCountRef],
+                factory: ({ inputs }) => [
+                  inputCountRef(inputs.singleton ? 1 : 0),
+                ],
+              }),
+              { namespace: 'app' },
+            ),
+          );
+          expect(
+            createAppNodeInstance({
+              apis: testApis,
+              attachments: new Map([
+                ['singleton', [attachmentWithoutRequiredData]],
+              ]),
+              node,
+              collector,
+            })?.getData(inputCountRef),
+          ).toBe(0);
+
+          expect(collector.collectErrors()).toEqual([
+            {
+              code: 'EXTENSION_INPUT_DATA_MISSING',
+              message:
+                "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')",
+              context: {
+                node: attachmentWithoutRequiredData,
+                inputName: 'singleton',
+              },
+            },
+          ]);
+        });
+
+        it('should fail if input is required', () => {
+          const node = makeNode(
+            resolveExtensionDefinition(
+              createExtension({
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  singleton: createExtensionInput([otherDataRef], {
+                    singleton: true,
+                  }),
+                },
+                output: [inputCountRef],
+                factory: ({ inputs }) => [
+                  inputCountRef(inputs.singleton ? 1 : 0),
+                ],
+              }),
+              { namespace: 'app' },
+            ),
+          );
+
+          expect(
+            createAppNodeInstance({
+              apis: testApis,
+              attachments: new Map([
+                ['singleton', [attachmentWithoutRequiredData]],
+              ]),
+              node,
+              collector,
+            })?.getData(inputCountRef),
+          ).toBeUndefined();
+
+          expect(collector.collectErrors()).toEqual([
+            {
+              code: 'EXTENSION_ATTACHMENT_MISSING',
+              message:
+                "input 'singleton' is required but it failed to be instantiated",
+              context: { inputName: 'singleton', node },
+            },
+            {
+              code: 'EXTENSION_INPUT_DATA_MISSING',
+              message:
+                "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')",
+              context: {
+                node: attachmentWithoutRequiredData,
+                inputName: 'singleton',
+              },
+            },
+          ]);
+        });
+
+        it('should filter out failed attachments for non-singleton inputs', () => {
+          const node = makeNode(
+            resolveExtensionDefinition(
+              createExtension({
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  children: createExtensionInput([otherDataRef]),
+                },
+                output: [inputCountRef],
+                factory: ({ inputs }) => [
+                  inputCountRef(inputs.children.length),
+                ],
+              }),
+              { namespace: 'app' },
+            ),
+          );
+          expect(
+            createAppNodeInstance({
+              apis: testApis,
+              attachments: new Map([
+                [
+                  'children',
+                  [
+                    attachmentWithoutRequiredData,
+                    makeInstanceWithId(simpleExtension, {
+                      other: 42,
+                    }),
+                  ],
+                ],
+              ]),
+              node,
+              collector,
+            })?.getData(inputCountRef),
+          ).toBe(1);
+
+          expect(collector.collectErrors()).toEqual([
+            {
+              code: 'EXTENSION_INPUT_DATA_MISSING',
+              message:
+                "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'children' requires ('other')",
+              context: {
+                node: attachmentWithoutRequiredData,
+                inputName: 'children',
+              },
+            },
+          ]);
+        });
       });
     });
   });

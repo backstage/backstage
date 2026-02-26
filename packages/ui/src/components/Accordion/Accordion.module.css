@@ -19,9 +19,21 @@
 @layer components {
   .bui-Accordion {
     width: 100%;
-    background-color: var(--bui-bg-surface-1);
+    background-color: var(--bui-bg-neutral-1);
     border-radius: var(--bui-radius-3);
     padding: var(--bui-space-3);
+
+    &[data-on-bg='neutral-1'] {
+      background-color: var(--bui-bg-neutral-2);
+    }
+
+    &[data-on-bg='neutral-2'] {
+      background-color: var(--bui-bg-neutral-3);
+    }
+
+    &[data-on-bg='neutral-3'] {
+      background-color: var(--bui-bg-neutral-4);
+    }
   }
 
   .bui-AccordionTrigger {
@@ -73,13 +85,13 @@
     width: 1rem;
     height: 1rem;
 
-    [data-expanded='true'] & {
+    .bui-Accordion[data-expanded='true'] > .bui-AccordionTrigger & {
       transform: rotate(180deg);
     }
   }
 
   .bui-AccordionPanel {
-    [data-expanded='true'] & {
+    .bui-Accordion[data-expanded='true'] > & {
       padding-top: var(--bui-space-1);
     }
   }

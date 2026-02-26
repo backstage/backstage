@@ -20,9 +20,9 @@ import {
   createExtensionInput,
   createFrontendModule,
   createSwappableComponent,
-  SwappableComponentBlueprint,
   swappableComponentsApiRef,
 } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import { DefaultSwappableComponentsApi } from './DefaultSwappableComponentsApi';
 import { render, screen } from '@testing-library/react';
 import { renderInTestApp, renderTestApp } from '@backstage/frontend-test-utils';

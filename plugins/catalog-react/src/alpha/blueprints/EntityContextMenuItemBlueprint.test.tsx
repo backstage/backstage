@@ -48,7 +48,7 @@ describe('EntityContextMenuItemBlueprint', () => {
     },
   ];
 
-  it.each(data)('should return an extension with sane defaults', params => {
+  it.each(data)('should return an extension with sane defaults, %#', params => {
     const extension = EntityContextMenuItemBlueprint.make({
       name: 'test',
       params,
@@ -118,6 +118,18 @@ describe('EntityContextMenuItemBlueprint', () => {
                               },
                               "required": [
                                 "$contains",
+                              ],
+                              "type": "object",
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "$hasPrefix": {
+                                  "type": "string",
+                                },
+                              },
+                              "required": [
+                                "$hasPrefix",
                               ],
                               "type": "object",
                             },
@@ -246,7 +258,7 @@ describe('EntityContextMenuItemBlueprint', () => {
   it.each([
     { filter: { kind: 'Api' } },
     { filter: (e: Entity) => e.kind.toLowerCase() === 'api' },
-  ])('should return a filter function', async ({ filter }) => {
+  ])('should return a filter function, %#', async ({ filter }) => {
     const extension = EntityContextMenuItemBlueprint.make({
       name: 'test',
       params: {

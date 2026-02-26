@@ -1,59 +1,78 @@
+import { ComponentGrid } from '@/components/ComponentGrid';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Banner } from '@/components/Banner';
-import { snippet } from './snippets';
+import { ColorFamily } from '@/components/ColorFamily';
+import {
+  surfacesSnippet,
+  adaptiveSnippet,
+  customCardSnippet,
+  customTokensSnippet,
+  colorPickerSnippet,
+} from './snippets';
 
-# Welcome to Backstage UI
+# Get Started with BUI
 
 Backstage UI is a design system created specifically for Backstage, built with React, TypeScript, and vanilla CSS.
 This open-source library is hosted in the Backstage monorepo. While it can be used in other projects, Backstage UI
 is designed to deliver a consistent, accessible, and extensible experience tailored to Backstage users.
 
-## Import BUI's global styles
+Backstage UI is installed by default on every instance of Backstage, so you can start using it right away.
+If your setup doesn&apos;t include it yet, follow the [installation guide](/get-started/installation) to get started.
 
-Backstage UI works by importing a global CSS file at the root of your application. This file includes all the default styles for the components.
-First, you'll need to install the package using a package manager. For example, if you're using Yarn:
+## Layout containers
 
-<CodeBlock
-  lang="shell"
-  title="Run this command in your `packages/app` directory"
-  code={`yarn add @backstage/ui`}
-/>
+[`Box`](/components/box), [`Flex`](/components/flex), [`Grid`](/components/grid), and [`Card`](/components/card) are the foundation of every layout in Backstage UI.
+Each one offers a set of utility props that map directly to our design tokens, so you can build consistent
+layouts without writing any CSS. When nested, they also act as surfaces and automatically increment the
+background depth so visual hierarchy is handled for you.
 
 <CodeBlock
   lang="tsx"
-  title="Add this line to `packages/app/src/index.tsx`"
-  code={`import '@backstage/cli/asset-types';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import '@backstage/ui/css/styles.css'; // [!code ++]
-
-ReactDOM.createRoot(document.getElementById('root')!).render(<App />);`}
+  title="Nested surfaces with automatic styling"
+  code={surfacesSnippet}
 />
 
-<Banner
-  text="Import these styles only once at your application root. Plugin developers should skip this step to avoid conflicts."
-  variant="warning"
-/>
+## Adaptive components
 
-## Use BUI components
-
-As a plugin maintainer, you can use BUI components in your plugin. As mentioned above, you should not import the styles
-again in your plugin as this will be handled at the root of your application. To get started, just add the library to
-your plugin and import the components you need.
+Components like [`Card`](/components/card), [`Button`](/components/button), [`Text`](/components/text), and others are **adaptive components**. They
+automatically adjust their colors, borders, and backgrounds to match the surface they live on. Drop a
+[`Button`](/components/button) inside a [`Card`](/components/card) inside a [`Box`](/components/box) and each component styles itself appropriately
+without any extra configuration.
 
 <CodeBlock
-  lang="shell"
-  title="Run this command in your `packages/[your-plugin]` directory"
-  code={`yarn add @backstage/ui`}
+  lang="tsx"
+  title="Nested surfaces with automatic styling"
+  code={adaptiveSnippet}
 />
 
-<CodeBlock lang="tsx" title="Let's get started 🚀" code={snippet} />
+## The neutral scale background colors
 
-## Support
+<ColorFamily />
 
-Now that you have the basics down, you can start building your plugin using the new design system.
-Please familiarise yourself first with our theming principles. This will help you understand the core concepts of the design system.
-If you have any questions, please reach out to us on [Discord](https://discord.gg/MUpMjP2).
+## Creating custom components
+
+As much as possible we would like you to use components directly without creating custom components. If you need to create a custom component, you should use the components provided by Backstage UI.
+
+<CodeBlock
+  lang="tsx"
+  title="Creating a custom card using BUI components"
+  code={customCardSnippet}
+/>
+
+If you need to build custom components outside of BUI, you can use our [design tokens](/tokens) as CSS variables to ensure your styles stay consistent with the rest of the system.
+
+<CodeBlock
+  lang="tsx"
+  title="Creating a custom component using BUI tokens"
+  code={customTokensSnippet}
+/>
+
+When building custom interactive components, we strongly recommend using [React Aria](https://react-spectrum.adobe.com/react-aria/) as your foundation. React Aria provides all the necessary accessibility features out of the box — keyboard navigation, focus management, ARIA attributes, and screen reader support — so you can focus on styling and logic without worrying about compliance.
+
+<CodeBlock
+  lang="tsx"
+  title="Building a color picker using React Aria and BUI tokens"
+  code={colorPickerSnippet}
+/>
 
 ## Philosophy
 

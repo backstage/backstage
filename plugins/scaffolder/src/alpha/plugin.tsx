@@ -42,7 +42,7 @@ import {
   scaffolderPage,
 } from './extensions';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { formFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
+import { formFieldsApi } from './formFieldsApi';
 import { formDecoratorsApi } from './api';
 import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { useScaffolderTemplateIconLinkProps } from './hooks/useScaffolderTemplateIconLinkProps';

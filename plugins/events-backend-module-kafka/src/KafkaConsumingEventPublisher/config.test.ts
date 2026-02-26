@@ -86,6 +86,8 @@ describe('readConsumerConfig', () => {
         consumerSubscribeTopics: {
           topics: ['topic-A'],
         },
+        autoCommit: true,
+        pauseOnError: false,
       },
       {
         backstageTopic: 'fake2',
@@ -95,6 +97,8 @@ describe('readConsumerConfig', () => {
         consumerSubscribeTopics: {
           topics: ['topic-B'],
         },
+        autoCommit: true,
+        pauseOnError: false,
       },
     ]);
   });
@@ -209,6 +213,8 @@ describe('readConsumerConfig', () => {
         consumerSubscribeTopics: {
           topics: ['topic-A'],
         },
+        autoCommit: true,
+        pauseOnError: false,
       },
       {
         backstageTopic: 'fake2',
@@ -218,6 +224,8 @@ describe('readConsumerConfig', () => {
         consumerSubscribeTopics: {
           topics: ['topic-B'],
         },
+        autoCommit: true,
+        pauseOnError: false,
       },
     ]);
   });
@@ -334,6 +342,8 @@ describe('readConsumerConfig', () => {
         consumerSubscribeTopics: {
           topics: ['topic-A'],
         },
+        autoCommit: true,
+        pauseOnError: false,
       },
       {
         backstageTopic: 'fake2',
@@ -343,6 +353,8 @@ describe('readConsumerConfig', () => {
         consumerSubscribeTopics: {
           topics: ['topic-B'],
         },
+        autoCommit: true,
+        pauseOnError: false,
       },
     ]);
 
@@ -350,5 +362,55 @@ describe('readConsumerConfig', () => {
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'Legacy single config format detected at events.modules.kafka.kafkaConsumingEventPublisher.',
     );
+  });
+
+  it('offset management fields (autoCommit, pauseOnError, fromBeginning)', () => {
+    const config = new ConfigReader({
+      events: {
+        modules: {
+          kafka: {
+            kafkaConsumingEventPublisher: {
+              dev: {
+                clientId: 'backstage-events',
+                brokers: ['kafka1:9092'],
+                topics: [
+                  {
+                    topic: 'fake1',
+                    kafka: {
+                      topics: ['topic-A'],
+                      groupId: 'my-group',
+                      autoCommit: false,
+                      pauseOnError: true,
+                      fromBeginning: true,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const publisherConfigs = readConsumerConfig(config, mockLogger);
+
+    expect(publisherConfigs).toBeDefined();
+    expect(publisherConfigs).toHaveLength(1);
+
+    const devConfig = publisherConfigs[0];
+    expect(devConfig.kafkaConsumerConfigs).toEqual([
+      {
+        backstageTopic: 'fake1',
+        consumerConfig: {
+          groupId: 'my-group',
+        },
+        consumerSubscribeTopics: {
+          topics: ['topic-A'],
+          fromBeginning: true,
+        },
+        autoCommit: false,
+        pauseOnError: true,
+      },
+    ]);
   });
 });

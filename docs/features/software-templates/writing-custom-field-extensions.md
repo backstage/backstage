@@ -22,7 +22,7 @@ Field extensions are a way to combine an ID, a `React` Component and a
 the `Scaffolder` frontend plugin in your own `App.tsx`.
 
 You can create your own Field Extension by using the
-[`createScaffolderFieldExtension`](https://backstage.io/docs/reference/plugin-scaffolder.createscaffolderfieldextension)
+[`createScaffolderFieldExtension`](https://backstage.io/api/stable/variables/_backstage_plugin-scaffolder.index.createScaffolderFieldExtension.html)
 `API` like below.
 
 As an example, we will create a component that validates whether a string is in the `Kebab-case` pattern:
@@ -151,7 +151,7 @@ const routes = (
 
 ### Async Validation Function
 
-A validation function can be asynchronous and use [Utility APIs](https://backstage.io/docs/api/utility-apis/) via the `ApiHolder` in the [field validation context](https://backstage.io/docs/reference/plugin-scaffolder-react.customfieldvalidator). The example below uses the `catalogApiRef` to check if the submitted value (in this scenario an entity ref) exists in the catalog.
+A validation function can be asynchronous and use [Utility APIs](https://backstage.io/docs/api/utility-apis/) via the `ApiHolder` in the [field validation context](https://backstage.io/api/stable/types/_backstage_plugin-scaffolder-react.index.CustomFieldValidator.html). The example below uses the `catalogApiRef` to check if the submitted value (in this scenario an entity ref) exists in the catalog.
 
 ```tsx
 import { FieldValidation } from '@rjsf/utils';

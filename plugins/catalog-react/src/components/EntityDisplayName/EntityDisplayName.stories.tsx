@@ -25,6 +25,7 @@ const defaultArgs = {
 export default {
   title: 'Catalog /EntityDisplayName',
   decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+  tags: ['!manifest'],
 };
 
 export const Default = (args: EntityDisplayNameProps) => (

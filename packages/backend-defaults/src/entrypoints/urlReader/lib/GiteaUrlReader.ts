@@ -40,7 +40,7 @@ import {
   NotFoundError,
   NotModifiedError,
 } from '@backstage/errors';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { parseLastModified } from './util';
 import parseGitUrl from 'git-url-parse';
 

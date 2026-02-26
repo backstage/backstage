@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { InjectOptions } from './types';
 import compileTemplate from 'lodash/template';
 import { Config, ConfigReader } from '@backstage/config';

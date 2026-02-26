@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { runOutput } from '@backstage/cli-common';
 

@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageRoles } from '@backstage/cli-node';
 import { paths } from '../../../lib/paths';

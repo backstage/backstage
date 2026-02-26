@@ -148,6 +148,18 @@ export const ALL_OBJECTS: ObjectToFetch[] = [
     plural: 'secrets',
     objectType: 'secrets',
   },
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'persistentvolumes',
+    objectType: 'persistentvolumes',
+  },
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'persistentvolumeclaims',
+    objectType: 'persistentvolumeclaims',
+  },
   ...DEFAULT_OBJECTS,
 ];
 

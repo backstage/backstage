@@ -23,7 +23,7 @@ import fs from 'fs-extra';
 import { createDefaultFilters } from '../../../../lib/templating/filters/createDefaultFilters';
 import { convertFiltersToRecord } from '../../../../util/templating';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import path from 'path';
+import path from 'node:path';
 import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
 
 export type TemplateFileActionInput = {

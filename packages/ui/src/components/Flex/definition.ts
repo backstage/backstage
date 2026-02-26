@@ -44,4 +44,14 @@ export const FlexDefinition = {
     'justify',
     'direction',
   ],
+  dataAttributes: {
+    bg: [
+      'neutral-1',
+      'neutral-2',
+      'neutral-3',
+      'danger',
+      'warning',
+      'success',
+    ] as const,
+  },
 } as const satisfies ComponentDefinition;

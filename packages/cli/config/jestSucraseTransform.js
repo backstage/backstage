@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { createHash } = require('crypto');
+const { createHash } = require('node:crypto');
 const { transform } = require('sucrase');
 const sucrasePkg = require('sucrase/package.json');
 

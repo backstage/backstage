@@ -16,11 +16,11 @@
  */
 
 const fs = require('fs-extra');
-const path = require('path');
+const path = require('node:path');
 const semver = require('semver');
 const { Octokit } = require('@octokit/rest');
-const { execFile: execFileCb } = require('child_process');
-const { promisify, parseArgs } = require('util');
+const { execFile: execFileCb } = require('node:child_process');
+const { promisify, parseArgs } = require('node:util');
 
 const execFile = promisify(execFileCb);
 
@@ -211,7 +211,7 @@ async function main(args) {
   // Output patch branch for CI workflows to capture
   if (process.env.PATCH_RELEASE_BRANCH && process.env.GITHUB_OUTPUT) {
     // Use native fs for appendFileSync (fs-extra doesn't have sync version)
-    const nativeFs = require('fs');
+    const nativeFs = require('node:fs');
     nativeFs.appendFileSync(
       process.env.GITHUB_OUTPUT,
       `patch_branch=${patchBranch}\n`,
@@ -244,7 +244,11 @@ async function main(args) {
     await run('git', 'checkout', '-b', branchName);
   }
 
+  const appliedPrNumbers = [];
+
   for (const prNumber of prNumbers) {
+    console.log(`Processing PR #${prNumber}...`);
+
     const { data } = await octokit.pulls.get({
       owner,
       repo,
@@ -271,18 +275,74 @@ async function main(args) {
       '--reverse',
       '--pretty=%H',
     );
-    for (const logSha of logLines.split(/\r?\n/)) {
-      await run('git', 'cherry-pick', '-n', logSha);
+
+    const commitMessage = `Patch from PR #${prNumber}`;
+
+    const commitMessagePattern = `^${commitMessage}$`;
+
+    // Check if this patch has already been applied by looking for the commit message
+    try {
+      const existingCommit = await run(
+        'git',
+        'log',
+        '--extended-regexp',
+        '--grep',
+        commitMessagePattern,
+        '--format=%H',
+        '-1',
+      );
+
+      if (existingCommit) {
+        console.log(
+          `Patch from PR #${prNumber} has already been applied, skipping...`,
+        );
+        continue;
+      }
+    } catch {
+      // No existing commit found, proceed with cherry-pick
     }
-    await run(
-      'git',
-      'commit',
-      '--signoff',
-      '--no-verify',
-      '-m',
-      `Patch from PR #${prNumber}`,
-    );
+
+    let hasChanges = false;
+    const commitShas = logLines.split(/\r?\n/).filter(Boolean);
+    for (const logSha of commitShas) {
+      try {
+        await run('git', 'cherry-pick', '-n', logSha);
+        hasChanges = true;
+      } catch (error) {
+        // Check if the cherry-pick failed because changes are already applied
+        const status = await run('git', 'status', '--porcelain');
+        if (!status) {
+          console.log(
+            `Commit ${logSha} appears to be already applied, skipping...`,
+          );
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    if (!hasChanges) {
+      console.log(
+        `All commits from PR #${prNumber} are already applied, skipping...`,
+      );
+      continue;
+    }
+
+    await run('git', 'commit', '--signoff', '--no-verify', '-m', commitMessage);
+
+    appliedPrNumbers.push(prNumber);
   }
+
+  if (appliedPrNumbers.length === 0) {
+    console.log('All patches have already been applied, nothing to do.');
+    return;
+  }
+
+  console.log(
+    `Applied ${appliedPrNumbers.length} patch(es): ${appliedPrNumbers.join(
+      ', ',
+    )}`,
+  );
 
   console.log('Running "yarn install" ...');
   await run('yarn', 'install');
@@ -311,12 +371,17 @@ async function main(args) {
     await run('git', 'push', 'origin', '-u', branchName);
   }
 
-  // Generate PR body
+  // Generate PR body using only applied patches
   let body;
   if (descriptions) {
-    const descriptionList = descriptions
+    // Filter descriptions to only include applied patches
+    const appliedDescriptions = descriptions.filter((_, index) =>
+      appliedPrNumbers.includes(prNumbers[index]),
+    );
+
+    const descriptionList = appliedDescriptions
       .map((desc, index) => {
-        const prNumber = prNumbers[index];
+        const prNumber = appliedPrNumbers[index];
         const prLink = `https://github.com/${owner}/${repo}/pull/${prNumber}`;
         return `- ${desc} ([#${prNumber}](${prLink}))`;
       })
@@ -329,7 +394,9 @@ async function main(args) {
   const params = new URLSearchParams({
     expand: 1,
     body: body,
-    title: `Patch release of ${prNumbers.map(nr => `#${nr}`).join(', ')}`,
+    title: `Patch release of ${appliedPrNumbers
+      .map(nr => `#${nr}`)
+      .join(', ')}`,
   });
 
   const url = `https://github.com/backstage/backstage/compare/${patchBranch}...${branchName}?${params}`;

@@ -6,3 +6,58 @@ find the full documentation for it [in our repository](https://github.com/change
 
 We have a quick list of common questions to get you started engaging with this project in
 [our documentation](https://github.com/changesets/changesets/blob/master/docs/common-questions.md)
+
+---
+
+## Backstage UI Changesets
+
+For `@backstage/ui` changesets, use this format:
+
+```markdown
+---
+'@backstage/ui': patch
+---
+
+Brief summary
+
+Optional description with code examples.
+
+**Migration:**
+
+Migration instructions (breaking changes only).
+
+**Affected components:** button, card
+```
+
+**Required:**
+
+- End with `**Affected components:**` + comma-separated component names
+- For breaking changes: Add `**Migration:**` section
+- No headings (`##`, `###`) inside - use bold markers
+
+**Examples:**
+
+```markdown
+Fixed button hover state
+
+**Affected components:** button
+```
+
+````markdown
+**BREAKING**: New Table API
+
+**Migration:**
+
+Update imports:
+
+```diff
+- import { Table } from '@backstage/ui';
++ import { Table, type ColumnConfig } from '@backstage/ui';
+```
+````
+
+**Affected components:** table
+
+```
+
+```

@@ -25,15 +25,15 @@ describe('BuiThemePreview', () => {
       <BuiThemePreview
         mode="light"
         styleObject={{
-          '--bui-bg-surface-2': '#ffffff',
-          '--bui-border': '#cccccc',
+          '--bui-bg-neutral-2': '#ffffff',
+          '--bui-border-2': '#cccccc',
           '--bui-radius-2': '4px',
           '--bui-space-3': '12px',
           '--bui-fg-secondary': '#777777',
           '--bui-bg-solid': '#000000',
           '--bui-fg-solid': '#ffffff',
           '--bui-fg-primary': '#111111',
-          '--bui-bg-surface-1': '#f5f5f5',
+          '--bui-bg-neutral-1': '#f5f5f5',
         }}
       />,
     );

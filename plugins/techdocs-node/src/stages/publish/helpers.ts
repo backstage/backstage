@@ -15,7 +15,7 @@
  */
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import mime from 'mime-types';
-import path from 'path';
+import path from 'node:path';
 import createLimiter from 'p-limit';
 import recursiveReadDir from 'recursive-readdir';
 

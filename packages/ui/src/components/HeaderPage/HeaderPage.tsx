@@ -56,6 +56,7 @@ export const HeaderPage = (props: HeaderPageProps) => {
                   color="secondary"
                   truncate
                   style={{ maxWidth: '240px' }}
+                  standalone
                 >
                   {breadcrumb.label}
                 </Link>

@@ -15,12 +15,12 @@ import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { NavContentComponent } from '@backstage/frontend-plugin-api';
+import { NavContentComponent } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { SignInPageProps } from '@backstage/frontend-plugin-api';
+import { SignInPageProps } from '@backstage/plugin-app-react';
 import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TranslationMessages } from '@backstage/frontend-plugin-api';
 import { TranslationResource } from '@backstage/frontend-plugin-api';
@@ -40,6 +40,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -57,6 +58,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
         content: ExtensionInput<
@@ -64,6 +66,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -89,6 +92,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         content: ExtensionInput<
@@ -100,6 +104,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
       };
@@ -121,6 +126,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
         signInPage: ExtensionInput<
@@ -132,6 +138,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
         children: ExtensionInput<
@@ -139,6 +146,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
         elements: ExtensionInput<
@@ -146,6 +154,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         wrappers: ExtensionInput<
@@ -157,6 +166,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -182,6 +192,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -218,6 +229,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -262,6 +274,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -471,6 +484,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -574,6 +588,38 @@ const appPlugin: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
+    'api:app/plugin-wrapper': OverridableExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        wrappers: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            () => Promise<{
+              component: ComponentType<{
+                children: ReactNode;
+              }>;
+            }>,
+            'core.plugin-wrapper.loader',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'plugin-wrapper';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
     'api:app/scm-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'scm-auth';
@@ -638,6 +684,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -672,6 +719,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };

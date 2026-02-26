@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { isValidElement, useState, useCallback, useMemo } from 'react';
+import {
+  isValidElement,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import {
   ElementCollection,
@@ -220,10 +226,18 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       ? convertConfigToDefaultWidgets(props.config, availableWidgets)
       : [];
   }, [props.config, availableWidgets]);
-  const [widgets, setWidgets, isStorageLoading] = useHomeStorage(defaultLayout);
+  const [storedWidgets, storeWidgets, isStorageLoading] =
+    useHomeStorage(defaultLayout);
+  const [widgets, setWidgets] = useState(storedWidgets);
+
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
   const [editMode, setEditMode] = useState(editModeOn);
+
+  useEffect(() => {
+    setWidgets(storedWidgets);
+  }, [storedWidgets]);
+
   const getWidgetByName = (name: string) => {
     return availableWidgets.find(widget => widget.name === name);
   };
@@ -287,16 +301,18 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
 
   const changeEditMode = (mode: boolean) => {
     setEditMode(mode);
-    setWidgets(
-      widgets.map(w => {
+
+    if (!mode) {
+      const newWidgets = widgets.map(w => {
         const resizable = w.resizable === false ? false : mode;
         const movable = w.movable === false ? false : mode;
         return {
           ...w,
           layout: { ...w.layout, isDraggable: movable, isResizable: resizable },
         };
-      }),
-    );
+      });
+      storeWidgets(newWidgets);
+    }
   };
 
   const handleLayoutChange = (newLayout: Layout[], _: Layouts) => {
@@ -329,6 +345,11 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     );
   };
 
+  const handleCancel = () => {
+    setWidgets(storedWidgets);
+    setEditMode(false);
+  };
+
   if (isStorageLoading) {
     return <Progress />;
   }
@@ -344,6 +365,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           changeEditMode={changeEditMode}
           defaultConfigAvailable={props.config !== undefined}
           restoreDefault={handleRestoreDefaultConfig}
+          cancel={handleCancel}
         />
       </ContentHeader>
       <Dialog

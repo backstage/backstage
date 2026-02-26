@@ -199,6 +199,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   } = useMemo(() => {
     const parsed = qs.parse(location.search, {
       ignoreQueryPrefix: true,
+      arrayLimit: 10000,
     });
 
     let limit = paginationLimit;
@@ -398,6 +399,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
 
       const oldParams = qs.parse(location.search, {
         ignoreQueryPrefix: true,
+        arrayLimit: 10000,
       });
       const newParams = qs.stringify(
         {

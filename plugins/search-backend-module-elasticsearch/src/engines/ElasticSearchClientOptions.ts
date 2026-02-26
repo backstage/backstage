@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ConnectionOptions as TLSConnectionOptions } from 'tls';
+import type { ConnectionOptions as TLSConnectionOptions } from 'node:tls';
 
 /**
  * Typeguard to differentiate ElasticSearch client options which are compatible

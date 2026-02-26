@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { join } from 'path';
+import { join } from 'node:path';
 import { paths as cliPaths } from '../../../lib/paths';
 
 export async function createTemporaryTsConfig(includedPackageDirs: string[]) {

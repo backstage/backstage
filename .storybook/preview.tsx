@@ -5,7 +5,7 @@ import addonLinks from '@storybook/addon-links';
 import { definePreview } from '@storybook/react-vite';
 import { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
-import { Content, AlertDisplay } from '@backstage/core-components';
+import { AlertDisplay } from '@backstage/core-components';
 import { apis } from './support/apis';
 import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
@@ -21,6 +21,7 @@ import './storybook.css';
 import './themes/spotify.css';
 
 export default definePreview({
+  tags: ['manifest'],
   globalTypes: {
     themeMode: {
       name: 'Theme Mode',
@@ -32,7 +33,6 @@ export default definePreview({
           { value: 'light', icon: 'circlehollow', title: 'Light' },
           { value: 'dark', icon: 'circle', title: 'Dark' },
         ],
-        showName: true,
         dynamicTitle: true,
       },
     },
@@ -46,7 +46,6 @@ export default definePreview({
           { value: 'backstage', title: 'Backstage' },
           { value: 'spotify', title: 'Spotify' },
         ],
-        showName: true,
         dynamicTitle: true,
       },
     },
@@ -58,8 +57,6 @@ export default definePreview({
   },
 
   parameters: {
-    layout: 'fullscreen',
-
     backgrounds: {
       disable: true,
     },
@@ -107,6 +104,13 @@ export default definePreview({
         // 'dark spotify': allModes['dark spotify'],
       },
     },
+
+    a11y: {
+      // 'todo' - show a11y violations in the test UI only
+      // 'error' - fail CI on a11y violations
+      // 'off' - skip a11y checks entirely
+      test: 'todo',
+    },
   },
 
   decorators: [
@@ -128,11 +132,10 @@ export default definePreview({
         };
       }, [selectedTheme, selectedThemeName]);
 
-      document.body.style.backgroundColor = 'var(--bui-bg-surface-0)';
+      document.body.style.backgroundColor = 'var(--bui-bg-app)';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor =
-          'var(--bui-bg-surface-0)';
+        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg-app)';
       });
 
       return (
@@ -140,9 +143,7 @@ export default definePreview({
           {/* @ts-ignore */}
           <TestApiProvider apis={apis}>
             <AlertDisplay />
-            <Content>
-              <Story />
-            </Content>
+            <Story />
           </TestApiProvider>
         </UnifiedThemeProvider>
       );

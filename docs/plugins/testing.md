@@ -4,6 +4,12 @@ title: Testing with Jest
 description: Documentation on How to do unit testing with Jest
 ---
 
+:::note Note
+
+You may want to consider migrating to Jest 30, to do this, you can follow this guide: [Migrating to Jest 30](../tutorials/jest30-migration.md)
+
+:::
+
 Backstage uses [Jest](https://facebook.github.io/jest/) for all our unit testing
 needs.
 
@@ -184,6 +190,11 @@ breaks and the next developer immediately know the problem is that the data
 loading is broken, not that the loading indicator is broken.
 
 ## Examples
+
+For more specific examples of how to test your Backstage **backend plugins** and **modules** or **frontend plugins** you can check out the following guides:
+
+- [Testing Backend Plugins and Modules](../backend-system/building-plugins-and-modules/02-testing.md)
+- [Testing Frontend Plugins](../frontend-system/building-plugins/02-testing.md)
 
 ### Utility Functions
 

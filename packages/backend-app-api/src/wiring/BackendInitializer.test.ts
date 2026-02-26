@@ -23,6 +23,7 @@ import {
   createBackendFeatureLoader,
   ServiceRef,
   coreServices,
+  ExtensionPointFactoryContext,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -738,6 +739,74 @@ describe('BackendInitializer', () => {
       }),
     );
     await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should honor module failure reports from extension points', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              plugins: {
+                test: {
+                  modules: { mod: { onPluginModuleBootFailure: 'continue' } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    let extensionValue = 0;
+    const extensionPoint = createExtensionPoint<{ getValue(): number }>({
+      id: 'test-extension',
+    });
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        let theContext: ExtensionPointFactoryContext | undefined;
+        reg.registerExtensionPoint({
+          extensionPoint,
+          factory: context => {
+            theContext = context;
+            return {
+              getValue: () => 3,
+            };
+          },
+        });
+        reg.registerInit({
+          deps: {},
+          async init() {
+            theContext?.reportModuleStartupFailure({
+              error: new Error('NOPE'),
+            });
+          },
+        });
+      },
+    });
+    const module = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'mod',
+      register(reg) {
+        reg.registerInit({
+          deps: { extension: extensionPoint },
+          async init({ extension }) {
+            extensionValue = extension.getValue();
+          },
+        });
+      },
+    });
+    init.add(plugin);
+    init.add(module);
+
+    const { result } = await init.start();
+    const moduleResult = result.plugins
+      .find(p => p.pluginId === 'test')
+      ?.modules.find(m => m.moduleId === 'mod');
+    expect(moduleResult?.failure?.allowed).toBe(true);
+    expect(moduleResult?.failure?.error?.message).toBe('NOPE');
+    expect(extensionValue).toBe(3);
   });
 
   it('should permit startup errors if the default onPluginModuleBootFailure is continue', async () => {

@@ -1,0 +1,120 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { alertPropDefs } from './props-definition';
+import {
+  alertUsageSnippet,
+  defaultSnippet,
+  statusVariantsSnippet,
+  withDescriptionSnippet,
+  withActionsSnippet,
+  loadingStatesSnippet,
+  withoutIconsSnippet,
+  customIconSnippet,
+} from './snippets';
+import {
+  Default,
+  StatusVariants,
+  WithDescription,
+  WithActions,
+  LoadingStates,
+  WithoutIcons,
+  CustomIcon,
+} from './components';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { AlertDefinition } from '../../../utils/definitions';
+
+<PageTitle
+  title="Alert"
+  description="A component for displaying alert messages with different status levels and optional actions."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={alertUsageSnippet} />
+
+## API reference
+
+<PropsTable data={alertPropDefs} />
+
+## Examples
+
+### Status Variants
+
+The Alert component supports four status variants, each with its own color theme.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<StatusVariants />}
+  code={statusVariantsSnippet}
+/>
+
+### With Description
+
+Add a description to provide additional context or details.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithDescription />}
+  code={withDescriptionSnippet}
+/>
+
+### With Actions
+
+Include custom actions like buttons for interactive alerts.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithActions />}
+  code={withActionsSnippet}
+/>
+
+### Loading States
+
+The loading spinner replaces the icon to indicate an ongoing process.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<LoadingStates />}
+  code={loadingStatesSnippet}
+/>
+
+### Without Icons
+
+Disable icons for a simpler appearance.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithoutIcons />}
+  code={withoutIconsSnippet}
+/>
+
+### Custom Icon
+
+Provide a custom icon element instead of the default status icon.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<CustomIcon />}
+  code={customIconSnippet}
+/>
+
+<Theming definition={AlertDefinition} />
+
+<ChangelogComponent component="alert" />

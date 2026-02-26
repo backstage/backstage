@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
-import { relative as relativePath, resolve as resolvePath } from 'path';
+import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
@@ -107,7 +107,8 @@ export const buildPackage = async (options: BuildOptions) => {
 
   const rollupConfigs = await makeRollupConfigs(options);
 
-  await fs.remove(resolvePath(options.targetDir ?? paths.targetDir, 'dist'));
+  const targetDir = options.targetDir ?? paths.targetDir;
+  await fs.remove(resolvePath(targetDir, 'dist'));
 
   const buildTasks = rollupConfigs.map(rollupBuild);
 

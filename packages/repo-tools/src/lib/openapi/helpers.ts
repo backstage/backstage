@@ -18,7 +18,7 @@ import Parser from '@apidevtools/swagger-parser';
 import fs, { pathExists } from 'fs-extra';
 import YAML from 'js-yaml';
 import { cloneDeep } from 'lodash';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { paths } from '../paths';
 import { YAML_SCHEMA_PATH } from './constants';
 
