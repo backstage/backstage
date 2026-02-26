@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMediaQuery } from './useMediaQuery';
+import { useMemo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import type { Breakpoint } from '../types';
 
 export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
@@ -25,40 +26,90 @@ export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
   { name: 'Extra Large', id: 'xl', value: 1536 },
 ];
 
-/** @public */
-export const useBreakpoint = () => {
-  // Call all media queries at the top level
-  const matches = breakpoints.map(breakpoint => {
-    return useMediaQuery(`(min-width: ${breakpoint.value}px)`);
-  });
+const breakpointIndex = new Map<Breakpoint, number>(
+  breakpoints.map((bp, i) => [bp.id, i]),
+);
 
-  // Pre-calculate all the up/down values we need
-  const upMatches = new Map(
-    breakpoints.map(bp => [bp.id, useMediaQuery(`(min-width: ${bp.value}px)`)]),
-  );
+function bpIndex(key: Breakpoint): number {
+  return breakpointIndex.get(key) ?? 0;
+}
 
-  const downMatches = new Map(
-    breakpoints.map(bp => [
-      bp.id,
-      useMediaQuery(`(max-width: ${bp.value - 1}px)`),
-    ]),
-  );
+const IS_SERVER =
+  typeof window === 'undefined' || typeof window.matchMedia === 'undefined';
 
-  let breakpoint: Breakpoint = breakpoints[0].id;
-  for (let i = matches.length - 1; i >= 0; i--) {
-    if (matches[i]) {
-      breakpoint = breakpoints[i].id;
-      break;
+function computeBreakpoint(): Breakpoint {
+  if (IS_SERVER) {
+    return 'initial';
+  }
+  for (let i = breakpoints.length - 1; i >= 0; i--) {
+    if (window.matchMedia(`(min-width: ${breakpoints[i].value}px)`).matches) {
+      return breakpoints[i].id;
     }
   }
+  return 'initial';
+}
 
-  return {
-    breakpoint,
-    up: (key: Breakpoint): boolean => {
-      return upMatches.get(key) ?? false;
-    },
-    down: (key: Breakpoint): boolean => {
-      return downMatches.get(key) ?? false;
-    },
+// --- Singleton store ---
+// Created lazily on first subscribe/getSnapshot call.
+
+let current: Breakpoint | undefined;
+let listeners: Set<() => void> | undefined;
+let initialized = false;
+
+function ensureInitialized(): void {
+  if (initialized || IS_SERVER) {
+    return;
+  }
+  initialized = true;
+  current = computeBreakpoint();
+  listeners = new Set();
+
+  for (const bp of breakpoints) {
+    const mql = window.matchMedia(`(min-width: ${bp.value}px)`);
+    const onChange = () => {
+      const next = computeBreakpoint();
+      if (next !== current) {
+        current = next;
+        for (const cb of listeners!) {
+          cb();
+        }
+      }
+    };
+    mql.addEventListener('change', onChange);
+  }
+}
+
+function subscribe(callback: () => void): () => void {
+  ensureInitialized();
+  listeners!.add(callback);
+  return () => {
+    listeners!.delete(callback);
   };
+}
+
+function getSnapshot(): Breakpoint {
+  ensureInitialized();
+  return current!;
+}
+
+function getServerSnapshot(): Breakpoint {
+  return 'initial';
+}
+
+/** @public */
+export const useBreakpoint = () => {
+  const breakpoint = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
+
+  return useMemo(
+    () => ({
+      breakpoint,
+      up: (key: Breakpoint): boolean => bpIndex(breakpoint) >= bpIndex(key),
+      down: (key: Breakpoint): boolean => bpIndex(breakpoint) < bpIndex(key),
+    }),
+    [breakpoint],
+  );
 };
