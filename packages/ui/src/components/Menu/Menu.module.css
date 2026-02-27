@@ -58,6 +58,10 @@
 
   .bui-MenuInner {
     border-radius: var(--menu-border-radius);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .bui-MenuContent {

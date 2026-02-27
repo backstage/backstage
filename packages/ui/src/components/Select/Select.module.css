@@ -116,12 +116,17 @@
     }
   }
 
-  .bui-SelectList:focus-visible {
-    /* Remove default focus-visible outline because React Aria
-     * triggers it on mouse click open of the list for some reason.
-     * On keyboard use, the top item receives the focus style,
-     * so it's not needed anyway. */
-    outline: none;
+  .bui-SelectList {
+    overflow: auto;
+    min-height: 0;
+
+    &:focus-visible {
+      /* Remove default focus-visible outline because React Aria
+       * triggers it on mouse click open of the list for some reason.
+       * On keyboard use, the top item receives the focus style,
+       * so it's not needed anyway. */
+      outline: none;
+    }
   }
 
   .bui-SelectItem {
