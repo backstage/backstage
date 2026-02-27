@@ -149,12 +149,15 @@ export class ScaffolderClient implements ScaffolderApi {
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   });
-  autocomplete(input: {
-    token: string;
-    provider: string;
-    resource: string;
-    context: Record<string, string>;
-  }): Promise<{
+  autocomplete(
+    input: {
+      token: string;
+      provider: string;
+      resource: string;
+      context: Record<string, string>;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
     results: {
       title?: string;
       id: string;

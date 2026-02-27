@@ -283,7 +283,6 @@ class DefaultScaffolderService implements ScaffolderService {
     return this.#client.dryRun(request, await this.#getOptions(options));
   }
 
-  // The autocomplete token is part of the request body, not derived from credentials
   async autocomplete(
     request: {
       token: string;
@@ -291,9 +290,9 @@ class DefaultScaffolderService implements ScaffolderService {
       resource: string;
       context: Record<string, string>;
     },
-    _options: ScaffolderServiceRequestOptions,
+    options: ScaffolderServiceRequestOptions,
   ): Promise<{ results: { title?: string; id: string }[] }> {
-    return this.#client.autocomplete(request);
+    return this.#client.autocomplete(request, await this.#getOptions(options));
   }
 
   async #getOptions(

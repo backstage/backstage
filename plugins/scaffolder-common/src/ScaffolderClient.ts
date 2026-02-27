@@ -393,22 +393,28 @@ export class ScaffolderClient implements ScaffolderApi {
   /**
    * {@inheritdoc ScaffolderApi.retry}
    */
-  async autocomplete({
-    token,
-    resource,
-    provider,
-    context,
-  }: {
-    token: string;
-    provider: string;
-    resource: string;
-    context: Record<string, string>;
-  }): Promise<{ results: { title?: string; id: string }[] }> {
+  async autocomplete(
+    {
+      token,
+      resource,
+      provider,
+      context,
+    }: {
+      token: string;
+      provider: string;
+      resource: string;
+      context: Record<string, string>;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{ results: { title?: string; id: string }[] }> {
     return await this.requestRequired(
-      await this.apiClient.autocomplete({
-        path: { provider, resource },
-        body: { token, context },
-      }),
+      await this.apiClient.autocomplete(
+        {
+          path: { provider, resource },
+          body: { token, context },
+        },
+        options,
+      ),
     );
   }
 
