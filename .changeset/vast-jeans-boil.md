@@ -1,8 +1,6 @@
 ---
-'example-app-legacy': minor
 '@backstage/create-app': minor
 '@backstage/theme': minor
-'example-app': minor
 ---
 
 Separates MUI 5 class name generator code into separate file and entry point that can be imported before any MUI 5 component loads.
