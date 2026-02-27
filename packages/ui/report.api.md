@@ -75,7 +75,7 @@ export const AccordionDefinition: {
   readonly propDefs: {
     readonly bg: {
       readonly dataAttribute: true;
-      readonly default: 'neutral-auto';
+      readonly default: 'neutral';
     };
     readonly children: {};
     readonly className: {};
@@ -1814,7 +1814,7 @@ export interface PopoverProps
     PopoverOwnProps {}
 
 // @public
-export type ProviderBg = ContainerBg | 'neutral-auto';
+export type ProviderBg = 'neutral' | 'danger' | 'warning' | 'success';
 
 // @public (undocumented)
 export interface QueryOptions<TFilter> {
