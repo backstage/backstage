@@ -1378,7 +1378,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Avatar</h2>
       <div class="badges">
-        <label for="c-2-backstage-ui-avatar-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-2-backstage-ui-avatar-props" class="badge ok as-toggle">5 prop types</label>
         <label for="c-2-backstage-ui-avatar-info" class="badge info as-toggle">1 info</label>
         <label for="c-2-backstage-ui-avatar-stories" class="badge ok as-toggle">4 stories</label>
         
@@ -1412,11 +1412,13 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">4 prop types</span>
+              <span class="badge ok">5 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Avatar/Avatar.tsx::Avatar</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>/**
+            <pre><code>className?: string
+
+/**
  * Name of the person - used for generating initials and accessibility labels
  */
 name: string
@@ -3295,7 +3297,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Checkbox</h2>
       <div class="badges">
-        <label for="c-9-backstage-ui-checkbox-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-9-backstage-ui-checkbox-props" class="badge ok as-toggle">4 prop types</label>
         <label for="c-9-backstage-ui-checkbox-info" class="badge info as-toggle">1 info</label>
         <label for="c-9-backstage-ui-checkbox-stories" class="badge ok as-toggle">3 stories</label>
         
@@ -3329,11 +3331,17 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">1 prop type</span>
+              <span class="badge ok">4 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Checkbox/Checkbox.tsx::Checkbox</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>children: React.ReactNode</code></pre>
+            <pre><code>children: React.ReactNode
+
+className?: string
+
+indeterminate?: boolean
+
+selected?: boolean</code></pre>
           </div>
         </div>
     
@@ -5039,7 +5047,7 @@ import { Fragment } from "react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Dialog</h2>
       <div class="badges">
-        <label for="c-13-backstage-ui-dialog-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-13-backstage-ui-dialog-props" class="badge ok as-toggle">5 prop types</label>
         <label for="c-13-backstage-ui-dialog-info" class="badge info as-toggle">1 info</label>
         <label for="c-13-backstage-ui-dialog-stories" class="badge ok as-toggle">11 stories</label>
         
@@ -5073,15 +5081,17 @@ import { Fragment } from "react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">4 prop types</span>
+              <span class="badge ok">5 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Dialog/Dialog.tsx::Dialog</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>children?: React.ReactNode
+            <pre><code>children?: ReactNode
 
 className?: string
 
 height?: number | string
+
+style?: React.CSSProperties
 
 width?: number | string</code></pre>
           </div>
@@ -5613,7 +5623,7 @@ style?: React.CSSProperties</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FieldError</h2>
       <div class="badges">
-        
+        <label for="c-15-backstage-ui-fielderror-props" class="badge ok as-toggle">1 prop type</label>
         <label for="c-15-backstage-ui-fielderror-info" class="badge info as-toggle">1 info</label>
         <label for="c-15-backstage-ui-fielderror-stories" class="badge ok as-toggle">3 stories</label>
         
@@ -5630,7 +5640,7 @@ style?: React.CSSProperties</code></pre>
   <input id="c-15-backstage-ui-fielderror-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-15-backstage-ui-fielderror-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  
+  <input id="c-15-backstage-ui-fielderror-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5643,6 +5653,17 @@ style?: React.CSSProperties</code></pre>
     </div>
         </div>
     
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">1 prop type</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/FieldError/FieldError.tsx::FieldError</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>className?: string</code></pre>
+          </div>
+        </div>
     
         <div class="panel panel-stories">
           
@@ -5745,7 +5766,7 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FieldLabel</h2>
       <div class="badges">
-        <label for="c-16-backstage-ui-fieldlabel-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-16-backstage-ui-fieldlabel-props" class="badge ok as-toggle">6 prop types</label>
         <label for="c-16-backstage-ui-fieldlabel-info" class="badge info as-toggle">1 info</label>
         <label for="c-16-backstage-ui-fieldlabel-stories" class="badge ok as-toggle">4 stories</label>
         
@@ -5779,11 +5800,13 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">5 prop types</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/FieldLabel/FieldLabel.tsx::FieldLabel</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>/**
+            <pre><code>className?: string
+
+/**
  * The description of the text field
  */
 description?: string | null
@@ -5916,7 +5939,7 @@ secondaryLabel?: string | null</code></pre>
 
 bg?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-children?: React.ReactNode
+children: ReactNode
 
 className?: string
 
@@ -5954,7 +5977,7 @@ px?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 py?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-style?: React.CSSProperties</code></pre>
+style?: CSSProperties</code></pre>
           </div>
         </div>
     
@@ -5990,7 +6013,7 @@ style?: React.CSSProperties</code></pre>
               </div>
               
               
-              <pre><code>const ColumnDirection = () =&gt; &lt;Flex direction=&quot;column&quot; /&gt;;</code></pre>
+              <pre><code>const ColumnDirection = () =&gt; &lt;Flex direction=&quot;column&quot;&gt;{null}&lt;/Flex&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -5999,7 +6022,7 @@ style?: React.CSSProperties</code></pre>
               </div>
               
               
-              <pre><code>const RowDirection = () =&gt; &lt;Flex direction=&quot;row&quot; /&gt;;</code></pre>
+              <pre><code>const RowDirection = () =&gt; &lt;Flex direction=&quot;row&quot;&gt;{null}&lt;/Flex&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6212,7 +6235,7 @@ style?: React.CSSProperties</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FullPage</h2>
       <div class="badges">
-        
+        <label for="c-18-backstage-ui-fullpage-props" class="badge ok as-toggle">1 prop type</label>
         
         <label for="c-18-backstage-ui-fullpage-stories" class="badge ok as-toggle">3 stories</label>
         
@@ -6229,12 +6252,23 @@ style?: React.CSSProperties</code></pre>
   
   <input id="c-18-backstage-ui-fullpage-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  
+  <input id="c-18-backstage-ui-fullpage-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
     
     
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">1 prop type</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/FullPage/FullPage.tsx::FullPage</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>className?: string</code></pre>
+          </div>
+        </div>
     
         <div class="panel panel-stories">
           
@@ -6667,7 +6701,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Link</h2>
       <div class="badges">
-        <label for="c-20-backstage-ui-link-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-20-backstage-ui-link-props" class="badge ok as-toggle">8 prop types</label>
         <label for="c-20-backstage-ui-link-info" class="badge info as-toggle">1 info</label>
         <label for="c-20-backstage-ui-link-stories" class="badge ok as-toggle">9 stories</label>
         
@@ -6701,11 +6735,13 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">7 prop types</span>
+              <span class="badge ok">8 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Link/Link.tsx::Link</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>children?: ReactNode
+
+className?: string
 
 color?: | TextColors
 | TextColorStatus
@@ -8190,7 +8226,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PasswordField</h2>
       <div class="badges">
-        <label for="c-25-backstage-ui-passwordfield-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-25-backstage-ui-passwordfield-props" class="badge ok as-toggle">7 prop types</label>
         <label for="c-25-backstage-ui-passwordfield-info" class="badge info as-toggle">1 info</label>
         <label for="c-25-backstage-ui-passwordfield-stories" class="badge ok as-toggle">12 stories</label>
         
@@ -8224,19 +8260,27 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">3 prop types</span>
+              <span class="badge ok">7 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/PasswordField/PasswordField.tsx::PasswordField</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>/**
+            <pre><code>className?: string
+
+description?: FieldLabelProps[&#39;description&#39;]
+
+/**
  * An icon to render before the input
  */
 icon?: ReactNode
+
+label?: FieldLabelProps[&#39;label&#39;]
 
 /**
  * Text to display in the input when it has no value
  */
 placeholder?: string
+
+secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]
 
 /**
  * The size of the password field
@@ -8840,7 +8884,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Popover</h2>
       <div class="badges">
-        <label for="c-27-backstage-ui-popover-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-27-backstage-ui-popover-props" class="badge ok as-toggle">3 prop types</label>
         
         <label for="c-27-backstage-ui-popover-stories" class="badge ok as-toggle">13 stories</label>
         
@@ -8867,7 +8911,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">2 prop types</span>
+              <span class="badge ok">3 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Popover/Popover.tsx::Popover</code></pre>
             <pre><code>Props:</code></pre>
@@ -8876,6 +8920,8 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
  * Content is automatically wrapped with padding and scroll behavior.
  */
 children: React.ReactNode
+
+className?: string
 
 /**
  * Whether to hide the arrow pointing to the trigger element.
@@ -9240,7 +9286,7 @@ hideArrow?: boolean</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> RadioGroup</h2>
       <div class="badges">
-        <label for="c-28-backstage-ui-radiogroup-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-28-backstage-ui-radiogroup-props" class="badge ok as-toggle">6 prop types</label>
         <label for="c-28-backstage-ui-radiogroup-info" class="badge info as-toggle">1 info</label>
         <label for="c-28-backstage-ui-radiogroup-stories" class="badge ok as-toggle">8 stories</label>
         
@@ -9274,11 +9320,21 @@ hideArrow?: boolean</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">1 prop type</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/RadioGroup/RadioGroup.tsx::RadioGroup</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>children?: ReactNode</code></pre>
+            <pre><code>children?: ReactNode
+
+className?: string
+
+description?: FieldLabelProps[&#39;description&#39;]
+
+isRequired?: AriaRadioGroupProps[&#39;isRequired&#39;]
+
+label?: FieldLabelProps[&#39;label&#39;]
+
+secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
           </div>
         </div>
     
@@ -9421,7 +9477,7 @@ hideArrow?: boolean</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> SearchField</h2>
       <div class="badges">
-        <label for="c-29-backstage-ui-searchfield-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-29-backstage-ui-searchfield-props" class="badge ok as-toggle">8 prop types</label>
         <label for="c-29-backstage-ui-searchfield-info" class="badge info as-toggle">1 info</label>
         <label for="c-29-backstage-ui-searchfield-stories" class="badge ok as-toggle">20 stories</label>
         
@@ -9455,19 +9511,27 @@ hideArrow?: boolean</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">4 prop types</span>
+              <span class="badge ok">8 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/SearchField/SearchField.tsx::SearchField</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>/**
+            <pre><code>className?: string
+
+description?: FieldLabelProps[&#39;description&#39;]
+
+/**
  * An icon to render before the input
  */
 icon?: ReactNode | false
+
+label?: FieldLabelProps[&#39;label&#39;]
 
 /**
  * The placeholder text for the input
  */
 placeholder?: string
+
+secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]
 
 /**
  * The size of the text field
@@ -9812,7 +9876,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-30-backstage-ui-select-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-30-backstage-ui-select-props" class="badge ok as-toggle">11 prop types</label>
         <label for="c-30-backstage-ui-select-info" class="badge info as-toggle">1 info</label>
         <label for="c-30-backstage-ui-select-stories" class="badge ok as-toggle">21 stories</label>
         
@@ -9846,14 +9910,22 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">6 prop types</span>
+              <span class="badge ok">11 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Select/Select.tsx::Select</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>/**
+            <pre><code>className?: string
+
+description?: FieldLabelProps[&#39;description&#39;]
+
+/**
  * An icon to render before the input
  */
 icon?: ReactNode
+
+isRequired?: boolean
+
+label?: FieldLabelProps[&#39;label&#39;]
 
 /**
  * The options of the select field
@@ -9872,6 +9944,8 @@ searchable?: boolean
  * @defaultvalue &#39;search...&#39;
  */
 searchPlaceholder?: string
+
+secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]
 
 /**
  * Selection mode, single or multiple
@@ -10197,7 +10271,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-31-backstage-ui-skeleton-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-31-backstage-ui-skeleton-props" class="badge ok as-toggle">5 prop types</label>
         <label for="c-31-backstage-ui-skeleton-info" class="badge info as-toggle">1 info</label>
         <label for="c-31-backstage-ui-skeleton-stories" class="badge ok as-toggle">4 stories</label>
         
@@ -10231,13 +10305,17 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">3 prop types</span>
+              <span class="badge ok">5 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Skeleton/Skeleton.tsx::Skeleton</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>height?: number | string
+            <pre><code>className?: string
+
+height?: number | string
 
 rounded?: boolean
+
+style?: React.CSSProperties
 
 width?: number | string</code></pre>
           </div>
@@ -10326,7 +10404,7 @@ width?: number | string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Switch</h2>
       <div class="badges">
-        <label for="c-32-backstage-ui-switch-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-32-backstage-ui-switch-props" class="badge ok as-toggle">2 prop types</label>
         <label for="c-32-backstage-ui-switch-info" class="badge info as-toggle">1 info</label>
         <label for="c-32-backstage-ui-switch-stories" class="badge ok as-toggle">2 stories</label>
         
@@ -10360,11 +10438,13 @@ width?: number | string</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">1 prop type</span>
+              <span class="badge ok">2 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Switch/Switch.tsx::Switch</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>/**
+            <pre><code>className?: string
+
+/**
  * The label of the switch
  */
 label?: string</code></pre>
@@ -10468,16 +10548,9 @@ onPreviousPage: () =&gt; void
 
 pageSize: number
 
-pageSizeOptions?: number[] | PageSizeOption[] = [
-  { label: &#39;Show 5 results&#39;, value: 5 },
-  { label: &#39;Show 10 results&#39;, value: 10 },
-  { label: &#39;Show 20 results&#39;, value: 20 },
-  { label: &#39;Show 30 results&#39;, value: 30 },
-  { label: &#39;Show 40 results&#39;, value: 40 },
-  { label: &#39;Show 50 results&#39;, value: 50 },
-]
+pageSizeOptions?: number[] | PageSizeOption[]
 
-showPageSizeOptions?: boolean = true
+showPageSizeOptions?: boolean
 
 totalCount?: number</code></pre>
           </div>
@@ -10599,7 +10672,7 @@ totalCount?: number</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Tabs</h2>
       <div class="badges">
-        
+        <label for="c-34-backstage-ui-tabs-props" class="badge ok as-toggle">2 prop types</label>
         
         <label for="c-34-backstage-ui-tabs-stories" class="badge ok as-toggle">13 stories</label>
         
@@ -10616,12 +10689,25 @@ totalCount?: number</code></pre>
   
   <input id="c-34-backstage-ui-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  
+  <input id="c-34-backstage-ui-tabs-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
     
     
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">2 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/Tabs/Tabs.tsx::Tabs</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>children?: AriaTabsProps[&#39;children&#39;]
+
+className?: string</code></pre>
+          </div>
+        </div>
     
         <div class="panel panel-stories">
           
@@ -11153,7 +11239,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TagGroup</h2>
       <div class="badges">
-        
+        <label for="c-35-backstage-ui-taggroup-props" class="badge ok as-toggle">4 prop types</label>
         
         <label for="c-35-backstage-ui-taggroup-stories" class="badge ok as-toggle">9 stories</label>
         
@@ -11170,12 +11256,29 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   <input id="c-35-backstage-ui-taggroup-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  
+  <input id="c-35-backstage-ui-taggroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
     
     
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/TagGroup/TagGroup.tsx::TagGroup</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>children?: ReactAriaTagListProps&lt;T&gt;[&#39;children&#39;]
+
+className?: string
+
+items?: ReactAriaTagListProps&lt;T&gt;[&#39;items&#39;]
+
+renderEmptyState?: ReactAriaTagListProps&lt;T&gt;[&#39;renderEmptyState&#39;]</code></pre>
+          </div>
+        </div>
     
         <div class="panel panel-stories">
           
@@ -11387,7 +11490,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Text</h2>
       <div class="badges">
-        <label for="c-36-backstage-ui-text-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-36-backstage-ui-text-props" class="badge ok as-toggle">6 prop types</label>
         <label for="c-36-backstage-ui-text-info" class="badge info as-toggle">1 info</label>
         <label for="c-36-backstage-ui-text-stories" class="badge ok as-toggle">9 stories</label>
         
@@ -11421,7 +11524,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">5 prop types</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Text/Text.tsx::Text</code></pre>
             <pre><code>Props:</code></pre>
@@ -11439,6 +11542,8 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
 | &#39;em&#39;
 | &#39;small&#39;
 | &#39;legend&#39;
+
+className?: string
 
 color?: | TextColors
 | TextColorStatus
@@ -11643,7 +11748,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-37-backstage-ui-textfield-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-37-backstage-ui-textfield-props" class="badge ok as-toggle">8 prop types</label>
         <label for="c-37-backstage-ui-textfield-info" class="badge info as-toggle">1 info</label>
         <label for="c-37-backstage-ui-textfield-stories" class="badge ok as-toggle">12 stories</label>
         
@@ -11677,19 +11782,27 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">4 prop types</span>
+              <span class="badge ok">8 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/TextField/TextField.tsx::TextField</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>/**
+            <pre><code>className?: string
+
+description?: FieldLabelProps[&#39;description&#39;]
+
+/**
  * An icon to render before the input
  */
 icon?: ReactNode
+
+label?: FieldLabelProps[&#39;label&#39;]
 
 /**
  * Text to display in the input when it has no value
  */
 placeholder?: string
+
+secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]
 
 /**
  * The size of the text field
@@ -11870,7 +11983,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleButton</h2>
       <div class="badges">
-        <label for="c-38-backstage-ui-togglebutton-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-38-backstage-ui-togglebutton-props" class="badge ok as-toggle">5 prop types</label>
         <label for="c-38-backstage-ui-togglebutton-info" class="badge info as-toggle">1 info</label>
         <label for="c-38-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
         
@@ -11904,11 +12017,15 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">3 prop types</span>
+              <span class="badge ok">5 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/ToggleButton/ToggleButton.tsx::ToggleButton</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>iconEnd?: ReactElement
+            <pre><code>children?: AriaToggleButtonProps[&#39;children&#39;]
+
+className?: string
+
+iconEnd?: ReactElement
 
 iconStart?: ReactElement
 
@@ -12234,7 +12351,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleButtonGroup</h2>
       <div class="badges">
-        <label for="c-39-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-39-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">2 prop types</label>
         <label for="c-39-backstage-ui-togglebuttongroup-info" class="badge info as-toggle">1 info</label>
         <label for="c-39-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
         
@@ -12268,11 +12385,13 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">1 prop type</span>
+              <span class="badge ok">2 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.tsx::ToggleButtonGroup</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>orientation?: NonNullable&lt;AriaToggleButtonGroupProps[&#39;orientation&#39;]&gt;</code></pre>
+            <pre><code>children?: ReactNode
+
+className?: string</code></pre>
           </div>
         </div>
     
@@ -13195,7 +13314,7 @@ style?: React.CSSProperties</code></pre>
             </div>
             <pre><code>Component: packages/ui/src/components/VisuallyHidden/VisuallyHidden.tsx::VisuallyHidden</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>children?: React.ReactNode</code></pre>
+            <pre><code>className?: string</code></pre>
           </div>
         </div>
     
