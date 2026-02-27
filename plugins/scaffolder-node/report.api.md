@@ -346,7 +346,9 @@ export interface ScaffolderService {
   }>;
   // (undocumented)
   cancelTask(
-    taskId: string,
+    request: {
+      taskId: string;
+    },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{
     status?: ScaffolderTaskStatus;
@@ -366,12 +368,16 @@ export interface ScaffolderService {
   ): Promise<LogEvent[]>;
   // (undocumented)
   getTask(
-    taskId: string,
+    request: {
+      taskId: string;
+    },
     options: ScaffolderServiceRequestOptions,
   ): Promise<ScaffolderTask>;
   // (undocumented)
   getTemplateParameterSchema(
-    templateRef: string,
+    request: {
+      templateRef: string;
+    },
     options: ScaffolderServiceRequestOptions,
   ): Promise<TemplateParameterSchema>;
   // (undocumented)
@@ -396,7 +402,9 @@ export interface ScaffolderService {
   ): Promise<ListTemplatingExtensionsResponse>;
   // (undocumented)
   retry(
-    taskId: string,
+    request: {
+      taskId: string;
+    },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{
     id: string;

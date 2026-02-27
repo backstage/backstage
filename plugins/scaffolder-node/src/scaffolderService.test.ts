@@ -89,9 +89,12 @@ describe('scaffolderServiceRef', () => {
 
     const scaffolder = await tester.getService(scaffolderServiceRef);
 
-    await scaffolder.getTask('task-1', {
-      credentials: mockCredentials.user(),
-    });
+    await scaffolder.getTask(
+      { taskId: 'task-1' },
+      {
+        credentials: mockCredentials.user(),
+      },
+    );
   });
 
   it('should inject token from service credentials', async () => {
@@ -127,9 +130,12 @@ describe('scaffolderServiceRef', () => {
 
     const scaffolder = await tester.getService(scaffolderServiceRef);
 
-    await scaffolder.getTask('task-1', {
-      credentials: mockCredentials.service(),
-    });
+    await scaffolder.getTask(
+      { taskId: 'task-1' },
+      {
+        credentials: mockCredentials.service(),
+      },
+    );
   });
 
   it('should pass credentials for direct HTTP calls like getLogs', async () => {

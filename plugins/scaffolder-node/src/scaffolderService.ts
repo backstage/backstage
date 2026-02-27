@@ -53,7 +53,7 @@ export interface ScaffolderServiceRequestOptions {
  */
 export interface ScaffolderService {
   getTemplateParameterSchema(
-    templateRef: string,
+    request: { templateRef: string },
     options: ScaffolderServiceRequestOptions,
   ): Promise<TemplateParameterSchema>;
 
@@ -63,17 +63,17 @@ export interface ScaffolderService {
   ): Promise<ScaffolderScaffoldResponse>;
 
   getTask(
-    taskId: string,
+    request: { taskId: string },
     options: ScaffolderServiceRequestOptions,
   ): Promise<ScaffolderTask>;
 
   cancelTask(
-    taskId: string,
+    request: { taskId: string },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{ status?: ScaffolderTaskStatus }>;
 
   retry(
-    taskId: string,
+    request: { taskId: string },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{ id: string }>;
 
@@ -137,11 +137,11 @@ class DefaultScaffolderService implements ScaffolderService {
   }
 
   async getTemplateParameterSchema(
-    templateRef: string,
+    request: { templateRef: string },
     options: ScaffolderServiceRequestOptions,
   ): Promise<TemplateParameterSchema> {
     return this.#client.getTemplateParameterSchema(
-      templateRef,
+      request.templateRef,
       await this.#getOptions(options),
     );
   }
@@ -154,24 +154,30 @@ class DefaultScaffolderService implements ScaffolderService {
   }
 
   async getTask(
-    taskId: string,
+    request: { taskId: string },
     options: ScaffolderServiceRequestOptions,
   ): Promise<ScaffolderTask> {
-    return this.#client.getTask(taskId, await this.#getOptions(options));
+    return this.#client.getTask(
+      request.taskId,
+      await this.#getOptions(options),
+    );
   }
 
   async cancelTask(
-    taskId: string,
+    request: { taskId: string },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{ status?: ScaffolderTaskStatus }> {
-    return this.#client.cancelTask(taskId, await this.#getOptions(options));
+    return this.#client.cancelTask(
+      request.taskId,
+      await this.#getOptions(options),
+    );
   }
 
   async retry(
-    taskId: string,
+    request: { taskId: string },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{ id: string }> {
-    return this.#client.retry(taskId, await this.#getOptions(options));
+    return this.#client.retry(request.taskId, await this.#getOptions(options));
   }
 
   async listTasks(
