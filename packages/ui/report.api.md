@@ -2434,25 +2434,47 @@ export const TagGroup: <T extends object>(
 
 // @public
 export const TagGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
-    readonly group: 'bui-TagGroup';
+    readonly root: 'bui-TagGroup';
     readonly list: 'bui-TagList';
-    readonly tag: 'bui-Tag';
-    readonly tagIcon: 'bui-TagIcon';
-    readonly tagRemoveButton: 'bui-TagRemoveButton';
+  };
+  readonly propDefs: {
+    readonly items: {};
+    readonly children: {};
+    readonly renderEmptyState: {};
+    readonly className: {};
   };
 };
 
 // @public
-export interface TagGroupProps<T>
-  extends Omit<TagGroupProps_2, 'children'>,
-    Pick<TagListProps<T>, 'items' | 'children' | 'renderEmptyState'> {}
+export type TagGroupOwnProps<T = object> = {
+  items?: TagListProps<T>['items'];
+  children?: TagListProps<T>['children'];
+  renderEmptyState?: TagListProps<T>['renderEmptyState'];
+  className?: string;
+};
 
 // @public
-export interface TagProps extends TagProps_2 {
+export interface TagGroupProps<T>
+  extends TagGroupOwnProps<T>,
+    Omit<TagGroupProps_2, 'children' | keyof TagGroupOwnProps> {}
+
+// @public
+export type TagOwnProps = {
   icon?: React.ReactNode;
   size?: 'small' | 'medium';
-}
+  href?: TagProps_2['href'];
+  children?: TagProps_2['children'];
+  className?: string;
+};
+
+// @public
+export interface TagProps
+  extends TagOwnProps,
+    Omit<TagProps_2, keyof TagOwnProps> {}
 
 // @public (undocumented)
 const Text_2: {
