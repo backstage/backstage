@@ -87,6 +87,20 @@ export type BackstageServicePrincipal = {
    * top of this.
    */
   accessRestrictions?: BackstagePrincipalAccessRestrictions;
+
+  /**
+   * The JWT payload claims from the token that was used to authenticate this
+   * principal.
+   *
+   * @remarks
+   *
+   * This field is only populated when the token was validated via an external
+   * access method of type `jwks`. It contains the raw claims from the verified
+   * JWT payload, such as `upn`, `name`, `oid`, `appid`, etc. The signature,
+   * issuer, expiry, and audience have already been validated before these
+   * claims are stored here.
+   */
+  tokenClaims?: Record<string, unknown>;
 };
 
 /**

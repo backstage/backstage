@@ -163,6 +163,7 @@ export class ExternalAuthTokenHandler {
     | {
         subject: string;
         accessRestrictions?: BackstagePrincipalAccessRestrictions;
+        tokenClaims?: Record<string, unknown>;
       }
     | undefined
   > {

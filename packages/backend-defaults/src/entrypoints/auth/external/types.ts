@@ -33,5 +33,7 @@ export interface ExternalTokenHandler<TContext> {
   verifyToken(
     token: string,
     ctx: TContext,
-  ): Promise<{ subject: string } | undefined>;
+  ): Promise<
+    { subject: string; tokenClaims?: Record<string, unknown> } | undefined
+  >;
 }

@@ -110,6 +110,7 @@ export class DefaultAuthService implements AuthService {
         externalResult.subject,
         undefined,
         externalResult.accessRestrictions,
+        externalResult.tokenClaims,
       );
     }
 
