@@ -27,6 +27,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha/index.ts",
+    "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -35,6 +36,9 @@
     "*": {
       "alpha": [
         "src/alpha/index.ts"
+      ],
+      "testUtils": [
+        "src/testUtils.ts"
       ],
       "package.json": [
         "package.json"
@@ -81,5 +85,13 @@
     "@backstage/config": "workspace:^",
     "@types/lodash": "^4.14.151",
     "msw": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@backstage/backend-test-utils": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "@backstage/backend-test-utils": {
+      "optional": true
+    }
   }
 }
