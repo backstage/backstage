@@ -50,10 +50,11 @@ function computeBreakpoint(): Breakpoint {
 }
 
 // --- Singleton store ---
-// Created lazily on first subscribe/getSnapshot call.
+// `current` is initialized lazily on first client-side access.
+// `listeners` is eagerly initialized since Set is safe to create on the server.
 
 let current: Breakpoint | undefined;
-let listeners: Set<() => void> | undefined;
+const listeners = new Set<() => void>();
 let initialized = false;
 
 function ensureInitialized(): void {
@@ -62,34 +63,35 @@ function ensureInitialized(): void {
   }
   initialized = true;
   current = computeBreakpoint();
-  listeners = new Set();
 
+  // Register one listener per breakpoint. When any query fires, re-evaluate
+  // all breakpoints to find the new active one. Notify subscribers only if
+  // the active breakpoint actually changed.
   for (const bp of breakpoints) {
     const mql = window.matchMedia(`(min-width: ${bp.value}px)`);
-    const onChange = () => {
+    mql.addEventListener('change', () => {
       const next = computeBreakpoint();
       if (next !== current) {
         current = next;
-        for (const cb of listeners!) {
+        for (const cb of listeners) {
           cb();
         }
       }
-    };
-    mql.addEventListener('change', onChange);
+    });
   }
 }
 
 function subscribe(callback: () => void): () => void {
   ensureInitialized();
-  listeners!.add(callback);
+  listeners.add(callback);
   return () => {
-    listeners!.delete(callback);
+    listeners.delete(callback);
   };
 }
 
 function getSnapshot(): Breakpoint {
   ensureInitialized();
-  return current!;
+  return current ?? 'initial';
 }
 
 function getServerSnapshot(): Breakpoint {
