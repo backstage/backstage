@@ -39,7 +39,8 @@ export const useFormState = <T extends JsonValue>(
   const storageApi = useApi(storageApiRef);
 
   const [loading, setLoading] = useState(true);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const onLoadRef = useRef(onLoad);
   const bucketRef = useRef(storageApi.forBucket('scaffolder-drafts'));
@@ -50,6 +51,8 @@ export const useFormState = <T extends JsonValue>(
 
   useEffect(() => {
     let isMounted = true;
+
+    setLoading(true);
 
     const load = () => {
       try {
@@ -81,7 +84,7 @@ export const useFormState = <T extends JsonValue>(
         clearTimeout(timeoutRef.current);
       }
       timeoutRef.current = setTimeout(() => {
-        bucketRef.current.set(id, value);
+        bucketRef.current.set(id, value).catch(() => {});
       }, debounceTime);
     },
     [id, debounceTime],
@@ -91,7 +94,7 @@ export const useFormState = <T extends JsonValue>(
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    bucketRef.current.remove(id);
+    bucketRef.current.remove(id).catch(() => {});
   }, [id]);
 
   useEffect(() => {
