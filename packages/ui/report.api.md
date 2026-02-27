@@ -273,7 +273,6 @@ export const AvatarDefinition: {
     };
     readonly src: {};
     readonly name: {};
-    readonly children: {};
     readonly className: {};
   };
 };
@@ -284,7 +283,6 @@ export type AvatarOwnProps = {
   name: string;
   size?: 'x-small' | 'small' | 'medium' | 'large' | 'x-large';
   purpose?: 'decoration' | 'informative';
-  children?: React.ReactNode;
   className?: string;
 };
 
@@ -2096,7 +2094,6 @@ export const SkeletonDefinition: {
       readonly dataAttribute: true;
       readonly default: false;
     };
-    readonly children: {};
     readonly className: {};
     readonly style: {};
   };
@@ -2107,7 +2104,6 @@ export type SkeletonOwnProps = {
   width?: number | string;
   height?: number | string;
   rounded?: boolean;
-  children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
 };

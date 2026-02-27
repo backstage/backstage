@@ -40,7 +40,6 @@ export type AvatarOwnProps = {
    */
   purpose?: 'decoration' | 'informative';
 
-  children?: React.ReactNode;
   className?: string;
 };
 

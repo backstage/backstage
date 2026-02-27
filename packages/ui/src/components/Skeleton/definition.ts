@@ -31,7 +31,6 @@ export const SkeletonDefinition = defineComponent<SkeletonOwnProps>()({
     width: { default: 80 },
     height: { default: 24 },
     rounded: { dataAttribute: true, default: false },
-    children: {},
     className: {},
     style: {},
   },
