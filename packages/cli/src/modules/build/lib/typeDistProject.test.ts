@@ -33,6 +33,7 @@ describe('typeDistProject', () => {
       frontend: false,
       backend: false,
       cli: false,
+      'cli-plugin': false,
       'common-library': false,
     };
 

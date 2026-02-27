@@ -294,7 +294,12 @@ export function fixPluginId(pkg: FixablePackage) {
     return;
   }
 
-  if (role === 'backend' || role === 'frontend' || role === 'cli') {
+  if (
+    role === 'backend' ||
+    role === 'frontend' ||
+    role === 'cli' ||
+    role === 'cli-plugin'
+  ) {
     return;
   }
 
@@ -376,7 +381,12 @@ export function fixPluginPackages(
     return;
   }
 
-  if (role === 'backend' || role === 'frontend' || role === 'cli') {
+  if (
+    role === 'backend' ||
+    role === 'frontend' ||
+    role === 'cli' ||
+    role === 'cli-plugin'
+  ) {
     return;
   }
 

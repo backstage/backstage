@@ -269,6 +269,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
       });
 
     case 'cli':
+    case 'cli-plugin':
     case 'node-library':
     case 'backend':
     case 'backend-plugin':
