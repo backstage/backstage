@@ -31,6 +31,7 @@ export type {
   MenuTriggerProps,
   SubmenuTriggerProps,
   MenuProps,
+  MenuPopoverOwnProps,
   MenuOwnProps,
   MenuListBoxProps,
   MenuListBoxOwnProps,

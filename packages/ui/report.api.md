@@ -1481,15 +1481,9 @@ export const MenuAutocompleteListbox: (
 ) => JSX_2.Element;
 
 // @public (undocumented)
-export type MenuAutocompleteListBoxOwnProps = {
+export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
-  placement?: PopoverProps_2['placement'];
   selectionMode?: ListBoxProps<object>['selectionMode'];
-  virtualized?: boolean;
-  maxWidth?: string;
-  maxHeight?: string;
-  style?: React.CSSProperties;
-  className?: string;
 };
 
 // @public (undocumented)
@@ -1498,14 +1492,8 @@ export interface MenuAutocompleteListBoxProps<T>
     Omit<ListBoxProps<T>, keyof MenuAutocompleteListBoxOwnProps> {}
 
 // @public (undocumented)
-export type MenuAutocompleteOwnProps = {
+export type MenuAutocompleteOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
-  placement?: PopoverProps_2['placement'];
-  virtualized?: boolean;
-  maxWidth?: string;
-  maxHeight?: string;
-  style?: React.CSSProperties;
-  className?: string;
 };
 
 // @public (undocumented)
@@ -1572,14 +1560,8 @@ export interface MenuListBoxItemProps
     Omit<ListBoxItemProps, keyof MenuListBoxItemOwnProps> {}
 
 // @public (undocumented)
-export type MenuListBoxOwnProps = {
-  placement?: PopoverProps_2['placement'];
+export type MenuListBoxOwnProps = MenuPopoverOwnProps & {
   selectionMode?: ListBoxProps<object>['selectionMode'];
-  virtualized?: boolean;
-  maxWidth?: string;
-  maxHeight?: string;
-  style?: React.CSSProperties;
-  className?: string;
 };
 
 // @public (undocumented)
@@ -1588,7 +1570,10 @@ export interface MenuListBoxProps<T>
     Omit<ListBoxProps<T>, keyof MenuListBoxOwnProps> {}
 
 // @public (undocumented)
-export type MenuOwnProps = {
+export type MenuOwnProps = MenuPopoverOwnProps;
+
+// @public
+export type MenuPopoverOwnProps = {
   placement?: PopoverProps_2['placement'];
   virtualized?: boolean;
   maxWidth?: string;

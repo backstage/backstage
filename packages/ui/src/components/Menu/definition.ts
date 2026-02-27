@@ -27,43 +27,48 @@ import type {
 } from './types';
 import styles from './Menu.module.css';
 
+// Shared classNames for all popover-based menu variants
+const menuPopoverClassNames = {
+  root: 'bui-MenuPopover',
+  inner: 'bui-MenuInner',
+  content: 'bui-MenuContent',
+} as const;
+
+// Shared classNames for autocomplete menu variants
+const menuAutocompleteClassNames = {
+  ...menuPopoverClassNames,
+  searchField: 'bui-MenuSearchField',
+  searchFieldInput: 'bui-MenuSearchFieldInput',
+  searchFieldClear: 'bui-MenuSearchFieldClear',
+} as const;
+
+// Shared propDefs for all popover-based menu variants
+const menuPopoverPropDefs = {
+  placement: { default: 'bottom start' },
+  virtualized: { default: false },
+  maxWidth: {},
+  maxHeight: {},
+  style: {},
+  className: {},
+} as const;
+
 /**
  * Component definition for Menu
  * @public
  */
 export const MenuDefinition = defineComponent<MenuOwnProps>()({
   styles,
-  classNames: {
-    root: 'bui-MenuPopover',
-    inner: 'bui-MenuInner',
-    content: 'bui-MenuContent',
-  },
-  propDefs: {
-    placement: { default: 'bottom start' },
-    virtualized: { default: false },
-    maxWidth: {},
-    maxHeight: {},
-    style: {},
-    className: {},
-  },
+  classNames: menuPopoverClassNames,
+  propDefs: menuPopoverPropDefs,
 });
 
 /** @internal */
 export const MenuListBoxDefinition = defineComponent<MenuListBoxOwnProps>()({
   styles,
-  classNames: {
-    root: 'bui-MenuPopover',
-    inner: 'bui-MenuInner',
-    content: 'bui-MenuContent',
-  },
+  classNames: menuPopoverClassNames,
   propDefs: {
-    placement: { default: 'bottom start' },
+    ...menuPopoverPropDefs,
     selectionMode: { default: 'single' },
-    virtualized: { default: false },
-    maxWidth: {},
-    maxHeight: {},
-    style: {},
-    className: {},
   },
 });
 
@@ -71,22 +76,10 @@ export const MenuListBoxDefinition = defineComponent<MenuListBoxOwnProps>()({
 export const MenuAutocompleteDefinition =
   defineComponent<MenuAutocompleteOwnProps>()({
     styles,
-    classNames: {
-      root: 'bui-MenuPopover',
-      inner: 'bui-MenuInner',
-      content: 'bui-MenuContent',
-      searchField: 'bui-MenuSearchField',
-      searchFieldInput: 'bui-MenuSearchFieldInput',
-      searchFieldClear: 'bui-MenuSearchFieldClear',
-    },
+    classNames: menuAutocompleteClassNames,
     propDefs: {
+      ...menuPopoverPropDefs,
       placeholder: {},
-      placement: { default: 'bottom start' },
-      virtualized: { default: false },
-      maxWidth: {},
-      maxHeight: {},
-      style: {},
-      className: {},
     },
   });
 
@@ -94,23 +87,11 @@ export const MenuAutocompleteDefinition =
 export const MenuAutocompleteListboxDefinition =
   defineComponent<MenuAutocompleteListBoxOwnProps>()({
     styles,
-    classNames: {
-      root: 'bui-MenuPopover',
-      inner: 'bui-MenuInner',
-      content: 'bui-MenuContent',
-      searchField: 'bui-MenuSearchField',
-      searchFieldInput: 'bui-MenuSearchFieldInput',
-      searchFieldClear: 'bui-MenuSearchFieldClear',
-    },
+    classNames: menuAutocompleteClassNames,
     propDefs: {
+      ...menuPopoverPropDefs,
       placeholder: {},
-      placement: { default: 'bottom start' },
       selectionMode: { default: 'single' },
-      virtualized: { default: false },
-      maxWidth: {},
-      maxHeight: {},
-      style: {},
-      className: {},
     },
   });
 

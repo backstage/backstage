@@ -32,8 +32,12 @@ export interface MenuTriggerProps extends RAMenuTriggerProps {}
 /** @public */
 export interface SubmenuTriggerProps extends RAMenuSubmenuTriggerProps {}
 
-/** @public */
-export type MenuOwnProps = {
+/**
+ * Common own props shared by all Menu popover variants.
+ *
+ * @public
+ */
+export type MenuPopoverOwnProps = {
   placement?: RAPopoverProps['placement'];
   virtualized?: boolean;
   maxWidth?: string;
@@ -43,19 +47,16 @@ export type MenuOwnProps = {
 };
 
 /** @public */
+export type MenuOwnProps = MenuPopoverOwnProps;
+
+/** @public */
 export interface MenuProps<T>
   extends MenuOwnProps,
     Omit<RAMenuProps<T>, keyof MenuOwnProps> {}
 
 /** @public */
-export type MenuListBoxOwnProps = {
-  placement?: RAPopoverProps['placement'];
+export type MenuListBoxOwnProps = MenuPopoverOwnProps & {
   selectionMode?: RAListBoxProps<object>['selectionMode'];
-  virtualized?: boolean;
-  maxWidth?: string;
-  maxHeight?: string;
-  style?: React.CSSProperties;
-  className?: string;
 };
 
 /** @public */
@@ -64,14 +65,8 @@ export interface MenuListBoxProps<T>
     Omit<RAListBoxProps<T>, keyof MenuListBoxOwnProps> {}
 
 /** @public */
-export type MenuAutocompleteOwnProps = {
+export type MenuAutocompleteOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
-  placement?: RAPopoverProps['placement'];
-  virtualized?: boolean;
-  maxWidth?: string;
-  maxHeight?: string;
-  style?: React.CSSProperties;
-  className?: string;
 };
 
 /** @public */
@@ -80,15 +75,9 @@ export interface MenuAutocompleteProps<T>
     Omit<RAMenuProps<T>, keyof MenuAutocompleteOwnProps> {}
 
 /** @public */
-export type MenuAutocompleteListBoxOwnProps = {
+export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
-  placement?: RAPopoverProps['placement'];
   selectionMode?: RAListBoxProps<object>['selectionMode'];
-  virtualized?: boolean;
-  maxWidth?: string;
-  maxHeight?: string;
-  style?: React.CSSProperties;
-  className?: string;
 };
 
 /** @public */
