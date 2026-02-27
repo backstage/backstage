@@ -14,30 +14,172 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type {
+  MenuOwnProps,
+  MenuListBoxOwnProps,
+  MenuAutocompleteOwnProps,
+  MenuAutocompleteListBoxOwnProps,
+  MenuItemOwnProps,
+  MenuListBoxItemOwnProps,
+  MenuSectionOwnProps,
+  MenuSeparatorOwnProps,
+} from './types';
+import styles from './Menu.module.css';
 
 /**
  * Component definition for Menu
  * @public
  */
-export const MenuDefinition = {
+export const MenuDefinition = defineComponent<MenuOwnProps>()({
+  styles,
   classNames: {
-    root: 'bui-Menu',
-    popover: 'bui-MenuPopover',
+    root: 'bui-MenuPopover',
     inner: 'bui-MenuInner',
     content: 'bui-MenuContent',
-    section: 'bui-MenuSection',
-    sectionHeader: 'bui-MenuSectionHeader',
-    item: 'bui-MenuItem',
-    itemListBox: 'bui-MenuItemListBox',
-    itemListBoxCheck: 'bui-MenuItemListBoxCheck',
+  },
+  propDefs: {
+    placement: { default: 'bottom start' },
+    virtualized: { default: false },
+    maxWidth: {},
+    maxHeight: {},
+    style: {},
+    className: {},
+  },
+});
+
+/** @internal */
+export const MenuListBoxDefinition = defineComponent<MenuListBoxOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-MenuPopover',
+    inner: 'bui-MenuInner',
+    content: 'bui-MenuContent',
+  },
+  propDefs: {
+    placement: { default: 'bottom start' },
+    selectionMode: { default: 'single' },
+    virtualized: { default: false },
+    maxWidth: {},
+    maxHeight: {},
+    style: {},
+    className: {},
+  },
+});
+
+/** @internal */
+export const MenuAutocompleteDefinition =
+  defineComponent<MenuAutocompleteOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-MenuPopover',
+      inner: 'bui-MenuInner',
+      content: 'bui-MenuContent',
+      searchField: 'bui-MenuSearchField',
+      searchFieldInput: 'bui-MenuSearchFieldInput',
+      searchFieldClear: 'bui-MenuSearchFieldClear',
+    },
+    propDefs: {
+      placeholder: {},
+      placement: { default: 'bottom start' },
+      virtualized: { default: false },
+      maxWidth: {},
+      maxHeight: {},
+      style: {},
+      className: {},
+    },
+  });
+
+/** @internal */
+export const MenuAutocompleteListboxDefinition =
+  defineComponent<MenuAutocompleteListBoxOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-MenuPopover',
+      inner: 'bui-MenuInner',
+      content: 'bui-MenuContent',
+      searchField: 'bui-MenuSearchField',
+      searchFieldInput: 'bui-MenuSearchFieldInput',
+      searchFieldClear: 'bui-MenuSearchFieldClear',
+    },
+    propDefs: {
+      placeholder: {},
+      placement: { default: 'bottom start' },
+      selectionMode: { default: 'single' },
+      virtualized: { default: false },
+      maxWidth: {},
+      maxHeight: {},
+      style: {},
+      className: {},
+    },
+  });
+
+/** @internal */
+export const MenuItemDefinition = defineComponent<MenuItemOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-MenuItem',
     itemWrapper: 'bui-MenuItemWrapper',
     itemContent: 'bui-MenuItemContent',
     itemArrow: 'bui-MenuItemArrow',
-    separator: 'bui-MenuSeparator',
-    searchField: 'bui-MenuSearchField',
-    searchFieldInput: 'bui-MenuSearchFieldInput',
-    searchFieldClear: 'bui-MenuSearchFieldClear',
-    emptyState: 'bui-MenuEmptyState',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    iconStart: {},
+    children: {},
+    color: { dataAttribute: true, default: 'primary' },
+    href: {},
+    className: {},
+  },
+});
+
+/** @internal */
+export const MenuListBoxItemDefinition =
+  defineComponent<MenuListBoxItemOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-MenuItemListBox',
+      itemWrapper: 'bui-MenuItemWrapper',
+      itemContent: 'bui-MenuItemContent',
+      check: 'bui-MenuItemListBoxCheck',
+    },
+    propDefs: {
+      children: {},
+      className: {},
+    },
+  });
+
+/** @internal */
+export const MenuSectionDefinition = defineComponent<MenuSectionOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-MenuSection',
+    header: 'bui-MenuSectionHeader',
+  },
+  propDefs: {
+    title: {},
+    children: {},
+    className: {},
+  },
+});
+
+/** @internal */
+export const MenuSeparatorDefinition = defineComponent<MenuSeparatorOwnProps>()(
+  {
+    styles,
+    classNames: {
+      root: 'bui-MenuSeparator',
+    },
+    propDefs: {
+      className: {},
+    },
+  },
+);
+
+/** @internal */
+export const MenuEmptyStateDefinition = defineComponent<{}>()({
+  styles,
+  classNames: {
+    root: 'bui-MenuEmptyState',
+  },
+  propDefs: {},
+});

@@ -33,70 +33,112 @@ export interface MenuTriggerProps extends RAMenuTriggerProps {}
 export interface SubmenuTriggerProps extends RAMenuSubmenuTriggerProps {}
 
 /** @public */
-export interface MenuProps<T>
-  extends RAMenuProps<T>,
-    Omit<RAMenuProps<T>, 'children'> {
+export type MenuOwnProps = {
   placement?: RAPopoverProps['placement'];
   virtualized?: boolean;
   maxWidth?: string;
   maxHeight?: string;
-}
+  style?: React.CSSProperties;
+  className?: string;
+};
+
+/** @public */
+export interface MenuProps<T>
+  extends MenuOwnProps,
+    Omit<RAMenuProps<T>, keyof MenuOwnProps> {}
+
+/** @public */
+export type MenuListBoxOwnProps = {
+  placement?: RAPopoverProps['placement'];
+  selectionMode?: RAListBoxProps<object>['selectionMode'];
+  virtualized?: boolean;
+  maxWidth?: string;
+  maxHeight?: string;
+  style?: React.CSSProperties;
+  className?: string;
+};
 
 /** @public */
 export interface MenuListBoxProps<T>
-  extends RAListBoxProps<T>,
-    Omit<RAListBoxProps<T>, 'children'> {
+  extends MenuListBoxOwnProps,
+    Omit<RAListBoxProps<T>, keyof MenuListBoxOwnProps> {}
+
+/** @public */
+export type MenuAutocompleteOwnProps = {
+  placeholder?: string;
   placement?: RAPopoverProps['placement'];
   virtualized?: boolean;
   maxWidth?: string;
   maxHeight?: string;
-}
+  style?: React.CSSProperties;
+  className?: string;
+};
 
 /** @public */
 export interface MenuAutocompleteProps<T>
-  extends RAMenuProps<T>,
-    Omit<RAMenuProps<T>, 'children'> {
+  extends MenuAutocompleteOwnProps,
+    Omit<RAMenuProps<T>, keyof MenuAutocompleteOwnProps> {}
+
+/** @public */
+export type MenuAutocompleteListBoxOwnProps = {
   placeholder?: string;
   placement?: RAPopoverProps['placement'];
+  selectionMode?: RAListBoxProps<object>['selectionMode'];
   virtualized?: boolean;
   maxWidth?: string;
   maxHeight?: string;
-}
+  style?: React.CSSProperties;
+  className?: string;
+};
 
 /** @public */
 export interface MenuAutocompleteListBoxProps<T>
-  extends RAListBoxProps<T>,
-    Omit<RAListBoxProps<T>, 'children'> {
-  placeholder?: string;
-  placement?: RAPopoverProps['placement'];
-  virtualized?: boolean;
-  maxWidth?: string;
-  maxHeight?: string;
-}
+  extends MenuAutocompleteListBoxOwnProps,
+    Omit<RAListBoxProps<T>, keyof MenuAutocompleteListBoxOwnProps> {}
 
 /** @public */
-export interface MenuItemProps
-  extends RAMenuItemProps,
-    Omit<RAMenuItemProps, 'children'> {
+export type MenuItemOwnProps = {
   iconStart?: React.ReactNode;
   children: React.ReactNode;
   color?: 'primary' | 'danger';
-}
+  href?: RAMenuItemProps['href'];
+  className?: string;
+};
+
+/** @public */
+export interface MenuItemProps
+  extends MenuItemOwnProps,
+    Omit<RAMenuItemProps, keyof MenuItemOwnProps> {}
+
+/** @public */
+export type MenuListBoxItemOwnProps = {
+  children: React.ReactNode;
+  className?: string;
+};
 
 /** @public */
 export interface MenuListBoxItemProps
-  extends RAListBoxItemProps,
-    Omit<RAListBoxItemProps, 'children'> {
+  extends MenuListBoxItemOwnProps,
+    Omit<RAListBoxItemProps, keyof MenuListBoxItemOwnProps> {}
+
+/** @public */
+export type MenuSectionOwnProps = {
+  title: string;
   children: React.ReactNode;
-}
+  className?: string;
+};
 
 /** @public */
 export interface MenuSectionProps<T>
-  extends RAMenuSectionProps<T>,
-    Omit<RAMenuSectionProps<T>, 'children'> {
-  title: string;
-  children: React.ReactNode;
-}
+  extends MenuSectionOwnProps,
+    Omit<RAMenuSectionProps<T>, keyof MenuSectionOwnProps> {}
 
 /** @public */
-export interface MenuSeparatorProps extends RAMenuSeparatorProps {}
+export type MenuSeparatorOwnProps = {
+  className?: string;
+};
+
+/** @public */
+export interface MenuSeparatorProps
+  extends MenuSeparatorOwnProps,
+    Omit<RAMenuSeparatorProps, keyof MenuSeparatorOwnProps> {}

@@ -1481,57 +1481,59 @@ export const MenuAutocompleteListbox: (
 ) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuAutocompleteListBoxProps<T>
-  extends ListBoxProps<T>,
-    Omit<ListBoxProps<T>, 'children'> {
-  // (undocumented)
-  maxHeight?: string;
-  // (undocumented)
-  maxWidth?: string;
-  // (undocumented)
+export type MenuAutocompleteListBoxOwnProps = {
   placeholder?: string;
-  // (undocumented)
   placement?: PopoverProps_2['placement'];
-  // (undocumented)
+  selectionMode?: ListBoxProps<object>['selectionMode'];
   virtualized?: boolean;
-}
+  maxWidth?: string;
+  maxHeight?: string;
+  style?: React.CSSProperties;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface MenuAutocompleteListBoxProps<T>
+  extends MenuAutocompleteListBoxOwnProps,
+    Omit<ListBoxProps<T>, keyof MenuAutocompleteListBoxOwnProps> {}
+
+// @public (undocumented)
+export type MenuAutocompleteOwnProps = {
+  placeholder?: string;
+  placement?: PopoverProps_2['placement'];
+  virtualized?: boolean;
+  maxWidth?: string;
+  maxHeight?: string;
+  style?: React.CSSProperties;
+  className?: string;
+};
 
 // @public (undocumented)
 export interface MenuAutocompleteProps<T>
-  extends MenuProps_2<T>,
-    Omit<MenuProps_2<T>, 'children'> {
-  // (undocumented)
-  maxHeight?: string;
-  // (undocumented)
-  maxWidth?: string;
-  // (undocumented)
-  placeholder?: string;
-  // (undocumented)
-  placement?: PopoverProps_2['placement'];
-  // (undocumented)
-  virtualized?: boolean;
-}
+  extends MenuAutocompleteOwnProps,
+    Omit<MenuProps_2<T>, keyof MenuAutocompleteOwnProps> {}
 
 // @public
 export const MenuDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
-    readonly root: 'bui-Menu';
-    readonly popover: 'bui-MenuPopover';
+    readonly root: 'bui-MenuPopover';
     readonly inner: 'bui-MenuInner';
     readonly content: 'bui-MenuContent';
-    readonly section: 'bui-MenuSection';
-    readonly sectionHeader: 'bui-MenuSectionHeader';
-    readonly item: 'bui-MenuItem';
-    readonly itemListBox: 'bui-MenuItemListBox';
-    readonly itemListBoxCheck: 'bui-MenuItemListBoxCheck';
-    readonly itemWrapper: 'bui-MenuItemWrapper';
-    readonly itemContent: 'bui-MenuItemContent';
-    readonly itemArrow: 'bui-MenuItemArrow';
-    readonly separator: 'bui-MenuSeparator';
-    readonly searchField: 'bui-MenuSearchField';
-    readonly searchFieldInput: 'bui-MenuSearchFieldInput';
-    readonly searchFieldClear: 'bui-MenuSearchFieldClear';
-    readonly emptyState: 'bui-MenuEmptyState';
+  };
+  readonly propDefs: {
+    readonly placement: {
+      readonly default: 'bottom start';
+    };
+    readonly virtualized: {
+      readonly default: false;
+    };
+    readonly maxWidth: {};
+    readonly maxHeight: {};
+    readonly style: {};
+    readonly className: {};
   };
 };
 
@@ -1539,16 +1541,18 @@ export const MenuDefinition: {
 export const MenuItem: (props: MenuItemProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuItemProps
-  extends MenuItemProps_2,
-    Omit<MenuItemProps_2, 'children'> {
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
-  color?: 'primary' | 'danger';
-  // (undocumented)
+export type MenuItemOwnProps = {
   iconStart?: React.ReactNode;
-}
+  children: React.ReactNode;
+  color?: 'primary' | 'danger';
+  href?: MenuItemProps_2['href'];
+  className?: string;
+};
+
+// @public (undocumented)
+export interface MenuItemProps
+  extends MenuItemOwnProps,
+    Omit<MenuItemProps_2, keyof MenuItemOwnProps> {}
 
 // @public (undocumented)
 export const MenuListBox: (props: MenuListBoxProps<object>) => JSX_2.Element;
@@ -1557,59 +1561,74 @@ export const MenuListBox: (props: MenuListBoxProps<object>) => JSX_2.Element;
 export const MenuListBoxItem: (props: MenuListBoxItemProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuListBoxItemProps
-  extends ListBoxItemProps,
-    Omit<ListBoxItemProps, 'children'> {
-  // (undocumented)
+export type MenuListBoxItemOwnProps = {
   children: React.ReactNode;
-}
+  className?: string;
+};
+
+// @public (undocumented)
+export interface MenuListBoxItemProps
+  extends MenuListBoxItemOwnProps,
+    Omit<ListBoxItemProps, keyof MenuListBoxItemOwnProps> {}
+
+// @public (undocumented)
+export type MenuListBoxOwnProps = {
+  placement?: PopoverProps_2['placement'];
+  selectionMode?: ListBoxProps<object>['selectionMode'];
+  virtualized?: boolean;
+  maxWidth?: string;
+  maxHeight?: string;
+  style?: React.CSSProperties;
+  className?: string;
+};
 
 // @public (undocumented)
 export interface MenuListBoxProps<T>
-  extends ListBoxProps<T>,
-    Omit<ListBoxProps<T>, 'children'> {
-  // (undocumented)
-  maxHeight?: string;
-  // (undocumented)
-  maxWidth?: string;
-  // (undocumented)
+  extends MenuListBoxOwnProps,
+    Omit<ListBoxProps<T>, keyof MenuListBoxOwnProps> {}
+
+// @public (undocumented)
+export type MenuOwnProps = {
   placement?: PopoverProps_2['placement'];
-  // (undocumented)
   virtualized?: boolean;
-}
+  maxWidth?: string;
+  maxHeight?: string;
+  style?: React.CSSProperties;
+  className?: string;
+};
 
 // @public (undocumented)
 export interface MenuProps<T>
-  extends MenuProps_2<T>,
-    Omit<MenuProps_2<T>, 'children'> {
-  // (undocumented)
-  maxHeight?: string;
-  // (undocumented)
-  maxWidth?: string;
-  // (undocumented)
-  placement?: PopoverProps_2['placement'];
-  // (undocumented)
-  virtualized?: boolean;
-}
+  extends MenuOwnProps,
+    Omit<MenuProps_2<T>, keyof MenuOwnProps> {}
 
 // @public (undocumented)
 export const MenuSection: (props: MenuSectionProps<object>) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuSectionProps<T>
-  extends MenuSectionProps_2<T>,
-    Omit<MenuSectionProps_2<T>, 'children'> {
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
+export type MenuSectionOwnProps = {
   title: string;
-}
+  children: React.ReactNode;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface MenuSectionProps<T>
+  extends MenuSectionOwnProps,
+    Omit<MenuSectionProps_2<T>, keyof MenuSectionOwnProps> {}
 
 // @public (undocumented)
 export const MenuSeparator: (props: MenuSeparatorProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuSeparatorProps extends SeparatorProps {}
+export type MenuSeparatorOwnProps = {
+  className?: string;
+};
+
+// @public (undocumented)
+export interface MenuSeparatorProps
+  extends MenuSeparatorOwnProps,
+    Omit<SeparatorProps, keyof MenuSeparatorOwnProps> {}
 
 // @public (undocumented)
 export const MenuTrigger: (props: MenuTriggerProps) => JSX_2.Element;
