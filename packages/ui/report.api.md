@@ -774,9 +774,6 @@ export interface CheckboxProps
   extends Omit<CheckboxProps_2, 'children' | 'className'>,
     CheckboxOwnProps {}
 
-// @public
-export type ClassNamesMap = Record<string, string>;
-
 // @public (undocumented)
 export const Column: (props: ColumnProps) => JSX_2.Element;
 
@@ -832,16 +829,6 @@ export type Columns =
   | '11'
   | '12'
   | 'auto';
-
-// @public
-export interface ComponentDefinition {
-  // (undocumented)
-  classNames: ClassNamesMap;
-  // (undocumented)
-  dataAttributes?: DataAttributesMap;
-  // (undocumented)
-  utilityProps?: string[];
-}
 
 // @public (undocumented)
 export const Container: ForwardRefExoticComponent<
@@ -931,12 +918,6 @@ export interface CursorResponse<T> {
   // (undocumented)
   totalCount?: number;
 }
-
-// @public
-export type DataAttributesMap = Record<string, DataAttributeValues>;
-
-// @public
-export type DataAttributeValues = readonly (string | number | boolean)[];
 
 // @public (undocumented)
 export const Dialog: ForwardRefExoticComponent<
