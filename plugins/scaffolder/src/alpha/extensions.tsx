@@ -51,7 +51,12 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
 
 export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
   name: 'templates',
-  factory(originalFactory, { apis }) {
+  config: {
+    schema: {
+      enableBackstageUi: z => z.boolean().default(false),
+    },
+  },
+  factory(originalFactory, { apis, config }) {
     const formFieldsApi = apis.get(formFieldsApiRef);
 
     return originalFactory({
@@ -61,7 +66,12 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
         const formFields = (await formFieldsApi?.loadFormFields()) ?? [];
 
         return import('./components/TemplatesSubPage').then(m => (
-          <m.TemplatesSubPage formFields={formFields} />
+          <m.TemplatesSubPage
+            formFields={formFields}
+            formProps={{
+              EXPERIMENTAL_theme: config.enableBackstageUi ? 'bui' : 'mui',
+            }}
+          />
         ));
       },
     });

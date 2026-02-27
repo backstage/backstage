@@ -34,7 +34,14 @@ import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
-import { useCallback, useEffect } from 'react';
+import {
+  type Key,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -45,7 +52,11 @@ import {
 import { VirtualizedListbox } from '../VirtualizedListbox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
-import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  ScaffolderField,
+  useScaffolderTheme,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
 
 export { EntityPickerSchema } from './schema';
 
@@ -56,6 +67,7 @@ export { EntityPickerSchema } from './schema';
  * @public
  */
 export const EntityPicker = (props: EntityPickerProps) => {
+  const theme = useScaffolderTheme();
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     onChange,
@@ -166,22 +178,158 @@ export const EntityPicker = (props: EntityPickerProps) => {
     [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
   );
 
-  // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
-  // back to the given value.
+  // Since free solo can be enabled, attempt to parse as a full entity ref first, then
+  // fall back to the given value.
   const selectedEntity =
     entities?.catalogEntities.find(e => stringifyEntityRef(e) === formData) ??
     (allowArbitraryValues && formData ? getLabel(formData) : '');
 
+  // BUI: options for autocomplete
+  const buiOptions = useMemo(
+    () =>
+      (entities?.catalogEntities || []).map(entity => {
+        const entityRef = stringifyEntityRef(entity);
+        const presentation = entities?.entityRefToPresentation.get(entityRef);
+        return {
+          value: entityRef,
+          label: presentation?.primaryTitle || entityRef,
+        };
+      }),
+    [entities],
+  );
+
+  // BUI: controlled input value
+  const [inputValue, setInputValue] = useState(formData || '');
+
   useEffect(() => {
-    if (
+    if (formData) {
+      const opt = buiOptions.find(o => o.value === formData);
+      setInputValue(opt?.label || formData);
+    } else {
+      setInputValue('');
+    }
+  }, [formData, buiOptions]);
+
+  const selectedKey =
+    formData && buiOptions.some(o => o.value === formData) ? formData : null;
+
+  const lastCommittedRef = useRef(formData);
+
+  useEffect(() => {
+    lastCommittedRef.current = formData;
+  }, [formData]);
+
+  const handleSelectionChange = useCallback(
+    (key: Key | null) => {
+      if (key !== null) {
+        const value = String(key);
+        lastCommittedRef.current = value;
+        onChange(value);
+      } else if (allowArbitraryValues && inputValue) {
+        let entityRef = inputValue;
+        try {
+          entityRef = stringifyEntityRef(
+            parseEntityRef(inputValue, { defaultKind, defaultNamespace }),
+          );
+        } catch {
+          // If the input isn't a valid entity ref, use it as-is
+        }
+        lastCommittedRef.current = entityRef;
+        onChange(entityRef);
+      } else {
+        lastCommittedRef.current = undefined;
+        onChange(undefined);
+      }
+    },
+    [onChange, allowArbitraryValues, inputValue, defaultKind, defaultNamespace],
+  );
+
+  const handleBlur = useCallback(() => {
+    if (allowArbitraryValues && inputValue) {
+      let entityRef = inputValue;
+      try {
+        entityRef = stringifyEntityRef(
+          parseEntityRef(inputValue, { defaultKind, defaultNamespace }),
+        );
+      } catch {
+        // If the input isn't a valid entity ref, use it as-is
+      }
+      if (lastCommittedRef.current !== entityRef) {
+        lastCommittedRef.current = entityRef;
+        onChange(entityRef);
+      }
+    }
+  }, [
+    allowArbitraryValues,
+    inputValue,
+    defaultKind,
+    defaultNamespace,
+    onChange,
+  ]);
+
+  // Auto-select when only one entity and required
+  useEffect(() => {
+    if (theme === 'bui') {
+      if (
+        required &&
+        !allowArbitraryValues &&
+        entities?.catalogEntities.length === 1 &&
+        !formData
+      ) {
+        onChange(stringifyEntityRef(entities.catalogEntities[0]));
+      }
+    } else {
+      if (
+        required &&
+        !allowArbitraryValues &&
+        entities?.catalogEntities.length === 1 &&
+        selectedEntity === ''
+      ) {
+        onChange(stringifyEntityRef(entities.catalogEntities[0]));
+      }
+    }
+  }, [
+    entities,
+    onChange,
+    selectedEntity,
+    formData,
+    required,
+    allowArbitraryValues,
+    theme,
+  ]);
+
+  if (theme === 'bui') {
+    const isAutoSelected =
       required &&
       !allowArbitraryValues &&
-      entities?.catalogEntities.length === 1 &&
-      selectedEntity === ''
-    ) {
-      onChange(stringifyEntityRef(entities.catalogEntities[0]));
-    }
-  }, [entities, onChange, selectedEntity, required, allowArbitraryValues]);
+      entities?.catalogEntities.length === 1;
+
+    return (
+      <ScaffolderField
+        rawErrors={rawErrors}
+        rawDescription={uiSchema['ui:description'] ?? description}
+        required={required}
+        disabled={isDisabled}
+        errors={errors}
+      >
+        <BuiAutocomplete
+          id={idSchema?.$id}
+          label={title}
+          isRequired={required}
+          isDisabled={isDisabled || isAutoSelected}
+          selectedKey={selectedKey}
+          inputValue={inputValue}
+          onInputChange={setInputValue}
+          onSelectionChange={handleSelectionChange}
+          onBlur={handleBlur}
+          isLoading={loading}
+          options={buiOptions}
+          allowsCustomValue={allowArbitraryValues}
+          isInvalid={rawErrors && rawErrors.length > 0}
+        />
+      </ScaffolderField>
+    );
+  }
 
   return (
     <ScaffolderField

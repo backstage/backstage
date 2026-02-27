@@ -125,7 +125,9 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
 
 // @alpha
 export const Form: (
-  props: PropsWithChildren<ScaffolderRJSFFormProps>,
+  props: PropsWithChildren<
+    ScaffolderRJSFFormProps & Pick<FormProps, 'EXPERIMENTAL_theme'>
+  >,
 ) => JSX_2.Element;
 
 // @public
@@ -320,10 +322,10 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
     readonly 'scaffolderPageContextMenu.templatingExtensionsLabel': 'Templating Extensions';
     readonly 'stepper.backButtonText': 'Back';
-    readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.createButtonText': 'Create';
     readonly 'stepper.reviewButtonText': 'Review';
     readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
+    readonly 'stepper.nextButtonText': 'Next';
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';
@@ -331,6 +333,9 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'templateOutputs.title': 'Text Output';
   }
 >;
+
+// @alpha (undocumented)
+export type ScaffolderTheme = 'mui' | 'bui';
 
 // @alpha
 export const SecretWidget: (
@@ -461,6 +466,9 @@ export const useFilteredSchemaProperties: (
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
+
+// @alpha (undocumented)
+export const useScaffolderTheme: () => ScaffolderTheme;
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {

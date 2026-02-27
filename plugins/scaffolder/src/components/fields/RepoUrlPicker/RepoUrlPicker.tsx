@@ -36,6 +36,8 @@ import { RepoUrlPickerFieldSchema } from './schema';
 import { RepoUrlPickerState } from './types';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 import { MarkdownContent } from '@backstage/core-components';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { Flex, Text } from '@backstage/ui';
 
 export { RepoUrlPickerSchema } from './schema';
 
@@ -48,6 +50,7 @@ export { RepoUrlPickerSchema } from './schema';
 export const RepoUrlPicker = (
   props: typeof RepoUrlPickerFieldSchema.TProps,
 ) => {
+  const scaffolderTheme = useScaffolderTheme();
   const { uiSchema, onChange, rawErrors, formData, schema } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),
@@ -170,19 +173,12 @@ export const RepoUrlPicker = (
 
   const description = uiSchema['ui:description'] ?? schema.description;
 
-  return (
+  const accessToken =
+    uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+    secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey];
+
+  const subComponents = (
     <>
-      {schema.title && (
-        <Box my={1}>
-          <Typography variant="h5">{schema.title}</Typography>
-          <Divider />
-        </Box>
-      )}
-      {description && (
-        <Typography variant="body1">
-          <MarkdownContent content={description} />
-        </Typography>
-      )}
       <RepoUrlPickerHost
         host={state.host}
         hosts={allowedHosts}
@@ -197,10 +193,7 @@ export const RepoUrlPicker = (
           rawErrors={rawErrors}
           state={state}
           isDisabled={isDisabled}
-          accessToken={
-            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
-            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
-          }
+          accessToken={accessToken}
         />
       )}
       {hostType === 'gitea' && (
@@ -220,10 +213,7 @@ export const RepoUrlPicker = (
           state={state}
           onChange={updateLocalState}
           isDisabled={isDisabled}
-          accessToken={
-            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
-            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
-          }
+          accessToken={accessToken}
         />
       )}
       {hostType === 'bitbucket' && (
@@ -234,10 +224,7 @@ export const RepoUrlPicker = (
           state={state}
           onChange={updateLocalState}
           isDisabled={isDisabled}
-          accessToken={
-            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
-            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
-          }
+          accessToken={accessToken}
         />
       )}
       {hostType === 'azure' && (
@@ -271,6 +258,41 @@ export const RepoUrlPicker = (
         rawErrors={rawErrors}
         availableRepos={state.availableRepos}
       />
+    </>
+  );
+
+  if (scaffolderTheme === 'bui') {
+    return (
+      <Flex direction="column" gap="4">
+        {schema.title && (
+          <Text as="h5" variant="title-small" weight="bold">
+            {schema.title}
+          </Text>
+        )}
+        {description && (
+          <Text as="p" variant="body-medium" color="secondary">
+            {description}
+          </Text>
+        )}
+        {subComponents}
+      </Flex>
+    );
+  }
+
+  return (
+    <>
+      {schema.title && (
+        <Box my={1}>
+          <Typography variant="h5">{schema.title}</Typography>
+          <Divider />
+        </Box>
+      )}
+      {description && (
+        <Typography variant="body1">
+          <MarkdownContent content={description} />
+        </Typography>
+      )}
+      {subComponents}
     </>
   );
 };

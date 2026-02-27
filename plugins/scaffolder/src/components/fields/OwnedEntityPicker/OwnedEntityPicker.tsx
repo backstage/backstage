@@ -16,7 +16,7 @@
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import MuiAutocomplete from '@material-ui/lab/Autocomplete';
 import useAsync from 'react-use/esm/useAsync';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
 
@@ -24,7 +24,11 @@ import { OwnedEntityPickerProps } from './schema';
 import { EntityPickerProps } from '../EntityPicker/schema';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
-import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  ScaffolderField,
+  useScaffolderTheme,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
 
 export { OwnedEntityPickerSchema } from './schema';
 
@@ -36,6 +40,7 @@ export { OwnedEntityPickerSchema } from './schema';
  */
 export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const theme = useScaffolderTheme();
   const {
     schema: {
       title = t('fields.ownedEntityPicker.title'),
@@ -51,14 +56,25 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
     return identity.ownershipEntityRefs;
   });
 
-  if (loading)
+  if (loading) {
+    if (theme === 'bui') {
+      return (
+        <BuiAutocomplete
+          label={title}
+          isRequired={required}
+          isLoading
+          options={[]}
+          isDisabled
+        />
+      );
+    }
     return (
       <ScaffolderField
         rawDescription={uiSchema['ui:description'] ?? description}
         required={required}
         disabled={uiSchema['ui:disabled']}
       >
-        <Autocomplete
+        <MuiAutocomplete
           loading={loading}
           renderInput={params => (
             <TextField
@@ -78,6 +94,7 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
         />
       </ScaffolderField>
     );
+  }
 
   const entityPickerUISchema = buildEntityPickerUISchema(
     uiSchema,

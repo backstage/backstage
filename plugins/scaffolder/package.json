@@ -98,6 +98,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "qs": "^6.9.4",
+    "react-aria-components": "^1.14.0",
     "react-resizable": "^3.0.5",
     "react-resizable-panels": "^3.0.4",
     "react-use": "^17.2.4",
