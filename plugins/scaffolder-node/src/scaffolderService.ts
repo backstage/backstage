@@ -20,6 +20,7 @@ import {
   coreServices,
   createServiceFactory,
   createServiceRef,
+  DiscoveryService,
 } from '@backstage/backend-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -87,11 +88,13 @@ export interface ScaffolderService {
   ): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }>;
 
   listActions(
-    options: ScaffolderServiceRequestOptions,
+    request?: {},
+    options?: ScaffolderServiceRequestOptions,
   ): Promise<ListActionsResponse>;
 
   listTemplatingExtensions(
-    options: ScaffolderServiceRequestOptions,
+    request?: {},
+    options?: ScaffolderServiceRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse>;
 
   getLogs(
@@ -121,19 +124,16 @@ export interface ScaffolderService {
 class DefaultScaffolderService implements ScaffolderService {
   readonly #auth: AuthService;
   readonly #client: ScaffolderClient;
-  readonly #discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
-  readonly #fetchApi: { fetch: typeof fetch };
+  readonly #discovery: DiscoveryService;
 
   constructor(options: {
     auth: AuthService;
     client: ScaffolderClient;
-    discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
-    fetchApi: { fetch: typeof fetch };
+    discovery: DiscoveryService;
   }) {
     this.#auth = options.auth;
     this.#client = options.client;
-    this.#discoveryApi = options.discoveryApi;
-    this.#fetchApi = options.fetchApi;
+    this.#discovery = options.discovery;
   }
 
   async getTemplateParameterSchema(
@@ -189,7 +189,7 @@ class DefaultScaffolderService implements ScaffolderService {
     options: ScaffolderServiceRequestOptions,
   ): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }> {
     const { token } = await this.#getOptions(options);
-    const baseUrl = await this.#discoveryApi.getBaseUrl('scaffolder');
+    const baseUrl = await this.#discovery.getBaseUrl('scaffolder');
 
     const params = new URLSearchParams();
     if (request.createdBy) {
@@ -205,7 +205,7 @@ class DefaultScaffolderService implements ScaffolderService {
     const query = params.toString();
     const url = `${baseUrl}/v2/tasks${query ? `?${query}` : ''}`;
 
-    const response = await this.#fetchApi.fetch(url, {
+    const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -220,16 +220,20 @@ class DefaultScaffolderService implements ScaffolderService {
   }
 
   async listActions(
-    options: ScaffolderServiceRequestOptions,
+    _request?: {},
+    options?: ScaffolderServiceRequestOptions,
   ): Promise<ListActionsResponse> {
-    return this.#client.listActions(await this.#getOptions(options));
+    return this.#client.listActions(
+      options ? await this.#getOptions(options) : {},
+    );
   }
 
   async listTemplatingExtensions(
-    options: ScaffolderServiceRequestOptions,
+    _request?: {},
+    options?: ScaffolderServiceRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse> {
     return this.#client.listTemplatingExtensions(
-      await this.#getOptions(options),
+      options ? await this.#getOptions(options) : {},
     );
   }
 
@@ -241,7 +245,7 @@ class DefaultScaffolderService implements ScaffolderService {
     options: ScaffolderServiceRequestOptions,
   ): Promise<LogEvent[]> {
     const { token } = await this.#getOptions(options);
-    const baseUrl = await this.#discoveryApi.getBaseUrl('scaffolder');
+    const baseUrl = await this.#discovery.getBaseUrl('scaffolder');
 
     const params = new URLSearchParams();
     if (request.after !== undefined) {
@@ -254,7 +258,7 @@ class DefaultScaffolderService implements ScaffolderService {
       query ? `?${query}` : ''
     }`;
 
-    const response = await this.#fetchApi.fetch(url, {
+    const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -324,8 +328,7 @@ export const scaffolderServiceRef = createServiceRef<ScaffolderService>({
         return new DefaultScaffolderService({
           auth,
           client,
-          discoveryApi: discovery,
-          fetchApi: { fetch },
+          discovery,
         });
       },
     }),

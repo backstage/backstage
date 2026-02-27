@@ -7111,6 +7111,11 @@ __metadata:
     winston-transport: "npm:^4.7.0"
     zod: "npm:^3.25.76"
     zod-to-json-schema: "npm:^3.25.1"
+  peerDependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+  peerDependenciesMeta:
+    "@backstage/backend-test-utils":
+      optional: true
   languageName: unknown
   linkType: soft
 

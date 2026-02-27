@@ -382,7 +382,8 @@ export interface ScaffolderService {
   ): Promise<TemplateParameterSchema>;
   // (undocumented)
   listActions(
-    options: ScaffolderServiceRequestOptions,
+    request?: {},
+    options?: ScaffolderServiceRequestOptions,
   ): Promise<ListActionsResponse>;
   // (undocumented)
   listTasks(
@@ -398,7 +399,8 @@ export interface ScaffolderService {
   }>;
   // (undocumented)
   listTemplatingExtensions(
-    options: ScaffolderServiceRequestOptions,
+    request?: {},
+    options?: ScaffolderServiceRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse>;
   // (undocumented)
   retry(
