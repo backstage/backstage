@@ -17,18 +17,21 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 
+/** @public */
 export interface UseFormStateOptions<T> {
   id: string;
   onLoad: (value: T | null) => void;
   debounceTime?: number;
 }
 
+/** @public */
 export interface UseFormStateResult<T> {
   loading: boolean;
   persistFormState: (value: T) => void;
   cleanupFormState: () => void;
 }
 
+/** @public */
 export const useFormState = <T extends JsonValue>(
   options: UseFormStateOptions<T>,
 ): UseFormStateResult<T> => {
