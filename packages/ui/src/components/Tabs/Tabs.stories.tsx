@@ -454,6 +454,51 @@ export const RootPathMatching = meta.story({
   ),
 });
 
+export const HrefWithQueryParams = meta.story({
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/cost-insights/dashboard?group=bar']}>
+      <Tabs>
+        <TabList>
+          <Tab
+            id="dashboard"
+            href="/cost-insights/dashboard?group=foo"
+            matchStrategy="prefix"
+          >
+            Dashboard
+          </Tab>
+          <Tab
+            id="alerts"
+            href="/cost-insights/alerts?group=foo"
+            matchStrategy="prefix"
+          >
+            Alerts
+          </Tab>
+        </TabList>
+      </Tabs>
+      <Box mt="6" pl="2">
+        <Text as="p">
+          Current URL: <strong>/cost-insights/dashboard?group=bar</strong>
+        </Text>
+        <Text as="p">
+          Tab hrefs include query params (e.g., ?group=foo) but the current URL
+          has different query params (?group=bar).
+        </Text>
+        <Text as="p">
+          • "Dashboard" tab: IS active — matching ignores query params and
+          compares only the pathname.
+        </Text>
+        <Text as="p">
+          • "Alerts" tab: NOT active — pathname /cost-insights/alerts doesn't
+          match /cost-insights/dashboard.
+        </Text>
+      </Box>
+    </MemoryRouter>
+  ),
+});
+
 export const AutoSelectionOfTabs = meta.story({
   args: {
     children: '',
