@@ -171,7 +171,7 @@ describe('scaffolderServiceRef', () => {
   });
 
   it('should pass createdBy and pagination params for listTasks', async () => {
-    expect.assertions(3);
+    expect.assertions(4);
 
     server.use(
       rest.get('*/api/scaffolder/v2/tasks', (req, res, ctx) => {
@@ -195,9 +195,11 @@ describe('scaffolderServiceRef', () => {
 
     const scaffolder = await tester.getService(scaffolderServiceRef);
 
-    await scaffolder.listTasks(
+    const result = await scaffolder.listTasks(
       { createdBy: 'user:default/guest', limit: 10, offset: 5 },
       { credentials: mockCredentials.user() },
     );
+
+    expect(result).toEqual({ items: [], totalItems: 0 });
   });
 });

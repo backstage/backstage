@@ -85,7 +85,7 @@ export interface ScaffolderService {
       offset?: number;
     },
     options: ScaffolderServiceRequestOptions,
-  ): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }>;
+  ): Promise<{ items: ScaffolderTask[]; totalItems: number }>;
 
   listActions(
     request?: {},
@@ -187,7 +187,7 @@ class DefaultScaffolderService implements ScaffolderService {
       offset?: number;
     },
     options: ScaffolderServiceRequestOptions,
-  ): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }> {
+  ): Promise<{ items: ScaffolderTask[]; totalItems: number }> {
     const { token } = await this.#getOptions(options);
     const baseUrl = await this.#discovery.getBaseUrl('scaffolder');
 
@@ -216,7 +216,11 @@ class DefaultScaffolderService implements ScaffolderService {
       throw await ResponseError.fromResponse(response);
     }
 
-    return response.json();
+    const body = await response.json();
+    return {
+      items: body.tasks,
+      totalItems: body.totalTasks ?? 0,
+    };
   }
 
   async listActions(

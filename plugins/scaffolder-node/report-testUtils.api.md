@@ -83,8 +83,8 @@ export interface ScaffolderService {
     },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{
-    tasks: ScaffolderTask[];
-    totalTasks?: number;
+    items: ScaffolderTask[];
+    totalItems: number;
   }>;
   // (undocumented)
   listTemplatingExtensions(
