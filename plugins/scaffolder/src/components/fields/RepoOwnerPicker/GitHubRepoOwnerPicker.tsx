@@ -18,14 +18,17 @@ import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import MuiTextField from '@material-ui/core/TextField';
+import MuiAutocomplete from '@material-ui/lab/Autocomplete';
 import { useCallback, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { BaseRepoOwnerPickerProps } from './types';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
+import type { Key } from 'react-aria-components';
 
 /**
  * The underlying component that is rendered in the form for the `GitHubRepoOwnerPicker`
@@ -47,6 +50,7 @@ export const GitHubRepoOwnerPicker = ({
   accessToken?: string;
   excludedOwners?: string[];
 }>) => {
+  const theme = useScaffolderTheme();
   const { host, owner } = state;
 
   const [availableOwners, setAvailableOwners] = useState<string[]>([]);
@@ -81,13 +85,37 @@ export const GitHubRepoOwnerPicker = ({
 
   useDebounce(updateAvailableOwners, 500, [updateAvailableOwners]);
 
+  if (theme === 'bui') {
+    const options = availableOwners.map(o => ({ label: o, value: o }));
+
+    return (
+      <BuiAutocomplete
+        label={schema?.title ?? t('fields.repoOwnerPicker.title')}
+        description={
+          schema?.description ?? t('fields.repoOwnerPicker.description')
+        }
+        inputValue={owner ?? ''}
+        onInputChange={value => onChange({ owner: value })}
+        onSelectionChange={(key: Key | null) => {
+          if (key !== null) {
+            onChange({ owner: String(key) });
+          }
+        }}
+        options={options}
+        isDisabled={isDisabled}
+        isRequired={required}
+        isInvalid={rawErrors?.length > 0 && !owner}
+      />
+    );
+  }
+
   return (
     <FormControl
       margin="normal"
       required={required}
       error={rawErrors?.length > 0 && !owner}
     >
-      <Autocomplete
+      <MuiAutocomplete
         value={owner}
         onChange={(_, newValue) => {
           onChange({ owner: newValue || '' });
@@ -95,7 +123,7 @@ export const GitHubRepoOwnerPicker = ({
         disabled={isDisabled}
         options={availableOwners}
         renderInput={params => (
-          <TextField
+          <MuiTextField
             {...params}
             label={schema?.title ?? t('fields.repoOwnerPicker.title')}
             disabled={isDisabled}

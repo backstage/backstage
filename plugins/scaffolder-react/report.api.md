@@ -153,7 +153,9 @@ export type FormProps = Pick<
   | 'formContext'
   | 'omitExtraData'
   | 'liveOmit'
->;
+> & {
+  EXPERIMENTAL_theme?: 'mui' | 'bui';
+};
 
 // @public
 export type LayoutComponent<_TInputProps> = () => null;

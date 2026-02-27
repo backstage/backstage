@@ -194,10 +194,12 @@ const _default: OverridableFrontendPlugin<
     }>;
     'page:scaffolder': OverridableExtensionDefinition<{
       config: {
+        enableBackstageUi: boolean;
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
+        enableBackstageUi?: boolean | undefined;
         title?: string | undefined;
         path?: string | undefined;
       };

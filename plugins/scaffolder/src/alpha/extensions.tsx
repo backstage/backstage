@@ -37,7 +37,12 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
       FormFieldBlueprint.dataRefs.formFieldLoader,
     ]),
   },
-  factory(originalFactory, { apis, inputs }) {
+  config: {
+    schema: {
+      enableBackstageUi: z => z.boolean().default(false),
+    },
+  },
+  factory(originalFactory, { apis, inputs, config }) {
     const formFieldsApi = apis.get(formFieldsApiRef);
 
     return originalFactory({
@@ -57,7 +62,12 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
         const formFields = [...apiFormFields, ...loadedFormFields];
 
         return import('../components/Router/Router').then(m => (
-          <m.InternalRouter formFields={formFields} />
+          <m.InternalRouter
+            formFields={formFields}
+            formProps={{
+              EXPERIMENTAL_theme: config.enableBackstageUi ? 'bui' : 'mui',
+            }}
+          />
         ));
       },
     });
