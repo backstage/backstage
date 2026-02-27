@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { ScaffolderClient } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
+import { JsonObject } from '@backstage/types';
 import yaml from 'yaml';
 
 const MAX_CONTENT_SIZE = 64 * 1024;
@@ -28,24 +29,21 @@ function base64EncodeContent(content: string): string {
 
 export const createDryRunTemplateAction = ({
   actionsRegistry,
-  scaffolderClient,
+  scaffolderService,
 }: {
   actionsRegistry: ActionsRegistryService;
-  scaffolderClient: ScaffolderClient;
+  scaffolderService: ScaffolderService;
 }) => {
-  // Register the validate-scaffolder action that calls /v2/dry-run endpoint
   actionsRegistry.register({
-    name: 'validate-scaffolder',
-    title: 'Validate Scaffolder Template',
+    name: 'dry-run-template',
+    title: 'Dry Run Scaffolder Template',
     attributes: {
       destructive: false,
       readOnly: true,
       idempotent: true,
     },
-    description: `Validates a scaffolder template by dry-running it.
-This action:
-- Calls scaffolderClient.dryRun()to validate and dry-run template.
-- Returns success with execution logs or errors for validation failures`,
+    description:
+      'Dry-runs a scaffolder template to validate it without making changes. Returns success with execution logs, or errors for validation failures.',
     schema: {
       input: z =>
         z.object({
@@ -57,18 +55,18 @@ This action:
           values: z
             .record(z.unknown())
             .optional()
-            .describe('Input values for template parameters (default: {})'),
+            .describe('Input values for template parameters'),
           files: z
             .array(
               z.object({
                 path: z
                   .string()
                   .describe('File path relative to template root'),
-                content: z.string().describe('file content'),
+                content: z.string().describe('File content'),
               }),
             )
             .optional()
-            .describe('files required for running the template'),
+            .describe('Files required for running the template'),
         }),
       output: z =>
         z.object({
@@ -106,78 +104,53 @@ This action:
             .describe('Parsed template steps'),
         }),
     },
-    action: async ({ input }: { input: any }) => {
+    action: async ({ input, credentials }) => {
       const { templateYaml, values = {}, files = [] } = input;
 
+      let template;
       try {
-        // Parse YAML content
-        let template;
-        try {
-          template = yaml.parse(templateYaml);
-        } catch (parseError: any) {
-          return {
-            output: {
-              valid: false,
-              message: 'Failed to parse YAML template',
-              errors: [
-                `YAML parsing error: ${parseError.message}`,
-                parseError.linePos
-                  ? `At line ${parseError.linePos[0].line}, column ${parseError.linePos[0].col}`
-                  : '',
-              ].filter(Boolean),
-            },
-          };
-        }
-
-        // Use ScaffolderClient to call the dryRun API
-        // - Template validation
-        // - Parameter validation
-        // - Dry-run execution of all steps
-        const result = await scaffolderClient.dryRun({
-          template,
-          values,
-          directoryContents: files.map(
-            (file: { path: string; content: string }) => ({
-              path: file.path,
-              base64Content: base64EncodeContent(file.content),
-            }),
-          ),
-        });
-
-        return {
-          output: {
-            valid: true,
-            message: 'Template validation successful',
-            log: result.log?.map((entry: any) => ({
-              message: entry.body?.message || entry.message,
-              stepId: entry.body?.stepId || entry.stepId,
-              status: entry.body?.status || entry.status,
-            })),
-            output: result.output,
-            steps: result.steps,
-          },
-        };
-      } catch (error: any) {
-        // Extract error messages from ResponseError or generic errors
-        const errorMessages: string[] = [];
-
-        if (error.name === 'ResponseError' || error.body) {
-          // Extract from API response
-          if (error.body?.error?.message)
-            errorMessages.push(error.body?.error?.message);
-          if (error.body?.errors) errorMessages.push(error.body?.errors);
-        } else if (error.message) {
-          errorMessages.push(error.message);
-        }
-
+        template = yaml.parse(templateYaml);
+      } catch (parseError) {
+        const yamlError = parseError as yaml.YAMLParseError;
         return {
           output: {
             valid: false,
-            message: 'Template validation failed',
-            errors: errorMessages,
+            message: 'Failed to parse YAML template',
+            errors: [
+              `YAML parsing error: ${yamlError.message}`,
+              yamlError.linePos
+                ? `At line ${yamlError.linePos[0].line}, column ${yamlError.linePos[0].col}`
+                : '',
+            ].filter(Boolean),
           },
         };
       }
+
+      const result = await scaffolderService.dryRun(
+        {
+          template,
+          values: values as JsonObject,
+          directoryContents: files.map(file => ({
+            path: file.path,
+            base64Content: base64EncodeContent(file.content),
+          })),
+        },
+        { credentials },
+      );
+
+      return {
+        output: {
+          valid: true,
+          message: 'Template validation successful',
+          log: result.log?.map(entry => ({
+            message: entry.body.message,
+            stepId: entry.body.stepId,
+            status: entry.body.status,
+          })),
+          output: result.output,
+          steps: result.steps,
+        },
+      };
     },
   });
 };

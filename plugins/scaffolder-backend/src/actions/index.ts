@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { ScaffolderClient } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 import { createDryRunTemplateAction } from './createDryRunTemplateAction';
 
 export const createScaffolderActions = (options: {
   actionsRegistry: ActionsRegistryService;
-  scaffolderClient: ScaffolderClient;
+  scaffolderService: ScaffolderService;
 }) => {
   createDryRunTemplateAction(options);
 };
