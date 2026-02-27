@@ -26,13 +26,13 @@ export interface ExternalTokenHandler<TContext> {
   initialize(ctx: { options: Config }): TContext;
   // (undocumented)
   type: string;
-  // (undocumented)
   verifyToken(
     token: string,
     ctx: TContext,
   ): Promise<
     | {
         subject: string;
+        tokenClaims?: Record<string, unknown>;
       }
     | undefined
   >;
