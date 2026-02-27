@@ -139,9 +139,14 @@ function createServicePrincipal(
     type: 'service',
     subject: sub,
     accessRestrictions,
-    tokenClaims,
   } as const;
   Object.defineProperties(result, {
+    tokenClaims: {
+      enumerable: false,
+      configurable: true,
+      writable: true,
+      value: tokenClaims,
+    },
     toString: {
       enumerable: false,
       configurable: true,

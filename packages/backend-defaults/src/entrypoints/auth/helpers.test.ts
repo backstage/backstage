@@ -68,6 +68,31 @@ describe('credentials', () => {
     });
   });
 
+  it('should preserve tokenClaims on the principal but not in serialized output', () => {
+    const claims = {
+      upn: 'user@example.com',
+      oid: 'abc-123',
+      name: 'Test User',
+    };
+    const credentials = createCredentialsWithServicePrincipal(
+      'my-service',
+      undefined,
+      undefined,
+      claims,
+    );
+
+    // Claims are accessible directly on the principal
+    expect(credentials.principal.tokenClaims).toEqual(claims);
+
+    // Non-enumerable: toEqual ignores it, and JSON.stringify omits it
+    expect(credentials).toEqual({
+      $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
+      principal: { type: 'service', subject: 'my-service' },
+    });
+    expect(JSON.stringify(credentials)).not.toMatch(/user@example\.com/);
+  });
+
   it('should not include tokens when serialized', () => {
     expect(
       JSON.stringify(
