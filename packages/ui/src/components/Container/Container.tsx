@@ -26,7 +26,7 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
       ContainerDefinition,
       props,
     );
-    const { classes, style } = ownProps;
+    const { classes, children, style } = ownProps;
 
     return (
       <div
@@ -34,7 +34,9 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
         className={classes.root}
         style={{ ...utilityStyle, ...style }}
         {...restProps}
-      />
+      >
+        {children}
+      </div>
     );
   },
 );
