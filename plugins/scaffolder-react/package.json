@@ -31,6 +31,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
+    "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -39,6 +40,9 @@
     "*": {
       "alpha": [
         "src/alpha.ts"
+      ],
+      "testUtils": [
+        "src/testUtils.ts"
       ],
       "package.json": [
         "package.json"
@@ -115,12 +119,16 @@
     "swr": "^2.0.0"
   },
   "peerDependencies": {
+    "@backstage/frontend-test-utils": "workspace:^",
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
+    "@backstage/frontend-test-utils": {
+      "optional": true
+    },
     "@types/react": {
       "optional": true
     }
