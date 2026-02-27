@@ -58,7 +58,7 @@ export type LogEvent = {
 // @public
 export interface ScaffolderApi {
   // (undocumented)
-  autocomplete?(
+  autocomplete(
     request: {
       token: string;
       provider: string;
@@ -79,7 +79,7 @@ export interface ScaffolderApi {
     status?: ScaffolderTaskStatus;
   }>;
   // (undocumented)
-  dryRun?(
+  dryRun(
     request: ScaffolderDryRunOptions,
     options?: ScaffolderRequestOptions,
   ): Promise<ScaffolderDryRunResponse>;
@@ -99,7 +99,7 @@ export interface ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   listActions(options?: ScaffolderRequestOptions): Promise<ListActionsResponse>;
   // (undocumented)
-  listTasks?(
+  listTasks(
     request: {
       filterByOwnership: 'owned' | 'all';
       limit?: number;
@@ -110,10 +110,10 @@ export interface ScaffolderApi {
     tasks: ScaffolderTask[];
     totalTasks?: number;
   }>;
-  listTemplatingExtensions?(
+  listTemplatingExtensions(
     options?: ScaffolderRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse>;
-  retry?(
+  retry(
     taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{
@@ -201,7 +201,7 @@ export class ScaffolderClient implements ScaffolderApi {
   listTemplatingExtensions(
     options?: ScaffolderRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse>;
-  retry?(
+  retry(
     taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{

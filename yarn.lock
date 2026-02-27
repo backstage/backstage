@@ -7104,6 +7104,7 @@ __metadata:
     isomorphic-git: "npm:^1.23.0"
     jsonschema: "npm:^1.5.0"
     lodash: "npm:^4.17.21"
+    msw: "npm:^1.0.0"
     p-limit: "npm:^3.1.0"
     tar: "npm:^7.5.6"
     winston: "npm:^3.2.1"

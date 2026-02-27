@@ -381,7 +381,7 @@ export class ScaffolderClient implements ScaffolderApi {
   /**
    * {@inheritdoc ScaffolderApi.retry}
    */
-  async retry?(
+  async retry(
     taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{ id: string }> {

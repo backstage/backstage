@@ -171,7 +171,7 @@ class DefaultScaffolderService implements ScaffolderService {
     taskId: string,
     options: ScaffolderServiceRequestOptions,
   ): Promise<{ id: string }> {
-    return this.#client.retry!(taskId, await this.#getOptions(options));
+    return this.#client.retry(taskId, await this.#getOptions(options));
   }
 
   async listTasks(
@@ -222,7 +222,7 @@ class DefaultScaffolderService implements ScaffolderService {
   async listTemplatingExtensions(
     options: ScaffolderServiceRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse> {
-    return this.#client.listTemplatingExtensions!(
+    return this.#client.listTemplatingExtensions(
       await this.#getOptions(options),
     );
   }
@@ -266,9 +266,10 @@ class DefaultScaffolderService implements ScaffolderService {
     request: ScaffolderDryRunOptions,
     options: ScaffolderServiceRequestOptions,
   ): Promise<ScaffolderDryRunResponse> {
-    return this.#client.dryRun!(request, await this.#getOptions(options));
+    return this.#client.dryRun(request, await this.#getOptions(options));
   }
 
+  // The autocomplete token is part of the request body, not derived from credentials
   async autocomplete(
     request: {
       token: string;
@@ -278,7 +279,7 @@ class DefaultScaffolderService implements ScaffolderService {
     },
     _options: ScaffolderServiceRequestOptions,
   ): Promise<{ results: { title?: string; id: string }[] }> {
-    return this.#client.autocomplete!(request);
+    return this.#client.autocomplete(request);
   }
 
   async #getOptions(
