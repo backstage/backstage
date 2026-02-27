@@ -2355,40 +2355,72 @@ export interface TableSelection {
 export const TabList: (props: TabListProps) => JSX_2.Element;
 
 // @public
-export interface TabListProps extends Omit<TabListProps_2<object>, 'items'> {}
+export type TabListOwnProps = {
+  className?: string;
+  children?: TabListProps_2<object>['children'];
+};
+
+// @public
+export interface TabListProps
+  extends TabListOwnProps,
+    Omit<TabListProps_2<object>, 'items' | keyof TabListOwnProps> {}
 
 // @public
 export type TabMatchStrategy = 'exact' | 'prefix';
 
 // @public
+export type TabOwnProps = {
+  className?: string;
+  matchStrategy?: TabMatchStrategy;
+  href?: TabProps_2['href'];
+  id?: TabProps_2['id'];
+};
+
+// @public
 export const TabPanel: (props: TabPanelProps) => JSX_2.Element;
 
 // @public
-export interface TabPanelProps extends TabPanelProps_2 {}
+export type TabPanelOwnProps = {
+  className?: string;
+};
 
 // @public
-export interface TabProps extends TabProps_2 {
-  matchStrategy?: 'exact' | 'prefix';
-}
+export interface TabPanelProps
+  extends TabPanelOwnProps,
+    Omit<TabPanelProps_2, keyof TabPanelOwnProps> {}
+
+// @public
+export interface TabProps
+  extends TabOwnProps,
+    Omit<TabProps_2, keyof TabOwnProps> {}
 
 // @public
 export const Tabs: (props: TabsProps) => JSX_2.Element | null;
 
 // @public
 export const TabsDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
-    readonly tabs: 'bui-Tabs';
-    readonly tabList: 'bui-TabList';
-    readonly tabListWrapper: 'bui-TabListWrapper';
-    readonly tab: 'bui-Tab';
-    readonly tabActive: 'bui-TabActive';
-    readonly tabHovered: 'bui-TabHovered';
-    readonly panel: 'bui-TabPanel';
+    readonly root: 'bui-Tabs';
+  };
+  readonly propDefs: {
+    readonly className: {};
+    readonly children: {};
   };
 };
 
 // @public
-export interface TabsProps extends TabsProps_2 {}
+export type TabsOwnProps = {
+  className?: string;
+  children?: TabsProps_2['children'];
+};
+
+// @public
+export interface TabsProps
+  extends TabsOwnProps,
+    Omit<TabsProps_2, keyof TabsOwnProps> {}
 
 // @public
 export const Tag: ForwardRefExoticComponent<

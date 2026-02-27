@@ -30,32 +30,68 @@ import { MutableRefObject } from 'react';
 export type TabMatchStrategy = 'exact' | 'prefix';
 
 /**
+ * Own props for the Tabs component.
+ *
+ * @public
+ */
+export type TabsOwnProps = {
+  className?: string;
+  children?: AriaTabsProps['children'];
+};
+
+/**
  * Props for the Tabs component.
  *
  * @public
  */
-export interface TabsProps extends AriaTabsProps {}
+export interface TabsProps
+  extends TabsOwnProps,
+    Omit<AriaTabsProps, keyof TabsOwnProps> {}
+
+/**
+ * Own props for the TabList component.
+ *
+ * @public
+ */
+export type TabListOwnProps = {
+  className?: string;
+  children?: AriaTabListProps<object>['children'];
+};
 
 /**
  * Props for the TabList component.
  *
  * @public
  */
-export interface TabListProps extends Omit<AriaTabListProps<object>, 'items'> {}
+export interface TabListProps
+  extends TabListOwnProps,
+    Omit<AriaTabListProps<object>, 'items' | keyof TabListOwnProps> {}
+
+/**
+ * Own props for the Tab component.
+ *
+ * @public
+ */
+export type TabOwnProps = {
+  className?: string;
+  /**
+   * Strategy for matching the current route to determine if this tab should be active.
+   * - 'exact': Tab href must exactly match the current pathname (default)
+   * - 'prefix': Tab is active if current pathname starts with tab href
+   */
+  matchStrategy?: TabMatchStrategy;
+  href?: AriaTabProps['href'];
+  id?: AriaTabProps['id'];
+};
 
 /**
  * Props for the Tab component.
  *
  * @public
  */
-export interface TabProps extends AriaTabProps {
-  /**
-   * Strategy for matching the current route to determine if this tab should be active.
-   * - 'exact': Tab href must exactly match the current pathname (default)
-   * - 'prefix': Tab is active if current pathname starts with tab href
-   */
-  matchStrategy?: 'exact' | 'prefix';
-}
+export interface TabProps
+  extends TabOwnProps,
+    Omit<AriaTabProps, keyof TabOwnProps> {}
 
 /** Context for sharing refs between Tabs and TabList
  *
@@ -71,20 +107,38 @@ export interface TabsContextValue {
 }
 
 /**
+ * Own props for the TabPanel component.
+ *
+ * @public
+ */
+export type TabPanelOwnProps = {
+  className?: string;
+};
+
+/**
  * Props for the TabPanel component.
  *
  * @public
  */
-export interface TabPanelProps extends AriaTabPanelProps {}
+export interface TabPanelProps
+  extends TabPanelOwnProps,
+    Omit<AriaTabPanelProps, keyof TabPanelOwnProps> {}
+
+/**
+ * Own props for the TabsIndicators component.
+ *
+ * @internal
+ */
+export type TabsIndicatorsOwnProps = {
+  tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
+  tabsRef: MutableRefObject<HTMLDivElement | null>;
+  hoveredKey: string | null;
+  prevHoveredKey: MutableRefObject<string | null>;
+};
 
 /**
  * Props for the TabsIndicators component.
  *
  * @internal
  */
-export interface TabsIndicatorsProps {
-  tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
-  tabsRef: MutableRefObject<HTMLDivElement | null>;
-  hoveredKey: string | null;
-  prevHoveredKey: MutableRefObject<string | null>;
-}
+export interface TabsIndicatorsProps extends TabsIndicatorsOwnProps {}

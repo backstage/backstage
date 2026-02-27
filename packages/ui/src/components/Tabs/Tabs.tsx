@@ -43,14 +43,17 @@ import {
   TabPanel as AriaTabPanel,
   TabProps as AriaTabProps,
 } from 'react-aria-components';
-import { useStyles } from '../../hooks/useStyles';
-import { TabsDefinition } from './definition';
+import { useDefinition } from '../../hooks/useDefinition';
+import {
+  TabsDefinition,
+  TabListDefinition,
+  TabDefinition,
+  TabPanelDefinition,
+} from './definition';
 import {
   isInternalLink,
   createRoutingRegistration,
 } from '../InternalLinkProvider';
-import styles from './Tabs.module.css';
-import clsx from 'clsx';
 
 const { RoutingProvider, useRoutingRegistrationEffect } =
   createRoutingRegistration();
@@ -105,8 +108,8 @@ const isTabActive = (
  * @public
  */
 export const Tabs = (props: TabsProps) => {
-  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
-  const { className, children, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(TabsDefinition, props);
+  const { classes, children } = ownProps;
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
@@ -210,15 +213,11 @@ export const Tabs = (props: TabsProps) => {
       <TabsContext.Provider value={tabsContextValue}>
         <TabSelectionContext.Provider value={selectionContextValue}>
           <AriaTabs
-            className={clsx(
-              classNames.tabs,
-              styles[classNames.tabs],
-              className,
-            )}
+            className={classes.root}
             keyboardActivation="manual"
             selectedKey={selectedTabId}
             ref={tabsRef}
-            {...rest}
+            {...restProps}
           >
             {children as ReactNode}
           </AriaTabs>
@@ -234,8 +233,8 @@ export const Tabs = (props: TabsProps) => {
  * @public
  */
 export const TabList = (props: TabListProps) => {
-  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
-  const { className, children, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(TabListDefinition, props);
+  const { classes, children } = ownProps;
   const { setHoveredKey, tabRefs, tabsRef, hoveredKey, prevHoveredKey } =
     useTabsContext();
 
@@ -255,17 +254,11 @@ export const TabList = (props: TabListProps) => {
   });
 
   return (
-    <div
-      className={clsx(
-        classNames.tabListWrapper,
-        styles[classNames.tabListWrapper],
-        className,
-      )}
-    >
+    <div className={classes.root}>
       <AriaTabList
-        className={clsx(classNames.tabList, styles[classNames.tabList])}
+        className={classes.tabList}
         aria-label="Toolbar tabs"
-        {...rest}
+        {...restProps}
       >
         {enhancedChildren}
       </AriaTabList>
@@ -330,9 +323,8 @@ function RoutedTabEffects({
  * @public
  */
 export const Tab = (props: TabProps) => {
-  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
-  const { className, href, children, id, matchStrategy, ...rest } =
-    cleanedProps;
+  const { ownProps, restProps } = useDefinition(TabDefinition, props);
+  const { classes, matchStrategy, href, id } = ownProps;
   const { setTabRef } = useTabsContext();
 
   return (
@@ -346,13 +338,11 @@ export const Tab = (props: TabProps) => {
       )}
       <AriaTab
         id={id}
-        className={clsx(classNames.tab, styles[classNames.tab], className)}
+        className={classes.root}
         ref={el => setTabRef(id as string, el as HTMLDivElement)}
         href={href}
-        {...rest}
-      >
-        {children}
-      </AriaTab>
+        {...restProps}
+      />
     </>
   );
 };
@@ -363,15 +353,7 @@ export const Tab = (props: TabProps) => {
  * @public
  */
 export const TabPanel = (props: TabPanelProps) => {
-  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
-  const { className, children, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(TabPanelDefinition, props);
 
-  return (
-    <AriaTabPanel
-      className={clsx(classNames.panel, styles[classNames.panel], className)}
-      {...rest}
-    >
-      {children}
-    </AriaTabPanel>
-  );
+  return <AriaTabPanel className={ownProps.classes.root} {...restProps} />;
 };
