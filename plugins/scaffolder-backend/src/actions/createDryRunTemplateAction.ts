@@ -15,7 +15,6 @@
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ScaffolderClient } from '@backstage/plugin-scaffolder-common';
-// import { ForwardedError } from '@backstage/errors';
 import yaml from 'yaml';
 
 const MAX_CONTENT_SIZE = 64 * 1024;
