@@ -19,15 +19,11 @@ import type { ToggleButtonGroupProps as AriaToggleButtonGroupProps } from 'react
 
 /** @public */
 export type ToggleButtonGroupOwnProps = {
-  orientation?: NonNullable<AriaToggleButtonGroupProps['orientation']>;
   className?: string;
   children?: ReactNode;
 };
 
 /** @public */
 export interface ToggleButtonGroupProps
-  extends Omit<
-      AriaToggleButtonGroupProps,
-      'orientation' | 'className' | 'children'
-    >,
+  extends Omit<AriaToggleButtonGroupProps, 'className' | 'children'>,
     ToggleButtonGroupOwnProps {}

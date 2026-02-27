@@ -23,19 +23,14 @@ import { ToggleButtonGroupDefinition } from './definition';
 /** @public */
 export const ToggleButtonGroup = forwardRef(
   (props: ToggleButtonGroupProps, ref: Ref<HTMLDivElement>) => {
-    const { ownProps, restProps, dataAttributes } = useDefinition(
+    const { ownProps, restProps } = useDefinition(
       ToggleButtonGroupDefinition,
       props,
     );
     const { classes, children } = ownProps;
 
     return (
-      <AriaToggleButtonGroup
-        className={classes.root}
-        ref={ref}
-        {...dataAttributes}
-        {...restProps}
-      >
+      <AriaToggleButtonGroup className={classes.root} ref={ref} {...restProps}>
         {children}
       </AriaToggleButtonGroup>
     );

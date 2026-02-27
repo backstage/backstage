@@ -29,7 +29,6 @@ export const ToggleButtonGroupDefinition =
       root: 'bui-ToggleButtonGroup',
     },
     propDefs: {
-      orientation: { dataAttribute: true },
       className: {},
       children: {},
     },

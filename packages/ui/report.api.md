@@ -2639,9 +2639,6 @@ export const ToggleButtonGroupDefinition: {
     readonly root: 'bui-ToggleButtonGroup';
   };
   readonly propDefs: {
-    readonly orientation: {
-      readonly dataAttribute: true;
-    };
     readonly className: {};
     readonly children: {};
   };
@@ -2649,17 +2646,13 @@ export const ToggleButtonGroupDefinition: {
 
 // @public (undocumented)
 export type ToggleButtonGroupOwnProps = {
-  orientation?: NonNullable<ToggleButtonGroupProps_2['orientation']>;
   className?: string;
   children?: ReactNode;
 };
 
 // @public (undocumented)
 export interface ToggleButtonGroupProps
-  extends Omit<
-      ToggleButtonGroupProps_2,
-      'orientation' | 'className' | 'children'
-    >,
+  extends Omit<ToggleButtonGroupProps_2, 'className' | 'children'>,
     ToggleButtonGroupOwnProps {}
 
 // @public (undocumented)
