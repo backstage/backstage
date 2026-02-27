@@ -27,7 +27,7 @@ import {
   Theme as Mui5Theme,
 } from '@mui/material/styles';
 import { UnifiedTheme } from './types';
-import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material/className';
+import './MuiClassNameSetup';
 
 /**
  * Props for {@link UnifiedThemeProvider}.
@@ -40,15 +40,6 @@ export interface UnifiedThemeProviderProps {
   /** Optional override for the value written to the `data-theme-name` attribute. */
   themeName?: string;
 }
-
-/**
- * This API is introduced in @mui/material (v5.0.5) as a replacement of deprecated createGenerateClassName & only affects v5 Material UI components from `@mui/*`.
- *
- * This call needs to be in the same module as the `UnifiedThemeProvider` to ensure that it doesn't get removed by tree shaking
- */
-ClassNameGenerator.configure(componentName => {
-  return `v5-${componentName}`;
-});
 
 // Background at https://mui.com/x/migration/migration-data-grid-v4/#using-mui-core-v4-with-v5
 // Rather than disabling globals and custom seed, we instead only set a production prefix that
