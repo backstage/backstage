@@ -129,58 +129,9 @@ To create the application:
        copying       .dockerignore ✔
        copying       .eslintignore ✔
        templating    .eslintrc.js.hbs ✔
-       templating    .gitignore.hbs ✔
-       copying       .prettierignore ✔
-       templating    .yarnrc.yml.hbs ✔
-       copying       README.md ✔
-       copying       app-config.local.yaml ✔
-       copying       app-config.production.yaml ✔
-       templating    app-config.yaml.hbs ✔
-       templating    backstage.json.hbs ✔
-       templating    catalog-info.yaml.hbs ✔
-       templating    package.json.hbs ✔
-       copying       playwright.config.ts ✔
-       copying       tsconfig.json ✔
-       copying       yarn.lock ✔
-       copying       README.md ✔
-       copying       yarn-4.4.1.cjs ✔
-       copying       entities.yaml ✔
-       copying       org.yaml ✔
-       copying       template.yaml ✔
-       copying       catalog-info.yaml ✔
-       copying       index.js ✔
-       copying       package.json ✔
-       copying       README.md ✔
-       templating    .eslintrc.js.hbs ✔
-       copying       Dockerfile ✔
-       copying       README.md ✔
-       templating    package.json.hbs ✔
-       copying       index.ts ✔
-       copying       .eslintignore ✔
-       templating    .eslintrc.js.hbs ✔
-       templating    package.json.hbs ✔
-       copying       app.test.ts ✔
-       copying       android-chrome-192x192.png ✔
-       copying       apple-touch-icon.png ✔
-       copying       favicon-16x16.png ✔
-       copying       favicon-32x32.png ✔
-       copying       favicon.ico ✔
-       copying       index.html ✔
-       copying       manifest.json ✔
-       copying       robots.txt ✔
-       copying       safari-pinned-tab.svg ✔
-       copying       App.test.tsx ✔
-       copying       App.tsx ✔
-       copying       apis.ts ✔
-       copying       index.tsx ✔
-       copying       setupTests.ts ✔
-       copying       LogoFull.tsx ✔
-       copying       LogoIcon.tsx ✔
-       copying       Root.tsx ✔
-       copying       index.ts ✔
-       copying       EntityPage.tsx ✔
-       copying       SearchPage.tsx ✔
-
+       .
+       .
+       .
    Moving to final location:
       moving        my-backstage-app ✔
       fetching      yarn.lock seed ✔
