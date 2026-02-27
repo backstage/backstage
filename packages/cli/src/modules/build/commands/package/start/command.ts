@@ -14,22 +14,79 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { startPackage } from './startPackage';
 import { resolveLinkedWorkspace } from './resolveLinkedWorkspace';
 import { findRoleFromCommand } from '../../../lib/role';
 import { targetPaths } from '@backstage/cli-common';
+import type { CommandContext } from '../../../../../wiring/types';
 
-export async function command(opts: OptionValues): Promise<void> {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: {
+      config,
+      role,
+      check,
+      inspect,
+      inspectBrk,
+      require: requirePaths,
+      link,
+      entrypoint,
+    },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        config: {
+          type: [String],
+          description: 'Config files to load instead of app-config.yaml',
+          default: [],
+        },
+        role: {
+          type: String,
+          description: 'Run the command with an explicit package role',
+        },
+        check: {
+          type: Boolean,
+          description: 'Enable type checking and linting if available',
+        },
+        inspect: {
+          type: String,
+          description: 'Enable debugger in Node.js environments',
+        },
+        inspectBrk: {
+          type: String,
+          description:
+            'Enable debugger in Node.js environments, breaking before code starts',
+        },
+        require: {
+          type: [String],
+          description: 'Add a --require argument to the node process',
+        },
+        link: {
+          type: String,
+          description: 'Link an external workspace for module resolution',
+        },
+        entrypoint: {
+          type: String,
+          description:
+            'The entrypoint to start from, relative to the package root. Can point to either a file (without extension) or a directory (in which case the index file in that directory is used). Defaults to "dev"',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   await startPackage({
-    role: await findRoleFromCommand(opts),
-    entrypoint: opts.entrypoint,
+    role: await findRoleFromCommand({ role }),
+    entrypoint,
     targetDir: targetPaths.dir,
-    configPaths: opts.config as string[],
-    checksEnabled: Boolean(opts.check),
-    linkedWorkspace: await resolveLinkedWorkspace(opts.link),
-    inspectEnabled: opts.inspect,
-    inspectBrkEnabled: opts.inspectBrk,
-    require: opts.require,
+    configPaths: config,
+    checksEnabled: Boolean(check),
+    linkedWorkspace: await resolveLinkedWorkspace(link),
+    inspectEnabled: inspect,
+    inspectBrkEnabled: inspectBrk,
+    require: requirePaths?.[0],
   });
-}
+};

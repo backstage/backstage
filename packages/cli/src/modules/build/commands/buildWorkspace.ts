@@ -15,20 +15,39 @@
  */
 
 import fs from 'fs-extra';
+import { cli } from 'cleye';
 import { createDistWorkspace } from '../lib/packager';
+import type { CommandContext } from '../../../wiring/types';
 
-type Options = {
-  alwaysPack?: boolean;
-};
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { alwaysPack },
+    _: positionals,
+  } = cli(
+    {
+      help: info,
+      parameters: ['<workspace-dir>', '[packages...]'],
+      flags: {
+        alwaysPack: {
+          type: Boolean,
+          description:
+            'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-export default async (dir: string, packages: string[], options: Options) => {
+  const [dir, ...packages] = positionals;
+
   if (!(await fs.pathExists(dir))) {
     throw new Error(`Target workspace directory doesn't exist, '${dir}'`);
   }
 
   await createDistWorkspace(packages, {
     targetDir: dir,
-    alwaysPack: options.alwaysPack,
+    alwaysPack,
     enableFeatureDetection: true,
   });
 };

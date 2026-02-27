@@ -21,10 +21,12 @@ import {
 } from '@backstage/cli-node';
 import { relative as relativePath } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
+import { cli } from 'cleye';
 
 import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
 import { startPackage } from '../package/start/startPackage';
 import { parseArgs } from 'node:util';
+import type { CommandContext } from '../../../../wiring/types';
 
 const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'frontend',
@@ -33,19 +35,60 @@ const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'backend-plugin',
 ];
 
-type CommandOptions = {
-  plugin: string[];
-  config: string[];
-  inspect?: boolean | string;
-  inspectBrk?: boolean | string;
-  require?: string;
-  link?: string;
-};
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { plugin, config, inspect, inspectBrk, require: requirePath, link },
+    _: namesOrPaths,
+  } = cli(
+    {
+      help: info,
+      flags: {
+        plugin: {
+          type: [String],
+          description:
+            'Start the dev entry-point for any matching plugin package in the repo',
+          default: [],
+        },
+        config: {
+          type: [String],
+          description: 'Config files to load instead of app-config.yaml',
+          default: [],
+        },
+        inspect: {
+          type: String,
+          description:
+            'Enable debugger in Node.js environments. Applies to backend package only',
+        },
+        inspectBrk: {
+          type: String,
+          description:
+            'Enable debugger in Node.js environments, breaking before code starts. Applies to backend package only',
+        },
+        require: {
+          type: String,
+          description:
+            'Add a --require argument to the node process. Applies to backend package only',
+        },
+        link: {
+          type: String,
+          description: 'Link an external workspace for module resolution',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-export async function command(namesOrPaths: string[], options: CommandOptions) {
-  const targetPackages = await findTargetPackages(namesOrPaths, options.plugin);
+  const targetPackages = await findTargetPackages(namesOrPaths, plugin);
 
-  const packageOptions = await resolvePackageOptions(targetPackages, options);
+  const packageOptions = await resolvePackageOptions(targetPackages, {
+    plugin,
+    config,
+    inspect,
+    inspectBrk,
+    require: requirePath,
+    link,
+  });
 
   if (packageOptions.length === 0) {
     console.log('No packages found to start');
@@ -60,7 +103,7 @@ export async function command(namesOrPaths: string[], options: CommandOptions) {
 
   // Each of these block until interrupted by user
   await Promise.all(packageOptions.map(entry => startPackage(entry.options)));
-}
+};
 
 export async function findTargetPackages(
   namesOrPaths: string[],
@@ -164,6 +207,15 @@ export async function findTargetPackages(
     `Unable to find any packages with role 'frontend', 'backend', 'frontend-plugin', or 'backend-plugin'.`,
   );
 }
+
+type CommandOptions = {
+  plugin: string[];
+  config: string[];
+  inspect?: string;
+  inspectBrk?: string;
+  require?: string;
+  link?: string;
+};
 
 async function resolvePackageOptions(
   targetPackages: BackstagePackage[],

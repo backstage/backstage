@@ -16,12 +16,12 @@
 
 import os from 'node:os';
 import crypto from 'node:crypto';
+import { parseArgs } from 'node:util';
 import yargs from 'yargs';
 // 'jest-cli' is included with jest and should be kept in sync with the installed jest version
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'node:path';
-import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph, SuccessCache } from '@backstage/cli-node';
 
 import {
@@ -31,6 +31,7 @@ import {
   findOwnPaths,
   isChildPath,
 } from '@backstage/cli-common';
+import type { CommandContext } from '../../../../wiring/types';
 
 type JestProject = {
   displayName: string;
@@ -148,18 +149,23 @@ function removeOptionArg(args: string[], option: string, size: number = 2) {
   } while (changed);
 }
 
-export async function command(opts: OptionValues, cmd: Command): Promise<void> {
+export default async ({ args }: CommandContext) => {
   const testGlobal = global as TestGlobal;
 
-  // all args are forwarded to jest
-  let parent = cmd;
-  while (parent.parent) {
-    parent = parent.parent;
-  }
-  const allArgs = parent.args as string[];
-  const args = allArgs.slice(allArgs.indexOf('test') + 1);
+  // Parse our own flags from the raw args using strict: false to allow Jest flags through
+  const { values: opts } = parseArgs({
+    args,
+    strict: false,
+    options: {
+      since: { type: 'string' },
+      successCache: { type: 'boolean' },
+      successCacheDir: { type: 'string' },
+      'jest-help': { type: 'boolean' },
+    },
+  });
 
   const hasFlags = createFlagFinder(args);
+  const sinceRef = typeof opts.since === 'string' ? opts.since : undefined;
 
   // Parse the args to ensure that no file filters are provided, in which case we refuse to run
   const { _: parsedArgs } = await yargs(args).options(jestYargsOptions).argv;
@@ -177,7 +183,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   // Run in watch mode unless in CI, coverage mode, or running all tests
   let isSingleWatchMode = args.includes('--watch');
   if (
-    !opts.since &&
+    !sinceRef &&
     !process.env.CI &&
     !hasFlags('--coverage', '--watch', '--watchAll')
   ) {
@@ -261,10 +267,10 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   let selectedProjects: string[] | undefined = undefined;
-  if (opts.since && !hasFlags('--selectProjects')) {
+  if (sinceRef && !hasFlags('--selectProjects')) {
     const graph = await getPackageGraph();
     const changedPackages = await graph.listChangedPackages({
-      ref: opts.since,
+      ref: sinceRef,
       analyzeLockfile: true,
     });
 
@@ -304,7 +310,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     }--no-node-snapshot`;
   }
 
-  if (args.includes('--jest-help')) {
+  if (opts['jest-help']) {
     removeOptionArg(args, '--jest-help');
     args.push('--help');
   }
@@ -332,7 +338,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
     const cache = SuccessCache.create({
       name: 'test',
-      basePath: opts.successCacheDir,
+      basePath: opts.successCacheDir as string | undefined,
     });
     const graph = await getPackageGraph();
 
@@ -439,4 +445,4 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   await runJest(args);
-}
+};
