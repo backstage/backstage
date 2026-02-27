@@ -49,9 +49,12 @@ function computeBreakpoint(): Breakpoint {
   return 'initial';
 }
 
-// --- Singleton store ---
+// --- Module-scoped singleton store ---
+// This is intentionally not a global singleton. Multiple copies of this module
+// (e.g. different package versions or module federation remotes) each get their
+// own store. This avoids cross-version coupling at the cost of a few extra
+// listeners, which is a fine trade-off.
 // `current` is initialized lazily on first client-side access.
-// `listeners` is eagerly initialized since Set is safe to create on the server.
 
 let current: Breakpoint | undefined;
 const listeners = new Set<() => void>();
