@@ -26,6 +26,7 @@ export const catalogReactTranslationRef = createTranslationRef({
     },
     entityKindPicker: {
       title: 'Kind',
+      optionAllTitle: 'All',
       errorMessage: 'Failed to load entity kinds',
     },
     entityLifecyclePicker: {

@@ -87,6 +87,11 @@ export function useEntityTypeFilter(): {
   useEffect(() => {
     const oldFacets = facetsRef.current;
     facetsRef.current = facets;
+
+    if (!kind) {
+      setAvailableTypes([]);
+    }
+
     // Delay processing hook until kind and facets load updates have settled to generate list of types;
     // This prevents resetting the type filter due to saved type value from query params not matching the
     // empty set of type values while values are still being loaded; also only run this hook on changes

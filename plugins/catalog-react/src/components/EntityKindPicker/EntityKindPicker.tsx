@@ -24,6 +24,8 @@ import { filterKinds, useAllKinds } from './kindFilterUtils';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
+const FILTER_ALL = 'All';
+
 function useEntityKindFilter(opts: { initialFilter: string }): {
   loading: boolean;
   error?: Error;
@@ -67,9 +69,11 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
 
   useEffect(() => {
     updateFilters({
-      kind: selectedKind
-        ? new EntityKindFilter(selectedKind, selectedKindLabel)
-        : undefined,
+      kind:
+        selectedKind === FILTER_ALL
+          ? undefined
+          : new EntityKindFilter(selectedKind, selectedKindLabel),
+      type: undefined,
     });
   }, [selectedKind, selectedKindLabel, updateFilters]);
 
@@ -93,13 +97,23 @@ export interface EntityKindPickerProps {
    * displayed.
    */
   allowedKinds?: string[];
+  /**
+   * Enabling will provide an option for 'All'. This will allow the fetching of
+   * all kinds in the catalog. There are no types associated with 'All'
+   */
+  allKindFilterEnabled?: boolean;
   initialFilter?: string;
   hidden?: boolean;
 }
 
 /** @public */
 export const EntityKindPicker = (props: EntityKindPickerProps) => {
-  const { allowedKinds, hidden, initialFilter = 'component' } = props;
+  const {
+    allowedKinds,
+    allKindFilterEnabled = false,
+    hidden,
+    initialFilter = 'component',
+  } = props;
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const alertApi = useApi(alertApiRef);
@@ -122,17 +136,30 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
 
   const options = filterKinds(allKinds, allowedKinds, selectedKind);
 
-  const items = [...options.entries()].map(([key, value]) => ({
-    label: value,
-    value: key,
-  }));
+  const items = [
+    ...options
+      .entries()
+      .map(([key, value]) => ({ label: value, value: key }))
+      .filter(item => item.value !== 'all'),
+  ];
+
+  if (allKindFilterEnabled) {
+    items.unshift({
+      value: FILTER_ALL,
+      label: t('entityKindPicker.optionAllTitle'),
+    });
+  }
 
   return hidden ? null : (
     <Box pb={1} pt={1}>
       <Select
         label={t('entityKindPicker.title')}
         items={items}
-        selected={selectedKind.toLocaleLowerCase('en-US')}
+        selected={
+          selectedKind === FILTER_ALL
+            ? FILTER_ALL
+            : selectedKind.toLocaleLowerCase('en-US')
+        }
         onChange={value => setSelectedKind(String(value))}
       />
     </Box>

@@ -196,4 +196,70 @@ describe('<EntityKindPicker/>', () => {
     fireEvent.mouseDown(within(input).getByRole('button'));
     expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
   });
+
+  it('all available in list when allKindFilterEnabled', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+            updateFilters,
+          }}
+        >
+          <EntityKindPicker allKindFilterEnabled />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
+
+    expect(await screen.findByText('All')).toBeVisible();
+  });
+
+  it('selecting all should clear kind and type filters', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+            updateFilters,
+          }}
+        >
+          <EntityKindPicker allKindFilterEnabled />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
+
+    await waitFor(() => screen.getByText('All'));
+    fireEvent.click(screen.getByText('All'));
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: undefined,
+      type: undefined,
+    });
+  });
+
+  it('does not show all when allFilterEnabled false', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+            updateFilters,
+          }}
+        >
+          <EntityKindPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
+
+    expect(screen.queryByText('All')).not.toBeInTheDocument();
+  });
 });
