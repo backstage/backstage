@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { mockServices } from '@backstage/backend-test-utils';
 import { Config, ConfigReader } from '@backstage/config';
 import {
   buildPgDatabaseConfig,
@@ -23,11 +24,16 @@ import {
   parsePgConnectionString,
 } from './postgres';
 import { type Knex } from 'knex';
+import waitForExpect from 'wait-for-expect';
 
 jest.mock('@google-cloud/cloud-sql-connector');
 jest.mock('@azure/identity');
 
 describe('postgres', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   const createMockConnection = () => ({
     host: 'acme',
     user: 'foo',
@@ -683,6 +689,120 @@ describe('postgres', () => {
           ),
         ),
       ).rejects.toThrow(/no such file or directory/);
+    });
+
+    it('wraps connection in a factory when subscribe is available', async () => {
+      const knex = jest.fn().mockReturnValue({});
+      const config = createConfig({
+        host: 'acme',
+        user: 'foo',
+        password: 'bar',
+        database: 'foodb',
+      });
+      config.subscribe = () => ({ unsubscribe: () => {} });
+
+      await createPgDatabaseClient(config, {
+        testInjectedKnexFactory: knex as any,
+        subscribe: true,
+      });
+
+      expect(knex).toHaveBeenCalledWith(
+        expect.objectContaining({
+          connection: expect.any(Function),
+        }),
+      );
+    });
+
+    it('does not wrap connection when subscribe is not available', async () => {
+      const knex = jest.fn().mockReturnValue({});
+
+      await createPgDatabaseClient(
+        createConfig({
+          host: 'acme',
+          user: 'foo',
+          password: 'bar',
+          database: 'foodb',
+        }),
+        { testInjectedKnexFactory: knex as any, subscribe: true },
+      );
+
+      expect(knex).toHaveBeenCalledWith(
+        expect.objectContaining({
+          connection: expect.objectContaining({ host: 'acme' }),
+        }),
+      );
+    });
+
+    it('rebuilds connection config on subscribe callback', async () => {
+      const knex = jest.fn().mockReturnValue({});
+      let onChange: (() => void) | undefined;
+      const config = createConfig({
+        host: 'acme',
+        user: 'foo',
+        password: 'bar',
+        database: 'foodb',
+      });
+      config.subscribe = cb => {
+        onChange = cb;
+        return { unsubscribe: () => {} };
+      };
+
+      await createPgDatabaseClient(config, {
+        testInjectedKnexFactory: knex as any,
+        subscribe: true,
+      });
+
+      const connFn = knex.mock.calls[0][0].connection as Function;
+
+      // Before any config change, the factory returns the original config
+      const conn1 = await connFn();
+      expect(conn1).toEqual(
+        expect.objectContaining({ host: 'acme', password: 'bar' }),
+      );
+      expect(conn1.expirationChecker()).toBe(false);
+
+      // Trigger a config change - since ConfigReader is a snapshot,
+      // the rebuilt config is identical so nothing should expire
+      onChange!();
+      await waitForExpect(async () => {
+        const conn = await connFn();
+        expect(conn.expirationChecker()).toBe(false);
+      });
+    });
+
+    it('logs a warning when config rebuild fails', async () => {
+      const knex = jest.fn().mockReturnValue({});
+      const logger = mockServices.logger.mock();
+      let onChange: (() => void) | undefined;
+      const config = createConfig({
+        host: 'acme',
+        user: 'foo',
+        password: 'bar',
+        database: 'foodb',
+      });
+      config.subscribe = cb => {
+        onChange = cb;
+        return { unsubscribe: () => {} };
+      };
+
+      await createPgDatabaseClient(config, {
+        testInjectedKnexFactory: knex as any,
+        logger,
+        subscribe: true,
+      });
+
+      // Break the config so rebuilding will fail
+      (config as any).get = () => {
+        throw new Error('broken config');
+      };
+
+      onChange!();
+      await waitForExpect(() => {
+        expect(logger.warn).toHaveBeenCalledWith(
+          'Failed to rebuild database connection config after config change',
+          expect.objectContaining({ error: expect.any(Error) }),
+        );
+      });
     });
   });
 
