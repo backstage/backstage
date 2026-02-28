@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -666,24 +666,6 @@ export const spec = {
           providerInfo: {
             type: 'object',
             description: 'Provider-specific information',
-            properties: {
-              accessToken: {
-                type: 'string',
-                description: 'OAuth access token',
-              },
-              expiresInSeconds: {
-                type: 'number',
-                description: 'Token expiry time in seconds',
-              },
-              scope: {
-                type: 'string',
-                description: 'Granted OAuth scopes',
-              },
-              idToken: {
-                type: 'string',
-                description: 'OpenID Connect ID token',
-              },
-            },
             additionalProperties: {},
           },
         },

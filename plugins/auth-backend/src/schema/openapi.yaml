@@ -443,19 +443,6 @@ components:
         providerInfo:
           type: object
           description: Provider-specific information
-          properties:
-            accessToken:
-              type: string
-              description: OAuth access token
-            expiresInSeconds:
-              type: number
-              description: Token expiry time in seconds
-            scope:
-              type: string
-              description: Granted OAuth scopes
-            idToken:
-              type: string
-              description: OpenID Connect ID token
           additionalProperties: {}
       required:
         - backstageIdentity
