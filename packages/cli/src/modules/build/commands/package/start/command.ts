@@ -22,17 +22,11 @@ import { targetPaths } from '@backstage/cli-common';
 import type { CommandContext } from '../../../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
+  const { inspectEnabled, inspectBrkEnabled, filteredArgs } =
+    extractInspectFlags(args);
+
   const {
-    flags: {
-      config,
-      role,
-      check,
-      inspect,
-      inspectBrk,
-      require: requirePaths,
-      link,
-      entrypoint,
-    },
+    flags: { config, role, check, require: requirePath, link, entrypoint },
   } = cli(
     {
       help: info,
@@ -50,17 +44,8 @@ export default async ({ args, info }: CommandContext) => {
           type: Boolean,
           description: 'Enable type checking and linting if available',
         },
-        inspect: {
-          type: String,
-          description: 'Enable debugger in Node.js environments',
-        },
-        inspectBrk: {
-          type: String,
-          description:
-            'Enable debugger in Node.js environments, breaking before code starts',
-        },
         require: {
-          type: [String],
+          type: String,
           description: 'Add a --require argument to the node process',
         },
         link: {
@@ -75,7 +60,7 @@ export default async ({ args, info }: CommandContext) => {
       },
     },
     undefined,
-    args,
+    filteredArgs,
   );
 
   await startPackage({
@@ -85,8 +70,38 @@ export default async ({ args, info }: CommandContext) => {
     configPaths: config,
     checksEnabled: Boolean(check),
     linkedWorkspace: await resolveLinkedWorkspace(link),
-    inspectEnabled: inspect,
-    inspectBrkEnabled: inspectBrk,
-    require: requirePaths?.[0],
+    inspectEnabled,
+    inspectBrkEnabled,
+    require: requirePath,
   });
 };
+
+// --inspect and --inspect-brk accept an optional host value, which cleye
+// can't express (it only supports required or no value). We extract them
+// from the raw args before passing the rest to cleye.
+function extractInspectFlags(args: string[]) {
+  let inspectEnabled: boolean | string | undefined;
+  let inspectBrkEnabled: boolean | string | undefined;
+  const filteredArgs: string[] = [];
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--inspect' || arg === '--inspect-brk') {
+      const next = args[i + 1];
+      const value = next && !next.startsWith('-') ? args[++i] : true;
+      if (arg === '--inspect') {
+        inspectEnabled = value;
+      } else {
+        inspectBrkEnabled = value;
+      }
+    } else if (arg.startsWith('--inspect=')) {
+      inspectEnabled = arg.slice('--inspect='.length);
+    } else if (arg.startsWith('--inspect-brk=')) {
+      inspectBrkEnabled = arg.slice('--inspect-brk='.length);
+    } else {
+      filteredArgs.push(arg);
+    }
+  }
+
+  return { inspectEnabled, inspectBrkEnabled, filteredArgs };
+}

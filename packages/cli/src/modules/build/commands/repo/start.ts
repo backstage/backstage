@@ -36,8 +36,11 @@ const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
 ];
 
 export default async ({ args, info }: CommandContext) => {
+  const { inspectEnabled, inspectBrkEnabled, filteredArgs } =
+    extractInspectFlags(args);
+
   const {
-    flags: { plugin, config, inspect, inspectBrk, require: requirePath, link },
+    flags: { plugin, config, require: requirePath, link },
     _: namesOrPaths,
   } = cli(
     {
@@ -54,16 +57,6 @@ export default async ({ args, info }: CommandContext) => {
           description: 'Config files to load instead of app-config.yaml',
           default: [],
         },
-        inspect: {
-          type: String,
-          description:
-            'Enable debugger in Node.js environments. Applies to backend package only',
-        },
-        inspectBrk: {
-          type: String,
-          description:
-            'Enable debugger in Node.js environments, breaking before code starts. Applies to backend package only',
-        },
         require: {
           type: String,
           description:
@@ -76,7 +69,7 @@ export default async ({ args, info }: CommandContext) => {
       },
     },
     undefined,
-    args,
+    filteredArgs,
   );
 
   const targetPackages = await findTargetPackages(namesOrPaths, plugin);
@@ -84,8 +77,8 @@ export default async ({ args, info }: CommandContext) => {
   const packageOptions = await resolvePackageOptions(targetPackages, {
     plugin,
     config,
-    inspect,
-    inspectBrk,
+    inspect: inspectEnabled,
+    inspectBrk: inspectBrkEnabled,
     require: requirePath,
     link,
   });
@@ -211,8 +204,8 @@ export async function findTargetPackages(
 type CommandOptions = {
   plugin: string[];
   config: string[];
-  inspect?: string;
-  inspectBrk?: string;
+  inspect?: boolean | string;
+  inspectBrk?: boolean | string;
   require?: string;
   link?: string;
 };
@@ -269,4 +262,34 @@ async function resolvePackageOptions(
       },
     ];
   });
+}
+
+// --inspect and --inspect-brk accept an optional host value, which cleye
+// can't express (it only supports required or no value). We extract them
+// from the raw args before passing the rest to cleye.
+function extractInspectFlags(args: string[]) {
+  let inspectEnabled: boolean | string | undefined;
+  let inspectBrkEnabled: boolean | string | undefined;
+  const filteredArgs: string[] = [];
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--inspect' || arg === '--inspect-brk') {
+      const next = args[i + 1];
+      const value = next && !next.startsWith('-') ? args[++i] : true;
+      if (arg === '--inspect') {
+        inspectEnabled = value;
+      } else {
+        inspectBrkEnabled = value;
+      }
+    } else if (arg.startsWith('--inspect=')) {
+      inspectEnabled = arg.slice('--inspect='.length);
+    } else if (arg.startsWith('--inspect-brk=')) {
+      inspectBrkEnabled = arg.slice('--inspect-brk='.length);
+    } else {
+      filteredArgs.push(arg);
+    }
+  }
+
+  return { inspectEnabled, inspectBrkEnabled, filteredArgs };
 }

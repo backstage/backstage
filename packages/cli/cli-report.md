@@ -310,8 +310,6 @@ Options:
   --check
   --config <string>
   --entrypoint <string>
-  --inspect <string>
-  --inspect-brk <string>
   --link <string>
   --require <string>
   --role <string>
@@ -515,8 +513,6 @@ Usage: backstage-cli repo start
 
 Options:
   --config <string>
-  --inspect <string>
-  --inspect-brk <string>
   --link <string>
   --plugin <string>
   --require <string>

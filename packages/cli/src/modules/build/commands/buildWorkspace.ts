@@ -20,6 +20,11 @@ import { createDistWorkspace } from '../lib/packager';
 import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
+  // Support legacy --alwaysYarnPack alias
+  const normalizedArgs = args.map(a =>
+    a === '--alwaysYarnPack' ? '--always-pack' : a,
+  );
+
   const {
     flags: { alwaysPack },
     _: positionals,
@@ -36,7 +41,7 @@ export default async ({ args, info }: CommandContext) => {
       },
     },
     undefined,
-    args,
+    normalizedArgs,
   );
 
   const [dir, ...packages] = positionals;
