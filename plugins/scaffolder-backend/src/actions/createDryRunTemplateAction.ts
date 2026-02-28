@@ -56,7 +56,7 @@ export const createDryRunTemplateAction = ({
             .record(z.unknown())
             .optional()
             .describe('Input values for template parameters'),
-          files: z
+          workspace: z
             .array(
               z.object({
                 path: z
@@ -66,7 +66,7 @@ export const createDryRunTemplateAction = ({
               }),
             )
             .optional()
-            .describe('Files required for running the template'),
+            .describe('Workspace files required for running the template'),
         }),
       output: z =>
         z.object({
@@ -105,7 +105,7 @@ export const createDryRunTemplateAction = ({
         }),
     },
     action: async ({ input, credentials }) => {
-      const { templateYaml, values = {}, files = [] } = input;
+      const { templateYaml, values = {}, workspace = [] } = input;
 
       let template;
       try {
@@ -130,7 +130,7 @@ export const createDryRunTemplateAction = ({
         {
           template,
           values: values as JsonObject,
-          directoryContents: files.map(file => ({
+          directoryContents: workspace.map(file => ({
             path: file.path,
             base64Content: base64EncodeContent(file.content),
           })),

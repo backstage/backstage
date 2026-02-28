@@ -120,7 +120,7 @@ describe('createDryRunTemplateAction', () => {
     );
   });
 
-  it('should pass values and files to the scaffolder service', async () => {
+  it('should pass values and workspace to the scaffolder service', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     mockScaffolderService.dryRun.mockResolvedValue({
       log: [],
@@ -135,7 +135,7 @@ describe('createDryRunTemplateAction', () => {
     });
 
     const values = { name: 'my-app' };
-    const files = [
+    const workspace = [
       {
         path: 'README.md',
         content: 'hello',
@@ -147,7 +147,7 @@ describe('createDryRunTemplateAction', () => {
       input: {
         templateYaml: validTemplateYaml,
         values,
-        files,
+        workspace,
       },
     });
 
@@ -210,7 +210,7 @@ describe('createDryRunTemplateAction', () => {
     ).rejects.toThrow('Authentication error');
   });
 
-  it('should use default empty values and files when not provided', async () => {
+  it('should use default empty values and workspace when not provided', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     mockScaffolderService.dryRun.mockResolvedValue({
       log: [],
