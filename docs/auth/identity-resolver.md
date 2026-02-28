@@ -4,13 +4,6 @@ title: Sign-in Identities and Resolvers
 description: An introduction to Backstage user identities and sign-in resolvers
 ---
 
-:::info
-This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage
-[version 1.24](../releases/v1.24.0.md). If you are still on the old backend
-system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/auth/identity-resolver--old.md)
-instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
-:::
-
 By default, every Backstage auth provider is configured only for the use-case of
 access delegation. This enables Backstage to request resources and actions from
 external systems on behalf of the user, for example re-triggering a build in CI.

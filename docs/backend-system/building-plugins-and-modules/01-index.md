@@ -2,15 +2,8 @@
 id: index
 title: Building Backend Plugins and Modules
 sidebar_label: Overview
-description: Building backend plugins and modules using the new backend system
+description: Building backend plugins and modules using the backend system
 ---
-
-:::note Note
-
-If you have an existing backend and/or backend plugins that are not yet
-using the new backend system, see [migrating](./08-migrating.md).
-
-:::
 
 This section covers how to build your own backend [plugins](../architecture/04-plugins.md) and
 [modules](../architecture/06-modules.md). They are sometimes collectively referred to as
