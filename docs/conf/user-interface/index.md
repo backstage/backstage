@@ -51,7 +51,7 @@ The `mui-to-bui` plugin provides a visual theme converter tool that helps you ge
 - **Generates both variants**: Creates CSS for both light and dark theme modes
 - **Provides live preview**: Shows how common BUI components look with your theme colors
 - **Exports CSS**: Allows you to copy the generated CSS to clipboard or download as a `.css` file
-- **No backend required**: Works entirely on the frontend, compatible with both old and new Backstage systems
+- **No backend required**: Works entirely on the frontend, compatible with both old and new Backstage frontend systems
 
 #### Installation
 
@@ -150,7 +150,7 @@ const app = createApp({
 });
 ```
 
-The generated CSS will automatically apply to BUI components when the corresponding theme is selected, without requiring additional runtime configuration.
+The generated CSS is applied to BUI components based on the active theme mode (`variant`): light-mode styles are scoped to `:root` and dark-mode styles to `[data-theme-mode="dark"]`, so they automatically follow the user’s light/dark preference. If you define multiple themes that share the same variant (for example, two light themes), you’ll need additional CSS scoping if you want their BUI styles to differ.
 
 | Name       | Description                                                                                                                                                                                                                              |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
