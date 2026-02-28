@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.8
+
+### Patch Changes
+
+- 50e2bf1: Added back `formFieldsApiRef` and `ScaffolderFormFieldsApi` as alpha exports.
+
 ## 1.19.7
 
 ### Patch Changes
