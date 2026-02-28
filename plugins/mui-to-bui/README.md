@@ -2,7 +2,10 @@
 
 ## Description
 
-The Backstage UI Themer helps you convert an existing MUI v5 theme into Backstage UI (BUI) CSS custom properties. It detects installed app themes, generates a complete set of BUI CSS variables for each theme (light and dark), and lets you preview how common BUI components look with your colors and typography. You can copy the generated CSS to the clipboard or download it as a `.css` file, and it works with both the old and new Backstage frontend systems without requiring any backend setup.
+The Backstage UI Themer helps you convert an existing MUI v5 theme into Backstage UI (BUI) CSS custom properties.
+
+For full documentation and usage details, see:
+[Using the mui-to-bui plugin](../../docs/conf/user-interface/index.md#using-the-mui-to-bui-plugin)
 
 ## Installation
 
