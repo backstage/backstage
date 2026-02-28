@@ -5,7 +5,7 @@ description: How to setup authentication for your Backstage app
 ---
 
 :::info
-This documentation is written for the old frontend system. If you are on the [new frontend system](../../frontend-system/index.md) you may want to read [its own article](./authentication--new.md) instead.
+This documentation is written for [the new frontend system](../../frontend-system/index.md). If you are on the old frontend system you may want to read [its own article](./authentication.md) instead.
 :::
 
 Audience: Admins or Developers
@@ -54,37 +54,63 @@ auth:
 
 The next step is to change the sign-in page. For this, you'll actually need to write some code.
 
-Open `packages/app/src/App.tsx` and below the last `import` line, add:
+First let's add the packages we need, do this from the root:
+
+```shell
+yarn --cwd packages/app add @backstage/core-plugin-api @backstage/plugin-app-react
+```
+
+Then open `packages/app/src/App.tsx` and below the last `import` line, add:
 
 ```typescript title="packages/app/src/App.tsx"
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
+import { SignInPage } from '@backstage/core-components';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+```
+
+Now below this we are going to use the `SignInPageBlueprint` to create an extension, add this code block to do that:
+
+```tsx
+const signInPage = SignInPageBlueprint.make({
+  params: {
+    loader: async () => props =>
+      (
+        <SignInPage
+          {...props}
+          provider={{
+            id: 'github-auth-provider',
+            title: 'GitHub',
+            message: 'Sign in using GitHub',
+            apiRef: githubAuthApiRef,
+          }}
+        />
+      ),
+  },
+});
 ```
 
 Search for `const app = createApp({` in this file, and replace:
 
 ```tsx title="packages/app/src/App.tsx"
-components: {
-  SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
-},
+export default createApp({
+  features: [catalogPlugin, navModule],
+});
 ```
 
 with
 
 ```tsx title="packages/app/src/App.tsx"
-components: {
-  SignInPage: props => (
-    <SignInPage
-      {...props}
-      auto
-      provider={{
-        id: 'github-auth-provider',
-        title: 'GitHub',
-        message: 'Sign in using GitHub',
-        apiRef: githubAuthApiRef,
-      }}
-    />
-  ),
-},
+export default createApp({
+  features: [
+    catalogPlugin,
+    navModule,
+    createFrontendModule({
+      pluginId: 'app',
+      extensions: [signInPage],
+    }),
+  ],
+});
 ```
 
 ## Add sign-in resolver(s)
