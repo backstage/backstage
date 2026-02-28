@@ -71,7 +71,9 @@ export async function createRouter(
     httpAuth,
   } = options;
 
-  const router = await createOpenApiRouter();
+  const router = await createOpenApiRouter({
+    middleware: [express.urlencoded({ extended: false }), express.json()],
+  });
 
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
@@ -139,9 +141,6 @@ export async function createRouter(
   } else {
     router.use(cookieParser());
   }
-
-  router.use(express.urlencoded({ extended: false }));
-  router.use(express.json());
 
   bindProviderRouters(router, {
     providers: providerFactories,
