@@ -178,7 +178,6 @@ describe('authModulePinnipedProvider', () => {
       `/api/auth/pinniped/start?env=development&audience=test_cluster`,
     );
 
-
     expect(startResponse.status).toBe(302);
   });
 
