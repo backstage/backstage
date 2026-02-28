@@ -27,8 +27,21 @@ export type {
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
+export type {
+  CatalogModelRegistryService,
+  CatalogModelRegistryAnnotationOptions,
+} from './CatalogModelRegistryService';
+
+export type {
+  CatalogModelService,
+  CatalogModelAnnotationDescriptor,
+  CatalogModelValidationResult,
+} from './CatalogModelService';
+
 export {
   actionsRegistryServiceRef,
   actionsServiceRef,
   rootSystemMetadataServiceRef,
+  catalogModelRegistryServiceRef,
+  catalogModelServiceRef,
 } from './refs';

@@ -18,6 +18,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { catalogModelRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 import {
@@ -224,6 +225,7 @@ export const kubernetesPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
+        catalogModelRegistry: catalogModelRegistryServiceRef,
       },
       async init({
         http,
@@ -234,7 +236,79 @@ export const kubernetesPlugin = createBackendPlugin({
         permissions,
         auth,
         httpAuth,
+        catalogModelRegistry,
       }) {
+        catalogModelRegistry.registerAnnotations({
+          entityKind: 'Component',
+          annotations: zod =>
+            zod.object({
+              'backstage.io/kubernetes-id': zod
+                .string()
+                .describe('Links a catalog entity to its Kubernetes resources'),
+              'backstage.io/kubernetes-label-selector': zod
+                .string()
+                .optional()
+                .describe(
+                  'Label selector query for filtering Kubernetes resources',
+                ),
+            }),
+        });
+
+        catalogModelRegistry.registerAnnotations({
+          entityKind: 'Resource',
+          annotations: zod =>
+            zod.object({
+              'kubernetes.io/api-server': zod
+                .string()
+                .optional()
+                .describe('API server URL for a Kubernetes cluster'),
+              'kubernetes.io/api-server-certificate-authority': zod
+                .string()
+                .optional()
+                .describe('CA certificate for the API server'),
+              'kubernetes.io/auth-provider': zod
+                .string()
+                .optional()
+                .describe('Auth provider for the Kubernetes cluster'),
+              'kubernetes.io/oidc-token-provider': zod
+                .string()
+                .optional()
+                .describe('OIDC provider for obtaining ID tokens'),
+              'kubernetes.io/skip-metrics-lookup': zod
+                .string()
+                .optional()
+                .describe('Whether to skip metrics lookup'),
+              'kubernetes.io/skip-tls-verify': zod
+                .string()
+                .optional()
+                .describe('Whether to skip TLS verification'),
+              'kubernetes.io/dashboard-url': zod
+                .string()
+                .optional()
+                .describe('Dashboard URL for the cluster'),
+              'kubernetes.io/dashboard-app': zod
+                .string()
+                .optional()
+                .describe('Dashboard application type'),
+              'kubernetes.io/dashboard-parameters': zod
+                .string()
+                .optional()
+                .describe('Dashboard application parameters'),
+              'kubernetes.io/aws-assume-role': zod
+                .string()
+                .optional()
+                .describe('AWS role ARN for authentication'),
+              'kubernetes.io/x-k8s-aws-id': zod
+                .string()
+                .optional()
+                .describe('AWS cluster ID for STS token signing'),
+              'kubernetes.io/aws-external-id': zod
+                .string()
+                .optional()
+                .describe('External ID for AWS communication'),
+            }),
+        });
+
         // TODO: this could do with a cleanup and push some of this initalization somewhere else
         if (config.has('kubernetes')) {
           const initializer = KubernetesInitializer.create({

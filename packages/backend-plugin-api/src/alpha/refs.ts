@@ -56,3 +56,37 @@ export const rootSystemMetadataServiceRef = createServiceRef<
   id: 'alpha.core.rootSystemMetadata',
   scope: 'root',
 });
+
+/**
+ * Service for registering catalog model extensions such as annotations.
+ * Plugin-scoped: each plugin gets its own instance, automatically namespaced
+ * by the plugin ID.
+ *
+ * See {@link CatalogModelRegistryService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/catalog-model-registry | the service docs}
+ * for more information.
+ *
+ * @alpha
+ */
+export const catalogModelRegistryServiceRef = createServiceRef<
+  import('./CatalogModelRegistryService').CatalogModelRegistryService
+>({
+  id: 'alpha.core.catalogModelRegistry',
+});
+
+/**
+ * Service for consuming registered catalog model extensions.
+ * Root-scoped: aggregates all registrations across plugins.
+ *
+ * See {@link CatalogModelService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/catalog-model | the service docs}
+ * for more information.
+ *
+ * @alpha
+ */
+export const catalogModelServiceRef = createServiceRef<
+  import('./CatalogModelService').CatalogModelService
+>({
+  id: 'alpha.core.catalogModel',
+  scope: 'root',
+});

@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createServiceFactory } from '@backstage/backend-plugin-api';
+import { catalogModelServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { DefaultCatalogModelService } from './DefaultCatalogModelService';
+import { catalogModelStoreServiceRef } from '../catalogModelRegistry/CatalogModelStore';
 
-export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
-export { actionsServiceFactory } from './entrypoints/actions';
-export { rootSystemMetadataServiceFactory } from './entrypoints/rootSystemMetadata';
-export {
-  catalogModelRegistryServiceFactory,
-  catalogModelStoreServiceFactory,
-} from './entrypoints/catalogModelRegistry';
-export { catalogModelServiceFactory } from './entrypoints/catalogModel';
+/**
+ * @public
+ */
+export const catalogModelServiceFactory = createServiceFactory({
+  service: catalogModelServiceRef,
+  deps: {
+    store: catalogModelStoreServiceRef,
+  },
+  factory: ({ store }) => new DefaultCatalogModelService(store),
+});
