@@ -17,7 +17,6 @@ import fs from 'fs-extra';
 import * as runObj from '@backstage/cli-common';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
-import type { CommandContext } from '../../../../wiring/types';
 import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
 import { YarnInfoInspectData } from '../../lib/versioning/packages';
 import { setupServer } from 'msw/node';
@@ -126,27 +125,7 @@ const expectLogsToMatch = (
   expect(receivedLogs.filter(Boolean).sort()).toEqual(expected.sort());
 };
 
-function callBump(flags: Record<string, string | boolean | null>) {
-  const args: string[] = [];
-  for (const [key, value] of Object.entries(flags)) {
-    if (value === null || value === undefined) {
-      continue;
-    }
-    const flag = `--${key.replace(/[A-Z]/g, c => `-${c.toLowerCase()}`)}`;
-    if (typeof value === 'boolean') {
-      if (value) {
-        args.push(flag);
-      }
-    } else {
-      args.push(flag, value);
-    }
-  }
-  const context: CommandContext = {
-    args,
-    info: { usage: 'backstage-cli versions:bump', description: 'test' },
-  };
-  return bump(context);
-}
+const info = { usage: 'backstage-cli versions:bump', description: '' };
 
 describe('bump', () => {
   const mockDir = createMockDirectory();
@@ -212,7 +191,7 @@ describe('bump', () => {
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({ release: 'main' });
+      await bump({ args: ['--release', 'main'], info });
     });
     expectLogsToMatch(logs, [
       'Using default pattern glob @backstage/*',
@@ -305,7 +284,7 @@ describe('bump', () => {
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({ release: 'main', skipInstall: true });
+      await bump({ args: ['--release', 'main', '--skip-install'], info });
     });
     expectLogsToMatch(logs, [
       'Using default pattern glob @backstage/*',
@@ -407,7 +386,7 @@ describe('bump', () => {
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({ release: 'main' });
+      await bump({ args: ['--release', 'main'], info });
     });
     expectLogsToMatch(logs, [
       'Using default pattern glob @backstage/*',
@@ -511,7 +490,7 @@ describe('bump', () => {
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({ release: 'main' });
+      await bump({ args: ['--release', 'main'], info });
     });
     expectLogsToMatch(logs, [
       'Using default pattern glob @backstage/*',
@@ -606,9 +585,9 @@ describe('bump', () => {
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await expect(callBump({ release: '999.0.1' })).rejects.toThrow(
-        'No release found for 999.0.1 version',
-      );
+      await expect(
+        bump({ args: ['--release', '999.0.1'], info }),
+      ).rejects.toThrow('No release found for 999.0.1 version');
     });
     expect(logs.filter(Boolean)).toEqual([
       'Using default pattern glob @backstage/*',
@@ -712,7 +691,7 @@ describe('bump', () => {
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({ release: 'next' });
+      await bump({ args: ['--release', 'next'], info });
     });
     expectLogsToMatch(logs, [
       'Using default pattern glob @backstage/*',
@@ -791,9 +770,14 @@ describe('bump', () => {
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({
-        pattern: '@{backstage,backstage-extra}/*',
-        release: 'main',
+      await bump({
+        args: [
+          '--pattern',
+          '@{backstage,backstage-extra}/*',
+          '--release',
+          'main',
+        ],
+        info,
       });
     });
     expectLogsToMatch(logs, [
@@ -900,7 +884,7 @@ describe('bump', () => {
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({ release: 'main' });
+      await bump({ args: ['--release', 'main'], info });
     });
     expectLogsToMatch(logs, [
       'Using default pattern glob @backstage/*',
@@ -1139,7 +1123,7 @@ describe('environment variables', () => {
     );
 
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({ release: 'main' });
+      await bump({ args: ['--release', 'main'], info });
     });
 
     expectLogsToMatch(logs, [
@@ -1213,7 +1197,7 @@ describe('environment variables', () => {
     } as any);
 
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({ release: 'main' });
+      await bump({ args: ['--release', 'main'], info });
     });
 
     expectLogsToMatch(logs, [
@@ -1298,7 +1282,7 @@ describe('environment variables', () => {
     );
 
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await callBump({ release: 'main' });
+      await bump({ args: ['--release', 'main'], info });
     });
 
     expectLogsToMatch(logs, [
@@ -1347,7 +1331,7 @@ describe('environment variables', () => {
       },
     });
 
-    await expect(callBump({ release: 'main' })).rejects.toThrow();
+    await expect(bump({ args: ['--release', 'main'], info })).rejects.toThrow();
   });
 
   it('should handle network errors when using custom base URL', async () => {
@@ -1375,6 +1359,6 @@ describe('environment variables', () => {
       ),
     );
 
-    await expect(callBump({ release: 'main' })).rejects.toThrow();
+    await expect(bump({ args: ['--release', 'main'], info })).rejects.toThrow();
   });
 });

@@ -15,6 +15,40 @@
  */
 import { parseArgs, type ParseArgsConfig } from 'node:util';
 
+// Splits a shell-like argument string, respecting single and double quotes
+function splitShellArgs(str: string): string[] {
+  const args: string[] = [];
+  let current = '';
+  let quote: string | undefined;
+
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+
+    if (quote) {
+      if (ch === quote) {
+        quote = undefined;
+      } else {
+        current += ch;
+      }
+    } else if (ch === '"' || ch === "'") {
+      quote = ch;
+    } else if (/\s/.test(ch)) {
+      if (current) {
+        args.push(current);
+        current = '';
+      }
+    } else {
+      current += ch;
+    }
+  }
+
+  if (current) {
+    args.push(current);
+  }
+
+  return args;
+}
+
 export function createScriptOptionsParser(
   commandPath: string[],
   options: ParseArgsConfig['options'],
@@ -27,7 +61,7 @@ export function createScriptOptionsParser(
     }
 
     const argsStr = scriptStr.slice(expectedScript.length).trim();
-    const args = argsStr ? argsStr.split(/\s+/) : [];
+    const args = argsStr ? splitShellArgs(argsStr) : [];
 
     const { values } = parseArgs({ args, strict: false, options });
     return values;
