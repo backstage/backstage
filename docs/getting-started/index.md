@@ -107,7 +107,7 @@ To create the application:
 
 2. If this is the first time that you are installing a Backstage application on this device, the following question is displayed. Enter `y` and select `Enter` to proceed with the installation.
 
-```
+```console
      Need to install the following packages:
      @backstage/create-app@0.7.4
      ok to proceed? (y)
@@ -115,7 +115,7 @@ To create the application:
 
 3. Enter the name for your application and select `Enter`. This is the root directory of your application. In this example, the name is set to `my-backstage-app`.
 
-```
+```console
      ? Enter a name for the app [required] my-backstage-app
 
      Creating the app...
