@@ -51,7 +51,7 @@ The `mui-to-bui` plugin provides a visual theme converter tool that helps you ge
 - **Generates both variants**: Creates CSS for both light and dark theme modes
 - **Provides live preview**: Shows how common BUI components look with your theme colors
 - **Exports CSS**: Allows you to copy the generated CSS to clipboard or download as a `.css` file
-- **No backend required**: Works entirely on the frontend, compatible with both old and new Backstage systems
+- **No backend required**: Works entirely on the frontend, compatible with both old and new Backstage frontend systems
 
 #### Installation
 
