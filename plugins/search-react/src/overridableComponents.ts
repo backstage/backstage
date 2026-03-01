@@ -14,19 +14,29 @@
  * limitations under the License.
  */
 
-import { Overrides } from '@material-ui/core/styles/overrides';
-import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { HighlightedSearchResultTextClassKey } from './components';
+
+/**
+ * CSS custom property overrides for search-react component styling.
+ * Used by theme consumers to customize component appearance via CSS custom properties.
+ * @public
+ */
+export type CSSCustomPropertyOverrides = Record<string, string>;
 
 /** @public */
 export type CatalogReactComponentsNameToClassKey = {
   SearchReactHighlightedSearchResultText: HighlightedSearchResultTextClassKey;
 };
 
-/** @public */
-export type BackstageOverrides = Overrides & {
+/**
+ * Backstage overrides type for search-react components.
+ * Uses CSS class name-based overrides instead of MUI StyleRules.
+ * Consumers can provide Tailwind class names or CSS custom property values.
+ * @public
+ */
+export type BackstageOverrides = {
   [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
-    StyleRules<CatalogReactComponentsNameToClassKey[Name]>
+    Record<CatalogReactComponentsNameToClassKey[Name], string>
   >;
 };
 
