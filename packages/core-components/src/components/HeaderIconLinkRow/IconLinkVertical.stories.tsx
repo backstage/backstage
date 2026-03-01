@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
-import LinkIcon from '@material-ui/icons/Link';
+import { Link2 as LinkIcon } from 'lucide-react';
 
 export default {
   title: 'Core/IconLinkVertical',
