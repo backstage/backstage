@@ -59,7 +59,7 @@ const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
   }
 
   return (
-    <LinkButton to={slackChannel.href} variant="contained">
+    <LinkButton to={slackChannel.href} variant="default">
       {slackChannel.name}
     </LinkButton>
   );

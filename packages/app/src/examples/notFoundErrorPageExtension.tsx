@@ -38,7 +38,7 @@ function CustomNotFoundErrorPage() {
         page used to exist.
       </Typography>
       <Button
-        variant="contained"
+        variant="default"
         to="/"
         style={{ marginTop: '1rem', width: 200 }}
       >

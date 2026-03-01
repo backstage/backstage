@@ -81,7 +81,7 @@ export const Default = () => {
           <pre>color="primary" variant="contained"</pre>
         </ListItemText>
 
-        <LinkButton to={link()} color="primary" variant="contained">
+        <LinkButton to={link()} variant="default">
           Register Component
         </LinkButton>
       </ListItem>
@@ -94,7 +94,7 @@ export const Default = () => {
           <pre>color="secondary" variant="contained"</pre>
         </ListItemText>
 
-        <LinkButton to={link()} color="secondary" variant="contained">
+        <LinkButton to={link()} variant="secondary">
           Cancel
         </LinkButton>
       </ListItem>
@@ -107,7 +107,7 @@ export const Default = () => {
           <pre>color="default" variant="outlined"</pre>
         </ListItemText>
 
-        <LinkButton to={link()} color="default" variant="outlined">
+        <LinkButton to={link()} variant="outline">
           View Details
         </LinkButton>
       </ListItem>
@@ -129,7 +129,7 @@ export const ButtonLinks = () => {
           // TODO: Refactor to use new routing mechanisms
         }
         <ListItem>
-          <LinkButton to={link()} color="default" variant="outlined">
+          <LinkButton to={link()} variant="outline">
             Route Ref
           </LinkButton>
           &nbsp; has props for both Material UI's component as well as for
@@ -137,7 +137,7 @@ export const ButtonLinks = () => {
         </ListItem>
 
         <ListItem>
-          <LinkButton to="/staticpath" color="default" variant="outlined">
+          <LinkButton to="/staticpath" variant="outline">
             Static Path
           </LinkButton>
           &nbsp; links to a statically defined route. In general, this should be

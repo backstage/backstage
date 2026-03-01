@@ -68,9 +68,9 @@ export const WithSecondaryAction = () => {
       secondaryAction={
         <LinkButton
           to="#"
-          size="small"
+          size="sm"
           aria-label="owner"
-          variant="text"
+          variant="ghost"
           startIcon={<GroupIcon />}
           style={{ textTransform: 'lowercase' }}
         >

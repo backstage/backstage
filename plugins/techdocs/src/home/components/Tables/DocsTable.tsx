@@ -99,9 +99,8 @@ export const DocsTable = (props: DocsTableProps) => {
           description="Create your own document. Check out our Getting Started Information"
           action={
             <LinkButton
-              color="primary"
               to="https://backstage.io/docs/features/techdocs/getting-started"
-              variant="contained"
+              variant="default"
             >
               DOCS
             </LinkButton>
