@@ -21,26 +21,18 @@ import {
 } from '@backstage/test-utils';
 import { createEvent, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import HomeIcon from '@material-ui/icons/Home';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import { Home as HomeIcon } from 'lucide-react';
+import { PlusCircle as CreateComponentIcon } from 'lucide-react';
 import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
-import { renderHook } from '@testing-library/react';
-import { makeStyles } from '@material-ui/core/styles';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles({
-  spotlight: {
-    backgroundColor: '#2b2a2a',
-  },
-});
+const spotlightClassName = 'bg-[#2b2a2a]';
 
 const handleSidebarItemClick = jest.fn();
 const analyticsApiMock = mockApis.analytics();
 
 async function renderSidebar() {
-  const { result } = renderHook(() => useStyles());
-
   await renderInTestApp(
     <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
       <Sidebar>
@@ -50,21 +42,21 @@ async function renderSidebar() {
           icon={CreateComponentIcon}
           onClick={handleSidebarItemClick}
           text="Create..."
-          className={result.current.spotlight}
+          className={spotlightClassName}
         />
         <SidebarItem
           icon={CreateComponentIcon}
           to="/docs"
           onClick={handleSidebarItemClick}
           text="Docs"
-          className={result.current.spotlight}
+          className={spotlightClassName}
         />
         <SidebarItem
           icon={CreateComponentIcon}
           to="/explore"
           onClick={handleSidebarItemClick}
           text="Explore"
-          className={result.current.spotlight}
+          className={spotlightClassName}
           noTrack
         />
         <SidebarExpandButton />
