@@ -17,8 +17,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import ListItemText from '@material-ui/core/ListItemText';
-
 import {
   renderInTestApp,
   TestApiProvider,
@@ -74,7 +72,12 @@ const createExtension = (
     component = async () => (props: { result?: SearchDocument }) =>
       (
         <>
-          <ListItemText primary="Default" secondary={props.result?.title} />
+          <div className="flex flex-col">
+            <span className="text-sm font-medium leading-none">Default</span>
+            <span className="text-sm text-muted-foreground">
+              {props.result?.title}
+            </span>
+          </div>
         </>
       ),
   } = options;
@@ -173,7 +176,12 @@ describe('extensions', () => {
       component: async () => (props: { result?: SearchDocument }) =>
         (
           <>
-            <ListItemText primary="Explore" secondary={props.result?.title} />
+            <div className="flex flex-col">
+              <span className="text-sm font-medium leading-none">Explore</span>
+              <span className="text-sm text-muted-foreground">
+                {props.result?.title}
+              </span>
+            </div>
           </>
         ),
     });
