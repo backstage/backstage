@@ -31,6 +31,13 @@ describe('<StatusOK />', () => {
     expect(getByLabelText('Status ok')).toBeInTheDocument();
     expect(getByTestId('status-ok')).toBeInTheDocument();
   });
+
+  it('renders shape indicator icon for accessibility', async () => {
+    const { container } = await renderInTestApp(<StatusOK />);
+    // lucide-react renders SVGs — verify SVG element exists within the status wrapper
+    const svgElement = container.querySelector('svg');
+    expect(svgElement).toBeInTheDocument();
+  });
 });
 
 describe('<StatusWarning />', () => {
@@ -40,6 +47,13 @@ describe('<StatusWarning />', () => {
     );
     expect(getByLabelText('Status warning')).toBeInTheDocument();
     expect(getByTestId('status-warning')).toBeInTheDocument();
+  });
+
+  it('renders shape indicator icon for accessibility', async () => {
+    const { container } = await renderInTestApp(<StatusWarning />);
+    // lucide-react renders SVGs — verify SVG element exists within the status wrapper
+    const svgElement = container.querySelector('svg');
+    expect(svgElement).toBeInTheDocument();
   });
 });
 
@@ -51,6 +65,13 @@ describe('<StatusError />', () => {
     expect(getByLabelText('Status error')).toBeInTheDocument();
     expect(getByTestId('status-error')).toBeInTheDocument();
   });
+
+  it('renders shape indicator icon for accessibility', async () => {
+    const { container } = await renderInTestApp(<StatusError />);
+    // lucide-react renders SVGs — verify SVG element exists within the status wrapper
+    const svgElement = container.querySelector('svg');
+    expect(svgElement).toBeInTheDocument();
+  });
 });
 
 describe('<StatusPending />', () => {
@@ -60,6 +81,13 @@ describe('<StatusPending />', () => {
     );
     expect(getByLabelText('Status pending')).toBeInTheDocument();
     expect(getByTestId('status-pending')).toBeInTheDocument();
+  });
+
+  it('renders shape indicator icon for accessibility', async () => {
+    const { container } = await renderInTestApp(<StatusPending />);
+    // lucide-react renders SVGs — verify SVG element exists within the status wrapper
+    const svgElement = container.querySelector('svg');
+    expect(svgElement).toBeInTheDocument();
   });
 });
 
@@ -71,6 +99,13 @@ describe('<StatusRunning />', () => {
     expect(getByLabelText('Status running')).toBeInTheDocument();
     expect(getByTestId('status-running')).toBeInTheDocument();
   });
+
+  it('renders shape indicator icon for accessibility', async () => {
+    const { container } = await renderInTestApp(<StatusRunning />);
+    // lucide-react renders SVGs — verify SVG element exists within the status wrapper
+    const svgElement = container.querySelector('svg');
+    expect(svgElement).toBeInTheDocument();
+  });
 });
 
 describe('<StatusAborted />', () => {
@@ -80,5 +115,12 @@ describe('<StatusAborted />', () => {
     );
     expect(getByLabelText('Status aborted')).toBeInTheDocument();
     expect(getByTestId('status-aborted')).toBeInTheDocument();
+  });
+
+  it('renders shape indicator icon for accessibility', async () => {
+    const { container } = await renderInTestApp(<StatusAborted />);
+    // lucide-react renders SVGs — verify SVG element exists within the status wrapper
+    const svgElement = container.querySelector('svg');
+    expect(svgElement).toBeInTheDocument();
   });
 });
