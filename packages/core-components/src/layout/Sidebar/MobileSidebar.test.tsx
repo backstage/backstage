@@ -16,10 +16,10 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import { mockBreakpoint } from '@backstage/core-components/testUtils';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import HomeIcon from '@material-ui/icons/Home';
-import LayersIcon from '@material-ui/icons/Layers';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import { PlusCircle as CreateComponentIcon } from 'lucide-react';
+import { Home as HomeIcon } from 'lucide-react';
+import { Layers as LayersIcon } from 'lucide-react';
+import { BookOpen as LibraryBooks } from 'lucide-react';
 import { fireEvent } from '@testing-library/react';
 import { Sidebar } from './Bar';
 import { SidebarItem } from './Items';
