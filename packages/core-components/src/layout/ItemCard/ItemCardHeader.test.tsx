@@ -15,19 +15,15 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
 import { screen } from '@testing-library/react';
 import { ItemCardHeader } from './ItemCardHeader';
 
 describe('<ItemCardHeader />', () => {
   it('renders default without exploding', async () => {
     await renderInTestApp(
-      <Card>
-        <CardMedia>
-          <ItemCardHeader title="My Title" subtitle="My Subtitle" />
-        </CardMedia>
-      </Card>,
+      <div>
+        <ItemCardHeader title="My Title" subtitle="My Subtitle" />
+      </div>,
     );
     expect(screen.getByText('My Title')).toBeInTheDocument();
     expect(screen.getByText('My Subtitle')).toBeInTheDocument();
@@ -35,11 +31,9 @@ describe('<ItemCardHeader />', () => {
 
   it('renders custom children', async () => {
     await renderInTestApp(
-      <Card>
-        <CardMedia>
-          <ItemCardHeader title="My Title">My Custom Text</ItemCardHeader>
-        </CardMedia>
-      </Card>,
+      <div>
+        <ItemCardHeader title="My Title">My Custom Text</ItemCardHeader>
+      </div>,
     );
     expect(screen.getByText('My Title')).toBeInTheDocument();
     expect(screen.getByText('My Custom Text')).toBeInTheDocument();
@@ -47,13 +41,11 @@ describe('<ItemCardHeader />', () => {
 
   it('renders custom styles', async () => {
     await renderInTestApp(
-      <Card>
-        <CardMedia>
-          <ItemCardHeader classes={{ root: 'my-css-class' }}>
-            My Custom Text
-          </ItemCardHeader>
-        </CardMedia>
-      </Card>,
+      <div>
+        <ItemCardHeader classes={{ root: 'my-css-class' }}>
+          My Custom Text
+        </ItemCardHeader>
+      </div>,
     );
     expect(screen.getByText('My Custom Text')).toHaveClass('my-css-class');
   });
