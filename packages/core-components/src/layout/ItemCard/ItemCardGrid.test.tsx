@@ -15,7 +15,6 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import Card from '@material-ui/core/Card';
 import { screen } from '@testing-library/react';
 import { ItemCardGrid } from './ItemCardGrid';
 
@@ -23,7 +22,7 @@ describe('<ItemCardGrid />', () => {
   it('renders default without exploding', async () => {
     await renderInTestApp(
       <ItemCardGrid>
-        <Card>Hello!</Card>
+        <div>Hello!</div>
       </ItemCardGrid>,
     );
     expect(screen.getByText('Hello!')).toBeInTheDocument();
@@ -33,19 +32,18 @@ describe('<ItemCardGrid />', () => {
     await renderInTestApp(
       <>
         <ItemCardGrid data-testid="cards-hello">
-          <Card>Hello!</Card>
+          <div>Hello!</div>
         </ItemCardGrid>
         <ItemCardGrid
           data-testid="cards-goodbye"
           classes={{ root: 'my-css-class' }}
         >
-          <Card>Goodbye!</Card>
+          <div>Goodbye!</div>
         </ItemCardGrid>
       </>,
     );
-    expect(screen.getByTestId('cards-hello')).toHaveStyle({
-      gridTemplateColumns: 'repeat(auto-fill, minmax(22em, 1fr))',
-    });
+    // Tailwind grid classes are applied via className, not inline styles
+    expect(screen.getByTestId('cards-hello')).toHaveClass('grid');
     expect(screen.getByTestId('cards-goodbye')).toHaveClass('my-css-class');
   });
 });
