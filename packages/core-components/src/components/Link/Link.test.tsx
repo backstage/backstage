@@ -62,7 +62,7 @@ describe('<Link />', () => {
         External Link
       </Link>,
     );
-    // Note: when externalLinkIcon is present, the SVG adds whitespace to the accessible name
+    // Note: when externalLinkIcon is present, the SVG element boundary adds whitespace to the accessible name
     const externalLink = screen.getByRole('link', {
       name: 'External Link , Opens in a new window',
     });
