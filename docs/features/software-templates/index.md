@@ -14,9 +14,7 @@ locations like GitHub or GitLab.
 
 When creating custom scaffolder actions, **use camelCase for action IDs** instead of kebab-case. Action IDs with dashes (like `fetch-component-id`) will cause template expressions like `${{ steps.fetch-component-id.output.componentId }}` to return `NaN` because the dashes are evaluated as subtraction operators in JavaScript expressions.
 
-:::note
-
-See the [Writing Custom Actions guide](./writing-custom-actions.md#naming-conventions) and [Template Migration guide](./migrating-from-v1beta2-to-v1beta3.md#watch-out-for-dash-case) for more details.
+See the [Writing Custom Actions guide](./writing-custom-actions.md#naming-conventions) for more details.
 
 :::
 
