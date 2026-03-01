@@ -11,6 +11,11 @@
   "compilerOptions": {
     "outDir": "dist-types",
     "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@/components/ui/*": ["packages/core-components/src/components/ui/*"],
+      "@/lib/*": ["packages/core-components/src/lib/*"]
+    },
     "useUnknownInCatchVariables": false,
     "jsx": "react-jsx"
   }
