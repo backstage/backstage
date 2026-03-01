@@ -17,7 +17,6 @@
 import { useRef, useLayoutEffect, useMemo } from 'react';
 import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { DependencyGraphTypes as Types } from './types';
 import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
@@ -39,21 +38,6 @@ export type GraphEdge<T> = Types.DependencyEdge<T> &
 
 /** @public */
 export type DependencyGraphEdgeClassKey = 'path' | 'label';
-
-const useStyles = makeStyles(
-  theme => ({
-    path: {
-      strokeWidth: 1.3,
-      stroke: theme.palette.textSubtle,
-      fill: 'none',
-      transition: `${theme.transitions.duration.shortest}ms`,
-    },
-    label: {
-      transition: `${theme.transitions.duration.shortest}ms`,
-    },
-  }),
-  { name: 'BackstageDependencyGraphEdge' },
-);
 
 type EdgePoint = dagre.GraphEdge['points'][0];
 
@@ -84,7 +68,6 @@ export function Edge<EdgeData>({
 }: EdgeComponentProps<EdgeData>) {
   const { x = 0, y = 0, width, height, points } = edge;
   const labelProps: Types.DependencyEdge<EdgeData> = edge;
-  const classes = useStyles();
 
   const labelRef = useRef<SVGGElement>(null);
 
@@ -130,7 +113,12 @@ export function Edge<EdgeData>({
       {path && (
         <path
           data-testid={EDGE_TEST_ID}
-          className={classes.path}
+          style={{
+            strokeWidth: 1.3,
+            stroke: 'var(--muted-foreground)',
+            fill: 'none',
+            transition: '150ms',
+          }}
           markerEnd={showArrowHeads ? `url(#${ARROW_MARKER_ID})` : undefined}
           d={path}
         />
@@ -139,7 +127,7 @@ export function Edge<EdgeData>({
         <g
           ref={labelRef}
           data-testid={LABEL_TEST_ID}
-          className={classes.label}
+          style={{ transition: '150ms' }}
           transform={`translate(${x},${y})`}
         >
           {render({ edge: labelProps })}
