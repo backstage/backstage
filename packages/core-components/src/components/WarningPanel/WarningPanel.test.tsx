@@ -16,7 +16,6 @@
 
 import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-import Typography from '@material-ui/core/Typography';
 import { WarningPanel, WarningProps } from './WarningPanel';
 
 const propsTitle: WarningProps = { title: 'Mock title' };
@@ -48,7 +47,7 @@ describe('<WarningPanel />', () => {
   it('renders title and children', async () => {
     await renderInTestApp(
       <WarningPanel {...propsTitle}>
-        <Typography>Java stacktrace</Typography>
+        <p>Java stacktrace</p>
       </WarningPanel>,
     );
     expect(screen.getByText('Java stacktrace')).toBeInTheDocument();
@@ -63,7 +62,7 @@ describe('<WarningPanel />', () => {
   it('renders title, message, and children', async () => {
     await renderInTestApp(
       <WarningPanel {...propsTitleMessage}>
-        <Typography>Java stacktrace</Typography>
+        <p>Java stacktrace</p>
       </WarningPanel>,
     );
     expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
