@@ -20,21 +20,29 @@ import { Lifecycle } from './Lifecycle';
 describe('<Lifecycle />', () => {
   it('renders Alpha with shorthand', async () => {
     const { getByText } = await renderInTestApp(<Lifecycle alpha shorthand />);
-    expect(getByText('α')).toBeInTheDocument();
+    const element = getByText('α');
+    expect(element).toBeInTheDocument();
+    expect(element.closest('[data-slot="badge"]')).toBeInTheDocument();
   });
 
   it('renders Alpha without shorthand', async () => {
     const { getByText } = await renderInTestApp(<Lifecycle alpha />);
-    expect(getByText('Alpha')).toBeInTheDocument();
+    const element = getByText('Alpha');
+    expect(element).toBeInTheDocument();
+    expect(element.closest('[data-slot="badge"]')).toBeInTheDocument();
   });
 
   it('renders Beta with shorthand', async () => {
     const { getByText } = await renderInTestApp(<Lifecycle shorthand />);
-    expect(getByText('β')).toBeInTheDocument();
+    const element = getByText('β');
+    expect(element).toBeInTheDocument();
+    expect(element.closest('[data-slot="badge"]')).toBeInTheDocument();
   });
 
   it('renders Beta without shorthand', async () => {
     const { getByText } = await renderInTestApp(<Lifecycle />);
-    expect(getByText('Beta')).toBeInTheDocument();
+    const element = getByText('Beta');
+    expect(element).toBeInTheDocument();
+    expect(element.closest('[data-slot="badge"]')).toBeInTheDocument();
   });
 });

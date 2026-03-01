@@ -13,49 +13,74 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import CSS from 'csstype';
+import { Badge } from '../ui/badge';
+import { cn } from '../../lib/utils';
 
-type Props = CSS.Properties & {
+/**
+ * Properties for the Lifecycle indicator component.
+ * Supports optional shorthand mode (Greek letters) and alpha/beta state.
+ */
+type Props = {
   shorthand?: boolean;
   alpha?: boolean;
+  className?: string;
 };
 
+/**
+ * Public API type for lifecycle stage CSS class keys.
+ * Preserved for backward compatibility with the overridable components system.
+ * @public
+ */
 export type LifecycleClassKey = 'alpha' | 'beta';
 
-const useStyles = makeStyles(
-  theme => ({
-    alpha: {
-      color: theme.palette.common.white,
-      fontFamily: 'serif',
-      fontWeight: 'normal',
-      fontStyle: 'italic',
-    },
-    beta: {
-      color: '#4d65cc',
-      fontFamily: 'serif',
-      fontWeight: 'normal',
-      fontStyle: 'italic',
-    },
-  }),
-  { name: 'BackstageLifecycle' },
-);
-
+/**
+ * Lifecycle indicator component displaying Alpha or Beta stage badges.
+ *
+ * @remarks
+ * Renders a styled badge indicating the lifecycle stage of a feature.
+ * - Alpha: primary background with white text, serif italic styling
+ * - Beta: secondary background with primary (blue) text, serif italic styling
+ * - Shorthand mode renders Greek letters (α/β) at 120% font size
+ * - Verbose mode renders full words ("Alpha"/"Beta")
+ *
+ * Migrated from MUI Typography/makeStyles to shadcn/ui Badge with Tailwind CSS.
+ *
+ * @example
+ * ```tsx
+ * <Lifecycle alpha />          // Renders "Alpha" badge
+ * <Lifecycle alpha shorthand /> // Renders "α" badge
+ * <Lifecycle />                // Renders "Beta" badge
+ * <Lifecycle shorthand />      // Renders "β" badge
+ * ```
+ *
+ * @public
+ */
 export function Lifecycle(props: Props) {
-  const classes = useStyles(props);
-  const { shorthand, alpha } = props;
-  return shorthand ? (
-    <Typography
-      component="span"
-      className={classes[alpha ? 'alpha' : 'beta']}
-      style={{ fontSize: '120%' }}
+  const { shorthand, alpha, className } = props;
+
+  /**
+   * Shared serif italic styling preserved from original MUI makeStyles:
+   * - alpha: white text on primary background (replaces theme.palette.common.white)
+   * - beta: primary (blue) text on secondary background (replaces hardcoded #4d65cc)
+   */
+  const variantClass = alpha
+    ? 'font-serif font-normal italic text-primary-foreground'
+    : 'font-serif font-normal italic text-primary';
+
+  // Determine the display label based on lifecycle stage and shorthand mode
+  let label: string;
+  if (shorthand) {
+    label = alpha ? 'α' : 'β';
+  } else {
+    label = alpha ? 'Alpha' : 'Beta';
+  }
+
+  return (
+    <Badge
+      variant={alpha ? 'default' : 'secondary'}
+      className={cn(variantClass, shorthand && 'text-[120%]', className)}
     >
-      {alpha ? <>&alpha;</> : <>&beta;</>}
-    </Typography>
-  ) : (
-    <Typography component="span" className={classes[alpha ? 'alpha' : 'beta']}>
-      {alpha ? 'Alpha' : 'Beta'}
-    </Typography>
+      {label}
+    </Badge>
   );
 }
