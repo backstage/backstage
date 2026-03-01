@@ -1,11 +1,11 @@
 ---
-id: index
+id: index--new
 title: Authentication in Backstage
 description: Introduction to authentication in Backstage
 ---
 
 :::info
-This documentation is written for [the new frontend system](../../frontend-system/index.md). If you are on the old frontend system you may want to read [its own article](./index.md) instead.
+This documentation is written for [the new frontend system](../frontend-system/index.md). If you are on the old frontend system you may want to read [its own article](./index.md) instead.
 :::
 
 The authentication system in Backstage serves two distinct purposes: sign-in and identification of users, as well as delegating access to third-party resources. It is possible to configure Backstage to have any number of authentication providers, but only one of these will typically be used for sign-in, with the rest being used to provide access to external resources.
@@ -358,7 +358,7 @@ The method with which frontend plugins request access to third-party services is
 
 There are generic authentication providers for OAuth2 and SAML. These can reduce the amount of code needed to implement a custom authentication provider that adheres to these standards.
 
-Backstage uses [Passport](http://www.passportjs.org/) under the hood, which has a wide library of authentication strategies for different providers. See[Add authentication provider](add-auth-provider.md) for details on adding a new Passport-supported authentication method.
+Backstage uses [Passport](http://www.passportjs.org/) under the hood, which has a wide library of authentication strategies for different providers. See [Add authentication provider](add-auth-provider.md) for details on adding a new Passport-supported authentication method.
 
 ## Custom ScmAuthApi Implementation
 

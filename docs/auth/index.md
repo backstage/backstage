@@ -5,7 +5,7 @@ description: Introduction to authentication in Backstage
 ---
 
 :::info
-This documentation is written for the old frontend system. If you are on the [new frontend system](../../frontend-system/index.md) you may want to read [its own article](./index--new.md) instead.
+This documentation is written for the old frontend system. If you are on the [new frontend system](../frontend-system/index.md) you may want to read [its own article](./index--new.md) instead.
 :::
 
 The authentication system in Backstage serves two distinct purposes: sign-in and
