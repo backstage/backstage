@@ -14,58 +14,97 @@
  * limitations under the License.
  */
 
+import { ComponentType } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
-import MuiApartmentIcon from '@material-ui/icons/Apartment';
-import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
-import MuiCategoryIcon from '@material-ui/icons/Category';
-import MuiCreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
-import MuiSubjectIcon from '@material-ui/icons/Subject';
-import MuiSearchIcon from '@material-ui/icons/Search';
-import MuiChatIcon from '@material-ui/icons/Chat';
-import MuiDashboardIcon from '@material-ui/icons/Dashboard';
-import MuiDocsIcon from '@material-ui/icons/Description';
-import MuiEmailIcon from '@material-ui/icons/Email';
-import MuiExtensionIcon from '@material-ui/icons/Extension';
-import MuiGitHubIcon from '@material-ui/icons/GitHub';
-import MuiHelpIcon from '@material-ui/icons/Help';
-import MuiLocationOnIcon from '@material-ui/icons/LocationOn';
-import MuiMemoryIcon from '@material-ui/icons/Memory';
-import MuiMenuBookIcon from '@material-ui/icons/MenuBook';
-import MuiPeopleIcon from '@material-ui/icons/People';
-import MuiPersonIcon from '@material-ui/icons/Person';
-import MuiWarningIcon from '@material-ui/icons/Warning';
-import MuiStorageIcon from '@material-ui/icons/Storage';
-import MuiFeaturedPlayListIcon from '@material-ui/icons/FeaturedPlayList';
-import Star from '@material-ui/icons/Star';
-import StarBorder from '@material-ui/icons/StarBorder';
-import OpenInNew from '@material-ui/icons/OpenInNew';
+import {
+  Building2,
+  ImageOff,
+  LayoutGrid,
+  FolderPlus,
+  FileText,
+  Search,
+  MessageCircle,
+  LayoutDashboard,
+  Mail,
+  Puzzle,
+  Github,
+  HelpCircle,
+  MapPin,
+  Cpu,
+  BookOpen,
+  Users,
+  User,
+  AlertTriangle,
+  Database,
+  ListVideo,
+  Star,
+  StarOff,
+  ExternalLink,
+} from 'lucide-react';
+
+/**
+ * Maps Backstage's MUI-derived fontSize values to Lucide numeric pixel sizes.
+ * "inherit" is intentionally omitted — when fontSize is "inherit" or absent,
+ * the Lucide icon renders at its default 24px size.
+ */
+const fontSizeToPixels: Record<string, number> = {
+  small: 16,
+  medium: 24,
+  large: 36,
+};
+
+/**
+ * Wraps a Lucide icon component as a Backstage IconComponent.
+ *
+ * Lucide icons accept LucideProps (size, strokeWidth, className, etc.) while
+ * Backstage's IconComponent expects { fontSize?: 'medium' | 'large' | 'small' | 'inherit' }.
+ * This adapter maps the fontSize prop to a numeric size value and assigns
+ * a displayName for easier debugging in React DevTools.
+ */
+const wrapIcon = (
+  LucideIcon: ComponentType<{ className?: string; size?: number | string }>,
+): IconComponent => {
+  const Wrapped: IconComponent = ({ fontSize }) => (
+    <LucideIcon
+      size={
+        fontSize && fontSize !== 'inherit'
+          ? fontSizeToPixels[fontSize]
+          : undefined
+      }
+    />
+  );
+  Wrapped.displayName = `Wrapped(${
+    LucideIcon.displayName || LucideIcon.name || 'Icon'
+  })`;
+  return Wrapped;
+};
 
 export const icons = {
-  brokenImage: MuiBrokenImageIcon as IconComponent,
+  brokenImage: wrapIcon(ImageOff),
   // To be confirmed: see https://github.com/backstage/backstage/issues/4970
-  catalog: MuiMenuBookIcon as IconComponent,
-  scaffolder: MuiCreateNewFolderIcon as IconComponent,
-  techdocs: MuiSubjectIcon as IconComponent,
-  search: MuiSearchIcon as IconComponent,
-  chat: MuiChatIcon as IconComponent,
-  dashboard: MuiDashboardIcon as IconComponent,
-  docs: MuiDocsIcon as IconComponent,
-  email: MuiEmailIcon as IconComponent,
-  github: MuiGitHubIcon as IconComponent,
-  group: MuiPeopleIcon as IconComponent,
-  help: MuiHelpIcon as IconComponent,
-  'kind:api': MuiExtensionIcon as IconComponent,
-  'kind:component': MuiMemoryIcon as IconComponent,
-  'kind:domain': MuiApartmentIcon as IconComponent,
-  'kind:group': MuiPeopleIcon as IconComponent,
-  'kind:location': MuiLocationOnIcon as IconComponent,
-  'kind:system': MuiCategoryIcon as IconComponent,
-  'kind:user': MuiPersonIcon as IconComponent,
-  'kind:resource': MuiStorageIcon as IconComponent,
-  'kind:template': MuiFeaturedPlayListIcon as IconComponent,
-  user: MuiPersonIcon as IconComponent,
-  warning: MuiWarningIcon as IconComponent,
-  star: Star as IconComponent,
-  unstarred: StarBorder as IconComponent,
-  externalLink: OpenInNew as IconComponent,
+  catalog: wrapIcon(BookOpen),
+  scaffolder: wrapIcon(FolderPlus),
+  techdocs: wrapIcon(FileText),
+  search: wrapIcon(Search),
+  chat: wrapIcon(MessageCircle),
+  dashboard: wrapIcon(LayoutDashboard),
+  docs: wrapIcon(FileText),
+  email: wrapIcon(Mail),
+  github: wrapIcon(Github),
+  group: wrapIcon(Users),
+  help: wrapIcon(HelpCircle),
+  'kind:api': wrapIcon(Puzzle),
+  'kind:component': wrapIcon(Cpu),
+  'kind:domain': wrapIcon(Building2),
+  'kind:group': wrapIcon(Users),
+  'kind:location': wrapIcon(MapPin),
+  'kind:system': wrapIcon(LayoutGrid),
+  'kind:user': wrapIcon(User),
+  'kind:resource': wrapIcon(Database),
+  'kind:template': wrapIcon(ListVideo),
+  user: wrapIcon(User),
+  warning: wrapIcon(AlertTriangle),
+  star: wrapIcon(Star),
+  unstarred: wrapIcon(StarOff),
+  externalLink: wrapIcon(ExternalLink),
 };
