@@ -15,7 +15,6 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import Typography from '@material-ui/core/Typography';
 import { fireEvent } from '@testing-library/react';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from './Breadcrumbs';
@@ -25,7 +24,7 @@ describe('<Breadcrumbs/>', () => {
     const rendered = await renderInTestApp(
       <Breadcrumbs>
         <Link to="/">General Page</Link>
-        <Typography>Current Page</Typography>
+        <span>Current Page</span>
       </Breadcrumbs>,
     );
     expect(rendered.getByLabelText('breadcrumb')).toBeVisible();
@@ -40,7 +39,7 @@ describe('<Breadcrumbs/>', () => {
         <Link to="/">Second Page</Link>
         <Link to="/">Third Page</Link>
         <Link to="/">Fourth Page</Link>
-        <Typography>Current page</Typography>
+        <span>Current page</span>
       </Breadcrumbs>,
     );
     expect(rendered.getByText('...')).toBeVisible();
