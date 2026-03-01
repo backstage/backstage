@@ -24,6 +24,7 @@ describe('AppIcon', () => {
     expect(screen.getByTestId('Api Icon')).toBeDefined();
   });
 
+  // Default fallback is ImageOff from lucide-react (replaced MuiBrokenImageIcon)
   it('should render the default fallback component', async () => {
     await renderInTestApp(
       <AppIcon data-testid="Fallback Icon" id="kind:api" />,
