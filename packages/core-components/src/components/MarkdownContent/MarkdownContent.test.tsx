@@ -49,12 +49,12 @@ describe('<MarkdownContent />', () => {
       <MarkdownContent content="https://example.com" dialect="common-mark" />,
     );
     const content = screen.getByText('https://example.com', { selector: 'p' });
+    const parentClasses = Array.from(
+      content.parentElement?.classList?.values() ?? [],
+    );
 
-    expect(
-      Array.from(content.parentElement?.classList?.values() ?? []).map(cls =>
-        cls.replace(/-\d+$/, ''),
-      ),
-    ).toEqual(['BackstageMarkdownContent-markdown']);
+    expect(parentClasses).toContain('prose');
+    expect(parentClasses).toContain('dark:prose-invert');
   });
 
   it('Render MarkdownContent component with custom class', async () => {
@@ -66,12 +66,13 @@ describe('<MarkdownContent />', () => {
       />,
     );
     const content = screen.getByText('https://example.com', { selector: 'p' });
+    const parentClasses = Array.from(
+      content.parentElement?.classList?.values() ?? [],
+    );
 
-    expect(
-      Array.from(content.parentElement?.classList?.values() ?? []).map(cls =>
-        cls.replace(/-\d+$/, ''),
-      ),
-    ).toEqual(['BackstageMarkdownContent-markdown', 'custom-class']);
+    expect(parentClasses).toContain('prose');
+    expect(parentClasses).toContain('dark:prose-invert');
+    expect(parentClasses).toContain('custom-class');
   });
 
   it('render MarkdownContent component with CodeSnippet for code blocks', async () => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '../../lib/utils';
 import ReactMarkdown, { Options } from 'react-markdown';
 import gfm from 'remark-gfm';
 import { Children, createElement } from 'react';
@@ -25,47 +25,6 @@ import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import type { PluggableList } from 'react-markdown/lib/react-markdown';
 
 export type MarkdownContentClassKey = 'markdown';
-
-const useStyles = makeStyles(
-  theme => ({
-    markdown: {
-      '& table': {
-        borderCollapse: 'collapse',
-        border: `1px solid ${theme.palette.border}`,
-      },
-      '& th, & td': {
-        border: `1px solid ${theme.palette.border}`,
-        padding: theme.spacing(1),
-      },
-      '& td': {
-        wordBreak: 'break-word',
-        overflow: 'hidden',
-        verticalAlign: 'middle',
-        lineHeight: '1',
-        margin: 0,
-        padding: theme.spacing(3, 2, 3, 2.5),
-        borderBottom: 0,
-      },
-      '& th': {
-        backgroundColor: theme.palette.background.paper,
-      },
-      '& tr': {
-        backgroundColor: theme.palette.background.paper,
-      },
-      '& tr:nth-child(odd)': {
-        backgroundColor: theme.palette.background.default,
-      },
-
-      '& a': {
-        color: theme.palette.link,
-      },
-      '& img': {
-        maxWidth: '100%',
-      },
-    },
-  }),
-  { name: 'BackstageMarkdownContent' },
-);
 
 type Props = {
   content: string;
@@ -150,12 +109,20 @@ export function MarkdownContent(props: Props) {
     transformImageUri,
     className,
   } = props;
-  const classes = useStyles();
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
       rehypePlugins={dialect === 'gfm' ? gfmRehypePlugins : []}
-      className={`${classes.markdown} ${className ?? ''}`.trim()}
+      className={cn(
+        'prose dark:prose-invert max-w-none',
+        '[&_table]:border-collapse [&_table]:border [&_table]:border-border',
+        '[&_th]:border [&_th]:border-border [&_th]:p-1 [&_th]:bg-card',
+        '[&_td]:border [&_td]:border-border [&_td]:break-words [&_td]:overflow-hidden [&_td]:align-middle [&_td]:leading-none [&_td]:m-0 [&_td]:px-2.5 [&_td]:py-3 [&_td]:border-b-0',
+        '[&_tr]:bg-card [&_tr:nth-child(odd)]:bg-background',
+        '[&_a]:text-primary',
+        '[&_img]:max-w-full',
+        className,
+      )}
       children={content}
       components={components}
       linkTarget={linkTarget}
