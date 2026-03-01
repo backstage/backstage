@@ -15,7 +15,6 @@
  */
 
 import { useRef, useLayoutEffect } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { DefaultNode } from './DefaultNode';
 import { DependencyGraphTypes as Types } from './types';
 import { NODE_TEST_ID } from './constants';
@@ -23,15 +22,6 @@ import dagre from '@dagrejs/dagre';
 
 /** @public */
 export type DependencyGraphNodeClassKey = 'node';
-
-const useStyles = makeStyles(
-  theme => ({
-    node: {
-      transition: `${theme.transitions.duration.shortest}ms`,
-    },
-  }),
-  { name: 'BackstageDependencyGraphNode' },
-);
 
 export type GraphNode<T> = dagre.Node<Types.DependencyNode<T>>;
 
@@ -52,7 +42,6 @@ export function Node<T>({
 }: NodeComponentProps<T>) {
   const { width, height, x = 0, y = 0 } = node;
   const nodeProps: Types.DependencyNode<T> = node;
-  const classes = useStyles();
   const nodeRef = useRef<SVGGElement | null>(null);
 
   useLayoutEffect(() => {
@@ -77,7 +66,7 @@ export function Node<T>({
     <g
       ref={nodeRef}
       data-testid={NODE_TEST_ID}
-      className={classes.node}
+      style={{ transition: '150ms' }}
       transform={`translate(${x - width / 2},${y - height / 2})`}
     >
       {render({ node: nodeProps })}
