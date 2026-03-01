@@ -1,0 +1,77 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * Tailwind CSS entry point for @backstage/core-components.
+ *
+ * This file serves as the single CSS import that bootstraps Tailwind's
+ * generated utility classes, component styles, and base reset (Preflight)
+ * for all shadcn/ui-based components in the core-components package.
+ *
+ * Import ordering:
+ *   1. Tailwind directives (base → components → utilities)
+ *   2. globals.css token system (shadcn/ui CSS custom properties)
+ *
+ * The @tailwind directives automatically inject styles into Tailwind's
+ * built-in @layer base, @layer components, and @layer utilities cascade
+ * layers. No additional manual @layer declaration is required — Tailwind
+ * manages cascade ordering internally.
+ *
+ * See also:
+ *   - packages/ui/src/css/styles.css (BUI's equivalent orchestration file)
+ *   - packages/core-components/src/styles/globals.css (token definitions)
+ */
+
+/*
+ * Tailwind base includes Preflight reset styles.
+ * Scoped via @layer to prevent CSS conflicts with MUI community plugins
+ * that render alongside shadcn/ui components.
+ *
+ * Tailwind's Preflight (injected by @tailwind base) applies a modern CSS
+ * reset. Because Backstage must support visual coexistence with MUI-based
+ * community plugins, Preflight is isolated within @layer base. This ensures
+ * the reset styles have lower cascade priority than any un-layered CSS that
+ * MUI plugins may inject, preserving their visual integrity.
+ */
+@tailwind base;
+
+/*
+ * Component-level class definitions.
+ * Tailwind @layer components provides a slot for reusable component classes
+ * (e.g., .btn, .card) that sit between base and utilities in specificity.
+ */
+@tailwind components;
+
+/*
+ * Utility classes (the core of Tailwind's utility-first methodology).
+ * These have the highest priority within Tailwind's layer system, ensuring
+ * utility overrides always win over base and component styles.
+ */
+@tailwind utilities;
+
+/* ================================================================
+ * shadcn/ui CSS custom property token system (light & dark mode)
+ *
+ * Imports the complete design token definitions that all shadcn/ui
+ * components and migrated Backstage components consume. Token values
+ * are mapped from the BUI token system (packages/ui/src/css/tokens.css)
+ * to ensure visual consistency across the platform.
+ *
+ * This import comes after the @tailwind directives so that the CSS
+ * custom property tokens are available to all Tailwind-generated
+ * styles and component classes.
+ * ================================================================ */
+@import './globals.css';
