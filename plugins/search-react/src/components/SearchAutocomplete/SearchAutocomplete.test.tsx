@@ -17,7 +17,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import LabelIcon from '@material-ui/icons/Label';
+import { Tag } from 'lucide-react';
 
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/core-app-api';
@@ -228,7 +228,7 @@ describe('SearchAutocomplete', () => {
           getOptionLabel={option => option.title}
           renderOption={option => (
             <SearchAutocompleteDefaultOption
-              icon={<LabelIcon titleAccess="Option icon" />}
+              icon={<Tag title="Option icon" />}
               primaryText={option.title}
               secondaryText={option.text}
             />
