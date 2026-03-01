@@ -31,7 +31,7 @@ import type { CommandContext } from '../../../../wiring/types';
 export default async ({ args, info }: CommandContext) => {
   const { _: positionals } = cli(
     {
-      help: info,
+      help: { ...info, usage: `${info.usage} <github-org>` },
       parameters: ['<github-org>'],
     },
     undefined,

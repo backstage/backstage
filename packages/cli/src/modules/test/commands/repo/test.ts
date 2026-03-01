@@ -16,7 +16,7 @@
 
 import os from 'node:os';
 import crypto from 'node:crypto';
-import { parseArgs } from 'node:util';
+import { cli } from 'cleye';
 import yargs from 'yargs';
 // 'jest-cli' is included with jest and should be kept in sync with the installed jest version
 // eslint-disable-next-line @backstage/no-undeclared-imports
@@ -131,41 +131,41 @@ export function createFlagFinder(args: string[]) {
   };
 }
 
-function removeOptionArg(args: string[], option: string, size: number = 2) {
-  let changed = false;
-  do {
-    changed = false;
-
-    const index = args.indexOf(option);
-    if (index >= 0) {
-      changed = true;
-      args.splice(index, size);
-    }
-    const indexEq = args.findIndex(arg => arg.startsWith(`${option}=`));
-    if (indexEq >= 0) {
-      changed = true;
-      args.splice(indexEq, 1);
-    }
-  } while (changed);
-}
-
-export default async ({ args }: CommandContext) => {
+export default async ({ args, info }: CommandContext) => {
   const testGlobal = global as TestGlobal;
 
-  // Parse our own flags from the raw args using strict: false to allow Jest flags through
-  const { values: opts } = parseArgs({
-    args,
-    strict: false,
-    options: {
-      since: { type: 'string' },
-      successCache: { type: 'boolean' },
-      successCacheDir: { type: 'string' },
-      'jest-help': { type: 'boolean' },
+  // Parse Backstage-specific flags; unknown flags and arguments are left in
+  // args so they can be forwarded to Jest.
+  const { flags: opts } = cli(
+    {
+      help: info,
+      flags: {
+        since: {
+          type: String,
+          description:
+            'Only include test packages changed since the specified ref',
+        },
+        successCache: {
+          type: Boolean,
+          description: 'Cache and skip tests for unchanged packages',
+        },
+        successCacheDir: {
+          type: String,
+          description: 'Directory for the success cache',
+        },
+        jestHelp: {
+          type: Boolean,
+          description: "Show Jest's own help output",
+        },
+      },
+      ignoreArgv: type => type === 'unknown-flag' || type === 'argument',
     },
-  });
+    undefined,
+    args,
+  );
 
   const hasFlags = createFlagFinder(args);
-  const sinceRef = typeof opts.since === 'string' ? opts.since : undefined;
+  const sinceRef = opts.since || undefined;
 
   // Parse the args to ensure that no file filters are provided, in which case we refuse to run
   const { _: parsedArgs } = await yargs(args).options(jestYargsOptions).argv;
@@ -252,10 +252,6 @@ export default async ({ args }: CommandContext) => {
     args.push('--maxWorkers=2');
   }
 
-  if (opts.since) {
-    removeOptionArg(args, '--since');
-  }
-
   let packageGraph: PackageGraph | undefined;
   async function getPackageGraph() {
     if (packageGraph) {
@@ -310,17 +306,13 @@ export default async ({ args }: CommandContext) => {
     }--no-node-snapshot`;
   }
 
-  if (opts['jest-help']) {
-    removeOptionArg(args, '--jest-help');
+  if (opts.jestHelp) {
     args.push('--help');
   }
 
   // This code path is enabled by the --successCache flag, which is specific to
   // the `repo test` command in the Backstage CLI.
   if (opts.successCache) {
-    removeOptionArg(args, '--successCache', 1);
-    removeOptionArg(args, '--successCacheDir');
-
     // Refuse to run if file filters are provided
     if (parsedArgs.length > 0) {
       throw new Error(
@@ -338,7 +330,7 @@ export default async ({ args }: CommandContext) => {
 
     const cache = SuccessCache.create({
       name: 'test',
-      basePath: opts.successCacheDir as string | undefined,
+      basePath: opts.successCacheDir,
     });
     const graph = await getPackageGraph();
 

@@ -163,7 +163,7 @@ describe('runBackend', () => {
 
       runBackend({
         entry: 'src/index',
-        inspectEnabled: true,
+        inspectEnabled: '',
       });
 
       // Fast-forward past the debounce delay (100ms)
