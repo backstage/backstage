@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { DependencyGraphTypes as Types } from './types';
 
 /** @public */
 export type DependencyGraphDefaultLabelClassKey = 'text';
 
-const useStyles = makeStyles(
-  theme => ({
-    text: {
-      fill: theme.palette.textContrast,
-    },
-  }),
-  { name: 'BackstageDependencyGraphDefaultLabel' },
-);
-
 /** @public */
 export function DefaultLabel({ edge: { label } }: Types.RenderLabelProps) {
-  const classes = useStyles();
   return (
-    <text className={classes.text} textAnchor="middle">
+    <text style={{ fill: 'var(--foreground)' }} textAnchor="middle">
       {label}
     </text>
   );
