@@ -18,6 +18,9 @@ import { ThemeOptions as ThemeOptions_2 } from '@material-ui/core/styles';
 import type { ThemeOptions as ThemeOptions_3 } from '@material-ui/core/styles/createTheme';
 import { UnifiedTheme as UnifiedTheme_2 } from '@backstage/theme';
 
+// @public
+export function applyShadcnTokens(tokens: ShadcnTokens, element?: HTMLElement): void;
+
 // @public @deprecated
 export type BackstagePalette = Palette & BackstagePaletteAdditions;
 
@@ -207,10 +210,25 @@ export function createUnifiedThemeFromV4(options: ThemeOptions_2): UnifiedTheme;
 export const darkTheme: Theme_3;
 
 // @public
+export const darkTokenValues: ShadcnTokens;
+
+// @public
 export const defaultComponentThemes: ThemeOptions['components'];
 
 // @public
 export const defaultTypography: BackstageTypography;
+
+// @public
+export function generatePaletteTokens(palette: (typeof palettes)['light'] | (typeof palettes)['dark']): Record<string, string>;
+
+// @public
+export function generateShadcnTokenCSS(tokens: ShadcnTokens): string;
+
+// @public
+export function generateShadcnTokens(palette: (typeof palettes)['light'] | (typeof palettes)['dark'], typography?: BackstageTypography): Record<string, string>;
+
+// @public
+export function generateTypographyTokens(typography?: BackstageTypography): Record<string, string>;
 
 // @public
 export function genPageTheme(props: {
@@ -223,6 +241,9 @@ export function genPageTheme(props: {
 
 // @public @deprecated
 export const lightTheme: Theme_3;
+
+// @public
+export const lightTokenValues: ShadcnTokens;
 
 // @public
 export interface OverrideComponentNameToClassKeys {}
@@ -390,6 +411,80 @@ export const palettes: {
     };
   };
 };
+
+// @public
+export const SHADCN_TOKENS_CSS: string;
+
+// @public
+export type ShadcnThemeMode = 'light' | 'dark';
+
+// @public
+export interface ShadcnTokens {
+  // (undocumented)
+  accent: string;
+  // (undocumented)
+  accentForeground: string;
+  // (undocumented)
+  background: string;
+  // (undocumented)
+  border: string;
+  // (undocumented)
+  card: string;
+  // (undocumented)
+  cardForeground: string;
+  // (undocumented)
+  destructive: string;
+  // (undocumented)
+  destructiveForeground: string;
+  // (undocumented)
+  fontMono: string;
+  // (undocumented)
+  fontSans: string;
+  // (undocumented)
+  foreground: string;
+  // (undocumented)
+  input: string;
+  // (undocumented)
+  muted: string;
+  // (undocumented)
+  mutedForeground: string;
+  // (undocumented)
+  popover: string;
+  // (undocumented)
+  popoverForeground: string;
+  // (undocumented)
+  primary: string;
+  // (undocumented)
+  primaryForeground: string;
+  // (undocumented)
+  radius: string;
+  // (undocumented)
+  ring: string;
+  // (undocumented)
+  secondary: string;
+  // (undocumented)
+  secondaryForeground: string;
+  // (undocumented)
+  sidebarBackground: string;
+  // (undocumented)
+  sidebarForeground: string;
+  // (undocumented)
+  sidebarIndicator: string;
+  // (undocumented)
+  sidebarNavItemHoverBackground: string;
+  // (undocumented)
+  statusAborted: string;
+  // (undocumented)
+  statusError: string;
+  // (undocumented)
+  statusOk: string;
+  // (undocumented)
+  statusPending: string;
+  // (undocumented)
+  statusRunning: string;
+  // (undocumented)
+  statusWarning: string;
+}
 
 // @public
 export const shapes: Record<string, string>;
