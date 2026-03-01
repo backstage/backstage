@@ -21,10 +21,6 @@ import {
   SearchDocument,
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '../HighlightedSearchResultText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 
 /**
@@ -57,49 +53,52 @@ export const DefaultResultListItemComponent = ({
   if (!result) return null;
 
   return (
-    <>
-      {icon && <ListItemIcon>{icon}</ListItemIcon>}
-      <ListItemText
-        primaryTypographyProps={{ variant: 'h6' }}
-        primary={
-          <Link noTrack to={result.location}>
-            {highlight?.fields.title ? (
-              <HighlightedSearchResultText
-                text={highlight?.fields.title || ''}
-                preTag={highlight?.preTag || ''}
-                postTag={highlight?.postTag || ''}
-              />
-            ) : (
-              result.title
-            )}
-          </Link>
-        }
-        secondary={
-          <Typography
-            component="span"
-            style={{
-              display: '-webkit-box',
-              WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: lineClamp,
-              overflow: 'hidden',
-            }}
-            color="textSecondary"
-            variant="body2"
-          >
-            {highlight?.fields.text ? (
-              <HighlightedSearchResultText
-                text={highlight.fields.text}
-                preTag={highlight.preTag}
-                postTag={highlight.postTag}
-              />
-            ) : (
-              result.text
-            )}
-          </Typography>
-        }
-      />
-      {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}
-    </>
+    <li className="flex items-start py-3 px-4 border-b border-border hover:bg-muted/50 transition-colors">
+      {icon && (
+        <div className="mr-4 mt-1 flex-shrink-0 text-muted-foreground">
+          {icon}
+        </div>
+      )}
+      <div className="flex flex-col min-w-0 flex-1">
+        <Link
+          noTrack
+          to={result.location}
+          className="text-sm font-medium truncate"
+        >
+          {highlight?.fields.title ? (
+            <HighlightedSearchResultText
+              text={highlight?.fields.title || ''}
+              preTag={highlight?.preTag || ''}
+              postTag={highlight?.postTag || ''}
+            />
+          ) : (
+            result.title
+          )}
+        </Link>
+        <p
+          className="text-xs text-muted-foreground"
+          style={{
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: lineClamp,
+            overflow: 'hidden',
+          }}
+        >
+          {highlight?.fields.text ? (
+            <HighlightedSearchResultText
+              text={highlight.fields.text}
+              preTag={highlight.preTag}
+              postTag={highlight.postTag}
+            />
+          ) : (
+            result.text
+          )}
+        </p>
+      </div>
+      {secondaryAction && (
+        <div className="ml-auto flex-shrink-0">{secondaryAction}</div>
+      )}
+    </li>
   );
 };
 
