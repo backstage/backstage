@@ -14,13 +14,38 @@
  * limitations under the License.
  */
 
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Avatar } from './Avatar';
 
 describe('<Avatar />', () => {
-  it('renders without exploding', async () => {
-    const { getByText } = render(<Avatar displayName="John Doe" />);
+  it('renders initials from displayName', () => {
+    render(<Avatar displayName="John Doe" />);
 
-    expect(getByText('JD')).toBeInTheDocument();
+    expect(screen.getByText('JD')).toBeInTheDocument();
+  });
+
+  it('renders an img element when picture is provided', () => {
+    const { container } = render(
+      <Avatar displayName="John Doe" picture="https://example.com/photo.jpg" />,
+    );
+
+    const img = container.querySelector('img');
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute('src', 'https://example.com/photo.jpg');
+  });
+
+  it('renders without crashing when no props are provided', () => {
+    const { container } = render(<Avatar />);
+
+    expect(container.firstChild).toBeTruthy();
+  });
+
+  it('provides alt text for accessibility when displayName is set', () => {
+    const { container } = render(
+      <Avatar displayName="John Doe" picture="https://example.com/photo.jpg" />,
+    );
+
+    const img = container.querySelector('img');
+    expect(img).toHaveAttribute('alt', 'John Doe');
   });
 });
