@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ElementType, ReactNode } from 'react';
-import { TabProps } from '@material-ui/core/Tab';
+import { ComponentPropsWithoutRef, ReactNode } from 'react';
 import {
   Header,
   Page,
@@ -34,7 +33,7 @@ export type SettingsLayoutRouteProps = {
   path: string;
   title: string;
   children: JSX.Element;
-  tabProps?: TabProps<ElementType, { component?: ElementType }>;
+  tabProps?: ComponentPropsWithoutRef<'button'> & { asChild?: boolean };
 };
 
 export const LAYOUT_DATA_KEY = 'plugin.user-settings.settingsLayout';

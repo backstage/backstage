@@ -54,13 +54,12 @@ import {
 } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
-import { TabProps } from '@material-ui/core/Tab';
 import Alert from '@material-ui/lab/Alert';
 import {
   ComponentProps,
+  ComponentPropsWithoutRef,
   useEffect,
   useState,
-  ElementType,
   ReactNode,
 } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -75,7 +74,7 @@ export type EntityLayoutRouteProps = {
   title: string;
   children: JSX.Element;
   if?: (entity: Entity) => boolean;
-  tabProps?: TabProps<ElementType, { component?: ElementType }>;
+  tabProps?: ComponentPropsWithoutRef<'button'> & { asChild?: boolean };
 };
 
 const dataKey = 'plugin.catalog.entityLayoutRoute';

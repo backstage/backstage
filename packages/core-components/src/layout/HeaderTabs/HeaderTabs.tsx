@@ -15,10 +15,9 @@
  */
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
-import TabUI, { TabProps } from '@material-ui/core/Tab';
+import TabUI from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import {
-  ElementType,
   ChangeEvent,
   useCallback,
   useEffect,
@@ -66,7 +65,7 @@ const useStyles = makeStyles(
 export type Tab = {
   id: string;
   label: string;
-  tabProps?: TabProps<ElementType, { component?: ElementType }>;
+  tabProps?: Record<string, any>;
 };
 
 type HeaderTabsProps = {
