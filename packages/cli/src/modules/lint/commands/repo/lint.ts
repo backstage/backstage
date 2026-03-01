@@ -29,6 +29,7 @@ import {
 import { targetPaths } from '@backstage/cli-common';
 
 import { createScriptOptionsParser } from '../../lib/optionsParser';
+import { warnDeprecatedFlags } from '../../../../lib/warnDeprecatedFlags';
 import type { CommandContext } from '../../../../wiring/types';
 
 function depCount(pkg: BackstagePackageJson) {
@@ -40,6 +41,43 @@ function depCount(pkg: BackstagePackageJson) {
 }
 
 export default async ({ args, info }: CommandContext) => {
+  const flagDefs = {
+    fix: {
+      type: Boolean,
+      description: 'Attempt to automatically fix violations',
+    },
+    format: {
+      type: String,
+      description: 'Lint report output format',
+      default: 'eslint-formatter-friendly',
+    },
+    outputFile: {
+      type: String,
+      description: 'Write the lint report to a file instead of stdout',
+    },
+    successCache: {
+      type: Boolean,
+      description:
+        'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
+    },
+    successCacheDir: {
+      type: String,
+      description:
+        'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
+    },
+    since: {
+      type: String,
+      description: 'Only lint packages that changed since the specified ref',
+    },
+    maxWarnings: {
+      type: String,
+      description:
+        'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
+    },
+  };
+
+  warnDeprecatedFlags(args, flagDefs);
+
   const {
     flags: {
       fix,
@@ -50,48 +88,7 @@ export default async ({ args, info }: CommandContext) => {
       since,
       maxWarnings,
     },
-  } = cli(
-    {
-      help: info,
-      flags: {
-        fix: {
-          type: Boolean,
-          description: 'Attempt to automatically fix violations',
-        },
-        format: {
-          type: String,
-          description: 'Lint report output format',
-          default: 'eslint-formatter-friendly',
-        },
-        outputFile: {
-          type: String,
-          description: 'Write the lint report to a file instead of stdout',
-        },
-        successCache: {
-          type: Boolean,
-          description:
-            'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
-        },
-        successCacheDir: {
-          type: String,
-          description:
-            'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
-        },
-        since: {
-          type: String,
-          description:
-            'Only lint packages that changed since the specified ref',
-        },
-        maxWarnings: {
-          type: String,
-          description:
-            'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
-        },
-      },
-    },
-    undefined,
-    args,
-  );
+  } = cli({ help: info, flags: flagDefs }, undefined, args);
 
   let packages = await PackageGraph.listTargetPackages();
 

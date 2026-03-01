@@ -17,28 +17,33 @@
 import fs from 'fs-extra';
 import { cli } from 'cleye';
 import { createDistWorkspace } from '../lib/packager';
+import { warnDeprecatedFlags } from '../../../lib/warnDeprecatedFlags';
 import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
-  // Support legacy --alwaysYarnPack alias
+  // Support legacy --alwaysYarnPack and --alwaysPack aliases
   const normalizedArgs = args.map(a =>
-    a === '--alwaysYarnPack' ? '--always-pack' : a,
+    a === '--alwaysYarnPack' || a === '--alwaysPack' ? '--always-pack' : a,
   );
+
+  const flagDefs = {
+    alwaysPack: {
+      type: Boolean,
+      description:
+        'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
+    },
+  };
+
+  warnDeprecatedFlags(args, flagDefs);
 
   const {
     flags: { alwaysPack },
     _: positionals,
   } = cli(
     {
-      help: info,
+      help: { ...info, usage: `${info.usage} <workspace-dir> [packages...]` },
       parameters: ['<workspace-dir>', '[packages...]'],
-      flags: {
-        alwaysPack: {
-          type: Boolean,
-          description:
-            'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
-        },
-      },
+      flags: flagDefs,
     },
     undefined,
     normalizedArgs,

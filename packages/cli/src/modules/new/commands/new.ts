@@ -16,9 +16,50 @@
 
 import { cli } from 'cleye';
 import { createNewPackage } from '../lib/createNewPackage';
+import { warnDeprecatedFlags } from '../../../lib/warnDeprecatedFlags';
 import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
+  const flagDefs = {
+    select: {
+      type: String,
+      description: 'Select the thing you want to be creating upfront',
+    },
+    option: {
+      type: [String] as const,
+      description: 'Pre-fill options for the creation process',
+      default: [] as string[],
+    },
+    skipInstall: {
+      type: Boolean,
+      description: `Skips running 'yarn install' and 'yarn lint --fix'`,
+    },
+    scope: {
+      type: String,
+      description: 'The scope to use for new packages',
+    },
+    npmRegistry: {
+      type: String,
+      description: 'The package registry to use for new packages',
+    },
+    baseVersion: {
+      type: String,
+      description: 'The version to use for any new packages (default: 0.1.0)',
+    },
+    license: {
+      type: String,
+      description:
+        'The license to use for any new packages (default: Apache-2.0)',
+    },
+    private: {
+      type: Boolean,
+      description: 'Mark new packages as private',
+      default: true,
+    },
+  };
+
+  warnDeprecatedFlags(args, flagDefs);
+
   const {
     flags: {
       select,
@@ -30,51 +71,7 @@ export default async ({ args, info }: CommandContext) => {
       license,
       private: isPrivate,
     },
-  } = cli(
-    {
-      help: info,
-      flags: {
-        select: {
-          type: String,
-          description: 'Select the thing you want to be creating upfront',
-        },
-        option: {
-          type: [String],
-          description: 'Pre-fill options for the creation process',
-          default: [],
-        },
-        skipInstall: {
-          type: Boolean,
-          description: `Skips running 'yarn install' and 'yarn lint --fix'`,
-        },
-        scope: {
-          type: String,
-          description: 'The scope to use for new packages',
-        },
-        npmRegistry: {
-          type: String,
-          description: 'The package registry to use for new packages',
-        },
-        baseVersion: {
-          type: String,
-          description:
-            'The version to use for any new packages (default: 0.1.0)',
-        },
-        license: {
-          type: String,
-          description:
-            'The license to use for any new packages (default: Apache-2.0)',
-        },
-        private: {
-          type: Boolean,
-          description: 'Mark new packages as private',
-          default: true,
-        },
-      },
-    },
-    undefined,
-    args,
-  );
+  } = cli({ help: info, flags: flagDefs }, undefined, args);
 
   const prefilledParams = parseParams(rawArgOptions);
 

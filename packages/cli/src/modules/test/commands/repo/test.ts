@@ -31,6 +31,7 @@ import {
   findOwnPaths,
   isChildPath,
 } from '@backstage/cli-common';
+import { warnDeprecatedFlags } from '../../../../lib/warnDeprecatedFlags';
 import type { CommandContext } from '../../../../wiring/types';
 
 type JestProject = {
@@ -136,28 +137,31 @@ export default async ({ args, info }: CommandContext) => {
 
   // Parse Backstage-specific flags; unknown flags and arguments are left in
   // args so they can be forwarded to Jest.
+  const flagDefs = {
+    since: {
+      type: String,
+      description: 'Only include test packages changed since the specified ref',
+    },
+    successCache: {
+      type: Boolean,
+      description: 'Cache and skip tests for unchanged packages',
+    },
+    successCacheDir: {
+      type: String,
+      description: 'Directory for the success cache',
+    },
+    jestHelp: {
+      type: Boolean,
+      description: "Show Jest's own help output",
+    },
+  };
+
+  warnDeprecatedFlags(args, flagDefs);
+
   const { flags: opts } = cli(
     {
       help: info,
-      flags: {
-        since: {
-          type: String,
-          description:
-            'Only include test packages changed since the specified ref',
-        },
-        successCache: {
-          type: Boolean,
-          description: 'Cache and skip tests for unchanged packages',
-        },
-        successCacheDir: {
-          type: String,
-          description: 'Directory for the success cache',
-        },
-        jestHelp: {
-          type: Boolean,
-          description: "Show Jest's own help output",
-        },
-      },
+      flags: flagDefs,
       ignoreArgv: type => type === 'unknown-flag' || type === 'argument',
     },
     undefined,

@@ -1,8 +1,8 @@
 ---
-'@backstage/cli': minor
+'@backstage/cli': patch
 ---
 
-**BREAKING**: Migrated remaining CLI command handlers from `commander` to `cleye` for argument parsing. The following CLI flags have been renamed from camelCase to kebab-case to match standard CLI conventions:
+Migrated remaining CLI command handlers from `commander` to `cleye` for argument parsing. The following CLI flags have been renamed from camelCase to kebab-case to match standard CLI conventions:
 
 - `--baseVersion` → `--base-version`
 - `--successCache` → `--success-cache`
@@ -10,4 +10,4 @@
 - `--alwaysPack` → `--always-pack`
 - `--alwaysYarnPack` → `--always-pack` (hidden legacy alias preserved)
 
-If you have scripts or CI configurations that use any of the above flags, update them to the new kebab-case spelling.
+The old camelCase flag names still work but will print a deprecation warning. Please update any scripts or CI configurations to use the new kebab-case spelling.
