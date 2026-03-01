@@ -14,77 +14,8 @@
  * limitations under the License.
  */
 
-import { FilterPredicate } from '@backstage/filter-predicates';
 import { OpaqueType } from '@internal/opaque';
-
-/**
- * Defines the rules that apply for the relations generated out of a certain
- * field.
- */
-export interface RelationDefinition {
-  /**
-   * If the given shorthand ref did not have a kind, use this kind as the
-   * default. If no default kind is specified, the ref must contain a kind.
-   */
-  defaultKind?: string;
-  /**
-   * If the given shorthand ref did not have a namespace, either inherit the
-   * namespace of the entity itself, or choose the default namespace.
-   */
-  defaultNamespace?: 'default' | 'inherit';
-  /**
-   * Only allow relations to be specified to the given kinds. This list must
-   * include the default kind, if any.
-   */
-  allowedKinds?: string[];
-  /**
-   * The type of relation that is generated for the outgoing direction (from the
-   * current entity toward the one being referenced).
-   */
-  outgoingType: string;
-  /**
-   * The type of relation that is generated for the incoming direction (from the
-   * one being referenced toward the current entity).
-   */
-  incomingType: string;
-}
-
-/**
- * Validate the entity against a JSON schema.
- */
-export interface OpJsonSchema {
-  type: 'entity.jsonschema';
-  /**
-   * The op applies to entities that match this filter predicate.
-   */
-  if: FilterPredicate;
-  /**
-   * The JSON schema to validate the entity against.
-   */
-  schema: unknown;
-}
-
-/**
- * Mark a field as a source of relations. The field is expected to be a string
- * or string array.
- */
-export interface OpSpecRelation {
-  type: 'field.relation';
-  /**
-   * The op applies to entities that match this filter predicate.
-   */
-  if: FilterPredicate;
-  /**
-   * The (dot separated) path to the field that is a source of relations.
-   */
-  path: string;
-  /**
-   * The definition of the relations generated out of this field.
-   */
-  relation: RelationDefinition;
-}
-
-export type CatalogModelOp = OpJsonSchema | OpSpecRelation;
+import { CatalogModelOp } from './operations';
 
 /**
  * The opaque type that represents a catalog model extension.
@@ -159,4 +90,21 @@ export interface CatalogModelBuilder {
  *
  * @alpha
  */
-export interface CatalogModel {}
+export interface CatalogModel {
+  /**
+   * Prepare an entity for validation.
+   *
+   * @remarks
+   *
+   * This may mutate the entity. For example, array relation fields may have
+   * sorting applied to stay consistent (since their order by definition is not
+   * important; this saves down on unnecessary stitching).
+   *
+   * @param entity - The entity to prepare.
+   */
+  prepareEntity(entity: unknown): void;
+  /**
+   * Validate an entity against this catalog model.
+   */
+  validateEntity(entity: unknown): void;
+}

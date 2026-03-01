@@ -16,9 +16,10 @@
 
 import { InputError } from '@backstage/errors';
 import { FilterPredicate } from '@backstage/filter-predicates';
+import { JsonObject } from '@backstage/types';
 import { get } from 'lodash';
 import { fromZodError } from 'zod-validation-error/v3';
-import { CatalogModelOp, RelationDefinition } from '../types';
+import { CatalogModelOp, RelationDefinition } from '../operations';
 import { SchemaObject } from 'ajv';
 import { validateMetaSchema } from './validateMetaSchema';
 import {
@@ -35,10 +36,24 @@ import {
 export function readJsonSchema(schema: unknown): Array<CatalogModelOp> {
   const parsed = validateMetaSchema(schema);
   const rootSchema = findRootSchema(parsed);
-  const filterPredicate = getFilterPredicate(rootSchema);
+  const { kinds, apiVersions, filterPredicate } =
+    getFilterPredicate(rootSchema);
+  const { description, examples } = getMetaProperties(parsed, rootSchema);
   const relations = getRelations(rootSchema);
 
   const result: Array<CatalogModelOp> = [];
+
+  for (const kind of kinds) {
+    result.push({
+      type: 'kind.declare',
+      kind,
+      apiVersions,
+      properties: {
+        ...(description ? { description: { markdown: description } } : {}),
+        ...(examples ? { examples: examples.map(json => ({ json })) } : {}),
+      },
+    });
+  }
 
   result.push({
     type: 'entity.jsonschema',
@@ -63,7 +78,11 @@ export function readJsonSchema(schema: unknown): Array<CatalogModelOp> {
  * support, and form a filter predicate for them. This is used to determine
  * when the schema should be applied or not, to an incoming entity.
  */
-function getFilterPredicate(schema: SchemaObject): FilterPredicate {
+function getFilterPredicate(schema: SchemaObject): {
+  kinds: string[];
+  apiVersions: string[] | undefined;
+  filterPredicate: FilterPredicate;
+} {
   const readConstantOrEnum = (path: string): string[] | undefined => {
     const obj = get(schema, path);
     if (!obj) {
@@ -88,13 +107,45 @@ function getFilterPredicate(schema: SchemaObject): FilterPredicate {
   }
 
   return {
-    kind: kinds.length === 1 ? kinds[0] : { $in: kinds },
-    ...(apiVersions
-      ? {
-          apiVersion:
-            apiVersions.length === 1 ? apiVersions[0] : { $in: apiVersions },
-        }
-      : {}),
+    kinds,
+    apiVersions,
+    filterPredicate: {
+      kind: kinds.length === 1 ? kinds[0] : { $in: kinds },
+      ...(apiVersions
+        ? {
+            apiVersion:
+              apiVersions.length === 1 ? apiVersions[0] : { $in: apiVersions },
+          }
+        : {}),
+    },
+  };
+}
+
+/**
+ * Extract meta properties (description, examples) from the schema. These
+ * can exist both in the top-level parsed schema and in the located root
+ * schema. Both are checked, with the top-level parsed schema taking
+ * precedence.
+ */
+function getMetaProperties(
+  parsed: SchemaObject,
+  rootSchema: SchemaObject,
+): {
+  description: string | undefined;
+  examples: JsonObject[] | undefined;
+} {
+  const rawDescription = parsed.description ?? rootSchema.description;
+  const description =
+    typeof rawDescription === 'string' ? rawDescription : undefined;
+
+  const rawExamples = parsed.examples ?? rootSchema.examples;
+  const examples = Array.isArray(rawExamples)
+    ? rawExamples.filter(isJsonObject)
+    : undefined;
+
+  return {
+    description,
+    examples: examples?.length ? examples : undefined,
   };
 }
 
