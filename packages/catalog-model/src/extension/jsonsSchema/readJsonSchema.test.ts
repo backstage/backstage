@@ -16,17 +16,24 @@
 
 import { readJsonSchema } from './readJsonSchema';
 
-const v1alpha1beta1 = {
-  $in: ['backstage.io/v1alpha1', 'backstage.io/v1beta1'],
-};
+const v1alpha1beta1 = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'];
 
 describe('readJsonSchema', () => {
   it('can parse the API schema', () => {
     const schema = require('../../schema/kinds/API.v1alpha1.schema.json');
     const ops = readJsonSchema(schema);
-    const expectedIf = { kind: 'API', apiVersion: v1alpha1beta1 };
+    const expectedIf = { kind: 'API', apiVersion: { $in: v1alpha1beta1 } };
 
     expect(ops).toEqual([
+      {
+        type: 'kind.declare',
+        kind: 'API',
+        apiVersions: v1alpha1beta1,
+        properties: {
+          description: { markdown: schema.description },
+          examples: schema.examples.map((json: unknown) => ({ json })),
+        },
+      },
       {
         type: 'entity.jsonschema',
         if: expectedIf,
@@ -62,9 +69,21 @@ describe('readJsonSchema', () => {
   it('can parse the Component schema', () => {
     const schema = require('../../schema/kinds/Component.v1alpha1.schema.json');
     const ops = readJsonSchema(schema);
-    const expectedIf = { kind: 'Component', apiVersion: v1alpha1beta1 };
+    const expectedIf = {
+      kind: 'Component',
+      apiVersion: { $in: v1alpha1beta1 },
+    };
 
     expect(ops).toEqual([
+      {
+        type: 'kind.declare',
+        kind: 'Component',
+        apiVersions: v1alpha1beta1,
+        properties: {
+          description: { markdown: schema.description },
+          examples: schema.examples.map((json: unknown) => ({ json })),
+        },
+      },
       {
         type: 'entity.jsonschema',
         if: expectedIf,
@@ -158,9 +177,18 @@ describe('readJsonSchema', () => {
   it('can parse the Domain schema', () => {
     const schema = require('../../schema/kinds/Domain.v1alpha1.schema.json');
     const ops = readJsonSchema(schema);
-    const expectedIf = { kind: 'Domain', apiVersion: v1alpha1beta1 };
+    const expectedIf = { kind: 'Domain', apiVersion: { $in: v1alpha1beta1 } };
 
     expect(ops).toEqual([
+      {
+        type: 'kind.declare',
+        kind: 'Domain',
+        apiVersions: v1alpha1beta1,
+        properties: {
+          description: { markdown: schema.description },
+          examples: schema.examples.map((json: unknown) => ({ json })),
+        },
+      },
       {
         type: 'entity.jsonschema',
         if: expectedIf,
@@ -196,9 +224,18 @@ describe('readJsonSchema', () => {
   it('can parse the Group schema', () => {
     const schema = require('../../schema/kinds/Group.v1alpha1.schema.json');
     const ops = readJsonSchema(schema);
-    const expectedIf = { kind: 'Group', apiVersion: v1alpha1beta1 };
+    const expectedIf = { kind: 'Group', apiVersion: { $in: v1alpha1beta1 } };
 
     expect(ops).toEqual([
+      {
+        type: 'kind.declare',
+        kind: 'Group',
+        apiVersions: v1alpha1beta1,
+        properties: {
+          description: { markdown: schema.description },
+          examples: schema.examples.map((json: unknown) => ({ json })),
+        },
+      },
       {
         type: 'entity.jsonschema',
         if: expectedIf,
@@ -246,9 +283,21 @@ describe('readJsonSchema', () => {
   it('can parse the Location schema', () => {
     const schema = require('../../schema/kinds/Location.v1alpha1.schema.json');
     const ops = readJsonSchema(schema);
-    const expectedIf = { kind: 'Location', apiVersion: v1alpha1beta1 };
+    const expectedIf = {
+      kind: 'Location',
+      apiVersion: { $in: v1alpha1beta1 },
+    };
 
     expect(ops).toEqual([
+      {
+        type: 'kind.declare',
+        kind: 'Location',
+        apiVersions: v1alpha1beta1,
+        properties: {
+          description: { markdown: schema.description },
+          examples: schema.examples.map((json: unknown) => ({ json })),
+        },
+      },
       {
         type: 'entity.jsonschema',
         if: expectedIf,
@@ -260,9 +309,21 @@ describe('readJsonSchema', () => {
   it('can parse the Resource schema', () => {
     const schema = require('../../schema/kinds/Resource.v1alpha1.schema.json');
     const ops = readJsonSchema(schema);
-    const expectedIf = { kind: 'Resource', apiVersion: v1alpha1beta1 };
+    const expectedIf = {
+      kind: 'Resource',
+      apiVersion: { $in: v1alpha1beta1 },
+    };
 
     expect(ops).toEqual([
+      {
+        type: 'kind.declare',
+        kind: 'Resource',
+        apiVersions: v1alpha1beta1,
+        properties: {
+          description: { markdown: schema.description },
+          examples: schema.examples.map((json: unknown) => ({ json })),
+        },
+      },
       {
         type: 'entity.jsonschema',
         if: expectedIf,
@@ -320,9 +381,18 @@ describe('readJsonSchema', () => {
   it('can parse the System schema', () => {
     const schema = require('../../schema/kinds/System.v1alpha1.schema.json');
     const ops = readJsonSchema(schema);
-    const expectedIf = { kind: 'System', apiVersion: v1alpha1beta1 };
+    const expectedIf = { kind: 'System', apiVersion: { $in: v1alpha1beta1 } };
 
     expect(ops).toEqual([
+      {
+        type: 'kind.declare',
+        kind: 'System',
+        apiVersions: v1alpha1beta1,
+        properties: {
+          description: { markdown: schema.description },
+          examples: schema.examples.map((json: unknown) => ({ json })),
+        },
+      },
       {
         type: 'entity.jsonschema',
         if: expectedIf,
@@ -358,9 +428,18 @@ describe('readJsonSchema', () => {
   it('can parse the User schema', () => {
     const schema = require('../../schema/kinds/User.v1alpha1.schema.json');
     const ops = readJsonSchema(schema);
-    const expectedIf = { kind: 'User', apiVersion: v1alpha1beta1 };
+    const expectedIf = { kind: 'User', apiVersion: { $in: v1alpha1beta1 } };
 
     expect(ops).toEqual([
+      {
+        type: 'kind.declare',
+        kind: 'User',
+        apiVersions: v1alpha1beta1,
+        properties: {
+          description: { markdown: schema.description },
+          examples: schema.examples.map((json: unknown) => ({ json })),
+        },
+      },
       {
         type: 'entity.jsonschema',
         if: expectedIf,
