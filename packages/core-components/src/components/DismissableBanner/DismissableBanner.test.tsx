@@ -41,6 +41,10 @@ describe('<DismissableBanner />', () => {
     );
     const element = await screen.findByText('test message');
     expect(element).toBeInTheDocument();
+
+    // Verify the shadcn Alert renders with the correct ARIA role
+    const alertElement = await screen.findByRole('alert');
+    expect(alertElement).toBeInTheDocument();
   });
 
   it('gets placed in local storage on dismiss', async () => {
