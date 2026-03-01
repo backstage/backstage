@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
+import { type ComponentProps } from 'react';
 import { Toaster as SonnerToaster, toast } from 'sonner';
 
 /**
@@ -28,7 +28,7 @@ import { Toaster as SonnerToaster, toast } from 'sonner';
  *
  * @public
  */
-type ToasterProps = React.ComponentProps<typeof SonnerToaster>;
+type ToasterProps = ComponentProps<typeof SonnerToaster>;
 
 /**
  * Backstage-themed toast notification container.

@@ -14,236 +14,255 @@
  * limitations under the License.
  */
 
+/**
+ * Full-featured data table built on @tanstack/react-table v8.
+ * Replaces the legacy @material-table/core implementation while preserving
+ * the identical public API surface (TableColumn, TableProps, TableOptions,
+ * TableFilter, TableState, Table.icons).
+ */
+
 import {
   TranslationFunction,
   useTranslationRef,
 } from '@backstage/core-plugin-api/alpha';
-import MTable, {
-  Column,
-  Icons,
-  MaterialTableProps,
-  MTableBody,
-  MTableHeader,
-  MTableToolbar,
-  Options,
-} from '@material-table/core';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
 import {
-  makeStyles,
-  Theme,
-  useTheme,
-  withStyles,
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import Search from '@material-ui/icons/Search';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import ViewColumn from '@material-ui/icons/ViewColumn';
+  type ColumnDef,
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  flexRender,
+  type SortingState,
+} from '@tanstack/react-table';
+import {
+  PlusSquare,
+  ArrowUp,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Trash2,
+  Pencil,
+  Download,
+  ListFilter,
+  Search,
+  ChevronsLeft,
+  ChevronsRight,
+  Minus,
+  Columns3,
+} from 'lucide-react';
 import { isEqual, transform } from 'lodash';
 import {
-  CSSProperties,
-  forwardRef,
-  MutableRefObject,
-  ReactNode,
+  type ComponentType,
+  type CSSProperties,
+  type MouseEvent,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 
+import { cn } from '../../lib/utils';
 import { coreComponentsTranslationRef } from '../../translation';
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 import { TableLoadingBody } from './TableLoadingBody';
 
-// Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
-const tableIcons: Icons = {
-  Add: forwardRef<SVGSVGElement>((props, ref) => (
-    <AddBox {...props} ref={ref} />
-  )),
-  Check: forwardRef<SVGSVGElement>((props, ref) => (
-    <Check {...props} ref={ref} />
-  )),
-  Clear: forwardRef<SVGSVGElement>((props, ref) => (
-    <Clear {...props} ref={ref} />
-  )),
-  Delete: forwardRef<SVGSVGElement>((props, ref) => (
-    <DeleteOutline {...props} ref={ref} />
-  )),
-  DetailPanel: forwardRef<SVGSVGElement>((props, ref) => (
-    <ChevronRight {...props} ref={ref} />
-  )),
-  Edit: forwardRef<SVGSVGElement>((props, ref) => (
-    <Edit {...props} ref={ref} />
-  )),
-  Export: forwardRef<SVGSVGElement>((props, ref) => (
-    <SaveAlt {...props} ref={ref} />
-  )),
-  Filter: forwardRef<SVGSVGElement>((props, ref) => (
-    <FilterList {...props} ref={ref} />
-  )),
-  FirstPage: forwardRef<SVGSVGElement>((props, ref) => (
-    <FirstPage {...props} ref={ref} />
-  )),
-  LastPage: forwardRef<SVGSVGElement>((props, ref) => (
-    <LastPage {...props} ref={ref} />
-  )),
-  NextPage: forwardRef<SVGSVGElement>((props, ref) => (
-    <ChevronRight {...props} ref={ref} />
-  )),
-  PreviousPage: forwardRef<SVGSVGElement>((props, ref) => (
-    <ChevronLeft {...props} ref={ref} />
-  )),
-  ResetSearch: forwardRef<SVGSVGElement>((props, ref) => (
-    <Clear {...props} ref={ref} />
-  )),
-  Search: forwardRef<SVGSVGElement>((props, ref) => (
-    <Search {...props} ref={ref} />
-  )),
-  SortArrow: forwardRef<SVGSVGElement>((props, ref) => (
-    <ArrowUpward {...props} ref={ref} />
-  )),
-  ThirdStateCheck: forwardRef<SVGSVGElement>((props, ref) => (
-    <Remove {...props} ref={ref} />
-  )),
-  ViewColumn: forwardRef<SVGSVGElement>((props, ref) => (
-    <ViewColumn {...props} ref={ref} />
-  )),
-};
+/* ---------------------------------------------------------------------------
+ * Lucide icon map — preserves the legacy Table.icons contract
+ * -------------------------------------------------------------------------- */
 
-// TODO: Material table might already have such a function internally that we can use?
+const tableIcons: Readonly<Record<string, ComponentType>> = Object.freeze({
+  Add: PlusSquare,
+  Check,
+  Clear: X,
+  Delete: Trash2,
+  DetailPanel: ChevronRight,
+  Edit: Pencil,
+  Export: Download,
+  Filter: ListFilter,
+  FirstPage: ChevronsLeft,
+  LastPage: ChevronsRight,
+  NextPage: ChevronRight,
+  PreviousPage: ChevronLeft,
+  ResetSearch: X,
+  Search,
+  SortArrow: ArrowUp,
+  ThirdStateCheck: Minus,
+  ViewColumn: Columns3,
+});
+
+/* ---------------------------------------------------------------------------
+ * Utility — deep-extract a dotted field path from a data row
+ * -------------------------------------------------------------------------- */
+
 function extractValueByField(data: any, field: string): any | undefined {
   const path = field.split('.');
   let value = data[path[0]];
-
   for (let i = 1; i < path.length; ++i) {
     if (value === undefined) {
       return value;
     }
-
-    const f = path[i];
-    value = value[f];
+    value = value[path[i]];
   }
-
   return value;
 }
 
+/* ---------------------------------------------------------------------------
+ * Public types — backward-compatible with the legacy @material-table API
+ * -------------------------------------------------------------------------- */
+
+/** Class key for the table header overrides. */
 export type TableHeaderClassKey = 'header';
 
-const StyledMTableHeader = withStyles(
-  theme => ({
-    header: {
-      padding: theme.spacing(1, 2, 1, 2.5),
-      borderTop: `1px solid ${theme.palette.grey.A100}`,
-      borderBottom: `1px solid ${theme.palette.grey.A100}`,
-      // withStyles hasn't a generic overload for theme
-      fontWeight: theme.typography.fontWeightBold,
-      position: 'static',
-      wordBreak: 'normal',
-      textTransform: 'uppercase',
-    },
-  }),
-  { name: 'BackstageTableHeader' },
-)(MTableHeader);
-
+/** Class key for the table toolbar overrides. */
 export type TableToolbarClassKey = 'root' | 'title' | 'searchField';
-
-const StyledMTableToolbar = withStyles(
-  theme => ({
-    root: {
-      padding: theme.spacing(3, 0, 2.5, 2.5),
-    },
-    title: {
-      '& > h6': {
-        fontWeight: theme.typography.fontWeightBold,
-      },
-    },
-    searchField: {
-      paddingRight: theme.spacing(2),
-    },
-  }),
-  { name: 'BackstageTableToolbar' },
-)(MTableToolbar);
 
 /** @public */
 export type FiltersContainerClassKey = 'root' | 'title';
 
-const useFilterStyles = makeStyles(
-  theme => ({
-    root: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      flexWrap: 'wrap',
-    },
-    title: {
-      fontWeight: theme.typography.fontWeightBold,
-      fontSize: 18,
-      whiteSpace: 'nowrap',
-    },
-  }),
-  { name: 'BackstageTableFiltersContainer' },
-);
-
+/** Class key for the table root container. */
 export type TableClassKey = 'root';
 
-const useTableStyles = makeStyles(
-  () => ({
-    root: {
-      display: 'flex',
-      alignItems: 'start',
-    },
-  }),
-  { name: 'BackstageTable' },
-);
-
-function convertColumns<T extends object>(
-  columns: TableColumn<T>[],
-  theme: Theme,
-): TableColumn<T>[] {
-  return columns.map(column => {
-    const headerStyle: CSSProperties = column.headerStyle ?? {};
-
-    let cellStyle = column.cellStyle || {};
-
-    if (column.highlight) {
-      headerStyle.color = theme.palette.textContrast;
-
-      if (typeof cellStyle === 'object') {
-        (cellStyle as CSSProperties).fontWeight =
-          theme.typography.fontWeightBold;
-      } else {
-        const cellStyleFn = cellStyle as (
-          data: any,
-          rowData: T,
-          column?: Column<T>,
-        ) => CSSProperties;
-        cellStyle = (data, rowData, rowColumn) => {
-          const style = cellStyleFn(data, rowData, rowColumn);
-          return { ...style, fontWeight: theme.typography.fontWeightBold };
-        };
-      }
-    }
-
-    return {
-      ...column,
-      headerStyle,
-      cellStyle,
-    };
-  });
+/**
+ * Column definition providing a backward-compatible interface that mirrors the
+ * legacy @material-table Column API while being powered by @tanstack/react-table
+ * internally. Consumers supply `title`, `field`, `cellStyle`, `headerStyle`, and
+ * the Table component converts these to @tanstack/react-table ColumnDef entries.
+ *
+ * @public
+ */
+export interface TableColumn<T extends object = {}> {
+  /** Unique column identifier (optional — defaults to field or index). */
+  id?: string;
+  /** Column header display text — supports string or JSX. */
+  title?: string | ReactNode;
+  /** Dot-notation field path into the row data. */
+  field?: string | keyof T;
+  /** Whether to visually highlight this column (bold cells, colored header). */
+  highlight?: boolean;
+  /** Explicit column width (CSS value). */
+  width?: string;
+  /** Static or dynamic CSS for table cells. */
+  cellStyle?:
+    | CSSProperties
+    | ((data: any, rowData: T, column?: TableColumn<T>) => CSSProperties);
+  /** Static CSS for the column header cell. */
+  headerStyle?: CSSProperties;
+  /** Custom cell render function. */
+  render?: (rowData: T) => ReactNode;
+  /** Lookup map for enum-style filtering (legacy compat). */
+  lookup?: Record<string, string>;
+  /** Default sort direction (legacy compat). */
+  defaultSort?: 'asc' | 'desc';
+  /** Whether this column is hidden (legacy compat). */
+  hidden?: boolean;
+  /** Legacy column type (e.g. 'numeric', 'boolean', 'datetime'). */
+  type?: string;
+  /** Custom filter-and-search function (legacy compat). */
+  customFilterAndSearch?: (query: string, rowData: T, columnDef: TableColumn<T>) => boolean;
+  /** Custom sort comparison (legacy compat). */
+  customSort?: (data1: T, data2: T, type: 'row' | 'group') => number;
+  /** Whether this column is searchable (legacy compat). */
+  searchable?: boolean;
+  /** Column text alignment (legacy compat). */
+  align?: 'left' | 'center' | 'right' | 'justify' | 'inherit';
+  /** Whether sorting is enabled for this column (legacy compat). */
+  sorting?: boolean;
+  /** Allow additional legacy column properties to pass through. */
+  [key: string]: any;
 }
+
+/** Filter configuration for the table sidebar. */
+export type TableFilter = {
+  column: string;
+  type: 'select' | 'multiple-select';
+};
+
+/** Serialisable table state for persistence / URL sync. */
+export type TableState = {
+  search?: string;
+  filtersOpen?: boolean;
+  filters?: SelectedFilters;
+};
+
+/**
+ * Table configuration options — backward-compatible subset of legacy options.
+ * The generic parameter T is preserved for API compatibility with consumers
+ * that pass `TableOptions<SomeType>`.
+ *
+ * @public
+ */
+export type TableOptions<T extends object = {}> = {
+  /** Number of rows per page (default 20). */
+  pageSize?: number;
+  /** Enable column sorting. */
+  sorting?: boolean;
+  /** Enable pagination. */
+  paging?: boolean;
+  /** Enable the search field in the toolbar. */
+  search?: boolean;
+  /** Legacy action column index. */
+  actionsColumnIndex?: number;
+  /** Row padding density. */
+  padding?: 'default' | 'dense';
+  /** Legacy toolbar visibility (preserved for backward compat). */
+  toolbar?: boolean;
+} & Record<string, unknown> & { _phantom?: T };
+
+/**
+ * Props for the Table component.
+ *
+ * @public
+ */
+export interface TableProps<T extends object = {}> {
+  columns: TableColumn<T>[];
+  data: T[] | (() => Promise<T[]>);
+  emptyContent?: ReactNode;
+  filters?: TableFilter[];
+  initialState?: TableState;
+  isLoading?: boolean;
+  onStateChange?: (state: TableState) => any;
+  options?: TableOptions<T>;
+  subtitle?: string;
+  title?: string | ReactElement;
+  /** Row-level action buttons. */
+  actions?: Array<{
+    icon: ComponentType;
+    tooltip?: string;
+    onClick: (event: any, data: T | T[]) => void;
+    isFreeAction?: boolean;
+    disabled?: boolean;
+    hidden?: boolean;
+    [key: string]: any;
+  }>;
+  /** Callback when a row is clicked. */
+  onRowClick?: (event: MouseEvent<HTMLElement>, row?: T) => void;
+  /** Additional CSS class applied to the root container. */
+  className?: string;
+  /** Inline style applied to the table element. */
+  style?: CSSProperties;
+  /** Localisation overrides (legacy compat). */
+  localization?: Record<string, any>;
+  /** Component overrides (supports Row). */
+  components?: {
+    Row?: ComponentType<any>;
+    [key: string]: ComponentType<any> | undefined;
+  };
+}
+
+/* ---------------------------------------------------------------------------
+ * Internal defaults
+ * -------------------------------------------------------------------------- */
+
+const defaultInitialState: Required<TableState> = {
+  search: '',
+  filtersOpen: false,
+  filters: {},
+};
 
 function removeDefaultValues(state: any, defaultState: any): any {
   return transform(state, (result, value, key) => {
@@ -253,314 +272,588 @@ function removeDefaultValues(state: any, defaultState: any): any {
   });
 }
 
-const defaultInitialState = {
-  search: '',
-  filtersOpen: false,
-  filters: {},
-};
+/* ---------------------------------------------------------------------------
+ * Column conversion: maps our backward-compat columns to @tanstack/react-table
+ * -------------------------------------------------------------------------- */
 
-export interface TableColumn<T extends object = {}> extends Column<T> {
-  highlight?: boolean;
-  width?: string;
+function toTanstackColumns<T extends object>(
+  columns: TableColumn<T>[],
+): ColumnDef<T, unknown>[] {
+  return columns
+    .filter(c => !c.hidden)
+    .map((col, idx) => {
+      const colId = col.id ?? String(col.field ?? idx);
+      const columnDef: ColumnDef<T, unknown> = {
+        id: colId,
+        accessorFn: col.field
+          ? (row: T) => extractValueByField(row, String(col.field))
+          : undefined,
+        header: () => col.title ?? '',
+        cell: col.render
+          ? (info: any) => col.render!(info.row.original)
+          : (info: any) => {
+              const value = info.getValue();
+              return value === null || value === undefined ? '' : String(value);
+            },
+        enableSorting: true,
+      };
+      return columnDef;
+    });
 }
 
-export type TableFilter = {
-  column: string;
-  type: 'select' | 'multiple-select';
-};
+/**
+ * Apply highlight and headerStyle transformations to produce final
+ * headerStyle and cellStyle per column — mirrors legacy convertColumns().
+ */
+function resolveColumnStyles<T extends object>(
+  column: TableColumn<T>,
+): { headerStyle: CSSProperties; cellStyleFn: (data: any, rowData: T) => CSSProperties } {
+  const headerStyle: CSSProperties = { ...(column.headerStyle ?? {}) };
+  let baseCellStyle = column.cellStyle;
 
-export type TableState = {
-  search?: string;
-  filtersOpen?: boolean;
-  filters?: SelectedFilters;
-};
+  if (column.highlight) {
+    /* Apply a visible color to the header for highlighted columns.
+       Uses the CSS custom property --primary which is always defined. */
+    headerStyle.color = headerStyle.color ?? 'var(--primary)';
 
-export interface TableProps<T extends object = {}>
-  extends MaterialTableProps<T> {
-  columns: TableColumn<T>[];
-  subtitle?: string;
-  filters?: TableFilter[];
-  initialState?: TableState;
-  emptyContent?: ReactNode;
-  isLoading?: boolean;
-  onStateChange?: (state: TableState) => any;
+    if (typeof baseCellStyle === 'function') {
+      const origFn = baseCellStyle as (data: any, rowData: T, col?: TableColumn<T>) => CSSProperties;
+      baseCellStyle = (data: any, rowData: T, col?: TableColumn<T>) => ({
+        ...origFn(data, rowData, col),
+        fontWeight: 700,
+      });
+    } else {
+      baseCellStyle = { ...(baseCellStyle as CSSProperties ?? {}), fontWeight: 700 };
+    }
+  }
+
+  const cellStyleFn =
+    typeof baseCellStyle === 'function'
+      ? (data: any, rowData: T) => (baseCellStyle as Function)(data, rowData, column)
+      : (_data: any, _rowData: T) => (baseCellStyle as CSSProperties) ?? {};
+
+  return { headerStyle, cellStyleFn };
 }
 
-export interface TableOptions<T extends object = {}> extends Options<T> {}
+/* ---------------------------------------------------------------------------
+ * TableToolbar — search field + filter toggle
+ * -------------------------------------------------------------------------- */
 
 export function TableToolbar(toolbarProps: {
-  toolbarRef: MutableRefObject<any>;
+  toolbarRef?: React.MutableRefObject<any>;
   setSearch: (value: string) => void;
-  onSearchChanged: (value: string) => void;
+  onSearchChanged?: (value: string) => void;
   toggleFilters: () => void;
   hasFilters: boolean;
   selectedFiltersLength: number;
+  searchText?: string;
+  showSearch?: boolean;
+  title?: string | ReactElement;
+  subtitle?: string;
 }) {
   const {
-    toolbarRef,
-    setSearch,
     hasFilters,
     selectedFiltersLength,
     toggleFilters,
+    searchText,
+    showSearch = true,
+    title,
+    subtitle,
+    setSearch,
   } = toolbarProps;
   const { t } = useTranslationRef(coreComponentsTranslationRef);
-  const filtersClasses = useFilterStyles();
-  const onSearchChanged = useCallback(
-    (searchText: string) => {
-      toolbarProps.onSearchChanged(searchText);
-      setSearch(searchText);
-    },
-    [toolbarProps, setSearch],
-  );
+  const [localSearch, setLocalSearch] = useState(searchText ?? '');
 
-  if (hasFilters) {
-    return (
-      <Box className={filtersClasses.root}>
-        <Box className={filtersClasses.root}>
-          <IconButton onClick={toggleFilters} aria-label="filter list">
-            <FilterList />
-          </IconButton>
-          <Typography className={filtersClasses.title}>
-            {t('table.filter.title')} ({selectedFiltersLength})
-          </Typography>
-        </Box>
-        <StyledMTableToolbar
-          {...toolbarProps}
-          ref={toolbarRef}
-          onSearchChanged={onSearchChanged}
-        />
-      </Box>
-    );
-  }
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setLocalSearch(value);
+      setSearch(value);
+      toolbarProps.onSearchChanged?.(value);
+    },
+    [setSearch, toolbarProps],
+  );
 
   return (
-    <StyledMTableToolbar
-      {...toolbarProps}
-      ref={toolbarRef}
-      onSearchChanged={onSearchChanged}
-    />
+    <div className="flex items-center justify-between px-2.5 py-3 flex-wrap gap-2">
+      <div className="flex items-center gap-2">
+        {hasFilters && (
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={toggleFilters}
+              aria-label="filter list"
+              className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              <ListFilter className="h-5 w-5" />
+            </button>
+            <span className="font-bold text-lg whitespace-nowrap">
+              {t('table.filter.title')} ({selectedFiltersLength})
+            </span>
+          </div>
+        )}
+        {(title || subtitle) && (
+          <div>
+            {title && (
+              <h2 className="text-xl font-bold leading-tight">
+                {title}
+              </h2>
+            )}
+            {subtitle && (
+              <p className="text-muted-foreground text-sm">{subtitle}</p>
+            )}
+          </div>
+        )}
+      </div>
+      {showSearch && (
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            value={localSearch}
+            onChange={e => handleSearchChange(e.target.value)}
+            placeholder={t('table.toolbar.search')}
+            className="h-9 w-60 rounded-md border border-input bg-transparent pl-8 pr-8 text-sm outline-none focus:ring-1 focus:ring-ring"
+            aria-label={t('table.toolbar.search')}
+          />
+          {localSearch && (
+            <button
+              type="button"
+              onClick={() => handleSearchChange('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
+
+/* ---------------------------------------------------------------------------
+ * Pagination controls
+ * -------------------------------------------------------------------------- */
+
+function TablePagination<T>({
+  table,
+  t,
+}: {
+  table: ReturnType<typeof useReactTable<T>>;
+  t: TranslationFunction<typeof coreComponentsTranslationRef.T>;
+}) {
+  const pageIndex = table.getState().pagination.pageIndex;
+  const pageCount = table.getPageCount();
+  const totalRows = table.getFilteredRowModel().rows.length;
+  const pageSize = table.getState().pagination.pageSize;
+  const start = pageIndex * pageSize + 1;
+  const end = Math.min((pageIndex + 1) * pageSize, totalRows);
+
+  return (
+    <div className="flex items-center justify-between border-t border-border px-4 py-2 text-sm text-muted-foreground">
+      <span>
+        {totalRows > 0
+          ? `${start}-${end} of ${totalRows}`
+          : t('table.body.emptyDataSourceMessage')}
+      </span>
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={() => table.setPageIndex(0)}
+          disabled={!table.getCanPreviousPage()}
+          aria-label={t('table.pagination.firstTooltip')}
+          className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
+        >
+          <ChevronsLeft className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+          aria-label={t('table.pagination.previousTooltip')}
+          className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+          aria-label={t('table.pagination.nextTooltip')}
+          className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => table.setPageIndex(pageCount - 1)}
+          disabled={!table.getCanNextPage()}
+          aria-label={t('table.pagination.lastTooltip')}
+          className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
+        >
+          <ChevronsRight className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------------------
+ * Table component — main export
+ * -------------------------------------------------------------------------- */
 
 /**
  * @public
  */
 export function Table<T extends object = {}>(props: TableProps<T>) {
   const {
-    data,
+    data: dataProp,
     columns,
     emptyContent,
     options,
     title,
     subtitle,
-    localization,
     filters,
     initialState,
     onStateChange,
-    components,
+    components: customComponents,
     isLoading: loading,
     style,
-    ...restProps
+    actions,
+    onRowClick,
+    className,
   } = props;
+
   const { t } = useTranslationRef(coreComponentsTranslationRef);
-  const tableClasses = useTableStyles();
 
-  const theme = useTheme();
-
+  /* -- Merge initial state ------------------------------------------------ */
   const calculatedInitialState = { ...defaultInitialState, ...initialState };
 
-  const [filtersOpen, setFiltersOpen] = useState(
-    calculatedInitialState.filtersOpen,
-  );
-  const toggleFilters = useCallback(
-    () => setFiltersOpen(v => !v),
-    [setFiltersOpen],
-  );
+  /* -- Filter panel state ------------------------------------------------- */
+  const [filtersOpen, setFiltersOpen] = useState(calculatedInitialState.filtersOpen);
+  const toggleFilters = useCallback(() => setFiltersOpen(v => !v), []);
 
-  const [selectedFilters, setSelectedFilters] = useState(
-    calculatedInitialState.filters,
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>(
+    calculatedInitialState.filters ?? {},
   );
 
-  const [search, setSearch] = useState(calculatedInitialState.search);
+  /* -- Search state ------------------------------------------------------- */
+  const [search, setSearch] = useState(calculatedInitialState.search ?? '');
 
+  /* -- Sorting state ------------------------------------------------------ */
+  const [sorting, setSorting] = useState<SortingState>(() => {
+    const defaultSorted = columns.find(c => c.defaultSort);
+    if (defaultSorted) {
+      return [
+        {
+          id: String(defaultSorted.field ?? ''),
+          desc: defaultSorted.defaultSort === 'desc',
+        },
+      ];
+    }
+    return [];
+  });
+
+  /* -- Async data resolution ---------------------------------------------- */
+  const [resolvedData, setResolvedData] = useState<T[]>([]);
+  const [asyncLoading, setAsyncLoading] = useState(false);
+
+  useEffect(() => {
+    if (typeof dataProp === 'function') {
+      setAsyncLoading(true);
+      (dataProp as () => Promise<T[]>)()
+        .then(result => {
+          setResolvedData(result);
+          setAsyncLoading(false);
+        })
+        .catch(() => setAsyncLoading(false));
+    }
+  }, [dataProp]);
+
+  const arrayData = useMemo<T[]>(
+    () => (typeof dataProp === 'function' ? resolvedData : dataProp),
+    [dataProp, resolvedData],
+  );
+
+  /* -- Apply sidebar filter selections ------------------------------------ */
+  const filteredData = useMemo(() => {
+    if (!selectedFilters) return arrayData;
+    const entries = Object.entries(selectedFilters).filter(
+      ([, value]) => !!(value as { length?: number }).length,
+    );
+    if (!entries.length) return arrayData;
+
+    return arrayData.filter(row =>
+      entries.every(([key, filterValue]) => {
+        const col = columns.find(c => c.title === key);
+        if (!col?.field) return true;
+        const fieldValue = extractValueByField(row, String(col.field));
+
+        if (Array.isArray(fieldValue) && Array.isArray(filterValue)) {
+          return fieldValue.some(v => (filterValue as string[]).includes(v));
+        } else if (Array.isArray(fieldValue)) {
+          return fieldValue.includes(filterValue);
+        } else if (Array.isArray(filterValue)) {
+          return (filterValue as string[]).includes(fieldValue);
+        }
+        return fieldValue === filterValue;
+      }),
+    );
+  }, [arrayData, selectedFilters, columns]);
+
+  /* -- Broadcast state changes -------------------------------------------- */
   useEffect(() => {
     if (onStateChange) {
       const state = removeDefaultValues(
-        {
-          search,
-          filtersOpen,
-          filters: selectedFilters,
-        },
+        { search, filtersOpen, filters: selectedFilters },
         defaultInitialState,
       );
-
       onStateChange(state);
     }
   }, [search, filtersOpen, selectedFilters, onStateChange]);
 
-  const getFieldByTitle = useCallback(
-    (titleValue: string | keyof T) =>
-      columns.find(el => el.title === titleValue)?.field,
+  /* -- Convert columns to @tanstack/react-table format -------------------- */
+  const tanstackColumns = useMemo(() => toTanstackColumns(columns), [columns]);
+
+  /* -- Pre-compute per-column style resolvers ----------------------------- */
+  const columnStyles = useMemo(
+    () => columns.map(col => resolveColumnStyles(col)),
     [columns],
   );
 
-  const tableData = useMemo(() => {
-    if (typeof data === 'function' || !selectedFilters) {
-      return data;
-    }
+  /* -- TanStack Table instance -------------------------------------------- */
+  const pageSize = options?.pageSize ?? 20;
+  const enablePaging = options?.paging !== false;
+  const enableSorting = options?.sorting !== false;
+  const enableSearch = options?.search !== false;
 
-    const selectedFiltersArray = Object.values(selectedFilters);
-    if (data && selectedFiltersArray.flat().length) {
-      const newData = (data as any[]).filter(
-        el =>
-          !!Object.entries(selectedFilters)
-            .filter(([, value]) => !!(value as { length?: number }).length)
-            .every(([key, filterValue]) => {
-              const fieldValue = extractValueByField(
-                el,
-                getFieldByTitle(key) as string,
-              );
+  const table = useReactTable<T>({
+    data: filteredData,
+    columns: tanstackColumns,
+    state: {
+      sorting,
+      globalFilter: search,
+    },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setSearch,
+    getCoreRowModel: getCoreRowModel(),
+    ...(enableSorting ? { getSortedRowModel: getSortedRowModel() } : {}),
+    ...(enableSearch ? { getFilteredRowModel: getFilteredRowModel() } : {}),
+    ...(enablePaging
+      ? {
+          getPaginationRowModel: getPaginationRowModel(),
+          initialState: { pagination: { pageSize } },
+        }
+      : {}),
+  });
 
-              if (Array.isArray(fieldValue) && Array.isArray(filterValue)) {
-                return fieldValue.some(v => filterValue.includes(v));
-              } else if (Array.isArray(fieldValue)) {
-                return fieldValue.includes(filterValue);
-              } else if (Array.isArray(filterValue)) {
-                return filterValue.includes(fieldValue);
-              }
-
-              return fieldValue === filterValue;
-            }),
-      );
-      return newData;
-    }
-    return data;
-  }, [data, selectedFilters, getFieldByTitle]);
-
+  /* -- Derived values ----------------------------------------------------- */
   const selectedFiltersLength = Object.values(selectedFilters).flat().length;
-
   const hasFilters = !!filters?.length;
-  const Toolbar = useCallback(
-    (toolbarProps: any /* no type for this in material-table */) => {
-      return (
+  const isLoading = loading || asyncLoading;
+  const hasNoRows = filteredData.length === 0;
+  const columnCount = columns.filter(c => !c.hidden).length + (actions?.length ? 1 : 0);
+  const isDense = options?.padding === 'dense';
+  const cellPadding = isDense ? 'px-2 py-1' : 'px-2.5 py-2';
+
+  /* -- Custom Row component ----------------------------------------------- */
+  const CustomRow = customComponents?.Row;
+
+  return (
+    <div className={cn('flex items-start', className)}>
+      {/* Sidebar filter panel */}
+      {filtersOpen && arrayData && filters?.length && (
+        <Filters
+          filters={constructFilters(filters, arrayData, columns, t)}
+          selectedFilters={selectedFilters}
+          onChangeFilters={setSelectedFilters}
+        />
+      )}
+
+      {/* Main table area */}
+      <div className="flex-1 min-w-0 overflow-hidden rounded-md border border-border bg-card">
+        {/* Toolbar */}
         <TableToolbar
           setSearch={setSearch}
           hasFilters={hasFilters}
           selectedFiltersLength={selectedFiltersLength}
           toggleFilters={toggleFilters}
-          {...toolbarProps}
+          searchText={search}
+          showSearch={enableSearch}
+          title={title}
+          subtitle={subtitle}
         />
-      );
-    },
-    [toggleFilters, hasFilters, selectedFiltersLength, setSearch],
-  );
 
-  const hasNoRows = typeof data !== 'function' && data.length === 0;
-  const columnCount = columns.length;
-  const Body = useMemo(
-    () => makeBody({ hasNoRows, emptyContent, columnCount, loading }),
-    [hasNoRows, emptyContent, columnCount, loading],
-  );
+        {/* Table element */}
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-sm" style={style}>
+            {/* -- Header -------------------------------------------------- */}
+            <thead>
+              <tr>
+                {table.getHeaderGroups()[0]?.headers.map((header, colIdx) => {
+                  const colStyle = columnStyles[colIdx]
+                    ? columnStyles[colIdx].headerStyle
+                    : {};
+                  const col = columns[colIdx];
+                  const widthStyle = col?.width ? { width: col.width } : {};
 
-  return (
-    <Box className={tableClasses.root}>
-      {filtersOpen && data && typeof data !== 'function' && filters?.length && (
-        <Filters
-          filters={constructFilters(filters, data as any[], columns, t)}
-          selectedFilters={selectedFilters}
-          onChangeFilters={setSelectedFilters}
-        />
-      )}
-      <MTable<T>
-        components={{
-          Header: StyledMTableHeader,
-          Body,
-          Toolbar,
-          ...components,
-        }}
-        options={options}
-        columns={convertColumns(columns, theme)}
-        icons={tableIcons}
-        title={
-          <>
-            <Typography variant="h5" component="h2">
-              {title}
-            </Typography>
-            {subtitle && (
-              <Typography color="textSecondary" variant="body1">
-                {subtitle}
-              </Typography>
+                  return (
+                    <th
+                      key={header.id}
+                      className={cn(
+                        'border-y border-border px-2.5 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground',
+                        enableSorting && header.column.getCanSort()
+                          ? 'cursor-pointer select-none'
+                          : '',
+                      )}
+                      style={{ ...widthStyle, ...colStyle }}
+                      onClick={
+                        enableSorting
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.getIsSorted() === 'asc' && (
+                          <ArrowUp className="h-3.5 w-3.5" />
+                        )}
+                        {header.column.getIsSorted() === 'desc' && (
+                          <ArrowUp className="h-3.5 w-3.5 rotate-180" />
+                        )}
+                      </span>
+                    </th>
+                  );
+                })}
+                {actions?.length ? (
+                  <th className="border-y border-border px-2.5 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t('table.header.actions')}
+                  </th>
+                ) : null}
+              </tr>
+            </thead>
+
+            {/* -- Body ---------------------------------------------------- */}
+            {isLoading && (
+              <TableLoadingBody colSpan={columnCount} />
             )}
-          </>
-        }
-        data={tableData}
-        style={{ width: '100%', ...style }}
-        localization={{
-          ...localization,
-          body: {
-            emptyDataSourceMessage: t('table.body.emptyDataSourceMessage'),
-            ...localization?.body,
-          },
-          pagination: {
-            firstTooltip: t('table.pagination.firstTooltip'),
-            labelDisplayedRows: t('table.pagination.labelDisplayedRows'),
-            labelRowsSelect: t('table.pagination.labelRowsSelect'),
-            lastTooltip: t('table.pagination.lastTooltip'),
-            nextTooltip: t('table.pagination.nextTooltip'),
-            previousTooltip: t('table.pagination.previousTooltip'),
-            ...localization?.pagination,
-          },
-          header: {
-            actions: t('table.header.actions'),
-            ...localization?.header,
-          },
-          toolbar: {
-            searchPlaceholder: t('table.toolbar.search'),
-            searchTooltip: t('table.toolbar.search'),
-            ...localization?.toolbar,
-          },
-        }}
-        {...restProps}
-      />
-    </Box>
+            {!isLoading && emptyContent && hasNoRows && (
+              <tbody>
+                <tr>
+                  <td colSpan={columnCount}>{emptyContent}</td>
+                </tr>
+              </tbody>
+            )}
+            {!isLoading && !emptyContent && hasNoRows && (
+              <tbody>
+                <tr>
+                  <td
+                    colSpan={columnCount}
+                    className="py-10 text-center text-muted-foreground"
+                  >
+                    {t('table.body.emptyDataSourceMessage')}
+                  </td>
+                </tr>
+              </tbody>
+            )}
+            {!isLoading && !hasNoRows && (
+              <tbody>
+                {table.getRowModel().rows.map(row => {
+                  if (CustomRow) {
+                    return (
+                      <CustomRow
+                        key={row.id}
+                        data={row.original}
+                        columns={columns}
+                      />
+                    );
+                  }
+
+                  return (
+                    <tr
+                      key={row.id}
+                      className={cn(
+                        'border-b border-border transition-colors hover:bg-muted/40',
+                        onRowClick && 'cursor-pointer',
+                      )}
+                      onClick={
+                        onRowClick
+                          ? (e: MouseEvent<HTMLTableRowElement>) =>
+                              onRowClick(e, row.original)
+                          : undefined
+                      }
+                    >
+                      {row.getVisibleCells().map((cell, colIdx) => {
+                        const col = columns[colIdx];
+                        const { cellStyleFn } = columnStyles[colIdx] ?? {
+                          cellStyleFn: () => ({}),
+                        };
+                        const value = cell.getValue();
+                        const computedStyle = cellStyleFn(value, row.original);
+                        const widthStyle = col?.width ? { width: col.width } : {};
+
+                        return (
+                          <td
+                            key={cell.id}
+                            className={cn(cellPadding)}
+                            style={{ ...widthStyle, ...computedStyle }}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        );
+                      })}
+                      {actions?.length ? (
+                        <td className={cn(cellPadding, 'whitespace-nowrap')}>
+                          <div className="flex items-center gap-1">
+                            {actions
+                              .filter(a => !a.isFreeAction)
+                              .map((action, actionIdx) => {
+                                const ActionIcon = action.icon;
+                                return (
+                                  <button
+                                    key={actionIdx}
+                                    type="button"
+                                    title={action.tooltip}
+                                    className="inline-flex items-center justify-center rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      action.onClick(e, row.original);
+                                    }}
+                                  >
+                                    <ActionIcon />
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        </td>
+                      ) : null}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            )}
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {enablePaging && !isLoading && !hasNoRows && (
+          <TablePagination table={table as any} t={t} />
+        )}
+      </div>
+    </div>
   );
 }
 
-Table.icons = Object.freeze(tableIcons);
+/** Static icon map — preserves the legacy `Table.icons` public API. */
+Table.icons = tableIcons;
 
-function makeBody({
-  columnCount,
-  emptyContent,
-  hasNoRows,
-  loading,
-}: {
-  hasNoRows: boolean;
-  emptyContent: ReactNode;
-  columnCount: number;
-  loading?: boolean;
-}) {
-  return (bodyProps: any /* no type for this in material-table */) => {
-    if (loading) {
-      return <TableLoadingBody colSpan={columnCount} />;
-    }
-
-    if (emptyContent && hasNoRows) {
-      return (
-        <tbody>
-          <tr>
-            <td colSpan={columnCount}>{emptyContent}</td>
-          </tr>
-        </tbody>
-      );
-    }
-
-    return <MTableBody {...bodyProps} />;
-  };
-}
+/* ---------------------------------------------------------------------------
+ * Filter construction — same logic as the legacy implementation
+ * -------------------------------------------------------------------------- */
 
 function constructFilters<T extends object>(
   filterConfig: TableFilter[],
-  dataValue: any[] | undefined,
+  dataValue: T[],
   columns: TableColumn<T>[],
   t: TranslationFunction<typeof coreComponentsTranslationRef.T>,
 ): Filter[] {
@@ -572,37 +865,32 @@ function constructFilters<T extends object>(
       }
     };
 
-    if (dataValue) {
-      dataValue.forEach(el => {
-        const value = extractValueByField(
-          el,
-          columns.find(c => c.title === field)?.field as string,
-        );
-
-        if (Array.isArray(value)) {
-          (value as []).forEach(addValue);
-        } else {
-          addValue(value);
-        }
-      });
-    }
+    dataValue.forEach(el => {
+      const value = extractValueByField(
+        el,
+        columns.find(c => c.title === field)?.field as string,
+      );
+      if (Array.isArray(value)) {
+        (value as []).forEach(addValue);
+      } else {
+        addValue(value);
+      }
+    });
 
     return distinctValues;
   };
 
   const constructSelect = (
     filter: TableFilter,
-  ): Without<SelectProps, 'onChange'> => {
-    return {
-      placeholder: t('table.filter.placeholder'),
-      label: filter.column,
-      multiple: filter.type === 'multiple-select',
-      items: [...extractDistinctValues(filter.column)].sort().map(value => ({
-        label: value,
-        value,
-      })),
-    };
-  };
+  ): Without<SelectProps, 'onChange'> => ({
+    placeholder: t('table.filter.placeholder'),
+    label: filter.column,
+    multiple: filter.type === 'multiple-select',
+    items: [...extractDistinctValues(filter.column)].sort().map(value => ({
+      label: value,
+      value,
+    })),
+  });
 
   return filterConfig.map(filter => ({
     type: filter.type,

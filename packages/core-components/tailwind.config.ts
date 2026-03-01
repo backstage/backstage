@@ -46,7 +46,7 @@ type BackstageTailwindConfig = Config & {
  *     referenced in this package are included in the generated CSS.
  *
  *  2. **Semantic color tokens** — Maps CSS custom properties to Tailwind color
- *     utilities using the `hsl(var(--*))` pattern following shadcn/ui
+ *     utilities using the `var(--*)` pattern matching the root Tailwind
  *     convention. The actual token values are defined in `globals.css` and
  *     resolve from the existing BUI token system
  *     (`packages/ui/src/css/tokens.css`). This indirection enables runtime
@@ -103,10 +103,9 @@ const config: BackstageTailwindConfig = {
    * Theme extensions
    * ---------------------------------------------------------------------------
    * Extends Tailwind's default theme with the Backstage/shadcn design tokens.
-   * All color values use the `hsl(var(--*))` pattern where the CSS custom
-   * property contains the HSL channel values (e.g. `210 40% 98%`). This
-   * enables Tailwind to compose opacity modifiers (e.g. `bg-primary/50`)
-   * while keeping theme switching purely CSS-driven.
+   * All color values use the `var(--*)` pattern where the CSS custom
+   * property contains the full color value (e.g. `#f8f8f8`). This
+   * keeps theme switching purely CSS-driven.
    */
   theme: {
     extend: {
@@ -126,60 +125,86 @@ const config: BackstageTailwindConfig = {
        */
       colors: {
         /* Semantic border color — form inputs, cards, dividers */
-        border: 'hsl(var(--border))',
+        border: 'var(--border)',
 
         /* Input field border and background tint */
-        input: 'hsl(var(--input))',
+        input: 'var(--input)',
 
         /* Focus ring indicator color */
-        ring: 'hsl(var(--ring))',
+        ring: 'var(--ring)',
 
         /* Global page background */
-        background: 'hsl(var(--background))',
+        background: 'var(--background)',
 
         /* Global default text color */
-        foreground: 'hsl(var(--foreground))',
+        foreground: 'var(--foreground)',
 
         /* Primary brand — CTAs, active states, links */
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)',
         },
 
         /* Secondary — less prominent actions, alternate surfaces */
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
         },
 
         /* Destructive / danger — delete actions, error states */
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
         },
 
         /* Muted — subtle backgrounds, disabled text, secondary content */
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
         },
 
         /* Accent — hover highlights, secondary emphasis */
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
         },
 
         /* Popover surfaces — dropdown menus, tooltips, popovers */
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
         },
 
         /* Card surfaces — info cards, entity detail panels */
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
+
+        /* Sidebar surfaces — collapsible navigation rail */
+        sidebar: {
+          DEFAULT: 'var(--sidebar-background)',
+          foreground: 'var(--sidebar-foreground)',
+          primary: 'var(--sidebar-primary)',
+          'primary-foreground': 'var(--sidebar-primary-foreground)',
+          accent: 'var(--sidebar-accent)',
+          'accent-foreground': 'var(--sidebar-accent-foreground)',
+          border: 'var(--sidebar-border)',
+          ring: 'var(--sidebar-ring)',
+        },
+
+        /* Status colors — catalog health, CI/CD displays */
+        warning: {
+          DEFAULT: 'var(--warning)',
+          foreground: 'var(--warning-foreground)',
+        },
+        success: {
+          DEFAULT: 'var(--success)',
+          foreground: 'var(--success-foreground)',
+        },
+        info: {
+          DEFAULT: 'var(--info)',
+          foreground: 'var(--info-foreground)',
         },
       },
 
@@ -244,6 +269,24 @@ const config: BackstageTailwindConfig = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+
+        /**
+         * Collapsible expand — animates from collapsed (height: 0) to the
+         * natural content height provided by Radix Collapsible.
+         */
+        'collapsible-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-collapsible-content-height)' },
+        },
+
+        /**
+         * Collapsible collapse — animates from the natural content height
+         * back to collapsed (height: 0).
+         */
+        'collapsible-up': {
+          from: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: '0' },
+        },
       },
 
       /*
@@ -260,6 +303,23 @@ const config: BackstageTailwindConfig = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'collapsible-down': 'collapsible-down 0.2s ease-out',
+        'collapsible-up': 'collapsible-up 0.2s ease-out',
+      },
+
+      /*
+       * ---------------------------------------------------------------------
+       * Responsive breakpoints
+       * ---------------------------------------------------------------------
+       * MUI-compatible breakpoints matching Backstage's existing responsive
+       * conventions. Maps Tailwind's responsive prefixes (sm:, md:, lg:, xl:)
+       * to the same pixel values used by the MUI theme in packages/theme.
+       */
+      screens: {
+        sm: '600px',
+        md: '960px',
+        lg: '1280px',
+        xl: '1920px',
       },
     },
   },

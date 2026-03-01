@@ -115,6 +115,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot.Root : 'button';
     return (
       <Comp
+        data-slot="button"
         className={cn(
           'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium',
           'transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',

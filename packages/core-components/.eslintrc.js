@@ -2,6 +2,15 @@ module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
   rules: {
     'jest/expect-expect': 0,
   },
+  overrides: [
+    {
+      // shadcn/ui primitives use native HTML elements by design (no MUI dependency)
+      files: ['src/components/ui/**/*.[jt]s?(x)'],
+      rules: {
+        'react/forbid-elements': 'off',
+      },
+    },
+  ],
   restrictedImports: [
     {
       name: '@backstage/core-components',

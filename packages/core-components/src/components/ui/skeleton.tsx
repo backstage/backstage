@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
+import { cn } from '../../lib/utils';
+
 /**
- * Core components used by Backstage plugins and apps
+ * Skeleton loader with pulse animation for content placeholders.
  *
- * @packageDocumentation
+ * @public
  */
+function Skeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="skeleton"
+      className={cn('animate-pulse rounded-md bg-primary/10', className)}
+      {...props}
+    />
+  );
+}
 
-export * from './components';
-export * from './hooks';
-export * from './icons';
-export * from './layout';
-export * from './overridableComponents';
-
-/* Tailwind utility helper for className composition */
-export { cn } from './lib/utils';
+export { Skeleton };

@@ -21,8 +21,15 @@ import {
 } from '@backstage/test-utils';
 import { createEvent, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Home as HomeIcon } from 'lucide-react';
-import { PlusCircle as CreateComponentIcon } from 'lucide-react';
+import { type IconComponent } from '@backstage/core-plugin-api';
+import { Home, PlusCircle } from 'lucide-react';
+
+/**
+ * lucide-react icon type (ForwardRefExoticComponent) is not directly assignable
+ * to Backstage's IconComponent type. Cast through unknown for test compatibility.
+ */
+const HomeIcon = Home as unknown as IconComponent;
+const CreateComponentIcon = PlusCircle as unknown as IconComponent;
 import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
 import { analyticsApiRef } from '@backstage/core-plugin-api';

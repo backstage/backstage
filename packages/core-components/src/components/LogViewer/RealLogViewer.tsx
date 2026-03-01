@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import CopyIcon from '@material-ui/icons/FileCopy';
+import { Copy } from 'lucide-react';
+import { cn } from '../../lib/utils';
+import { toast } from '../ui/toast';
 import classnames from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -30,7 +30,6 @@ import { HEADER_SIZE, logViewerStyles } from './styles';
 import type { LogViewerClasses } from './styles';
 import { useLogViewerSearch } from './useLogViewerSearch';
 import { useLogViewerSelection } from './useLogViewerSelection';
-import Snackbar from '@material-ui/core/Snackbar';
 
 export interface RealLogViewerProps {
   text: string;
@@ -52,8 +51,6 @@ export function RealLogViewer(props: RealLogViewerProps) {
   // The processor keeps state that optimizes appending to the text
   const processor = useMemo(() => new AnsiProcessor(), []);
   const lines = processor.process(props.text);
-  const [showCopyInfo, setShowCopyInfo] = useState(false);
-
   const search = useLogViewerSearch(lines);
   const selection = useLogViewerSelection(lines);
   const location = useLocation();
@@ -107,7 +104,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
 
   const handleCopySelection = (line: number) => {
     selection.copySelection(line);
-    setShowCopyInfo(true);
+    toast('Lines copied to clipboard');
   };
 
   function setRowHeight(index: number, size: number) {
@@ -123,7 +120,6 @@ export function RealLogViewer(props: RealLogViewerProps) {
   }
 
   return (
-    <>
       <AutoSizer>
         {({ height, width }: { height?: number; width?: number }) => {
           const commonProps = {
@@ -147,21 +143,21 @@ export function RealLogViewer(props: RealLogViewerProps) {
             const line = data[index];
             const { lineNumber } = line;
             return (
-              <Box
+              <div
                 style={{ ...style }}
                 className={classnames(classes.line, {
                   [classes.lineSelected]: selection.isSelected(lineNumber),
                 })}
               >
                 {selection.shouldShowCopyButton(lineNumber) && (
-                  <IconButton
+                  <button
                     data-testid="copy-button"
-                    size="small"
-                    className={classes.lineCopyButton}
+                    type="button"
+                    className={cn(classes.lineCopyButton, 'inline-flex items-center justify-center rounded-sm p-1 hover:bg-accent')}
                     onClick={() => handleCopySelection(lineNumber)}
                   >
-                    <CopyIcon fontSize="inherit" />
-                  </IconButton>
+                    <Copy className="h-3 w-3" />
+                  </button>
                 )}
                 <a
                   role="row"
@@ -184,15 +180,15 @@ export function RealLogViewer(props: RealLogViewerProps) {
                       : undefined
                   }
                 />
-              </Box>
+              </div>
             );
           };
 
           return (
-            <Box style={{ width, height }} className={classes.root}>
-              <Box className={classes.header}>
+            <div style={{ width, height }} className={classes.root}>
+              <div className={classes.header}>
                 <LogViewerControls {...search} />
-              </Box>
+              </div>
               {shouldTextWrap ? (
                 <VariableSizeList<AnsiLine[]>
                   {...commonProps}
@@ -205,17 +201,9 @@ export function RealLogViewer(props: RealLogViewerProps) {
                   {renderItem}
                 </FixedSizeList>
               )}
-            </Box>
+            </div>
           );
         }}
       </AutoSizer>
-      <Snackbar
-        open={showCopyInfo}
-        autoHideDuration={3000}
-        onClose={() => setShowCopyInfo(false)}
-        message="Lines copied to clipboard"
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      />
-    </>
   );
 }

@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import TabUI from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+
+/**
+ * HeaderTabs — migrated from MUI Tabs/Tab/makeStyles to Tailwind utility
+ * classes and native HTML elements with accessible `data-state` attributes.
+ * Radix Tabs primitives are available in `ui/tabs.tsx` for future adoption;
+ * this component preserves the existing imperative `onChange(index)` API
+ * for backward compatibility with consumers across Backstage.
+ *
+ * Supports the `tabProps.component` pattern used by RoutedTabs to render
+ * tabs as `<Link>` elements (anchor tags) for react-router navigation.
+ */
+
+import { cn } from '../../lib/utils';
 import {
-  ChangeEvent,
+  createElement,
   useCallback,
   useEffect,
   useState,
 } from 'react';
-
-// TODO(blam): Remove this implementation when the Tabs are ready
-// This is just a temporary solution to implementing tabs for now
 
 /** @public */
 export type HeaderTabsClassKey =
@@ -33,34 +39,6 @@ export type HeaderTabsClassKey =
   | 'defaultTab'
   | 'selected'
   | 'tabRoot';
-
-const useStyles = makeStyles(
-  theme => ({
-    tabsWrapper: {
-      gridArea: 'pageSubheader',
-      backgroundColor: theme.palette.background.paper,
-      paddingLeft: theme.spacing(3),
-      minWidth: 0,
-    },
-    defaultTab: {
-      ...theme.typography.caption,
-      padding: theme.spacing(3, 3),
-      textTransform: 'uppercase',
-      fontWeight: theme.typography.fontWeightBold,
-      color: theme.palette.text.secondary,
-    },
-    selected: {
-      color: theme.palette.text.primary,
-    },
-    tabRoot: {
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-      },
-    },
-  }),
-  { name: 'BackstageHeaderTabs' },
-);
 
 export type Tab = {
   id: string;
@@ -83,10 +61,9 @@ type HeaderTabsProps = {
 export function HeaderTabs(props: HeaderTabsProps) {
   const { tabs, onChange, selectedIndex } = props;
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);
-  const styles = useStyles();
 
   const handleChange = useCallback(
-    (_: ChangeEvent<{}>, index: number) => {
+    (index: number) => {
       if (selectedIndex === undefined) {
         setSelectedTab(index);
       }
@@ -102,29 +79,67 @@ export function HeaderTabs(props: HeaderTabsProps) {
   }, [selectedIndex]);
 
   return (
-    <Box className={styles.tabsWrapper}>
-      <Tabs
-        indicatorColor="primary"
-        textColor="inherit"
-        variant="scrollable"
-        scrollButtons="auto"
+    <div
+      className={cn(
+        'bg-card pl-3 min-w-0',
+        '[grid-area:pageSubheader]',
+      )}
+    >
+      <div
+        role="tablist"
         aria-label="tabs"
-        onChange={handleChange}
-        value={selectedTab}
+        className="flex overflow-x-auto scrollbar-none"
       >
-        {tabs.map((tab, index) => (
-          <TabUI
-            data-testid={`header-tab-${index}`}
-            data-state={(selectedIndex ?? selectedTab) === index ? 'active' : 'inactive'}
-            label={tab.label}
-            key={tab.id}
-            value={index}
-            className={styles.defaultTab}
-            classes={{ selected: styles.selected, root: styles.tabRoot }}
-            {...tab.tabProps}
-          />
-        ))}
-      </Tabs>
-    </Box>
+        {tabs.map((tab, index) => {
+          const isActive = (selectedIndex ?? selectedTab) === index;
+          const { component, ...restTabProps } = tab.tabProps ?? {};
+
+          /**
+           * Common attributes applied to the tab element, whether it's
+           * a plain <button> or a custom component (e.g. <Link>).
+           */
+          const commonProps: Record<string, any> = {
+            key: tab.id,
+            role: 'tab',
+            'data-testid': `header-tab-${index}`,
+            'data-state': isActive ? 'active' : 'inactive',
+            'aria-selected': isActive ? 'true' : 'false',
+            tabIndex: isActive ? 0 : -1,
+            className: cn(
+              'px-3 py-3 text-xs uppercase font-bold whitespace-nowrap',
+              'transition-colors border-b-2 border-transparent',
+              'text-muted-foreground',
+              'hover:bg-accent hover:text-foreground',
+              isActive && 'text-foreground border-b-primary',
+            ),
+            onClick: () => handleChange(index),
+            ...restTabProps,
+          };
+
+          /**
+           * When tabProps.component is specified (e.g. `Link`), render
+           * using that component so the tab becomes an <a> tag with
+           * proper href / react-router navigation. Otherwise, render
+           * a standard <button>.
+           */
+          if (component) {
+            return createElement(
+              component,
+              commonProps,
+              <span>{tab.label}</span>,
+            );
+          }
+
+          return (
+            <button
+              {...commonProps}
+              type="button"
+            >
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

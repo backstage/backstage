@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
+import { type IconComponent } from '@backstage/core-plugin-api';
 import { renderInTestApp } from '@backstage/test-utils';
 import { mockBreakpoint } from '@backstage/core-components/testUtils';
-import { PlusCircle as CreateComponentIcon } from 'lucide-react';
-import { Home as HomeIcon } from 'lucide-react';
-import { Layers as LayersIcon } from 'lucide-react';
-import { BookOpen as LibraryBooks } from 'lucide-react';
+import { PlusCircle, Home, Layers, BookOpen } from 'lucide-react';
 import { fireEvent } from '@testing-library/react';
+
+/*
+ * Cast lucide-react icons to Backstage's IconComponent type for sidebar test
+ * fixtures. Lucide icons are ForwardRefExoticComponent<LucideProps> which
+ * doesn't structurally match IconComponent's { fontSize?: … } contract,
+ * but at runtime the icons render correctly as SVG React components.
+ */
+const CreateComponentIcon = PlusCircle as unknown as IconComponent;
+const HomeIcon = Home as unknown as IconComponent;
+const LayersIcon = Layers as unknown as IconComponent;
+const LibraryBooks = BookOpen as unknown as IconComponent;
 import { Sidebar } from './Bar';
 import { SidebarItem } from './Items';
 import { MobileSidebar } from './MobileSidebar';

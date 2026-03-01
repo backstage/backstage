@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
+import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from 'react';
 import { VisuallyHidden as VisuallyHiddenPrimitive } from 'radix-ui';
 
 /**
@@ -38,9 +38,9 @@ import { VisuallyHidden as VisuallyHiddenPrimitive } from 'radix-ui';
  * </Button>
  * ```
  */
-const VisuallyHidden = React.forwardRef<
-  React.ComponentRef<typeof VisuallyHiddenPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof VisuallyHiddenPrimitive.Root>
+const VisuallyHidden = forwardRef<
+  ComponentRef<typeof VisuallyHiddenPrimitive.Root>,
+  ComponentPropsWithoutRef<typeof VisuallyHiddenPrimitive.Root>
 >(({ ...props }, ref) => (
   <VisuallyHiddenPrimitive.Root
     ref={ref}

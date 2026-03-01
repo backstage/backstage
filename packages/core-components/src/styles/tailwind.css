@@ -36,15 +36,15 @@
  */
 
 /*
- * Tailwind base includes Preflight reset styles.
- * Scoped via @layer to prevent CSS conflicts with MUI community plugins
- * that render alongside shadcn/ui components.
+ * Tailwind base layer — foundational styles excluding Preflight.
  *
- * Tailwind's Preflight (injected by @tailwind base) applies a modern CSS
- * reset. Because Backstage must support visual coexistence with MUI-based
- * community plugins, Preflight is isolated within @layer base. This ensures
- * the reset styles have lower cascade priority than any un-layered CSS that
- * MUI plugins may inject, preserving their visual integrity.
+ * Tailwind's Preflight (CSS reset) is DISABLED via
+ * `corePlugins: { preflight: false }` in tailwind.config.ts to prevent it
+ * from overriding baseline styles in community plugins that still render MUI
+ * components. The @tailwind base directive injects only the non-reset base
+ * styles (custom property definitions, layer ordering). Any required reset
+ * styles for shadcn/ui components are applied selectively via @layer base
+ * in globals.css.
  */
 @tailwind base;
 

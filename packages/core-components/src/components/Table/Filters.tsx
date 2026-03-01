@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+/**
+ * Sidebar filter panel for the Table component.
+ * Replaces MUI Box/Button/makeStyles with Tailwind utility classes.
+ */
+
 import { useEffect, useState } from 'react';
 
 import { Select } from '../Select';
@@ -25,37 +27,6 @@ import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
-
-const useFilterStyles = makeStyles(
-  theme => ({
-    root: {
-      height: '100%',
-      width: '315px',
-      display: 'flex',
-      flexDirection: 'column',
-      marginRight: theme.spacing(3),
-    },
-    value: {
-      fontWeight: 'bold',
-      fontSize: 18,
-    },
-    header: {
-      display: 'flex',
-      alignItems: 'center',
-      height: theme.spacing(7.5),
-      justifyContent: 'space-between',
-      borderBottom: `1px solid ${theme.palette.grey[500]}`,
-    },
-    filters: {
-      display: 'flex',
-      flexDirection: 'column',
-      '& > *': {
-        marginTop: theme.spacing(2),
-      },
-    },
-  }),
-  { name: 'BackstageTableFilters' },
-);
 
 export type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
 
@@ -75,8 +46,6 @@ type Props = {
 };
 
 export const Filters = (props: Props) => {
-  const classes = useFilterStyles();
-
   const { onChangeFilters } = props;
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
@@ -85,7 +54,6 @@ export const Filters = (props: Props) => {
   });
   const [reset, triggerReset] = useState(false);
 
-  // Trigger re-rendering
   const handleClick = () => {
     setSelectedFilters({});
     triggerReset(el => !el);
@@ -95,16 +63,19 @@ export const Filters = (props: Props) => {
     onChangeFilters(selectedFilters);
   }, [selectedFilters, onChangeFilters]);
 
-  // As material table doesn't provide a way to add a column filter tab we will make our own filter logic
   return (
-    <Box className={classes.root}>
-      <Box className={classes.header}>
-        <Box className={classes.value}>{t('table.filter.title')}</Box>
-        <Button color="primary" onClick={handleClick}>
+    <div className="flex h-full w-[315px] flex-col mr-6">
+      <div className="flex items-center justify-between h-[60px] border-b border-border">
+        <span className="font-bold text-lg">{t('table.filter.title')}</span>
+        <button
+          type="button"
+          onClick={handleClick}
+          className="text-primary text-sm font-medium hover:underline"
+        >
           {t('table.filter.clearAll')}
-        </Button>
-      </Box>
-      <Box className={classes.filters}>
+        </button>
+      </div>
+      <div className="flex flex-col gap-4 pt-4">
         {props.filters?.length &&
           props.filters.map(filter => (
             <Select
@@ -120,7 +91,7 @@ export const Filters = (props: Props) => {
               }
             />
           ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
