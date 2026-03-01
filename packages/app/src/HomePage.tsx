@@ -27,7 +27,7 @@ import {
   WelcomeTitle,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
-import HomeIcon from '@material-ui/icons/Home';
+import { Home } from 'lucide-react';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -100,7 +100,7 @@ export const homePage = (
             {
               url: 'https://backstage.io',
               label: 'Backstage Homepage',
-              icon: <HomeIcon />,
+              icon: <Home />,
             },
           ]}
         />
