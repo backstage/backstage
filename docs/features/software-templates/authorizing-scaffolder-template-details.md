@@ -8,7 +8,7 @@ The scaffolder plugin integrates with the Backstage [permission framework](../..
 
 :::tip
 
-To better understand the following examples make sure to review the [Writing a permission policy](./../permissions/writing-a-policy.md)) documentation before moving forward.
+To better understand the following examples make sure to review the [Writing a permission policy](../../permissions/writing-a-policy.md)) documentation before moving forward.
 
 :::
 
