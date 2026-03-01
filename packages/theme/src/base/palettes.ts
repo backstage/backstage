@@ -165,3 +165,105 @@ export const palettes = {
     },
   },
 };
+
+/**
+ * Converts a hex color string to space-separated RGB values.
+ * Used internally for shadcn/ui CSS custom properties that support
+ * Tailwind's opacity modifier syntax: `rgb(var(--color) / 0.5)`.
+ *
+ * @param hex - Hex color string (e.g., '#F8F8F8' or '#fff')
+ * @returns Space-separated RGB string (e.g., '248 248 248')
+ */
+function hexToRgb(hex: string): string {
+  const sanitized = hex.replace('#', '');
+  const fullHex =
+    sanitized.length === 3
+      ? sanitized
+          .split('')
+          .map(c => c + c)
+          .join('')
+      : sanitized;
+  const r = parseInt(fullHex.substring(0, 2), 16);
+  const g = parseInt(fullHex.substring(2, 4), 16);
+  const b = parseInt(fullHex.substring(4, 6), 16);
+  return `${r} ${g} ${b}`;
+}
+
+/**
+ * Generates CSS custom property token declarations from a Backstage palette.
+ *
+ * Converts Backstage palette color values into shadcn/ui-compatible CSS custom
+ * properties using space-separated RGB values. These tokens are injected by
+ * the UnifiedThemeProvider at the document root level.
+ *
+ * The returned record maps CSS custom property names (e.g. `--background`,
+ * `--primary`) to their computed values. Color tokens use space-separated RGB
+ * (e.g. `'248 248 248'`) to support Tailwind's opacity modifier syntax, while
+ * non-color tokens like `--radius` use their native CSS value.
+ *
+ * @public
+ * @param palette - A Backstage palette object (e.g., `palettes.light` or `palettes.dark`)
+ * @returns A Record mapping CSS custom property names to their RGB values
+ */
+export function generatePaletteTokens(
+  palette: typeof palettes.light | typeof palettes.dark,
+): Record<string, string> {
+  // Neutral tone used for secondary/muted/accent backgrounds.
+  // Light mode uses a near-white (#F5F5F5 = 245 245 245),
+  // dark mode reuses the paper surface (#424242 = 66 66 66).
+  const neutralBg = palette.type === 'light' ? '245 245 245' : '66 66 66';
+
+  return {
+    // ── Core Layout ──────────────────────────────────────────────
+    '--background': hexToRgb(palette.background.default),
+    '--foreground': hexToRgb(palette.textContrast),
+
+    // ── Card ─────────────────────────────────────────────────────
+    '--card': hexToRgb(palette.background.paper),
+    '--card-foreground': hexToRgb(palette.textContrast),
+
+    // ── Popover ──────────────────────────────────────────────────
+    '--popover': hexToRgb(palette.background.paper),
+    '--popover-foreground': hexToRgb(palette.textContrast),
+
+    // ── Primary ──────────────────────────────────────────────────
+    '--primary': hexToRgb(palette.primary.main),
+    '--primary-foreground': hexToRgb(palette.bursts.fontColor),
+
+    // ── Secondary ────────────────────────────────────────────────
+    '--secondary': neutralBg,
+    '--secondary-foreground': hexToRgb(palette.textContrast),
+
+    // ── Muted ────────────────────────────────────────────────────
+    '--muted': neutralBg,
+    '--muted-foreground': hexToRgb(palette.textSubtle),
+
+    // ── Accent ───────────────────────────────────────────────────
+    '--accent': neutralBg,
+    '--accent-foreground': hexToRgb(palette.textContrast),
+
+    // ── Destructive ──────────────────────────────────────────────
+    '--destructive': hexToRgb(palette.status.error),
+    '--destructive-foreground': '255 255 255',
+
+    // ── Border / Input / Ring ────────────────────────────────────
+    '--border': hexToRgb(palette.border),
+    '--input': hexToRgb(palette.border),
+    '--ring': hexToRgb(palette.primary.main),
+
+    // ── Radius (non-RGB value) ───────────────────────────────────
+    '--radius': '0.5rem',
+
+    // ── Status Colors (catalog health / CI/CD displays) ──────────
+    '--status-ok': hexToRgb(palette.status.ok),
+    '--status-warning': hexToRgb(palette.status.warning),
+    '--status-error': hexToRgb(palette.status.error),
+    '--status-running': hexToRgb(palette.status.running),
+    '--status-pending': hexToRgb(palette.status.pending),
+    '--status-aborted': hexToRgb(palette.status.aborted),
+
+    // ── Navigation (sidebar) ─────────────────────────────────────
+    '--sidebar-background': hexToRgb(palette.navigation.background),
+    '--sidebar-foreground': hexToRgb(palette.navigation.color),
+  };
+}
