@@ -16,7 +16,7 @@
 
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-import FindInPageIcon from '@material-ui/icons/FindInPage';
+import { FileSearch } from 'lucide-react';
 import { DefaultResultListItem } from './DefaultResultListItem';
 
 describe('DefaultResultListItem', () => {
@@ -44,7 +44,7 @@ describe('DefaultResultListItem', () => {
     await renderInTestApp(
       <DefaultResultListItem
         result={result}
-        icon={<FindInPageIcon aria-label="icon" />}
+        icon={<FileSearch aria-label="icon" />}
       />,
     );
     expect(screen.getByLabelText('icon')).toBeInTheDocument();
