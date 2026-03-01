@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
+import { type IconComponent } from '@backstage/core-plugin-api';
 import { renderInTestApp } from '@backstage/test-utils';
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
+import { Snowflake, PlusCircle, Wrench, BookOpen } from 'lucide-react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Sidebar } from './Bar';
@@ -26,6 +24,15 @@ import { SidebarExpandButton, SidebarItem, SidebarSearchField } from './Items';
 import { SidebarPinStateProvider } from './SidebarPinStateContext';
 import { SidebarSubmenu } from './SidebarSubmenu';
 import { SidebarSubmenuItem } from './SidebarSubmenuItem';
+
+// Cast lucide-react icons to Backstage's IconComponent type for sidebar test fixtures.
+// Lucide icons are ForwardRefExoticComponent<LucideProps> which doesn't structurally
+// match IconComponent's { fontSize?: 'medium'|'large'|'small'|'inherit' } contract,
+// but at runtime the icons render correctly as SVG React components.
+const AcUnitIcon = Snowflake as unknown as IconComponent;
+const CreateComponentIcon = PlusCircle as unknown as IconComponent;
+const BuildRoundedIcon = Wrench as unknown as IconComponent;
+const MenuBookIcon = BookOpen as unknown as IconComponent;
 
 async function renderScalableSidebar() {
   await renderInTestApp(
