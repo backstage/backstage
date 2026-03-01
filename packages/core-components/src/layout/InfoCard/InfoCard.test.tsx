@@ -70,4 +70,80 @@ describe('<InfoCard />', () => {
       expect(queryByTestId('info-card-subheader')).not.toBeInTheDocument();
     });
   });
+
+  describe('Variants', () => {
+    it('renders with the gridItem variant without crashing', async () => {
+      const rendered = await renderInTestApp(
+        <InfoCard {...minProps} variant="gridItem">
+          <span>Grid item content</span>
+        </InfoCard>,
+      );
+
+      expect(rendered.getByText('Some title')).toBeInTheDocument();
+      expect(rendered.getByText('Grid item content')).toBeInTheDocument();
+    });
+
+    it('renders with the fullHeight variant without crashing', async () => {
+      const rendered = await renderInTestApp(
+        <InfoCard {...minProps} variant="fullHeight">
+          <span>Full height content</span>
+        </InfoCard>,
+      );
+
+      expect(rendered.getByText('Some title')).toBeInTheDocument();
+      expect(rendered.getByText('Full height content')).toBeInTheDocument();
+    });
+  });
+
+  describe('Actions', () => {
+    it('renders footer actions when the actions prop is provided', async () => {
+      const rendered = await renderInTestApp(
+        <InfoCard {...minProps} actions={<button>Save</button>}>
+          <span>Card body</span>
+        </InfoCard>,
+      );
+
+      expect(rendered.getByText('Save')).toBeInTheDocument();
+      expect(rendered.getByText('Card body')).toBeInTheDocument();
+    });
+
+    it('renders top-right actions when the actionsTopRight prop is provided', async () => {
+      const rendered = await renderInTestApp(
+        <InfoCard
+          {...minProps}
+          actionsTopRight={
+            <span data-testid="top-right-action">Top Right</span>
+          }
+        >
+          <span>Card body</span>
+        </InfoCard>,
+      );
+
+      expect(rendered.getByTestId('top-right-action')).toBeInTheDocument();
+      expect(rendered.getByText('Top Right')).toBeInTheDocument();
+    });
+  });
+
+  describe('Content options', () => {
+    it('renders with noPadding without crashing', async () => {
+      const rendered = await renderInTestApp(
+        <InfoCard {...minProps} noPadding>
+          <span>No padding content</span>
+        </InfoCard>,
+      );
+
+      expect(rendered.getByText('No padding content')).toBeInTheDocument();
+    });
+
+    it('renders without divider when divider prop is false', async () => {
+      const rendered = await renderInTestApp(
+        <InfoCard {...minProps} divider={false}>
+          <span>No divider content</span>
+        </InfoCard>,
+      );
+
+      expect(rendered.getByText('Some title')).toBeInTheDocument();
+      expect(rendered.getByText('No divider content')).toBeInTheDocument();
+    });
+  });
 });
