@@ -28,6 +28,8 @@ Out of the box, Backstage includes:
 - [Backstage TechDocs](https://backstage.io/docs/features/techdocs/) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
 - Plus, a growing ecosystem of [open source plugins](https://github.com/backstage/backstage/tree/master/plugins) that further expand Backstage’s customizability and functionality
 
+The core Backstage UI is built with [React](https://react.dev/) 18 and [TypeScript](https://www.typescriptlang.org/), using [shadcn/ui](https://ui.shadcn.com/) components powered by [Radix UI](https://www.radix-ui.com/) primitives and [Tailwind CSS](https://tailwindcss.com/). Theming is driven by CSS custom properties with full light and dark mode support meeting WCAG 2.1 AA accessibility standards.
+
 Backstage was created by Spotify but is now hosted by the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io) as an Incubation level project. For more information, see the [announcement](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
 
 ## Project roadmap
