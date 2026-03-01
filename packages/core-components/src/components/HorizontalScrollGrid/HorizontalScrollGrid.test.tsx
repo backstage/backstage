@@ -17,7 +17,6 @@
 import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { HorizontalScrollGrid } from './HorizontalScrollGrid';
-import Grid from '@material-ui/core/Grid';
 
 describe('<HorizontalScrollGrid />', () => {
   beforeEach(() => {
@@ -35,14 +34,14 @@ describe('<HorizontalScrollGrid />', () => {
   it('renders without exploding', async () => {
     const rendered = await renderInTestApp(
       <HorizontalScrollGrid>
-        <Grid item>item1</Grid>
-        <Grid item>item2</Grid>
+        <div>item1</div>
+        <div>item2</div>
       </HorizontalScrollGrid>,
     );
     rendered.getByText('item1');
     rendered.getByText('item2');
-    expect(rendered.queryByLabelText('Scroll Left')).toBeNull();
-    expect(rendered.queryByLabelText('Scroll Right')).toBeNull();
+    expect(rendered.queryByTitle('Scroll Left')).toBeNull();
+    expect(rendered.queryByTitle('Scroll Right')).toBeNull();
   });
 
   it('should show scroll buttons', async () => {
@@ -64,12 +63,8 @@ describe('<HorizontalScrollGrid />', () => {
 
     const rendered = await renderInTestApp(
       <HorizontalScrollGrid>
-        <Grid item style={{ minWidth: 200 }}>
-          item1
-        </Grid>
-        <Grid item style={{ minWidth: 200 }}>
-          item2
-        </Grid>
+        <div style={{ minWidth: 200 }}>item1</div>
+        <div style={{ minWidth: 200 }}>item2</div>
       </HorizontalScrollGrid>,
     );
 
