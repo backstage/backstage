@@ -32,6 +32,10 @@ const mockIdentityApi = mockApis.identity({ token: 'xxx' });
 const apis = TestApiRegistry.from([identityApiRef, mockIdentityApi]);
 
 describe('AutoLogout', () => {
+  // StillTherePrompt now renders a shadcn/Radix Dialog. The
+  // data-testid="inactivity-prompt-dialog" attribute is preserved on the
+  // ShadcnDialogContent element, so selector-based queries remain valid.
+
   beforeAll(() => {
     createMocks();
     // @ts-ignore
