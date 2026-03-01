@@ -38,9 +38,9 @@ export type RunBackendOptions = {
   /** relative entry point path without extension, e.g. 'src/index' */
   entry: string;
   /** Whether to forward the --inspect flag to the node process */
-  inspectEnabled?: string;
+  inspectEnabled?: boolean | string;
   /** Whether to forward the --inspect-brk flag to the node process */
-  inspectBrkEnabled?: string;
+  inspectBrkEnabled?: boolean | string;
   /** Additional module to require via the --require flag to the node process */
   require?: string | string[];
   /** An external linked workspace to override module resolution towards */
@@ -96,18 +96,18 @@ export async function runBackend(options: RunBackendOptions) {
     }
 
     const optionArgs = new Array<string>();
-    if (options.inspectEnabled !== undefined) {
-      optionArgs.push(
-        options.inspectEnabled
+    if (options.inspectEnabled) {
+      const inspect =
+        typeof options.inspectEnabled === 'string'
           ? `--inspect=${options.inspectEnabled}`
-          : '--inspect',
-      );
-    } else if (options.inspectBrkEnabled !== undefined) {
-      optionArgs.push(
-        options.inspectBrkEnabled
+          : '--inspect';
+      optionArgs.push(inspect);
+    } else if (options.inspectBrkEnabled) {
+      const inspect =
+        typeof options.inspectBrkEnabled === 'string'
           ? `--inspect-brk=${options.inspectBrkEnabled}`
-          : '--inspect-brk',
-      );
+          : '--inspect-brk';
+      optionArgs.push(inspect);
     }
     if (options.require) {
       const requires = [options.require].flat();

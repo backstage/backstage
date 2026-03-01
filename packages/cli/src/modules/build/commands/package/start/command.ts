@@ -86,8 +86,8 @@ export default async ({ args, info }: CommandContext) => {
     configPaths: config,
     checksEnabled: Boolean(check),
     linkedWorkspace: await resolveLinkedWorkspace(link),
-    inspectEnabled: inspect,
-    inspectBrkEnabled: inspectBrk,
+    inspectEnabled: inspect || (inspect === '' ? true : undefined),
+    inspectBrkEnabled: inspectBrk || (inspectBrk === '' ? true : undefined),
     require: requirePath,
   });
 };

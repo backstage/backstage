@@ -38,8 +38,8 @@ export async function startPackage(options: {
   targetDir: string;
   configPaths: string[];
   checksEnabled: boolean;
-  inspectEnabled?: string;
-  inspectBrkEnabled?: string;
+  inspectEnabled?: boolean | string;
+  inspectBrkEnabled?: boolean | string;
   linkedWorkspace?: string;
   require?: string;
 }): Promise<void> {

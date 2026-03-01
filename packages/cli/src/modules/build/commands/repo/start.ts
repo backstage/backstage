@@ -84,8 +84,8 @@ export default async ({ args, info }: CommandContext) => {
   const packageOptions = await resolvePackageOptions(targetPackages, {
     plugin,
     config,
-    inspect,
-    inspectBrk,
+    inspect: inspect || (inspect === '' ? true : undefined),
+    inspectBrk: inspectBrk || (inspectBrk === '' ? true : undefined),
     require: requirePath,
     link,
   });
@@ -211,8 +211,8 @@ export async function findTargetPackages(
 type CommandOptions = {
   plugin: string[];
   config: string[];
-  inspect?: string;
-  inspectBrk?: string;
+  inspect?: boolean | string;
+  inspectBrk?: boolean | string;
   require?: string;
   link?: string;
 };
