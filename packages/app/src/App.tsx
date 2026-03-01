@@ -53,7 +53,7 @@ import { appModuleNav } from './modules/appModuleNav';
 import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
 import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
-import InfoIcon from '@material-ui/icons/Info';
+import { Info } from 'lucide-react';
 
 /*
 
@@ -144,7 +144,7 @@ const customizedCatalog = catalogPlugin.withOverrides({
   extensions: [
     catalogPlugin.getExtension('entity-content:catalog/overview').override({
       params: {
-        icon: <InfoIcon />,
+        icon: <Info />,
       },
     }),
   ],
