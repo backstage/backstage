@@ -115,6 +115,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
         {tabs.map((tab, index) => (
           <TabUI
             data-testid={`header-tab-${index}`}
+            data-state={(selectedIndex ?? selectedTab) === index ? 'active' : 'inactive'}
             label={tab.label}
             key={tab.id}
             value={index}
