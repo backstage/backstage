@@ -20,17 +20,6 @@ import { CopyTextButton } from './CopyTextButton';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { default as useCopyToClipboardUnmocked } from 'react-use/esm/useCopyToClipboard';
 
-jest.mock('popper.js', () => {
-  const PopperJS = jest.requireActual('popper.js');
-
-  return class {
-    static placements = PopperJS.placements;
-    update() {}
-    destroy() {}
-    scheduleUpdate() {}
-  };
-});
-
 const useCopyToClipboard = jest.mocked(useCopyToClipboardUnmocked);
 jest.mock('react-use/esm/useCopyToClipboard', () =>
   jest.fn().mockImplementation(() => [{ noUserInteraction: false }, jest.fn()]),
@@ -50,12 +39,12 @@ const apis = [[errorApiRef, mockErrorApi] as const] as const;
 
 describe('<CopyTextButton />', () => {
   it('renders without exploding', async () => {
-    const { getByTitle, queryByText, getByLabelText } = await renderInTestApp(
+    const { getByRole, queryByText, getByLabelText } = await renderInTestApp(
       <TestApiProvider apis={apis}>
         <CopyTextButton {...props} />
       </TestApiProvider>,
     );
-    expect(getByTitle('mockTooltip')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Copy text' })).toBeInTheDocument();
     expect(queryByText('mockTooltip')).not.toBeInTheDocument();
     expect(getByLabelText('Copy text')).toBeInTheDocument();
   });
@@ -72,7 +61,7 @@ describe('<CopyTextButton />', () => {
         <CopyTextButton {...props} />
       </TestApiProvider>,
     );
-    const button = rendered.getByTitle('mockTooltip');
+    const button = rendered.getByRole('button', { name: 'Copy text' });
     fireEvent.click(button);
     act(() => {
       jest.runAllTimers();
