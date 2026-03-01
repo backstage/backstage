@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, ComponentType, PropsWithChildren } from 'react';
+import {
+  useState,
+  ComponentType,
+  PropsWithChildren,
+  type CSSProperties,
+} from 'react';
 import { FavoriteToggle } from './FavoriteToggle';
 import {
   UnifiedThemeProvider,
@@ -44,30 +49,40 @@ export const Default = () => {
   );
 };
 
-const theme = createUnifiedTheme({
-  ...createBaseThemeOptions({
-    palette: palettes.dark,
-  }),
-  components: {
-    BackstageFavoriteToggleIcon: {
-      styleOverrides: {
-        icon: () => ({ color: 'aqua' }),
-        iconBorder: () => ({ color: 'white' }),
-      },
-    },
-  },
-});
+/**
+ * Dark theme created without the legacy MUI `BackstageFavoriteToggleIcon`
+ * component override. The migrated FavoriteToggle uses CSS custom properties
+ * for star colors, so theming is demonstrated via `--favorite-star-color` and
+ * `--favorite-star-border-color` on a wrapper element.
+ */
+const darkTheme = createUnifiedTheme(
+  createBaseThemeOptions({ palette: palettes.dark }),
+);
 
+/**
+ * Demonstrates the FavoriteToggle rendered inside a dark theme context with
+ * CSS custom property overrides for the star icon colors (aqua fill, white
+ * border). This replaces the former MUI `styleOverrides` approach.
+ */
 export const WithThemeOverride = () => {
   const [isFavorite, setFavorite] = useState(false);
   return (
-    <UnifiedThemeProvider theme={theme}>
-      <FavoriteToggle
-        id="favorite-toggle"
-        title="Add entity to favorites"
-        isFavorite={isFavorite}
-        onToggle={setFavorite}
-      />
+    <UnifiedThemeProvider theme={darkTheme}>
+      <div
+        style={
+          {
+            '--favorite-star-color': 'aqua',
+            '--favorite-star-border-color': 'white',
+          } as CSSProperties
+        }
+      >
+        <FavoriteToggle
+          id="favorite-toggle"
+          title="Add entity to favorites"
+          isFavorite={isFavorite}
+          onToggle={setFavorite}
+        />
+      </div>
     </UnifiedThemeProvider>
   );
 };
