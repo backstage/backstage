@@ -18,12 +18,12 @@ import { useEffect, useMemo, useRef } from 'react';
 import { AnsiChunk, AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
 import classnames from 'classnames';
-import { useStyles } from './styles';
+import type { LogViewerClasses } from './styles';
 import Linkify from 'linkify-react';
 import { Link } from '../Link';
 
 export function getModifierClasses(
-  classes: ReturnType<typeof useStyles>,
+  classes: LogViewerClasses,
   modifiers: ChunkModifiers,
 ) {
   const classNames = new Array<string>();
@@ -156,7 +156,7 @@ const renderLink = ({
 
 export interface LogLineProps {
   line: AnsiLine;
-  classes: ReturnType<typeof useStyles>;
+  classes: LogViewerClasses;
   searchText: string;
   highlightResultIndex?: number;
   setRowHeight?: (index: number, size: number) => void;

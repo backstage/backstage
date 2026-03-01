@@ -26,7 +26,8 @@ import { FixedSizeList, VariableSizeList } from 'react-window';
 import { AnsiLine, AnsiProcessor } from './AnsiProcessor';
 import { LogLine } from './LogLine';
 import { LogViewerControls } from './LogViewerControls';
-import { HEADER_SIZE, useStyles } from './styles';
+import { HEADER_SIZE, logViewerStyles } from './styles';
+import type { LogViewerClasses } from './styles';
 import { useLogViewerSearch } from './useLogViewerSearch';
 import { useLogViewerSelection } from './useLogViewerSelection';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -38,7 +39,10 @@ export interface RealLogViewerProps {
 }
 
 export function RealLogViewer(props: RealLogViewerProps) {
-  const classes = useStyles({ classes: props.classes });
+  // Merge override classes (preserving MUI makeStyles merge behavior)
+  const classes: LogViewerClasses = props.classes?.root
+    ? { ...logViewerStyles, root: `${logViewerStyles.root} ${props.classes.root}` }
+    : logViewerStyles;
   const [listInstance, setListInstance] = useState<
     VariableSizeList<AnsiLine[]> | FixedSizeList<AnsiLine[]> | null
   >(null);

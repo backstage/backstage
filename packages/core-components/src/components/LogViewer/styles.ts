@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import { alpha, makeStyles } from '@material-ui/core/styles';
-import * as colors from '@material-ui/core/colors';
-
 export const HEADER_SIZE = 40;
 
 /** @public Class keys for overriding LogViewer styles */
@@ -52,131 +49,82 @@ export type LogViewerClassKey =
   | 'modifierBackgroundWhite'
   | 'modifierBackgroundGrey';
 
-export const useStyles = makeStyles(
-  theme => ({
-    root: {
-      background: theme.palette.background.paper,
-    },
-    header: {
-      height: HEADER_SIZE,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-    },
-    log: {
-      fontFamily: '"Monaco", monospace',
-      fontSize: theme.typography.pxToRem(12),
-      lineHeight: '20px',
-    },
-    line: {
-      position: 'relative',
-      whiteSpace: 'pre',
-      display: 'flex',
-      alignItems: 'flex-start',
+/**
+ * TypeScript type representing the full map of LogViewer CSS class strings.
+ * Includes all LogViewerClassKey members plus the `textWrap` utility class.
+ * Replaces the previous `ReturnType<typeof useStyles>` pattern.
+ * @public
+ */
+export type LogViewerClasses = Record<LogViewerClassKey | 'textWrap', string>;
 
-      '&:hover': {
-        background: theme.palette.action.hover,
-      },
-    },
-    lineSelected: {
-      background: theme.palette.action.selected,
+/**
+ * Static Tailwind CSS class map for the LogViewer component.
+ *
+ * Replaces the MUI `makeStyles` hook (`useStyles`) with a zero-runtime object
+ * of Tailwind utility class strings. Theme-dependent values resolve through
+ * CSS custom properties (e.g., `bg-card` → `var(--card)`), while ANSI color
+ * modifiers map directly to Tailwind's color palette classes.
+ *
+ * @remarks
+ * Property keys are identical to the previous `useStyles` output to maintain
+ * full backward compatibility with `LogLine.tsx`'s `getModifierClasses` function.
+ */
+export const logViewerStyles: LogViewerClasses = {
+  /* Layout — root container background */
+  root: 'bg-card',
 
-      '&:hover': {
-        background: theme.palette.action.selected,
-      },
-    },
-    lineCopyButton: {
-      position: 'absolute',
-      paddingTop: 0,
-      paddingBottom: 0,
-      '&:hover': {
-        color: theme.palette.linkHover,
-      },
-    },
-    lineNumber: {
-      display: 'inline-block',
-      textAlign: 'end',
-      width: 60,
-      paddingRight: theme.spacing(1),
-      marginRight: theme.spacing(1),
-      cursor: 'pointer',
-      flexShrink: 0,
-      color: colors.blue[300],
-      borderRight: `1px solid ${colors.blue[700]}`,
-    },
-    textHighlight: {
-      background: alpha(theme.palette.info.main, 0.15),
-    },
-    textSelectedHighlight: {
-      background: alpha(theme.palette.info.main, 0.4),
-    },
-    modifierBold: {
-      fontWeight: theme.typography.fontWeightBold,
-    },
-    modifierItalic: {
-      fontStyle: 'italic',
-    },
-    modifierUnderline: {
-      textDecoration: 'underline',
-    },
-    modifierForegroundBlack: {
-      color: colors.common.black,
-    },
-    modifierForegroundRed: {
-      color: colors.red[500],
-    },
-    modifierForegroundGreen: {
-      color: colors.green[500],
-    },
-    modifierForegroundYellow: {
-      color: colors.yellow[500],
-    },
-    modifierForegroundBlue: {
-      color: colors.blue[500],
-    },
-    modifierForegroundMagenta: {
-      color: colors.purple[500],
-    },
-    modifierForegroundCyan: {
-      color: colors.cyan[500],
-    },
-    modifierForegroundWhite: {
-      color: colors.common.white,
-    },
-    modifierForegroundGrey: {
-      color: colors.grey[500],
-    },
-    modifierBackgroundBlack: {
-      background: colors.common.black,
-    },
-    modifierBackgroundRed: {
-      background: colors.red[500],
-    },
-    modifierBackgroundGreen: {
-      background: colors.green[500],
-    },
-    modifierBackgroundYellow: {
-      background: colors.yellow[500],
-    },
-    modifierBackgroundBlue: {
-      background: colors.blue[500],
-    },
-    modifierBackgroundMagenta: {
-      background: colors.purple[500],
-    },
-    modifierBackgroundCyan: {
-      background: colors.cyan[500],
-    },
-    modifierBackgroundWhite: {
-      background: colors.common.white,
-    },
-    modifierBackgroundGrey: {
-      background: colors.grey[500],
-    },
-    textWrap: {
-      whiteSpace: 'pre-wrap',
-      wordBreak: 'break-all',
-    },
-  }),
-  { name: 'BackstageLogViewer' },
-);
+  /* Header bar — fixed height matching HEADER_SIZE, right-aligned controls */
+  header: 'h-[40px] flex items-center justify-end',
+
+  /* Log content — monospace font, 12px / 20px line-height */
+  log: 'font-mono text-xs leading-5',
+
+  /* Individual log line — pre-formatted, flex row, hover highlight */
+  line: 'relative whitespace-pre flex items-start hover:bg-accent',
+
+  /* Selected log line — persistent selection highlight, overrides hover */
+  lineSelected: 'bg-accent hover:bg-accent',
+
+  /* Copy button overlay — absolutely positioned, no vertical padding */
+  lineCopyButton: 'absolute pt-0 pb-0 hover:text-primary',
+
+  /* Line number gutter — fixed width, right-aligned, decorative border */
+  lineNumber:
+    'inline-block text-end w-[60px] pr-2 mr-2 cursor-pointer shrink-0 text-blue-400 border-r border-blue-700',
+
+  /* Search result highlight — translucent info color background */
+  textHighlight: 'bg-blue-500/15',
+
+  /* Active/selected search result highlight — stronger opacity */
+  textSelectedHighlight: 'bg-blue-500/40',
+
+  /* ANSI text style modifiers */
+  modifierBold: 'font-bold',
+  modifierItalic: 'italic',
+  modifierUnderline: 'underline',
+
+  /* ANSI foreground (text) color modifiers */
+  modifierForegroundBlack: 'text-black dark:text-black',
+  modifierForegroundRed: 'text-red-500',
+  modifierForegroundGreen: 'text-green-500',
+  modifierForegroundYellow: 'text-yellow-500',
+  modifierForegroundBlue: 'text-blue-500',
+  modifierForegroundMagenta: 'text-purple-500',
+  modifierForegroundCyan: 'text-cyan-500',
+  modifierForegroundWhite: 'text-white',
+  modifierForegroundGrey: 'text-gray-500',
+
+  /* ANSI background color modifiers */
+  modifierBackgroundBlack: 'bg-black',
+  modifierBackgroundRed: 'bg-red-500',
+  modifierBackgroundGreen: 'bg-green-500',
+  modifierBackgroundYellow: 'bg-yellow-500',
+  modifierBackgroundBlue: 'bg-blue-500',
+  modifierBackgroundMagenta: 'bg-purple-500',
+  modifierBackgroundCyan: 'bg-cyan-500',
+  modifierBackgroundWhite: 'bg-white',
+  modifierBackgroundGrey: 'bg-gray-500',
+
+  /* Text wrapping — enables pre-wrap with forced word-break */
+  textWrap: 'whitespace-pre-wrap break-all',
+};
