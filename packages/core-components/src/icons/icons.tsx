@@ -15,7 +15,7 @@
  */
 
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
-import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
+import { ImageOff } from 'lucide-react';
 import { ComponentProps } from 'react';
 
 /**
@@ -41,7 +41,7 @@ export type AppIconProps = IconComponentProps & {
  * A component that renders a system icon by its id.
  */
 export function AppIcon(props: AppIconProps) {
-  const { id: key, Fallback = MuiBrokenImageIcon, ...rest } = props;
+  const { id: key, Fallback = ImageOff, ...rest } = props;
   const app = useApp();
   const Icon = app.getSystemIcon(key) ?? Fallback;
   return <Icon {...rest} />;
