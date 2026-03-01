@@ -16,7 +16,7 @@
 import Typography from '@material-ui/core/Typography';
 import { useState } from 'react';
 import { Link } from '../../components/Link';
-import { CodeSnippet } from '../../components';
+import { CodeSnippet } from '../../components/CodeSnippet';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { coreComponentsTranslationRef } from '../../translation';
