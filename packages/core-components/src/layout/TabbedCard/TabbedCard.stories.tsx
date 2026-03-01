@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { PropsWithChildren, useState } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { CardTab, TabbedCard } from './TabbedCard';
@@ -31,9 +29,9 @@ export default {
   component: TabbedCard,
   decorators: [
     (storyFn: () => JSX.Element) => (
-      <Grid container spacing={4}>
-        <Grid item>{storyFn()}</Grid>
-      </Grid>
+      <div className="grid gap-4 p-4">
+        <div>{storyFn()}</div>
+      </div>
     ),
   ],
   tags: ['!manifest'],
@@ -91,7 +89,9 @@ export const WithControlledTabValue = () => {
 
   return (
     <Wrapper>
-      <Typography component="span">Selected tab is {selectedTab}</Typography>
+      <span className="text-sm text-muted-foreground">
+        Selected tab is {selectedTab}
+      </span>
 
       <TabbedCard
         value={selectedTab}
