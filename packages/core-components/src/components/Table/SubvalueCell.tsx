@@ -14,38 +14,27 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
 
+/** @public */
 export type SubvalueCellClassKey = 'value' | 'subvalue';
-
-const useSubvalueCellStyles = makeStyles(
-  theme => ({
-    value: {
-      marginBottom: theme.spacing(0.75),
-    },
-    subvalue: {
-      color: theme.palette.textSubtle,
-      fontWeight: 'normal',
-    },
-  }),
-  { name: 'BackstageSubvalueCell' },
-);
 
 type SubvalueCellProps = {
   value: ReactNode;
   subvalue: ReactNode;
 };
 
+/**
+ * Renders a primary value with a secondary subvalue beneath it,
+ * used within table cells for displaying additional context.
+ */
 export function SubvalueCell(props: SubvalueCellProps) {
   const { value, subvalue } = props;
-  const classes = useSubvalueCellStyles();
 
   return (
     <>
-      <Box className={classes.value}>{value}</Box>
-      <Box className={classes.subvalue}>{subvalue}</Box>
+      <div className="mb-1.5">{value}</div>
+      <div className="text-muted-foreground font-normal">{subvalue}</div>
     </>
   );
 }
