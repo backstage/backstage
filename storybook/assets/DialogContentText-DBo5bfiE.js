@@ -1,0 +1,1 @@
+import{w as a,r as t,c as n,_ as r}from"./iframe-ONoB0Qo9.js";var s={root:{marginBottom:12}},i=t.forwardRef(function(o,e){return t.createElement(n,r({component:"p",variant:"body1",color:"textSecondary",ref:e},o))});const x=a(s,{name:"MuiDialogContentText"})(i);export{x as D};

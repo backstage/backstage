@@ -576,7 +576,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">375 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">376 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -10674,7 +10674,7 @@ totalCount?: number</code></pre>
       <div class="badges">
         <label for="c-34-backstage-ui-tabs-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-34-backstage-ui-tabs-stories" class="badge ok as-toggle">13 stories</label>
+        <label for="c-34-backstage-ui-tabs-stories" class="badge ok as-toggle">14 stories</label>
         
       </div>
     </div>
@@ -10822,10 +10822,10 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/TabList&gt;
     &lt;/Tabs&gt;
     &lt;Box mt=&quot;6&quot; pl=&quot;2&quot;&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Current URL is mocked to be: &lt;strong&gt;/tab3&lt;/strong&gt;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Notice how the &quot;Tab 3 With long title&quot; tab is selected (highlighted)
         because it matches the current path.
       &lt;/Text&gt;
@@ -10856,14 +10856,14 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/TabList&gt;
     &lt;/Tabs&gt;
     &lt;Box mt=&quot;6&quot; pl=&quot;2&quot;&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Current URL is mocked to be: &lt;strong&gt;/some-other-page&lt;/strong&gt;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         No tab is selected because the current path doesn&#39;t match any tab&#39;s
         href.
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Tabs without href (like &quot;Tab 1&quot;, &quot;Tab 2&quot;, &quot;Tab 3 With long title&quot;)
         fall back to React Aria&#39;s internal state.
       &lt;/Text&gt;
@@ -10894,14 +10894,14 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/TabList&gt;
     &lt;/Tabs&gt;
     &lt;Box mt=&quot;6&quot; pl=&quot;2&quot;&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Current URL: &lt;strong&gt;/mentorship/events&lt;/strong&gt;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Using default exact matching, only the &quot;Events&quot; tab is active because
         it exactly matches the URL.
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         The &quot;Mentorship&quot; tab is NOT active even though the URL contains
         &quot;/mentorship&quot;.
       &lt;/Text&gt;
@@ -10932,18 +10932,18 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/TabList&gt;
     &lt;/Tabs&gt;
     &lt;Box mt=&quot;6&quot; pl=&quot;2&quot;&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Current URL: &lt;strong&gt;/mentorship/events&lt;/strong&gt;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         The &quot;Mentorship&quot; tab uses prefix matching and IS active because
         &quot;/mentorship/events&quot; starts with &quot;/mentorship&quot;.
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         The &quot;Events&quot; tab uses exact matching and is also active because it
         exactly matches.
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         The &quot;Catalog&quot; tab uses prefix matching but is NOT active because the
         URL doesn&#39;t start with &quot;/catalog&quot;.
       &lt;/Text&gt;
@@ -11018,22 +11018,22 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/TabList&gt;
     &lt;/Tabs&gt;
     &lt;Box mt=&quot;6&quot; pl=&quot;2&quot;&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Current URL: &lt;strong&gt;/dashboard/analytics/reports&lt;/strong&gt;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Overview&quot; tab: exact matching, NOT active (doesn&#39;t exactly match
         &quot;/dashboard&quot;)
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Analytics&quot; tab: prefix matching, IS active (URL starts with
         &quot;/dashboard/analytics&quot;)
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Settings&quot; tab: prefix matching, NOT active (URL doesn&#39;t start with
         &quot;/dashboard/settings&quot;)
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Help&quot; tab: exact matching, NOT active (doesn&#39;t exactly match
         &quot;/help&quot;)
       &lt;/Text&gt;
@@ -11064,20 +11064,20 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/TabList&gt;
     &lt;/Tabs&gt;
     &lt;Box mt=&quot;6&quot; pl=&quot;2&quot;&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Current URL: &lt;strong&gt;/foobar&lt;/strong&gt;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Foo&quot; tab (prefix): NOT active - prevents &quot;/foo&quot; from matching
         &quot;/foobar&quot;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Foobar&quot; tab (exact): IS active - exactly matches &quot;/foobar&quot;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Foo (exact)&quot; tab: NOT active - doesn&#39;t exactly match &quot;/foobar&quot;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         This shows that prefix matching properly requires a &quot;/&quot; separator to
         prevent false matches.
       &lt;/Text&gt;
@@ -11108,20 +11108,20 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/TabList&gt;
     &lt;/Tabs&gt;
     &lt;Box mt=&quot;6&quot; pl=&quot;2&quot;&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Current URL: &lt;strong&gt;/foo/bar&lt;/strong&gt;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Foo&quot; tab (prefix): IS active - &quot;/foo/bar&quot; starts with &quot;/foo/&quot;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Foobar&quot; tab (exact): NOT active - doesn&#39;t exactly match &quot;/foobar&quot;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Bar&quot; tab (prefix): NOT active - &quot;/foo/bar&quot; doesn&#39;t start with
         &quot;/bar&quot;
       &lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         This demonstrates proper prefix matching with the &quot;/&quot; separator.
       &lt;/Text&gt;
     &lt;/Box&gt;
@@ -11151,14 +11151,63 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/TabList&gt;
     &lt;/Tabs&gt;
     &lt;Box mt=&quot;6&quot; pl=&quot;2&quot;&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         Current URL: &lt;strong&gt;/&lt;/strong&gt;
       &lt;/Text&gt;
-      &lt;Text&gt;• &quot;Home&quot; tab (exact): IS active - exactly matches &quot;/&quot;&lt;/Text&gt;
-      &lt;Text&gt;• &quot;Home (prefix)&quot; tab: IS active - &quot;/&quot; matches &quot;/&quot;&lt;/Text&gt;
-      &lt;Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
+        • &quot;Home&quot; tab (exact): IS active - exactly matches &quot;/&quot;
+      &lt;/Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;• &quot;Home (prefix)&quot; tab: IS active - &quot;/&quot; matches &quot;/&quot;&lt;/Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
         • &quot;Catalog&quot; tab (prefix): NOT active - &quot;/&quot; doesn&#39;t start with
         &quot;/catalog&quot;
+      &lt;/Text&gt;
+    &lt;/Box&gt;
+  &lt;/MemoryRouter&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">HrefWithQueryParams</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const HrefWithQueryParams = () =&gt; (
+  &lt;MemoryRouter initialEntries={[&#39;/cost-insights/dashboard?group=bar&#39;]}&gt;
+    &lt;Tabs&gt;
+      &lt;TabList&gt;
+        &lt;Tab
+          id=&quot;dashboard&quot;
+          href=&quot;/cost-insights/dashboard?group=foo&quot;
+          matchStrategy=&quot;prefix&quot;
+        &gt;
+          Dashboard
+        &lt;/Tab&gt;
+        &lt;Tab
+          id=&quot;alerts&quot;
+          href=&quot;/cost-insights/alerts?group=foo&quot;
+          matchStrategy=&quot;prefix&quot;
+        &gt;
+          Alerts
+        &lt;/Tab&gt;
+      &lt;/TabList&gt;
+    &lt;/Tabs&gt;
+    &lt;Box mt=&quot;6&quot; pl=&quot;2&quot;&gt;
+      &lt;Text as=&quot;p&quot;&gt;
+        Current URL: &lt;strong&gt;/cost-insights/dashboard?group=bar&lt;/strong&gt;
+      &lt;/Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
+        Tab hrefs include query params (e.g., ?group=foo) but the current URL
+        has different query params (?group=bar).
+      &lt;/Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
+        • &quot;Dashboard&quot; tab: IS active — matching ignores query params and
+        compares only the pathname.
+      &lt;/Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
+        • &quot;Alerts&quot; tab: NOT active — pathname /cost-insights/alerts doesn&#39;t
+        match /cost-insights/dashboard.
       &lt;/Text&gt;
     &lt;/Box&gt;
   &lt;/MemoryRouter&gt;
@@ -11201,10 +11250,12 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;/Tabs&gt;
 
       {/* With hrefs */}
-      &lt;Text&gt;
-        {&#39; &#39;}
-        &lt;strong&gt;Case 2: With hrefs&lt;/strong&gt; By default no selection is shown
-        because the URL doesn&#39;t match any tab&#39;s href.{&#39; &#39;}
+      &lt;Text as=&quot;p&quot;&gt;
+        &lt;strong&gt;Case 2: With hrefs&lt;/strong&gt;
+      &lt;/Text&gt;
+      &lt;Text as=&quot;p&quot;&gt;
+        By default no selection is shown because the URL doesn&#39;t match any
+        tab&#39;s href.
       &lt;/Text&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
