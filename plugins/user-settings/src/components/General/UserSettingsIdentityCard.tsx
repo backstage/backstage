@@ -16,8 +16,6 @@
 
 import { InfoCard } from '@backstage/core-components';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { useUserProfile } from '../useUserProfileInfo';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
@@ -27,24 +25,28 @@ const Contents = () => {
   const { t } = useTranslationRef(userSettingsTranslationRef);
 
   if (!backstageIdentity) {
-    return <Typography>{t('identityCard.noIdentityTitle')}</Typography>;
+    return (
+      <p className="text-sm text-muted-foreground">
+        {t('identityCard.noIdentityTitle')}
+      </p>
+    );
   }
 
   return (
-    <Grid container spacing={1}>
-      <Grid item xs={12}>
-        <Typography variant="subtitle1" gutterBottom>
+    <div className="grid grid-cols-1 gap-2">
+      <div>
+        <p className="text-base font-medium mb-1">
           {t('identityCard.userEntity')}:{' '}
           <EntityRefLinks entityRefs={[backstageIdentity.userEntityRef]} />
-        </Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <Typography variant="subtitle1">
+        </p>
+      </div>
+      <div>
+        <p className="text-base font-medium">
           {t('identityCard.ownershipEntities')}:{' '}
           <EntityRefLinks entityRefs={backstageIdentity.ownershipEntityRefs} />
-        </Typography>
-      </Grid>
-    </Grid>
+        </p>
+      </div>
+    </div>
   );
 };
 
