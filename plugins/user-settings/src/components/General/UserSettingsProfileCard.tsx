@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { UserSettingsSignInAvatar } from './UserSettingsSignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from '../useUserProfileInfo';
@@ -30,28 +28,24 @@ export const UserSettingsProfileCard = () => {
 
   return (
     <InfoCard title={t('profileCard.title')} variant="gridItem">
-      <Grid container spacing={6}>
-        <Grid item>
+      <div className="flex gap-6">
+        <div className="shrink-0">
           <UserSettingsSignInAvatar size={96} />
-        </Grid>
-        <Grid item xs={12} sm container>
-          <Grid item xs container direction="column" spacing={2}>
-            <Grid item xs>
-              <Typography variant="subtitle1" gutterBottom>
-                {displayName}
-              </Typography>
-              {profile.email && (
-                <Typography variant="body2" color="textSecondary">
-                  {profile.email}
-                </Typography>
-              )}
-            </Grid>
-          </Grid>
-          <Grid item>
+        </div>
+        <div className="flex flex-1 flex-col sm:flex-row gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <p className="text-base font-medium text-foreground">
+              {displayName}
+            </p>
+            {profile.email && (
+              <p className="text-sm text-muted-foreground">{profile.email}</p>
+            )}
+          </div>
+          <div className="shrink-0">
             <UserSettingsMenu />
-          </Grid>
-        </Grid>
-      </Grid>
+          </div>
+        </div>
+      </div>
     </InfoCard>
   );
 };
