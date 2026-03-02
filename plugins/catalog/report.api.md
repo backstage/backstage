@@ -8,6 +8,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { CSSProperties } from 'react';
 import { DomainEntity } from '@backstage/catalog-model';
 import { ElementType } from 'react';
 import { Entity } from '@backstage/catalog-model';
@@ -67,6 +68,8 @@ export interface AboutFieldProps {
   gridSizes?: Record<string, number>;
   // (undocumented)
   label: string;
+  // (undocumented)
+  style?: CSSProperties;
   // (undocumented)
   value?: string;
 }
