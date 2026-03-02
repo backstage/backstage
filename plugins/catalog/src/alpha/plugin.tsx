@@ -16,7 +16,7 @@
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import CategoryIcon from '@material-ui/icons/Category';
+import { LayoutGrid } from 'lucide-react';
 
 import {
   createComponentRouteRef,
@@ -40,7 +40,7 @@ import contextMenuItems from './contextMenuItems';
 export default createFrontendPlugin({
   pluginId: 'catalog',
   title: 'Catalog',
-  icon: <CategoryIcon />,
+  icon: <LayoutGrid />,
   info: {
     packageJson: () => import('../../package.json'),
   },
