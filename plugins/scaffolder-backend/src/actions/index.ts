@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
-import { ScmIntegrations } from '@backstage/integration';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { createListScaffolderTasksAction } from './listScaffolderTasksAction';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 import { createDryRunTemplateAction } from './createDryRunTemplateAction';
@@ -24,8 +23,6 @@ export const createScaffolderActions = (options: {
   actionsRegistry: ActionsRegistryService;
   scaffolderService: ScaffolderService;
   auth: AuthService;
-  discovery: DiscoveryService;
-  scmIntegrations: ScmIntegrations;
 }) => {
   createListScaffolderTasksAction({
     actionsRegistry: options.actionsRegistry,

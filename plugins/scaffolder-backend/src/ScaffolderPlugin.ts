@@ -167,7 +167,6 @@ export const scaffolderPlugin = createBackendPlugin({
         reader,
         database,
         auth,
-        discovery,
         httpRouter,
         httpAuth,
         catalog,
@@ -233,8 +232,6 @@ export const scaffolderPlugin = createBackendPlugin({
           actionsRegistry: actionsRegistryService,
           scaffolderService,
           auth,
-          discovery,
-          scmIntegrations: integrations,
         });
 
         const router = await createRouter({
