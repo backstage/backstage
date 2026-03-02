@@ -16,8 +16,9 @@
 
 import { PackageGraph } from '@backstage/cli-node';
 import { findTargetPackages } from './start';
-import { posix } from 'node:path';
-import { paths } from '../../../../lib/paths';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
+
+overrideTargetPaths('/root');
 
 const mocks = {
   app: {
@@ -97,11 +98,6 @@ const mocks = {
 describe('findTargetPackages', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest
-      .spyOn(paths, 'resolveTargetRoot')
-      .mockImplementation((...parts: string[]) => {
-        return posix.resolve('/root', ...parts);
-      });
   });
 
   it('should select default packages', async () => {

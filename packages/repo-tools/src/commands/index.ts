@@ -226,6 +226,7 @@ export function registerCommands(program: Command) {
       'CI run checks that there are no changes to catalog-info.yaml files',
     )
     .description('Create or fix info yaml files for all backstage packages')
+    .allowExcessArguments(true)
     .action(
       lazy(
         () => import('./generate-catalog-info/generate-catalog-info'),

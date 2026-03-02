@@ -213,6 +213,10 @@
   .bui-Tag {
     border-radius: var(--bui-radius-full);
   }
+
+  .bui-Container {
+    padding-inline: 0;
+  }
 }
 
 [data-theme-mode='light'][data-theme-name='spotify'] {

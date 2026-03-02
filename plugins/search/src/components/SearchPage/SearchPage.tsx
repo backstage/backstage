@@ -59,9 +59,7 @@ export const UrlUpdater = () => {
       setPageCursor(query.pageCursor as string);
     }
 
-    if (query.types) {
-      setTypes(query.types as string[]);
-    }
+    setTypes(query.types ? (query.types as string[]) : []);
   }, [prevQueryParams, location, setTerm, setTypes, setPageCursor, setFilters]);
 
   useEffect(() => {

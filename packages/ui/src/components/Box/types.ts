@@ -21,7 +21,7 @@ import type { Responsive, ProviderBg, SpaceProps } from '../../types';
 export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
   bg?: Responsive<ProviderBg>;
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
   style?: CSSProperties;
 };
@@ -45,4 +45,4 @@ export interface BoxProps
   extends SpaceProps,
     BoxOwnProps,
     BoxUtilityProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {}

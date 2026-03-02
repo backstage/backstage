@@ -18,6 +18,7 @@ import {
   createMockDirectory,
 } from '@backstage/backend-test-utils';
 import * as runObj from '@backstage/cli-common';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
@@ -38,9 +39,7 @@ jest.mock('@backstage/cli-common', () => {
   return {
     ...actual,
     findPaths: () => ({
-      resolveTargetRoot(filename: string) {
-        return mockDir.resolve(filename);
-      },
+      resolveTargetRoot: (...args: string[]) => mockDir.resolve(...args),
       get targetDir() {
         return mockDir.path;
       },
@@ -58,6 +57,7 @@ function expectLogsToMatch(receivedLogs: String[], expected: String[]): void {
 
 describe('versions:migrate', () => {
   mockDir = createMockDirectory();
+  beforeAll(() => overrideTargetPaths(mockDir.path));
 
   beforeEach(() => {
     (runObj.run as jest.Mock).mockReturnValue({
@@ -73,9 +73,7 @@ describe('versions:migrate', () => {
   it('should bump to the moved version when the package is moved', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
-        workspaces: {
-          packages: ['packages/*'],
-        },
+        workspaces: ['packages/*'],
       }),
       node_modules: {
         '@backstage': {
@@ -177,9 +175,7 @@ describe('versions:migrate', () => {
   it('should replace the occurrences of the moved package in files inside the correct package', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
-        workspaces: {
-          packages: ['packages/*'],
-        },
+        workspaces: ['packages/*'],
       }),
       node_modules: {
         '@backstage': {
@@ -264,9 +260,7 @@ describe('versions:migrate', () => {
   it('should replace occurrences of changed packages, and is careful', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
-        workspaces: {
-          packages: ['packages/*'],
-        },
+        workspaces: ['packages/*'],
       }),
       node_modules: {
         '@backstage': {

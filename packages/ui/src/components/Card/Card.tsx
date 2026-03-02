@@ -44,7 +44,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
 
   return (
     <Box
-      bg="neutral-auto"
+      bg="neutral"
       ref={ref}
       className={classes.root}
       {...dataAttributes}

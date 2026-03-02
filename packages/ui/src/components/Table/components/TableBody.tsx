@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  TableBody as ReactAriaTableBody,
-  type TableBodyProps,
-} from 'react-aria-components';
-import { useStyles } from '../../../hooks/useStyles';
-import { TableDefinition } from '../definition';
-import styles from '../Table.module.css';
-import clsx from 'clsx';
+import { TableBody as ReactAriaTableBody } from 'react-aria-components';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { TableBodyDefinition } from '../definition';
+import type { TableBodyProps } from '../types';
 
 /** @public */
 export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
-  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
+  const { ownProps, restProps } = useDefinition(TableBodyDefinition, props);
 
   return (
-    <ReactAriaTableBody
-      className={clsx(classNames.body, styles[classNames.body])}
-      {...cleanedProps}
-    />
+    <ReactAriaTableBody className={ownProps.classes.root} {...restProps} />
   );
 };

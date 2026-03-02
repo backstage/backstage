@@ -18,11 +18,11 @@ import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
 import { relative as relativePath, resolve as resolvePath } from 'node:path';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
-import { PackageRoles } from '@backstage/cli-node';
-import { runParallelWorkers } from '../../../../lib/parallel';
+import { PackageRoles, runConcurrentTasks } from '@backstage/cli-node';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -34,7 +34,7 @@ export function formatErrorMessage(error: any) {
         msg += `\n\n`;
         for (const { text, location } of error.errors) {
           const { line, column } = location;
-          const path = relativePath(paths.targetDir, error.id);
+          const path = relativePath(targetPaths.dir, error.id);
           const loc = chalk.cyan(`${path}:${line}:${column}`);
 
           if (text === 'Unexpected "<"' && error.id.endsWith('.js')) {
@@ -53,11 +53,11 @@ export function formatErrorMessage(error: any) {
   } else {
     // Generic rollup errors, log what's available
     if (error.loc) {
-      const file = `${paths.resolveTarget((error.loc.file || error.id)!)}`;
+      const file = `${targetPaths.resolve((error.loc.file || error.id)!)}`;
       const pos = `${error.loc.line}:${error.loc.column}`;
       msg += `${file} [${pos}]\n`;
     } else if (error.id) {
-      msg += `${paths.resolveTarget(error.id)}\n`;
+      msg += `${targetPaths.resolve(error.id)}\n`;
     }
 
     msg += `${error}\n`;
@@ -90,7 +90,7 @@ async function rollupBuild(config: RollupOptions) {
 export const buildPackage = async (options: BuildOptions) => {
   try {
     const { resolutions } = await fs.readJson(
-      paths.resolveTargetRoot('package.json'),
+      targetPaths.resolveRoot('package.json'),
     );
     if (resolutions?.esbuild) {
       console.warn(
@@ -107,7 +107,7 @@ export const buildPackage = async (options: BuildOptions) => {
 
   const rollupConfigs = await makeRollupConfigs(options);
 
-  const targetDir = options.targetDir ?? paths.targetDir;
+  const targetDir = options.targetDir ?? targetPaths.dir;
   await fs.remove(resolvePath(targetDir, 'dist'));
 
   const buildTasks = rollupConfigs.map(rollupBuild);
@@ -127,7 +127,7 @@ export const buildPackages = async (options: BuildOptions[]) => {
 
   const buildTasks = rollupConfigs.flat().map(opts => () => rollupBuild(opts));
 
-  await runParallelWorkers({
+  await runConcurrentTasks({
     items: buildTasks,
     worker: async task => task(),
   });

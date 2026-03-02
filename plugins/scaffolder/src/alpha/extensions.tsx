@@ -25,11 +25,13 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  FormFieldBlueprint,
+  formFieldsApiRef,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
-import { formFieldsApiRef } from './formFieldsApi';
 
 export const scaffolderPage = PageBlueprint.makeWithOverrides({
   inputs: {

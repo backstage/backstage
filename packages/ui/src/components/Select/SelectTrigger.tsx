@@ -17,25 +17,22 @@
 import { ReactNode } from 'react';
 import { Button, SelectValue } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
-import { SelectDefinition } from './definition';
-import styles from './Select.module.css';
+import { useDefinition } from '../../hooks/useDefinition';
+import { SelectTriggerDefinition } from './definition';
 
 interface SelectTriggerProps {
   icon?: ReactNode;
 }
 
-export function SelectTrigger({ icon }: SelectTriggerProps) {
-  const { classNames } = useStyles(SelectDefinition);
+export function SelectTrigger(props: SelectTriggerProps) {
+  const { ownProps } = useDefinition(SelectTriggerDefinition, props);
+  const { classes, icon } = ownProps;
 
   return (
-    <Button className={clsx(classNames.trigger, styles[classNames.trigger])}>
+    <Button className={classes.root}>
       {icon}
-      <SelectValue
-        className={clsx(classNames.value, styles[classNames.value])}
-      />
-      <div className={clsx(classNames.chevron, styles[classNames.chevron])}>
+      <SelectValue className={classes.value} />
+      <div className={classes.chevron}>
         <RiArrowDownSLine aria-hidden="true" />
       </div>
     </Button>

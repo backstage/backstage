@@ -1,1 +1,1 @@
-Follow the instructions at /.github/copilot-instructions.md
+../AGENTS.md

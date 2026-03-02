@@ -78,32 +78,104 @@ type TabGroup = {
 type EntityTabsListProps = {
   tabs: Tab[];
   groupDefinitions: EntityContentGroupDefinitions;
+  defaultContentOrder?: 'title' | 'natural';
   showIcons?: boolean;
   selectedIndex?: number;
 };
+
+function resolveGroupId(
+  tabGroup: string | undefined,
+  groupDefinitions: EntityContentGroupDefinitions,
+  aliasToGroup: Record<string, string>,
+): string | undefined {
+  if (!tabGroup) {
+    return undefined;
+  }
+  if (groupDefinitions[tabGroup]) {
+    return tabGroup;
+  }
+  return aliasToGroup[tabGroup];
+}
 
 export function EntityTabsList(props: EntityTabsListProps) {
   const styles = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
-  const { tabs: items, selectedIndex = 0, showIcons, groupDefinitions } = props;
+  const {
+    tabs: items,
+    selectedIndex = 0,
+    showIcons,
+    groupDefinitions,
+    defaultContentOrder = 'title',
+  } = props;
 
-  const groups = useMemo(
+  const aliasToGroup = useMemo(
     () =>
-      items.reduce((result, tab) => {
-        const group = tab.group ? groupDefinitions[tab.group] : undefined;
-        const groupOrId = group && tab.group ? tab.group : tab.id;
-        result[groupOrId] = result[groupOrId] ?? {
-          group,
-          items: [],
-        };
-        result[groupOrId].items.push(tab);
-        return result;
-      }, {} as Record<string, TabGroup>),
-    [items, groupDefinitions],
+      Object.entries(groupDefinitions).reduce((map, [groupId, def]) => {
+        for (const alias of def.aliases ?? []) {
+          map[alias] = groupId;
+        }
+        return map;
+      }, {} as Record<string, string>),
+    [groupDefinitions],
   );
 
+  const groups = useMemo(() => {
+    const byKey = items.reduce((result, tab) => {
+      const resolvedGroupId = resolveGroupId(
+        tab.group,
+        groupDefinitions,
+        aliasToGroup,
+      );
+      const group = resolvedGroupId
+        ? groupDefinitions[resolvedGroupId]
+        : undefined;
+      const groupOrId = group && resolvedGroupId ? resolvedGroupId : tab.id;
+      result[groupOrId] = result[groupOrId] ?? {
+        group,
+        items: [],
+      };
+      result[groupOrId].items.push(tab);
+      return result;
+    }, {} as Record<string, TabGroup>);
+
+    const groupOrder = Object.keys(groupDefinitions);
+    const sorted = Object.entries(byKey).sort(([a], [b]) => {
+      const ai = groupOrder.indexOf(a);
+      const bi = groupOrder.indexOf(b);
+      if (ai !== -1 && bi !== -1) {
+        return ai - bi;
+      }
+      if (ai !== -1) {
+        return -1;
+      }
+      if (bi !== -1) {
+        return 1;
+      }
+      return 0;
+    });
+
+    for (const [id, tabGroup] of sorted) {
+      const groupDef = groupDefinitions[id];
+      if (groupDef) {
+        const order = groupDef.contentOrder ?? defaultContentOrder;
+        if (order === 'title') {
+          tabGroup.items.sort((a, b) =>
+            a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }),
+          );
+        }
+      }
+    }
+
+    return sorted;
+  }, [items, groupDefinitions, aliasToGroup, defaultContentOrder]);
+
   const selectedItem = items[selectedIndex];
+  const selectedGroup = resolveGroupId(
+    selectedItem?.group,
+    groupDefinitions,
+    aliasToGroup,
+  );
   return (
     <Box className={styles.tabsWrapper}>
       <Tabs
@@ -113,9 +185,9 @@ export function EntityTabsList(props: EntityTabsListProps) {
         variant="scrollable"
         scrollButtons="auto"
         aria-label={t('entityTabs.tabsAriaLabel')}
-        value={selectedItem?.group ?? selectedItem?.id}
+        value={selectedGroup ?? selectedItem?.id}
       >
-        {Object.entries(groups).map(([id, tabGroup]) => (
+        {groups.map(([id, tabGroup]) => (
           <EntityTabsGroup
             data-testid={`header-tab-${id}`}
             className={styles.defaultTab}

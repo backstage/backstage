@@ -14,21 +14,55 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type {
+  PluginHeaderOwnProps,
+  PluginHeaderToolbarOwnProps,
+} from './types';
+import styles from './PluginHeader.module.css';
 
 /**
  * Component definition for PluginHeader
  * @public
  */
-export const PluginHeaderDefinition = {
+export const PluginHeaderDefinition = defineComponent<PluginHeaderOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-PluginHeader',
-    toolbar: 'bui-PluginHeaderToolbar',
-    toolbarWrapper: 'bui-PluginHeaderToolbarWrapper',
-    toolbarContent: 'bui-PluginHeaderToolbarContent',
-    toolbarControls: 'bui-PluginHeaderToolbarControls',
-    toolbarIcon: 'bui-PluginHeaderToolbarIcon',
-    toolbarName: 'bui-PluginHeaderToolbarName',
     tabsWrapper: 'bui-PluginHeaderTabsWrapper',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    icon: {},
+    title: {},
+    titleLink: {},
+    customActions: {},
+    tabs: {},
+    onTabSelectionChange: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for PluginHeaderToolbar
+ * @internal
+ */
+export const PluginHeaderToolbarDefinition =
+  defineComponent<PluginHeaderToolbarOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-PluginHeaderToolbar',
+      wrapper: 'bui-PluginHeaderToolbarWrapper',
+      content: 'bui-PluginHeaderToolbarContent',
+      controls: 'bui-PluginHeaderToolbarControls',
+      icon: 'bui-PluginHeaderToolbarIcon',
+      name: 'bui-PluginHeaderToolbarName',
+    },
+    propDefs: {
+      icon: {},
+      title: {},
+      titleLink: {},
+      customActions: {},
+      hasTabs: {},
+      className: {},
+    },
+  });

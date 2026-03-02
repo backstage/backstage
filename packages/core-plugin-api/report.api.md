@@ -508,7 +508,7 @@ export { ProfileInfoApi };
 
 // @public
 export type RouteFunc<Params extends AnyParams> = (
-  ...[params]: Params extends undefined ? readonly [] : readonly [Params]
+  ...input: Params extends undefined ? readonly [] : readonly [Params]
 ) => string;
 
 // @public

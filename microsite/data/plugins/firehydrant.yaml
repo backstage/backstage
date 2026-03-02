@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/firehydrant/plugins/firehydrant/doc/firehydrant_logo.png
 npmPackageName: '@backstage-community/plugin-firehydrant'
 addedDate: '2021-08-18'
+status: active

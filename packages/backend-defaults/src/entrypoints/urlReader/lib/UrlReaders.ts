@@ -24,7 +24,6 @@ import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 import { AzureUrlReader } from './AzureUrlReader';
 import { BitbucketCloudUrlReader } from './BitbucketCloudUrlReader';
 import { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
-import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { GerritUrlReader } from './GerritUrlReader';
 import { GithubUrlReader } from './GithubUrlReader';
 import { GitlabUrlReader } from './GitlabUrlReader';
@@ -92,7 +91,6 @@ export class UrlReaders {
         AzureUrlReader.factory,
         BitbucketCloudUrlReader.factory,
         BitbucketServerUrlReader.factory,
-        BitbucketUrlReader.factory,
         GerritUrlReader.factory,
         GithubUrlReader.factory,
         GiteaUrlReader.factory,

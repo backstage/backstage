@@ -14,35 +14,149 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type {
+  TableRootOwnProps,
+  TableHeaderOwnProps,
+  TableBodyOwnProps,
+  RowOwnProps,
+  ColumnOwnProps,
+  CellOwnProps,
+  CellTextOwnProps,
+  CellProfileOwnProps,
+} from './types';
+import styles from './Table.module.css';
 
 /**
  * Component definition for Table
  * @public
  */
-export const TableDefinition = {
+export const TableDefinition = defineComponent<TableRootOwnProps>()({
+  styles,
   classNames: {
-    table: 'bui-Table',
-    header: 'bui-TableHeader',
-    body: 'bui-TableBody',
-    row: 'bui-TableRow',
-    head: 'bui-TableHead',
+    root: 'bui-Table',
+  },
+  propDefs: {
+    stale: { dataAttribute: true },
+  },
+});
+
+/**
+ * Component definition for TableHeader
+ * @internal
+ */
+export const TableHeaderDefinition = defineComponent<TableHeaderOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TableHeader',
+    headSelection: 'bui-TableHeadSelection',
+  },
+  propDefs: {
+    columns: {},
+    children: {},
+  },
+});
+
+/**
+ * Component definition for TableBody
+ * @internal
+ */
+export const TableBodyDefinition = defineComponent<TableBodyOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TableBody',
+  },
+  propDefs: {},
+});
+
+/**
+ * Component definition for Row
+ * @internal
+ */
+export const RowDefinition = defineComponent<RowOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TableRow',
+    cell: 'bui-TableCell',
+    cellSelection: 'bui-TableCellSelection',
+  },
+  propDefs: {
+    columns: {},
+    children: {},
+    href: {},
+  },
+});
+
+/**
+ * Component definition for Column
+ * @internal
+ */
+export const ColumnDefinition = defineComponent<ColumnOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TableHead',
     headContent: 'bui-TableHeadContent',
     headSortButton: 'bui-TableHeadSortButton',
-    caption: 'bui-TableCaption',
-    cell: 'bui-TableCell',
+  },
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for Cell
+ * @internal
+ */
+export const CellDefinition = defineComponent<CellOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TableCell',
+  },
+  propDefs: {
+    className: {},
+  },
+});
+
+/**
+ * Component definition for CellText
+ * @internal
+ */
+export const CellTextDefinition = defineComponent<CellTextOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TableCell',
     cellContentWrapper: 'bui-TableCellContentWrapper',
     cellContent: 'bui-TableCellContent',
     cellIcon: 'bui-TableCellIcon',
-    cellProfileAvatar: 'bui-TableCellProfileAvatar',
-    cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage',
-    cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback',
-    cellProfileName: 'bui-TableCellProfileName',
-    cellProfileLink: 'bui-TableCellProfileLink',
-    headSelection: 'bui-TableHeadSelection',
-    cellSelection: 'bui-TableCellSelection',
   },
-  dataAttributes: {
-    stale: [true, false] as const,
+  propDefs: {
+    title: {},
+    description: {},
+    color: { default: 'primary' },
+    leadingIcon: {},
+    href: {},
+    className: {},
   },
-} as const satisfies ComponentDefinition;
+});
+
+/**
+ * Component definition for CellProfile
+ * @internal
+ */
+export const CellProfileDefinition = defineComponent<CellProfileOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TableCell',
+    cellContentWrapper: 'bui-TableCellContentWrapper',
+    cellContent: 'bui-TableCellContent',
+  },
+  propDefs: {
+    src: {},
+    name: {},
+    href: {},
+    description: {},
+    color: { default: 'primary' },
+    className: {},
+  },
+});

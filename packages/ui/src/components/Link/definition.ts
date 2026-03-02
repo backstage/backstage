@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { LinkOwnProps } from './types';
+import styles from './Link.module.css';
 
 /**
  * Component definition for Link
  * @public
  */
-export const LinkDefinition = {
+export const LinkDefinition = defineComponent<LinkOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Link',
   },
-  dataAttributes: {
-    variant: ['subtitle', 'body', 'caption', 'label'] as const,
-    weight: ['regular', 'bold'] as const,
-    color: [
-      'primary',
-      'secondary',
-      'danger',
-      'warning',
-      'success',
-      'info',
-    ] as const,
-    truncate: [true, false] as const,
-    standalone: [true, false] as const,
+  propDefs: {
+    variant: { dataAttribute: true, default: 'body-medium' },
+    weight: { dataAttribute: true, default: 'regular' },
+    color: { dataAttribute: true, default: 'primary' },
+    truncate: { dataAttribute: true },
+    standalone: { dataAttribute: true },
+    title: {},
+    children: {},
+    className: {},
   },
-} as const satisfies ComponentDefinition;
+});

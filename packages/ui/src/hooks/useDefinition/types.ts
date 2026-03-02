@@ -47,14 +47,22 @@ export interface ComponentConfig<
 
 /**
  * Type constraint that validates bg props are present in the props type.
- * - Provider components must include 'bg' in their props
+ * - Provider components must include 'bg' in their props and 'children' in propDefs
  * - Consumer components don't need a bg prop
  */
 export type BgPropsConstraint<P, Bg> = Bg extends 'provider'
   ? 'bg' extends keyof P
-    ? {}
+    ? 'children' extends keyof P
+      ? {} extends Pick<P, 'children'>
+        ? {
+            __error: 'Bg provider components cannot have children as optional.';
+          }
+        : {}
+      : {
+          __error: 'Bg provider components must include children in own props type.';
+        }
     : {
-        __error: 'Bg provider components must include bg in props type.';
+        __error: 'Bg provider components must include bg in own props type.';
       }
   : {};
 

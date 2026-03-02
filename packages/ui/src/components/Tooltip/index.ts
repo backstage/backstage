@@ -15,5 +15,5 @@
  */
 
 export { TooltipTrigger, Tooltip } from './Tooltip';
-export type { TooltipProps } from './types';
+export type { TooltipOwnProps, TooltipProps } from './types';
 export { TooltipDefinition } from './definition';

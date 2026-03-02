@@ -17,33 +17,11 @@
 import { Knex } from 'knex';
 import splitToChunks from 'lodash/chunk';
 import { v4 as uuid } from 'uuid';
-import { ErrorLike, isError } from '@backstage/errors';
 import { StitchingStrategy } from '../../../stitching/types';
-import { setTimeout as sleep } from 'node:timers/promises';
 import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
+import { retryOnDeadlock } from '../../util';
 
 const UPDATE_CHUNK_SIZE = 100; // Smaller chunks reduce contention
-const DEADLOCK_RETRY_ATTEMPTS = 3;
-const DEADLOCK_BASE_DELAY_MS = 25;
-
-// PostgreSQL deadlock error code
-const POSTGRES_DEADLOCK_SQLSTATE = '40P01';
-
-/**
- * Checks if the given error is a deadlock error for the database engine in use.
- */
-function isDeadlockError(
-  knex: Knex | Knex.Transaction,
-  e: unknown,
-): e is ErrorLike {
-  if (knex.client.config.client.includes('pg')) {
-    // PostgreSQL deadlock detection
-    return isError(e) && e.code === POSTGRES_DEADLOCK_SQLSTATE;
-  }
-
-  // Add more database engine checks here as needed
-  return false;
-}
 
 /**
  * Marks a number of entities for stitching some time in the near
@@ -69,12 +47,7 @@ export async function markForStitching(options: {
         .update({
           hash: 'force-stitching',
         })
-        .whereIn(
-          'entity_id',
-          knex<DbRefreshStateRow>('refresh_state')
-            .select('entity_id')
-            .whereIn('entity_ref', chunk),
-        );
+        .whereIn('entity_ref', chunk);
       await retryOnDeadlock(async () => {
         await knex
           .table<DbRefreshStateRow>('refresh_state')
@@ -142,25 +115,4 @@ function sortSplit(input: Iterable<string> | undefined): string[][] {
   const array = Array.isArray(input) ? input.slice() : [...input];
   array.sort();
   return splitToChunks(array, UPDATE_CHUNK_SIZE);
-}
-
-async function retryOnDeadlock<T>(
-  fn: () => Promise<T>,
-  knex: Knex | Knex.Transaction,
-  retries = DEADLOCK_RETRY_ATTEMPTS,
-  baseMs = DEADLOCK_BASE_DELAY_MS,
-): Promise<T> {
-  let attempt = 0;
-  for (;;) {
-    try {
-      return await fn();
-    } catch (e: unknown) {
-      if (isDeadlockError(knex, e) && attempt < retries) {
-        await sleep(baseMs * Math.pow(2, attempt));
-        attempt++;
-        continue;
-      }
-      throw e;
-    }
-  }
 }

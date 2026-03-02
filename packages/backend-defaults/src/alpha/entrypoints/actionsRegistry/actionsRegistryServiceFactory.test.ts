@@ -22,7 +22,7 @@ import {
 import { httpRouterServiceFactory } from '../../../entrypoints/httpRouter';
 import request from 'supertest';
 import { actionsRegistryServiceFactory } from './actionsRegistryServiceFactory';
-import { InputError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 describe('actionsRegistryServiceFactory', () => {
@@ -510,7 +510,7 @@ describe('actionsRegistryServiceFactory', () => {
       expect(body).toMatchObject({ output: { ok: true } });
     });
 
-    it('should return the error from the action if it throws', async () => {
+    it('should forward the original error when the action throws a known error', async () => {
       const { server } = await startTestBackend({
         features: [pluginSubject, ...defaultServices],
       });
@@ -528,9 +528,32 @@ describe('actionsRegistryServiceFactory', () => {
       expect(status).toBe(400);
       expect(body).toMatchObject({
         error: {
-          message: expect.stringContaining(
-            'Failed execution of action "my-plugin:test"',
-          ),
+          name: 'InputError',
+          message: 'test',
+        },
+      });
+    });
+
+    it('should forward a NotFoundError from the action with 404 status', async () => {
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      mockAction.mockRejectedValue(new NotFoundError('entity not found'));
+
+      const { body, status } = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
+        )
+        .send({
+          name: 'test',
+        });
+
+      expect(status).toBe(404);
+      expect(body).toMatchObject({
+        error: {
+          name: 'NotFoundError',
+          message: 'entity not found',
         },
       });
     });

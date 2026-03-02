@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/plugin-feedback-logo.svg
 npmPackageName: '@backstage-community/plugin-entity-feedback'
 addedDate: '2024-04-09'
+status: active

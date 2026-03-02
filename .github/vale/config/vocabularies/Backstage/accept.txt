@@ -322,6 +322,7 @@ openapi
 OpenSearch
 OpenShift
 openssl
+opentelemetry
 orgs
 overridable
 padding
@@ -526,6 +527,7 @@ unassign
 unbreak
 Unconference
 undici
+ungrouped
 unicode
 unmanaged
 unmount
@@ -575,3 +577,4 @@ zsh
 resizable
 enums
 LLMs
+cleye

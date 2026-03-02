@@ -18,7 +18,6 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { chunk as lodashChunk, isEqual } from 'lodash';
-import { z } from 'zod';
 import {
   Cursor,
   EntitiesBatchRequest,
@@ -49,7 +48,6 @@ import {
   isQueryEntitiesCursorRequest,
   isQueryEntitiesInitialRequest,
 } from './util';
-import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
 import { processRawEntitiesResult } from './response';
@@ -226,9 +224,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         })
         .whereIn('final_entities.entity_ref', chunk);
 
-      if (request?.filter) {
+      if (request?.filter || request?.query) {
         query = applyEntityFilterToQuery({
           filter: request.filter,
+          query: request.query,
           targetQuery: query,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
@@ -303,10 +302,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           });
         }
 
-        // Add regular filters, if given
-        if (cursor.filter) {
+        // Add regular filters and/or predicate query, if given
+        if (cursor.filter || cursor.query) {
           applyEntityFilterToQuery({
             filter: cursor.filter,
+            query: cursor.query,
             targetQuery: inner,
             onEntityIdField: 'final_entities.entity_id',
             knex: this.database,
@@ -687,9 +687,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       })
       .groupBy(['search.key', 'search.original_value']);
 
-    if (request.filter) {
+    if (request.filter || request.query) {
       applyEntityFilterToQuery({
         filter: request.filter,
+        query: request.query,
         targetQuery: query,
         onEntityIdField: 'search.entity_id',
         knex: this.database,
@@ -713,40 +714,24 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   }
 }
 
-const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
-  z
-    .object({
-      key: z.string(),
-      values: z.array(z.string()).optional(),
-    })
-    .or(z.object({ not: entityFilterParser }))
-    .or(z.object({ anyOf: z.array(entityFilterParser) }))
-    .or(z.object({ allOf: z.array(entityFilterParser) })),
-);
-
-export const cursorParser: z.ZodSchema<Cursor> = z.object({
-  orderFields: z.array(
-    z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
-  ),
-  orderFieldValues: z.array(z.string().or(z.null())),
-  filter: entityFilterParser.optional(),
-  isPrevious: z.boolean(),
-  query: z.string().optional(),
-  firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
-  totalItems: z.number().optional(),
-});
-
 function parseCursorFromRequest(
   request?: QueryEntitiesRequest,
 ): Partial<Cursor> & { skipTotalItems: boolean } {
   if (isQueryEntitiesInitialRequest(request)) {
     const {
       filter,
+      query,
       orderFields: sortFields = [],
       fullTextFilter,
       skipTotalItems = false,
     } = request;
-    return { filter, orderFields: sortFields, fullTextFilter, skipTotalItems };
+    return {
+      filter,
+      query,
+      orderFields: sortFields,
+      fullTextFilter,
+      skipTotalItems,
+    };
   }
   if (isQueryEntitiesCursorRequest(request)) {
     return {

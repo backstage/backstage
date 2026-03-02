@@ -15,23 +15,31 @@
  */
 import { OpaqueType } from '@internal/opaque';
 
+export interface CommandContext {
+  args: string[];
+  info: {
+    /**
+     * The usage string of the current command, for example: "backstage-cli repo test"
+     */
+    usage: string;
+    /**
+     * The description provided for the command
+     */
+    description: string;
+  };
+}
+
+export type CommandExecuteFn = (context: CommandContext) => Promise<void>;
+
 export interface BackstageCommand {
   path: string[];
   description: string;
   deprecated?: boolean;
-  execute: (context: {
-    args: string[];
-    info: {
-      /**
-       * The usage string of the current command, for example: "backstage-cli repo test"
-       */
-      usage: string;
-      /**
-       * The description provided for the command
-       */
-      description: string;
-    };
-  }) => Promise<void>;
+  execute:
+    | CommandExecuteFn
+    | {
+        loader: () => Promise<{ default: CommandExecuteFn }>;
+      };
 }
 
 export type CliFeature = CliPlugin;

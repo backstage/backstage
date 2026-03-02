@@ -17,13 +17,11 @@
 import type { PluginHeaderProps } from './types';
 import { PluginHeaderToolbar } from './PluginHeaderToolbar';
 import { Tabs, TabList, Tab } from '../Tabs';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { PluginHeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
 import { useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
-import styles from './PluginHeader.module.css';
-import clsx from 'clsx';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -38,16 +36,16 @@ declare module 'react-aria-components' {
  * @public
  */
 export const PluginHeader = (props: PluginHeaderProps) => {
-  const { classNames, cleanedProps } = useStyles(PluginHeaderDefinition, props);
+  const { ownProps } = useDefinition(PluginHeaderDefinition, props);
   const {
-    className,
+    classes,
     tabs,
     icon,
     title,
     titleLink,
     customActions,
     onTabSelectionChange,
-  } = cleanedProps;
+  } = ownProps;
 
   const hasTabs = tabs && tabs.length > 0;
   const headerRef = useRef<HTMLElement>(null);
@@ -85,10 +83,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
   }, []);
 
   return (
-    <header
-      ref={headerRef}
-      className={clsx(classNames.root, styles[classNames.root], className)}
-    >
+    <header ref={headerRef} className={classes.root}>
       <PluginHeaderToolbar
         icon={icon}
         title={title}
@@ -97,12 +92,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
         hasTabs={hasTabs}
       />
       {tabs && (
-        <div
-          className={clsx(
-            classNames.tabsWrapper,
-            styles[classNames.tabsWrapper],
-          )}
-        >
+        <div className={classes.tabsWrapper}>
           <Tabs onSelectionChange={onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (

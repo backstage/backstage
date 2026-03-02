@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
 import { Lockfile } from './Lockfile';
 import { GitUtils } from '../git';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
 
-jest.mock('../paths', () => ({
-  paths: {
-    targetRoot: '/',
-    resolveTargetRoot: (...paths: string[]) => resolvePath('/', ...paths),
-  },
-}));
+overrideTargetPaths('/');
 
 const testPackages = [
   {

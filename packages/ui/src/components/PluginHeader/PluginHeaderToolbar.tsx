@@ -15,14 +15,12 @@
  */
 
 import { Link } from 'react-aria-components';
-import { useStyles } from '../../hooks/useStyles';
-import { PluginHeaderDefinition } from './definition';
+import { useDefinition } from '../../hooks/useDefinition';
+import { PluginHeaderToolbarDefinition } from './definition';
 import { useRef } from 'react';
 import { RiShapesLine } from '@remixicon/react';
 import type { PluginHeaderToolbarProps } from './types';
 import { Text } from '../Text';
-import styles from './PluginHeader.module.css';
-import clsx from 'clsx';
 
 /**
  * A component that renders the toolbar section of a plugin header.
@@ -30,9 +28,8 @@ import clsx from 'clsx';
  * @internal
  */
 export const PluginHeaderToolbar = (props: PluginHeaderToolbarProps) => {
-  const { classNames, cleanedProps } = useStyles(PluginHeaderDefinition, props);
-  const { className, icon, title, titleLink, customActions, hasTabs } =
-    cleanedProps;
+  const { ownProps } = useDefinition(PluginHeaderToolbarDefinition, props);
+  const { classes, icon, title, titleLink, customActions, hasTabs } = ownProps;
 
   // Refs for collision detection
   const toolbarWrapperRef = useRef<HTMLDivElement>(null);
@@ -41,68 +38,26 @@ export const PluginHeaderToolbar = (props: PluginHeaderToolbarProps) => {
 
   const titleContent = (
     <>
-      <div
-        className={clsx(classNames.toolbarIcon, styles[classNames.toolbarIcon])}
-      >
-        {icon || <RiShapesLine />}
-      </div>
+      <div className={classes.icon}>{icon || <RiShapesLine />}</div>
       <Text variant="body-medium">{title || 'Your plugin'}</Text>
     </>
   );
 
   return (
-    <div
-      className={clsx(
-        classNames.toolbar,
-        styles[classNames.toolbar],
-        className,
-      )}
-      data-has-tabs={hasTabs}
-    >
-      <div
-        className={clsx(
-          classNames.toolbarWrapper,
-          styles[classNames.toolbarWrapper],
-        )}
-        ref={toolbarWrapperRef}
-      >
-        <div
-          className={clsx(
-            classNames.toolbarContent,
-            styles[classNames.toolbarContent],
-          )}
-          ref={toolbarContentRef}
-        >
+    <div className={classes.root} data-has-tabs={hasTabs}>
+      <div className={classes.wrapper} ref={toolbarWrapperRef}>
+        <div className={classes.content} ref={toolbarContentRef}>
           <Text as="h1" variant="body-medium">
             {titleLink ? (
-              <Link
-                className={clsx(
-                  classNames.toolbarName,
-                  styles[classNames.toolbarName],
-                )}
-                href={titleLink}
-              >
+              <Link className={classes.name} href={titleLink}>
                 {titleContent}
               </Link>
             ) : (
-              <div
-                className={clsx(
-                  classNames.toolbarName,
-                  styles[classNames.toolbarName],
-                )}
-              >
-                {titleContent}
-              </div>
+              <div className={classes.name}>{titleContent}</div>
             )}
           </Text>
         </div>
-        <div
-          className={clsx(
-            classNames.toolbarControls,
-            styles[classNames.toolbarControls],
-          )}
-          ref={toolbarControlsRef}
-        >
+        <div className={classes.controls} ref={toolbarControlsRef}>
           {customActions}
         </div>
       </div>

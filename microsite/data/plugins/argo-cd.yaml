@@ -8,3 +8,4 @@ documentation: https://roadie.io/backstage/plugins/argo-cd/?utm_source=backstage
 iconUrl: https://roadie.io/images/logos/argo.png
 npmPackageName: '@roadiehq/backstage-plugin-argo-cd'
 addedDate: '2021-04-20'
+status: active

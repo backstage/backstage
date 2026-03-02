@@ -18,6 +18,9 @@ import {
   CellProps as ReactAriaCellProps,
   ColumnProps as ReactAriaColumnProps,
   TableProps as ReactAriaTableProps,
+  TableHeaderProps as ReactAriaTableHeaderProps,
+  TableBodyProps as ReactAriaTableBodyProps,
+  RowProps as ReactAriaRowProps,
 } from 'react-aria-components';
 import type { ReactElement, ReactNode } from 'react';
 import type { SortDescriptor as ReactStatelySortDescriptor } from 'react-stately';
@@ -37,35 +40,96 @@ export interface SortState {
 }
 
 /** @public */
-export interface CellProps extends ReactAriaCellProps {}
+export type TableRootOwnProps = {
+  stale?: boolean;
+};
 
 /** @public */
-export interface CellTextProps extends ReactAriaCellProps {
+export interface TableRootProps
+  extends TableRootOwnProps,
+    Omit<ReactAriaTableProps, keyof TableRootOwnProps> {}
+
+/** @public */
+export type TableHeaderOwnProps<T = object> = {
+  columns?: ReactAriaTableHeaderProps<T>['columns'];
+  children?: ReactAriaTableHeaderProps<T>['children'];
+};
+
+/** @public */
+export interface TableHeaderProps<T>
+  extends TableHeaderOwnProps<T>,
+    Omit<ReactAriaTableHeaderProps<T>, keyof TableHeaderOwnProps> {}
+
+/** @public */
+export type TableBodyOwnProps = {};
+
+/** @public */
+export interface TableBodyProps<T extends object>
+  extends TableBodyOwnProps,
+    Omit<ReactAriaTableBodyProps<T>, keyof TableBodyOwnProps> {}
+
+/** @public */
+export type RowOwnProps<T = object> = {
+  columns?: ReactAriaRowProps<T>['columns'];
+  children?: ReactAriaRowProps<T>['children'];
+  href?: string;
+};
+
+/** @public */
+export interface RowProps<T>
+  extends RowOwnProps<T>,
+    Omit<ReactAriaRowProps<T>, keyof RowOwnProps> {}
+
+/** @public */
+export type ColumnOwnProps = {
+  children?: React.ReactNode;
+  className?: string;
+};
+
+/** @public */
+export interface ColumnProps
+  extends ColumnOwnProps,
+    Omit<ReactAriaColumnProps, keyof ColumnOwnProps> {}
+
+/** @public */
+export type CellOwnProps = {
+  className?: string;
+};
+
+/** @public */
+export interface CellProps
+  extends CellOwnProps,
+    Omit<ReactAriaCellProps, keyof CellOwnProps> {}
+
+/** @public */
+export type CellTextOwnProps = {
   title: string;
   description?: string;
   color?: TextColors;
   leadingIcon?: React.ReactNode | null;
   href?: string;
-}
+  className?: string;
+};
 
 /** @public */
-export interface CellProfileProps extends ReactAriaCellProps {
+export interface CellTextProps
+  extends CellTextOwnProps,
+    Omit<ReactAriaCellProps, keyof CellTextOwnProps> {}
+
+/** @public */
+export type CellProfileOwnProps = {
   src?: string;
   name?: string;
   href?: string;
   description?: string;
   color?: TextColors;
-}
+  className?: string;
+};
 
 /** @public */
-export interface ColumnProps extends Omit<ReactAriaColumnProps, 'children'> {
-  children?: React.ReactNode;
-}
-
-/** @public */
-export interface TableRootProps extends ReactAriaTableProps {
-  stale?: boolean;
-}
+export interface CellProfileProps
+  extends CellProfileOwnProps,
+    Omit<ReactAriaCellProps, keyof CellProfileOwnProps> {}
 
 /** @public */
 export interface TableItem {

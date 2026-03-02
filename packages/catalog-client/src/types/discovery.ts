@@ -15,7 +15,9 @@
  */
 
 /**
- * This is a copy of the DiscoveryApi, to avoid importing core-plugin-api.
+ * This is a structurally similar version of `DiscoveryApi` /
+ * `DiscoveryService`, used here to avoid dependencies on the frontend or
+ * backend plugin API packages and allowing both of those forms to be passed in.
  */
 export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;

@@ -652,15 +652,7 @@ export type HorizontalScrollGridClassKey =
 export type IconComponentProps = ComponentProps<IconComponent>;
 
 // @public (undocumented)
-export function IconLinkVertical({
-  color,
-  disabled,
-  href,
-  icon,
-  label,
-  onClick,
-  title,
-}: IconLinkVerticalProps): JSX_2.Element;
+export function IconLinkVertical(input: IconLinkVerticalProps): JSX_2.Element;
 
 // @public (undocumented)
 export type IconLinkVerticalClassKey =

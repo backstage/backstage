@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { paths as cliPaths } from '../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 import pLimit from 'p-limit';
 import os from 'node:os';
 import { relative as relativePath, resolve as resolvePath } from 'node:path';
@@ -100,9 +100,9 @@ async function handlePackage({
 }: KnipPackageOptions) {
   console.log(`## Processing ${packageDir}`);
 
-  const fullDir = cliPaths.resolveTargetRoot(packageDir);
+  const fullDir = targetPaths.resolveRoot(packageDir);
   const reportPath = resolvePath(fullDir, 'knip-report.md');
-  const run = createBinRunner(cliPaths.targetRoot, '');
+  const run = createBinRunner(targetPaths.rootDir, '');
 
   let report = await run(
     `${knipDir}/knip.js`,
@@ -149,7 +149,7 @@ async function handlePackage({
         console.log('');
         console.log(
           `The conflicting file is ${relativePath(
-            cliPaths.targetRoot,
+            targetPaths.rootDir,
             reportPath,
           )}, expecting the following content:`,
         );
@@ -168,8 +168,8 @@ export async function runKnipReports({
   packageDirs,
   isLocalBuild,
 }: KnipExtractionOptions) {
-  const knipDir = cliPaths.resolveTargetRoot('./node_modules/knip/bin/');
-  const knipConfigPath = cliPaths.resolveTargetRoot('./knip.json');
+  const knipDir = targetPaths.resolveRoot('./node_modules/knip/bin/');
+  const knipConfigPath = targetPaths.resolveRoot('./knip.json');
   const limiter = pLimit(os.cpus().length);
 
   await generateKnipConfig({ knipConfigPath });

@@ -15,4 +15,19 @@ export const allModes = {
     themeMode: 'dark',
     themeName: 'spotify',
   },
+  'light spotify neutral-1': {
+    themeMode: 'light',
+    themeName: 'spotify',
+    background: 'neutral-1',
+  },
+  'light spotify neutral-2': {
+    themeMode: 'light',
+    themeName: 'spotify',
+    background: 'neutral-2',
+  },
+  'light spotify neutral-3': {
+    themeMode: 'light',
+    themeName: 'spotify',
+    background: 'neutral-3',
+  },
 } as const;

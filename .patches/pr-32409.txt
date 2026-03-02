@@ -1,1 +1,0 @@
-Fixes a deprecation warning for Router extension in tests

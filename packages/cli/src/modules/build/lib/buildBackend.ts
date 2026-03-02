@@ -19,7 +19,6 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import * as tar from 'tar';
 import { createDistWorkspace } from './packager';
-import { getEnvironmentParallelism } from '../../../lib/parallel';
 import { buildPackage, Output } from './builder';
 import { PackageGraph } from '@backstage/cli-node';
 
@@ -53,7 +52,6 @@ export async function buildBackend(options: BuildBackendOptions) {
       configPaths,
       buildDependencies: !skipBuildDependencies,
       buildExcludes: [pkg.name],
-      parallelism: getEnvironmentParallelism(),
       skeleton: SKELETON_FILE,
       minify,
     });

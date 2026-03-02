@@ -8,3 +8,4 @@ documentation: https://github.com/globallogicuki/globallogic-backstage-plugins/t
 iconUrl: /img/terraform-logo.svg
 npmPackageName: '@globallogicuki/backstage-plugin-terraform'
 addedDate: '2024-07-17'
+status: active

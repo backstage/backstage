@@ -18,6 +18,9 @@
     // ignored due to licensing issues. See #10992
     '@elastic/elasticsearch',
     'event-source-polyfill',
+    // These need to stay pinned to match the React/Node versions we support
+    '@types/react',
+    '@types/node',
   ],
   packageRules: [
     {

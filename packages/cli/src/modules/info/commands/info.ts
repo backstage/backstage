@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import { version as cliVersion } from '../../../../package.json';
 import os from 'node:os';
-import { runOutput } from '@backstage/cli-common';
-import { paths } from '../../../lib/paths';
-import { Lockfile } from '../../../lib/versioning';
-import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
+import { runOutput, targetPaths, findOwnPaths } from '@backstage/cli-common';
+import {
+  BackstagePackageJson,
+  Lockfile,
+  PackageGraph,
+} from '@backstage/cli-node';
 import { minimatch } from 'minimatch';
 import fs from 'fs-extra';
-
-interface InfoOptions {
-  include: string[];
-  format: 'text' | 'json';
-}
+import type { CommandContext } from '../../../wiring/types';
 
 /**
  * Attempts to read package.json from node_modules for a given package name.
@@ -53,12 +52,37 @@ function hasBackstageField(packageName: string, targetPath: string): boolean {
   return pkg?.backstage !== undefined;
 }
 
-export default async (options: InfoOptions) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { include, format },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        include: {
+          type: [String],
+          description:
+            'Glob patterns for additional packages to include (e.g., @spotify/backstage*)',
+        },
+        format: {
+          type: String,
+          description: 'Output format (text or json)',
+          default: 'text',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  const options = { include, format: format as 'text' | 'json' };
+
   await new Promise(async () => {
     const yarnVersion = await runOutput(['yarn', '--version']);
-    const isLocal = fs.existsSync(paths.resolveOwn('./src'));
+    /* eslint-disable-next-line no-restricted-syntax */
+    const isLocal = fs.existsSync(findOwnPaths(__dirname).resolve('./src'));
 
-    const backstageFile = paths.resolveTargetRoot('backstage.json');
+    const backstageFile = targetPaths.resolveRoot('backstage.json');
     let backstageVersion = 'N/A';
     if (fs.existsSync(backstageFile)) {
       try {
@@ -83,9 +107,9 @@ export default async (options: InfoOptions) => {
       backstage: backstageVersion,
     };
 
-    const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+    const lockfilePath = targetPaths.resolveRoot('yarn.lock');
     const lockfile = await Lockfile.load(lockfilePath);
-    const targetPath = paths.targetRoot;
+    const targetPath = targetPaths.rootDir;
 
     // Get workspace package names and their versions
     const workspacePackages = new Map<string, string>();

@@ -8,3 +8,4 @@ documentation: https://docs.digital.ai/deploy/docs/concept/xl-deploy-backstage-o
 iconUrl: /img/digital.ai-deploy.svg
 npmPackageName: '@digital-ai/plugin-dai-deploy'
 addedDate: '2024-05-06'
+status: active

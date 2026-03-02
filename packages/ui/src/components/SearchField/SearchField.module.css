@@ -39,7 +39,7 @@
       }
     }
 
-    &[data-startCollapsed='true'] {
+    &[data-startcollapsed='true'] {
       transition: flex-basis 0.3s ease-in-out, width 0.3s ease-in-out,
         max-width 0.3s ease-in-out;
       padding: 0;

@@ -135,23 +135,29 @@ export const Backgrounds = meta.story({
         <CardHeader>No parent</CardHeader>
         <CardBody>Defaults to neutral-1</CardBody>
       </Card>
-      <Box bg="neutral-1" p="4" style={{ borderRadius: '8px' }}>
+      <Box bg="neutral" p="4" style={{ borderRadius: '8px' }}>
         <Card {...args} style={{ width: '200px' }}>
           <CardHeader>On neutral-1</CardHeader>
           <CardBody>Auto-increments to neutral-2</CardBody>
         </Card>
       </Box>
-      <Box bg="neutral-2" p="4" style={{ borderRadius: '8px' }}>
-        <Card {...args} style={{ width: '200px' }}>
-          <CardHeader>On neutral-2</CardHeader>
-          <CardBody>Auto-increments to neutral-3</CardBody>
-        </Card>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4" style={{ borderRadius: '8px' }}>
+          <Card {...args} style={{ width: '200px' }}>
+            <CardHeader>On neutral-2</CardHeader>
+            <CardBody>Auto-increments to neutral-3</CardBody>
+          </Card>
+        </Box>
       </Box>
-      <Box bg="neutral-3" p="4" style={{ borderRadius: '8px' }}>
-        <Card {...args} style={{ width: '200px' }}>
-          <CardHeader>On neutral-3</CardHeader>
-          <CardBody>Steps up to neutral-4</CardBody>
-        </Card>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4" style={{ borderRadius: '8px' }}>
+            <Card {...args} style={{ width: '200px' }}>
+              <CardHeader>On neutral-3</CardHeader>
+              <CardBody>Steps up to neutral-4</CardBody>
+            </Card>
+          </Box>
+        </Box>
       </Box>
     </Flex>
   ),
@@ -197,23 +203,29 @@ export const BgOnProviders = meta.story({
         <CardHeader>No provider</CardHeader>
         <CardBody>Card defaults to neutral-1</CardBody>
       </Card>
-      <Box bg="neutral-1" p="4" style={{ borderRadius: '8px' }}>
+      <Box bg="neutral" p="4" style={{ borderRadius: '8px' }}>
         <Card {...args} style={{ width: '200px' }}>
           <CardHeader>On neutral-1</CardHeader>
           <CardBody>Card auto-increments to neutral-2</CardBody>
         </Card>
       </Box>
-      <Box bg="neutral-2" p="4" style={{ borderRadius: '8px' }}>
-        <Card {...args} style={{ width: '200px' }}>
-          <CardHeader>On neutral-2</CardHeader>
-          <CardBody>Card auto-increments to neutral-3</CardBody>
-        </Card>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4" style={{ borderRadius: '8px' }}>
+          <Card {...args} style={{ width: '200px' }}>
+            <CardHeader>On neutral-2</CardHeader>
+            <CardBody>Card auto-increments to neutral-3</CardBody>
+          </Card>
+        </Box>
       </Box>
-      <Box bg="neutral-3" p="4" style={{ borderRadius: '8px' }}>
-        <Card {...args} style={{ width: '200px' }}>
-          <CardHeader>On neutral-3</CardHeader>
-          <CardBody>Card visually at neutral-4</CardBody>
-        </Card>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4" style={{ borderRadius: '8px' }}>
+            <Card {...args} style={{ width: '200px' }}>
+              <CardHeader>On neutral-3</CardHeader>
+              <CardBody>Card visually at neutral-4</CardBody>
+            </Card>
+          </Box>
+        </Box>
       </Box>
     </Flex>
   ),
@@ -226,11 +238,7 @@ export const CustomCardWithBox = meta.story({
         A custom card built with Box. Use Box with an explicit bg prop to create
         a card-like container that participates in the bg system as a provider.
       </Box>
-      <Box
-        bg="neutral-auto"
-        p="4"
-        style={{ borderRadius: '8px', width: '300px' }}
-      >
+      <Box bg="neutral" p="4" style={{ borderRadius: '8px', width: '300px' }}>
         <Button variant="secondary" style={{ marginTop: '8px' }}>
           Button (on neutral-1)
         </Button>

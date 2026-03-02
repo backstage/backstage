@@ -221,7 +221,7 @@ export interface MutableConfigSourceOptions {
 }
 
 // @public
-export type Parser = ({ contents }: { contents: string }) => Promise<{
+export type Parser = (input: { contents: string }) => Promise<{
   result?: JsonObject;
 }>;
 

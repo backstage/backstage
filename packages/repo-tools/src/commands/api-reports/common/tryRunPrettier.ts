@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { paths as cliPaths } from '../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 import type { Config } from 'prettier';
 
 /**
@@ -33,7 +33,7 @@ export async function tryRunPrettierAsync(
     // Filepath for proper config resolution
     const filepath =
       extraConfig.filepath ??
-      `${cliPaths.targetRoot}/should-not-be-ignored.any`;
+      `${targetPaths.rootDir}/should-not-be-ignored.any`;
     const config =
       (await prettier.resolveConfig(filepath, { editorconfig: true })) ?? {};
     const formattedContent = prettier.format(content, {
@@ -68,7 +68,7 @@ export function createPrettierSyncFormatter(
       // We need a filepath for proper config resolution, not just a directory
       const filepath =
         extraConfig.filepath ??
-        `${cliPaths.targetRoot}/should-not-be-ignored.any`;
+        `${targetPaths.rootDir}/should-not-be-ignored.any`;
       const resolveConfig =
         // @ts-expect-error: v2 requires .sync, @prettier/sync v3 does not
         prettierSync.resolveConfig?.sync ?? prettierSync.resolveConfig;

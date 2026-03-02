@@ -15,5 +15,10 @@
  */
 
 export { TagGroup, Tag } from './TagGroup';
-export type { TagGroupProps, TagProps } from './types';
+export type {
+  TagGroupProps,
+  TagGroupOwnProps,
+  TagProps,
+  TagOwnProps,
+} from './types';
 export { TagGroupDefinition } from './definition';

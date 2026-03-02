@@ -1,0 +1,1 @@
+Added back `formFieldsApiRef` and `ScaffolderFormFieldsApi` alpha exports to `@backstage/plugin-scaffolder-react`. This change was incorrectly applied to `@backstage/plugin-scaffolder` in the 1.48.2 release, which is now gone. Note that the API signature of this API has still changed since the 1.47 release.

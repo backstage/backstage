@@ -15,7 +15,7 @@
  */
 import { createCliPlugin } from '../../wiring/factory';
 import { Command } from 'commander';
-import { lazy } from '../../lib/lazy';
+import { lazy } from '../../wiring/lazy';
 
 export default createCliPlugin({
   pluginId: 'migrate',
@@ -68,39 +68,24 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['migrate', 'package-roles'],
       description: `Add package role field to packages that don't have it`,
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command.action(
-          lazy(() => import('./commands/packageRole'), 'default'),
-        );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
+      execute: {
+        loader: () => import('./commands/packageRole'),
       },
     });
 
     reg.addCommand({
       path: ['migrate', 'package-scripts'],
       description: 'Set package scripts according to each package role',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command.action(
-          lazy(() => import('./commands/packageScripts'), 'command'),
-        );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
+      execute: {
+        loader: () => import('./commands/packageScripts'),
       },
     });
 
     reg.addCommand({
       path: ['migrate', 'package-exports'],
       description: 'Synchronize package subpath export definitions',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command.action(
-          lazy(() => import('./commands/packageExports'), 'command'),
-        );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
+      execute: {
+        loader: () => import('./commands/packageExports'),
       },
     });
 
@@ -108,13 +93,8 @@ export default createCliPlugin({
       path: ['migrate', 'package-lint-configs'],
       description:
         'Migrates all packages to use @backstage/cli/config/eslint-factory',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command.action(
-          lazy(() => import('./commands/packageLintConfigs'), 'command'),
-        );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
+      execute: {
+        loader: () => import('./commands/packageLintConfigs'),
       },
     });
 
@@ -122,13 +102,8 @@ export default createCliPlugin({
       path: ['migrate', 'react-router-deps'],
       description:
         'Migrates the react-router dependencies for all packages to be peer dependencies',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command.action(
-          lazy(() => import('./commands/reactRouterDeps'), 'command'),
-        );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
+      execute: {
+        loader: () => import('./commands/reactRouterDeps'),
       },
     });
   },

@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - 'microsite/**'
+      - '!microsite/data/**'
       - 'beps/**'
 
 permissions:

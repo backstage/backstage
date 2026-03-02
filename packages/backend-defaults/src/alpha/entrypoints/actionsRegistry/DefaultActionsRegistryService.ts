@@ -28,12 +28,7 @@ import {
   ActionsRegistryActionOptions,
   ActionsRegistryService,
 } from '@backstage/backend-plugin-api/alpha';
-import {
-  ForwardedError,
-  InputError,
-  NotAllowedError,
-  NotFoundError,
-} from '@backstage/errors';
+import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
   private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
@@ -131,31 +126,24 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           );
         }
 
-        try {
-          const result = await action.action({
-            input: input.data,
-            credentials,
-            logger: this.logger,
-          });
+        const result = await action.action({
+          input: input.data,
+          credentials,
+          logger: this.logger,
+        });
 
-          const output = action.schema?.output
-            ? action.schema.output(z).safeParse(result?.output)
-            : ({ success: true, data: result?.output } as const);
+        const output = action.schema?.output
+          ? action.schema.output(z).safeParse(result?.output)
+          : ({ success: true, data: result?.output } as const);
 
-          if (!output.success) {
-            throw new InputError(
-              `Invalid output from action "${req.params.actionId}"`,
-              output.error,
-            );
-          }
-
-          res.json({ output: output.data });
-        } catch (error) {
-          throw new ForwardedError(
-            `Failed execution of action "${req.params.actionId}"`,
-            error,
+        if (!output.success) {
+          throw new InputError(
+            `Invalid output from action "${req.params.actionId}"`,
+            output.error,
           );
         }
+
+        res.json({ output: output.data });
       },
     );
     return router;

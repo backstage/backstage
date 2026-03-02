@@ -35,6 +35,7 @@ const meta = preview.meta({
       options: ['row', 'column', 'row-reverse', 'column-reverse'],
     },
   },
+  args: { children: null },
 });
 
 const DecorativeBox = ({
@@ -70,6 +71,7 @@ const DecorativeBox = ({
         fontWeight: 'bold',
         color: '#2563eb',
       }}
+      children={null}
     />
   );
 };
@@ -252,18 +254,21 @@ export const Backgrounds = meta.story({
   render: args => (
     <Flex align="center" style={{ flexWrap: 'wrap' }}>
       <Flex {...args}>Default</Flex>
-      <Flex bg="neutral-1" {...args}>
-        Neutral 1
+      <Flex bg="neutral" {...args}>
+        Neutral (level 1)
       </Flex>
-      <Flex bg="neutral-2" {...args}>
-        Neutral 2
-      </Flex>
-      <Flex bg="neutral-3" {...args}>
-        Neutral 3
-      </Flex>
-      <Flex bg={{ initial: 'neutral-1', sm: 'neutral-2' }} {...args}>
-        Responsive Bg
-      </Flex>
+      <Box bg="neutral">
+        <Flex bg="neutral" {...args}>
+          Neutral (level 2)
+        </Flex>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Flex bg="neutral" {...args}>
+            Neutral (level 3)
+          </Flex>
+        </Box>
+      </Box>
       <Flex bg="danger" {...args}>
         Danger
       </Flex>
@@ -277,20 +282,20 @@ export const Backgrounds = meta.story({
   ),
 });
 
-export const BgNeutralAuto = meta.story({
+export const BgNeutral = meta.story({
   args: { px: '6', py: '4', gap: '4' },
   render: args => (
     <Flex direction="column">
       <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
-        Using bg="neutral-auto" on Flex auto-increments from the parent context.
-        The first Flex defaults to neutral-1 (no parent), then each nested Flex
+        Using bg="neutral" on Flex auto-increments from the parent context. The
+        first Flex defaults to neutral-1 (no parent), then each nested Flex
         increments by one, capping at neutral-3.
       </div>
-      <Flex {...args} bg="neutral-auto" direction="column">
-        <div>Neutral 1 (auto, no parent)</div>
-        <Flex {...args} bg="neutral-auto" direction="column">
+      <Flex {...args} bg="neutral" direction="column">
+        <div>Neutral 1 (no parent)</div>
+        <Flex {...args} bg="neutral" direction="column">
           <div>Neutral 2 (auto-incremented)</div>
-          <Flex {...args} bg="neutral-auto" direction="column">
+          <Flex {...args} bg="neutral" direction="column">
             <div>Neutral 3 (auto-incremented, capped)</div>
           </Flex>
         </Flex>

@@ -336,8 +336,8 @@ async function getRootConfig() {
     rejectFrontendNetworkRequests,
   };
 
-  const workspacePatterns =
-    rootPkgJson.workspaces && rootPkgJson.workspaces.packages;
+  const ws = rootPkgJson.workspaces;
+  const workspacePatterns = Array.isArray(ws) ? ws : ws?.packages;
 
   // Check if we're running within a specific monorepo package. In that case just get the single project config.
   if (!workspacePatterns || paths.targetRoot !== paths.targetDir) {

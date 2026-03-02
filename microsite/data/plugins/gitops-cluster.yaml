@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: '/img/logo-gradient-on-dark.svg'
 npmPackageName: '@backstage-community/plugin-gitops-profiles'
 addedDate: '2020-11-03'
+status: active

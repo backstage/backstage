@@ -23,11 +23,12 @@ import {
   PackageGraph,
   BackstagePackageJson,
   Lockfile,
+  runWorkerQueueThreads,
+  SuccessCache,
 } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
-import { runWorkerQueueThreads } from '../../../../lib/parallel';
-import { createScriptOptionsParser } from '../../../../lib/optionsParser';
-import { SuccessCache } from '../../../../lib/cache/SuccessCache';
+import { targetPaths } from '@backstage/cli-common';
+
+import { createScriptOptionsParser } from '../../lib/optionsParser';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
@@ -40,11 +41,14 @@ function depCount(pkg: BackstagePackageJson) {
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
 
-  const cache = new SuccessCache('lint', opts.successCacheDir);
+  const cache = SuccessCache.create({
+    name: 'lint',
+    basePath: opts.successCacheDir,
+  });
   const cacheContext = opts.successCache
     ? {
         entries: await cache.read(),
-        lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
+        lockfile: await Lockfile.load(targetPaths.resolveRoot('yarn.lock')),
       }
     : undefined;
 
@@ -62,7 +66,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
   if (opts.format === 'eslint-formatter-friendly') {
-    process.chdir(paths.targetRoot);
+    process.chdir(targetPaths.rootDir);
   }
 
   // Make sure lint output is colored unless the user explicitly disabled it
@@ -77,7 +81,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       const lintOptions = parseLintScript(pkg.packageJson.scripts?.lint);
       const base = {
         fullDir: pkg.dir,
-        relativeDir: relativePath(paths.targetRoot, pkg.dir),
+        relativeDir: relativePath(targetPaths.rootDir, pkg.dir),
         lintOptions,
         parentHash: undefined,
       };
@@ -105,15 +109,15 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     }),
   );
 
-  const resultsList = await runWorkerQueueThreads({
+  const { results: resultsList } = await runWorkerQueueThreads({
     items: items.filter(item => item.lintOptions), // Filter out packages without lint script
-    workerData: {
+    context: {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
       shouldCache: Boolean(cacheContext),
       maxWarnings: opts.maxWarnings ?? -1,
       successCache: cacheContext?.entries,
-      rootDir: paths.targetRoot,
+      rootDir: targetPaths.rootDir,
     },
     workerFactory: async ({
       fix,
@@ -263,7 +267,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   if (opts.outputFile && errorOutput) {
-    await fs.writeFile(paths.resolveTargetRoot(opts.outputFile), errorOutput);
+    await fs.writeFile(targetPaths.resolveRoot(opts.outputFile), errorOutput);
   }
 
   if (cacheContext) {

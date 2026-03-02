@@ -1,0 +1,1 @@
+Fixed a type inference issue with the `apis` option of testing utilities in `@backstage/frontend-test-utils`.

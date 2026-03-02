@@ -16,8 +16,10 @@
 
 import { screen } from '@testing-library/react';
 import { useSelectedSubRoute } from './EntityTabs';
+import { EntityTabsList } from './EntityTabsList';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
 
 function TestSubRouteHook(props: {
   subRoutes: Array<{
@@ -36,6 +38,83 @@ function TestSubRouteHook(props: {
     </div>
   );
 }
+
+describe('EntityTabsList', () => {
+  it('should render groups in the order defined by groupDefinitions', () => {
+    const tabs = [
+      { id: '/cicd', label: 'CI/CD', path: 'cicd', group: 'cicd' },
+      {
+        id: '/overview',
+        label: 'Overview',
+        path: 'overview',
+        group: 'overview',
+      },
+      {
+        id: '/techdocs',
+        label: 'TechDocs',
+        path: 'techdocs',
+        group: 'techdocs',
+      },
+    ];
+
+    const groupDefinitions = {
+      overview: { title: 'Overview' },
+      techdocs: { title: 'TechDocs' },
+      cicd: { title: 'CI/CD' },
+    };
+
+    renderInTestApp(
+      <EntityTabsList
+        tabs={tabs}
+        groupDefinitions={groupDefinitions}
+        selectedIndex={0}
+      />,
+    );
+
+    const tabElements = screen.getAllByRole('tab');
+    expect(tabElements).toHaveLength(3);
+    expect(tabElements[0]).toHaveTextContent('Overview');
+    expect(tabElements[1]).toHaveTextContent('TechDocs');
+    expect(tabElements[2]).toHaveTextContent('CI/CD');
+  });
+
+  it('should place ungrouped tabs after defined groups', () => {
+    const tabs = [
+      { id: '/standalone', label: 'Standalone', path: 'standalone' },
+      {
+        id: '/overview',
+        label: 'Overview',
+        path: 'overview',
+        group: 'overview',
+      },
+      {
+        id: '/techdocs',
+        label: 'TechDocs',
+        path: 'techdocs',
+        group: 'techdocs',
+      },
+    ];
+
+    const groupDefinitions = {
+      overview: { title: 'Overview' },
+      techdocs: { title: 'TechDocs' },
+    };
+
+    renderInTestApp(
+      <EntityTabsList
+        tabs={tabs}
+        groupDefinitions={groupDefinitions}
+        selectedIndex={0}
+      />,
+    );
+
+    const tabElements = screen.getAllByRole('tab');
+    expect(tabElements).toHaveLength(3);
+    expect(tabElements[0]).toHaveTextContent('Overview');
+    expect(tabElements[1]).toHaveTextContent('TechDocs');
+    expect(tabElements[2]).toHaveTextContent('Standalone');
+  });
+});
 
 describe('EntityTabs', () => {
   const subRoutes = [

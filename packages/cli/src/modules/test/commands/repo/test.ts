@@ -22,11 +22,15 @@ import yargs from 'yargs';
 import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'node:path';
 import { Command, OptionValues } from 'commander';
-import { Lockfile, PackageGraph } from '@backstage/cli-node';
-import { paths } from '../../../../lib/paths';
-import { runCheck, runOutput } from '@backstage/cli-common';
-import { isChildPath } from '@backstage/cli-common';
-import { SuccessCache } from '../../../../lib/cache/SuccessCache';
+import { Lockfile, PackageGraph, SuccessCache } from '@backstage/cli-node';
+
+import {
+  runCheck,
+  runOutput,
+  targetPaths,
+  findOwnPaths,
+  isChildPath,
+} from '@backstage/cli-common';
 
 type JestProject = {
   displayName: string;
@@ -63,7 +67,7 @@ interface TestGlobal extends Global {
 async function readPackageTreeHashes(graph: PackageGraph) {
   const pkgs = Array.from(graph.values()).map(pkg => ({
     ...pkg,
-    path: relativePath(paths.targetRoot, pkg.dir),
+    path: relativePath(targetPaths.rootDir, pkg.dir),
   }));
   const output = await runOutput([
     'git',
@@ -162,7 +166,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
   // Only include our config if caller isn't passing their own config
   if (!hasFlags('-c', '--config')) {
-    args.push('--config', paths.resolveOwn('config/jest.js'));
+    /* eslint-disable-next-line no-restricted-syntax */
+    args.push('--config', findOwnPaths(__dirname).resolve('config/jest.js'));
   }
 
   if (!hasFlags('--passWithNoTests')) {
@@ -299,11 +304,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     }--no-node-snapshot`;
   }
 
-  // This ensures that the process doesn't exit too early before stdout is flushed
   if (args.includes('--jest-help')) {
     removeOptionArg(args, '--jest-help');
     args.push('--help');
-    (process.stdout as any)._handle.setBlocking(true);
   }
 
   // This code path is enabled by the --successCache flag, which is specific to
@@ -327,7 +330,10 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       );
     }
 
-    const cache = new SuccessCache('test', opts.successCacheDir);
+    const cache = SuccessCache.create({
+      name: 'test',
+      basePath: opts.successCacheDir,
+    });
     const graph = await getPackageGraph();
 
     // Shared state for the bridge
@@ -341,7 +347,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       async filterConfigs(projectConfigs, globalRootConfig) {
         const cacheEntries = await cache.read();
         const lockfile = await Lockfile.load(
-          paths.resolveTargetRoot('yarn.lock'),
+          targetPaths.resolveRoot('yarn.lock'),
         );
         const getPackageTreeHash = await readPackageTreeHashes(graph);
 
