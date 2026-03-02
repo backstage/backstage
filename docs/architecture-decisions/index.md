@@ -35,3 +35,57 @@ Records should be stored under the `architecture-decisions` directory.
 
 If an ADR supersedes an older ADR then the status of the older ADR is changed to
 "superseded by ADR-XXXX", and links to the new ADR.
+
+## Enforcing ADRs on Pull Requests
+
+ADRs are only effective if the team is reminded of them when relevant code changes.
+[Decision Guardian](https://github.com/DecispherHQ/decision-guardian) is a GitHub Action + CLI that automatically surfaces ADRs as PR comments when a pull request touches files covered by a decision.
+
+### GitHub Action (automatic enforcement)
+
+Add to `.github/workflows/adrs.yml`:
+
+```yaml
+name: Enforce ADRs
+on:
+  pull_request:
+
+jobs:
+  check-adrs:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DecispherHQ/decision-guardian@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          decision_file: '.decispher/decisions.md'
+          fail_on_critical: true
+```
+
+When a PR touches a protected path, Decision Guardian posts a comment linking
+to the relevant ADR and explaining what to consider before merging.
+
+### CLI (local checks before pushing)
+
+```bash
+npx decision-guardian check .decispher/decisions.md --staged --fail-on-critical
+```
+
+### Linking ADRs to file patterns
+
+Create `.decispher/decisions.md` and reference your ADR docs:
+```markdown
+<!-- DECISION-001 -->
+## Decision: Authentication Changes
+
+**Status**: Active
+**Severity**: Critical
+**Files**:
+- `src/auth/**/*`
+
+### Context
+
+See [ADR-0012](./adr012-authentication.md) before modifying auth flows.
+```
