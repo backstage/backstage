@@ -19,11 +19,13 @@ import { EntityLabelsEmptyState } from './EntityLabelsEmptyState';
 import {
   Table,
   CellText,
+  useTable,
   type ColumnConfig,
   type TableItem,
 } from '@backstage/ui';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useMemo } from 'react';
 
 /** @public */
 export interface EntityLabelsCardProps {
@@ -36,20 +38,6 @@ interface LabelItem extends TableItem {
   value: string;
 }
 
-const columnConfig: ColumnConfig<LabelItem>[] = [
-  {
-    id: 'key',
-    label: 'Label',
-    isRowHeader: true,
-    cell: item => <CellText title={item.key} />,
-  },
-  {
-    id: 'value',
-    label: 'Value',
-    cell: item => <CellText title={item.value} />,
-  },
-];
-
 export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
   const { title } = props;
   const { entity } = useEntity();
@@ -57,20 +45,45 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
 
   const labels = entity?.metadata?.labels;
 
+  const columnConfig: ColumnConfig<LabelItem>[] = useMemo(
+    () => [
+      {
+        id: 'key',
+        label: t('entityLabelsCard.columnKeyLabel'),
+        isRowHeader: true,
+        cell: item => <CellText title={item.key} />,
+      },
+      {
+        id: 'value',
+        label: t('entityLabelsCard.columnValueLabel'),
+        cell: item => <CellText title={item.value} />,
+      },
+    ],
+    [t],
+  );
+
+  const data = useMemo(
+    () =>
+      Object.keys(labels ?? {}).map(labelKey => ({
+        id: labelKey,
+        key: labelKey,
+        value: labels![labelKey],
+      })),
+    [labels],
+  );
+
+  const { tableProps } = useTable({
+    mode: 'complete',
+    data,
+    paginationOptions: { pageSize: 5 },
+  });
+
   return (
     <EntityInfoCard title={title || t('entityLabelsCard.title')}>
       {!labels || Object.keys(labels).length === 0 ? (
         <EntityLabelsEmptyState />
       ) : (
-        <Table
-          columnConfig={columnConfig}
-          data={Object.keys(labels).map(labelKey => ({
-            id: labelKey,
-            key: labelKey,
-            value: labels[labelKey],
-          }))}
-          pagination={{ type: 'none' }}
-        />
+        <Table columnConfig={columnConfig} {...tableProps} />
       )}
     </EntityInfoCard>
   );

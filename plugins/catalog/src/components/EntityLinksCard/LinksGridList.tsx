@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Grid } from '@backstage/ui';
+import { Grid, type Columns } from '@backstage/ui';
 import { IconLink } from './IconLink';
 import { ColumnBreakpoints } from './types';
 import { useDynamicColumns } from './useDynamicColumns';
@@ -36,7 +36,10 @@ export function LinksGridList(props: LinksGridListProps) {
   const numOfCols = useDynamicColumns(cols);
 
   return (
-    <Grid.Root columns={String(numOfCols) as any} gap="2">
+    <Grid.Root
+      columns={String(Math.min(Math.max(numOfCols, 1), 12)) as Columns}
+      gap="2"
+    >
       {items.map(({ text, href, Icon }, i) => (
         <IconLink key={i} href={href} text={text ?? href} Icon={Icon} />
       ))}
