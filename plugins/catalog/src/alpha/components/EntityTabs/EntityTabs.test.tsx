@@ -19,6 +19,17 @@ import { useSelectedSubRoute } from './EntityTabs';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 
+/**
+ * These tests exercise `useSelectedSubRoute`, a pure routing hook that relies
+ * only on react-router-dom primitives (useParams, useRoutes, matchRoutes).
+ * No UI component rendering context (MUI ThemeProvider, shadcn/ui providers,
+ * etc.) is required because the hook is entirely route-resolution logic.
+ *
+ * If future sibling components (EntityTabsList, EntityTabsGroup, EntityTabsPanel)
+ * require integration tests that render their visual output, those tests should
+ * set up any necessary shadcn/ui or Tailwind CSS context at that point.
+ */
+
 function TestSubRouteHook(props: {
   subRoutes: Array<{
     group: string;
