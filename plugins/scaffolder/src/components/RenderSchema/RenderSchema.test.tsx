@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import { renderInTestApp } from '@backstage/test-utils';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import {
   BoundFunction,
   queries,
@@ -35,31 +33,16 @@ import { RenderEnum, RenderSchema } from './RenderSchema';
 
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "assert*"] }] */
 
-const useStyles = makeStyles(theme => ({
-  code: {
-    fontFamily: 'Menlo, monospace',
-    padding: theme.spacing(1),
-    backgroundColor:
-      theme.palette.type === 'dark'
-        ? theme.palette.grey[700]
-        : theme.palette.grey[300],
-    display: 'inline-block',
-    borderRadius: 5,
-    border: `1px solid ${theme.palette.grey[500]}`,
-    position: 'relative',
-  },
-
-  codeRequired: {
-    '&::after': {
-      position: 'absolute',
-      content: '"*"',
-      top: 0,
-      right: theme.spacing(0.5),
-      fontWeight: 'bolder',
-      color: theme.palette.error.light,
-    },
-  },
-}));
+/**
+ * Returns a Record<string, string> of Tailwind CSS class strings that replaces
+ * the MUI makeStyles hook. Keys are preserved for test assertion compatibility
+ * (e.g. 'codeRequired' must appear in classList for assertion checks).
+ */
+const useStyles = (): Record<string, string> => ({
+  code: 'font-mono p-2 bg-muted inline-block rounded border border-border relative',
+  codeRequired:
+    'codeRequired after:absolute after:content-["*"] after:top-0 after:right-1 after:font-bold after:text-destructive',
+});
 
 const LocalRenderEnum = ({ e }: { e: JSONSchema7Type[] }) => {
   const classes = useStyles();
@@ -84,7 +67,7 @@ const LocalRenderSchema = ({
           parentId: 'test',
           classes,
           expanded,
-          headings: [<Typography component="h1" />],
+          headings: [<h1 className="text-lg font-semibold">Schema</h1>],
         },
       }}
     />
