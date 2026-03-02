@@ -114,20 +114,21 @@ export function AboutContent(props: AboutContentProps) {
     entitySourceLocation = undefined;
   }
 
+  const columns = { initial: '1', sm: '2', lg: '3' } as const;
+
   return (
-    <Grid.Root columns={{ initial: '1', sm: '2', lg: '3' }} gap="3">
-      <AboutField
-        label={t('aboutCard.descriptionField.label')}
-        style={{ gridColumn: '1 / -1' }}
-      >
-        <MarkdownContent
-          className={classes.description}
-          content={
-            entity?.metadata?.description ||
-            t('aboutCard.descriptionField.value')
-          }
-        />
-      </AboutField>
+    <Grid.Root columns={columns} gap="3">
+      <Grid.Item colSpan={columns}>
+        <AboutField label={t('aboutCard.descriptionField.label')}>
+          <MarkdownContent
+            className={classes.description}
+            content={
+              entity?.metadata?.description ||
+              t('aboutCard.descriptionField.value')
+            }
+          />
+        </AboutField>
+      </Grid.Item>
       <AboutField
         label={t('aboutCard.ownerField.label')}
         value={t('aboutCard.ownerField.value')}
@@ -213,24 +214,25 @@ export function AboutContent(props: AboutContentProps) {
         ))}
       </AboutField>
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (
-        <AboutField
-          label={t('aboutCard.targetsField.label')}
-          style={{ gridColumn: '1 / -1' }}
-        >
-          <LinksGridList
-            cols={1}
-            items={((entity.spec.targets as JsonArray) || [entity.spec.target])
-              .map(target => target as string)
-              .map(target => ({
-                text: target,
-                href: getLocationTargetHref(
-                  target,
-                  (entity?.spec?.type || t('aboutCard.unknown')) as string,
-                  entitySourceLocation!,
-                ),
-              }))}
-          />
-        </AboutField>
+        <Grid.Item colSpan={columns}>
+          <AboutField label={t('aboutCard.targetsField.label')}>
+            <LinksGridList
+              cols={1}
+              items={(
+                (entity.spec.targets as JsonArray) || [entity.spec.target]
+              )
+                .map(target => target as string)
+                .map(target => ({
+                  text: target,
+                  href: getLocationTargetHref(
+                    target,
+                    (entity?.spec?.type || t('aboutCard.unknown')) as string,
+                    entitySourceLocation!,
+                  ),
+                }))}
+            />
+          </AboutField>
+        </Grid.Item>
       )}
     </Grid.Root>
   );

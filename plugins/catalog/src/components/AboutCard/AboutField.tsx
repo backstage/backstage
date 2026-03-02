@@ -17,7 +17,7 @@
 import { useElementFilter } from '@backstage/core-plugin-api';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { CSSProperties, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 
@@ -50,19 +50,11 @@ export interface AboutFieldProps {
   gridSizes?: Record<string, number>;
   children?: ReactNode;
   className?: string;
-  style?: CSSProperties;
 }
 
 /** @public */
 export function AboutField(props: AboutFieldProps) {
-  const {
-    label,
-    value,
-    gridSizes: _gridSizes,
-    children,
-    className,
-    style,
-  } = props;
+  const { label, value, gridSizes: _gridSizes, children, className } = props;
   const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
@@ -78,7 +70,7 @@ export function AboutField(props: AboutFieldProps) {
       </Typography>
     );
   return (
-    <div className={className} style={style}>
+    <div className={className}>
       <Typography variant="h2" className={classes.label}>
         {label}
       </Typography>
