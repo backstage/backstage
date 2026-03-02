@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import List from '@material-ui/core/List';
 import { EmptyProviders } from './EmptyProviders';
 import { DefaultProviderSettings } from './DefaultProviderSettings';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
@@ -41,7 +40,7 @@ export const UserSettingsAuthProviders = (props: {
 
   return (
     <InfoCard title={t('authProviders.title')}>
-      <List dense>{providers}</List>
+      <ul className="space-y-1">{providers}</ul>
     </InfoCard>
   );
 };
