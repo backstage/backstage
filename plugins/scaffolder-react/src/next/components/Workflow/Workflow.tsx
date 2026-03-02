@@ -154,15 +154,13 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
                 <CardHeader
                   title={title ?? sortedManifest.title}
                   action={
-                    <>
-                      <IconButton
-                        aria-label={t('workflow.hideDescriptionButtonTitle')}
-                        title={t('workflow.hideDescriptionButtonTitle')}
-                        onClick={onHideDescription}
-                      >
-                        <VisibilityOffIcon />
-                      </IconButton>
-                    </>
+                    <IconButton
+                      aria-label="Hide"
+                      title={t('workflow.hideDescriptionButtonTitle')}
+                      onClick={onHideDescription}
+                    >
+                      <VisibilityOffIcon />
+                    </IconButton>
                   }
                 />
                 <Divider />
