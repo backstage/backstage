@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import { useState } from 'react';
-import Snackbar from '@material-ui/core/Snackbar';
-import Button from '@material-ui/core/Button';
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 
 type TechDocsRedirectNotificationProps = {
   handleButtonClick: () => void;
@@ -25,43 +23,27 @@ type TechDocsRedirectNotificationProps = {
   autoHideDuration: number;
 };
 
-const useStyles = makeStyles(theme => ({
-  button: {
-    color: theme.palette.primary.light,
-    textDecoration: 'underline',
-  },
-}));
-
 export const TechDocsRedirectNotification = ({
   message,
   handleButtonClick,
   autoHideDuration,
 }: TechDocsRedirectNotificationProps) => {
-  const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const hasShown = useRef(false);
 
-  const handleClose = () => setOpen(false);
+  useEffect(() => {
+    if (hasShown.current) return;
+    hasShown.current = true;
 
-  return (
-    <Snackbar
-      open={open}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      autoHideDuration={autoHideDuration}
-      color="primary"
-      onClose={handleClose}
-      message={message}
-      action={
-        <Button
-          classes={{ root: classes.button }}
-          size="small"
-          onClick={() => {
-            handleClose();
-            handleButtonClick();
-          }}
-        >
-          Redirect now
-        </Button>
-      }
-    />
-  );
+    toast(message, {
+      duration: autoHideDuration,
+      action: {
+        label: 'Redirect now',
+        onClick: () => {
+          handleButtonClick();
+        },
+      },
+    });
+  }, [message, autoHideDuration, handleButtonClick]);
+
+  return null;
 };
