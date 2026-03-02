@@ -21,4 +21,3 @@ export { themes } from './themes';
 export { UnifiedThemeProvider } from './UnifiedThemeProvider';
 export type { UnifiedThemeProviderProps } from './UnifiedThemeProvider';
 export type { UnifiedTheme, SupportedThemes, SupportedVersions } from './types';
-export * from './MuiClassNameSetup';

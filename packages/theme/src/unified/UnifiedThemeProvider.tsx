@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import './MuiClassNameSetup';
 import { ReactNode } from 'react';
 import {
   ThemeProvider,
@@ -27,7 +28,6 @@ import {
   Theme as Mui5Theme,
 } from '@mui/material/styles';
 import { UnifiedTheme } from './types';
-import './MuiClassNameSetup';
 
 /**
  * Props for {@link UnifiedThemeProvider}.
