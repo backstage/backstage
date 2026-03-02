@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import DocsIcon from '@material-ui/icons/Description';
+import { FileText } from 'lucide-react';
 
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -45,7 +45,7 @@ export function useTechdocsReaderIconLinkProps() {
         entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
         entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
       ) || !viewTechdocLink,
-    icon: <DocsIcon />,
+    icon: <FileText />,
     href: buildTechDocsURL(entity, viewTechdocLink),
   };
 }
