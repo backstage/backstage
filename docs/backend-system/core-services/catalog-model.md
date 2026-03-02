@@ -9,11 +9,23 @@ description: Documentation for the Catalog Model Service
 
 The Catalog Model Service is the consumer-facing counterpart to the [Catalog Model Registry](./catalog-model-registry.md). It aggregates all annotation registrations from across plugins and provides methods to list them and validate entities against their schemas.
 
-This service is root-scoped, meaning there is a single instance shared across the backend.
+This service is plugin-scoped and communicates with registry instances over HTTP, so it works correctly in distributed deployments where plugins run in separate processes.
+
+## Configuration
+
+The service reads the `backend.catalogModel.pluginSources` config to know which plugins to query for annotations:
+
+```yaml
+backend:
+  catalogModel:
+    pluginSources:
+      - kubernetes
+      - my-plugin
+```
 
 ## How it Works
 
-The service reads from a shared store that all Catalog Model Registry instances write to. Reads are lazy, so the service always returns the latest state of all registrations.
+The service fetches annotation registrations from each configured plugin source via HTTP. Each source plugin runs an instance of the [Catalog Model Registry](./catalog-model-registry.md) service that exposes its registered annotations.
 
 ### `listAnnotations`
 
@@ -53,10 +65,10 @@ export const myPlugin = createBackendPlugin({
       },
       async init({ catalogModel }) {
         // List all registered annotations
-        const all = catalogModel.listAnnotations();
+        const all = await catalogModel.listAnnotations();
 
         // List annotations for a specific entity kind
-        const componentAnnotations = catalogModel.listAnnotations({
+        const componentAnnotations = await catalogModel.listAnnotations({
           entityKind: 'Component',
         });
       },
@@ -68,7 +80,7 @@ export const myPlugin = createBackendPlugin({
 ### Validating an Entity
 
 ```typescript
-const result = catalogModel.validateEntity({
+const result = await catalogModel.validateEntity({
   kind: 'Component',
   metadata: {
     annotations: {
@@ -91,9 +103,9 @@ if (!result.valid) {
 The service is most useful when consumed on incoming requests rather than during plugin init, since all plugins will have registered their annotations by then.
 
 ```typescript
-router.get('/annotations', (req, res) => {
+router.get('/annotations', async (req, res) => {
   const entityKind = req.query.kind as string | undefined;
-  const annotations = catalogModel.listAnnotations(
+  const annotations = await catalogModel.listAnnotations(
     entityKind ? { entityKind } : undefined,
   );
   res.json({ annotations });
@@ -101,7 +113,7 @@ router.get('/annotations', (req, res) => {
 
 router.post('/validate', async (req, res) => {
   const entity = req.body;
-  const result = catalogModel.validateEntity(entity);
+  const result = await catalogModel.validateEntity(entity);
   res.json(result);
 });
 ```

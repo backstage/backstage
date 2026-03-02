@@ -13,81 +13,148 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
-import { JSONSchema7 } from 'json-schema';
+import {
+  AuthService,
+  DiscoveryService,
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
+import { ResponseError } from '@backstage/errors';
 import {
   CatalogModelService,
   CatalogModelAnnotationDescriptor,
   CatalogModelValidationResult,
 } from '@backstage/backend-plugin-api/alpha';
-import { CatalogModelStore } from '../catalogModelRegistry/CatalogModelStore';
+import Ajv from 'ajv';
 
 export class DefaultCatalogModelService implements CatalogModelService {
-  private readonly store: CatalogModelStore;
+  private readonly discovery: DiscoveryService;
+  private readonly config: RootConfigService;
+  private readonly logger: LoggerService;
+  private readonly auth: AuthService;
+  private readonly ajv: Ajv;
 
-  constructor(store: CatalogModelStore) {
-    this.store = store;
+  private constructor(
+    discovery: DiscoveryService,
+    config: RootConfigService,
+    logger: LoggerService,
+    auth: AuthService,
+  ) {
+    this.discovery = discovery;
+    this.config = config;
+    this.logger = logger;
+    this.auth = auth;
+    this.ajv = new Ajv();
   }
 
-  listAnnotations(
+  static create({
+    discovery,
+    config,
+    logger,
+    auth,
+  }: {
+    discovery: DiscoveryService;
+    config: RootConfigService;
+    logger: LoggerService;
+    auth: AuthService;
+  }) {
+    return new DefaultCatalogModelService(discovery, config, logger, auth);
+  }
+
+  async listAnnotations(
     options?: { entityKind?: string } | undefined,
-  ): CatalogModelAnnotationDescriptor[] {
-    const registrations = this.store.getAnnotations(options?.entityKind);
-    const descriptors: CatalogModelAnnotationDescriptor[] = [];
+  ): Promise<CatalogModelAnnotationDescriptor[]> {
+    const pluginSources =
+      this.config.getOptionalStringArray(
+        'backend.catalogModel.pluginSources',
+      ) ?? [];
 
-    for (const registration of registrations) {
-      const jsonSchema = zodToJsonSchema(registration.schema) as JSONSchema7;
-      const properties = jsonSchema.properties ?? {};
+    const allAnnotations = await Promise.all(
+      pluginSources.map(async source => {
+        try {
+          const response = await this.makeRequest({
+            path: '/.backstage/catalog-model/v1/annotations',
+            pluginId: source,
+          });
 
-      for (const [key, propSchema] of Object.entries(properties)) {
-        const prop = propSchema as JSONSchema7;
-        descriptors.push({
-          key,
-          pluginId: registration.pluginId,
-          entityKind: registration.entityKind,
-          description: prop.description,
-          schema: prop,
-        });
-      }
+          if (!response.ok) {
+            throw await ResponseError.fromResponse(response);
+          }
+
+          const { annotations } = (await response.json()) as {
+            annotations: CatalogModelAnnotationDescriptor[];
+          };
+
+          return annotations;
+        } catch (error) {
+          this.logger.warn(
+            `Failed to fetch catalog model annotations from ${source}`,
+            error,
+          );
+          return [];
+        }
+      }),
+    );
+
+    const flat = allAnnotations.flat();
+
+    if (options?.entityKind) {
+      return flat.filter(a => a.entityKind === options.entityKind);
     }
 
-    return descriptors;
+    return flat;
   }
 
-  validateEntity(entity: {
+  async validateEntity(entity: {
     kind: string;
     metadata: { annotations?: Record<string, string> };
-  }): CatalogModelValidationResult {
-    const registrations = this.store.getAnnotations(entity.kind);
-    const annotations = entity.metadata.annotations ?? {};
+  }): Promise<CatalogModelValidationResult> {
+    const descriptors = await this.listAnnotations({
+      entityKind: entity.kind,
+    });
+
+    const entityAnnotations = entity.metadata.annotations ?? {};
     const errors: CatalogModelValidationResult['errors'] = [];
 
-    for (const registration of registrations) {
-      const shape = registration.schema.shape;
+    for (const descriptor of descriptors) {
+      const value = entityAnnotations[descriptor.key];
+      if (value === undefined) {
+        continue;
+      }
 
-      for (const [key, fieldSchema] of Object.entries(shape)) {
-        const value = annotations[key];
-        if (value === undefined) {
-          continue;
-        }
-
-        const result = (fieldSchema as z.ZodType).safeParse(value);
-        if (!result.success) {
-          for (const issue of result.error.issues) {
-            errors.push({
-              pluginId: registration.pluginId,
-              annotation: key,
-              message: issue.message,
-            });
-          }
+      const validate = this.ajv.compile(descriptor.schema);
+      if (!validate(value)) {
+        for (const error of validate.errors ?? []) {
+          errors.push({
+            pluginId: descriptor.pluginId,
+            annotation: descriptor.key,
+            message: error.message ?? 'Validation failed',
+          });
         }
       }
     }
 
-    return {
-      valid: errors.length === 0,
-      errors,
-    };
+    return { valid: errors.length === 0, errors };
+  }
+
+  private async makeRequest(opts: {
+    path: string;
+    pluginId: string;
+    options?: RequestInit;
+  }) {
+    const baseUrl = await this.discovery.getBaseUrl(opts.pluginId);
+
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: opts.pluginId,
+    });
+
+    return fetch(`${baseUrl}${opts.path}`, {
+      ...opts.options,
+      headers: {
+        ...opts.options?.headers,
+        Authorization: `Bearer ${token}`,
+      },
+    });
   }
 }

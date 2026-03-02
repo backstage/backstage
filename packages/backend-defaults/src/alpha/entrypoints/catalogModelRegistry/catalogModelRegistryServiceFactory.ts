@@ -19,10 +19,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { catalogModelRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DefaultCatalogModelRegistryService } from './DefaultCatalogModelRegistryService';
-import {
-  catalogModelStoreServiceRef,
-  DefaultCatalogModelStore,
-} from './CatalogModelStore';
 
 /**
  * @public
@@ -30,18 +26,12 @@ import {
 export const catalogModelRegistryServiceFactory = createServiceFactory({
   service: catalogModelRegistryServiceRef,
   deps: {
-    store: catalogModelStoreServiceRef,
     metadata: coreServices.pluginMetadata,
+    httpRouter: coreServices.httpRouter,
   },
-  factory: ({ store, metadata }) =>
-    new DefaultCatalogModelRegistryService(store, metadata),
-});
-
-/**
- * @public
- */
-export const catalogModelStoreServiceFactory = createServiceFactory({
-  service: catalogModelStoreServiceRef,
-  deps: {},
-  factory: () => new DefaultCatalogModelStore(),
+  factory: ({ metadata, httpRouter }) => {
+    const service = new DefaultCatalogModelRegistryService(metadata);
+    httpRouter.use(service.createRouter());
+    return service;
+  },
 });

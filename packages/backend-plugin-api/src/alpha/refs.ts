@@ -88,5 +88,4 @@ export const catalogModelServiceRef = createServiceRef<
   import('./CatalogModelService').CatalogModelService
 >({
   id: 'alpha.core.catalogModel',
-  scope: 'root',
 });

@@ -54,10 +54,10 @@ export type CatalogModelValidationResult = {
 export interface CatalogModelService {
   listAnnotations(options?: {
     entityKind?: string;
-  }): CatalogModelAnnotationDescriptor[];
+  }): Promise<CatalogModelAnnotationDescriptor[]>;
 
   validateEntity(entity: {
     kind: string;
     metadata: { annotations?: Record<string, string> };
-  }): CatalogModelValidationResult;
+  }): Promise<CatalogModelValidationResult>;
 }

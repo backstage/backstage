@@ -14,29 +14,66 @@
  * limitations under the License.
  */
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
+import PromiseRouter from 'express-promise-router';
+import { Router, json } from 'express';
 import { z, AnyZodObject } from 'zod';
+import zodToJsonSchema from 'zod-to-json-schema';
 import {
   CatalogModelRegistryService,
   CatalogModelRegistryAnnotationOptions,
 } from '@backstage/backend-plugin-api/alpha';
-import { CatalogModelStore } from './CatalogModelStore';
+import { JSONSchema7 } from 'json-schema';
+
+interface AnnotationRegistration {
+  pluginId: string;
+  entityKind: string;
+  schema: AnyZodObject;
+}
 
 export class DefaultCatalogModelRegistryService
   implements CatalogModelRegistryService
 {
-  private readonly store: CatalogModelStore;
+  private readonly annotations: AnnotationRegistration[] = [];
   private readonly metadata: PluginMetadataService;
 
-  constructor(store: CatalogModelStore, metadata: PluginMetadataService) {
-    this.store = store;
+  constructor(metadata: PluginMetadataService) {
     this.metadata = metadata;
+  }
+
+  createRouter(): Router {
+    const router = PromiseRouter();
+    router.use(json());
+
+    router.get('/.backstage/catalog-model/v1/annotations', (_, res) => {
+      const descriptors = [];
+
+      for (const registration of this.annotations) {
+        const jsonSchema = zodToJsonSchema(registration.schema) as JSONSchema7;
+        const properties = jsonSchema.properties ?? {};
+
+        for (const [key, propSchema] of Object.entries(properties)) {
+          const prop = propSchema as JSONSchema7;
+          descriptors.push({
+            key,
+            pluginId: registration.pluginId,
+            entityKind: registration.entityKind,
+            description: prop.description,
+            schema: prop,
+          });
+        }
+      }
+
+      return res.json({ annotations: descriptors });
+    });
+
+    return router;
   }
 
   registerAnnotations<TSchema extends AnyZodObject>(
     options: CatalogModelRegistryAnnotationOptions<TSchema>,
   ): void {
     const schema = options.annotations(z);
-    this.store.addAnnotations({
+    this.annotations.push({
       pluginId: this.metadata.getId(),
       entityKind: options.entityKind,
       schema,

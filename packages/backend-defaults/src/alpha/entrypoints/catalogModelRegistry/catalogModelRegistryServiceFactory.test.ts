@@ -13,40 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createBackendPlugin,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
+import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import {
-  CatalogModelService,
-  catalogModelRegistryServiceRef,
-  catalogModelServiceRef,
-} from '@backstage/backend-plugin-api/alpha';
+import { catalogModelRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { catalogModelRegistryServiceFactory } from './catalogModelRegistryServiceFactory';
-import { catalogModelServiceFactory } from '../catalogModel/catalogModelServiceFactory';
-import {
-  catalogModelStoreServiceRef,
-  DefaultCatalogModelStore,
-} from './CatalogModelStore';
+import { httpRouterServiceFactory } from '../../../entrypoints/httpRouter';
+import request from 'supertest';
 
 describe('catalogModelRegistryServiceFactory', () => {
-  const storeFactory = createServiceFactory({
-    service: catalogModelStoreServiceRef,
-    deps: {},
-    factory: () => new DefaultCatalogModelStore(),
-  });
-
   const defaultServices = [
     catalogModelRegistryServiceFactory,
-    catalogModelServiceFactory,
-    storeFactory,
+    httpRouterServiceFactory,
   ];
 
-  it('should register annotations and list them via the model service', async () => {
-    expect.assertions(1);
-
-    await startTestBackend({
+  it('should list registered annotations as JSON Schema', async () => {
+    const { server } = await startTestBackend({
       features: [
         createBackendPlugin({
           pluginId: 'test-plugin',
@@ -54,9 +35,8 @@ describe('catalogModelRegistryServiceFactory', () => {
             reg.registerInit({
               deps: {
                 catalogModelRegistry: catalogModelRegistryServiceRef,
-                catalogModel: catalogModelServiceRef,
               },
-              async init({ catalogModelRegistry, catalogModel }) {
+              async init({ catalogModelRegistry }) {
                 catalogModelRegistry.registerAnnotations({
                   entityKind: 'Component',
                   annotations: zod =>
@@ -66,17 +46,6 @@ describe('catalogModelRegistryServiceFactory', () => {
                         .describe('A test annotation'),
                     }),
                 });
-
-                expect(catalogModel.listAnnotations()).toEqual(
-                  expect.arrayContaining([
-                    expect.objectContaining({
-                      key: 'test.io/my-annotation',
-                      pluginId: 'test-plugin',
-                      entityKind: 'Component',
-                      description: 'A test annotation',
-                    }),
-                  ]),
-                );
               },
             });
           },
@@ -84,12 +53,27 @@ describe('catalogModelRegistryServiceFactory', () => {
         ...defaultServices,
       ],
     });
+
+    const { body, status } = await request(server).get(
+      '/api/test-plugin/.backstage/catalog-model/v1/annotations',
+    );
+
+    expect(status).toBe(200);
+    expect(body).toMatchObject({
+      annotations: [
+        {
+          key: 'test.io/my-annotation',
+          pluginId: 'test-plugin',
+          entityKind: 'Component',
+          description: 'A test annotation',
+          schema: { type: 'string', description: 'A test annotation' },
+        },
+      ],
+    });
   });
 
-  it('should filter annotations by entity kind', async () => {
-    expect.assertions(4);
-
-    await startTestBackend({
+  it('should list annotations from multiple registrations', async () => {
+    const { server } = await startTestBackend({
       features: [
         createBackendPlugin({
           pluginId: 'multi-kind',
@@ -97,86 +81,22 @@ describe('catalogModelRegistryServiceFactory', () => {
             reg.registerInit({
               deps: {
                 catalogModelRegistry: catalogModelRegistryServiceRef,
-                catalogModel: catalogModelServiceRef,
-              },
-              async init({ catalogModelRegistry, catalogModel }) {
-                catalogModelRegistry.registerAnnotations({
-                  entityKind: 'Component',
-                  annotations: zod =>
-                    zod.object({ 'test.io/component-only': zod.string() }),
-                });
-                catalogModelRegistry.registerAnnotations({
-                  entityKind: 'Resource',
-                  annotations: zod =>
-                    zod.object({ 'test.io/resource-only': zod.string() }),
-                });
-
-                const component = catalogModel.listAnnotations({
-                  entityKind: 'Component',
-                });
-                const resource = catalogModel.listAnnotations({
-                  entityKind: 'Resource',
-                });
-
-                expect(component).toHaveLength(1);
-                expect(component[0].key).toBe('test.io/component-only');
-                expect(resource).toHaveLength(1);
-                expect(resource[0].key).toBe('test.io/resource-only');
-              },
-            });
-          },
-        }),
-        ...defaultServices,
-      ],
-    });
-  });
-
-  it('should namespace registrations by plugin ID', async () => {
-    let catalogModel: CatalogModelService;
-
-    await startTestBackend({
-      features: [
-        createBackendPlugin({
-          pluginId: 'plugin-a',
-          register(reg) {
-            reg.registerInit({
-              deps: {
-                catalogModelRegistry: catalogModelRegistryServiceRef,
               },
               async init({ catalogModelRegistry }) {
                 catalogModelRegistry.registerAnnotations({
                   entityKind: 'Component',
                   annotations: zod =>
-                    zod.object({ 'a.io/annotation': zod.string() }),
+                    zod.object({
+                      'test.io/component-only': zod.string(),
+                    }),
                 });
-              },
-            });
-          },
-        }),
-        createBackendPlugin({
-          pluginId: 'plugin-b',
-          register(reg) {
-            reg.registerInit({
-              deps: {
-                catalogModelRegistry: catalogModelRegistryServiceRef,
-              },
-              async init({ catalogModelRegistry }) {
                 catalogModelRegistry.registerAnnotations({
-                  entityKind: 'Component',
+                  entityKind: 'Resource',
                   annotations: zod =>
-                    zod.object({ 'b.io/annotation': zod.string() }),
+                    zod.object({
+                      'test.io/resource-only': zod.string(),
+                    }),
                 });
-              },
-            });
-          },
-        }),
-        createBackendPlugin({
-          pluginId: 'consumer',
-          register(reg) {
-            reg.registerInit({
-              deps: { cm: catalogModelServiceRef },
-              async init({ cm }) {
-                catalogModel = cm;
               },
             });
           },
@@ -185,79 +105,28 @@ describe('catalogModelRegistryServiceFactory', () => {
       ],
     });
 
-    const annotations = catalogModel!.listAnnotations();
-    expect(annotations).toEqual(
+    const { body, status } = await request(server).get(
+      '/api/multi-kind/.backstage/catalog-model/v1/annotations',
+    );
+
+    expect(status).toBe(200);
+    expect(body.annotations).toHaveLength(2);
+    expect(body.annotations).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          key: 'a.io/annotation',
-          pluginId: 'plugin-a',
+          key: 'test.io/component-only',
+          entityKind: 'Component',
         }),
         expect.objectContaining({
-          key: 'b.io/annotation',
-          pluginId: 'plugin-b',
+          key: 'test.io/resource-only',
+          entityKind: 'Resource',
         }),
       ]),
     );
   });
 
-  it('should validate entity annotations against registered schemas', async () => {
-    expect.assertions(2);
-
-    await startTestBackend({
-      features: [
-        createBackendPlugin({
-          pluginId: 'validator',
-          register(reg) {
-            reg.registerInit({
-              deps: {
-                catalogModelRegistry: catalogModelRegistryServiceRef,
-                catalogModel: catalogModelServiceRef,
-              },
-              async init({ catalogModelRegistry, catalogModel }) {
-                catalogModelRegistry.registerAnnotations({
-                  entityKind: 'Component',
-                  annotations: zod =>
-                    zod.object({
-                      'test.io/count': zod.coerce.number().int(),
-                    }),
-                });
-
-                expect(
-                  catalogModel.validateEntity({
-                    kind: 'Component',
-                    metadata: { annotations: { 'test.io/count': '42' } },
-                  }),
-                ).toEqual({ valid: true, errors: [] });
-
-                expect(
-                  catalogModel.validateEntity({
-                    kind: 'Component',
-                    metadata: {
-                      annotations: { 'test.io/count': 'not-a-number' },
-                    },
-                  }),
-                ).toEqual({
-                  valid: false,
-                  errors: [
-                    expect.objectContaining({
-                      pluginId: 'validator',
-                      annotation: 'test.io/count',
-                    }),
-                  ],
-                });
-              },
-            });
-          },
-        }),
-        ...defaultServices,
-      ],
-    });
-  });
-
-  it('should skip validation for annotations not present on the entity', async () => {
-    expect.assertions(1);
-
-    await startTestBackend({
+  it('should serialize optional annotations correctly', async () => {
+    const { server } = await startTestBackend({
       features: [
         createBackendPlugin({
           pluginId: 'test-plugin',
@@ -265,62 +134,16 @@ describe('catalogModelRegistryServiceFactory', () => {
             reg.registerInit({
               deps: {
                 catalogModelRegistry: catalogModelRegistryServiceRef,
-                catalogModel: catalogModelServiceRef,
               },
-              async init({ catalogModelRegistry, catalogModel }) {
+              async init({ catalogModelRegistry }) {
                 catalogModelRegistry.registerAnnotations({
                   entityKind: 'Component',
                   annotations: zod =>
-                    zod.object({ 'test.io/required-looking': zod.string() }),
-                });
-
-                expect(
-                  catalogModel.validateEntity({
-                    kind: 'Component',
-                    metadata: { annotations: {} },
-                  }),
-                ).toEqual({ valid: true, errors: [] });
-              },
-            });
-          },
-        }),
-        ...defaultServices,
-      ],
-    });
-  });
-
-  it('should only validate against schemas for the matching entity kind', async () => {
-    expect.assertions(1);
-
-    await startTestBackend({
-      features: [
-        createBackendPlugin({
-          pluginId: 'test-plugin',
-          register(reg) {
-            reg.registerInit({
-              deps: {
-                catalogModelRegistry: catalogModelRegistryServiceRef,
-                catalogModel: catalogModelServiceRef,
-              },
-              async init({ catalogModelRegistry, catalogModel }) {
-                catalogModelRegistry.registerAnnotations({
-                  entityKind: 'Resource',
-                  annotations: zod =>
                     zod.object({
-                      'test.io/resource-annotation': zod.coerce.number().int(),
+                      'test.io/required': zod.string(),
+                      'test.io/optional': zod.string().optional(),
                     }),
                 });
-
-                expect(
-                  catalogModel.validateEntity({
-                    kind: 'Component',
-                    metadata: {
-                      annotations: {
-                        'test.io/resource-annotation': 'not-a-number',
-                      },
-                    },
-                  }),
-                ).toEqual({ valid: true, errors: [] });
               },
             });
           },
@@ -328,5 +151,12 @@ describe('catalogModelRegistryServiceFactory', () => {
         ...defaultServices,
       ],
     });
+
+    const { body, status } = await request(server).get(
+      '/api/test-plugin/.backstage/catalog-model/v1/annotations',
+    );
+
+    expect(status).toBe(200);
+    expect(body.annotations).toHaveLength(2);
   });
 });

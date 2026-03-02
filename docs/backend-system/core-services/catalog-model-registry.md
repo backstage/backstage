@@ -9,7 +9,19 @@ description: Documentation for the Catalog Model Registry Service
 
 The Catalog Model Registry Service allows backend plugins to register claims on parts of the catalog model, such as annotations on specific entity kinds. Plugins declare what annotations they own, provide validation schemas using Zod, and include descriptions for documentation purposes.
 
-This service is plugin-scoped, meaning each plugin gets its own instance that is automatically namespaced by the plugin ID.
+This service is plugin-scoped, meaning each plugin gets its own instance that is automatically namespaced by the plugin ID. Registrations are stored locally and exposed via HTTP endpoints, allowing the [Catalog Model](./catalog-model.md) consumer service to aggregate annotations across distributed plugin instances.
+
+## Configuration
+
+Plugins that register annotations must be listed in the `backend.catalogModel.pluginSources` config so the consumer service knows where to fetch from:
+
+```yaml
+backend:
+  catalogModel:
+    pluginSources:
+      - kubernetes
+      - my-plugin
+```
 
 ## Registration Structure
 
@@ -129,4 +141,4 @@ catalogModelRegistry.registerAnnotations({
 
 ### Registration Timing
 
-Registration happens during plugin `init()`. The store is lazy, so consumers reading the registry after all plugins have initialized will see all registrations regardless of init order.
+Registration happens during plugin `init()`. Registrations are served via HTTP, so consumers reading annotations after all plugins have initialized will see all registrations regardless of init order.

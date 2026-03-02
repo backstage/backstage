@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createServiceFactory } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import { catalogModelServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DefaultCatalogModelService } from './DefaultCatalogModelService';
-import { catalogModelStoreServiceRef } from '../catalogModelRegistry/CatalogModelStore';
 
 /**
  * @public
@@ -24,7 +26,11 @@ import { catalogModelStoreServiceRef } from '../catalogModelRegistry/CatalogMode
 export const catalogModelServiceFactory = createServiceFactory({
   service: catalogModelServiceRef,
   deps: {
-    store: catalogModelStoreServiceRef,
+    discovery: coreServices.discovery,
+    config: coreServices.rootConfig,
+    logger: coreServices.logger,
+    auth: coreServices.auth,
   },
-  factory: ({ store }) => new DefaultCatalogModelService(store),
+  factory: ({ discovery, config, logger, auth }) =>
+    DefaultCatalogModelService.create({ discovery, config, logger, auth }),
 });

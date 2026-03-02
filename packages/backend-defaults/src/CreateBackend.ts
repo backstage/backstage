@@ -39,7 +39,6 @@ import {
   actionsRegistryServiceFactory,
   actionsServiceFactory,
   catalogModelRegistryServiceFactory,
-  catalogModelStoreServiceFactory,
   catalogModelServiceFactory,
 } from '@backstage/backend-defaults/alpha';
 import { instanceMetadataServiceFactory } from './alpha/entrypoints/instanceMetadata/instanceMetadataServiceFactory';
@@ -70,7 +69,6 @@ export const defaultServiceFactories = [
   actionsRegistryServiceFactory,
   actionsServiceFactory,
   catalogModelRegistryServiceFactory,
-  catalogModelStoreServiceFactory,
   catalogModelServiceFactory,
 
   // Unexported alpha services kept around for compatibility reasons

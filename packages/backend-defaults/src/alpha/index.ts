@@ -17,8 +17,5 @@
 export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
 export { actionsServiceFactory } from './entrypoints/actions';
 export { rootSystemMetadataServiceFactory } from './entrypoints/rootSystemMetadata';
-export {
-  catalogModelRegistryServiceFactory,
-  catalogModelStoreServiceFactory,
-} from './entrypoints/catalogModelRegistry';
+export { catalogModelRegistryServiceFactory } from './entrypoints/catalogModelRegistry';
 export { catalogModelServiceFactory } from './entrypoints/catalogModel';
