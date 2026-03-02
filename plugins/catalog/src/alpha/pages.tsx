@@ -31,7 +31,7 @@ import {
   EntityHeaderBlueprint,
   EntityContentGroupDefinitions,
 } from '@backstage/plugin-catalog-react/alpha';
-import CategoryIcon from '@material-ui/icons/Category';
+import { LayoutGrid } from 'lucide-react';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
@@ -59,7 +59,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
     return originalFactory({
       path: '/catalog',
       routeRef: rootRouteRef,
-      icon: <CategoryIcon />,
+      icon: <LayoutGrid />,
       title: 'Catalog',
       loader: async () => {
         const { BaseCatalogPage } = await import('../components/CatalogPage');
