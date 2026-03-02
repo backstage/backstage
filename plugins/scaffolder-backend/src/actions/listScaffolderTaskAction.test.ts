@@ -15,46 +15,34 @@
  */
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { mockServices, mockCredentials } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
+import { NotAllowedError } from '@backstage/errors';
 import { ScaffolderTask } from '@backstage/plugin-scaffolder-common';
+import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
 import { createListScaffolderTasksAction } from './listScaffolderTasksAction';
 import { ListTasksResponse } from '../schema/openapi/generated/models/ListTasksResponse.model';
 
-const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));
-
 describe('createListScaffolderTasksAction', () => {
-  const mockBaseUrl = 'http://localhost:7007/api/scaffolder';
-  const mockToken = 'mock-token';
-
-  let mockFetch: jest.SpyInstance;
-
-  beforeEach(() => {
-    mockFetch = jest.spyOn(global, 'fetch');
-  });
-
-  afterEach(() => {
-    mockFetch.mockRestore();
-  });
-
   it('should list tasks successfully', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockAuth = mockServices.auth.mock();
-    const mockDiscovery = mockServices.discovery.mock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
     const mockTasks = generateMockTasks();
 
-    mockAuth.getPluginRequestToken.mockResolvedValue({ token: mockToken });
-    mockDiscovery.getBaseUrl.mockResolvedValue(mockBaseUrl);
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockTasks,
+    mockScaffolderService.listTasks.mockResolvedValue({
+      items: mockTasks.tasks.map(task => ({
+        id: task.id,
+        spec: task.spec,
+        status: task.status,
+        createdAt: task.createdAt,
+        lastHeartbeatAt: task.lastHeartbeatAt,
+      })) as ScaffolderTask[],
+      totalItems: mockTasks.totalTasks ?? 0,
     });
 
     createListScaffolderTasksAction({
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
-      discovery: mockDiscovery,
-      scmIntegrations,
+      scaffolderService: mockScaffolderService,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -72,48 +60,44 @@ describe('createListScaffolderTasksAction', () => {
 
     expect(result.output).toEqual({
       tasks: expectedTasks,
-      totalTasks: mockTasks.totalTasks,
+      totalTasks: mockTasks.totalTasks ?? 0,
     });
+    expect(mockScaffolderService.listTasks).toHaveBeenCalledWith(
+      { createdBy: undefined, limit: undefined, offset: undefined },
+      expect.objectContaining({ credentials: expect.anything() }),
+    );
   });
 
   it('should pass limit and offset through to the API and return paginated results', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockAuth = mockServices.auth.mock();
-    const mockDiscovery = mockServices.discovery.mock();
-    const paginatedResponse: ListTasksResponse = {
-      tasks: [
-        {
-          id: 'task-2',
-          spec: {},
-          status: 'completed',
-          createdAt: '2025-01-01T00:00:00Z',
-          lastHeartbeatAt: '2025-01-01T00:01:00Z',
-          createdBy: 'user:default/guest',
-        },
-        {
-          id: 'task-3',
-          spec: {},
-          status: 'processing',
-          createdAt: '2025-01-01T00:00:00Z',
-          lastHeartbeatAt: '2025-01-01T00:02:00Z',
-          createdBy: 'user:default/admin',
-        },
-      ],
-      totalTasks: 10,
-    };
+    const mockScaffolderService = scaffolderServiceMock.mock();
+    const paginatedTasks = [
+      {
+        id: 'task-2',
+        spec: {},
+        status: 'completed',
+        createdAt: '2025-01-01T00:00:00Z',
+        lastHeartbeatAt: '2025-01-01T00:01:00Z',
+      },
+      {
+        id: 'task-3',
+        spec: {},
+        status: 'processing',
+        createdAt: '2025-01-01T00:00:00Z',
+        lastHeartbeatAt: '2025-01-01T00:02:00Z',
+      },
+    ];
 
-    mockAuth.getPluginRequestToken.mockResolvedValue({ token: mockToken });
-    mockDiscovery.getBaseUrl.mockResolvedValue(mockBaseUrl);
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => paginatedResponse,
+    mockScaffolderService.listTasks.mockResolvedValue({
+      items: paginatedTasks as ScaffolderTask[],
+      totalItems: 10,
     });
 
     createListScaffolderTasksAction({
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
-      discovery: mockDiscovery,
-      scmIntegrations,
+      scaffolderService: mockScaffolderService,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -121,24 +105,18 @@ describe('createListScaffolderTasksAction', () => {
       input: { limit: 2, offset: 1 },
     });
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('limit=2'),
-      expect.any(Object),
-    );
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('offset=1'),
-      expect.any(Object),
+    expect(mockScaffolderService.listTasks).toHaveBeenCalledWith(
+      { createdBy: undefined, limit: 2, offset: 1 },
+      expect.objectContaining({ credentials: expect.anything() }),
     );
 
-    const expectedTasks: ScaffolderTask[] = paginatedResponse.tasks.map(
-      task => ({
-        id: task.id,
-        spec: task.spec,
-        status: task.status,
-        createdAt: task.createdAt,
-        lastHeartbeatAt: task.lastHeartbeatAt,
-      }),
-    );
+    const expectedTasks = paginatedTasks.map(task => ({
+      id: task.id,
+      spec: task.spec,
+      status: task.status,
+      createdAt: task.createdAt,
+      lastHeartbeatAt: task.lastHeartbeatAt,
+    }));
 
     expect(result.output).toEqual({
       tasks: expectedTasks,
@@ -146,24 +124,19 @@ describe('createListScaffolderTasksAction', () => {
     });
   });
 
-  it('should throw an error if the API call fails', async () => {
+  it('should throw an error if the service call fails', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockAuth = mockServices.auth.mock();
-    const mockDiscovery = mockServices.discovery.mock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
 
-    mockAuth.getPluginRequestToken.mockResolvedValue({ token: mockToken });
-    mockDiscovery.getBaseUrl.mockResolvedValue(mockBaseUrl);
-    mockFetch.mockResolvedValue({
-      ok: false,
-      status: 500,
-      statusText: 'Internal Server Error',
-    });
+    mockScaffolderService.listTasks.mockRejectedValue(
+      new Error('Internal Server Error'),
+    );
 
     createListScaffolderTasksAction({
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
-      discovery: mockDiscovery,
-      scmIntegrations,
+      scaffolderService: mockScaffolderService,
     });
 
     await expect(
@@ -171,16 +144,15 @@ describe('createListScaffolderTasksAction', () => {
         id: 'test:list-scaffolder-tasks',
         input: {},
       }),
-    ).rejects.toThrow(`Internal Server Error`);
+    ).rejects.toThrow('Internal Server Error');
   });
 
   it('should use createdBy filter when owned is true with user identity', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockAuth = mockServices.auth.mock();
-    const mockDiscovery = mockServices.discovery.mock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
     const mockTasks = generateMockTasks();
 
-    mockAuth.getPluginRequestToken.mockResolvedValue({ token: mockToken });
     mockAuth.isPrincipal.mockImplementation(
       (creds, type) =>
         type === 'user' &&
@@ -188,17 +160,21 @@ describe('createListScaffolderTasksAction', () => {
         typeof (creds.principal as { userEntityRef?: string }).userEntityRef ===
           'string',
     );
-    mockDiscovery.getBaseUrl.mockResolvedValue(mockBaseUrl);
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockTasks,
+    mockScaffolderService.listTasks.mockResolvedValue({
+      items: mockTasks.tasks.map(task => ({
+        id: task.id,
+        spec: task.spec,
+        status: task.status,
+        createdAt: task.createdAt,
+        lastHeartbeatAt: task.lastHeartbeatAt,
+      })) as ScaffolderTask[],
+      totalItems: mockTasks.totalTasks ?? 0,
     });
 
     createListScaffolderTasksAction({
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
-      discovery: mockDiscovery,
-      scmIntegrations,
+      scaffolderService: mockScaffolderService,
     });
 
     await mockActionsRegistry.invoke({
@@ -207,10 +183,38 @@ describe('createListScaffolderTasksAction', () => {
       credentials: mockCredentials.user('user:default/alice'),
     });
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('createdBy=user%3Adefault%2Falice'),
-      expect.any(Object),
+    expect(mockScaffolderService.listTasks).toHaveBeenCalledWith(
+      {
+        createdBy: 'user:default/alice',
+        limit: undefined,
+        offset: undefined,
+      },
+      expect.objectContaining({ credentials: expect.anything() }),
     );
+  });
+
+  it('should throw NotAllowedError when owned is true without user identity', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockAuth = mockServices.auth.mock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
+
+    mockAuth.isPrincipal.mockReturnValue(false);
+
+    createListScaffolderTasksAction({
+      actionsRegistry: mockActionsRegistry,
+      auth: mockAuth,
+      scaffolderService: mockScaffolderService,
+    });
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:list-scaffolder-tasks',
+        input: { owned: true },
+        credentials: mockCredentials.service(),
+      }),
+    ).rejects.toThrow(NotAllowedError);
+
+    expect(mockScaffolderService.listTasks).not.toHaveBeenCalled();
   });
 });
 

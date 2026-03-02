@@ -27,6 +27,10 @@ export const createScaffolderActions = (options: {
   discovery: DiscoveryService;
   scmIntegrations: ScmIntegrations;
 }) => {
-  createListScaffolderTasksAction(options);
+  createListScaffolderTasksAction({
+    actionsRegistry: options.actionsRegistry,
+    auth: options.auth,
+    scaffolderService: options.scaffolderService,
+  });
   createDryRunTemplateAction(options);
 };

@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
-import { ScmIntegrations } from '@backstage/integration';
-import { ScaffolderClient } from '@backstage/plugin-scaffolder-common';
+import { AuthService } from '@backstage/backend-plugin-api';
+import { NotAllowedError } from '@backstage/errors';
+import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 
 export const createListScaffolderTasksAction = ({
   actionsRegistry,
   auth,
-  discovery,
-  scmIntegrations,
+  scaffolderService,
 }: {
   actionsRegistry: ActionsRegistryService;
   auth: AuthService;
-  discovery: DiscoveryService;
-  scmIntegrations: ScmIntegrations;
+  scaffolderService: ScaffolderService;
 }) => {
   actionsRegistry.register({
     name: 'list-scaffolder-tasks',
@@ -98,50 +96,36 @@ Pagination is supported via limit and offset.
           ),
     },
     action: async ({ input, credentials }) => {
-      const { token } = await auth.getPluginRequestToken({
-        onBehalfOf: credentials,
-        targetPluginId: 'scaffolder',
-      });
+      if (input.owned && !auth.isPrincipal(credentials, 'user')) {
+        throw new NotAllowedError(
+          'Filtering by owned tasks requires a user identity.',
+        );
+      }
 
-      const userRef = auth.isPrincipal(credentials, 'user')
-        ? credentials.principal.userEntityRef
-        : 'user:default/anonymous';
+      const createdBy =
+        input.owned && auth.isPrincipal(credentials, 'user')
+          ? credentials.principal.userEntityRef
+          : undefined;
 
-      // Better way to handle this for scenarios where 'filterByOwnership: owned'?
-      // Because scaffolderClient.listTasks requires the identityApi when filtering by ownership,
-      // we need to create a scaffolder client with the userRef
-      const client = new ScaffolderClient({
-        discoveryApi: discovery,
-        fetchApi: { fetch },
-        scmIntegrationsApi: scmIntegrations,
-        identityApi: {
-          getBackstageIdentity: async () => ({
-            type: 'user' as const,
-            userEntityRef: userRef,
-            ownershipEntityRefs: [],
-          }),
-        },
-      });
-
-      const { tasks, totalTasks } = await client.listTasks(
+      const { items, totalItems } = await scaffolderService.listTasks(
         {
-          filterByOwnership: input.owned ? 'owned' : 'all',
+          createdBy,
           limit: input.limit,
           offset: input.offset,
         },
-        { token },
+        { credentials },
       );
 
       return {
         output: {
-          tasks: tasks.map(task => ({
+          tasks: items.map(task => ({
             id: task.id,
             spec: task.spec,
             status: task.status,
             createdAt: task.createdAt,
             lastHeartbeatAt: task.lastHeartbeatAt,
           })),
-          totalTasks,
+          totalTasks: totalItems,
         },
       };
     },
