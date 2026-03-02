@@ -17,9 +17,6 @@
 import { ReactNode } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { ThemeProvider } from '@material-ui/core/styles';
-
-import { lightTheme } from '@backstage/theme';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { configApiRef } from '@backstage/core-plugin-api';
@@ -68,18 +65,16 @@ const wrapper = ({
   entityRef?: CompoundEntityRef;
   children: ReactNode;
 }) => (
-  <ThemeProvider theme={lightTheme}>
-    <TestApiProvider
-      apis={[
-        [techdocsApiRef, techdocsApiMock],
-        [configApiRef, configApiMock],
-      ]}
-    >
-      <TechDocsReaderPageProvider entityRef={entityRef}>
-        {children}
-      </TechDocsReaderPageProvider>
-    </TestApiProvider>
-  </ThemeProvider>
+  <TestApiProvider
+    apis={[
+      [techdocsApiRef, techdocsApiMock],
+      [configApiRef, configApiMock],
+    ]}
+  >
+    <TechDocsReaderPageProvider entityRef={entityRef}>
+      {children}
+    </TechDocsReaderPageProvider>
+  </TestApiProvider>
 );
 
 describe('context', () => {
