@@ -96,11 +96,12 @@ describe('<TemplateTypePicker/>', () => {
     expect(rendered.getByText('Categories')).toBeInTheDocument();
     fireEvent.click(rendered.getByTestId('categories-picker-expand'));
 
-    entities.forEach(entity => {
-      expect(
-        rendered.getByLabelText(capitalize(entity.spec!.type as string)),
-      ).toBeInTheDocument();
-    });
+    // After the Popover opens, each available type is rendered as a
+    // Command item containing a Checkbox (with aria-label) and a text span.
+    for (const entity of entities) {
+      const label = capitalize(entity.spec!.type as string);
+      expect(await rendered.findByText(label)).toBeInTheDocument();
+    }
   });
 
   it('sets the selected type filters', async () => {
@@ -117,28 +118,46 @@ describe('<TemplateTypePicker/>', () => {
       </ApiProvider>,
     );
 
+    // Open the Popover containing the Command combobox list
     fireEvent.click(rendered.getByTestId('categories-picker-expand'));
-    expect(rendered.getByLabelText('Service')).not.toBeChecked();
-    expect(rendered.getByLabelText('Website')).not.toBeChecked();
 
-    fireEvent.click(rendered.getByLabelText('Service'));
-    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
-    expect(rendered.getByLabelText('Service')).toBeChecked();
-    expect(rendered.getByLabelText('Website')).not.toBeChecked();
+    // Wait for the popover content to render, then verify initial unchecked state.
+    // Radix Checkbox exposes role="checkbox" and aria-checked so toBeChecked() works.
+    const serviceCheckbox = await rendered.findByRole('checkbox', {
+      name: 'Service',
+    });
+    const websiteCheckbox = await rendered.findByRole('checkbox', {
+      name: 'Website',
+    });
+    expect(serviceCheckbox).not.toBeChecked();
+    expect(websiteCheckbox).not.toBeChecked();
 
-    fireEvent.click(rendered.getByLabelText('Website'));
-    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
-    expect(rendered.getByLabelText('Service')).toBeChecked();
-    expect(rendered.getByLabelText('Website')).toBeChecked();
+    // Toggle Service ON — clicking the checkbox propagates to CommandItem onSelect
+    fireEvent.click(rendered.getByRole('checkbox', { name: 'Service' }));
+    expect(rendered.getByRole('checkbox', { name: 'Service' })).toBeChecked();
+    expect(
+      rendered.getByRole('checkbox', { name: 'Website' }),
+    ).not.toBeChecked();
 
-    fireEvent.click(rendered.getByLabelText('Service'));
-    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
-    expect(rendered.getByLabelText('Service')).not.toBeChecked();
-    expect(rendered.getByLabelText('Website')).toBeChecked();
+    // Toggle Website ON
+    fireEvent.click(rendered.getByRole('checkbox', { name: 'Website' }));
+    expect(rendered.getByRole('checkbox', { name: 'Service' })).toBeChecked();
+    expect(rendered.getByRole('checkbox', { name: 'Website' })).toBeChecked();
 
-    fireEvent.click(rendered.getByLabelText('Website'));
-    fireEvent.click(rendered.getByTestId('categories-picker-expand'));
-    expect(rendered.getByLabelText('Service')).not.toBeChecked();
-    expect(rendered.getByLabelText('Website')).not.toBeChecked();
+    // Toggle Service OFF
+    fireEvent.click(rendered.getByRole('checkbox', { name: 'Service' }));
+    expect(
+      rendered.getByRole('checkbox', { name: 'Service' }),
+    ).not.toBeChecked();
+    expect(rendered.getByRole('checkbox', { name: 'Website' })).toBeChecked();
+
+    // Toggle Website OFF
+    fireEvent.click(rendered.getByRole('checkbox', { name: 'Website' }));
+    expect(
+      rendered.getByRole('checkbox', { name: 'Service' }),
+    ).not.toBeChecked();
+    expect(
+      rendered.getByRole('checkbox', { name: 'Website' }),
+    ).not.toBeChecked();
   });
 });
