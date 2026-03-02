@@ -61,10 +61,10 @@ describe('UserSummary Test', () => {
     );
 
     expect(screen.getByText('calum-leavy@example.com')).toBeInTheDocument();
-    expect(screen.getByAltText('Calum Leavy')).toHaveAttribute(
-      'src',
-      'https://example.com/staff/calum.jpeg',
-    );
+    // BUI Avatar is decorative (aria-hidden), so the name must be
+    // present as text for the information to be accessible.
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
+    expect(screen.getByText('Calum Leavy')).toBeInTheDocument();
     expect(screen.getByText('examplegroup').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/group/examplegroup',
