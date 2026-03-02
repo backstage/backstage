@@ -193,10 +193,10 @@ describe('DefaultCatalogPage', () => {
   it('should render the default column of the grid', async () => {
     await renderWrapped(<DefaultCatalogPage />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeaders = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeaders.map(c =>
+      (c.textContent ?? '').trim(),
+    );
 
     expect(columnHeaderLabels).toEqual([
       'Name',
@@ -218,10 +218,10 @@ describe('DefaultCatalogPage', () => {
     ];
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeaders = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeaders.map(c =>
+      (c.textContent ?? '').trim(),
+    );
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
 
@@ -237,10 +237,10 @@ describe('DefaultCatalogPage', () => {
     };
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeaders = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeaders.map(c =>
+      (c.textContent ?? '').trim(),
+    );
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
 
@@ -289,7 +289,7 @@ describe('DefaultCatalogPage', () => {
     await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
     await expect(
-      screen.findByTitle(/Bar Action/).then(e => e.firstChild),
+      screen.findByTitle(/Bar Action/),
     ).resolves.toBeDisabled();
   }, 20_000);
 

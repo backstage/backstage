@@ -196,7 +196,7 @@ export type TableState = {
  *
  * @public
  */
-export type TableOptions<T extends object = {}> = {
+export type TableOptions<_T extends object = {}> = {
   /** Number of rows per page (default 20). */
   pageSize?: number;
   /** Enable column sorting. */
@@ -211,13 +211,31 @@ export type TableOptions<T extends object = {}> = {
   padding?: 'default' | 'dense';
   /** Legacy toolbar visibility (preserved for backward compat). */
   toolbar?: boolean;
-} & Record<string, unknown> & { _phantom?: T };
+} & Record<string, unknown>;
 
 /**
  * Props for the Table component.
  *
  * @public
  */
+/**
+ * Shape of a resolved action entry. Callers may also provide a function
+ * `(rowData: T) => TableActionEntry<T>` to compute the action per row —
+ * the Table component resolves it at render time.
+ *
+ * @public
+ */
+export interface TableActionEntry<T extends object = {}> {
+  icon: ComponentType;
+  tooltip?: string;
+  onClick: (event: any, data: T | T[]) => void;
+  isFreeAction?: boolean;
+  disabled?: boolean;
+  hidden?: boolean;
+  cellStyle?: CSSProperties;
+  [key: string]: any;
+}
+
 export interface TableProps<T extends object = {}> {
   columns: TableColumn<T>[];
   data: T[] | (() => Promise<T[]>);
@@ -229,16 +247,10 @@ export interface TableProps<T extends object = {}> {
   options?: TableOptions<T>;
   subtitle?: string;
   title?: string | ReactElement;
-  /** Row-level action buttons. */
-  actions?: Array<{
-    icon: ComponentType;
-    tooltip?: string;
-    onClick: (event: any, data: T | T[]) => void;
-    isFreeAction?: boolean;
-    disabled?: boolean;
-    hidden?: boolean;
-    [key: string]: any;
-  }>;
+  /** Row-level action buttons — static objects or per-row functions. */
+  actions?: Array<
+    TableActionEntry<T> | ((rowData: T) => TableActionEntry<T>)
+  >;
   /** Callback when a row is clicked. */
   onRowClick?: (event: MouseEvent<HTMLElement>, row?: T) => void;
   /** Additional CSS class applied to the root container. */
@@ -252,6 +264,14 @@ export interface TableProps<T extends object = {}> {
     Row?: ComponentType<any>;
     [key: string]: ComponentType<any> | undefined;
   };
+  /** External page index for server-side pagination. */
+  page?: number;
+  /** Callback when the page changes (server-side pagination). */
+  onPageChange?: (page: number) => void;
+  /** Callback when page size changes. */
+  onRowsPerPageChange?: (pageSize: number) => void;
+  /** External total row count for server-side pagination. */
+  totalCount?: number;
 }
 
 /* ---------------------------------------------------------------------------
@@ -438,9 +458,11 @@ export function TableToolbar(toolbarProps: {
 function TablePagination<T>({
   table,
   t,
+  onPageChange,
 }: {
   table: ReturnType<typeof useReactTable<T>>;
   t: TranslationFunction<typeof coreComponentsTranslationRef.T>;
+  onPageChange?: (page: number) => void;
 }) {
   const pageIndex = table.getState().pagination.pageIndex;
   const pageCount = table.getPageCount();
@@ -448,6 +470,11 @@ function TablePagination<T>({
   const pageSize = table.getState().pagination.pageSize;
   const start = pageIndex * pageSize + 1;
   const end = Math.min((pageIndex + 1) * pageSize, totalRows);
+
+  const goToPage = (page: number) => {
+    table.setPageIndex(page);
+    onPageChange?.(page);
+  };
 
   return (
     <div className="flex items-center justify-between border-t border-border px-4 py-2 text-sm text-muted-foreground">
@@ -459,7 +486,7 @@ function TablePagination<T>({
       <div className="flex items-center gap-1">
         <button
           type="button"
-          onClick={() => table.setPageIndex(0)}
+          onClick={() => goToPage(0)}
           disabled={!table.getCanPreviousPage()}
           aria-label={t('table.pagination.firstTooltip')}
           className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
@@ -468,7 +495,10 @@ function TablePagination<T>({
         </button>
         <button
           type="button"
-          onClick={() => table.previousPage()}
+          onClick={() => {
+            table.previousPage();
+            onPageChange?.(pageIndex - 1);
+          }}
           disabled={!table.getCanPreviousPage()}
           aria-label={t('table.pagination.previousTooltip')}
           className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
@@ -477,7 +507,10 @@ function TablePagination<T>({
         </button>
         <button
           type="button"
-          onClick={() => table.nextPage()}
+          onClick={() => {
+            table.nextPage();
+            onPageChange?.(pageIndex + 1);
+          }}
           disabled={!table.getCanNextPage()}
           aria-label={t('table.pagination.nextTooltip')}
           className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
@@ -486,7 +519,7 @@ function TablePagination<T>({
         </button>
         <button
           type="button"
-          onClick={() => table.setPageIndex(pageCount - 1)}
+          onClick={() => goToPage(pageCount - 1)}
           disabled={!table.getCanNextPage()}
           aria-label={t('table.pagination.lastTooltip')}
           className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
@@ -522,6 +555,10 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     actions,
     onRowClick,
     className,
+    page: externalPage,
+    onPageChange,
+    onRowsPerPageChange: _onRowsPerPageChange,
+    totalCount: _totalCount,
   } = props;
 
   const { t } = useTranslationRef(coreComponentsTranslationRef);
@@ -627,24 +664,53 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const enableSorting = options?.sorting !== false;
   const enableSearch = options?.search !== false;
 
+  /* -- External (server-side) pagination mode ----------------------------- */
+  const isExternalPagination = externalPage !== undefined;
+  const externalPageCount =
+    _totalCount !== undefined && pageSize > 0
+      ? Math.ceil(_totalCount / pageSize)
+      : undefined;
+
+  const [pagination, setPagination] = useState({
+    pageIndex: externalPage ?? 0,
+    pageSize,
+  });
+
+  useEffect(() => {
+    if (externalPage !== undefined) {
+      setPagination(prev => ({ ...prev, pageIndex: externalPage }));
+    }
+  }, [externalPage]);
+
   const table = useReactTable<T>({
     data: filteredData,
     columns: tanstackColumns,
     state: {
       sorting,
       globalFilter: search,
+      ...(isExternalPagination ? { pagination } : {}),
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setSearch,
     getCoreRowModel: getCoreRowModel(),
     ...(enableSorting ? { getSortedRowModel: getSortedRowModel() } : {}),
     ...(enableSearch ? { getFilteredRowModel: getFilteredRowModel() } : {}),
-    ...(enablePaging
-      ? {
+    ...((() => {
+      if (isExternalPagination) {
+        return {
+          manualPagination: true,
+          pageCount: externalPageCount ?? -1,
+          onPaginationChange: setPagination,
+        };
+      }
+      if (enablePaging) {
+        return {
           getPaginationRowModel: getPaginationRowModel(),
           initialState: { pagination: { pageSize } },
-        }
-      : {}),
+        };
+      }
+      return {};
+    })()),
   });
 
   /* -- Derived values ----------------------------------------------------- */
@@ -806,7 +872,12 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                         <td className={cn(cellPadding, 'whitespace-nowrap')}>
                           <div className="flex items-center gap-1">
                             {actions
-                              .filter(a => !a.isFreeAction)
+                              .map(a =>
+                                typeof a === 'function'
+                                  ? a(row.original)
+                                  : a,
+                              )
+                              .filter(a => !a.isFreeAction && !a.hidden)
                               .map((action, actionIdx) => {
                                 const ActionIcon = action.icon;
                                 return (
@@ -814,7 +885,9 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                                     key={actionIdx}
                                     type="button"
                                     title={action.tooltip}
-                                    className="inline-flex items-center justify-center rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    disabled={action.disabled}
+                                    style={action.cellStyle}
+                                    className="inline-flex items-center justify-center rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50 disabled:pointer-events-none"
                                     onClick={e => {
                                       e.stopPropagation();
                                       action.onClick(e, row.original);
@@ -837,7 +910,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
         {/* Pagination */}
         {enablePaging && !isLoading && !hasNoRows && (
-          <TablePagination table={table as any} t={t} />
+          <TablePagination table={table as any} t={t} onPageChange={onPageChange} />
         )}
       </div>
     </div>

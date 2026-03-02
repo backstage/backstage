@@ -34,10 +34,7 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import Typography from '@material-ui/core/Typography';
-import { visuallyHidden } from '@mui/utils';
-import Edit from '@material-ui/icons/Edit';
-import OpenInNew from '@material-ui/icons/OpenInNew';
+import { Pencil, ExternalLink } from 'lucide-react';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
 import { ReactNode, useMemo } from 'react';
@@ -136,8 +133,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography style={visuallyHidden}>{title}</Typography>
-            <OpenInNew fontSize="small" />
+            <span className="sr-only">{title}</span>
+            <ExternalLink className="h-4 w-4" />
           </>
         ),
         tooltip: title,
@@ -155,8 +152,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography style={visuallyHidden}>{title}</Typography>
-            <Edit fontSize="small" />
+            <span className="sr-only">{title}</span>
+            <Pencil className="h-4 w-4" />
           </>
         ),
         tooltip: title,
@@ -196,7 +193,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       .join(' ');
 
   const actions = props.actions || defaultActions;
-  const options: TableProps['options'] = {
+  const options: TableProps<CatalogTableRow>['options'] = {
     actionsColumnIndex: -1,
     loadingType: 'linear' as const,
     showEmptyDataSourceMessage: !loading,

@@ -84,7 +84,7 @@ export const RenderingCustomOptions = () => {
       options={options}
       renderOption={option => (
         <SearchAutocompleteDefaultOption
-          icon={<Tag title="Option icon" />}
+          icon={<Tag aria-label="Option icon" />}
           primaryText={option.title}
           secondaryText={option.text}
         />

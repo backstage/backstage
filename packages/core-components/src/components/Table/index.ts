@@ -19,6 +19,7 @@ export { SubvalueCell } from './SubvalueCell';
 export type { SubvalueCellClassKey } from './SubvalueCell';
 export { Table } from './Table';
 export type {
+  TableActionEntry,
   TableColumn,
   TableFilter,
   TableProps,
