@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core/styles';
 import { Content, Header, Page } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -26,15 +25,6 @@ import { scaffolderTranslationRef } from '../../../translation';
 import { editRouteRef } from '../../../routes';
 import { TemplateEditor } from './TemplateEditor';
 
-const useStyles = makeStyles(
-  {
-    content: {
-      padding: 0,
-    },
-  },
-  { name: 'ScaffolderTemplateEditorToolbar' },
-);
-
 interface TemplatePageProps {
   defaultPreviewTemplate?: string;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
@@ -43,7 +33,6 @@ interface TemplatePageProps {
 }
 
 export function TemplateEditorPage(props: TemplatePageProps) {
-  const classes = useStyles();
   const editLink = useRouteRef(editRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -55,7 +44,7 @@ export function TemplateEditorPage(props: TemplatePageProps) {
         type={t('templateIntroPage.title')}
         typeLink={editLink()}
       />
-      <Content className={classes.content}>
+      <Content className="p-0">
         <TemplateEditor
           layouts={props.layouts}
           formProps={props.formProps}
