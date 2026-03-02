@@ -46,7 +46,7 @@ describe('<SettingsPage />', () => {
       },
     );
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
+    const tabs = container.querySelectorAll('[role="tablist"] a');
     expect(tabs).toHaveLength(3);
   });
 
@@ -66,7 +66,7 @@ describe('<SettingsPage />', () => {
       },
     );
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
+    const tabs = container.querySelectorAll('[role="tablist"] a');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
   });
@@ -87,7 +87,7 @@ describe('<SettingsPage />', () => {
       },
     );
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
+    const tabs = container.querySelectorAll('[role="tablist"] a');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
     const user = userEvent.setup();
@@ -117,7 +117,7 @@ describe('<SettingsPage />', () => {
       },
     );
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
+    const tabs = container.querySelectorAll('[role="tablist"] a');
     expect(tabs).toHaveLength(2);
     expect(tabs[0].textContent).toEqual('General');
     expect(tabs[1].textContent).toEqual('Advanced');

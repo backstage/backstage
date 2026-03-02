@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import SettingsIcon from '@material-ui/icons/Settings';
+import { Settings as SettingsIcon } from 'lucide-react';
 import { settingsRouteRef } from '../plugin';
 import { SidebarItem } from '@backstage/core-components';
 import { useRouteRef, IconComponent } from '@backstage/core-plugin-api';

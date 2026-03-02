@@ -41,7 +41,7 @@ describe('<DefaultSettingsPage />', () => {
       </TestApiProvider>,
     );
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
+    const tabs = container.querySelectorAll('[role="tablist"] a');
     expect(tabs).toHaveLength(3);
   });
 
@@ -57,7 +57,7 @@ describe('<DefaultSettingsPage />', () => {
       </TestApiProvider>,
     );
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
+    const tabs = container.querySelectorAll('[role="tablist"] a');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
   });
@@ -74,7 +74,7 @@ describe('<DefaultSettingsPage />', () => {
       </TestApiProvider>,
     );
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
+    const tabs = container.querySelectorAll('[role="tablist"] a');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
   });
