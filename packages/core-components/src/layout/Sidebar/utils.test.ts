@@ -121,4 +121,56 @@ describe('isLocationMatching', () => {
       expect(isLocationMatch(currentLocation, toLocation, true)).toBe(true);
     });
   });
+
+  describe('hash matching', () => {
+    it('return true when hash does not match, but hashMatch is not enabled', async () => {
+      currentLocation = {
+        pathname: '/toolbox',
+        search: '?x=foo&y=bar',
+        state: null,
+        hash: '#my-tool',
+        key: '',
+      };
+      toLocation = {
+        pathname: '/toolbox',
+        search: '?x=foo',
+        hash: '#other-tool',
+      };
+      expect(isLocationMatch(currentLocation, toLocation, false, false)).toBe(
+        true,
+      );
+    });
+
+    it('return false when hash does not match, and hashMatch is enabled', async () => {
+      currentLocation = {
+        pathname: '/toolbox',
+        search: '?x=foo&y=bar',
+        state: null,
+        hash: '#my-tool',
+        key: '',
+      };
+      toLocation = {
+        pathname: '/toolbox',
+        search: '?x=foo',
+        hash: '#other-tool',
+      };
+      expect(isLocationMatch(currentLocation, toLocation, false, true)).toBe(
+        false,
+      );
+    });
+
+    it('return true when hash does match, and hashMatch is enabled', async () => {
+      currentLocation = {
+        pathname: '/toolbox',
+        search: '?x=foo&y=bar',
+        state: null,
+        hash: '#my-tool',
+        key: '',
+      };
+      toLocation = { pathname: '/toolbox', search: '?x=foo', hash: '#my-tool' };
+      expect(isLocationMatch(currentLocation, toLocation, false, true)).toBe(
+        true,
+      );
+    });
+  });
 });
