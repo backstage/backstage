@@ -45,7 +45,11 @@ export function EntityInfoCard(props: EntityInfoCardProps) {
             <Text as="h3" variant="title-x-small" weight="bold">
               {title}
             </Text>
-            {headerActions}
+            {headerActions && (
+              <Flex align="center" gap="1">
+                {headerActions}
+              </Flex>
+            )}
           </Flex>
         </CardHeader>
       )}
