@@ -38,6 +38,7 @@ import {
   NavItemBlueprint,
   configApiRef,
 } from '@backstage/frontend-plugin-api';
+import type { IconComponent } from '@backstage/frontend-plugin-api';
 
 import {
   catalogApiRef,
@@ -66,6 +67,12 @@ import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
+
+/**
+ * Wrapper bridging lucide-react's ForwardRefExoticComponent to Backstage's
+ * IconComponent type which expects ComponentType<{ fontSize?: ... }>.
+ */
+const SearchIcon: IconComponent = props => <Search {...props} />;
 
 /** @alpha */
 export const searchApi = ApiBlueprint.make({
@@ -253,7 +260,7 @@ export const searchNavItem = NavItemBlueprint.make({
   params: {
     routeRef: rootRouteRef,
     title: 'Search',
-    icon: Search,
+    icon: SearchIcon,
   },
 });
 
@@ -261,7 +268,7 @@ export const searchNavItem = NavItemBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'search',
   title: 'Search',
-  icon: <Search />,
+  icon: <SearchIcon />,
   info: { packageJson: () => import('../package.json') },
   extensions: [searchApi, searchPage, searchNavItem],
   routes: {
