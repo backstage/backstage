@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Overrides } from '@material-ui/core/styles/overrides';
-import { StyleRules } from '@material-ui/core/styles/withStyles';
+import type React from 'react';
 import { InfoCardGridClassKey } from './home/components/Grids/InfoCardGrid';
 
 /** @public */
@@ -24,9 +23,12 @@ export type CatalogReactComponentsNameToClassKey = {
 };
 
 /** @public */
-export type BackstageOverrides = Overrides & {
+export type BackstageOverrides = Record<
+  string,
+  React.CSSProperties | undefined
+> & {
   [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
-    StyleRules<CatalogReactComponentsNameToClassKey[Name]>
+    Record<CatalogReactComponentsNameToClassKey[Name], string>
   >;
 };
 
