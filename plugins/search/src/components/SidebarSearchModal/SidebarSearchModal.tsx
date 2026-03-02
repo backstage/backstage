@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import SearchIcon from '@material-ui/icons/Search';
+import { Search } from 'lucide-react';
 import { SidebarItem } from '@backstage/core-components';
 import { IconComponent } from '@backstage/core-plugin-api';
 import {
@@ -24,6 +24,13 @@ import {
 } from '../SearchModal';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { searchTranslationRef } from '../../translation';
+
+/**
+ * Wraps the lucide-react Search icon to conform to Backstage's IconComponent type.
+ * Lucide icons use LucideProps (size, strokeWidth, etc.) while IconComponent expects
+ * { fontSize?: 'medium' | 'large' | 'small' | 'inherit' }.
+ */
+const SearchIcon: IconComponent = props => <Search {...props} />;
 
 /**
  * Props for {@link SidebarSearchModal}.
