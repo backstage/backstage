@@ -22,6 +22,39 @@ import {
   useState,
 } from 'react';
 
+/**
+ * Local replacement for MUI's useMediaQuery hook.
+ * Uses window.matchMedia to track a CSS media query string.
+ * Falls back to false when matchMedia is unavailable (SSR / JSDOM).
+ */
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(() => {
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function'
+    ) {
+      return window.matchMedia(query).matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    ) {
+      return undefined;
+    }
+    const mql = window.matchMedia(query);
+    const handler = (event: MediaQueryListEvent) => setMatches(event.matches);
+    setMatches(mql.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, [query]);
+
+  return matches;
+}
+
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
