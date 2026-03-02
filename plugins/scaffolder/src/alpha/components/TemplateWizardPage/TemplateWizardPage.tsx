@@ -142,12 +142,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
       manifest?.presentation?.showDescription ??
         desc.length > descriptionPreviewThreshold,
     );
-  }, [
-    manifest?.description,
-    manifest?.presentation?.showDescription,
-    setDescription,
-    setShowDescription,
-  ]);
+  }, [manifest?.description, manifest?.presentation?.showDescription]);
 
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
