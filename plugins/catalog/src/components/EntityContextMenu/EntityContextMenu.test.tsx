@@ -22,6 +22,7 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { Search } from 'lucide-react';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { fireEvent, screen } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { EntityContextMenu } from './EntityContextMenu';
@@ -106,7 +107,7 @@ describe('ComponentContextMenu', () => {
   it('supports extra items', async () => {
     const extra = {
       title: 'HELLO',
-      Icon: Search,
+      Icon: Search as unknown as IconComponent,
       onClick: jest.fn(),
     };
 
