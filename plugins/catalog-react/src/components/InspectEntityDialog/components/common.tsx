@@ -15,55 +15,30 @@
  */
 
 import { Link } from '@backstage/core-components';
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import MuiListItemText from '@material-ui/core/ListItemText';
-import MuiListSubheader from '@material-ui/core/ListSubheader';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import { HelpCircle } from 'lucide-react';
 import { ReactNode } from 'react';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  marginTop: {
-    marginTop: theme.spacing(2),
-  },
-  helpIcon: {
-    marginLeft: theme.spacing(1),
-    color: theme.palette.text.disabled,
-  },
-  monospace: {
-    fontFamily: 'monospace',
-  },
-}));
 
 export function ListItemText(props: {
   primary: ReactNode;
   secondary?: ReactNode;
 }) {
-  const classes = useStyles();
   return (
-    <MuiListItemText
-      {...props}
-      primaryTypographyProps={{ className: classes.monospace }}
-      secondaryTypographyProps={{ className: classes.monospace }}
-    />
+    <div className="min-w-0 flex-1">
+      <div className="font-mono text-sm">{props.primary}</div>
+      {props.secondary !== undefined && (
+        <div className="font-mono text-sm text-muted-foreground">
+          {props.secondary}
+        </div>
+      )}
+    </div>
   );
 }
 
 export function ListSubheader(props: { children?: ReactNode }) {
-  const classes = useStyles();
   return (
-    <MuiListSubheader className={classes.monospace}>
+    <div className="font-mono text-sm font-medium px-4 py-2 text-muted-foreground">
       {props.children}
-    </MuiListSubheader>
+    </div>
   );
 }
 
@@ -73,17 +48,17 @@ export function Container(props: {
   children: ReactNode;
 }) {
   return (
-    <Box mt={2}>
-      <Card variant="outlined">
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
+    <div className="mt-2">
+      <div className="border rounded-lg">
+        <div className="p-4">
+          <h6 className="text-lg font-semibold mb-2">
             {props.title}
             {props.helpLink && <HelpIcon to={props.helpLink} />}
-          </Typography>
+          </h6>
           {props.children}
-        </CardContent>
-      </Card>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -106,21 +81,20 @@ export function KeyValueListItem(props: {
   const link = findLink(value);
 
   return (
-    <ListItem>
-      {props.indent && <ListItemIcon />}
+    <li className="px-2 py-1 flex items-center">
+      {props.indent && <span className="mr-2 w-6 shrink-0" />}
       <ListItemText
         primary={key}
         secondary={link ? <Link to={link}>{value}</Link> : value}
       />
-    </ListItem>
+    </li>
   );
 }
 
 export function HelpIcon(props: { to: string }) {
-  const classes = useStyles();
   return (
-    <Link to={props.to} className={classes.helpIcon}>
-      <HelpOutlineIcon fontSize="inherit" />
+    <Link to={props.to} className="ml-1 text-muted-foreground inline-block">
+      <HelpCircle className="w-[1em] h-[1em]" />
     </Link>
   );
 }
