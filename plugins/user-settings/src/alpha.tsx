@@ -20,8 +20,15 @@ import {
   PageBlueprint,
   NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
-import SettingsIcon from '@material-ui/icons/Settings';
+import type { IconComponent } from '@backstage/frontend-plugin-api';
+import { Settings } from 'lucide-react';
 import { settingsRouteRef } from './plugin';
+
+/**
+ * Wrapper bridging lucide-react's ForwardRefExoticComponent to Backstage's
+ * IconComponent type which expects ComponentType<{ fontSize?: ... }>.
+ */
+const SettingsIcon: IconComponent = props => <Settings {...props} />;
 
 export * from './translation';
 
