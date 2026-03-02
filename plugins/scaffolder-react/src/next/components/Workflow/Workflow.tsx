@@ -156,7 +156,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
                   action={
                     <>
                       <IconButton
-                        aria-label="Hide"
+                        aria-label={t('workflow.hideDescriptionButtonTitle')}
                         title={t('workflow.hideDescriptionButtonTitle')}
                         onClick={onHideDescription}
                       >
