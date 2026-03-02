@@ -24,7 +24,7 @@ import { filterKinds, useAllKinds } from './kindFilterUtils';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-const FILTER_ALL = 'All';
+const FILTER_ALL = 'all';
 
 function useEntityKindFilter(opts: { initialFilter: string }): {
   loading: boolean;
@@ -134,13 +134,11 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
 
   if (error) return null;
 
-  const options = filterKinds(allKinds, allowedKinds, selectedKind);
+  const forcedKind = selectedKind === FILTER_ALL ? undefined : selectedKind;
+  const options = filterKinds(allKinds, allowedKinds, forcedKind);
 
   const items = [
-    ...options
-      .entries()
-      .map(([key, value]) => ({ label: value, value: key }))
-      .filter(item => item.value !== 'all'),
+    ...options.entries().map(([key, value]) => ({ label: value, value: key })),
   ];
 
   if (allKindFilterEnabled) {
