@@ -17,7 +17,6 @@ import { useCallback, useState } from 'react';
 import useInterval from 'react-use/esm/useInterval';
 import { DateTime, Interval } from 'luxon';
 import humanizeDuration from 'humanize-duration';
-import Typography from '@material-ui/core/Typography';
 import { useMountEffect } from '@react-hookz/web';
 
 export const StepTime = (props: {
@@ -62,5 +61,5 @@ export const StepTime = (props: {
   useMountEffect(calculate);
   useInterval(calculate, getDelay());
 
-  return <Typography variant="caption">{time}</Typography>;
+  return <span className="text-xs text-muted-foreground">{time}</span>;
 };
