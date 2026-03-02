@@ -103,7 +103,10 @@ describe('OngoingTask', () => {
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
     });
-    expect(getByTestId('cancel-task')).not.toHaveClass('Mui-disabled');
+    expect(getByTestId('cancel-task')).not.toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
 
     await act(async () => {
       const element = getByTestId('cancel-task');
@@ -116,7 +119,7 @@ describe('OngoingTask', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('cancel-task')).toHaveClass('Mui-disabled');
+      expect(getByTestId('cancel-task')).toHaveAttribute('aria-disabled');
     });
   });
 
@@ -178,7 +181,7 @@ describe('OngoingTask', () => {
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
     });
-    expect(getByTestId('cancel-task')).toHaveClass('Mui-disabled');
+    expect(getByTestId('cancel-task')).toHaveAttribute('aria-disabled');
   });
 
   it('should have start over button be disabled when user has read permission but lacks create permission', async () => {
