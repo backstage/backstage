@@ -1,0 +1,13 @@
+[default.extend-words]
+BUI = "BUI"
+Aks = "Aks"
+AKS = "AKS"
+
+[files]
+extend-exclude = ["docs/releases/*", 
+"**/**/CHANGELOG.md", 
+"plugins/home/src/homePageComponents/WelcomeTitle/locales/goodMorning.locales.json", 
+"plugins/home/src/homePageComponents/WelcomeTitle/locales/goodAfternoon.locales.json",
+"plugins/home/src/homePageComponents/WelcomeTitle/locales/goodEvening.locales.json",
+"README-*.md",
+"ADOPTERS.md",]
