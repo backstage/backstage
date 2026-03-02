@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import Grid from '@material-ui/core/Grid';
 import { JSX, useMemo } from 'react';
 import { parseFilterExpression } from './parseFilterExpression';
 
@@ -81,8 +80,6 @@ export function FilterWrapper(props: {
   );
 
   return filterFn(entity) ? (
-    <Grid item md={6} xs={12}>
-      {element}
-    </Grid>
+    <div className="col-span-12 md:col-span-6">{element}</div>
   ) : null;
 }
