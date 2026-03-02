@@ -47,14 +47,13 @@ const useStyles = makeStyles(theme => ({
 export interface AboutFieldProps {
   label: string;
   value?: string;
-  gridSizes?: Record<string, number>;
   children?: ReactNode;
   className?: string;
 }
 
 /** @public */
 export function AboutField(props: AboutFieldProps) {
-  const { label, value, gridSizes: _gridSizes, children, className } = props;
+  const { label, value, children, className } = props;
   const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 

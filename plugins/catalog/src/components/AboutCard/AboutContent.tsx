@@ -133,7 +133,6 @@ export function AboutContent(props: AboutContentProps) {
         label={t('aboutCard.ownerField.label')}
         value={t('aboutCard.ownerField.value')}
         className={classes.description}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {ownedByRelations.length > 0 && (
           <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
@@ -143,7 +142,6 @@ export function AboutContent(props: AboutContentProps) {
         <AboutField
           label={t('aboutCard.domainField.label')}
           value={t('aboutCard.domainField.value')}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
           {partOfDomainRelations.length > 0 && (
             <EntityRefLinks
@@ -160,7 +158,6 @@ export function AboutContent(props: AboutContentProps) {
         <AboutField
           label={t('aboutCard.systemField.label')}
           value={t('aboutCard.systemField.value')}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
           {partOfSystemRelations.length > 0 && (
             <EntityRefLinks
@@ -174,7 +171,6 @@ export function AboutContent(props: AboutContentProps) {
         <AboutField
           label={t('aboutCard.parentComponentField.label')}
           value={t('aboutCard.parentComponentField.value')}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
           <EntityRefLinks
             entityRefs={partOfComponentRelations}
@@ -192,7 +188,6 @@ export function AboutContent(props: AboutContentProps) {
         <AboutField
           label={t('aboutCard.typeField.label')}
           value={entity?.spec?.type as string}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         />
       )}
       {(isAPI ||
@@ -201,13 +196,11 @@ export function AboutContent(props: AboutContentProps) {
         <AboutField
           label={t('aboutCard.lifecycleField.label')}
           value={entity?.spec?.lifecycle as string}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         />
       )}
       <AboutField
         label={t('aboutCard.tagsField.label')}
         value={t('aboutCard.tagsField.value')}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {(entity?.metadata?.tags || []).map(tag => (
           <Chip key={tag} size="small" label={tag} />

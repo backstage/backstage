@@ -93,9 +93,6 @@ const CardTitle = (props: { title: string; pictureSrc?: string }) =>
 
 /** @public */
 export const UserProfileCard = (props: {
-  // Accepted for API compatibility but not applied.
-  // The new entity page layout handles card sizing.
-  // TODO: Discuss removal in code review.
   showLinks?: boolean;
   maxRelations?: number;
   hideIcons?: boolean;
