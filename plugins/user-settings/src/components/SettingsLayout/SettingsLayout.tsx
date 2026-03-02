@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentPropsWithoutRef, ReactNode } from 'react';
+import { ComponentPropsWithRef, ElementType, ReactNode } from 'react';
 import {
   Header,
   Page,
@@ -28,12 +28,16 @@ import {
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
 
+type TabButtonProps = ComponentPropsWithRef<'button'> & {
+  component?: ElementType;
+};
+
 /** @public */
 export type SettingsLayoutRouteProps = {
   path: string;
   title: string;
   children: JSX.Element;
-  tabProps?: ComponentPropsWithoutRef<'button'> & { asChild?: boolean };
+  tabProps?: TabButtonProps;
 };
 
 export const LAYOUT_DATA_KEY = 'plugin.user-settings.settingsLayout';
