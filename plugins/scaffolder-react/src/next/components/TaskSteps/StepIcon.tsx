@@ -14,55 +14,49 @@
  * limitations under the License.
  */
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { StepIconProps } from '@material-ui/core/StepIcon';
-import { makeStyles } from '@material-ui/core/styles';
-import RemoveCircleOutline from '@material-ui/icons/RemoveCircleOutline';
-import PanoramaFishEyeIcon from '@material-ui/icons/PanoramaFishEye';
 import classNames from 'classnames';
-import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
-import ErrorOutline from '@material-ui/icons/ErrorOutline';
+import {
+  MinusCircle,
+  Circle,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+} from 'lucide-react';
 
-const useStepIconStyles = makeStyles(theme => ({
-  root: {
-    color: theme.palette.text.disabled,
-  },
-  completed: {
-    color: theme.palette.status.ok,
-  },
-  error: {
-    color: theme.palette.status.error,
-  },
-}));
+/** Props for the step icon component, replacing MUI StepIconProps. */
+interface StepIconComponentProps {
+  active?: boolean;
+  completed?: boolean;
+  error?: boolean;
+  icon?: React.ReactNode;
+}
 
-export const StepIcon = (props: StepIconProps & { skipped: boolean }) => {
-  const classes = useStepIconStyles();
+export const StepIcon = (
+  props: StepIconComponentProps & { skipped: boolean },
+) => {
   const { active, completed, error, skipped } = props;
 
   const getMiddle = () => {
     if (active) {
-      return <CircularProgress size="20px" />;
+      return <Loader2 className="h-5 w-5 animate-spin text-primary" />;
     }
     if (completed) {
-      return <CheckCircleOutline />;
+      return <CheckCircle2 className="h-5 w-5" />;
     }
-
     if (error) {
-      return <ErrorOutline />;
+      return <AlertCircle className="h-5 w-5" />;
     }
-
     if (skipped) {
-      return <RemoveCircleOutline />;
+      return <MinusCircle className="h-5 w-5" />;
     }
-
-    return <PanoramaFishEyeIcon />;
+    return <Circle className="h-5 w-5" />;
   };
 
   return (
     <div
-      className={classNames(classes.root, {
-        [classes.completed]: completed,
-        [classes.error]: error,
+      className={classNames('text-muted-foreground', {
+        'text-green-600 dark:text-green-400': completed,
+        'text-destructive': error,
       })}
     >
       {getMiddle()}

@@ -25,7 +25,13 @@ describe('TaskBorder', () => {
     const progressBar = getByRole('progressbar');
 
     expect(progressBar).toBeInTheDocument();
-    expect(progressBar).toHaveClass('MuiLinearProgress-indeterminate');
+    // After MUI-to-Tailwind migration, the progress bar uses Tailwind utility classes
+    expect(progressBar).toHaveClass(
+      'relative',
+      'h-1',
+      'w-full',
+      'overflow-hidden',
+    );
   });
 
   it('should render a determinate progress bar if the task is complete', () => {
@@ -34,6 +40,12 @@ describe('TaskBorder', () => {
     const progressBar = getByRole('progressbar');
 
     expect(progressBar).toBeInTheDocument();
-    expect(progressBar).toHaveClass('MuiLinearProgress-determinate');
+    // After MUI-to-Tailwind migration, the progress bar uses Tailwind utility classes
+    expect(progressBar).toHaveClass(
+      'relative',
+      'h-1',
+      'w-full',
+      'overflow-hidden',
+    );
   });
 });
