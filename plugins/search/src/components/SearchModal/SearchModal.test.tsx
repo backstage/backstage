@@ -156,7 +156,7 @@ describe('SearchModal', () => {
   });
 
   it('should render SearchModal hiding its content', async () => {
-    const { getByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
         <SearchModal open hidden toggleModal={toggleModal} />
       </ApiProvider>,
@@ -167,8 +167,9 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(getByTestId('search-bar-next')).toBeInTheDocument();
-    expect(getByTestId('search-bar-next')).not.toBeVisible();
+    // With Radix Dialog, when hidden=true the dialog maps to open=false,
+    // so dialog content is not rendered in the DOM at all
+    expect(screen.queryByTestId('search-bar-next')).not.toBeInTheDocument();
   });
 
   it('should focus on its search bar when opened', async () => {
