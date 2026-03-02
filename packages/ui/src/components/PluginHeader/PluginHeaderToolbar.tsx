@@ -21,6 +21,7 @@ import { useRef } from 'react';
 import { RiShapesLine } from '@remixicon/react';
 import type { PluginHeaderToolbarProps } from './types';
 import { Text } from '../Text';
+import { Box } from '../Box';
 
 /**
  * A component that renders the toolbar section of a plugin header.
@@ -44,7 +45,7 @@ export const PluginHeaderToolbar = (props: PluginHeaderToolbarProps) => {
   );
 
   return (
-    <div className={classes.root} data-has-tabs={hasTabs}>
+    <Box bg="neutral" className={classes.root} data-has-tabs={hasTabs}>
       <div className={classes.wrapper} ref={toolbarWrapperRef}>
         <div className={classes.content} ref={toolbarContentRef}>
           <Text as="h1" variant="body-medium">
@@ -61,6 +62,6 @@ export const PluginHeaderToolbar = (props: PluginHeaderToolbarProps) => {
           {customActions}
         </div>
       </div>
-    </div>
+    </Box>
   );
 };

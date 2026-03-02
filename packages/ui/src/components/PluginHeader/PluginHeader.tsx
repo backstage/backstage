@@ -22,6 +22,7 @@ import { PluginHeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
 import { useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
+import { Box } from '../Box';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -92,7 +93,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
         hasTabs={hasTabs}
       />
       {tabs && (
-        <div className={classes.tabsWrapper}>
+        <Box bg="neutral" className={classes.tabsWrapper}>
           <Tabs onSelectionChange={onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (
@@ -107,7 +108,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
               ))}
             </TabList>
           </Tabs>
-        </div>
+        </Box>
       )}
     </header>
   );

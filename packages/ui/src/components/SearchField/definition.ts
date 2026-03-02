@@ -31,6 +31,7 @@ export const SearchFieldDefinition = defineComponent<SearchFieldOwnProps>()({
     input: 'bui-SearchFieldInput',
     inputIcon: 'bui-SearchFieldInputIcon',
   },
+  bg: 'consumer',
   propDefs: {
     startCollapsed: { dataAttribute: true, default: false },
     size: { dataAttribute: true, default: 'small' },

@@ -31,6 +31,7 @@ export const TextFieldDefinition = defineComponent<TextFieldOwnProps>()({
     inputIcon: 'bui-InputIcon',
     inputAction: 'bui-InputAction',
   },
+  bg: 'consumer',
   propDefs: {
     size: { dataAttribute: true, default: 'small' },
     className: {},

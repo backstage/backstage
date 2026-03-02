@@ -93,9 +93,20 @@
     display: flex;
     align-items: center;
     border-radius: var(--bui-radius-2);
-    border: 1px solid var(--bui-border-2);
     background-color: var(--bui-bg-neutral-1);
     transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
+
+    .bui-SearchField[data-on-bg='neutral-1'] & {
+      background-color: var(--bui-bg-neutral-2);
+    }
+
+    .bui-SearchField[data-on-bg='neutral-2'] & {
+      background-color: var(--bui-bg-neutral-3);
+    }
+
+    .bui-SearchField[data-on-bg='neutral-3'] & {
+      background-color: var(--bui-bg-neutral-4);
+    }
 
     &[data-size='small'] {
       height: 2rem;
