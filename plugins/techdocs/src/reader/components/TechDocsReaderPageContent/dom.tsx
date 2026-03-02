@@ -22,9 +22,6 @@ import {
   useState,
 } from 'react';
 
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core/styles';
-
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
@@ -83,7 +80,6 @@ export const useTechDocsReaderDom = (
   defaultPath?: string,
 ): Element | null => {
   const navigate = useNavigateUrl();
-  const theme = useTheme();
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
   const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();
@@ -217,7 +213,7 @@ export const useTechDocsReaderDom = (
       transformer(transformedElement, [
         handleMetaRedirects(navigate, entityRef.name),
         scrollIntoNavigation(),
-        copyToClipboard(theme),
+        copyToClipboard(),
         addLinkClickListener({
           baseUrl:
             configApi.getOptionalString('app.baseUrl') ||
@@ -294,7 +290,7 @@ export const useTechDocsReaderDom = (
         }),
         addNavLinkKeyboardToggle(),
       ]),
-    [theme, navigate, analytics, entityRef.name, configApi],
+    [navigate, analytics, entityRef.name, configApi],
   );
 
   useEffect(() => {
