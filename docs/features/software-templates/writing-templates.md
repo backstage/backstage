@@ -867,5 +867,5 @@ spec:
   owner: scaffolder/maintainers
   type: website
   presentation:
-    showDescription: true|false
+    showDescription: true  # or false
 ```
