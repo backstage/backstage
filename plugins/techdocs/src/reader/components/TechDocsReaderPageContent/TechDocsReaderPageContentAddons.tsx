@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Portal from '@material-ui/core/Portal';
+import { createPortal } from 'react-dom';
 import {
   useTechDocsAddons,
   TechDocsAddonLocations as locations,
@@ -62,15 +62,21 @@ export const TechDocsReaderPageContentAddons = () => {
 
   return (
     <>
-      <Portal container={primarySidebarAddonLocation}>
-        {addons.renderComponentsByLocation(locations.PrimarySidebar)}
-      </Portal>
-      <Portal container={contentElement}>
-        {addons.renderComponentsByLocation(locations.Content)}
-      </Portal>
-      <Portal container={secondarySidebarAddonLocation}>
-        {addons.renderComponentsByLocation(locations.SecondarySidebar)}
-      </Portal>
+      {primarySidebarAddonLocation &&
+        createPortal(
+          addons.renderComponentsByLocation(locations.PrimarySidebar),
+          primarySidebarAddonLocation,
+        )}
+      {contentElement &&
+        createPortal(
+          addons.renderComponentsByLocation(locations.Content),
+          contentElement,
+        )}
+      {secondarySidebarAddonLocation &&
+        createPortal(
+          addons.renderComponentsByLocation(locations.SecondarySidebar),
+          secondarySidebarAddonLocation,
+        )}
     </>
   );
 };
