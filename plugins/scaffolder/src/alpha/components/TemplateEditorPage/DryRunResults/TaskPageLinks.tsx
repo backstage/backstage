@@ -16,8 +16,7 @@
 
 import { parseEntityRef } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import Box from '@material-ui/core/Box';
-import LanguageIcon from '@material-ui/icons/Language';
+import { Globe } from 'lucide-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { IconLink } from './IconLink';
 import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
@@ -26,16 +25,19 @@ type TaskPageLinksProps = {
   output: ScaffolderTaskOutput;
 };
 
+/** Type-cast Globe icon for compatibility with Backstage's IconComponent type */
+const GlobeIcon = Globe as unknown as IconComponent;
+
 export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
   const { links = [] } = output;
   const app = useApp();
   const entityRoute = useRouteRef(entityRouteRef);
 
   const iconResolver = (key?: string): IconComponent =>
-    key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
+    key ? app.getSystemIcon(key) ?? GlobeIcon : GlobeIcon;
 
   return (
-    <Box px={3} pb={3}>
+    <div className="px-3 pb-3">
       {links
         .filter(({ url, entityRef }) => url || entityRef)
         .map(({ url, entityRef, title, icon }) => {
@@ -58,6 +60,6 @@ export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
             target="_blank"
           />
         ))}
-    </Box>
+    </div>
   );
 };
