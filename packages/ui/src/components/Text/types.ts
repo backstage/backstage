@@ -48,6 +48,10 @@ export type TextOwnProps = {
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
   className?: string;
+  /**
+   * If true, disables the text element (for applicable tags like button, input, etc.)
+   */
+  disabled?: boolean;
 };
 
 /** @public */

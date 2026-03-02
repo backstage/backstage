@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import type { ElementType } from 'react';
 import type { TextProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
@@ -28,17 +28,64 @@ function TextComponent<T extends ElementType = 'span'>(
     TextDefinition,
     props,
   );
-  const { classes, as } = ownProps;
-
+  const { classes, as, disabled, copyable, children } = ownProps;
   const Component = as;
+  const [copied, setCopied] = useState(false);
+
+  // Only pass 'disabled' prop to elements that support it
+  const disabledProps: Record<string, any> = {};
+  if (
+    disabled &&
+    [
+      'button',
+      'input',
+      'textarea',
+      'select',
+      'fieldset',
+      'optgroup',
+      'option',
+    ].includes(Component)
+  ) {
+    disabledProps.disabled = true;
+  }
+
+  const handleCopy = () => {
+    if (typeof children === 'string') {
+      window.navigator.clipboard.writeText(children);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
 
   return (
-    <Component
-      ref={ref}
-      className={classes.root}
-      {...dataAttributes}
-      {...restProps}
-    />
+    <>
+      <Component
+        ref={ref}
+        className={
+          disabled ? `${classes.root} bui-Text--disabled` : classes.root
+        }
+        {...dataAttributes}
+        {...restProps}
+        {...disabledProps}
+      >
+        {children}
+      </Component>
+      {copyable && typeof children === 'string' && (
+        <button
+          type="button"
+          aria-label="Copy text"
+          onClick={handleCopy}
+          style={{ marginLeft: 4, cursor: 'pointer' }}
+        >
+          📋
+        </button>
+      )}
+      {copied && (
+        <span style={{ marginLeft: 4, color: 'green', fontSize: '0.9em' }}>
+          Copied!
+        </span>
+      )}
+    </>
   );
 }
 

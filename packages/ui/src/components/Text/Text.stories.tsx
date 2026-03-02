@@ -175,3 +175,17 @@ export const Playground = meta.story({
     </Flex>
   ),
 });
+
+export const Copyable = meta.story({
+  args: {
+    children: 'This text can be copied!',
+    copyable: true,
+  },
+});
+
+export const Disabled = meta.story({
+  args: {
+    children: 'This text is disabled',
+    disabled: true,
+  },
+});
