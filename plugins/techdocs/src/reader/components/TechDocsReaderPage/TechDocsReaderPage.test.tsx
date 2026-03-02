@@ -296,9 +296,12 @@ describe('<TechDocsReaderPage />', () => {
       },
     );
 
-    const text = rendered.getAllByText(mockTechDocsMetadata.site_name)[0];
-
-    expect(text).toHaveStyle('fontFamily: Comic Sans MS');
+    // The overrideThemeOptions typography is applied as inline CSS on a wrapper
+    // div. CSS font-family inherits to all descendants in a real browser.
+    // In JSDOM, we verify the wrapper element has the style applied.
+    const wrapper = rendered.container.querySelector('[style*="font-family"]');
+    expect(wrapper).toBeInTheDocument();
+    expect(wrapper).toHaveStyle('fontFamily: Comic Sans MS');
   });
 
   describe('external TechDocs redirect', () => {
