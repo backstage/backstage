@@ -129,7 +129,7 @@ describe('OngoingTask', () => {
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
     });
-    expect(getByTestId('cancel-button')).not.toHaveClass('Mui-disabled');
+    expect(getByTestId('cancel-button')).not.toBeDisabled();
 
     await act(async () => {
       const element = getByTestId('cancel-button');
@@ -142,7 +142,7 @@ describe('OngoingTask', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('cancel-button')).toHaveClass('Mui-disabled');
+      expect(getByTestId('cancel-button')).toBeDisabled();
     });
   });
 
@@ -173,7 +173,7 @@ describe('OngoingTask', () => {
     const rendered = await render(permissionApi);
 
     const { getByTestId } = rendered;
-    expect(getByTestId('cancel-button')).toHaveClass('Mui-disabled');
+    expect(getByTestId('cancel-button')).toBeDisabled();
 
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
@@ -193,11 +193,11 @@ describe('OngoingTask', () => {
     const rendered = await render(permissionApi);
 
     const { getByTestId } = rendered;
-    expect(getByTestId('start-over-button')).toHaveClass('Mui-disabled');
+    expect(getByTestId('start-over-button')).toBeDisabled();
 
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
     });
-    expect(getByTestId('start-over-button')).toHaveClass('Mui-disabled');
+    expect(getByTestId('start-over-button')).toBeDisabled();
   });
 });
