@@ -26,7 +26,7 @@ function CustomNotFoundErrorPage() {
         Unable to locate this page. Please contact your support team if this
         page used to exist.
       </p>
-      <Button variant="contained" to="/" className="mt-4 w-[200px]">
+      <Button variant="default" to="/" className="mt-4 w-[200px]">
         Go home
       </Button>
     </article>

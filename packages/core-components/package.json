@@ -23,6 +23,7 @@
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./testUtils": "./src/testUtils.ts",
+    "./styles/tailwind.css": "./src/styles/tailwind.css",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",

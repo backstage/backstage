@@ -132,6 +132,22 @@
     --info-foreground: #173da6; /* BUI: --bui-fg-info-on-bg */
 
     /* ----------------------------------------------------------
+     * Status Indicator Tokens (Backstage-specific)
+     *
+     * Direct indicator colors for progress bars, status dots, and
+     * CI/CD pipeline displays. Unlike --success/--warning/--info
+     * (surface + foreground pairs for alert backgrounds), these
+     * tokens represent the indicator color itself.
+     * Derived from palettes.light.status / palettes.dark.status.
+     * ---------------------------------------------------------- */
+    --status-ok: #1DB954; /* palettes.light.status.ok */
+    --status-warning: #FF9800; /* palettes.light.status.warning */
+    --status-error: #E22134; /* palettes.light.status.error */
+    --status-running: #1F5493; /* palettes.light.status.running */
+    --status-pending: #FFED51; /* palettes.light.status.pending */
+    --status-aborted: #757575; /* palettes.light.status.aborted */
+
+    /* ----------------------------------------------------------
      * Sidebar Tokens
      *
      * Dedicated tokens for the collapsible sidebar redesign.
@@ -222,6 +238,17 @@
     --info-foreground: #a3cfff; /* BUI dark: --bui-fg-info-on-bg */
 
     /* ----------------------------------------------------------
+     * Status Indicator Tokens (dark mode)
+     * Derived from palettes.dark.status
+     * ---------------------------------------------------------- */
+    --status-ok: #71CF88; /* palettes.dark.status.ok */
+    --status-warning: #FFB84D; /* palettes.dark.status.warning */
+    --status-error: #F84C55; /* palettes.dark.status.error */
+    --status-running: #3488E3; /* palettes.dark.status.running */
+    --status-pending: #FEF071; /* palettes.dark.status.pending */
+    --status-aborted: #9E9E9E; /* palettes.dark.status.aborted */
+
+    /* ----------------------------------------------------------
      * Sidebar Tokens (dark mode)
      *
      * Dark mode sidebar uses a dark background rather than the
@@ -259,5 +286,22 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
+  }
+
+  /* ----------------------------------------------------------
+   * Keyframe Animations
+   *
+   * Centralized keyframe definitions for components that need
+   * custom animations. Defined here instead of inline <style>
+   * tags to avoid per-render style injection overhead.
+   * ---------------------------------------------------------- */
+
+  @keyframes backstage-indeterminate {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(300%);
+    }
   }
 }

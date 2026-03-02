@@ -217,9 +217,9 @@
     --accent-foreground: #FFFFFF;
 
     /* Destructive/error
-     * --destructive: palettes.dark.status.error
-     * Contrast ratio: #FFFFFF on #F84C55 ≈ 3.3:1 — WCAG AA for large text */
-    --destructive: #F84C55;
+     * --destructive: Darkened from palettes.dark.status.error for WCAG AA normal text
+     * Contrast ratio: #FFFFFF on #C62828 ≈ 6.7:1 — WCAG AA ✓ */
+    --destructive: #C62828;
     --destructive-foreground: #FFFFFF;
 
     /* Borders and inputs

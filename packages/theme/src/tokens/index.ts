@@ -313,8 +313,8 @@ export const darkTokenValues: ShadcnTokens = {
   mutedForeground: '#CCCCCC', // palettes.dark.textSubtle
   accent: '#424242', // accent surface
   accentForeground: '#FFFFFF', // palettes.dark.textContrast
-  destructive: '#F84C55', // palettes.dark.status.error
-  destructiveForeground: '#FFFFFF', // white on destructive
+  destructive: '#C62828', // Darkened from palettes.dark.status.error for WCAG AA normal text contrast
+  destructiveForeground: '#FFFFFF', // white on destructive — contrast ≈ 6.7:1
 
   // Borders and interactive
   border: '#E6E6E6', // palettes.dark.border

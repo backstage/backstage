@@ -193,6 +193,20 @@ export type TechDocsShadowDomProps = PropsWithChildren<{
  * @param props - see {@link TechDocsShadowDomProps}.
  * @public
  */
+/*
+ * TRANSITIONAL NOTE (shadcn/ui migration):
+ *
+ * The JSS `StylesProvider` with shadow DOM `insertionPoint` was removed
+ * as part of the MUI-to-shadcn/ui migration. During the transitional period
+ * before `plugins/techdocs/` completes its own migration, MUI components
+ * rendered inside this shadow DOM will not have their JSS-based styles
+ * injected into the shadow root. This is expected and will resolve once
+ * the techdocs plugin migration is completed in a subsequent checkpoint.
+ *
+ * Shadow DOM CSS isolation (`attachShadow({ mode: 'open' })`) remains
+ * intact and continues to prevent style bleed between TechDocs content
+ * and the host application.
+ */
 export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
   const { element, onAppend, children } = props;
 

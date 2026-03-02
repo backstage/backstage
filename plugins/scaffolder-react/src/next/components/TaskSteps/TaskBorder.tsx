@@ -15,18 +15,27 @@
  */
 
 /**
- * The visual progress of the task event stream
+ * The visual progress of the task event stream.
+ *
+ * Renders an indeterminate sliding progress bar when the task is running,
+ * or a full-width determinate bar with success/error coloring when complete.
+ *
+ * Uses semantic CSS custom property tokens (`--status-ok`, `--destructive`)
+ * defined in the global token system for theme-aware coloring.
+ * The `backstage-indeterminate` keyframe animation is defined in
+ * `packages/core-components/src/styles/globals.css`.
  */
 export const TaskBorder = (props: {
   isComplete: boolean;
   isError: boolean;
 }) => {
   if (!props.isComplete) {
-    // Indeterminate progress bar — animated sliding bar
+    // Indeterminate progress bar — animated sliding bar using global keyframe
     return (
       <div
         className="relative h-1 w-full overflow-hidden bg-primary/20"
         role="progressbar"
+        data-testid="task-border-indeterminate"
       >
         <div
           className="absolute inset-0 h-full w-1/3 bg-primary"
@@ -35,18 +44,11 @@ export const TaskBorder = (props: {
               'backstage-indeterminate 1.5s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite',
           }}
         />
-        {/* Keyframe definition for the indeterminate animation */}
-        <style>{`
-          @keyframes backstage-indeterminate {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-          }
-        `}</style>
       </div>
     );
   }
 
-  // Determinate progress bar — full width with success/error color
+  // Determinate progress bar — full width with success/error semantic token
   return (
     <div
       className="relative h-1 w-full overflow-hidden bg-primary/20"
@@ -54,11 +56,15 @@ export const TaskBorder = (props: {
       aria-valuenow={100}
       aria-valuemin={0}
       aria-valuemax={100}
+      data-testid="task-border-determinate"
     >
       <div
-        className={`h-full w-full transition-all ${
-          props.isError ? 'bg-destructive' : 'bg-green-600 dark:bg-green-400'
-        }`}
+        className="h-full w-full transition-all"
+        style={{
+          backgroundColor: props.isError
+            ? 'var(--destructive)'
+            : 'var(--status-ok)',
+        }}
       />
     </div>
   );

@@ -167,14 +167,17 @@ export const palettes = {
 };
 
 /**
- * Converts a hex color string to space-separated RGB values.
- * Used internally for shadcn/ui CSS custom properties that support
- * Tailwind's opacity modifier syntax: `rgb(var(--color) / 0.5)`.
+ * Normalizes a hex color string to its full 6-character uppercase form.
  *
- * @param hex - Hex color string (e.g., '#F8F8F8' or '#fff')
- * @returns Space-separated RGB string (e.g., '248 248 248')
+ * Ensures consistent hex format for CSS custom property values, matching
+ * the format used in the companion `shadcn-tokens.css` and `globals.css`
+ * stylesheets. Tailwind CSS v4 consumes hex values directly via
+ * `var(--token)` — the space-separated RGB format is no longer required.
+ *
+ * @param hex - Hex color string (e.g., '#F8F8F8', '#fff', or 'abc')
+ * @returns Normalized hex string (e.g., '#F8F8F8')
  */
-function hexToRgb(hex: string): string {
+function normalizeHex(hex: string): string {
   const sanitized = hex.replace('#', '');
   const fullHex =
     sanitized.length === 3
@@ -183,87 +186,83 @@ function hexToRgb(hex: string): string {
           .map(c => c + c)
           .join('')
       : sanitized;
-  const r = parseInt(fullHex.substring(0, 2), 16);
-  const g = parseInt(fullHex.substring(2, 4), 16);
-  const b = parseInt(fullHex.substring(4, 6), 16);
-  return `${r} ${g} ${b}`;
+  return `#${fullHex.toUpperCase()}`;
 }
 
 /**
  * Generates CSS custom property token declarations from a Backstage palette.
  *
  * Converts Backstage palette color values into shadcn/ui-compatible CSS custom
- * properties using space-separated RGB values. These tokens are injected by
- * the UnifiedThemeProvider at the document root level.
+ * properties using hex color values. These tokens are injected by the
+ * UnifiedThemeProvider at the document root level.
  *
  * The returned record maps CSS custom property names (e.g. `--background`,
- * `--primary`) to their computed values. Color tokens use space-separated RGB
- * (e.g. `'248 248 248'`) to support Tailwind's opacity modifier syntax, while
- * non-color tokens like `--radius` use their native CSS value.
+ * `--primary`) to their computed hex values. This matches the format used in
+ * `shadcn-tokens.css` and `globals.css` for consistent token representation
+ * across TypeScript-generated and stylesheet-defined tokens.
  *
  * @public
  * @param palette - A Backstage palette object (e.g., `palettes.light` or `palettes.dark`)
- * @returns A Record mapping CSS custom property names to their RGB values
+ * @returns A Record mapping CSS custom property names to their hex color values
  */
 export function generatePaletteTokens(
   palette: typeof palettes.light | typeof palettes.dark,
 ): Record<string, string> {
   // Neutral tone used for secondary/muted/accent backgrounds.
-  // Light mode uses a near-white (#F5F5F5 = 245 245 245),
-  // dark mode reuses the paper surface (#424242 = 66 66 66).
-  const neutralBg = palette.type === 'light' ? '245 245 245' : '66 66 66';
+  // Light mode uses a near-white, dark mode reuses the paper surface.
+  const neutralBg = palette.type === 'light' ? '#F5F5F5' : '#424242';
 
   return {
     // ── Core Layout ──────────────────────────────────────────────
-    '--background': hexToRgb(palette.background.default),
-    '--foreground': hexToRgb(palette.textContrast),
+    '--background': normalizeHex(palette.background.default),
+    '--foreground': normalizeHex(palette.textContrast),
 
     // ── Card ─────────────────────────────────────────────────────
-    '--card': hexToRgb(palette.background.paper),
-    '--card-foreground': hexToRgb(palette.textContrast),
+    '--card': normalizeHex(palette.background.paper),
+    '--card-foreground': normalizeHex(palette.textContrast),
 
     // ── Popover ──────────────────────────────────────────────────
-    '--popover': hexToRgb(palette.background.paper),
-    '--popover-foreground': hexToRgb(palette.textContrast),
+    '--popover': normalizeHex(palette.background.paper),
+    '--popover-foreground': normalizeHex(palette.textContrast),
 
     // ── Primary ──────────────────────────────────────────────────
-    '--primary': hexToRgb(palette.primary.main),
-    '--primary-foreground': hexToRgb(palette.bursts.fontColor),
+    '--primary': normalizeHex(palette.primary.main),
+    '--primary-foreground': normalizeHex(palette.bursts.fontColor),
 
     // ── Secondary ────────────────────────────────────────────────
     '--secondary': neutralBg,
-    '--secondary-foreground': hexToRgb(palette.textContrast),
+    '--secondary-foreground': normalizeHex(palette.textContrast),
 
     // ── Muted ────────────────────────────────────────────────────
     '--muted': neutralBg,
-    '--muted-foreground': hexToRgb(palette.textSubtle),
+    '--muted-foreground': normalizeHex(palette.textSubtle),
 
     // ── Accent ───────────────────────────────────────────────────
     '--accent': neutralBg,
-    '--accent-foreground': hexToRgb(palette.textContrast),
+    '--accent-foreground': normalizeHex(palette.textContrast),
 
     // ── Destructive ──────────────────────────────────────────────
-    '--destructive': hexToRgb(palette.status.error),
-    '--destructive-foreground': '255 255 255',
+    '--destructive': normalizeHex(palette.status.error),
+    '--destructive-foreground': '#FFFFFF',
 
     // ── Border / Input / Ring ────────────────────────────────────
-    '--border': hexToRgb(palette.border),
-    '--input': hexToRgb(palette.border),
-    '--ring': hexToRgb(palette.primary.main),
+    '--border': normalizeHex(palette.border),
+    '--input': normalizeHex(palette.border),
+    '--ring': normalizeHex(palette.primary.main),
 
-    // ── Radius (non-RGB value) ───────────────────────────────────
+    // ── Radius (non-color value) ─────────────────────────────────
     '--radius': '0.5rem',
 
     // ── Status Colors (catalog health / CI/CD displays) ──────────
-    '--status-ok': hexToRgb(palette.status.ok),
-    '--status-warning': hexToRgb(palette.status.warning),
-    '--status-error': hexToRgb(palette.status.error),
-    '--status-running': hexToRgb(palette.status.running),
-    '--status-pending': hexToRgb(palette.status.pending),
-    '--status-aborted': hexToRgb(palette.status.aborted),
+    '--status-ok': normalizeHex(palette.status.ok),
+    '--status-warning': normalizeHex(palette.status.warning),
+    '--status-error': normalizeHex(palette.status.error),
+    '--status-running': normalizeHex(palette.status.running),
+    '--status-pending': normalizeHex(palette.status.pending),
+    '--status-aborted': normalizeHex(palette.status.aborted),
 
     // ── Navigation (sidebar) ─────────────────────────────────────
-    '--sidebar-background': hexToRgb(palette.navigation.background),
-    '--sidebar-foreground': hexToRgb(palette.navigation.color),
+    '--sidebar-background': normalizeHex(palette.navigation.background),
+    '--sidebar-foreground': normalizeHex(palette.navigation.color),
   };
 }
