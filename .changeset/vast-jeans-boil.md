@@ -10,7 +10,7 @@ This addresses the problem where the elements contain the `v5-` prefix for MUI c
 Import should be made as follows to ensure the prefix problem is addressed correctly:
 
 ```diff
-// packages/app/src/index.ts
+// packages/app/src/index.tsx
 
 + import '@backstage/theme/MuiClassNameSetup'; // must be the very first import!
 import '@backstage/cli/asset-types';

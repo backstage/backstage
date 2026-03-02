@@ -21,7 +21,7 @@ import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material
  * This needs to be configured before any MUI 5 component can possibly be imported. See: https://v5.mui.com/material-ui/experimental-api/classname-generator/#caveat
  *
  * ```diff
- * // packages/app/src/index.ts
+ * // packages/app/src/index.tsx
  *
  * + import '@backstage/theme/MuiClassNameSetup'; // must be the very first import!
  * import '@backstage/cli/asset-types';
