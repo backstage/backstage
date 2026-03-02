@@ -319,15 +319,15 @@ export class BackendInitializer {
       'root',
     );
 
-    const allRegistrations = this.#registrations.flatMap(f => [
-      ...f.getRegistrations(),
-    ]);
+    const allRegistrations = this.#registrations.flatMap(f =>
+      f.getRegistrations(),
+    );
 
     const allPluginIds = [
       ...new Set(
-        allRegistrations
-          .map(r => (r as any).pluginId)
-          .filter((id): id is string => typeof id === 'string'),
+        allRegistrations.flatMap(r =>
+          'pluginId' in r && typeof r.pluginId === 'string' ? [r.pluginId] : [],
+        ),
       ),
     ];
 
@@ -520,18 +520,12 @@ export class BackendInitializer {
         for (const id of addedExtensionPointIds) {
           this.#extensionPoints.delete(id);
         }
-        const pluginId = (r as any).pluginId;
-        if (!pluginId) {
-          throw error;
-        }
-        if (r.type === 'module' || r.type === 'module-v1.1') {
-          resultCollector.onPluginModuleResult(
-            pluginId,
-            (r as any).moduleId,
-            error,
-          );
+        if ('pluginId' in r && 'moduleId' in r) {
+          resultCollector.onPluginModuleResult(r.pluginId, r.moduleId, error);
+        } else if ('pluginId' in r) {
+          resultCollector.onPluginResult(r.pluginId, error);
         } else {
-          resultCollector.onPluginResult(pluginId, error);
+          throw error;
         }
       }
     }
