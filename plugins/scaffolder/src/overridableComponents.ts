@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Overrides } from '@material-ui/core/styles/overrides';
-import { StyleRules } from '@material-ui/core/styles/withStyles';
+import type React from 'react';
+
 import { ScaffolderTemplateEditorClassKey } from './alpha/components/TemplateEditorPage/TemplateEditor';
 import { ScaffolderTemplateFormPreviewerClassKey } from './alpha/components/TemplateEditorPage/TemplateFormPreviewer';
 import { ScaffolderCustomFieldExplorerClassKey } from './alpha/components/TemplateEditorPage/CustomFieldExplorer';
@@ -27,10 +27,19 @@ export type ScaffolderReactComponentsNameToClassKey = {
   ScaffolderCustomFieldExplorer: ScaffolderCustomFieldExplorerClassKey;
 };
 
+/**
+ * CSS custom property overrides for a component's class keys.
+ * Each class key maps to a Record of CSS custom property names to values,
+ * combined with standard React CSSProperties for inline style overrides.
+ */
+type CSSCustomPropertyOverride<ClassKey extends string> = {
+  [K in ClassKey]?: React.CSSProperties & Record<`--${string}`, string>;
+};
+
 /** @public */
-export type BackstageOverrides = Overrides & {
+export type BackstageOverrides = {
   [Name in keyof ScaffolderReactComponentsNameToClassKey]?: Partial<
-    StyleRules<ScaffolderReactComponentsNameToClassKey[Name]>
+    CSSCustomPropertyOverride<ScaffolderReactComponentsNameToClassKey[Name]>
   >;
 };
 
