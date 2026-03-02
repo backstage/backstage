@@ -24,7 +24,13 @@ import {
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskScheduleDefinition,
 } from '@backstage/backend-plugin-api';
-import { Counter, Histogram, Gauge, metrics, trace } from '@opentelemetry/api';
+import { trace } from '@opentelemetry/api';
+import {
+  MetricsService,
+  MetricsServiceCounter,
+  MetricsServiceGauge,
+  MetricsServiceHistogram,
+} from '@backstage/backend-plugin-api/alpha';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
 import express from 'express';
@@ -45,10 +51,10 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
   private readonly allScheduledTasks: SchedulerServiceTaskDescriptor[] = [];
   private readonly shutdownInitiated: Promise<boolean>;
 
-  private readonly counter: Counter;
-  private readonly duration: Histogram;
-  private readonly lastStarted: Gauge;
-  private readonly lastCompleted: Gauge;
+  private readonly counter: MetricsServiceCounter;
+  private readonly duration: MetricsServiceHistogram;
+  private readonly lastStarted: MetricsServiceGauge;
+  private readonly lastCompleted: MetricsServiceGauge;
 
   private readonly pluginId: string;
   private readonly databaseFactory: () => Promise<Knex>;
@@ -58,24 +64,27 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     pluginId: string,
     databaseFactory: () => Promise<Knex>,
     logger: LoggerService,
+    metrics: MetricsService,
     rootLifecycle: RootLifecycleService,
   ) {
     this.pluginId = pluginId;
     this.databaseFactory = databaseFactory;
     this.logger = logger;
-    const meter = metrics.getMeter('default');
-    this.counter = meter.createCounter('backend_tasks.task.runs.count', {
+    this.counter = metrics.createCounter('backend_tasks.task.runs.count', {
       description: 'Total number of times a task has been run',
     });
-    this.duration = meter.createHistogram('backend_tasks.task.runs.duration', {
-      description: 'Histogram of task run durations',
-      unit: 'seconds',
-    });
-    this.lastStarted = meter.createGauge('backend_tasks.task.runs.started', {
+    this.duration = metrics.createHistogram(
+      'backend_tasks.task.runs.duration',
+      {
+        description: 'Histogram of task run durations',
+        unit: 'seconds',
+      },
+    );
+    this.lastStarted = metrics.createGauge('backend_tasks.task.runs.started', {
       description: 'Epoch timestamp seconds when the task was last started',
       unit: 'seconds',
     });
-    this.lastCompleted = meter.createGauge(
+    this.lastCompleted = metrics.createGauge(
       'backend_tasks.task.runs.completed',
       {
         description: 'Epoch timestamp seconds when the task was last completed',

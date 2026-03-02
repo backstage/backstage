@@ -80,6 +80,12 @@ const TabSelectionContext = createContext<TabSelectionContextValue | null>(
 );
 
 /**
+ * Strips query params and hash from a href, leaving only the pathname.
+ * Tab matching always compares against location.pathname which never includes them.
+ */
+const hrefPathname = (href: string) => href.split('?')[0].split('#')[0];
+
+/**
  * Utility function to determine if a tab should be active based on the matching strategy.
  * This follows the pattern used in WorkaroundNavLink from the sidebar.
  */
@@ -88,18 +94,20 @@ const isTabActive = (
   currentPathname: string,
   matchStrategy: 'exact' | 'prefix',
 ): boolean => {
+  const pathname = hrefPathname(tabHref);
+
   if (matchStrategy === 'exact') {
-    return tabHref === currentPathname;
+    return pathname === currentPathname;
   }
 
   // Prefix matching - similar to WorkaroundNavLink behavior
-  if (tabHref === currentPathname) {
+  if (pathname === currentPathname) {
     return true;
   }
 
   // Check if current path starts with tab href followed by a slash
   // This prevents /foo matching /foobar
-  return currentPathname.startsWith(`${tabHref}/`);
+  return currentPathname.startsWith(`${pathname}/`);
 };
 
 /**
@@ -304,7 +312,7 @@ function RoutedTabEffects({
 
   // Register as active tab when URL matches (for tab selection)
   const isActive = isTabActive(href, location.pathname, matchStrategy);
-  const segmentCount = href.split('/').filter(Boolean).length;
+  const segmentCount = hrefPathname(href).split('/').filter(Boolean).length;
 
   useEffect(() => {
     if (isActive && selectionCtx) {

@@ -29,6 +29,7 @@ import {
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
 import { targetPaths } from '@backstage/cli-common';
 import {
+  getOpenApiGeneratorKey,
   getPathToCurrentOpenApiSpec,
   getRelativePathToFile,
   toGeneratorAdditionalProperties,
@@ -103,6 +104,7 @@ async function generate(
   const additionalProperties = toGeneratorAdditionalProperties({
     initialValue: serverAdditionalProperties,
   });
+  const generatorKey = await getOpenApiGeneratorKey(resolvedOpenapiPath);
 
   await exec(
     'node',
@@ -121,7 +123,7 @@ async function generate(
         'templates/typescript-backstage-server.yaml',
       ),
       '--generator-key',
-      'v3.0',
+      generatorKey,
       additionalProperties
         ? `--additional-properties=${additionalProperties}`
         : '',
@@ -160,7 +162,12 @@ async function generate(
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
+  fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
 
+  fs.rmSync(resolve(resolvedOutputDirectory, 'docs'), {
+    recursive: true,
+    force: true,
+  });
   fs.rmSync(resolve(resolvedOutputDirectory, '.openapi-generator'), {
     recursive: true,
     force: true,

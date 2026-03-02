@@ -730,12 +730,12 @@ Notes:
 
 ### Content ordering within groups
 
-By default, content items within each group are sorted alphabetically by title. You can change this with the `contentOrder` option, which supports two modes:
+By default, content items within each group are sorted alphabetically by title. You can change this with the `defaultContentOrder` option, which supports two modes:
 
 - **`title`** (default) — sort alphabetically by the content extension's title (case-insensitive).
 - **`natural`** — preserve the natural extension discovery/registration order.
 
-A page-level `contentOrder` sets the default for all groups, and individual groups can override it:
+A page-level `defaultContentOrder` sets the default for all groups, and individual groups can override it with a per-group `contentOrder`:
 
 ```yaml
 app:
@@ -743,7 +743,7 @@ app:
     - page:catalog/entity:
         config:
           # Default content order for all groups
-          contentOrder: title
+          defaultContentOrder: title
 
           groups:
             - documentation:

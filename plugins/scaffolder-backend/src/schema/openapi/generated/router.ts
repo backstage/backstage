@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import { createValidatedOpenApiRouterFromGeneratedEndpointMap } from '@backstage
 import { EndpointMap } from './apis';
 
 export const spec = {
-  openapi: '3.0.3',
+  openapi: '3.1.0',
   info: {
     title: 'scaffolder',
     version: '1',
@@ -69,7 +69,6 @@ export const spec = {
         name: 'kind',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -89,7 +88,6 @@ export const spec = {
         name: 'namespace',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -98,7 +96,6 @@ export const spec = {
         name: 'name',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -144,7 +141,6 @@ export const spec = {
         name: 'taskId',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -325,8 +321,7 @@ export const spec = {
             type: 'string',
           },
           {
-            type: 'object',
-            nullable: true,
+            type: 'null',
           },
         ],
         description: 'A type representing all allowed JSON primitive values.',
@@ -605,8 +600,14 @@ export const spec = {
             type: 'string',
           },
           value: {
-            type: 'object',
-            nullable: true,
+            anyOf: [
+              {
+                type: 'object',
+              },
+              {
+                type: 'null',
+              },
+            ],
           },
         },
         required: ['value'],
@@ -1272,7 +1273,6 @@ export const spec = {
             in: 'path',
             name: 'provider',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1281,7 +1281,6 @@ export const spec = {
             in: 'path',
             name: 'resource',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },

@@ -49,7 +49,7 @@ app:
         config:
           showNavItemIcons: true
           # default content order for all groups, can be 'title' or 'natural'
-          # contentOrder: title
+          # defaultContentOrder: title
           groups:
             # placing a tab at the beginning
             - overview:

@@ -1097,12 +1097,12 @@ const _default: OverridableFrontendPlugin<
               {
                 title: string;
                 icon?: string | undefined;
-                contentOrder?: 'title' | 'natural' | undefined;
                 aliases?: string[] | undefined;
+                contentOrder?: 'title' | 'natural' | undefined;
               }
             >[]
           | undefined;
-        contentOrder: 'title' | 'natural';
+        defaultContentOrder: 'title' | 'natural';
         showNavItemIcons: boolean;
         path: string | undefined;
         title: string | undefined;
@@ -1114,13 +1114,13 @@ const _default: OverridableFrontendPlugin<
               {
                 title: string;
                 icon?: string | undefined;
-                contentOrder?: 'title' | 'natural' | undefined;
                 aliases?: string[] | undefined;
+                contentOrder?: 'title' | 'natural' | undefined;
               }
             >[]
           | undefined;
+        defaultContentOrder?: 'title' | 'natural' | undefined;
         showNavItemIcons?: boolean | undefined;
-        contentOrder?: 'title' | 'natural' | undefined;
         title?: string | undefined;
         path?: string | undefined;
       };

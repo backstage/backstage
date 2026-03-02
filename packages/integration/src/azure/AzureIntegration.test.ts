@@ -25,7 +25,7 @@ describe('AzureIntegration', () => {
           azure: [
             {
               host: 'h.com',
-              token: 'token',
+              credentials: [{ personalAccessToken: 'token' }],
             },
           ],
         },
