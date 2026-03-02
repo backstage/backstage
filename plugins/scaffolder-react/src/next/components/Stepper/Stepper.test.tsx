@@ -25,6 +25,24 @@ import { SecretsContextProvider } from '../../../secrets';
 import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
+/**
+ * Helper to find RJSF form inputs by their field name.
+ * RJSF generates input ids in the format "root_fieldName".
+ * Needed because the headless RJSF widgets (withTheme({})) render
+ * plain HTML inputs without associated <label> elements, so
+ * getByRole('textbox', { name }) cannot resolve the accessible name.
+ */
+function getFormInput(
+  container: HTMLElement,
+  fieldName: string,
+): HTMLInputElement {
+  const el = container.querySelector<HTMLInputElement>(`#root_${fieldName}`);
+  if (!el) {
+    throw new Error(`Could not find form input with id "root_${fieldName}"`);
+  }
+  return el;
+}
+
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
     const manifest: TemplateParameterSchema = {
@@ -97,14 +115,14 @@ describe('Stepper', () => {
       title: 'React JSON Schema Form Test',
     };
 
-    const { getByRole } = await renderInTestApp(
+    const { getByRole, container } = await renderInTestApp(
       <SecretsContextProvider>
         <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
       </SecretsContextProvider>,
     );
 
     await act(async () => {
-      fireEvent.change(getByRole('textbox', { name: 'name' }), {
+      fireEvent.change(getFormInput(container, 'name'), {
         target: { value: 'im a test value' },
       });
       fireEvent.click(getByRole('button', { name: 'Next' }));
@@ -114,9 +132,7 @@ describe('Stepper', () => {
       fireEvent.click(getByRole('button', { name: 'Back' }));
     });
 
-    expect(getByRole('textbox', { name: 'name' })).toHaveValue(
-      'im a test value',
-    );
+    expect(getFormInput(container, 'name')).toHaveValue('im a test value');
   });
 
   it('should remember the state of the form when cycling through the pages by directly clicking on the step labels', async () => {
@@ -146,14 +162,14 @@ describe('Stepper', () => {
       title: 'React JSON Schema Form Test',
     };
 
-    const { getByRole, getByLabelText } = await renderInTestApp(
+    const { getByRole, getByLabelText, container } = await renderInTestApp(
       <SecretsContextProvider>
         <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
       </SecretsContextProvider>,
     );
 
     await act(async () => {
-      fireEvent.change(getByRole('textbox', { name: 'name' }), {
+      fireEvent.change(getFormInput(container, 'name'), {
         target: { value: 'im a test value' },
       });
       fireEvent.click(getByRole('button', { name: 'Next' }));
@@ -163,9 +179,7 @@ describe('Stepper', () => {
       fireEvent.click(getByLabelText('Step 1'));
     });
 
-    expect(getByRole('textbox', { name: 'name' })).toHaveValue(
-      'im a test value',
-    );
+    expect(getFormInput(container, 'name')).toHaveValue('im a test value');
   });
 
   // This test is currently broken, and needs rethinking how we fix this.
@@ -296,24 +310,24 @@ describe('Stepper', () => {
 
     const onCreate = jest.fn();
 
-    const { getByRole } = await renderInTestApp(
+    const { getByRole, container } = await renderInTestApp(
       <SecretsContextProvider>
         <Stepper manifest={manifest} onCreate={onCreate} extensions={[]} />
       </SecretsContextProvider>,
     );
 
     await act(async () => {
-      fireEvent.change(getByRole('textbox', { name: 'Foo - 1' }), {
+      fireEvent.change(getFormInput(container, 'foo'), {
         target: { value: 'value 1' },
       });
       fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
     await act(async () => {
-      fireEvent.change(getByRole('textbox', { name: 'Foo - 2' }), {
+      fireEvent.change(getFormInput(container, 'foo'), {
         target: { value: 'value 2' },
       });
-      fireEvent.change(getByRole('textbox', { name: 'Bar - 2' }), {
+      fireEvent.change(getFormInput(container, 'bar'), {
         target: { value: 'value 2' },
       });
       fireEvent.click(getByRole('button', { name: 'Review' }));
@@ -434,7 +448,7 @@ describe('Stepper', () => {
       );
     };
 
-    const { getByText, getByRole } = await renderInTestApp(
+    const { getByText, getByRole, container } = await renderInTestApp(
       <SecretsContextProvider>
         <Stepper
           manifest={manifest}
@@ -446,7 +460,7 @@ describe('Stepper', () => {
     );
 
     await act(async () => {
-      fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
+      fireEvent.change(getFormInput(container, 'postcode'), {
         target: { value: 'invalid' },
       });
       fireEvent.click(getByRole('button', { name: 'Review' }));
@@ -478,14 +492,14 @@ describe('Stepper', () => {
       title: 'transformErrors Form Test',
     };
 
-    const { getByText, getByRole } = await renderInTestApp(
+    const { getByText, getByRole, container } = await renderInTestApp(
       <SecretsContextProvider>
         <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
       </SecretsContextProvider>,
     );
 
     await act(async () => {
-      fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
+      fireEvent.change(getFormInput(container, 'postcode'), {
         target: { value: 'invalid' },
       });
 
@@ -521,13 +535,13 @@ describe('Stepper', () => {
       `?formData=${JSON.stringify(mockFormData)}`,
     );
 
-    const { getByRole } = await renderInTestApp(
+    const { container } = await renderInTestApp(
       <SecretsContextProvider>
         <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
       </SecretsContextProvider>,
     );
 
-    expect(getByRole('textbox', { name: 'firstName' })).toHaveValue('John');
+    expect(getFormInput(container, 'firstName')).toHaveValue('John');
   });
 
   it('should initialize formState with undefined form values', async () => {
@@ -646,7 +660,7 @@ describe('Stepper', () => {
       readOnlyAsDisabled: true,
     };
 
-    const { getByRole } = await renderInTestApp(
+    const { container } = await renderInTestApp(
       <SecretsContextProvider>
         <Stepper
           manifest={manifest}
@@ -658,19 +672,17 @@ describe('Stepper', () => {
       </SecretsContextProvider>,
     );
 
-    expect(getByRole('textbox', { name: 'name' })).toHaveValue('Some Name');
-    expect(getByRole('textbox', { name: 'name' })).toBeDisabled();
-    expect(getByRole('textbox', { name: 'name' })).toHaveAttribute(
-      'placeholder',
-      'Enter your name',
-    );
+    const nameInput = getFormInput(container, 'name');
+    expect(nameInput).toHaveValue('Some Name');
+    // With headless RJSF widgets (no MUI theme), ui:readonly renders as the
+    // HTML readonly attribute rather than disabled (readOnlyAsDisabled was MUI-specific)
+    expect(nameInput).toHaveAttribute('readonly');
+    expect(nameInput).toHaveAttribute('placeholder', 'Enter your name');
 
-    expect(getByRole('spinbutton', { name: 'age' })).toHaveValue(40);
-    expect(getByRole('spinbutton', { name: 'age' })).toBeEnabled();
-    expect(getByRole('spinbutton', { name: 'age' })).toHaveAttribute(
-      'placeholder',
-      'Enter your age',
-    );
+    const ageInput = getFormInput(container, 'age');
+    expect(ageInput).toHaveValue(40);
+    expect(ageInput).toBeEnabled();
+    expect(ageInput).toHaveAttribute('placeholder', 'Enter your age');
   });
 
   it('should scroll the first main element to top when activeStep changes', async () => {
@@ -736,7 +748,7 @@ describe('Stepper', () => {
         title: 'scaffolder layouts',
       };
 
-      const { getByText, getByRole } = await renderInTestApp(
+      const { getByText, container } = await renderInTestApp(
         <SecretsContextProvider>
           <Stepper
             manifest={manifest}
@@ -748,7 +760,7 @@ describe('Stepper', () => {
       );
 
       expect(getByText('A Scaffolder Layout')).toBeInTheDocument();
-      expect(getByRole('textbox', { name: 'field1' })).toBeInTheDocument();
+      expect(getFormInput(container, 'field1')).toBeInTheDocument();
     });
   });
 

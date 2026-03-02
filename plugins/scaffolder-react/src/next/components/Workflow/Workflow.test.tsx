@@ -27,6 +27,24 @@ import { ScaffolderApi, scaffolderApiRef } from '../../../api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
+/**
+ * Helper to find RJSF form inputs by their field name.
+ * RJSF generates input ids in the format "root_fieldName".
+ * Needed because the headless RJSF widgets (withTheme({})) render
+ * plain HTML inputs without associated <label> elements, so
+ * getByRole('textbox', { name }) cannot resolve the accessible name.
+ */
+function getFormInput(
+  container: HTMLElement,
+  fieldName: string,
+): HTMLInputElement {
+  const el = container.querySelector<HTMLInputElement>(`#root_${fieldName}`);
+  if (!el) {
+    throw new Error(`Could not find form input with id "root_${fieldName}"`);
+  }
+  return el;
+}
+
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   cancelTask: jest.fn(),
   scaffold: jest.fn(),
@@ -80,42 +98,41 @@ describe('<Workflow />', () => {
       title: 'React JSON Schema Form Test',
     });
 
-    const { getByRole, getAllByRole, getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <Workflow
-          title="Different title than template"
-          description={`
+    const { getByRole, getAllByRole, getByText, container } =
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <Workflow
+            title="Different title than template"
+            description={`
       ## This is markdown
       - overriding the template description
             `}
-          onCreate={onCreate}
-          onError={onError}
-          namespace="default"
-          templateName="docs-template"
-          initialState={{
-            name: 'prefilled-name',
-            age: '53',
-          }}
-          components={{
-            ReviewStateComponent: () => (
-              <h1>This is a different wrapper for the review page</h1>
-            ),
-            reviewButtonText: <i>Onwards</i>,
-            createButtonText: <b>Make</b>,
-          }}
-          extensions={[]}
-        />
-      </ApiProvider>,
-    );
+            onCreate={onCreate}
+            onError={onError}
+            namespace="default"
+            templateName="docs-template"
+            initialState={{
+              name: 'prefilled-name',
+              age: '53',
+            }}
+            components={{
+              ReviewStateComponent: () => (
+                <h1>This is a different wrapper for the review page</h1>
+              ),
+              reviewButtonText: <i>Onwards</i>,
+              createButtonText: <b>Make</b>,
+            }}
+            extensions={[]}
+          />
+        </ApiProvider>,
+      );
 
     // Test template title is overridden
     expect(getByRole('heading', { level: 2 }).innerHTML).toBe(
       'Different title than template',
     );
 
-    const nameInput = getByRole('textbox', {
-      name: 'name',
-    }) as HTMLInputElement;
+    const nameInput = getFormInput(container, 'name');
 
     expect(nameInput).toBeInTheDocument();
 
@@ -125,7 +142,7 @@ describe('<Workflow />', () => {
       fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
-    const ageInput = getByRole('textbox', { name: 'age' }) as HTMLInputElement;
+    const ageInput = getFormInput(container, 'age');
 
     expect(ageInput.value).toBe('53');
 

@@ -20,9 +20,8 @@ import { FieldTemplate } from './FieldTemplate';
 import { DescriptionFieldTemplate } from './DescriptionFieldTemplate';
 import { FieldProps } from '@rjsf/utils';
 import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
-import { Theme as MuiTheme } from '@rjsf/material-ui';
 
-const WrappedForm = withTheme(MuiTheme);
+const WrappedForm = withTheme({});
 
 /**
  * The Form component
