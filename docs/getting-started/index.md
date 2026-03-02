@@ -132,15 +132,15 @@ To create the application:
        .
        .
        .
-   Moving to final location:
+     Moving to final location:
       moving        my-backstage-app ✔
       fetching      yarn.lock seed ✔
 
-   Installing dependencies:
+     Installing dependencies:
       executing     yarn install ✔
       executing     yarn tsc ✔
 
-  🥇  Successfully created my-backstage-app
+     🥇  Successfully created my-backstage-app
 ```
 
 Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn start` command. The `yarn start` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
