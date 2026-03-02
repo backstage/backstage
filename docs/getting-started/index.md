@@ -109,7 +109,7 @@ To create the application:
 
 ```console
      Need to install the following packages:
-     @backstage/create-app@0.7.4
+     @backstage/create-app@<version>
      ok to proceed? (y)
 ```
 
