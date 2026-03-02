@@ -15,7 +15,7 @@
  */
 
 import type { Transformer } from './transformer';
-import MenuIcon from '@material-ui/icons/Menu';
+import { Menu } from 'lucide-react';
 import { createElement } from 'react';
 import { renderReactElement } from './renderReactElement';
 
@@ -33,7 +33,7 @@ export const addSidebarToggle = (): Transformer => {
     }
 
     const toggleSidebar = mkdocsToggleSidebar.cloneNode() as HTMLLabelElement;
-    renderReactElement(createElement(MenuIcon), toggleSidebar);
+    renderReactElement(createElement(Menu), toggleSidebar);
     toggleSidebar.id = 'toggle-sidebar';
     toggleSidebar.title = 'Toggle Sidebar';
     toggleSidebar.classList.add('md-content__button');
