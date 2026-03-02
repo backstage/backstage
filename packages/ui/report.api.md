@@ -1745,7 +1745,13 @@ export const PluginHeaderDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-PluginHeader';
-    readonly tabsWrapper: 'bui-PluginHeaderTabsWrapper';
+    readonly toolbar: 'bui-PluginHeaderToolbar';
+    readonly toolbarWrapper: 'bui-PluginHeaderToolbarWrapper';
+    readonly toolbarContent: 'bui-PluginHeaderToolbarContent';
+    readonly toolbarControls: 'bui-PluginHeaderToolbarControls';
+    readonly toolbarIcon: 'bui-PluginHeaderToolbarIcon';
+    readonly toolbarName: 'bui-PluginHeaderToolbarName';
+    readonly tabs: 'bui-PluginHeaderTabsWrapper';
   };
   readonly propDefs: {
     readonly icon: {};

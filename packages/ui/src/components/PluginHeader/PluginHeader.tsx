@@ -15,13 +15,15 @@
  */
 
 import type { PluginHeaderProps } from './types';
-import { PluginHeaderToolbar } from './PluginHeaderToolbar';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useDefinition } from '../../hooks/useDefinition';
 import { PluginHeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
 import { useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
+import { Link } from 'react-aria-components';
+import { RiShapesLine } from '@remixicon/react';
+import { Text } from '../Text';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -49,6 +51,9 @@ export const PluginHeader = (props: PluginHeaderProps) => {
 
   const hasTabs = tabs && tabs.length > 0;
   const headerRef = useRef<HTMLElement>(null);
+  const toolbarWrapperRef = useRef<HTMLDivElement>(null);
+  const toolbarContentRef = useRef<HTMLDivElement>(null);
+  const toolbarControlsRef = useRef<HTMLDivElement>(null);
 
   useIsomorphicLayoutEffect(() => {
     const el = headerRef.current;
@@ -82,17 +87,35 @@ export const PluginHeader = (props: PluginHeaderProps) => {
     };
   }, []);
 
+  const titleContent = (
+    <>
+      <div className={classes.toolbarIcon}>{icon || <RiShapesLine />}</div>
+      <Text variant="body-medium">{title || 'Your plugin'}</Text>
+    </>
+  );
+
   return (
     <header ref={headerRef} className={classes.root}>
-      <PluginHeaderToolbar
-        icon={icon}
-        title={title}
-        titleLink={titleLink}
-        customActions={customActions}
-        hasTabs={hasTabs}
-      />
+      <div className={classes.toolbar} data-has-tabs={hasTabs}>
+        <div className={classes.toolbarWrapper} ref={toolbarWrapperRef}>
+          <div className={classes.toolbarContent} ref={toolbarContentRef}>
+            <Text as="h1" variant="body-medium">
+              {titleLink ? (
+                <Link className={classes.toolbarName} href={titleLink}>
+                  {titleContent}
+                </Link>
+              ) : (
+                <div className={classes.toolbarName}>{titleContent}</div>
+              )}
+            </Text>
+          </div>
+          <div className={classes.toolbarControls} ref={toolbarControlsRef}>
+            {customActions}
+          </div>
+        </div>
+      </div>
       {tabs && (
-        <div className={classes.tabsWrapper}>
+        <div className={classes.tabs}>
           <Tabs onSelectionChange={onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (

@@ -55,24 +55,3 @@ export interface HeaderTab {
    */
   matchStrategy?: TabMatchStrategy;
 }
-
-/**
- * Own props for the PluginHeaderToolbar component.
- *
- * @internal
- */
-export interface PluginHeaderToolbarOwnProps {
-  icon?: PluginHeaderOwnProps['icon'];
-  title?: PluginHeaderOwnProps['title'];
-  titleLink?: PluginHeaderOwnProps['titleLink'];
-  customActions?: PluginHeaderOwnProps['customActions'];
-  hasTabs?: boolean;
-  className?: string;
-}
-
-/**
- * Props for the PluginHeaderToolbar component.
- *
- * @internal
- */
-export interface PluginHeaderToolbarProps extends PluginHeaderToolbarOwnProps {}
