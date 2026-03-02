@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { CodeSnippet, EmptyState } from '@backstage/core-components';
+import { Button, CodeSnippet, EmptyState } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
 
@@ -37,9 +35,10 @@ export const EmptyProviders = () => {
       description={t('emptyProviders.description')}
       action={
         <>
-          <Typography variant="body1">
+          {/* eslint-disable-next-line react/forbid-elements -- migrating from MUI Typography to native elements with Tailwind */}
+          <p className="text-sm text-muted-foreground">
             {t('emptyProviders.action.title')}
-          </Typography>
+          </p>
           <CodeSnippet
             text={EXAMPLE}
             language="yaml"
@@ -47,11 +46,7 @@ export const EmptyProviders = () => {
             highlightedNumbers={[3, 4, 5, 6, 7, 8]}
             customStyle={{ background: 'inherit', fontSize: '115%' }}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            href="https://backstage.io/docs/auth/add-auth-provider"
-          >
+          <Button to="https://backstage.io/docs/auth/add-auth-provider">
             {t('emptyProviders.action.readMoreButtonTitle')}
           </Button>
         </>
