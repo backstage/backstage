@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import IconButton from '@material-ui/core/IconButton';
-import { ComponentProps } from 'react';
 import { useStarredEntity } from '../../hooks/useStarredEntity';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { FavoriteToggle } from '@backstage/core-components';
 
 /** @public */
-export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
+export type FavoriteEntityProps = Omit<
+  React.ComponentProps<typeof FavoriteToggle>,
+  'id' | 'title' | 'isFavorite' | 'onToggle'
+> & {
   entity: Entity;
 };
 
 /**
- * IconButton for showing if a current entity is starred and adding/removing it from the favorite entities
- * @param props - MaterialUI IconButton props extended by required `entity` prop
+ * Button for showing if a current entity is starred and adding/removing it from the favorite entities
+ * @param props - Button props extended by required `entity` prop
  * @public
  */
 export const FavoriteEntity = (props: FavoriteEntityProps) => {
-  const { toggleStarredEntity, isStarredEntity } = useStarredEntity(
-    props.entity,
-  );
+  const { entity, ...rest } = props;
+  const { toggleStarredEntity, isStarredEntity } = useStarredEntity(entity);
   const { t } = useTranslationRef(catalogReactTranslationRef);
   const title = isStarredEntity
     ? t('favoriteEntity.removeFromFavorites')
     : t('favoriteEntity.addToFavorites');
 
-  const id = `favorite-${stringifyEntityRef(props.entity).replace(
+  const id = `favorite-${stringifyEntityRef(entity).replace(
     /[^a-zA-Z0-9-_]/g,
     '-',
   )}`;
@@ -52,7 +53,7 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
       id={id}
       isFavorite={isStarredEntity}
       onToggle={toggleStarredEntity}
-      {...props}
+      {...rest}
     />
   );
 };
