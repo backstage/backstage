@@ -41,6 +41,7 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'catalogFilter.buttonTitle': 'Filters';
     readonly 'entityKindPicker.title': 'Kind';
     readonly 'entityKindPicker.errorMessage': 'Failed to load entity kinds';
+    readonly 'entityKindPicker.optionAllTitle': 'All';
     readonly 'entityLifecyclePicker.title': 'Lifecycle';
     readonly 'entityNamespacePicker.title': 'Namespace';
     readonly 'entityOwnerPicker.title': 'Owner';
