@@ -21,7 +21,7 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import SearchIcon from '@material-ui/icons/Search';
+import { Search } from 'lucide-react';
 import { fireEvent, screen } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { EntityContextMenu } from './EntityContextMenu';
@@ -106,7 +106,7 @@ describe('ComponentContextMenu', () => {
   it('supports extra items', async () => {
     const extra = {
       title: 'HELLO',
-      Icon: SearchIcon,
+      Icon: Search,
       onClick: jest.fn(),
     };
 
