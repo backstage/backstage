@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import IconButton from '@material-ui/core/IconButton';
-import EmailIcon from '@material-ui/icons/Email';
+import { Mail } from 'lucide-react';
 import { Link } from '@backstage/core-components';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -28,8 +27,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const EmailCardAction = (props: { email: string }) => {
   const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
-    <IconButton
-      component={Link}
+    <Link
       aria-label={t('entityPeekAheadPopover.emailCardAction.ariaLabel')}
       title={t('entityPeekAheadPopover.emailCardAction.title', {
         email: props.email,
@@ -37,8 +35,9 @@ export const EmailCardAction = (props: { email: string }) => {
       to={t('entityPeekAheadPopover.emailCardAction.subTitle', {
         email: props.email,
       })}
+      className="inline-flex items-center justify-center rounded-md w-9 h-9 hover:bg-accent hover:text-accent-foreground transition-colors"
     >
-      <EmailIcon />
-    </IconButton>
+      <Mail className="h-4 w-4" />
+    </Link>
   );
 };
