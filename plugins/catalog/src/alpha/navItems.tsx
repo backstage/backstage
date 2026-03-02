@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import HomeIcon from '@material-ui/icons/Home';
-import { NavItemBlueprint } from '@backstage/frontend-plugin-api';
+import { Home } from 'lucide-react';
+import {
+  type IconComponent,
+  NavItemBlueprint,
+} from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
+
+/**
+ * Wrapper bridging lucide-react's ForwardRefExoticComponent to Backstage's
+ * IconComponent type which expects ComponentType<{ fontSize?: ... }>.
+ */
+const HomeIcon: IconComponent = props => <Home {...props} />;
 
 export const catalogNavItem = NavItemBlueprint.make({
   params: {
