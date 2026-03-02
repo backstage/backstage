@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import { CodeSnippet } from '@backstage/core-components';
+import { CodeSnippet, Button } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 
@@ -31,28 +28,15 @@ const ENTITY_YAML = `metadata:
 /** @public */
 export type EntityLinksEmptyStateClassKey = 'code';
 
-const useStyles = makeStyles(
-  theme => ({
-    code: {
-      borderRadius: 6,
-      margin: theme.spacing(2, 0),
-      background:
-        theme.palette.type === 'dark' ? '#444' : theme.palette.common.white,
-    },
-  }),
-  { name: 'PluginCatalogEntityLinksEmptyState' },
-);
-
 export function EntityLinksEmptyState() {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
     <>
-      <Typography variant="body1">
+      <p className="text-sm text-foreground">
         {t('entityLinksCard.emptyDescription')}
-      </Typography>
-      <div className={classes.code}>
+      </p>
+      <div className="my-4 rounded-md bg-card dark:bg-muted">
         <CodeSnippet
           text={ENTITY_YAML}
           language="yaml"
@@ -61,12 +45,7 @@ export function EntityLinksEmptyState() {
           customStyle={{ background: 'inherit', fontSize: '115%' }}
         />
       </div>
-      <Button
-        variant="contained"
-        color="primary"
-        target="_blank"
-        href="https://backstage.io/docs/features/software-catalog/descriptor-format#links-optional"
-      >
+      <Button to="https://backstage.io/docs/features/software-catalog/descriptor-format#links-optional">
         {t('entityLinksCard.readMoreButtonTitle')}
       </Button>
     </>
