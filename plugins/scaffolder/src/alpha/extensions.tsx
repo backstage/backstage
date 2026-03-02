@@ -23,13 +23,17 @@ import {
   NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import type { IconComponent } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import { PlusCircle } from 'lucide-react';
 import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
 import { formFieldsApiRef } from './formFieldsApi';
+
+// Bridge lucide-react icon to Backstage's IconComponent type interface
+const CreateComponentIcon = PlusCircle as unknown as IconComponent;
 
 export const scaffolderPage = PageBlueprint.makeWithOverrides({
   inputs: {
