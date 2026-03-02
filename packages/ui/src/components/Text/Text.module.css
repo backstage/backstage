@@ -17,7 +17,6 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-
   .bui-Text--disabled {
     color: #bdbdbd !important;
     opacity: 0.6;
