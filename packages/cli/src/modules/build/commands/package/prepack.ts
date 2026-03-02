@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  productionPack,
-  revertProductionPack,
-} from '../../lib/packager/productionPack';
-import { targetPaths } from '@backstage/cli-common';
-
+import { cli } from 'cleye';
 import fs from 'fs-extra';
+import { targetPaths } from '@backstage/cli-common';
+import { productionPack } from '../../lib/packager/productionPack';
 import { publishPreflightCheck } from '../../lib/publishing';
 import { createTypeDistProject } from '../../lib/typeDistProject';
+import type { CommandContext } from '../../../../wiring/types';
 
-export const pre = async () => {
+export default async ({ args, info }: CommandContext) => {
+  cli({ help: info }, undefined, args);
+
   publishPreflightCheck({
     dir: targetPaths.dir,
     packageJson: await fs.readJson(targetPaths.resolve('package.json')),
@@ -34,8 +34,4 @@ export const pre = async () => {
     packageDir: targetPaths.dir,
     featureDetectionProject: await createTypeDistProject(),
   });
-};
-
-export const post = async () => {
-  await revertProductionPack(targetPaths.dir);
 };
