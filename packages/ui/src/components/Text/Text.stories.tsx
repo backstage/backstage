@@ -175,3 +175,28 @@ export const Playground = meta.story({
     </Flex>
   ),
 });
+
+export const Copyable = meta.story({
+  args: {
+    children: 'This text can be copied!',
+    copyable: true,
+  },
+  render: args => (
+    <Flex gap="4" direction="column">
+      <Text {...args} />
+      {/* <Text {...args} variant="body-large" children="Try copying this large text!" /> */}
+    </Flex>
+  ),
+});
+
+export const Disabled = meta.story({
+  args: {
+    children: 'This text is disabled',
+    disabled: true,
+  },
+  render: args => (
+    <Flex gap="4" direction="column">
+      <Text {...args} />
+    </Flex>
+  ),
+});

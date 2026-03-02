@@ -47,6 +47,8 @@ export type TextOwnProps = {
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
+  copyable?: boolean;
+  disabled?: boolean;
 };
 
 /** @public */

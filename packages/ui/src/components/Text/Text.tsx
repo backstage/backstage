@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import clsx from 'clsx';
 import type { ElementType } from 'react';
 import type { TextProps } from './types';
@@ -27,7 +27,6 @@ function TextComponent<T extends ElementType = 'span'>(
   ref: React.Ref<any>,
 ) {
   const Component = props.as || 'span';
-
   const { classNames, dataAttributes, cleanedProps } = useStyles(
     TextDefinition,
     {
@@ -37,16 +36,50 @@ function TextComponent<T extends ElementType = 'span'>(
       ...props,
     },
   );
+  const { className, truncate, copyable, children, disabled, ...restProps } =
+    cleanedProps;
+  const [copied, setCopied] = useState(false);
 
-  const { className, truncate, ...restProps } = cleanedProps;
+  const handleCopy = () => {
+    if (typeof children === 'string') {
+      window.navigator.clipboard.writeText(children);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
 
   return (
-    <Component
-      ref={ref}
-      className={clsx(classNames.root, styles[classNames.root], className)}
-      {...dataAttributes}
-      {...restProps}
-    />
+    <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+      <Component
+        ref={ref}
+        className={clsx(
+          classNames.root,
+          styles[classNames.root],
+          className,
+          disabled && styles['bui-Text--disabled'],
+        )}
+        {...dataAttributes}
+        {...restProps}
+        aria-disabled={disabled || undefined}
+      >
+        {children}
+      </Component>
+      {copyable && typeof children === 'string' && !disabled && (
+        <button
+          type="button"
+          aria-label="Copy text"
+          onClick={handleCopy}
+          style={{ marginLeft: 4, cursor: 'pointer' }}
+        >
+          📋
+        </button>
+      )}
+      {copied && (
+        <span style={{ marginLeft: 4, color: 'green', fontSize: '0.9em' }}>
+          Copied!
+        </span>
+      )}
+    </span>
   );
 }
 

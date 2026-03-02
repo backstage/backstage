@@ -107,5 +107,12 @@
   .bui-Text[data-as='em'],
   .bui-Text[data-as='small'] {
     display: inline-block;
-  }
+    }
+    
+    .bui-Text--disabled {
+      color: #aaa !important;
+      opacity: 0.6;
+      pointer-events: none;
+      user-select: none;
+    }
 }
