@@ -21,7 +21,6 @@ import {
   TemplateEntityV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
-import Typography from '@material-ui/core/Typography';
 import { ComponentType, useCallback, useEffect } from 'react';
 
 import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
@@ -74,13 +73,13 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
 
   if (!entities || !entities.length) {
     return (
-      <Typography variant="body2">
+      <p className="text-sm text-muted-foreground">
         No templates found that match your filter. Learn more about{' '}
         <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
           adding templates
         </Link>
         .
-      </Typography>
+      </p>
     );
   }
 
