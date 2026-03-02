@@ -523,6 +523,7 @@ export class BackendInitializer {
         if ('pluginId' in r && 'moduleId' in r) {
           resultCollector.onPluginModuleResult(r.pluginId, r.moduleId, error);
         } else if ('pluginId' in r) {
+          pluginInits.delete(r.pluginId);
           moduleInits.delete(r.pluginId);
           resultCollector.onPluginResult(r.pluginId, error);
         } else {
