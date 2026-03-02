@@ -215,20 +215,34 @@ export const buildPlugin = createCliPlugin({
     reg.addCommand({
       path: ['package', 'prepack'],
       description: 'Prepares a package for packaging before publishing',
-      execute: async ({ args, info }) => {
-        cli({ help: info }, undefined, args);
-        const { pre } = await import('./commands/package/pack');
-        await pre();
+      execute: {
+        loader: () =>
+          import('./commands/package/pack').then(m => {
+            const { pre } = (m as any).default ?? m;
+            return {
+              default: async ({ args, info }) => {
+                cli({ help: info }, undefined, args);
+                await pre();
+              },
+            };
+          }),
       },
     });
 
     reg.addCommand({
       path: ['package', 'postpack'],
       description: 'Restores the changes made by the prepack command',
-      execute: async ({ args, info }) => {
-        cli({ help: info }, undefined, args);
-        const { post } = await import('./commands/package/pack');
-        await post();
+      execute: {
+        loader: () =>
+          import('./commands/package/pack').then(m => {
+            const { post } = (m as any).default ?? m;
+            return {
+              default: async ({ args, info }) => {
+                cli({ help: info }, undefined, args);
+                await post();
+              },
+            };
+          }),
       },
     });
 
