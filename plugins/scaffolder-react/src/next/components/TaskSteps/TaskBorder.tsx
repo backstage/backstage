@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-import LinearProgress from '@material-ui/core/LinearProgress';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(theme => ({
-  failed: {
-    backgroundColor: theme.palette.error.main,
-  },
-  success: {
-    backgroundColor: theme.palette.success.main,
-  },
-}));
-
 /**
  * The visual progress of the task event stream
  */
@@ -33,17 +21,45 @@ export const TaskBorder = (props: {
   isComplete: boolean;
   isError: boolean;
 }) => {
-  const styles = useStyles();
-
   if (!props.isComplete) {
-    return <LinearProgress variant="indeterminate" />;
+    // Indeterminate progress bar — animated sliding bar
+    return (
+      <div
+        className="relative h-1 w-full overflow-hidden bg-primary/20"
+        role="progressbar"
+      >
+        <div
+          className="absolute inset-0 h-full w-1/3 bg-primary"
+          style={{
+            animation:
+              'backstage-indeterminate 1.5s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite',
+          }}
+        />
+        {/* Keyframe definition for the indeterminate animation */}
+        <style>{`
+          @keyframes backstage-indeterminate {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+          }
+        `}</style>
+      </div>
+    );
   }
 
+  // Determinate progress bar — full width with success/error color
   return (
-    <LinearProgress
-      variant="determinate"
-      classes={{ bar: props.isError ? styles.failed : styles.success }}
-      value={100}
-    />
+    <div
+      className="relative h-1 w-full overflow-hidden bg-primary/20"
+      role="progressbar"
+      aria-valuenow={100}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    >
+      <div
+        className={`h-full w-full transition-all ${
+          props.isError ? 'bg-destructive' : 'bg-green-600 dark:bg-green-400'
+        }`}
+      />
+    </div>
   );
 };
