@@ -15,7 +15,7 @@
  */
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import { PlusCircle } from 'lucide-react';
 import {
   actionsRouteRef,
   editRouteRef,
@@ -61,7 +61,7 @@ const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'scaffolder',
   title: 'Create',
-  icon: <CreateComponentIcon />,
+  icon: <PlusCircle />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
     root: rootRouteRef,
