@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import CatalogIcon from '@material-ui/icons/MenuBook';
-import DocsIcon from '@material-ui/icons/Description';
-import UsersGroupsIcon from '@material-ui/icons/Person';
+import { BookOpen, FileText, User } from 'lucide-react';
 import { ComponentType, PropsWithChildren } from 'react';
 import { SearchType } from './SearchType';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -35,11 +31,11 @@ export default {
     (Story: ComponentType<PropsWithChildren<{}>>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
-          <Grid container direction="row">
-            <Grid item xs={4}>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
               <Story />
-            </Grid>
-          </Grid>
+            </div>
+          </div>
         </SearchContextProvider>
       </TestApiProvider>
     ),
@@ -51,9 +47,9 @@ const values = ['value-1', 'value-2', 'value-3'];
 
 export const Default = () => {
   return (
-    <Paper style={{ padding: 10 }}>
+    <div className="rounded-lg border border-border bg-card p-2.5">
       <SearchType name="Search type" values={values} defaultValue={values[0]} />
-    </Paper>
+    </div>
   );
 };
 
@@ -63,9 +59,9 @@ export const Accordion = () => {
       name="Result Types"
       defaultValue="value-1"
       types={[
-        { value: 'value-1', name: 'Value One', icon: <CatalogIcon /> },
-        { value: 'value-2', name: 'Value Two', icon: <DocsIcon /> },
-        { value: 'value-3', name: 'Value Three', icon: <UsersGroupsIcon /> },
+        { value: 'value-1', name: 'Value One', icon: <BookOpen /> },
+        { value: 'value-2', name: 'Value Two', icon: <FileText /> },
+        { value: 'value-3', name: 'Value Three', icon: <User /> },
       ]}
     />
   );
