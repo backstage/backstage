@@ -53,6 +53,14 @@ export type SelectOwnProps = {
    */
   searchPlaceholder?: string;
 
+  /**
+   * handler for search input change
+   * only used when searchable is true
+   * @param search
+   * @returns
+   */
+  onSearchChanged?: (search: string) => void;
+
   label?: FieldLabelProps['label'];
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   description?: FieldLabelProps['description'];
@@ -80,6 +88,7 @@ export interface SelectTriggerOwnProps {
 export interface SelectContentOwnProps {
   searchable?: boolean;
   searchPlaceholder?: string;
+  onSearchChange?: SelectOwnProps['onSearchChange'];
   options?: SelectOwnProps['options'];
 }
 
