@@ -22,8 +22,7 @@ import {
   RELATION_PARENT_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { Avatar, Link } from '@backstage/core-components';
-import Box from '@material-ui/core/Box';
+import { Link } from '@backstage/core-components';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -53,7 +52,7 @@ import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
 import { makeStyles } from '@material-ui/core/styles';
-import { Flex, Text } from '@backstage/ui';
+import { Avatar, Flex, Box, Text } from '@backstage/ui';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -68,9 +67,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CardTitle = (props: { title: string }) => (
-  <Flex align="center" gap="1">
-    <GroupIcon fontSize="inherit" />
+const CardTitle = (props: { title: string; pictureSrc?: string }) => (
+  <Flex align="center" gap="2">
+    <Avatar
+      size="small"
+      purpose="decoration"
+      name={props.title}
+      src={props.pictureSrc || ''}
+    />
     {props.title}
   </Flex>
 );
@@ -150,7 +154,7 @@ export const GroupProfileCard = (props: {
 
   return (
     <EntityInfoCard
-      title={<CardTitle title={displayName} />}
+      title={<CardTitle title={displayName} pictureSrc={profile?.picture} />}
       headerActions={
         <>
           {allowRefresh && canRefresh && (
@@ -167,8 +171,7 @@ export const GroupProfileCard = (props: {
       }
     >
       {description && <Text color="secondary">{description}</Text>}
-      <Box className={classes.container}>
-        <Avatar displayName={displayName} picture={profile?.picture} />
+      <Box p="2">
         <List className={classes.list}>
           <ListItem>
             <ListItemIcon>

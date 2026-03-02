@@ -19,11 +19,10 @@ import {
   RELATION_MEMBER_OF,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Avatar, Link } from '@backstage/core-components';
+import { Link } from '@backstage/core-components';
 import { EntityInfoCard } from '@backstage/plugin-catalog-react';
-import { Flex, Text } from '@backstage/ui';
+import { Avatar, Box, Flex, Text } from '@backstage/ui';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import BaseButton from '@material-ui/core/ButtonBase';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
@@ -48,7 +47,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import { LinksGroup } from '../../Meta';
-import PersonIcon from '@material-ui/icons/Person';
 
 import { useCallback, useState } from 'react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -80,10 +78,15 @@ const useStyles = makeStyles(
   { name: 'PluginOrgUserProfileCard' },
 );
 
-const CardTitle = (props: { title?: string }) =>
+const CardTitle = (props: { title: string; pictureSrc?: string }) =>
   props.title ? (
-    <Flex align="center" gap="1">
-      <PersonIcon fontSize="inherit" />
+    <Flex align="center" gap="2">
+      <Avatar
+        size="small"
+        purpose="decoration"
+        name={props.title}
+        src={props.pictureSrc || ''}
+      />
       {props.title}
     </Flex>
   ) : null;
@@ -132,7 +135,7 @@ export const UserProfileCard = (props: {
 
   return (
     <EntityInfoCard
-      title={<CardTitle title={displayName} />}
+      title={<CardTitle title={displayName} pictureSrc={profile?.picture} />}
       headerActions={
         <>
           {entityMetadataEditUrl && (
@@ -149,62 +152,54 @@ export const UserProfileCard = (props: {
       }
     >
       {description && <Text color="secondary">{description}</Text>}
-      <Grid container spacing={3} alignItems="flex-start">
-        <Grid item xs={12} sm={2} xl={1}>
-          <Avatar displayName={displayName} picture={profile?.picture} />
-        </Grid>
+      <Box p="2">
+        <List>
+          {profile?.email && (
+            <ListItem>
+              <ListItemIcon>
+                <Tooltip title={t('userProfileCard.listItemTitle.email')}>
+                  <EmailIcon />
+                </Tooltip>
+              </ListItemIcon>
+              <ListItemText>
+                <Link to={emailHref ?? ''}>{profile.email}</Link>
+              </ListItemText>
+            </ListItem>
+          )}
 
-        <Grid item md={10} xl={11}>
-          <List>
-            {profile?.email && (
-              <ListItem>
-                <ListItemIcon>
-                  <Tooltip title={t('userProfileCard.listItemTitle.email')}>
-                    <EmailIcon />
-                  </Tooltip>
-                </ListItemIcon>
-                <ListItemText>
-                  <Link to={emailHref ?? ''}>{profile.email}</Link>
-                </ListItemText>
-              </ListItem>
-            )}
-
-            {maxRelations === undefined || maxRelations > 0 ? (
-              <ListItem>
-                <ListItemIcon>
-                  <Tooltip title={t('userProfileCard.listItemTitle.memberOf')}>
-                    <GroupIcon />
-                  </Tooltip>
-                </ListItemIcon>
-                <ListItemText>
-                  <EntityRefLinks
-                    entityRefs={memberOfRelations.slice(0, maxRelations)}
-                    defaultKind="Group"
-                    hideIcons={hideIcons}
-                  />
-                  {maxRelations && memberOfRelations.length > maxRelations ? (
-                    <>
-                      ,
-                      <BaseButton
-                        className={classes.moreButton}
-                        onClick={toggleAllGroupsDialog}
-                        disableRipple
-                      >
-                        {t('userProfileCard.moreGroupButtonTitle', {
-                          number: String(
-                            memberOfRelations.length - maxRelations,
-                          ),
-                        })}
-                      </BaseButton>
-                    </>
-                  ) : null}
-                </ListItemText>
-              </ListItem>
-            ) : null}
-            {props?.showLinks && <LinksGroup links={links} />}
-          </List>
-        </Grid>
-      </Grid>
+          {maxRelations === undefined || maxRelations > 0 ? (
+            <ListItem>
+              <ListItemIcon>
+                <Tooltip title={t('userProfileCard.listItemTitle.memberOf')}>
+                  <GroupIcon />
+                </Tooltip>
+              </ListItemIcon>
+              <ListItemText>
+                <EntityRefLinks
+                  entityRefs={memberOfRelations.slice(0, maxRelations)}
+                  defaultKind="Group"
+                  hideIcons={hideIcons}
+                />
+                {maxRelations && memberOfRelations.length > maxRelations ? (
+                  <>
+                    ,
+                    <BaseButton
+                      className={classes.moreButton}
+                      onClick={toggleAllGroupsDialog}
+                      disableRipple
+                    >
+                      {t('userProfileCard.moreGroupButtonTitle', {
+                        number: String(memberOfRelations.length - maxRelations),
+                      })}
+                    </BaseButton>
+                  </>
+                ) : null}
+              </ListItemText>
+            </ListItem>
+          ) : null}
+          {props?.showLinks && <LinksGroup links={links} />}
+        </List>
+      </Box>
 
       <Dialog
         classes={{ paper: classes.dialogPaper }}
