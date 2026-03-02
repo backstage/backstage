@@ -27,10 +27,6 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface EntityLabelsCardProps {
-  // Accepted for API compatibility but not applied.
-  // The new entity page layout handles card sizing.
-  // TODO: Discuss removal in code review.
-  variant?: string;
   title?: string;
 }
 
@@ -55,7 +51,7 @@ const columnConfig: ColumnConfig<LabelItem>[] = [
 ];
 
 export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
-  const { variant: _variant, title } = props;
+  const { title } = props;
   const { entity } = useEntity();
   const { t } = useTranslationRef(catalogTranslationRef);
 

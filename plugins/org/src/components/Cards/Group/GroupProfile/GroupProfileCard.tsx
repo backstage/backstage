@@ -80,14 +80,8 @@ const CardTitle = (props: { title: string; pictureSrc?: string }) => (
 );
 
 /** @public */
-export const GroupProfileCard = (props: {
-  // Accepted for API compatibility but not applied.
-  // The new entity page layout handles card sizing.
-  // TODO: Discuss removal in code review.
-  variant?: string;
-  showLinks?: boolean;
-}) => {
-  const { variant: _variant } = props;
+export const GroupProfileCard = (props: { showLinks?: boolean }) => {
+  const { showLinks } = props;
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const { entity: group } = useEntity<GroupEntity>();
@@ -237,7 +231,7 @@ export const GroupProfileCard = (props: {
               secondary={t('groupProfileCard.listItemTitle.childGroups')}
             />
           </ListItem>
-          {props?.showLinks && <LinksGroup links={links} />}
+          {showLinks && <LinksGroup links={links} />}
         </List>
       </Box>
     </EntityInfoCard>

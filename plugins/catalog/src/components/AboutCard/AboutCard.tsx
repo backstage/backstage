@@ -147,25 +147,13 @@ function DefaultAboutCardSubheader() {
   return <HeaderIconLinkRow links={links} />;
 }
 
-/**
- * Props for {@link EntityAboutCard}.
- *
- * @public
- */
-export type AboutCardProps = {
-  // Accepted for API compatibility but not applied.
-  // The new entity page layout handles card sizing.
-  // TODO: Discuss removal in code review.
-  variant?: string;
-};
-
-export interface InternalAboutCardProps extends AboutCardProps {
+export interface InternalAboutCardProps {
   /** Icon link row rendered at the top of the card body. */
   iconLinks?: JSX.Element;
 }
 
 export function InternalAboutCard(props: InternalAboutCardProps) {
-  const { variant: _variant, iconLinks } = props;
+  const { iconLinks } = props;
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
@@ -244,10 +232,10 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
 /**
  * Exported publicly via the EntityAboutCard
  *
- * NOTE: We generally do not accept pull requests to extend this class with more
- * props and customizability. If you need to tweak it, consider making a bespoke
- * card in your own repository instead, that is perfect for your own needs.
+ * NOTE: We generally do not accept pull requests to extend this class with props
+ * and customizability. If you need to tweak it, consider making a bespoke card
+ * in your own repository instead, that is perfect for your own needs.
  */
-export function AboutCard(props: AboutCardProps) {
-  return <InternalAboutCard {...props} />;
+export function AboutCard() {
+  return <InternalAboutCard />;
 }

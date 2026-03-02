@@ -26,14 +26,10 @@ import { catalogTranslationRef } from '../../alpha/translation';
 /** @public */
 export interface EntityLinksCardProps {
   cols?: ColumnBreakpoints | number;
-  // Accepted for API compatibility but not applied.
-  // The new entity page layout handles card sizing.
-  // TODO: Discuss removal in code review.
-  variant?: string;
 }
 
 export const EntityLinksCard = (props: EntityLinksCardProps) => {
-  const { cols = undefined, variant: _variant } = props;
+  const { cols = undefined } = props;
   const { entity } = useEntity();
   const app = useApp();
   const { t } = useTranslationRef(catalogTranslationRef);

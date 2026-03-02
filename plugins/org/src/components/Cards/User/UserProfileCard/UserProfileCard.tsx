@@ -96,12 +96,11 @@ export const UserProfileCard = (props: {
   // Accepted for API compatibility but not applied.
   // The new entity page layout handles card sizing.
   // TODO: Discuss removal in code review.
-  variant?: string;
   showLinks?: boolean;
   maxRelations?: number;
   hideIcons?: boolean;
 }) => {
-  const { maxRelations, hideIcons, variant: _variant } = props;
+  const { maxRelations, hideIcons } = props;
 
   const classes = useStyles();
   const { entity: user } = useEntity<UserEntity>();
