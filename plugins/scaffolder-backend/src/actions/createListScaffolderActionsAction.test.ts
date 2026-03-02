@@ -15,18 +15,22 @@
  */
 import { createListScaffolderActionsAction } from './createListScaffolderActionsAction';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
+import type {
+  Action,
+  ListActionsResponse,
+} from '@backstage/plugin-scaffolder-common';
 
 describe('createListScaffolderActionsAction', () => {
   it('should list all scaffolder actions successfully', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
     const mockActions = createMockActions();
-    const mockTemplateActionRegistry =
-      createMockTemplateActionRegistry(mockActions);
+    mockScaffolderService.listActions.mockResolvedValue(mockActions);
 
     createListScaffolderActionsAction({
       actionsRegistry: mockActionsRegistry,
-      templateActionRegistry: mockTemplateActionRegistry,
+      scaffolderService: mockScaffolderService,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -63,18 +67,14 @@ describe('createListScaffolderActionsAction', () => {
 
   it('should handle actions without descriptions, schemas, or examples', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockActions = [
-      {
-        id: 'minimal-action',
-        handler: jest.fn(),
-      } as unknown as TemplateAction,
-    ];
-    const mockTemplateActionRegistry =
-      createMockTemplateActionRegistry(mockActions);
+    const mockScaffolderService = scaffolderServiceMock.mock();
+    mockScaffolderService.listActions.mockResolvedValue([
+      { id: 'minimal-action' },
+    ]);
 
     createListScaffolderActionsAction({
       actionsRegistry: mockActionsRegistry,
-      templateActionRegistry: mockTemplateActionRegistry,
+      scaffolderService: mockScaffolderService,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -94,11 +94,12 @@ describe('createListScaffolderActionsAction', () => {
 
   it('should return empty array when no actions are registered', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockTemplateActionRegistry = createMockTemplateActionRegistry([]);
+    const mockScaffolderService = scaffolderServiceMock.mock();
+    mockScaffolderService.listActions.mockResolvedValue([]);
 
     createListScaffolderActionsAction({
       actionsRegistry: mockActionsRegistry,
-      templateActionRegistry: mockTemplateActionRegistry,
+      scaffolderService: mockScaffolderService,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -112,17 +113,16 @@ describe('createListScaffolderActionsAction', () => {
 
   it('should maintain consistent sorting across multiple calls', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockActions = [
-      createMockAction('z-action', 'Last alphabetically'),
-      createMockAction('a-action', 'First alphabetically'),
-      createMockAction('middle-action', 'Middle alphabetically'),
-    ];
-    const mockTemplateActionRegistry =
-      createMockTemplateActionRegistry(mockActions);
+    const mockScaffolderService = scaffolderServiceMock.mock();
+    mockScaffolderService.listActions.mockResolvedValue([
+      createMockListAction('z-action', 'Last alphabetically'),
+      createMockListAction('a-action', 'First alphabetically'),
+      createMockListAction('middle-action', 'Middle alphabetically'),
+    ]);
 
     createListScaffolderActionsAction({
       actionsRegistry: mockActionsRegistry,
-      templateActionRegistry: mockTemplateActionRegistry,
+      scaffolderService: mockScaffolderService,
     });
 
     const result1 = await mockActionsRegistry.invoke({
@@ -145,6 +145,7 @@ describe('createListScaffolderActionsAction', () => {
 
   it('should include all action properties in the output', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
     const complexAction = {
       id: 'complex-action',
       description: 'A complex action with all properties',
@@ -173,16 +174,14 @@ describe('createListScaffolderActionsAction', () => {
           example: 'example content 2',
         },
       ],
-      handler: jest.fn(),
-    } as TemplateAction;
-
-    const mockTemplateActionRegistry = createMockTemplateActionRegistry([
-      complexAction,
+    };
+    mockScaffolderService.listActions.mockResolvedValue([
+      complexAction as Action,
     ]);
 
     createListScaffolderActionsAction({
       actionsRegistry: mockActionsRegistry,
-      templateActionRegistry: mockTemplateActionRegistry,
+      scaffolderService: mockScaffolderService,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -223,7 +222,10 @@ describe('createListScaffolderActionsAction', () => {
   });
 });
 
-function createMockAction(id: string, description: string): TemplateAction {
+function createMockListAction(
+  id: string,
+  description: string,
+): ListActionsResponse[number] {
   return {
     id,
     description,
@@ -232,11 +234,10 @@ function createMockAction(id: string, description: string): TemplateAction {
       output: { type: 'object' },
     },
     examples: [],
-    handler: jest.fn(),
-  } as TemplateAction;
+  };
 }
 
-function createMockActions(): TemplateAction[] {
+function createMockActions(): ListActionsResponse {
   return [
     {
       id: 'fetch:template',
@@ -246,8 +247,7 @@ function createMockActions(): TemplateAction[] {
         output: { type: 'object' },
       },
       examples: [],
-      handler: jest.fn(),
-    } as TemplateAction,
+    },
     {
       id: 'catalog:register',
       description: 'Registers entities in the catalog',
@@ -256,8 +256,7 @@ function createMockActions(): TemplateAction[] {
         output: { type: 'object' },
       },
       examples: [{ description: 'Basic usage', example: 'register entity' }],
-      handler: jest.fn(),
-    } as TemplateAction,
+    },
     {
       id: 'debug:log',
       description: 'Logs debug information',
@@ -266,17 +265,6 @@ function createMockActions(): TemplateAction[] {
         output: { type: 'object' },
       },
       examples: [],
-      handler: jest.fn(),
-    } as TemplateAction,
+    },
   ];
-}
-
-function createMockTemplateActionRegistry(actions: TemplateAction[] = []) {
-  const actionsMap = new Map(actions.map(action => [action.id, action]));
-
-  return {
-    list: jest.fn().mockResolvedValue(actionsMap),
-    get: jest.fn(),
-    register: jest.fn(),
-  };
 }

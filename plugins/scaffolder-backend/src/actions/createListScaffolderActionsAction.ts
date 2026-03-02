@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
+import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 
 export const createListScaffolderActionsAction = ({
   actionsRegistry,
-  templateActionRegistry,
+  scaffolderService,
 }: {
   actionsRegistry: ActionsRegistryService;
-  templateActionRegistry: TemplateActionRegistry;
+  scaffolderService: ScaffolderService;
 }) => {
   actionsRegistry.register({
     name: 'list-scaffolder-actions',
@@ -61,8 +61,10 @@ Each action includes:
         }),
     },
     action: async ({ credentials }) => {
-      const actionsMap = await templateActionRegistry.list({ credentials });
-      const scaffolderActions = Array.from(actionsMap.values()).map(action => ({
+      const actions = await scaffolderService.listActions(undefined, {
+        credentials,
+      });
+      const scaffolderActions = actions.map(action => ({
         id: action.id,
         description: action.description ?? '',
         schema: {
