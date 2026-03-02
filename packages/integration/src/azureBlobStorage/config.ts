@@ -27,7 +27,7 @@ export type AzureBlobStorageIntegrationConfig = {
   /**
    * The name of the Azure Storage Account, e.g., "mystorageaccount".
    */
-  accountName: string;
+  accountName?: string;
 
   /**
    * The primary or secondary key for the Azure Storage Account.
@@ -156,5 +156,14 @@ export function readAzureBlobStorageIntegrationConfig(
 export function readAzureBlobStorageIntegrationConfigs(
   configs: Config[],
 ): AzureBlobStorageIntegrationConfig[] {
-  return configs.map(readAzureBlobStorageIntegrationConfig);
+  const parsed = configs.map(readAzureBlobStorageIntegrationConfig);
+
+  // Add a default integration as a catch-all for any Azure Blob Storage URL,
+  // using DefaultAzureCredential for authentication (works with managed identity,
+  // environment variables, Azure CLI, etc.)
+  if (!parsed.some(c => c.host === AZURE_HOST)) {
+    parsed.push({ host: AZURE_HOST });
+  }
+
+  return parsed;
 }
