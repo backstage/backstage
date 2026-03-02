@@ -61,8 +61,8 @@ describe('UserSummary Test', () => {
     );
 
     expect(screen.getByText('calum-leavy@example.com')).toBeInTheDocument();
-    // BUI Avatar is decorative (aria-hidden), so the name must be
-    // present as text for the information to be accessible.
+    // BUI Avatar is decorative (aria-hidden), because the name is
+    // present as text right beside it.
     expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
     expect(screen.getByText('Calum Leavy')).toBeInTheDocument();
     expect(screen.getByText('examplegroup').closest('a')).toHaveAttribute(
