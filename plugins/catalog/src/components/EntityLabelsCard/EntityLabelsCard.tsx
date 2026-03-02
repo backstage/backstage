@@ -15,10 +15,13 @@
  */
 
 import { useEntity, EntityInfoCard } from '@backstage/plugin-catalog-react';
-import { Table, TableColumn } from '@backstage/core-components';
 import { EntityLabelsEmptyState } from './EntityLabelsEmptyState';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import {
+  Table,
+  CellText,
+  type ColumnConfig,
+  type TableItem,
+} from '@backstage/ui';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -31,32 +34,30 @@ export interface EntityLabelsCardProps {
   title?: string;
 }
 
-const useStyles = makeStyles(_ => ({
-  key: {
-    fontWeight: 'bold',
+interface LabelItem extends TableItem {
+  id: string;
+  key: string;
+  value: string;
+}
+
+const columnConfig: ColumnConfig<LabelItem>[] = [
+  {
+    id: 'key',
+    label: 'Label',
+    isRowHeader: true,
+    cell: item => <CellText title={item.key} />,
   },
-}));
+  {
+    id: 'value',
+    label: 'Value',
+    cell: item => <CellText title={item.value} />,
+  },
+];
 
 export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
   const { variant: _variant, title } = props;
   const { entity } = useEntity();
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
-
-  const columns: TableColumn<{ key: string; value: string }>[] = [
-    {
-      render: row => {
-        return (
-          <Typography className={classes.key} variant="body2">
-            {row.key}
-          </Typography>
-        );
-      },
-    },
-    {
-      field: 'value',
-    },
-  ];
 
   const labels = entity?.metadata?.labels;
 
@@ -66,21 +67,13 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
         <EntityLabelsEmptyState />
       ) : (
         <Table
-          columns={columns}
+          columnConfig={columnConfig}
           data={Object.keys(labels).map(labelKey => ({
+            id: labelKey,
             key: labelKey,
             value: labels[labelKey],
           }))}
-          options={{
-            search: false,
-            showTitle: true,
-            loadingType: 'linear',
-            header: false,
-            padding: 'dense',
-            pageSize: 5,
-            toolbar: false,
-            paging: Object.keys(labels).length > 5,
-          }}
+          pagination={{ type: 'none' }}
         />
       )}
     </EntityInfoCard>
