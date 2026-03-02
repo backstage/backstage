@@ -78,7 +78,9 @@ describe('Entity Docs Card Grid', () => {
     );
     expect(await screen.findByText('testName')).toBeInTheDocument();
     expect(await screen.findByText('testName2')).toBeInTheDocument();
-    const [button1, button2] = await screen.findAllByRole('button');
+    const [button1, button2] = await screen.findAllByRole('link', {
+      name: 'Read Docs',
+    });
     expect(button1.getAttribute('href')).toContain(
       '/docs/default/testkind/testname',
     );
@@ -113,7 +115,7 @@ describe('Entity Docs Card Grid', () => {
       },
     );
 
-    const button = await screen.findByRole('button');
+    const button = await screen.findByRole('link', { name: 'Read Docs' });
     expect(getOptionalBooleanMock).toHaveBeenCalledWith(
       'techdocs.legacyUseCaseSensitiveTripletPaths',
     );

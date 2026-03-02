@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { DocsTableRow } from './types';
-import {
-  EntityTextFilter,
-  useEntityList,
-} from '@backstage/plugin-catalog-react';
+import { useEntityList } from '@backstage/plugin-catalog-react';
 
 /**
+ * Offset-paginated docs table — manages server-side pagination via
+ * the entity list context while delegating rendering to the core Table
+ * component. Custom pagination controls replace the legacy
+ * `page`/`onPageChange`/`totalCount` props that are no longer supported
+ * by the @tanstack/react-table–based Table.
+ *
  * @internal
  */
 export function OffsetPaginatedDocsTable(props: TableProps<DocsTableRow>) {
   const { actions, columns, data, isLoading, options, title } = props;
-  const { updateFilters, setLimit, setOffset, limit, totalItems, offset } =
-    useEntityList();
+  const { setOffset, limit, totalItems, offset } = useEntityList();
   const [page, setPage] = useState(
     offset && limit ? Math.floor(offset / limit) : 0,
   );
@@ -42,35 +44,59 @@ export function OffsetPaginatedDocsTable(props: TableProps<DocsTableRow>) {
     }
   }, [setOffset, page, limit, totalItems]);
 
+  const handleNext = useCallback(() => setPage(p => p + 1), []);
+  const handlePrev = useCallback(() => setPage(p => Math.max(0, p - 1)), []);
+
+  const hasNextPage = useMemo(
+    () => totalItems !== undefined && (page + 1) * limit < totalItems,
+    [page, limit, totalItems],
+  );
+  const hasPrevPage = page > 0;
+
   return (
-    <Table<DocsTableRow>
-      title={title}
-      columns={columns}
-      data={data}
-      options={{
-        paginationPosition: 'both',
-        pageSizeOptions: [5, 10, 20, 50, 100],
-        pageSize: limit,
-        emptyRowsWhenPaging: false,
-        actionsColumnIndex: -1,
-        ...options,
-      }}
-      actions={actions}
-      onSearchChange={(searchText: string) =>
-        updateFilters({
-          text: searchText ? new EntityTextFilter(searchText) : undefined,
-        })
-      }
-      page={page}
-      onPageChange={newPage => {
-        setPage(newPage);
-      }}
-      onRowsPerPageChange={pageSize => {
-        setLimit(pageSize);
-      }}
-      totalCount={totalItems}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
-      isLoading={isLoading}
-    />
+    <div>
+      <Table<DocsTableRow>
+        title={title}
+        columns={columns}
+        data={data}
+        options={{
+          paging: false,
+          pageSize: limit,
+          search: true,
+          ...options,
+        }}
+        actions={actions}
+        isLoading={isLoading}
+      />
+      {/* External pagination controls for server-side offset pagination */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.5rem 1rem',
+        }}
+      >
+        <button
+          type="button"
+          aria-label="Previous Page"
+          disabled={!hasPrevPage}
+          onClick={handlePrev}
+          style={{ padding: '0.25rem 0.75rem' }}
+        >
+          Previous
+        </button>
+        <button
+          type="button"
+          aria-label="Next Page"
+          disabled={!hasNextPage}
+          onClick={handleNext}
+          style={{ padding: '0.25rem 0.75rem' }}
+        >
+          Next
+        </button>
+      </div>
+    </div>
   );
 }

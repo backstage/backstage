@@ -23,51 +23,59 @@ type PaginatedDocsTableProps = {
 } & TableProps<DocsTableRow>;
 
 /**
+ * Cursor-paginated docs table — renders a core Table with disabled internal
+ * pagination and adds custom Previous/Next Page buttons whose enabled state
+ * is driven by the `prev` and `next` callback props (cursor availability).
+ *
  * @internal
  */
-
 export function CursorPaginatedDocsTable(props: PaginatedDocsTableProps) {
-  const {
-    actions,
-    columns,
-    data,
-    next,
-    prev,
-    title,
-    isLoading,
-    options,
-    ...restProps
-  } = props;
+  const { actions, columns, data, next, prev, title, isLoading, options } =
+    props;
 
   return (
-    <Table
-      title={isLoading ? '' : title}
-      columns={columns}
-      data={data}
-      options={{
-        paginationPosition: 'both',
-        ...options,
-        // These settings are configured to force server side pagination
-        pageSizeOptions: [],
-        showFirstLastPageButtons: false,
-        pageSize: Number.MAX_SAFE_INTEGER,
-        emptyRowsWhenPaging: false,
-        actionsColumnIndex: -1,
-      }}
-      onPageChange={page => {
-        if (page > 0) {
-          next?.();
-        } else {
-          prev?.();
-        }
-      }}
-      /* this will enable the prev button accordingly */
-      page={prev ? 1 : 0}
-      /* this will enable the next button accordingly */
-      totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
-      isLoading={isLoading}
-      {...restProps}
-    />
+    <div>
+      <Table
+        title={isLoading ? '' : title}
+        columns={columns}
+        data={data}
+        options={{
+          paging: false,
+          pageSize: Number.MAX_SAFE_INTEGER,
+          ...options,
+        }}
+        actions={actions}
+        isLoading={isLoading}
+      />
+      {/* Custom cursor-based pagination controls */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.5rem 1rem',
+        }}
+      >
+        <button
+          type="button"
+          aria-label="Previous Page"
+          disabled={!prev}
+          onClick={() => prev?.()}
+          style={{ padding: '0.25rem 0.75rem' }}
+        >
+          Previous
+        </button>
+        <button
+          type="button"
+          aria-label="Next Page"
+          disabled={!next}
+          onClick={() => next?.()}
+          style={{ padding: '0.25rem 0.75rem' }}
+        >
+          Next
+        </button>
+      </div>
+    </div>
   );
 }

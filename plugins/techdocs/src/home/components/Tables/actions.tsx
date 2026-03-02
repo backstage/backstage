@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import ShareIcon from '@material-ui/icons/Share';
+import { Share } from 'lucide-react';
 import { DocsTableRow } from './types';
 import { FavoriteToggleIcon } from '@backstage/core-components';
 
@@ -25,28 +25,26 @@ import { FavoriteToggleIcon } from '@backstage/core-components';
  */
 export const actionFactories = {
   createCopyDocsUrlAction(copyToClipboard: Function) {
-    return (row: DocsTableRow) => {
-      return {
-        icon: () => <ShareIcon fontSize="small" />,
-        tooltip: 'Click to copy documentation link to clipboard',
-        onClick: () =>
-          copyToClipboard(`${window.location.origin}${row.resolved.docsUrl}`),
-      };
+    return {
+      icon: () => <Share className="h-4 w-4" />,
+      tooltip: 'Click to copy documentation link to clipboard',
+      onClick: (_event: any, row: DocsTableRow | DocsTableRow[]) => {
+        const data = Array.isArray(row) ? row[0] : row;
+        copyToClipboard(`${window.location.origin}${data.resolved.docsUrl}`);
+      },
     };
   },
   createStarEntityAction(
-    isStarredEntity: Function,
+    _isStarredEntity: Function,
     toggleStarredEntity: Function,
   ) {
-    return (row: DocsTableRow) => {
-      const entity = row.entity;
-      const isStarred = isStarredEntity(entity);
-      return {
-        cellStyle: { paddingLeft: '1em' },
-        icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
-        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
-        onClick: () => toggleStarredEntity(entity),
-      };
+    return {
+      icon: () => <FavoriteToggleIcon isFavorite={false} />,
+      tooltip: 'Toggle favorite',
+      onClick: (_event: any, row: DocsTableRow | DocsTableRow[]) => {
+        const data = Array.isArray(row) ? row[0] : row;
+        toggleStarredEntity(data.entity);
+      },
     };
   },
 };
