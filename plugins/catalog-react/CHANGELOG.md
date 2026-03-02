@@ -2,6 +2,10 @@
 
 ## 2.0.1-next.0
 
+### Minor Changes
+
+- Added `allFilterEnabled` prop to `EntityKindPicker`, letting callers include an “all” option that clears the kind filter and omits the `kind` query parameter. This is disabled by default for backwards compatibility.
+
 ### Patch Changes
 
 - Updated dependencies
