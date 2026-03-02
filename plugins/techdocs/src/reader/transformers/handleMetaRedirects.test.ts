@@ -16,7 +16,6 @@
 
 import { handleMetaRedirects } from './handleMetaRedirects';
 import { createTestShadowDom } from '../../test-utils';
-import { act } from '@testing-library/react';
 
 // Mock sonner's toast function — TechDocsRedirectNotification now uses
 // imperative toast() instead of rendering DOM, so we verify toast calls

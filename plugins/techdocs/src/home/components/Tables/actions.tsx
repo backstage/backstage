@@ -39,6 +39,7 @@ export const actionFactories = {
     toggleStarredEntity: Function,
   ) {
     return {
+      cellStyle: { paddingLeft: '1em' },
       icon: () => <FavoriteToggleIcon isFavorite={false} />,
       tooltip: 'Toggle favorite',
       onClick: (_event: any, row: DocsTableRow | DocsTableRow[]) => {
