@@ -15,7 +15,7 @@
  */
 
 import { configApiRef } from '@backstage/core-plugin-api';
-import { screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   SearchContextProvider,
@@ -55,19 +55,6 @@ describe('SearchType', () => {
     jest.resetAllMocks();
   });
 
-  /**
-   * Helper to locate the shadcn Popover content element in the DOM.
-   * The Radix Popover portal renders outside the component tree,
-   * so we find it via the data-slot attribute set by the shadcn PopoverContent wrapper.
-   */
-  function findPopoverContent(): HTMLElement {
-    const el = document.querySelector('[data-slot="popover-content"]');
-    if (!el) {
-      throw new Error('Popover content not found in DOM');
-    }
-    return el as HTMLElement;
-  }
-
   describe('Type Filter', () => {
     it('Renders field name and values when provided as props', async () => {
       await renderInTestApp(
@@ -87,17 +74,18 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      // Open the multi-select popover via the combobox trigger
-      await userEvent.click(screen.getByRole('combobox'));
+      await userEvent.click(screen.getByRole('button'));
 
-      // Wait for the Radix Popover content to appear in the DOM
       await waitFor(() => {
-        expect(findPopoverContent()).toBeInTheDocument();
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      const popover = findPopoverContent();
-      expect(within(popover).getByText(values[0])).toBeInTheDocument();
-      expect(within(popover).getByText(values[1])).toBeInTheDocument();
+      expect(
+        screen.getByRole('option', { name: values[0] }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('option', { name: values[1] }),
+      ).toBeInTheDocument();
     });
 
     it('Renders correctly based on type filter state', async () => {
@@ -123,21 +111,19 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      // Open the multi-select popover via the combobox trigger
-      await userEvent.click(screen.getByRole('combobox'));
+      await userEvent.click(screen.getByRole('button'));
 
-      // Wait for the Radix Popover content to appear
       await waitFor(() => {
-        expect(findPopoverContent()).toBeInTheDocument();
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      // Checkboxes inside the popover reflect type filter state:
-      // values[0] is in the types array → its checkbox should be checked
-      // values[1] is NOT in the types array → its checkbox should NOT be checked
-      const popover = findPopoverContent();
-      const checkboxes = within(popover).getAllByRole('checkbox');
-      expect(checkboxes[0]).toBeChecked();
-      expect(checkboxes[1]).not.toBeChecked();
+      expect(screen.getByRole('option', { name: values[0] })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+      expect(
+        screen.getByRole('option', { name: values[1] }),
+      ).not.toHaveAttribute('aria-selected');
     });
 
     it('Renders correctly based on type filter defaultValue', async () => {
@@ -158,20 +144,19 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      // Open the multi-select popover via the combobox trigger
-      await userEvent.click(screen.getByRole('combobox'));
+      await userEvent.click(screen.getByRole('button'));
 
-      // Wait for the Radix Popover content to appear
       await waitFor(() => {
-        expect(findPopoverContent()).toBeInTheDocument();
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      // defaultValue seeds values[0] into the types state, so its checkbox
-      // should be checked; values[1] should NOT be checked
-      const popover = findPopoverContent();
-      const checkboxes = within(popover).getAllByRole('checkbox');
-      expect(checkboxes[0]).toBeChecked();
-      expect(checkboxes[1]).not.toBeChecked();
+      expect(screen.getByRole('option', { name: values[0] })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+      expect(
+        screen.getByRole('option', { name: values[1] }),
+      ).not.toHaveAttribute('aria-selected');
     });
 
     it('Selecting a value sets type filter state', async () => {
@@ -192,18 +177,15 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      // Open the multi-select popover via the combobox trigger
-      await userEvent.click(screen.getByRole('combobox'));
+      const button = screen.getByRole('button');
 
-      // Wait for the Radix Popover content to appear
+      await userEvent.click(button);
+
       await waitFor(() => {
-        expect(findPopoverContent()).toBeInTheDocument();
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      // Click the first value to select it — the Popover stays open
-      // (shadcn Popover does not auto-close on item interaction)
-      const popover = findPopoverContent();
-      await userEvent.click(within(popover).getByText(values[0]));
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
@@ -216,9 +198,10 @@ describe('SearchType', () => {
         );
       });
 
-      // Verify the popover is still open after selection (Radix Popover stays open)
+      await userEvent.click(button);
+
       await waitFor(() => {
-        expect(findPopoverContent()).toBeInTheDocument();
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
     });
 
@@ -245,17 +228,15 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      // Open the multi-select popover via the combobox trigger
-      await userEvent.click(screen.getByRole('combobox'));
+      const button = screen.getByRole('button');
 
-      // Wait for the Radix Popover content to appear
+      await userEvent.click(button);
+
       await waitFor(() => {
-        expect(findPopoverContent()).toBeInTheDocument();
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      // Click values[0] to add it to the existing typeValues selection
-      let popover = findPopoverContent();
-      await userEvent.click(within(popover).getByText(values[0]));
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
@@ -268,9 +249,13 @@ describe('SearchType', () => {
         );
       });
 
-      // Popover stays open in Radix — click values[0] again to toggle it off
-      popover = findPopoverContent();
-      await userEvent.click(within(popover).getByText(values[0]));
+      await userEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(

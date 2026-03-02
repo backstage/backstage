@@ -167,9 +167,9 @@ describe('SearchModal', () => {
       },
     );
 
-    // With Radix Dialog, when hidden=true the dialog maps to open=false,
-    // so dialog content is not rendered in the DOM at all
-    expect(screen.queryByTestId('search-bar-next')).not.toBeInTheDocument();
+    // When hidden=true, the search bar is rendered in the DOM but not visible
+    expect(screen.getByTestId('search-bar-next')).toBeInTheDocument();
+    expect(screen.getByTestId('search-bar-next')).not.toBeVisible();
   });
 
   it('should focus on its search bar when opened', async () => {
