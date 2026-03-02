@@ -22,39 +22,6 @@ import {
   useState,
 } from 'react';
 
-/**
- * Local replacement for MUI's useMediaQuery hook.
- * Uses window.matchMedia to track a CSS media query string.
- * Falls back to false when matchMedia is unavailable (SSR / JSDOM).
- */
-function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(() => {
-    if (
-      typeof window !== 'undefined' &&
-      typeof window.matchMedia === 'function'
-    ) {
-      return window.matchMedia(query).matches;
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    if (
-      typeof window === 'undefined' ||
-      typeof window.matchMedia !== 'function'
-    ) {
-      return undefined;
-    }
-    const mql = window.matchMedia(query);
-    const handler = (event: MediaQueryListEvent) => setMatches(event.matches);
-    setMatches(mql.matches);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, [query]);
-
-  return matches;
-}
-
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
@@ -86,6 +53,34 @@ import {
 import { useNavigateUrl } from './useNavigateUrl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
+/**
+ * Custom hook that replaces MUI's useMediaQuery with native window.matchMedia.
+ * Returns a boolean indicating whether the media query matches.
+ * Falls back to false when matchMedia is unavailable (SSR / JSDOM).
+ */
+const useNativeMediaQuery = (query: string): boolean => {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia(query).matches
+      : false,
+  );
+
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    ) {
+      return undefined;
+    }
+    const mql = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, [query]);
+
+  return matches;
+};
+
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
 // If a defaultPath is specified then we should navigate to that path replacing the
@@ -113,7 +108,7 @@ export const useTechDocsReaderDom = (
   defaultPath?: string,
 ): Element | null => {
   const navigate = useNavigateUrl();
-  const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
+  const isMobileMedia = useNativeMediaQuery(MOBILE_MEDIA_QUERY);
   const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();
   const analytics = useAnalytics();
