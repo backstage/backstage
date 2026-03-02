@@ -16,10 +16,7 @@
 
 import { ComponentType, PropsWithChildren } from 'react';
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import DefaultIcon from '@material-ui/icons/InsertDriveFile';
-import CustomIcon from '@material-ui/icons/NoteAdd';
+import { FileText, FilePlus } from 'lucide-react';
 
 import { Link } from '@backstage/core-components';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
@@ -86,11 +83,11 @@ export default {
 const CustomResultListItem = (props: { result: SearchDocument }) => {
   const { result } = props;
   return (
-    <ListItem>
+    <li className="flex items-start py-2 border-b border-border">
       <Link to={result.location}>
         {result.title} - {result.text}
       </Link>
-    </ListItem>
+    </li>
   );
 };
 
@@ -98,7 +95,7 @@ export const Default = () => {
   return (
     <SearchResult>
       {({ results }) => (
-        <List>
+        <ul className="list-none p-0 m-0">
           {results.map(({ type, document }) => {
             switch (type) {
               case 'custom-result-item':
@@ -117,7 +114,7 @@ export const Default = () => {
                 );
             }
           })}
-        </List>
+        </ul>
       )}
     </SearchResult>
   );
@@ -131,7 +128,7 @@ export const WithQuery = () => {
   return (
     <SearchResult query={query}>
       {({ results }) => (
-        <List>
+        <ul className="list-none p-0 m-0">
           {results.map(({ type, document }) => {
             switch (type) {
               case 'custom-result-item':
@@ -150,7 +147,7 @@ export const WithQuery = () => {
                 );
             }
           })}
-        </List>
+        </ul>
       )}
     </SearchResult>
   );
@@ -192,7 +189,7 @@ export const GroupLayout = () => {
       {({ results }) => (
         <>
           <SearchResultGroupLayout
-            icon={<CustomIcon />}
+            icon={<FilePlus />}
             title="Custom"
             link="See all custom results"
             resultItems={results.filter(
@@ -203,7 +200,7 @@ export const GroupLayout = () => {
             )}
           />
           <SearchResultGroupLayout
-            icon={<DefaultIcon />}
+            icon={<FileText />}
             title="Default"
             resultItems={results.filter(
               ({ type }) => type !== 'custom-result-item',
@@ -225,7 +222,7 @@ export const WithCustomNoResultsComponent = () => {
   return (
     <SearchResult noResultsComponent={<>No results were found</>}>
       {({ results }) => (
-        <List>
+        <ul className="list-none p-0 m-0">
           {results.map(({ type, document }) => {
             switch (type) {
               case 'custom-result-item':
@@ -244,7 +241,7 @@ export const WithCustomNoResultsComponent = () => {
                 );
             }
           })}
-        </List>
+        </ul>
       )}
     </SearchResult>
   );
