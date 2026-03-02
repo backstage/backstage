@@ -80,8 +80,8 @@
     --bui-bg-app: #f8f8f8;
 
     --bui-bg-neutral-1: #fff;
-    --bui-bg-neutral-1-hover: oklch(0% 0 0 / 12%);
-    --bui-bg-neutral-1-pressed: oklch(0% 0 0 / 16%);
+    --bui-bg-neutral-1-hover: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-1-pressed: oklch(0% 0 0 / 12%);
     --bui-bg-neutral-1-disabled: oklch(0% 0 0 / 6%);
 
     --bui-bg-neutral-2: oklch(0% 0 0 / 6%);
