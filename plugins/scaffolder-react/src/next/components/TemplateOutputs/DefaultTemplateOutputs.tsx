@@ -19,8 +19,7 @@ import {
   ScaffolderOutputText,
   ScaffolderTaskOutput,
 } from '@backstage/plugin-scaffolder-react';
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
+
 import { useEffect, useMemo, useState } from 'react';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
@@ -66,15 +65,9 @@ export const DefaultTemplateOutputs = (props: {
   return (
     <>
       {!emptyOutput ? (
-        <Box paddingBottom={2} data-testid="output-box">
-          <Paper>
-            <Box
-              padding={2}
-              justifyContent="center"
-              display="flex"
-              gridGap={16}
-              flexWrap="wrap"
-            >
+        <div className="pb-4" data-testid="output-box">
+          <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+            <div className="flex flex-wrap justify-center gap-4 p-4">
               {displayTextButtons && (
                 <TextOutputs
                   data-testid="text-outputs"
@@ -84,22 +77,22 @@ export const DefaultTemplateOutputs = (props: {
                 />
               )}
               <LinkOutputs output={output} />
-            </Box>
-          </Paper>
-        </Box>
+            </div>
+          </div>
+        </div>
       ) : null}
       {textOutput ? (
-        <Box paddingBottom={2} data-testid="text-output-box">
+        <div className="pb-4" data-testid="text-output-box">
           <InfoCard
             title={textOutput.title ?? t('templateOutputs.title')}
             noPadding
             titleTypographyProps={{ component: 'h2' }}
           >
-            <Box padding={2} height="100%">
+            <div className="h-full p-4">
               <MarkdownContent content={textOutput.content ?? ''} />
-            </Box>
+            </div>
           </InfoCard>
-        </Box>
+        </div>
       ) : null}
     </>
   );
