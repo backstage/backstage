@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Overrides } from '@material-ui/core/styles/overrides';
-import { StyleRules } from '@material-ui/core/styles/withStyles';
+import type React from 'react';
 
 import { EntityLinksEmptyStateClassKey } from './components/EntityLinksCard';
 import { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
@@ -22,6 +21,14 @@ import { EntityContextMenuClassKey } from './components/EntityContextMenu';
 import { CatalogSearchResultListItemClassKey } from './components/CatalogSearchResultListItem';
 import { CatalogTableToolbarClassKey } from './components/CatalogTable';
 import { EntityLabelsEmptyStateClassKey } from './components/EntityLabelsCard';
+
+/**
+ * CSS custom property overrides for a component's class keys.
+ * Each class key maps to a Record of CSS custom property names to values.
+ */
+type CSSCustomPropertyOverride<ClassKey extends string> = {
+  [K in ClassKey]?: React.CSSProperties & Record<`--${string}`, string>;
+};
 
 /** @public */
 export type PluginCatalogComponentsNameToClassKey = {
@@ -34,9 +41,9 @@ export type PluginCatalogComponentsNameToClassKey = {
 };
 
 /** @public */
-export type BackstageOverrides = Overrides & {
+export type BackstageOverrides = {
   [Name in keyof PluginCatalogComponentsNameToClassKey]?: Partial<
-    StyleRules<PluginCatalogComponentsNameToClassKey[Name]>
+    CSSCustomPropertyOverride<PluginCatalogComponentsNameToClassKey[Name]>
   >;
 };
 
