@@ -14,26 +14,12 @@
  * limitations under the License.
  */
 import { MarkdownContent } from '@backstage/core-components';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import {
   DescriptionFieldProps,
   FormContextType,
   RJSFSchema,
   StrictRJSFSchema,
 } from '@rjsf/utils';
-
-const useStyles = makeStyles(theme => ({
-  markdownDescription: {
-    fontSize: theme.typography.caption.fontSize,
-    margin: 0,
-    color: theme.palette.text.secondary,
-    '& :first-child': {
-      margin: 0,
-      marginTop: '3px', // to keep the standard browser padding
-    },
-  },
-}));
 
 /** The `DescriptionField` is the template to use to render the description of a field
  * @alpha
@@ -47,7 +33,6 @@ export const DescriptionFieldTemplate = <
   props: DescriptionFieldProps<T, S, F>,
 ) => {
   const { id, description } = props;
-  const classes = useStyles();
 
   if (description) {
     if (typeof description === 'string') {
@@ -55,15 +40,15 @@ export const DescriptionFieldTemplate = <
         <MarkdownContent
           content={description}
           linkTarget="_blank"
-          className={classes.markdownDescription}
+          className="text-xs text-muted-foreground m-0 [&_:first-child]:m-0 [&_:first-child]:mt-[3px]"
         />
       );
     }
 
     return (
-      <Typography id={id} variant="subtitle2" style={{ marginTop: '5px' }}>
+      <p id={id} className="text-sm font-medium mt-[5px]">
         {description}
-      </Typography>
+      </p>
     );
   }
 
