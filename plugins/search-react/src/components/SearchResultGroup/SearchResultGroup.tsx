@@ -15,26 +15,16 @@
  */
 
 import {
-  MouseEvent,
   ChangeEvent,
+  FormEventHandler,
+  HTMLAttributes,
   PropsWithChildren,
   ReactNode,
   useCallback,
-  useState,
 } from 'react';
 import qs from 'qs';
 
-import List, { ListProps } from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputBase from '@material-ui/core/InputBase';
-import Select from '@material-ui/core/Select';
-import Chip from '@material-ui/core/Chip';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
-import ArrowRightIcon from '@material-ui/icons/ArrowForwardIos';
+import { Plus, ChevronRight, X } from 'lucide-react';
 
 import { JsonValue } from '@backstage/types';
 import {
@@ -43,6 +33,17 @@ import {
   Progress,
   EmptyState,
   ResponseErrorPanel,
+  Badge,
+  ShadcnButton,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  ShadcnSelect,
+  SelectTrigger,
+  SelectContent,
+  ShadcnSelectItem,
+  SelectValue,
 } from '@backstage/core-components';
 import { AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchResult } from '@backstage/plugin-search-common';
@@ -53,35 +54,6 @@ import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResultState, SearchResultStateProps } from '../SearchResult';
 import { searchReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  listSubheader: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  listSubheaderName: {
-    marginLeft: theme.spacing(1),
-    textTransform: 'uppercase',
-  },
-  listSubheaderChip: {
-    color: theme.palette.text.secondary,
-    margin: theme.spacing(0, 0, 0, 1.5),
-  },
-  listSubheaderFilter: {
-    display: 'flex',
-    color: theme.palette.text.secondary,
-    margin: theme.spacing(0, 0, 0, 1.5),
-  },
-  listSubheaderLink: {
-    marginLeft: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  listSubheaderLinkIcon: {
-    fontSize: 'inherit',
-    marginLeft: theme.spacing(0.5),
-  },
-}));
 
 /**
  * Props for {@link SearchResultGroupFilterFieldLayout}
@@ -101,24 +73,26 @@ export type SearchResultGroupFilterFieldLayoutProps = PropsWithChildren<{
 export const SearchResultGroupFilterFieldLayout = (
   props: SearchResultGroupFilterFieldLayoutProps,
 ) => {
-  const classes = useStyles();
-  const { label, children, ...rest } = props;
+  const { label, children, onDelete, value } = props;
 
   return (
-    <Chip
-      {...rest}
-      className={classes.listSubheaderFilter}
-      variant="outlined"
-      label={
-        <>
-          {label}: {children}
-        </>
-      }
-    />
+    <Badge
+      variant="outline"
+      className="flex items-center gap-1 text-muted-foreground ml-1.5"
+    >
+      {label}: {children}
+      {value !== undefined && (
+        <button
+          onClick={onDelete}
+          className="ml-1 hover:text-foreground"
+          aria-label={`Remove ${label} filter`}
+        >
+          <X className="h-3 w-3" />
+        </button>
+      )}
+    </Badge>
   );
 };
-
-const NullIcon = () => null;
 
 /**
  * Common props for a result group filter field.
@@ -128,23 +102,6 @@ export type SearchResultGroupFilterFieldPropsWith<T> = T &
   SearchResultGroupFilterFieldLayoutProps & {
     onChange: (value: JsonValue) => void;
   };
-
-const useSearchResultGroupTextFilterStyles = makeStyles((theme: Theme) => ({
-  root: {
-    fontSize: 'inherit',
-    '&:focus': {
-      outline: 'none',
-      background: theme.palette.common.white,
-    },
-    '&:not(:focus)': {
-      cursor: 'pointer',
-      color: theme.palette.primary.main,
-      '&:hover': {
-        textDecoration: 'underline',
-      },
-    },
-  },
-}));
 
 /**
  * Props for {@link SearchResultGroupTextFilterField}.
@@ -171,7 +128,6 @@ export type SearchResultGroupTextFilterFieldProps =
 export const SearchResultGroupTextFilterField = (
   props: SearchResultGroupTextFilterFieldProps,
 ) => {
-  const classes = useSearchResultGroupTextFilterStyles();
   const { label, value = 'None', onChange, onDelete } = props;
 
   const handleChange = useCallback(
@@ -183,41 +139,23 @@ export const SearchResultGroupTextFilterField = (
 
   return (
     <SearchResultGroupFilterFieldLayout label={label} onDelete={onDelete}>
-      <Typography
+      <span
         role="textbox"
-        component="span"
-        className={classes.root}
-        onChange={handleChange}
+        className="text-inherit focus:outline-none focus:bg-white cursor-pointer text-primary hover:underline focus:cursor-text focus:text-foreground focus:no-underline"
+        onChange={
+          handleChange as unknown as FormEventHandler<HTMLSpanElement>
+        }
         contentEditable
         suppressContentEditableWarning
       >
         {value?.toString()}
-      </Typography>
+      </span>
     </SearchResultGroupFilterFieldLayout>
   );
 };
 
-const useSearchResultGroupSelectFilterStyles = makeStyles((theme: Theme) => ({
-  root: {
-    fontSize: 'inherit',
-    '&:not(:focus)': {
-      cursor: 'pointer',
-      color: theme.palette.primary.main,
-      '&:hover': {
-        textDecoration: 'underline',
-      },
-    },
-    '&:focus': {
-      outline: 'none',
-    },
-    '&>div:first-child': {
-      padding: 0,
-    },
-  },
-}));
-
 /**
- * Props for {@link SearchResultGroupTextFilterField}.
+ * Props for {@link SearchResultGroupSelectFilterField}.
  * @public
  */
 export type SearchResultGroupSelectFilterFieldProps =
@@ -237,8 +175,8 @@ export type SearchResultGroupSelectFilterFieldProps =
  *   onChange={handleChangeFilter}
  *   onDelete={handleDeleteFilter}
  * >
- *   <MenuItem value="experimental">Experimental</MenuItem>
- *   <MenuItem value="production">Production</MenuItem>
+ *   <ShadcnSelectItem value="experimental">Experimental</ShadcnSelectItem>
+ *   <ShadcnSelectItem value="production">Production</ShadcnSelectItem>
  *  </SearchResultGroupSelectFilterField>
  * ```
  * @public
@@ -246,28 +184,26 @@ export type SearchResultGroupSelectFilterFieldProps =
 export const SearchResultGroupSelectFilterField = (
   props: SearchResultGroupSelectFilterFieldProps,
 ) => {
-  const classes = useSearchResultGroupSelectFilterStyles();
   const { label, value = 'none', onChange, onDelete, children } = props;
 
   const handleChange = useCallback(
-    (e: ChangeEvent<{ value: unknown }>) => {
-      onChange(e.target.value as JsonValue);
+    (val: string) => {
+      onChange(val as JsonValue);
     },
     [onChange],
   );
 
   return (
     <SearchResultGroupFilterFieldLayout label={label} onDelete={onDelete}>
-      <Select
-        className={classes.root}
-        value={value}
-        onChange={handleChange}
-        input={<InputBase />}
-        IconComponent={NullIcon}
-      >
-        <MenuItem value="none">None</MenuItem>
-        {children}
-      </Select>
+      <ShadcnSelect value={value?.toString()} onValueChange={handleChange}>
+        <SelectTrigger className="h-auto border-0 p-0 text-inherit text-primary hover:underline focus:outline-none focus:ring-0 [&>svg]:hidden">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <ShadcnSelectItem value="none">None</ShadcnSelectItem>
+          {children}
+        </SelectContent>
+      </ShadcnSelect>
     </SearchResultGroupFilterFieldLayout>
   );
 };
@@ -276,77 +212,78 @@ export const SearchResultGroupSelectFilterField = (
  * Props for {@link SearchResultGroupLayout}
  * @public
  */
-export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
-  /**
-   * If defined, will render a default error panel.
-   */
-  error?: Error;
-  /**
-   * If defined, will render a default loading progress.
-   */
-  loading?: boolean;
-  /**
-   * Icon that representing a result group.
-   */
-  icon: JSX.Element;
-  /**
-   * The results group title content, it could be a text or an element.
-   */
-  title: ReactNode;
-  /**
-   * Props for the results group title.
-   */
-  titleProps?: Partial<TypographyProps>;
-  /**
-   * The results group link content, it could be a text or an element.
-   */
-  link?: ReactNode;
-  /**
-   * Props for the results group link, the "to" prop defaults to "/search".
-   */
-  linkProps?: Partial<LinkProps>;
-  /**
-   * A generic filter options that is rendered on the "Add filter" dropdown.
-   */
-  filterOptions?: FilterOption[];
-  /**
-   * Function to customize how filter options are rendered.
-   * @remarks Defaults to a menu item where its value and label bounds to the option string.
-   */
-  renderFilterOption?: (
-    value: FilterOption,
-    index: number,
-    array: FilterOption[],
-  ) => JSX.Element | null;
-  /**
-   * A list of search filter keys, also known as filter field names.
-   */
-  filterFields?: string[];
-  /**
-   * Function to customize how filter chips are rendered.
-   */
-  renderFilterField?: (key: string) => JSX.Element | null;
-  /**
-   * Search results to be rendered as a group.
-   */
-  resultItems?: SearchResult[];
-  /**
-   * Function to customize how result items are rendered.
-   */
-  renderResultItem?: (
-    value: SearchResult,
-    index: number,
-    array: SearchResult[],
-  ) => JSX.Element | null;
-  /**
-   * Optional component to render when no results. Default to <EmptyState /> component.
-   */
-  noResultsComponent?: ReactNode;
-  /**
-   * Optional property to provide if component should not render the component when no results are found.
-   */
-  disableRenderingWithNoResults?: boolean;
-};
+export type SearchResultGroupLayoutProps<FilterOption> =
+  HTMLAttributes<HTMLUListElement> & {
+    /**
+     * If defined, will render a default error panel.
+     */
+    error?: Error;
+    /**
+     * If defined, will render a default loading progress.
+     */
+    loading?: boolean;
+    /**
+     * Icon that representing a result group.
+     */
+    icon: JSX.Element;
+    /**
+     * The results group title content, it could be a text or an element.
+     */
+    title: ReactNode;
+    /**
+     * Props for the results group title.
+     */
+    titleProps?: HTMLAttributes<HTMLElement>;
+    /**
+     * The results group link content, it could be a text or an element.
+     */
+    link?: ReactNode;
+    /**
+     * Props for the results group link, the "to" prop defaults to "/search".
+     */
+    linkProps?: Partial<LinkProps>;
+    /**
+     * A generic filter options that is rendered on the "Add filter" dropdown.
+     */
+    filterOptions?: FilterOption[];
+    /**
+     * Function to customize how filter options are rendered.
+     * @remarks Defaults to a dropdown menu item where its value and label bounds to the option string.
+     */
+    renderFilterOption?: (
+      value: FilterOption,
+      index: number,
+      array: FilterOption[],
+    ) => JSX.Element | null;
+    /**
+     * A list of search filter keys, also known as filter field names.
+     */
+    filterFields?: string[];
+    /**
+     * Function to customize how filter chips are rendered.
+     */
+    renderFilterField?: (key: string) => JSX.Element | null;
+    /**
+     * Search results to be rendered as a group.
+     */
+    resultItems?: SearchResult[];
+    /**
+     * Function to customize how result items are rendered.
+     */
+    renderResultItem?: (
+      value: SearchResult,
+      index: number,
+      array: SearchResult[],
+    ) => JSX.Element | null;
+    /**
+     * Optional component to render when no results. Default to <EmptyState /> component.
+     */
+    noResultsComponent?: ReactNode;
+    /**
+     * Optional property to provide if component should not render the component when no results are found.
+     */
+    disableRenderingWithNoResults?: boolean;
+  };
 
 /**
  * Default layout for rendering search results in a group.
@@ -356,8 +293,6 @@ export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
 export function SearchResultGroupLayout<FilterOption>(
   props: SearchResultGroupLayoutProps<FilterOption>,
 ) {
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { t } = useTranslationRef(searchReactTranslationRef);
 
   const {
@@ -369,15 +304,18 @@ export function SearchResultGroupLayout<FilterOption>(
     link = (
       <>
         {t('searchResultGroup.linkTitle')}
-        <ArrowRightIcon className={classes.listSubheaderLinkIcon} />
+        <ChevronRight className="h-3 w-3 ml-0.5 inline" />
       </>
     ),
     linkProps = {},
     filterOptions,
     renderFilterOption = filterOption => (
-      <MenuItem key={String(filterOption)} value={String(filterOption)}>
+      <DropdownMenuItem
+        key={String(filterOption)}
+        textValue={String(filterOption)}
+      >
         {String(filterOption)}
-      </MenuItem>
+      </DropdownMenuItem>
     ),
     filterFields,
     renderFilterField,
@@ -394,14 +332,6 @@ export function SearchResultGroupLayout<FilterOption>(
     ),
     ...rest
   } = props;
-
-  const handleClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(e.currentTarget);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setAnchorEl(null);
-  }, []);
 
   if (loading) {
     return <Progress />;
@@ -421,49 +351,44 @@ export function SearchResultGroupLayout<FilterOption>(
   }
 
   return (
-    <List {...rest}>
-      <ListSubheader className={classes.listSubheader}>
+    <ul {...rest}>
+      <li
+        className="flex items-center px-4 py-2 sticky top-0 z-10 bg-background"
+        role="presentation"
+      >
         {icon}
-        <Typography
-          className={classes.listSubheaderName}
-          component="strong"
+        <strong
+          className="ml-1 uppercase text-sm font-semibold"
           {...titleProps}
         >
           {title}
-        </Typography>
+        </strong>
         {filterOptions ? (
-          <Chip
-            className={classes.listSubheaderChip}
-            component="button"
-            icon={<AddIcon />}
-            variant="outlined"
-            label={t('searchResultGroup.addFilterButtonTitle')}
-            aria-controls="filters-menu"
-            aria-haspopup="true"
-            onClick={handleClick}
-          />
-        ) : null}
-        {filterOptions ? (
-          <Menu
-            id="filters-menu"
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            onClick={handleClose}
-            keepMounted
-          >
-            {filterOptions.map(renderFilterOption)}
-          </Menu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <ShadcnButton
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground ml-1.5"
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                {t('searchResultGroup.addFilterButtonTitle')}
+              </ShadcnButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {filterOptions.map(renderFilterOption)}
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : null}
         {filterFields?.map(
           filterField => renderFilterField?.(filterField) ?? null,
         )}
-        <Link className={classes.listSubheaderLink} to="/search" {...linkProps}>
+        <Link className="ml-auto flex items-center" to="/search" {...linkProps}>
           {link}
         </Link>
-      </ListSubheader>
+      </li>
       {resultItems.map(renderResultItem)}
-    </List>
+    </ul>
   );
 }
 
