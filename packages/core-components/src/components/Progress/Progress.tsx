@@ -14,28 +14,43 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import LinearProgress, {
-  LinearProgressProps,
-} from '@material-ui/core/LinearProgress';
-import { useTheme } from '@material-ui/core/styles';
-import { PropsWithChildren, useEffect, useState } from 'react';
+import {
+  type ComponentPropsWithoutRef,
+  type PropsWithChildren,
+  useEffect,
+  useState,
+} from 'react';
 
-export function Progress(props: PropsWithChildren<LinearProgressProps>) {
-  const theme = useTheme();
+import { ProgressIndicator } from '../ui/progress';
+import { cn } from '../../lib/utils';
+
+/**
+ * Default delay in milliseconds before the progress indicator becomes visible.
+ * Prevents flash of loading indicator during quick operations.
+ * Replaces MUI's theme.transitions.duration.short (250ms).
+ */
+const PROGRESS_DELAY_MS = 250;
+
+/**
+ * A loading progress indicator that appears after a short delay to prevent
+ * flashing during quick loads. Wraps the shadcn/ui ProgressIndicator
+ * (Radix Progress primitive) with configurable visibility delay.
+ *
+ * @public
+ */
+export function Progress(
+  props: PropsWithChildren<ComponentPropsWithoutRef<typeof ProgressIndicator>>,
+) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const handle = setTimeout(
-      () => setIsVisible(true),
-      theme.transitions.duration.short,
-    );
+    const handle = setTimeout(() => setIsVisible(true), PROGRESS_DELAY_MS);
     return () => clearTimeout(handle);
-  }, [theme.transitions.duration.short]);
+  }, []);
 
   return isVisible ? (
-    <LinearProgress {...props} data-testid="progress" />
+    <ProgressIndicator {...props} data-testid="progress" />
   ) : (
-    <Box display="none" data-testid="progress" />
+    <div className={cn('hidden')} data-testid="progress" />
   );
 }
