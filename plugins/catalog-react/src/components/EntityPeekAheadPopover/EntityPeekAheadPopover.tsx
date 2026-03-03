@@ -25,6 +25,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
+  cn,
 } from '@backstage/core-components';
 import {
   EntityCardActions,
@@ -110,14 +111,18 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
       </PopoverTrigger>
       {isHovered && (
         <PopoverContent
-          className="w-[30em] p-0"
+          className={cn('w-[30em] p-0')}
           align="center"
           side="bottom"
           onMouseEnter={() => debouncedHandleMouseEnter.cancel()}
           onMouseLeave={handleOnMouseLeave}
           onOpenAutoFocus={e => e.preventDefault()}
         >
-          <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+          <div
+            className={cn(
+              'rounded-lg border bg-card text-card-foreground shadow-sm',
+            )}
+          >
             <div className="p-4">
               {error && <ResponseErrorPanel error={error} />}
               {loading && <Progress />}
@@ -144,7 +149,11 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
                       .map(tag => (
                         <span
                           key={tag}
-                          className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold mr-1 bg-secondary text-secondary-foreground"
+                          className={cn(
+                            'inline-flex items-center rounded-full border',
+                            'px-2.5 py-0.5 text-xs font-semibold',
+                            'mr-1 bg-secondary text-secondary-foreground',
+                          )}
                         >
                           {tag}
                         </span>
@@ -153,7 +162,11 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
                       entity.metadata.tags?.length > maxTagChips && (
                         <span
                           key="other-tags"
-                          className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground"
+                          className={cn(
+                            'inline-flex items-center rounded-full border',
+                            'px-2.5 py-0.5 text-xs font-semibold',
+                            'bg-secondary text-secondary-foreground',
+                          )}
                           title={t('entityPeekAheadPopover.title')}
                         >
                           ...
@@ -164,7 +177,7 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
               )}
             </div>
             {!error && entity && (
-              <div className="flex items-center p-4 pt-0">
+              <div className={cn('flex items-center p-4 pt-0')}>
                 {isUserEntity(entity) && <UserCardActions entity={entity} />}
                 {isGroupEntity(entity) && <GroupCardActions entity={entity} />}
                 <EntityCardActions entity={entity} />
