@@ -72,6 +72,16 @@ import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useSourceTemplateCompoundEntityRef } from './hooks';
 import { AboutContent } from './AboutContent';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  linkContainer: {
+    border: '1px solid var(--bui-border-1)',
+    borderLeft: 'none',
+    borderRight: 'none',
+    marginBottom: 'var(--bui-space-6)',
+  },
+});
 
 export function useCatalogSourceIconLinkProps() {
   const { entity } = useEntity();
@@ -154,6 +164,7 @@ export interface InternalAboutCardProps {
 
 export function InternalAboutCard(props: InternalAboutCardProps) {
   const { iconLinks } = props;
+  const classes = useStyles();
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
@@ -223,7 +234,9 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
         </>
       }
     >
-      {iconLinks ?? <DefaultAboutCardSubheader />}
+      <div className={classes.linkContainer}>
+        {iconLinks ?? <DefaultAboutCardSubheader />}
+      </div>
       <AboutContent entity={entity} />
     </EntityInfoCard>
   );
