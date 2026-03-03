@@ -16,8 +16,6 @@
 
 import { ComponentProps, ReactNode, ReactElement } from 'react';
 
-import Alert from '@material-ui/lab/Alert';
-
 import {
   attachComponentData,
   useElementFilter,
@@ -25,6 +23,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
+  Alert,
   Content,
   Link,
   Page,
@@ -170,7 +169,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {error && (
         <Content>
-          <Alert severity="error">{error.toString()}</Alert>
+          <Alert variant="destructive">{error.toString()}</Alert>
         </Content>
       )}
 
