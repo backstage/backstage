@@ -13,54 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState } from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { memo } from 'react';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Stepper from '@material-ui/core/Stepper';
+import { useState, memo } from 'react';
 import { ScaffolderTaskStatus } from '@backstage/plugin-scaffolder-react';
-import StepButton from '@material-ui/core/StepButton';
-import { StepIconProps } from '@material-ui/core/StepIcon';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Cancel from '@material-ui/icons/Cancel';
-import Check from '@material-ui/icons/Check';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import Typography from '@material-ui/core/Typography';
 import { DateTime, Interval } from 'luxon';
 import useInterval from 'react-use/esm/useInterval';
 import humanizeDuration from 'humanize-duration';
-import classNames from 'classnames';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../../translation';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-    },
-    button: {
-      marginBottom: theme.spacing(2),
-      marginLeft: theme.spacing(2),
-    },
-    actionsContainer: {
-      marginBottom: theme.spacing(2),
-    },
-    resetContainer: {
-      padding: theme.spacing(3),
-    },
-    labelWrapper: {
-      display: 'flex',
-      flex: 1,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    stepWrapper: {
-      width: '100%',
-    },
-  }),
-);
+/* shadcn/ui migration — replaces MUI makeStyles + classNames */
+import { cn } from '@backstage/core-components';
+/* lucide-react icons — replace @material-ui/icons and CircularProgress */
+import { XCircle, Check, Circle, Loader2 } from 'lucide-react';
 
+/**
+ * Represents a single step in the scaffolder task execution pipeline.
+ * Preserves the original type contract used by the stepper.
+ */
 type TaskStep = {
   id: string;
   name: string;
@@ -69,23 +38,23 @@ type TaskStep = {
   endedAt?: string;
 };
 
-const useStepIconStyles = makeStyles(theme =>
-  createStyles({
-    root: {
-      color: theme.palette.text.disabled,
-      display: 'flex',
-      height: 22,
-      alignItems: 'center',
-    },
-    completed: {
-      color: theme.palette.status.ok,
-    },
-    error: {
-      color: theme.palette.status.error,
-    },
-  }),
-);
+/**
+ * Local StepIconProps interface — replaces the MUI StepIconProps import.
+ * Provides active/completed/error status flags for icon rendering.
+ */
+interface StepIconProps {
+  active?: boolean;
+  completed?: boolean;
+  error?: boolean;
+}
 
+/**
+ * Displays a live-updating elapsed-time ticker for a scaffolder task step.
+ * Uses luxon for time interval calculation and humanize-duration for formatting.
+ *
+ * All timing logic (useState, useInterval, luxon DateTime/Interval, humanizeDuration)
+ * is preserved exactly from the original MUI implementation.
+ */
 const StepTimeTicker = ({ step }: { step: TaskStep }) => {
   const [time, setTime] = useState('');
 
@@ -107,38 +76,59 @@ const StepTimeTicker = ({ step }: { step: TaskStep }) => {
     setTime(humanizeDuration(formatted, { round: true }));
   }, 1000);
 
-  return <Typography variant="caption">{time}</Typography>;
+  /* Typography variant="caption" → text-xs text-muted-foreground */
+  // eslint-disable-next-line react/forbid-elements -- MUI Typography replaced with Tailwind-styled span per shadcn/ui migration
+  return <span className="text-xs text-muted-foreground">{time}</span>;
 };
 
+/**
+ * Renders the status icon for each step in the task stepper.
+ * Icon selection is based on the step's current status:
+ * - active (processing) → spinning Loader2 icon
+ * - completed → Check icon (green)
+ * - error (failed/cancelled) → XCircle icon (destructive red)
+ * - default (pending) → Circle icon (muted)
+ *
+ * Replaces the MUI StepIconComponent + useStepIconStyles pattern with
+ * lucide-react icons and Tailwind utility classes via cn().
+ */
 function TaskStepIconComponent(props: StepIconProps) {
-  const classes = useStepIconStyles();
   const { active, completed, error } = props;
 
-  const getMiddle = () => {
-    if (active) {
-      return <CircularProgress size="24px" />;
-    }
-    if (completed) {
-      return <Check />;
-    }
-    if (error) {
-      return <Cancel />;
-    }
-    return <FiberManualRecordIcon />;
+  const getIcon = () => {
+    if (active) return <Loader2 className="h-6 w-6 animate-spin" />;
+    if (completed) return <Check className="h-6 w-6" />;
+    if (error) return <XCircle className="h-6 w-6" />;
+    return <Circle className="h-6 w-6" />;
   };
 
   return (
     <div
-      className={classNames(classes.root, {
-        [classes.completed]: completed,
-        [classes.error]: error,
-      })}
+      className={cn(
+        'flex h-[22px] items-center text-muted-foreground',
+        completed && 'text-green-600 dark:text-green-400',
+        error && 'text-destructive',
+      )}
     >
-      {getMiddle()}
+      {getIcon()}
     </div>
   );
 }
 
+/**
+ * A vertical task-status stepper displaying each step of a scaffolder task
+ * with interactive step selection, status icons, and elapsed-time tickers.
+ *
+ * Replaces the MUI Stepper/Step/StepButton/StepLabel composition with a
+ * custom Tailwind CSS vertical stepper built from semantic button elements,
+ * flexbox layout, and vertical connector lines.
+ *
+ * @remarks
+ * - memo() wrapper is preserved for render optimization
+ * - useTranslationRef provides i18n for the "Skipped" label
+ * - The `classes?.root` prop is preserved for backward compatibility
+ * - Each step is a focusable button for accessibility (keyboard-operable)
+ */
 export const TaskStatusStepper = memo(
   (props: {
     steps: TaskStep[];
@@ -149,16 +139,11 @@ export const TaskStatusStepper = memo(
     };
   }) => {
     const { steps, currentStepId, onUserStepChange } = props;
-    const classes = useStyles(props);
     const { t } = useTranslationRef(scaffolderTranslationRef);
 
     return (
-      <div className={classes.root}>
-        <Stepper
-          activeStep={steps.findIndex(s => s.id === currentStepId)}
-          orientation="vertical"
-          nonLinear
-        >
+      <div className={cn('w-full', props.classes?.root)}>
+        <div className="flex flex-col">
           {steps.map((step, index) => {
             const isCancelled = step.status === 'cancelled';
             const isActive = step.status === 'processing';
@@ -167,35 +152,48 @@ export const TaskStatusStepper = memo(
             const isSkipped = step.status === 'skipped';
 
             return (
-              <Step key={String(index)} expanded>
-                <StepButton onClick={() => onUserStepChange(step.id)}>
-                  <StepLabel
-                    StepIconProps={{
-                      completed: isCompleted,
-                      error: isFailed || isCancelled,
-                      active: isActive,
-                    }}
-                    StepIconComponent={TaskStepIconComponent}
-                    className={classes.stepWrapper}
-                  >
-                    <div className={classes.labelWrapper}>
-                      <Typography variant="subtitle2">{step.name}</Typography>
-                      {isSkipped ? (
-                        <Typography variant="caption">
-                          {t(
-                            'templateEditorPage.taskStatusStepper.skippedStepTitle',
-                          )}
-                        </Typography>
-                      ) : (
-                        <StepTimeTicker step={step} />
+              // eslint-disable-next-line react/forbid-elements -- MUI Button replaced with native button per shadcn/ui migration
+              <button
+                key={String(index)}
+                type="button"
+                className={cn(
+                  'flex items-start gap-3 px-4 py-2 w-full text-left hover:bg-accent/50 transition-colors',
+                  currentStepId === step.id && 'bg-accent',
+                )}
+                onClick={() => onUserStepChange(step.id)}
+              >
+                {/* Step icon with vertical connector */}
+                <div className="flex flex-col items-center pt-0.5">
+                  <TaskStepIconComponent
+                    completed={isCompleted}
+                    error={isFailed || isCancelled}
+                    active={isActive}
+                  />
+                  {/* Vertical connector line between steps */}
+                  {index < steps.length - 1 && (
+                    <div className="w-px flex-1 bg-border mt-1 min-h-[16px]" />
+                  )}
+                </div>
+
+                {/* Step label and time/status content */}
+                <div className="flex flex-1 flex-row justify-between w-full min-w-0">
+                  {/* eslint-disable-next-line react/forbid-elements -- MUI Typography replaced with Tailwind-styled span per shadcn/ui migration */}
+                  <span className="text-sm font-medium">{step.name}</span>
+                  {isSkipped ? (
+                    // eslint-disable-next-line react/forbid-elements -- MUI Typography replaced with Tailwind-styled span per shadcn/ui migration
+                    <span className="text-xs text-muted-foreground">
+                      {t(
+                        'templateEditorPage.taskStatusStepper.skippedStepTitle',
                       )}
-                    </div>
-                  </StepLabel>
-                </StepButton>
-              </Step>
+                    </span>
+                  ) : (
+                    <StepTimeTicker step={step} />
+                  )}
+                </div>
+              </button>
             );
           })}
-        </Stepper>
+        </div>
       </div>
     );
   },
