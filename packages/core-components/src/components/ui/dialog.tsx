@@ -14,28 +14,73 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef, type HTMLAttributes } from 'react';
+import * as React from 'react';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 import { X } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
 
-/** Root Dialog component. @public */
-const Dialog = DialogPrimitive.Root;
+/* ---------------------------------- Root ---------------------------------- */
 
-/** Trigger that opens the dialog. @public */
+/**
+ * Root Dialog component wrapping Radix UI Dialog.Root.
+ * Controls the open/closed state of the dialog.
+ *
+ * @example
+ * ```tsx
+ * <ShadcnDialog open={isOpen} onOpenChange={setIsOpen}>
+ *   <DialogTrigger asChild>
+ *     <Button>Open</Button>
+ *   </DialogTrigger>
+ *   <ShadcnDialogContent>
+ *     <DialogHeader>
+ *       <ShadcnDialogTitle>Title</ShadcnDialogTitle>
+ *       <DialogDescription>Description</DialogDescription>
+ *     </DialogHeader>
+ *   </ShadcnDialogContent>
+ * </ShadcnDialog>
+ * ```
+ *
+ * @public
+ */
+const ShadcnDialog = DialogPrimitive.Root;
+
+/**
+ * Button or element that opens the dialog when activated.
+ * Wraps Radix UI Dialog.Trigger.
+ *
+ * @public
+ */
 const DialogTrigger = DialogPrimitive.Trigger;
 
-/** Portal container for dialog. @public */
+/**
+ * Portal container that renders dialog content into document.body
+ * to avoid stacking context and overflow issues.
+ * Wraps Radix UI Dialog.Portal.
+ *
+ * @public
+ */
 const DialogPortal = DialogPrimitive.Portal;
 
-/** Dialog close button. @public */
+/**
+ * Button or element that closes the dialog when activated.
+ * Wraps Radix UI Dialog.Close.
+ *
+ * @public
+ */
 const DialogClose = DialogPrimitive.Close;
 
-/** Backdrop overlay. @public */
-const DialogOverlay = forwardRef<
-  ComponentRef<typeof DialogPrimitive.Overlay>,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+/* -------------------------------- Overlay --------------------------------- */
+
+/**
+ * Semi-transparent backdrop overlay rendered behind the dialog content.
+ * Provides fade-in/fade-out animation tied to the dialog open state.
+ *
+ * @public
+ */
+const DialogOverlay = React.forwardRef<
+  React.ComponentRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
@@ -51,10 +96,29 @@ const DialogOverlay = forwardRef<
 ));
 DialogOverlay.displayName = 'DialogOverlay';
 
-/** Centered dialog content panel with close button. @public */
-const DialogContent = forwardRef<
-  ComponentRef<typeof DialogPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+/* -------------------------------- Content --------------------------------- */
+
+/**
+ * Centered dialog content panel with a built-in close button.
+ * Automatically renders inside a DialogPortal with a DialogOverlay backdrop.
+ *
+ * Includes animated enter/exit transitions:
+ * - Fade in/out
+ * - Zoom in (95% → 100%) / zoom out (100% → 95%)
+ * - Slide from center positioning
+ *
+ * A close button with an X icon and screen-reader-only "Close" label is
+ * rendered in the top-right corner by default.
+ *
+ * @remarks
+ * Named `ShadcnDialogContent` to avoid naming conflicts with the existing
+ * Backstage `DialogContent` component exported from the `./Dialog` barrel.
+ *
+ * @public
+ */
+const ShadcnDialogContent = React.forwardRef<
+  React.ComponentRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
@@ -62,7 +126,7 @@ const DialogContent = forwardRef<
       ref={ref}
       data-slot="dialog-content"
       className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200',
+        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 shadow-lg duration-200',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -81,44 +145,75 @@ const DialogContent = forwardRef<
     </DialogPrimitive.Content>
   </DialogPortal>
 ));
-DialogContent.displayName = 'DialogContent';
+ShadcnDialogContent.displayName = 'ShadcnDialogContent';
 
-/** Dialog header section. @public */
-const DialogHeader = ({
+/* ------------------------------- Header ---------------------------------- */
+
+/**
+ * Layout helper for the dialog header section.
+ * Renders a flex column container with consistent spacing
+ * and responsive text alignment (center on mobile, left on sm+).
+ *
+ * @public
+ */
+function DialogHeader({
   className,
   ...props
-}: HTMLAttributes<HTMLDivElement>) => (
-  <div
-    data-slot="dialog-header"
-    className={cn(
-      'flex flex-col space-y-1.5 text-center sm:text-left',
-      className,
-    )}
-    {...props}
-  />
-);
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="dialog-header"
+      className={cn(
+        'flex flex-col space-y-1.5 text-center sm:text-left',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 DialogHeader.displayName = 'DialogHeader';
 
-/** Dialog footer for action buttons. @public */
-const DialogFooter = ({
+/* ------------------------------- Footer ---------------------------------- */
+
+/**
+ * Layout helper for the dialog footer section.
+ * Renders action buttons in a column (reversed for mobile natural order)
+ * and a row with end-aligned spacing on sm+ screens.
+ *
+ * @public
+ */
+function DialogFooter({
   className,
   ...props
-}: HTMLAttributes<HTMLDivElement>) => (
-  <div
-    data-slot="dialog-footer"
-    className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-      className,
-    )}
-    {...props}
-  />
-);
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="dialog-footer"
+      className={cn(
+        'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 DialogFooter.displayName = 'DialogFooter';
 
-/** Dialog title. @public */
-const DialogTitle = forwardRef<
-  ComponentRef<typeof DialogPrimitive.Title>,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+/* -------------------------------- Title ---------------------------------- */
+
+/**
+ * Accessible dialog title rendered as an h2 heading by Radix.
+ * Connected to the dialog content via `aria-labelledby` automatically.
+ *
+ * @remarks
+ * Named `ShadcnDialogTitle` to avoid naming conflicts with the existing
+ * Backstage `DialogTitle` component exported from the `./Dialog` barrel.
+ *
+ * @public
+ */
+const ShadcnDialogTitle = React.forwardRef<
+  React.ComponentRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
@@ -130,12 +225,20 @@ const DialogTitle = forwardRef<
     {...props}
   />
 ));
-DialogTitle.displayName = 'DialogTitle';
+ShadcnDialogTitle.displayName = 'ShadcnDialogTitle';
 
-/** Dialog description text. @public */
-const DialogDescription = forwardRef<
-  ComponentRef<typeof DialogPrimitive.Description>,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+/* ----------------------------- Description ------------------------------- */
+
+/**
+ * Accessible dialog description text.
+ * Connected to the dialog content via `aria-describedby` automatically.
+ * Rendered in muted foreground color at a smaller text size.
+ *
+ * @public
+ */
+const DialogDescription = React.forwardRef<
+  React.ComponentRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
@@ -146,15 +249,17 @@ const DialogDescription = forwardRef<
 ));
 DialogDescription.displayName = 'DialogDescription';
 
+/* -------------------------------- Exports -------------------------------- */
+
 export {
-  Dialog,
+  ShadcnDialog,
   DialogPortal,
   DialogOverlay,
   DialogTrigger,
   DialogClose,
-  DialogContent,
+  ShadcnDialogContent,
   DialogHeader,
   DialogFooter,
-  DialogTitle,
+  ShadcnDialogTitle,
   DialogDescription,
 };
