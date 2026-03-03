@@ -58,9 +58,6 @@ export const GroupProfileCard: (props: {
 }) => JSX_2.Element;
 
 // @public (undocumented)
-export type MemberComponentClassKey = 'card' | 'avatar';
-
-// @public (undocumented)
 export const MembersListCard: (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
@@ -71,7 +68,7 @@ export const MembersListCard: (props: {
 }) => JSX_2.Element;
 
 // @public (undocumented)
-export type MembersListCardClassKey = 'root' | 'cardContent' | 'memberList';
+export type MembersListCardClassKey = 'memberList';
 
 // @public
 export const MyGroupsSidebarItem: (props: {
@@ -103,13 +100,7 @@ export const OwnershipCard: (props: {
 }) => JSX_2.Element;
 
 // @public (undocumented)
-export type OwnershipCardClassKey =
-  | 'card'
-  | 'cardContent'
-  | 'list'
-  | 'listItemText'
-  | 'listItemSecondaryAction'
-  | 'grid';
+export type OwnershipCardClassKey = 'grid';
 
 // @public (undocumented)
 export const UserProfileCard: (props: {

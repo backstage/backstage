@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { EntityRefLink } from './EntityRefLink';
+export { EntityRefLink, useEntityRoute } from './EntityRefLink';
 export type { EntityRefLinkProps } from './EntityRefLink';
 export { EntityRefLinks } from './EntityRefLinks';
 export type { EntityRefLinksProps } from './EntityRefLinks';

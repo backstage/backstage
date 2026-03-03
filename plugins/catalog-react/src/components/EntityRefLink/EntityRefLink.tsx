@@ -78,7 +78,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
 // contrived, because it tries to retain the casing of the entity name if
 // present, but not of other parts. This is in an attempt to make slightly more
 // nice-looking URLs.
-function useEntityRoute(
+export function useEntityRoute(
   entityRef: Entity | CompoundEntityRef | string,
 ): string {
   const entityRoute = useRouteRef(entityRouteRef);
