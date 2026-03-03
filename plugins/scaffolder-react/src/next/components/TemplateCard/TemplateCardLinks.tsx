@@ -16,13 +16,15 @@
 
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import LanguageIcon from '@material-ui/icons/Language';
+import { Separator } from '@backstage/core-components';
+import { Globe } from 'lucide-react';
 import { CardLink } from './CardLink';
 
-const useStyles = makeStyles<Theme>({});
+/**
+ * Adapts the Lucide Globe icon to the Backstage IconComponent type contract.
+ * LucideIcon props differ from IconComponent's fontSize union type.
+ */
+const GlobeIcon: IconComponent = props => <Globe {...props} />;
 
 /**
  * The Props for the {@link TemplateCardLinks} component
@@ -40,45 +42,35 @@ export const TemplateCardLinks = ({
   template,
   additionalLinks,
 }: TemplateCardLinksProps) => {
-  const styles = useStyles();
   const app = useApp();
   const iconResolver = (key?: string): IconComponent =>
-    key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
+    key ? app.getSystemIcon(key) ?? GlobeIcon : GlobeIcon;
   return (
     <>
-      <Grid item xs={12}>
-        <Divider data-testid="template-card-separator--links" />
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container spacing={2} data-testid="template-card-links">
+      <div className="col-span-full">
+        <Separator data-testid="template-card-separator--links" />
+      </div>
+      <div className="col-span-full">
+        <div
+          className="grid grid-cols-2 gap-4"
+          data-testid="template-card-links"
+        >
           {additionalLinks?.map(({ icon, text, url }, index) => (
-            <Grid
-              className={styles.linkText}
-              item
-              xs={6}
-              key={index}
-              data-testid="template-card-links--item"
-            >
+            <div key={index} data-testid="template-card-links--item">
               <CardLink icon={icon} text={text} url={url} />
-            </Grid>
+            </div>
           ))}
           {template.metadata.links?.map(({ url, icon, title }, index) => (
-            <Grid
-              className={styles.linkText}
-              item
-              xs={6}
-              key={index}
-              data-testid="template-card-links--metalink"
-            >
+            <div key={index} data-testid="template-card-links--metalink">
               <CardLink
                 icon={iconResolver(icon)}
                 text={title || url}
                 url={url}
               />
-            </Grid>
+            </div>
           ))}
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </>
   );
 };
