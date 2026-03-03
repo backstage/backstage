@@ -15,8 +15,12 @@
  */
 
 import { ReactNode } from 'react';
-import Button from '@material-ui/core/Button';
-import { ErrorPanel, Progress, ErrorPage } from '@backstage/core-components';
+import {
+  ErrorPanel,
+  Progress,
+  ErrorPage,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
 import {
   MemoryRouter,
   useInRouterContext,
@@ -65,7 +69,7 @@ const DefaultErrorBoundaryFallback = ({
       defaultExpanded
       error={error}
     >
-      <Button variant="outlined" onClick={resetError}>
+      <Button variant="outline" onClick={resetError}>
         Retry
       </Button>
     </ErrorPanel>
