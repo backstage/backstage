@@ -17,8 +17,11 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { AccessLevel } from '@gitbeaker/core';
 import { getClient, parseRepoHost } from '../util';
 import { examples } from './gitlabGroupAccessAction.examples';
+
+type NonAdminAccessLevel = Exclude<AccessLevel, AccessLevel.ADMIN>;
 
 const accessLevelMapping: Record<string, number> = {
   no_access: 0,
@@ -154,8 +157,7 @@ export const createGitlabGroupAccessAction = (options: {
         );
       }
 
-      const accessLevel =
-        action === 'add' ? resolveAccessLevel(rawAccessLevel) : 0;
+      const accessLevel = resolveAccessLevel(rawAccessLevel);
 
       if (ctx.isDryRun) {
         if (userIds.length > 0) {
@@ -187,11 +189,19 @@ export const createGitlabGroupAccessAction = (options: {
           fn: async () => {
             if (action === 'add') {
               try {
-                await api.GroupMembers.add(path, userId, accessLevel);
+                await api.GroupMembers.add(
+                  path,
+                  accessLevel as NonAdminAccessLevel,
+                  { userId },
+                );
               } catch (error: any) {
                 // If member already exists, try to edit instead
                 if (error.cause?.response?.status === 409) {
-                  await api.GroupMembers.edit(path, userId, accessLevel);
+                  await api.GroupMembers.edit(
+                    path,
+                    userId,
+                    accessLevel as NonAdminAccessLevel,
+                  );
                   return;
                 }
                 throw error;

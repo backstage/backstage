@@ -88,11 +88,9 @@ describe('gitlab:group:access', () => {
       },
     });
 
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      30,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 456,
+    });
 
     expect(mockContext.output).toHaveBeenCalledWith('userIds', [456]);
     expect(mockContext.output).toHaveBeenCalledWith('path', 123);
@@ -113,21 +111,15 @@ describe('gitlab:group:access', () => {
     });
 
     expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledTimes(3);
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      30,
-    );
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      789,
-      30,
-    );
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      101,
-      30,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 456,
+    });
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 789,
+    });
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 101,
+    });
 
     expect(mockContext.output).toHaveBeenCalledWith('userIds', [456, 789, 101]);
     expect(mockContext.output).toHaveBeenCalledWith('path', 123);
@@ -147,11 +139,9 @@ describe('gitlab:group:access', () => {
       },
     });
 
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      30,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 456,
+    });
     expect(mockGitlabClient.GroupMembers.remove).not.toHaveBeenCalled();
   });
 
@@ -211,11 +201,9 @@ describe('gitlab:group:access', () => {
       },
     });
 
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      30,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 456,
+    });
     expect(mockContext.output).toHaveBeenCalledWith('accessLevel', 30);
   });
 
@@ -314,11 +302,9 @@ describe('gitlab:group:access', () => {
       },
     });
 
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      10,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 10, {
+      userId: 456,
+    });
   });
 
   it('should add users as Maintainer (accessLevel 40)', async () => {
@@ -334,11 +320,9 @@ describe('gitlab:group:access', () => {
       },
     });
 
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      40,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 40, {
+      userId: 456,
+    });
   });
 
   it('should add users as Owner (accessLevel 50)', async () => {
@@ -354,11 +338,9 @@ describe('gitlab:group:access', () => {
       },
     });
 
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      50,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 50, {
+      userId: 456,
+    });
   });
 
   it('should accept string accessLevel "developer"', async () => {
@@ -374,11 +356,9 @@ describe('gitlab:group:access', () => {
       },
     });
 
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      30,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 456,
+    });
     expect(mockContext.output).toHaveBeenCalledWith('accessLevel', 30);
   });
 
@@ -395,11 +375,9 @@ describe('gitlab:group:access', () => {
       },
     });
 
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      40,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 40, {
+      userId: 456,
+    });
     expect(mockContext.output).toHaveBeenCalledWith('accessLevel', 40);
   });
 
@@ -435,11 +413,9 @@ describe('gitlab:group:access', () => {
       },
     });
 
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      30,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 456,
+    });
     expect(mockGitlabClient.GroupMembers.edit).toHaveBeenCalledWith(
       123,
       456,
@@ -585,16 +561,12 @@ describe('gitlab:group:access', () => {
     });
 
     expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledTimes(2);
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      456,
-      30,
-    );
-    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(
-      123,
-      789,
-      30,
-    );
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 456,
+    });
+    expect(mockGitlabClient.GroupMembers.add).toHaveBeenCalledWith(123, 30, {
+      userId: 789,
+    });
 
     expect(mockGitlabClient.Groups.share).toHaveBeenCalledTimes(2);
     expect(mockGitlabClient.Groups.share).toHaveBeenCalledWith(
