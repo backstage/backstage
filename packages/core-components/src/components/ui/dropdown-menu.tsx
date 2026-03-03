@@ -14,22 +14,65 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef, type HTMLAttributes } from 'react';
+import * as React from 'react';
 import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
 import { Check, ChevronRight, Circle } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
 
+/**
+ * DropdownMenu root — manages open/close state for the dropdown menu.
+ * Direct re-export of the Radix DropdownMenu.Root primitive.
+ * @public
+ */
 const DropdownMenu = DropdownMenuPrimitive.Root;
+
+/**
+ * DropdownMenuTrigger — the element that toggles the dropdown menu.
+ * Direct re-export of the Radix DropdownMenu.Trigger primitive.
+ * @public
+ */
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+
+/**
+ * DropdownMenuGroup — groups related menu items together.
+ * Direct re-export of the Radix DropdownMenu.Group primitive.
+ * @public
+ */
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
+
+/**
+ * DropdownMenuPortal — renders dropdown content in a React portal.
+ * Direct re-export of the Radix DropdownMenu.Portal primitive.
+ * @public
+ */
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
+
+/**
+ * DropdownMenuSub — manages open/close state for a sub-menu.
+ * Direct re-export of the Radix DropdownMenu.Sub primitive.
+ * @public
+ */
 const DropdownMenuSub = DropdownMenuPrimitive.Sub;
+
+/**
+ * DropdownMenuRadioGroup — groups radio menu items allowing single selection.
+ * Direct re-export of the Radix DropdownMenu.RadioGroup primitive.
+ * @public
+ */
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
-const DropdownMenuSubTrigger = forwardRef<
-  ComponentRef<typeof DropdownMenuPrimitive.SubTrigger>,
-  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & { inset?: boolean }
+/**
+ * DropdownMenuSubTrigger — the item that opens a nested sub-menu.
+ * Renders a ChevronRight icon to indicate the expandable sub-menu.
+ * Supports an `inset` prop for additional left padding alignment.
+ * @public
+ */
+const DropdownMenuSubTrigger = React.forwardRef<
+  React.ComponentRef<typeof DropdownMenuPrimitive.SubTrigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
+    inset?: boolean;
+  }
 >(({ className, inset, children, ...props }, ref) => (
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
@@ -49,15 +92,20 @@ const DropdownMenuSubTrigger = forwardRef<
 ));
 DropdownMenuSubTrigger.displayName = 'DropdownMenuSubTrigger';
 
-const DropdownMenuSubContent = forwardRef<
-  ComponentRef<typeof DropdownMenuPrimitive.SubContent>,
-  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
+/**
+ * DropdownMenuSubContent — the content panel for a nested sub-menu.
+ * Rendered through a portal with entry/exit animations.
+ * @public
+ */
+const DropdownMenuSubContent = React.forwardRef<
+  React.ComponentRef<typeof DropdownMenuPrimitive.SubContent>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     data-slot="dropdown-menu-sub-content"
     className={cn(
-      'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg',
+      'z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-lg',
       'data-[state=open]:animate-in data-[state=closed]:animate-out',
       'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -70,9 +118,15 @@ const DropdownMenuSubContent = forwardRef<
 ));
 DropdownMenuSubContent.displayName = 'DropdownMenuSubContent';
 
-const DropdownMenuContent = forwardRef<
-  ComponentRef<typeof DropdownMenuPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
+/**
+ * DropdownMenuContent — the main content panel for the dropdown menu.
+ * Rendered through a portal with collision-aware positioning and animations.
+ * Default sideOffset is 4px.
+ * @public
+ */
+const DropdownMenuContent = React.forwardRef<
+  React.ComponentRef<typeof DropdownMenuPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
@@ -80,7 +134,7 @@ const DropdownMenuContent = forwardRef<
       sideOffset={sideOffset}
       data-slot="dropdown-menu-content"
       className={cn(
-        'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md',
+        'z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -94,9 +148,17 @@ const DropdownMenuContent = forwardRef<
 ));
 DropdownMenuContent.displayName = 'DropdownMenuContent';
 
-const DropdownMenuItem = forwardRef<
-  ComponentRef<typeof DropdownMenuPrimitive.Item>,
-  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & { inset?: boolean }
+/**
+ * DropdownMenuItem — a single actionable item in the dropdown menu.
+ * Supports keyboard navigation and focus styling via Radix primitives.
+ * The `inset` prop adds left padding for alignment with checkbox/radio items.
+ * @public
+ */
+const DropdownMenuItem = React.forwardRef<
+  React.ComponentRef<typeof DropdownMenuPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
+    inset?: boolean;
+  }
 >(({ className, inset, ...props }, ref) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
@@ -105,7 +167,7 @@ const DropdownMenuItem = forwardRef<
       'relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none',
       'transition-colors focus:bg-accent focus:text-accent-foreground',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-      '[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+      '[&>svg]:size-4 [&>svg]:shrink-0',
       inset && 'pl-8',
       className,
     )}
@@ -114,9 +176,14 @@ const DropdownMenuItem = forwardRef<
 ));
 DropdownMenuItem.displayName = 'DropdownMenuItem';
 
-const DropdownMenuCheckboxItem = forwardRef<
-  ComponentRef<typeof DropdownMenuPrimitive.CheckboxItem>,
-  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
+/**
+ * DropdownMenuCheckboxItem — a menu item with a checkbox indicator.
+ * Uses the Check icon from lucide-react to display the checked state.
+ * @public
+ */
+const DropdownMenuCheckboxItem = React.forwardRef<
+  React.ComponentRef<typeof DropdownMenuPrimitive.CheckboxItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
 >(({ className, children, checked, ...props }, ref) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
@@ -140,9 +207,14 @@ const DropdownMenuCheckboxItem = forwardRef<
 ));
 DropdownMenuCheckboxItem.displayName = 'DropdownMenuCheckboxItem';
 
-const DropdownMenuRadioItem = forwardRef<
-  ComponentRef<typeof DropdownMenuPrimitive.RadioItem>,
-  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
+/**
+ * DropdownMenuRadioItem — a menu item acting as a radio button within a group.
+ * Uses the Circle icon from lucide-react to display the selected state.
+ * @public
+ */
+const DropdownMenuRadioItem = React.forwardRef<
+  React.ComponentRef<typeof DropdownMenuPrimitive.RadioItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
 >(({ className, children, ...props }, ref) => (
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
@@ -165,9 +237,16 @@ const DropdownMenuRadioItem = forwardRef<
 ));
 DropdownMenuRadioItem.displayName = 'DropdownMenuRadioItem';
 
-const DropdownMenuLabel = forwardRef<
-  ComponentRef<typeof DropdownMenuPrimitive.Label>,
-  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & { inset?: boolean }
+/**
+ * DropdownMenuLabel — a non-interactive label for grouping menu items.
+ * Supports an `inset` prop for alignment with checkbox/radio items.
+ * @public
+ */
+const DropdownMenuLabel = React.forwardRef<
+  React.ComponentRef<typeof DropdownMenuPrimitive.Label>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
+    inset?: boolean;
+  }
 >(({ className, inset, ...props }, ref) => (
   <DropdownMenuPrimitive.Label
     ref={ref}
@@ -182,9 +261,13 @@ const DropdownMenuLabel = forwardRef<
 ));
 DropdownMenuLabel.displayName = 'DropdownMenuLabel';
 
-const DropdownMenuSeparator = forwardRef<
-  ComponentRef<typeof DropdownMenuPrimitive.Separator>,
-  ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
+/**
+ * DropdownMenuSeparator — a visual divider between menu item groups.
+ * @public
+ */
+const DropdownMenuSeparator = React.forwardRef<
+  React.ComponentRef<typeof DropdownMenuPrimitive.Separator>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
@@ -195,10 +278,15 @@ const DropdownMenuSeparator = forwardRef<
 ));
 DropdownMenuSeparator.displayName = 'DropdownMenuSeparator';
 
+/**
+ * DropdownMenuShortcut — displays a keyboard shortcut hint aligned to the right.
+ * Used alongside DropdownMenuItem to show shortcut keys (e.g., ⌘K, Ctrl+S).
+ * @public
+ */
 const DropdownMenuShortcut = ({
   className,
   ...props
-}: HTMLAttributes<HTMLSpanElement>) => (
+}: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
     data-slot="dropdown-menu-shortcut"
     className={cn('ml-auto text-xs tracking-widest opacity-60', className)}
