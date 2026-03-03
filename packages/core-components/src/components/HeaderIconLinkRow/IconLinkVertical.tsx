@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 import { ReactNode, MouseEventHandler } from 'react';
-import classnames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
-import LinkIcon from '@material-ui/icons/Link';
+import { cn } from '../../lib/utils';
+import { Link2 as LinkIcon } from 'lucide-react';
 import { Link } from '../Link';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 
 export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';
@@ -39,33 +36,6 @@ export type IconLinkVerticalClassKey =
   | 'secondary'
   | 'label';
 
-const useIconStyles = makeStyles(
-  theme => ({
-    link: {
-      display: 'grid',
-      justifyItems: 'center',
-      gridGap: 4,
-      textAlign: 'center',
-    },
-    disabled: {
-      color: theme.palette.text.secondary,
-      cursor: 'default',
-    },
-    primary: {
-      color: theme.palette.primary.main,
-    },
-    secondary: {
-      color: theme.palette.secondary.main,
-    },
-    label: {
-      textTransform: 'uppercase',
-      fontWeight: theme.typography.fontWeightBold,
-      letterSpacing: 1.2,
-    },
-  }),
-  { name: 'BackstageIconLinkVertical' },
-);
-
 /** @public */
 export function IconLinkVertical({
   color = 'primary',
@@ -76,34 +46,37 @@ export function IconLinkVertical({
   onClick,
   title,
 }: IconLinkVerticalProps) {
-  const classes = useIconStyles();
-
   if (disabled) {
     return (
-      <Box title={title} className={classnames(classes.link, classes.disabled)}>
+      <div
+        title={title}
+        className={cn(
+          'grid justify-items-center gap-1 text-center',
+          'text-muted-foreground cursor-default',
+        )}
+      >
         {icon}
-        <Typography
-          variant="caption"
-          component="span"
-          className={classes.label}
-        >
+        <span className="uppercase font-bold tracking-wider text-xs">
           {label}
-        </Typography>
-      </Box>
+        </span>
+      </div>
     );
   }
 
   return (
     <Link
       title={title}
-      className={classnames(classes.link, classes[color])}
+      className={cn(
+        'grid justify-items-center gap-1 text-center no-underline',
+        color === 'primary' ? 'text-primary' : 'text-secondary-foreground',
+      )}
       to={href}
       onClick={onClick}
     >
       {icon}
-      <Typography variant="caption" component="span" className={classes.label}>
+      <span className="uppercase font-bold tracking-wider text-xs">
         {label}
-      </Typography>
+      </span>
     </Link>
   );
 }
