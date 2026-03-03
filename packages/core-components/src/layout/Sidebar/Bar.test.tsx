@@ -65,6 +65,13 @@ async function renderScalableSidebar() {
                 },
               ]}
             />
+            <SidebarSubmenuItem
+              title="Start and End Components"
+              startComponent={
+                <div data-testid="my-start-component">[START]</div>
+              }
+              endComponent={<div data-testid="my-end-component">[END]</div>}
+            />
           </SidebarSubmenu>
         </SidebarItem>
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
@@ -132,6 +139,12 @@ describe('Sidebar', () => {
         'href',
         'https://backstage.io/',
       );
+    });
+
+    it('Submenu item with start and end components should render them', async () => {
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
+      expect(screen.getByTestId('my-start-component')).toBeInTheDocument();
+      expect(screen.getByTestId('my-end-component')).toBeInTheDocument();
     });
   });
 });
