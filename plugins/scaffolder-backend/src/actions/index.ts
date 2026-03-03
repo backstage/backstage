@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
+import { AuthService } from '@backstage/backend-plugin-api';
+import { createListScaffolderTasksAction } from './listScaffolderTasksAction';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 import { createDryRunTemplateAction } from './createDryRunTemplateAction';
 import { createListScaffolderActionsAction } from './createListScaffolderActionsAction';
@@ -21,7 +23,13 @@ import { createListScaffolderActionsAction } from './createListScaffolderActions
 export const createScaffolderActions = (options: {
   actionsRegistry: ActionsRegistryService;
   scaffolderService: ScaffolderService;
+  auth: AuthService;
 }) => {
+  createListScaffolderTasksAction({
+    actionsRegistry: options.actionsRegistry,
+    auth: options.auth,
+    scaffolderService: options.scaffolderService,
+  });
   createDryRunTemplateAction(options);
   createListScaffolderActionsAction(options);
 };
