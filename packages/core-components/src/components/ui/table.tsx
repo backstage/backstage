@@ -14,19 +14,60 @@
  * limitations under the License.
  */
 
-import { forwardRef, type HTMLAttributes, type TdHTMLAttributes, type ThHTMLAttributes } from 'react';
+import * as React from 'react';
 import { cn } from '../../lib/utils';
 
 /**
- * HTML table styled with Tailwind CSS.
- * Replaces MUI Table/TableBody/TableRow/TableCell for simple data display.
- * For full-featured data tables (sort, filter, pagination), use DataTable.
+ * Semantic HTML table primitives styled with Tailwind CSS, following the
+ * shadcn/ui new-york convention. Replaces MUI Table/TableBody/TableRow/TableCell
+ * with lightweight, accessible HTML table elements wrapped in a responsive
+ * overflow container.
+ *
+ * @remarks
+ * The root component is exported as `ShadcnTable` to avoid naming conflicts
+ * with the existing Backstage `Table` component (which wraps \@tanstack/react-table).
+ * Sub-components (TableHeader, TableBody, TableFooter, TableRow, TableHead,
+ * TableCell, TableCaption) use standard HTML table element names.
+ *
+ * All components support `ref` forwarding and accept standard HTML attributes
+ * for their respective elements, along with a `className` prop that is merged
+ * with default Tailwind classes via the `cn()` utility.
+ *
+ * For full-featured data tables with sorting, filtering, and pagination,
+ * use the DataTable component instead.
+ *
+ * @example
+ * ```tsx
+ * import { ShadcnTable, TableHeader, TableBody, TableRow, TableHead, TableCell } from './ui/table';
+ *
+ * <ShadcnTable>
+ *   <TableHeader>
+ *     <TableRow>
+ *       <TableHead>Name</TableHead>
+ *       <TableHead>Status</TableHead>
+ *     </TableRow>
+ *   </TableHeader>
+ *   <TableBody>
+ *     <TableRow>
+ *       <TableCell>my-service</TableCell>
+ *       <TableCell>Running</TableCell>
+ *     </TableRow>
+ *   </TableBody>
+ * </ShadcnTable>
+ * ```
  *
  * @public
  */
-const ShadcnTable = forwardRef<
+
+/**
+ * Root table component wrapped in a responsive overflow container.
+ * Renders a `<table>` inside a `<div>` with horizontal scroll support.
+ *
+ * @public
+ */
+const ShadcnTable = React.forwardRef<
   HTMLTableElement,
-  HTMLAttributes<HTMLTableElement>
+  React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
   <div className="relative w-full overflow-auto">
     <table
@@ -37,11 +78,16 @@ const ShadcnTable = forwardRef<
     />
   </div>
 ));
-ShadcnTable.displayName = 'ShadcnTable';
+ShadcnTable.displayName = 'Table';
 
-const TableHeader = forwardRef<
+/**
+ * Table header section (`<thead>`) with bottom-border styling on child rows.
+ *
+ * @public
+ */
+const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
-  HTMLAttributes<HTMLTableSectionElement>
+  React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
@@ -52,9 +98,14 @@ const TableHeader = forwardRef<
 ));
 TableHeader.displayName = 'TableHeader';
 
-const TableBody = forwardRef<
+/**
+ * Table body section (`<tbody>`) that removes the border from the last row.
+ *
+ * @public
+ */
+const TableBody = React.forwardRef<
   HTMLTableSectionElement,
-  HTMLAttributes<HTMLTableSectionElement>
+  React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
   <tbody
     ref={ref}
@@ -65,9 +116,14 @@ const TableBody = forwardRef<
 ));
 TableBody.displayName = 'TableBody';
 
-const TableFooter = forwardRef<
+/**
+ * Table footer section (`<tfoot>`) with top-border and muted background.
+ *
+ * @public
+ */
+const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
-  HTMLAttributes<HTMLTableSectionElement>
+  React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
   <tfoot
     ref={ref}
@@ -81,9 +137,15 @@ const TableFooter = forwardRef<
 ));
 TableFooter.displayName = 'TableFooter';
 
-const TableRow = forwardRef<
+/**
+ * Table row (`<tr>`) with hover highlight and selection state support.
+ * Supports `data-state="selected"` for row selection highlighting.
+ *
+ * @public
+ */
+const TableRow = React.forwardRef<
   HTMLTableRowElement,
-  HTMLAttributes<HTMLTableRowElement>
+  React.HTMLAttributes<HTMLTableRowElement>
 >(({ className, ...props }, ref) => (
   <tr
     ref={ref}
@@ -97,9 +159,15 @@ const TableRow = forwardRef<
 ));
 TableRow.displayName = 'TableRow';
 
-const TableHead = forwardRef<
+/**
+ * Table header cell (`<th>`) with muted foreground text and medium font weight.
+ * Adjusts padding when containing a checkbox role element.
+ *
+ * @public
+ */
+const TableHead = React.forwardRef<
   HTMLTableCellElement,
-  ThHTMLAttributes<HTMLTableCellElement>
+  React.ThHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
   <th
     ref={ref}
@@ -113,9 +181,15 @@ const TableHead = forwardRef<
 ));
 TableHead.displayName = 'TableHead';
 
-const TableCell = forwardRef<
+/**
+ * Table data cell (`<td>`) with consistent padding and vertical alignment.
+ * Adjusts padding when containing a checkbox role element.
+ *
+ * @public
+ */
+const TableCell = React.forwardRef<
   HTMLTableCellElement,
-  TdHTMLAttributes<HTMLTableCellElement>
+  React.TdHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
@@ -129,9 +203,14 @@ const TableCell = forwardRef<
 ));
 TableCell.displayName = 'TableCell';
 
-const TableCaption = forwardRef<
+/**
+ * Table caption (`<caption>`) positioned at the bottom with muted text styling.
+ *
+ * @public
+ */
+const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
-  HTMLAttributes<HTMLTableCaptionElement>
+  React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
