@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from 'react';
+import * as React from 'react';
 import { Accordion as AccordionPrimitive } from 'radix-ui';
 import { ChevronDown } from 'lucide-react';
 
@@ -36,14 +36,14 @@ const Accordion = AccordionPrimitive.Root;
  * Individual collapsible item within an Accordion.
  * @public
  */
-const AccordionItem = forwardRef<
-  ComponentRef<typeof AccordionPrimitive.Item>,
-  ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
+const AccordionItem = React.forwardRef<
+  React.ComponentRef<typeof AccordionPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
 >(({ className, ...props }, ref) => (
   <AccordionPrimitive.Item
     ref={ref}
     data-slot="accordion-item"
-    className={cn('border-b', className)}
+    className={cn('border-b border-border', className)}
     {...props}
   />
 ));
@@ -54,9 +54,9 @@ AccordionItem.displayName = 'AccordionItem';
  * Renders a chevron icon that rotates on open/close.
  * @public
  */
-const AccordionTrigger = forwardRef<
-  ComponentRef<typeof AccordionPrimitive.Trigger>,
-  ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
+const AccordionTrigger = React.forwardRef<
+  React.ComponentRef<typeof AccordionPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Header className="flex">
     <AccordionPrimitive.Trigger
@@ -81,9 +81,9 @@ AccordionTrigger.displayName = 'AccordionTrigger';
  * Uses the accordion-down/accordion-up keyframes defined in tailwind.config.ts.
  * @public
  */
-const AccordionContent = forwardRef<
-  ComponentRef<typeof AccordionPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
+const AccordionContent = React.forwardRef<
+  React.ComponentRef<typeof AccordionPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
