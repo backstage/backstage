@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '@backstage/core-components';
 import { EntityLifecycleFilter } from '../../filters';
 import { EntityAutocompletePicker } from '../EntityAutocompletePicker';
 import { catalogReactTranslationRef } from '../../translation';
@@ -23,17 +23,9 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 /** @public */
 export type CatalogReactEntityLifecyclePickerClassKey = 'input';
 
-const useStyles = makeStyles(
-  {
-    input: {},
-  },
-  { name: 'CatalogReactEntityLifecyclePicker' },
-);
-
 /** @public */
 export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
   const { initialFilter = [] } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return (
@@ -42,7 +34,7 @@ export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
       name="lifecycles"
       path="spec.lifecycle"
       Filter={EntityLifecycleFilter}
-      InputProps={{ className: classes.input }}
+      InputProps={{ className: cn() }}
       initialSelectedOptions={initialFilter}
     />
   );
