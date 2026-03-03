@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from 'react';
+import * as React from 'react';
 import { Tooltip as TooltipPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/utils';
@@ -22,28 +22,87 @@ import { cn } from '../../lib/utils';
 /**
  * Radix UI Tooltip provider — required at the app root (or a parent scope)
  * to supply shared delay and skip-delay configuration to all nested tooltips.
+ *
+ * @remarks
+ * Wrap your application or a subtree with `<TooltipProvider>` to enable
+ * coordinated tooltip delays. When a user moves between tooltip triggers
+ * within the skip-delay window, subsequent tooltips open instantly.
+ *
+ * @example
+ * ```tsx
+ * <TooltipProvider delayDuration={300} skipDelayDuration={150}>
+ *   <App />
+ * </TooltipProvider>
+ * ```
+ *
+ * @public
  */
 const TooltipProvider = TooltipPrimitive.Provider;
 
 /**
  * Root tooltip component wrapping the Radix Tooltip primitive.
- * Named ShadcnTooltip to avoid collisions with MUI Tooltip during migration.
+ *
+ * @remarks
+ * Named `ShadcnTooltip` to avoid naming collisions with the MUI `Tooltip`
+ * component during the migration period. Consumer code and other Backstage
+ * components can import `ShadcnTooltip` without ambiguity.
+ *
+ * @example
+ * ```tsx
+ * <ShadcnTooltip>
+ *   <TooltipTrigger asChild>
+ *     <button>Hover me</button>
+ *   </TooltipTrigger>
+ *   <TooltipContent>Helpful tip</TooltipContent>
+ * </ShadcnTooltip>
+ * ```
+ *
+ * @public
  */
 const ShadcnTooltip = TooltipPrimitive.Root;
 
 /**
  * The element that triggers the tooltip on hover / focus.
- * Supports `asChild` to merge props into the child element.
+ *
+ * @remarks
+ * Supports `asChild` to merge tooltip trigger props into the child element
+ * rather than wrapping it in an additional DOM node, preserving the
+ * semantic markup of the trigger.
+ *
+ * @public
  */
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
 /**
- * Tooltip content rendered inside a portal with enter/exit animations.
- * Default sideOffset is 4 px from the trigger.
+ * Tooltip content rendered inside a Radix portal with animated enter/exit
+ * transitions. Positioned relative to the trigger with collision-aware
+ * placement via Radix's floating-UI integration.
+ *
+ * @remarks
+ * Default `sideOffset` is 4px from the trigger edge. The component
+ * renders inside a portal so it is not clipped by `overflow: hidden`
+ * ancestors. Animation classes handle fade + zoom on open/close and
+ * directional slide based on the computed tooltip side.
+ *
+ * @example
+ * ```tsx
+ * <ShadcnTooltip>
+ *   <TooltipTrigger asChild>
+ *     <button aria-label="Copy">
+ *       <CopyIcon />
+ *     </button>
+ *   </TooltipTrigger>
+ *   <TooltipContent side="top" sideOffset={8}>
+ *     Copy to clipboard
+ *   </TooltipContent>
+ * </ShadcnTooltip>
+ * ```
+ *
+ * @public
  */
-const TooltipContent = forwardRef<
-  ComponentRef<typeof TooltipPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
+const TooltipContent = React.forwardRef<
+  React.ComponentRef<typeof TooltipPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
   <TooltipPrimitive.Portal>
     <TooltipPrimitive.Content
