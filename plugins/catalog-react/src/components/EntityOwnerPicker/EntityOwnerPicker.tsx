@@ -19,23 +19,20 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import { MouseEvent, useEffect, useMemo, useState } from 'react';
+import { cn } from '@backstage/core-components';
+import { User, Users, Square, SquareCheckBig } from 'lucide-react';
+import {
+  type ReactNode,
+  MouseEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { useDebouncedEffect } from '@react-hookz/web';
-import PersonIcon from '@material-ui/icons/Person';
-import GroupIcon from '@material-ui/icons/Group';
 import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
 import { useFetchEntities } from './useFetchEntities';
-import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -44,38 +41,38 @@ import { CatalogAutocomplete } from '../CatalogAutocomplete';
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
 
-const useStyles = makeStyles(
-  {
-    root: {},
-    label: {},
-    input: {},
-    fullWidth: { width: '100%' },
-    boxLabel: {
-      width: '100%',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-    },
-  },
-  { name: 'CatalogReactEntityOwnerPicker' },
-);
-
 /** @public */
 export type FixedWidthFormControlLabelClassKey = 'label' | 'root';
 
-const FixedWidthFormControlLabel = withStyles(
-  _theme => ({
-    label: {
-      width: '100%',
-    },
-    root: {
-      width: '90%',
-    },
-  }),
-  { name: 'FixedWidthFormControlLabel' },
-)(FormControlLabel);
+/**
+ * Tailwind-styled replacement for MUI's FormControlLabel with fixed-width constraints.
+ * Replaces the previous MUI styled FormControlLabel pattern.
+ */
+function FixedWidthFormControlLabel(props: {
+  control: ReactNode;
+  label: ReactNode;
+  className?: string;
+  onClick?: (event: MouseEvent) => void;
+}) {
+  return (
+    // Keyboard interaction is handled by the parent CatalogAutocomplete listbox;
+    // the onClick here only calls preventDefault() to avoid redundant toggling.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
+    <label
+      className={cn(
+        'flex items-center w-[90%] cursor-pointer',
+        props.className,
+      )}
+      onClick={props.onClick}
+    >
+      {props.control}
+      <span className="w-full">{props.label}</span>
+    </label>
+  );
+}
 
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
+const icon = <Square className="h-4 w-4 text-muted-foreground" />;
+const checkedIcon = <SquareCheckBig className="h-4 w-4 text-primary" />;
 
 /**
  * @public
@@ -85,44 +82,37 @@ export type EntityOwnerPickerProps = {
 };
 
 function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
-  const classes = useStyles();
   const isGroup = props.entity.kind.toLocaleLowerCase('en-US') === 'group';
   const { primaryTitle: title } = useEntityPresentation(props.entity);
   return (
-    <Box className={classes.fullWidth}>
+    <div className="w-full">
       <FixedWidthFormControlLabel
-        className={classes.fullWidth}
+        className="w-full"
         control={
-          <Checkbox
-            icon={icon}
-            checkedIcon={checkedIcon}
-            checked={props.isSelected}
-          />
+          <span className="mr-2 flex items-center">
+            {props.isSelected ? checkedIcon : icon}
+          </span>
         }
         onClick={event => event.preventDefault()}
         label={
-          <Tooltip title={title}>
-            <Box display="flex" alignItems="center">
-              {isGroup ? (
-                <GroupIcon fontSize="small" />
-              ) : (
-                <PersonIcon fontSize="small" />
-              )}
-              &nbsp;
-              <Box className={classes.boxLabel}>
-                <Typography noWrap>{title}</Typography>
-              </Box>
-            </Box>
-          </Tooltip>
+          <div title={title} className="flex items-center">
+            {isGroup ? (
+              <Users className="h-4 w-4 shrink-0" />
+            ) : (
+              <User className="h-4 w-4 shrink-0" />
+            )}
+            <span className="w-full overflow-hidden text-ellipsis ml-1">
+              <span className="truncate block text-sm">{title}</span>
+            </span>
+          </div>
         }
       />
-    </Box>
+    </div>
   );
 }
 
 /** @public */
 export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
-  const classes = useStyles();
   const { mode = 'owners-only' } = props || {};
   const {
     updateFilters,
@@ -180,7 +170,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   }
 
   return (
-    <Box className={classes.root} pb={1} pt={1}>
+    <div className="py-2">
       <CatalogAutocomplete<Entity, true>
         label={t('entityOwnerPicker.title')}
         multiple
@@ -241,9 +231,9 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
           },
           'data-testid': 'owner-picker-listbox',
         }}
-        LabelProps={{ className: classes.label }}
-        TextFieldProps={{ className: classes.input }}
+        LabelProps={{}}
+        TextFieldProps={{}}
       />
-    </Box>
+    </div>
   );
 };
