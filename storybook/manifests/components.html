@@ -2007,7 +2007,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Button</h2>
       <div class="badges">
-        <label for="c-4-backstage-ui-button-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-4-backstage-ui-button-props" class="badge ok as-toggle">8 prop types</label>
         
         <label for="c-4-backstage-ui-button-stories" class="badge ok as-toggle">11 stories</label>
         
@@ -2034,7 +2034,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">9 prop types</span>
+              <span class="badge ok">8 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Button/Button.tsx::Button</code></pre>
             <pre><code>Props:</code></pre>
@@ -2051,8 +2051,6 @@ iconStart?: ReactElement
 loading?: boolean
 
 size?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
-
-style?: CSSProperties
 
 variant?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           </div>
@@ -2448,7 +2446,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ButtonIcon</h2>
       <div class="badges">
-        <label for="c-5-backstage-ui-buttonicon-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-5-backstage-ui-buttonicon-props" class="badge ok as-toggle">5 prop types</label>
         <label for="c-5-backstage-ui-buttonicon-info" class="badge info as-toggle">1 info</label>
         <label for="c-5-backstage-ui-buttonicon-stories" class="badge ok as-toggle">7 stories</label>
         
@@ -2482,7 +2480,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">6 prop types</span>
+              <span class="badge ok">5 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/ButtonIcon/ButtonIcon.tsx::ButtonIcon</code></pre>
             <pre><code>Props:</code></pre>
@@ -2493,8 +2491,6 @@ icon?: ReactElement
 loading?: boolean
 
 size?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
-
-style?: CSSProperties
 
 variant?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           </div>
@@ -2698,7 +2694,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ButtonLink</h2>
       <div class="badges">
-        <label for="c-6-backstage-ui-buttonlink-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-6-backstage-ui-buttonlink-props" class="badge ok as-toggle">6 prop types</label>
         <label for="c-6-backstage-ui-buttonlink-info" class="badge info as-toggle">1 info</label>
         <label for="c-6-backstage-ui-buttonlink-stories" class="badge ok as-toggle">7 stories</label>
         
@@ -2732,7 +2728,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">7 prop types</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/ButtonLink/ButtonLink.tsx::ButtonLink</code></pre>
             <pre><code>Props:</code></pre>
@@ -2745,8 +2741,6 @@ iconEnd?: ReactElement
 iconStart?: ReactElement
 
 size?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
-
-style?: CSSProperties
 
 variant?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           </div>
@@ -3180,9 +3174,7 @@ className?: string</code></pre>
       a card-like container that participates in the bg system as a provider.
     &lt;/Box&gt;
     &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot; style={{ borderRadius: &#39;8px&#39;, width: &#39;300px&#39; }}&gt;
-      &lt;Button variant=&quot;secondary&quot; style={{ marginTop: &#39;8px&#39; }}&gt;
-        Button (on neutral-1)
-      &lt;/Button&gt;
+      &lt;Button variant=&quot;secondary&quot;&gt;Button (on neutral-1)&lt;/Button&gt;
     &lt;/Box&gt;
     &lt;Card style={{ width: &#39;300px&#39; }}&gt;
       &lt;CardHeader&gt;Header&lt;/CardHeader&gt;
