@@ -227,8 +227,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
               >
                 <Link
                   to={object.to}
-                  underline="none"
-                  className={classes.dropdownItem}
+                  className={`no-underline hover:no-underline ${classes.dropdownItem}`}
                   onClick={closeSubmenu}
                   onTouchStart={e => e.stopPropagation()}
                 >
@@ -249,8 +248,9 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
       <Tooltip title={title} enterDelay={500} enterNextDelay={500}>
         <Link
           to={to!}
-          underline="none"
           className={classnames(
+            'no-underline',
+            'hover:no-underline',
             classes.item,
             isActive ? classes.selected : undefined,
           )}

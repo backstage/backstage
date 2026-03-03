@@ -62,7 +62,11 @@ export function BottomLink(props: BottomLinkProps) {
   return (
     <Box>
       <Divider />
-      <Link to={link} onClick={onClick} underline="none">
+      <Link
+        to={link}
+        onClick={onClick}
+        className="no-underline hover:no-underline"
+      >
         <Box display="flex" alignItems="center" className={classes.root}>
           <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
             <Typography>

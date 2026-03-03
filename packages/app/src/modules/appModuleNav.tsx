@@ -62,8 +62,7 @@ const SidebarLogo = () => {
     >
       <Link
         to="/"
-        underline="none"
-        className="ml-6"
+        className="ml-6 no-underline hover:no-underline"
         style={{ width: sidebarConfig.drawerWidthClosed }}
         aria-label="Home"
       >
