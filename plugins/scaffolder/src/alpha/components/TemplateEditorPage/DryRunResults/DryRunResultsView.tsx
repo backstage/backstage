@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { LogViewer } from '@backstage/core-components';
+import {
+  LogViewer,
+  Separator,
+  ShadcnTabs,
+  TabsList,
+  TabsTrigger,
+  cn,
+} from '@backstage/core-components';
 import { StreamLanguage } from '@codemirror/language';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import { makeStyles } from '@material-ui/core/styles';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
 import CodeMirror from '@uiw/react-codemirror';
 import { useEffect, useMemo, useState } from 'react';
 import { useDryRun } from '../DryRunContext';
@@ -32,35 +34,7 @@ import { TaskStatusStepper } from './TaskStatusStepper';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../../translation';
 
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexFlow: 'column nowrap',
-  },
-  contentWrapper: {
-    flex: 1,
-    position: 'relative',
-  },
-  content: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-
-    display: 'flex',
-    '& > *': {
-      flex: 1,
-    },
-  },
-  codeMirror: {
-    height: '100%',
-    overflowY: 'auto',
-  },
-});
-
 function FilesContent() {
-  const classes = useStyles();
   const { selectedResult } = useDryRun();
   const [selectedPath, setSelectedPath] = useState<string>('');
   const selectedFile = selectedResult?.directoryContents.find(
@@ -90,7 +64,7 @@ function FilesContent() {
         filePaths={selectedResult.directoryContents.map(file => file.path)}
       />
       <CodeMirror
-        className={classes.codeMirror}
+        className="h-full overflow-y-auto"
         theme="dark"
         height="100%"
         extensions={[StreamLanguage.define(yamlSupport)]}
@@ -144,7 +118,6 @@ function LogContent() {
 }
 
 function OutputContent() {
-  const classes = useStyles();
   const { selectedResult } = useDryRun();
 
   if (!selectedResult) {
@@ -153,13 +126,13 @@ function OutputContent() {
 
   return (
     <DryRunResultsSplitView>
-      <Box pt={2}>
+      <div className="pt-2">
         {selectedResult.output?.links?.length && (
           <TaskPageLinks output={selectedResult.output} />
         )}
-      </Box>
+      </div>
       <CodeMirror
-        className={classes.codeMirror}
+        className="h-full overflow-y-auto"
         theme="dark"
         height="100%"
         extensions={[StreamLanguage.define(yamlSupport)]}
@@ -171,37 +144,36 @@ function OutputContent() {
 }
 
 export function DryRunResultsView() {
-  const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState<'files' | 'log' | 'output'>(
     'files',
   );
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   return (
-    <div className={classes.root}>
-      <Tabs value={selectedTab} onChange={(_, v) => setSelectedTab(v)}>
-        <Tab
-          value="files"
-          label={t('templateEditorPage.dryRunResultsView.tab.files')}
-        />
-        <Tab
-          value="log"
-          label={t('templateEditorPage.dryRunResultsView.tab.log')}
-        />
-        <Tab
-          value="output"
-          label={t('templateEditorPage.dryRunResultsView.tab.output')}
-        />
-      </Tabs>
-      <Divider />
-
-      <div className={classes.contentWrapper}>
-        <div className={classes.content}>
+    <ShadcnTabs
+      value={selectedTab}
+      onValueChange={v => setSelectedTab(v as 'files' | 'log' | 'output')}
+      className="flex flex-col"
+    >
+      <TabsList>
+        <TabsTrigger value="files">
+          {t('templateEditorPage.dryRunResultsView.tab.files')}
+        </TabsTrigger>
+        <TabsTrigger value="log">
+          {t('templateEditorPage.dryRunResultsView.tab.log')}
+        </TabsTrigger>
+        <TabsTrigger value="output">
+          {t('templateEditorPage.dryRunResultsView.tab.output')}
+        </TabsTrigger>
+      </TabsList>
+      <Separator />
+      <div className="flex-1 relative">
+        <div className={cn('absolute inset-0 flex [&>*]:flex-1')}>
           {selectedTab === 'files' && <FilesContent />}
           {selectedTab === 'log' && <LogContent />}
           {selectedTab === 'output' && <OutputContent />}
         </div>
       </div>
-    </div>
+    </ShadcnTabs>
   );
 }
