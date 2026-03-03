@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from 'react';
+import * as React from 'react';
 import { ScrollArea as ScrollAreaPrimitive } from 'radix-ui';
-
 import { cn } from '../../lib/utils';
 
 /**
  * Scrollable area with custom scrollbars built on Radix ScrollArea.
- * Used for virtualized content regions like LogViewer and sidebar navigation.
+ *
+ * Provides accessible, cross-browser custom-styled scrollable regions
+ * for virtualized content like LogViewer, long entity lists, and sidebar
+ * content overflow. Augments native browser scrollbars with styled
+ * alternatives while retaining full keyboard and assistive-technology
+ * support via the Radix ScrollArea primitive.
  *
  * @public
  */
-/* eslint-disable @typescript-eslint/no-use-before-define -- ScrollBar is co-defined below in this module */
-const ScrollArea = forwardRef<
-  ComponentRef<typeof ScrollAreaPrimitive.Root>,
-  ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
+/* eslint-disable @typescript-eslint/no-use-before-define -- ScrollBar is co-defined below */
+const ScrollArea = React.forwardRef<
+  React.ComponentRef<typeof ScrollAreaPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
 >(({ className, children, ...props }, ref) => (
   <ScrollAreaPrimitive.Root
     ref={ref}
@@ -43,13 +47,22 @@ const ScrollArea = forwardRef<
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>
 ));
-ScrollArea.displayName = 'ScrollArea';
 /* eslint-enable @typescript-eslint/no-use-before-define */
+ScrollArea.displayName = 'ScrollArea';
 
-/** Custom scrollbar thumb and track. @public */
-const ScrollBar = forwardRef<
-  ComponentRef<typeof ScrollAreaPrimitive.Scrollbar>,
-  ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Scrollbar>
+/**
+ * Custom scrollbar with thumb and track styling supporting both vertical
+ * and horizontal orientations.
+ *
+ * Renders a styled Radix Scrollbar with touch-none and select-none
+ * interaction semantics and smooth color transitions. The thumb uses
+ * the `bg-border` token colour and rounded-full corners.
+ *
+ * @public
+ */
+const ScrollBar = React.forwardRef<
+  React.ComponentRef<typeof ScrollAreaPrimitive.Scrollbar>,
+  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Scrollbar>
 >(({ className, orientation = 'vertical', ...props }, ref) => (
   <ScrollAreaPrimitive.Scrollbar
     ref={ref}
