@@ -14,23 +14,49 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from 'react';
+import * as React from 'react';
 import { Tabs as TabsPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/utils';
 
 /**
- * Root Tabs container built on Radix Tabs primitive.
- * Replaces MUI Tabs/Tab across TabbedLayout, HeaderTabs, and TabbedCard.
+ * Root Tabs container built on the Radix UI Tabs primitive.
+ *
+ * @remarks
+ * Named `ShadcnTabs` (rather than `Tabs`) to avoid a naming collision with the
+ * existing Backstage `TabbedLayout` / `Tabs` exports. This is a direct
+ * re-export of `TabsPrimitive.Root` and accepts the same props: `value`,
+ * `defaultValue`, `onValueChange`, `orientation`, and `dir`.
+ *
+ * Replaces MUI `Tabs` / `Tab` usage across TabbedLayout, HeaderTabs,
+ * TabbedCard, and EntityLayout components.
+ *
+ * @example
+ * ```tsx
+ * <ShadcnTabs defaultValue="overview">
+ *   <TabsList>
+ *     <TabsTrigger value="overview">Overview</TabsTrigger>
+ *     <TabsTrigger value="ci-cd">CI / CD</TabsTrigger>
+ *   </TabsList>
+ *   <TabsContent value="overview">…</TabsContent>
+ *   <TabsContent value="ci-cd">…</TabsContent>
+ * </ShadcnTabs>
+ * ```
  *
  * @public
  */
 const ShadcnTabs = TabsPrimitive.Root;
 
-/** Tab trigger list container. @public */
-const TabsList = forwardRef<
-  ComponentRef<typeof TabsPrimitive.List>,
-  ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+/**
+ * Horizontal container for tab triggers. Wraps `TabsPrimitive.List` with
+ * shadcn/ui new-york styling: rounded-lg muted background, inline-flex
+ * layout, and consistent height.
+ *
+ * @public
+ */
+const TabsList = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
@@ -42,12 +68,23 @@ const TabsList = forwardRef<
     {...props}
   />
 ));
-TabsList.displayName = 'TabsList';
+TabsList.displayName = TabsPrimitive.List.displayName;
 
-/** Individual tab trigger button. @public */
-const TabsTrigger = forwardRef<
-  ComponentRef<typeof TabsPrimitive.Trigger>,
-  ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+/**
+ * Individual tab trigger button. Wraps `TabsPrimitive.Trigger` with
+ * shadcn/ui new-york styling: rounded-md shape, focus-visible ring,
+ * active-state background/shadow, and disabled state handling.
+ *
+ * @remarks
+ * Active state is driven by the Radix `data-state="active"` attribute,
+ * applying `bg-background`, `text-foreground`, and `shadow`. Focus
+ * visibility uses `ring-2 ring-ring ring-offset-2` for keyboard users.
+ *
+ * @public
+ */
+const TabsTrigger = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Trigger
     ref={ref}
@@ -62,12 +99,23 @@ const TabsTrigger = forwardRef<
     {...props}
   />
 ));
-TabsTrigger.displayName = 'TabsTrigger';
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
-/** Tab content panel associated with a trigger. @public */
-const TabsContent = forwardRef<
-  ComponentRef<typeof TabsPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+/**
+ * Content panel associated with a specific tab trigger. Wraps
+ * `TabsPrimitive.Content` with shadcn/ui new-york styling: top margin for
+ * visual separation and focus-visible ring for keyboard accessibility.
+ *
+ * @remarks
+ * Only the content whose `value` matches the active trigger is rendered
+ * (Radix default behavior). Focus rings use `ring-offset-background` to
+ * maintain consistent offset coloring with the theme.
+ *
+ * @public
+ */
+const TabsContent = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
@@ -79,6 +127,6 @@ const TabsContent = forwardRef<
     {...props}
   />
 ));
-TabsContent.displayName = 'TabsContent';
+TabsContent.displayName = TabsPrimitive.Content.displayName;
 
 export { ShadcnTabs, TabsList, TabsTrigger, TabsContent };
