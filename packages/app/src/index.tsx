@@ -19,5 +19,6 @@ import ReactDOM from 'react-dom/client';
 import app from './App';
 import '@backstage/ui/css/styles.css';
 import '@backstage/core-components/styles/tailwind.css';
+import '@backstage/core-components/styles/globals.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(app);
