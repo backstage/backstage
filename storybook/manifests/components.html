@@ -576,7 +576,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">376 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">378 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -9471,7 +9471,7 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
       <div class="badges">
         <label for="c-29-backstage-ui-searchfield-props" class="badge ok as-toggle">8 prop types</label>
         <label for="c-29-backstage-ui-searchfield-info" class="badge info as-toggle">1 info</label>
-        <label for="c-29-backstage-ui-searchfield-stories" class="badge ok as-toggle">20 stories</label>
+        <label for="c-29-backstage-ui-searchfield-stories" class="badge ok as-toggle">21 stories</label>
         
       </div>
     </div>
@@ -9546,7 +9546,7 @@ startCollapsed?: boolean</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Button, ButtonIcon, FieldLabel, Flex, PluginHeader, SearchField } from "@backstage/ui";
+                <pre><code>import { Box, Button, ButtonIcon, FieldLabel, Flex, PluginHeader, SearchField, Text } from "@backstage/ui";
 import { Form } from "react-aria-components";
 import { MemoryRouter } from "react-router-dom";
 import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
@@ -9851,6 +9851,46 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
         &lt;/Flex&gt;
     );
 };</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">AutoBg</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AutoBg = () =&gt; (
+  &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+    &lt;div style={{ maxWidth: &#39;600px&#39; }}&gt;
+      SearchField automatically detects its parent bg context and increments
+      the neutral level by 1. No prop is needed — it&#39;s fully automatic.
+    &lt;/div&gt;
+    &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+      &lt;Text&gt;Neutral 1 container&lt;/Text&gt;
+      &lt;Flex mt=&quot;2&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+        &lt;SearchField aria-label=&quot;Search&quot; size=&quot;small&quot; /&gt;
+      &lt;/Flex&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+        &lt;Text&gt;Neutral 2 container&lt;/Text&gt;
+        &lt;Flex mt=&quot;2&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+          &lt;SearchField aria-label=&quot;Search&quot; size=&quot;small&quot; /&gt;
+        &lt;/Flex&gt;
+      &lt;/Box&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+          &lt;Text&gt;Neutral 3 container&lt;/Text&gt;
+          &lt;Flex mt=&quot;2&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+            &lt;SearchField aria-label=&quot;Search&quot; size=&quot;small&quot; /&gt;
+          &lt;/Flex&gt;
+        &lt;/Box&gt;
+      &lt;/Box&gt;
+    &lt;/Box&gt;
+  &lt;/Flex&gt;
+);</code></pre>
             </div>
         </div>
     
@@ -11793,7 +11833,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
       <div class="badges">
         <label for="c-37-backstage-ui-textfield-props" class="badge ok as-toggle">8 prop types</label>
         <label for="c-37-backstage-ui-textfield-info" class="badge info as-toggle">1 info</label>
-        <label for="c-37-backstage-ui-textfield-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-37-backstage-ui-textfield-stories" class="badge ok as-toggle">13 stories</label>
         
       </div>
     </div>
@@ -11872,7 +11912,7 @@ type?: &#39;text&#39; | &#39;email&#39; | &#39;tel&#39; | &#39;url&#39;</code></
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { FieldLabel, Flex, TextField } from "@backstage/ui";
+                <pre><code>import { Box, FieldLabel, Flex, Text, TextField } from "@backstage/ui";
 import { Form } from "react-aria-components";
 import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
               </div>
@@ -12008,6 +12048,54 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
       defaultValue=&quot;Custom Field&quot;
     /&gt;
   &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">AutoBg</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AutoBg = () =&gt; (
+  &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+    &lt;div style={{ maxWidth: &#39;600px&#39; }}&gt;
+      TextField automatically detects its parent bg context and increments the
+      neutral level by 1. No prop is needed — it&#39;s fully automatic.
+    &lt;/div&gt;
+    &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+      &lt;Text&gt;Neutral 1 container&lt;/Text&gt;
+      &lt;Flex mt=&quot;2&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+        &lt;TextField aria-label=&quot;Text&quot; placeholder=&quot;Enter text&quot; size=&quot;small&quot; /&gt;
+      &lt;/Flex&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+        &lt;Text&gt;Neutral 2 container&lt;/Text&gt;
+        &lt;Flex mt=&quot;2&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+          &lt;TextField
+            aria-label=&quot;Text&quot;
+            placeholder=&quot;Enter text&quot;
+            size=&quot;small&quot;
+          /&gt;
+        &lt;/Flex&gt;
+      &lt;/Box&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+          &lt;Text&gt;Neutral 3 container&lt;/Text&gt;
+          &lt;Flex mt=&quot;2&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+            &lt;TextField
+              aria-label=&quot;Text&quot;
+              placeholder=&quot;Enter text&quot;
+              size=&quot;small&quot;
+            /&gt;
+          &lt;/Flex&gt;
+        &lt;/Box&gt;
+      &lt;/Box&gt;
+    &lt;/Box&gt;
+  &lt;/Flex&gt;
 );</code></pre>
             </div>
         </div>
