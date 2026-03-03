@@ -73,28 +73,37 @@ For example, if you install the `api-docs` plugin, a matching `SidebarItem`
 could be something like this:
 
 ```tsx title="packages/app/src/components/Root/Root.tsx"
-// Import icon from Material UI
-import ExtensionIcon from '@material-ui/icons/Extension';
+// Import icon from Lucide React
+import { Puzzle } from 'lucide-react';
 
 // ... inside the AppSidebar component
-<SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />;
+<SidebarItem icon={Puzzle} to="api-docs" text="APIs" />;
 ```
 
-You can also use your own SVGs directly as icon components. Just make sure they
-are sized according to the Material UI's
-[SvgIcon](https://material-ui.com/api/svg-icon/) default of 24x24px, and wrap
-the SVG elements in a `SvgIcon` component like this:
+You can also use your own SVGs directly as icon components. Lucide React icons
+are self-contained SVG components sized at 24x24px by default. Custom icons
+should follow the same 24x24px convention with `currentColor` stroke for theme
+compatibility:
 
 ```tsx
-import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
+import type { SVGProps } from 'react';
 
-export const ExampleIcon = (props: SvgIconProps) => (
-  <SvgIcon {...props}>
-    <g>
-      <path ... />
-      <path ... />
-    </g>
-  </SvgIcon>
+export const ExampleIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path ... />
+    <path ... />
+  </svg>
 );
 ```
 
@@ -105,18 +114,18 @@ customizing the experience you can group `SidebarItems` in a `SidebarGroup`
 
 ```tsx
 // Example 1
-<SidebarGroup icon={<MenuIcon />} label="Menu">
+<SidebarGroup icon={<Menu />} label="Menu">
   ...
-  <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+  <SidebarItem icon={Puzzle} to="api-docs" text="APIs" />
   ...
 <SidebarGroup />
 ```
 
 ```tsx
 // Example 2
-<SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+<SidebarGroup label="Search" icon={<Search />} to="/search">
   ...
-  <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+  <SidebarItem icon={Puzzle} to="api-docs" text="APIs" />
   ...
 <SidebarGroup />
 ```
