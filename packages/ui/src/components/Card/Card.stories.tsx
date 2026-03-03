@@ -239,9 +239,7 @@ export const CustomCardWithBox = meta.story({
         a card-like container that participates in the bg system as a provider.
       </Box>
       <Box bg="neutral" p="4" style={{ borderRadius: '8px', width: '300px' }}>
-        <Button variant="secondary" style={{ marginTop: '8px' }}>
-          Button (on neutral-1)
-        </Button>
+        <Button variant="secondary">Button (on neutral-1)</Button>
       </Box>
       <Card style={{ width: '300px' }}>
         <CardHeader>Header</CardHeader>
