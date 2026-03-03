@@ -24,10 +24,10 @@ type SecretStore = {
   delete(service: string, account: string): Promise<void>;
 };
 
-async function loadKeytar(): Promise<any | undefined> {
+async function loadKeytar(): Promise<typeof import('keytar') | undefined> {
   try {
-    // eslint-disable-next-line import/no-extraneous-dependencies
-    const keytar = require('keytar') as any;
+    // eslint-disable-next-line import/no-extraneous-dependencies, @backstage/no-undeclared-imports
+    const keytar = require('keytar') as typeof import('keytar');
     if (keytar && typeof keytar.getPassword === 'function') {
       return keytar;
     }
@@ -38,12 +38,13 @@ async function loadKeytar(): Promise<any | undefined> {
 }
 
 class KeytarSecretStore implements SecretStore {
-  private readonly keytar: any;
-  constructor(keytar: any) {
+  private readonly keytar: typeof import('keytar');
+  constructor(keytar: typeof import('keytar')) {
     this.keytar = keytar;
   }
   async get(service: string, account: string): Promise<string | undefined> {
-    return (await this.keytar.getPassword(service, account)) ?? undefined;
+    const result = await this.keytar.getPassword(service, account);
+    return result ?? undefined;
   }
   async set(service: string, account: string, secret: string): Promise<void> {
     await this.keytar.setPassword(service, account, secret);
@@ -61,7 +62,7 @@ class FileSecretStore implements SecretStore {
       (process.platform === 'win32'
         ? process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming')
         : path.join(os.homedir(), '.local', 'share'));
-    this.baseDir = path.join(root, 'backstage-cli', 'secrets');
+    this.baseDir = path.join(root, 'backstage-cli', 'auth-secrets');
   }
   private filePath(service: string, account: string): string {
     return path.join(

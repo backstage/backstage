@@ -31,6 +31,7 @@ export async function show(argv: string[]) {
   let instance = await getSelectedInstance(parsed.instance);
 
   if (accessTokenNeedsRefresh(instance)) {
+    process.stderr.write('Refreshing access token...\n');
     instance = await refreshAccessToken(instance.name);
   }
   const authBase = new URL('/api/auth', instance.baseUrl)

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+jest.mock('keytar', () => {
+  throw new Error('keytar not available');
+});
+
 import fs from 'fs-extra';
 import path from 'node:path';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -77,7 +81,7 @@ describe('secretStore', () => {
       const expectedDir = path.join(
         mockDir.resolve('data'),
         'backstage-cli',
-        'secrets',
+        'auth-secrets',
         encodeURIComponent('test-service'),
       );
       const expectedFile = path.join(
@@ -96,7 +100,7 @@ describe('secretStore', () => {
       const expectedFile = path.join(
         mockDir.resolve('data'),
         'backstage-cli',
-        'secrets',
+        'auth-secrets',
         encodeURIComponent('test-service'),
         `${encodeURIComponent('test-account')}.secret`,
       );
@@ -116,7 +120,7 @@ describe('secretStore', () => {
       const expectedFile = path.join(
         mockDir.resolve('data'),
         'backstage-cli',
-        'secrets',
+        'auth-secrets',
         encodeURIComponent('my-service/test'),
         `${encodeURIComponent('my-account@test')}.secret`,
       );
@@ -192,7 +196,7 @@ describe('secretStore', () => {
       const expectedFile = path.join(
         customDataHome,
         'backstage-cli',
-        'secrets',
+        'auth-secrets',
         encodeURIComponent('test-service'),
         `${encodeURIComponent('test-account')}.secret`,
       );
@@ -231,7 +235,7 @@ describe('secretStore', () => {
       const expectedFile = path.join(
         mockDir.resolve('data'),
         'backstage-cli',
-        'secrets',
+        'auth-secrets',
         encodeURIComponent('test-service'),
         `${encodeURIComponent('test-account')}.secret`,
       );

@@ -23,6 +23,7 @@ import {
   upsertInstance,
   withMetadataLock,
   getAllInstances,
+  getInstanceByName,
   StoredInstance,
 } from '../lib/storage';
 import { getSecretStore } from '../lib/secretStore';
@@ -91,12 +92,9 @@ export async function login(argv: string[]) {
   }
 
   const authBaseUrl = `${backendBaseUrl}/api/auth`;
-
-  const callback = await startCallbackServer({ state: cryptoRandom() });
-
   const clientId = `${authBaseUrl}/.well-known/oauth-client/cli.json`;
 
-  // Verify the server supports CIMD before starting the auth flow
+  // Verify the server supports CIMD before starting the callback server
   const metadataResponse = await fetch(clientId);
   if (!metadataResponse.ok) {
     throw new Error(
@@ -104,34 +102,40 @@ export async function login(argv: string[]) {
     );
   }
 
-  const { verifier, challenge, state } = createPkceState();
-  const authorizeUrl = buildAuthorizeUrl({
-    authBaseUrl,
-    clientId,
-    redirectUri: callback.url,
-    state,
-    challenge,
-  });
+  const callback = await startCallbackServer({ state: cryptoRandom() });
 
-  await openBrowserOrPrint(authorizeUrl, parsed.noBrowser);
+  try {
+    const { verifier, challenge, state } = createPkceState();
+    const authorizeUrl = buildAuthorizeUrl({
+      authBaseUrl,
+      clientId,
+      redirectUri: callback.url,
+      state,
+      challenge,
+    });
 
-  const code = await waitForAuthorizationCode(callback, state);
+    await openBrowserOrPrint(authorizeUrl, parsed.noBrowser);
 
-  const token = await exchangeAuthorizationCode({
-    authBaseUrl,
-    code,
-    redirectUri: callback.url,
-    verifier,
-  });
+    const code = await waitForAuthorizationCode(callback, state);
 
-  await persistInstance({
-    instanceName,
-    backendBaseUrl,
-    clientId,
-    token,
-  });
+    const token = await exchangeAuthorizationCode({
+      authBaseUrl,
+      code,
+      redirectUri: callback.url,
+      verifier,
+    });
 
-  process.stderr.write('Login successful\n');
+    await persistInstance({
+      instanceName,
+      backendBaseUrl,
+      clientId,
+      token,
+    });
+
+    process.stderr.write('Login successful\n');
+  } finally {
+    await callback.close();
+  }
 }
 
 async function promptForInstance(
@@ -185,7 +189,7 @@ async function pickBaseUrl() {
     }
   }
 
-  const list = candidates;
+  const list = [...new Map(candidates.map(c => [c.url, c])).values()];
   if (list.length === 0) {
     const { manual } = await inquirer.prompt<{ manual: string }>([
       { type: 'input', name: 'manual', message: 'Enter backend base URL' },
@@ -222,8 +226,12 @@ function normalizeUrl(u: string | undefined): string | undefined {
   if (u === undefined) {
     return undefined;
   }
-  const url = new URL(u);
-  return url.toString().replace(/\/$/, '');
+  try {
+    const url = new URL(u);
+    return url.toString().replace(/\/$/, '');
+  } catch {
+    throw new Error(`'${u}' is not a valid URL`);
+  }
 }
 
 function deriveInstanceName(url: string): string {
@@ -270,7 +278,6 @@ async function waitForAuthorizationCode(
   expectedState: string,
 ) {
   const { code, state } = await callback.waitForCode();
-  await callback.close();
   if (state !== expectedState) {
     throw new Error('State mismatch');
   }
@@ -320,12 +327,19 @@ async function persistInstance(options: {
         'Warning: No refresh token received. You will need to re-authenticate when the access token expires.\n',
       );
     }
+    let existing: StoredInstance | undefined;
+    try {
+      existing = await getInstanceByName(instanceName);
+    } catch {
+      // new instance
+    }
     await upsertInstance({
       name: instanceName,
       baseUrl: backendBaseUrl,
       clientId,
       issuedAt: Date.now(),
       accessTokenExpiresAt: Date.now() + token.expires_in * 1000,
+      selected: existing?.selected,
     });
   });
 }

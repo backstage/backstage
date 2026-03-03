@@ -22,7 +22,7 @@ import lockfile from 'proper-lockfile';
 import YAML from 'yaml';
 import { z } from 'zod';
 
-const METADATA_FILE = 'instances.yaml';
+const METADATA_FILE = 'auth-instances.yaml';
 
 const INSTANCE_NAME_PATTERN = /^[a-zA-Z0-9._:@-]+$/;
 

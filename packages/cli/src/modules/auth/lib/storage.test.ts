@@ -65,7 +65,7 @@ describe('storage', () => {
       expect(result1).toEqual({ instances: [], selected: undefined });
 
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': '',
+        'config/backstage-cli/auth-instances.yaml': '',
       });
 
       const result2 = await getAllInstances();
@@ -74,7 +74,7 @@ describe('storage', () => {
 
     it('should parse and return instances from YAML', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
     baseUrl: https://backstage.example.com
     clientId: prod-client
@@ -99,7 +99,7 @@ describe('storage', () => {
 
     it('should select first instance if none marked as selected', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
     baseUrl: https://backstage.example.com
     clientId: prod-client
@@ -122,7 +122,7 @@ describe('storage', () => {
 
     it('should return empty array if YAML parsing fails', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': 'invalid: yaml: [',
+        'config/backstage-cli/auth-instances.yaml': 'invalid: yaml: [',
       });
 
       const result = await getAllInstances();
@@ -132,7 +132,7 @@ describe('storage', () => {
 
     it('should normalize selected property across instances', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
     baseUrl: https://backstage.example.com
     clientId: prod-client
@@ -160,7 +160,7 @@ describe('storage', () => {
   describe('getSelectedInstance', () => {
     it('should return instance by name if provided', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
     baseUrl: https://backstage.example.com
     clientId: prod-client
@@ -177,7 +177,7 @@ describe('storage', () => {
 
     it('should return selected instance if no name provided', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
     baseUrl: https://backstage.example.com
     clientId: prod-client
@@ -209,7 +209,7 @@ describe('storage', () => {
   describe('getInstanceByName', () => {
     it('should return instance with matching name', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
     baseUrl: https://backstage.example.com
     clientId: prod-client
@@ -245,7 +245,7 @@ describe('storage', () => {
 
     it('should update existing instance', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
     baseUrl: https://backstage.example.com
     clientId: prod-client
@@ -269,7 +269,7 @@ describe('storage', () => {
   describe('removeInstance', () => {
     it('should remove instance with matching name', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
     baseUrl: https://backstage.example.com
     clientId: prod-client
@@ -303,7 +303,7 @@ describe('storage', () => {
   describe('setSelectedInstance', () => {
     it('should set selected instance and unselect others', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
     baseUrl: https://backstage.example.com
     clientId: prod-client
@@ -372,7 +372,7 @@ describe('storage', () => {
       const expectedFile = path.join(
         customConfigHome,
         'backstage-cli',
-        'instances.yaml',
+        'auth-instances.yaml',
       );
       expect(await fs.pathExists(expectedFile)).toBe(true);
     });
@@ -383,7 +383,7 @@ describe('storage', () => {
       const file = path.join(
         mockDir.resolve('config'),
         'backstage-cli',
-        'instances.yaml',
+        'auth-instances.yaml',
       );
       const stats = await fs.stat(file);
       const mode = stats.mode & 0o777;
@@ -392,7 +392,7 @@ describe('storage', () => {
 
     it('should handle invalid schema and missing fields gracefully', async () => {
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: ""
     baseUrl: not-a-url
     clientId: ""
@@ -403,7 +403,7 @@ describe('storage', () => {
       expect(result1.instances).toHaveLength(0);
 
       mockDir.setContent({
-        'config/backstage-cli/instances.yaml': `instances:
+        'config/backstage-cli/auth-instances.yaml': `instances:
   - name: production
 `,
       });

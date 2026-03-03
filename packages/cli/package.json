@@ -198,6 +198,9 @@
     "webpack": "~5.105.0",
     "webpack-dev-server": "^5.0.0"
   },
+  "optionalDependencies": {
+    "keytar": "^7.9.0"
+  },
   "peerDependencies": {
     "@jest/environment-jsdom-abstract": "^30.0.0",
     "@module-federation/enhanced": "^0.21.6",

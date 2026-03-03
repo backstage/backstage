@@ -23,7 +23,7 @@ export default createCliPlugin({
   init: async reg => {
     reg.addCommand({
       path: ['auth', 'login'],
-      description: 'Log in the CLI using OIDC dynamic client registration',
+      description: 'Log in the CLI to a Backstage instance',
       execute: async ({ args }) => {
         yargs().parse(args);
         await commands.login(args);
@@ -31,7 +31,7 @@ export default createCliPlugin({
     });
     reg.addCommand({
       path: ['auth', 'logout'],
-      description: 'Log out the CLI and revoke refresh token',
+      description: 'Log out the CLI and clear stored credentials',
       execute: async ({ args }) => {
         yargs().parse(args);
         await commands.logout(args);

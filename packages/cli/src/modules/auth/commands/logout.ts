@@ -64,6 +64,7 @@ export async function logout(argv: string[]) {
       }
     }
 
+    await secretStore.delete(service, 'accessToken');
     await secretStore.delete(service, 'clientSecret');
     await secretStore.delete(service, 'refreshToken');
     await removeInstance(instance.name);

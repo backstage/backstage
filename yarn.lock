@@ -3389,6 +3389,7 @@ __metadata:
     jest-css-modules: "npm:^2.1.0"
     jsdom: "npm:^27.1.0"
     json-schema: "npm:^0.4.0"
+    keytar: "npm:^7.9.0"
     lodash: "npm:^4.17.21"
     mini-css-extract-plugin: "npm:^2.4.2"
     minimatch: "npm:^10.2.1"
@@ -3446,6 +3447,9 @@ __metadata:
     terser-webpack-plugin: ^5.1.3
     webpack: ~5.105.0
     webpack-dev-server: ^5.0.0
+  dependenciesMeta:
+    keytar:
+      optional: true
   peerDependenciesMeta:
     "@jest/environment-jsdom-abstract":
       optional: true
@@ -37336,6 +37340,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"keytar@npm:^7.9.0":
+  version: 7.9.0
+  resolution: "keytar@npm:7.9.0"
+  dependencies:
+    node-addon-api: "npm:^4.3.0"
+    node-gyp: "npm:latest"
+    prebuild-install: "npm:^7.0.1"
+  checksum: 10/904795bc304f8ad89b80f915c869a941a383312b58584212a199473d18647035cfda92a9c53e6c53bf13ea0fed23037c9597eb418a5c71ee9454f140f026fac9
+  languageName: node
+  linkType: hard
+
 "keyv@npm:*, keyv@npm:^5.2.1":
   version: 5.6.0
   resolution: "keyv@npm:5.6.0"
@@ -40384,6 +40399,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-addon-api@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "node-addon-api@npm:4.3.0"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10/d3b38d16cb9ad0714d965331d0e38cef1c27750c2c3343cd3464a9ed8158501a2910ccbf2fd9fdc476e806a19dbc9e0524ff9d66a7c779d42a9752a63ba30b80
+  languageName: node
+  linkType: hard
+
 "node-addon-api@npm:^8.0.0, node-addon-api@npm:^8.2.2, node-addon-api@npm:^8.3.0, node-addon-api@npm:^8.3.1":
   version: 8.5.0
   resolution: "node-addon-api@npm:8.5.0"
@@ -43263,7 +43287,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prebuild-install@npm:^7.1.1, prebuild-install@npm:^7.1.3":
+"prebuild-install@npm:^7.0.1, prebuild-install@npm:^7.1.1, prebuild-install@npm:^7.1.3":
   version: 7.1.3
   resolution: "prebuild-install@npm:7.1.3"
   dependencies:
