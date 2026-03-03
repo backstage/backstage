@@ -37,7 +37,7 @@ export const createListScaffolderTasksAction = ({
     },
     description: `
 This allows you to list scaffolder tasks that have been created.
-Each task has a unique id, specification, and status (one of open, processing, completed, failed, cancelled, stale).
+Each task has a unique id, specification, and status (one of open, processing, completed, failed, cancelled, skipped).
 Each task includes a timestamp for when it was created, and an optional last heartbeat timestamp indicating the most recent activity.
 Set owned to true to return only tasks created by the current user; omit or set to false for all tasks the credentials can see.
 Pagination is supported via limit and offset.
@@ -54,12 +54,14 @@ Pagination is supported via limit and offset.
             ),
           limit: z
             .number()
+            .int()
             .min(1)
             .max(1000)
             .describe('The maximum number of tasks to return for pagination')
             .optional(),
           offset: z
             .number()
+            .int()
             .min(0)
             .describe('The offset to start from for pagination')
             .optional(),
@@ -75,7 +77,7 @@ Pagination is supported via limit and offset.
                   status: z
                     .string()
                     .describe(
-                      'Task status: open, processing, completed, failed, cancelled, or stale',
+                      'Task status: open, processing, completed, failed, cancelled, or skipped',
                     ),
                   createdAt: z
                     .string()
@@ -89,14 +91,9 @@ Pagination is supported via limit and offset.
               .describe('The list of scaffolder tasks'),
             totalTasks: z
               .number()
-              .optional()
-              .describe(
-                'Total number of tasks matching the filter (for pagination)',
-              ),
+              .describe('Total number of tasks matching the filter'),
           })
-          .describe(
-            'Object containing a tasks array and optional totalTasks count',
-          ),
+          .describe('Object containing a tasks array and totalTasks count'),
     },
     action: async ({ input, credentials }) => {
       if (input.owned && !auth.isPrincipal(credentials, 'user')) {
