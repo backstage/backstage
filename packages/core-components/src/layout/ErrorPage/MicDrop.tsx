@@ -14,34 +14,19 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '../../lib/utils';
 import MicDropSvgUrl from './mic-drop.svg';
-
-const useStyles = makeStyles(
-  theme => ({
-    micDrop: {
-      maxWidth: '60%',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-      [theme.breakpoints.down('xs')]: {
-        maxWidth: '96%',
-        bottom: 'unset',
-        right: 'unset',
-        margin: theme.spacing(10, 'auto', 4),
-      },
-    },
-  }),
-  { name: 'BackstageErrorPageMicDrop' },
-);
 
 export type MicDropClassKey = 'micDrop';
 
 export const MicDrop = () => {
-  const classes = useStyles();
   return (
     <img
       src={MicDropSvgUrl}
-      className={classes.micDrop}
+      className={cn(
+        'max-w-[60%]',
+        'max-sm:max-w-[96%] max-sm:mt-20 max-sm:mx-auto max-sm:mb-8',
+      )}
       alt="Girl dropping mic from her hands"
     />
   );
