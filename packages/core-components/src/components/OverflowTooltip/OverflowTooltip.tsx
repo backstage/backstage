@@ -14,49 +14,136 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import React from 'react';
+import {
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '../ui/tooltip';
+import { cn } from '../../lib/utils';
 
+/**
+ * Radix-compatible side values.
+ * @internal
+ */
+type Side = 'top' | 'right' | 'bottom' | 'left';
+
+/**
+ * Radix-compatible align values.
+ * @internal
+ */
+type Align = 'start' | 'center' | 'end';
+
+/**
+ * Placement values accepted by the OverflowTooltip, matching the original
+ * MUI `Tooltip` placement API for full backward compatibility. Compound
+ * values (e.g. `"bottom-start"`) are internally mapped to Radix `side` +
+ * `align` props.
+ *
+ * @public
+ */
+type Placement =
+  | 'bottom-end'
+  | 'bottom-start'
+  | 'bottom'
+  | 'left-end'
+  | 'left-start'
+  | 'left'
+  | 'right-end'
+  | 'right-start'
+  | 'right'
+  | 'top-end'
+  | 'top-start'
+  | 'top';
+
+/** Props for the {@link OverflowTooltip} component. */
 type Props = {
+  /** The text content to display and truncate when overflowing. */
   text?: string | undefined;
-  title?: TooltipProps['title'];
+  /** Custom tooltip content. Falls back to `text` when not provided. */
+  title?: React.ReactNode;
+  /** Maximum number of lines before truncation (defaults to 1). */
   line?: number | undefined;
-  placement?: TooltipProps['placement'];
-  tooltipClasses?: TooltipProps['classes'];
+  /**
+   * Tooltip placement relative to the trigger element.
+   * Accepts the full set of MUI-compatible placement values
+   * (e.g. `"bottom-start"`) which are mapped to Radix `side` + `align`.
+   */
+  placement?: Placement;
+  /** Additional CSS class names applied to the trigger element via `cn()`. */
+  className?: string;
 };
 
+/** @public */
 export type OverflowTooltipClassKey = 'container';
 
-const useStyles = makeStyles(
-  {
-    container: {
-      overflow: 'visible !important',
-    },
-    typo: {
-      fontSize: 'inherit',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      display: '-webkit-box',
-      '-webkit-line-clamp': ({ line }: Props) => line || 1,
-      '-webkit-box-orient': 'vertical',
-    },
-  },
-  { name: 'BackstageOverflowTooltip' },
-);
+/**
+ * Parses a MUI-style placement string into Radix `side` and `align` values.
+ *
+ * @param placement - e.g. `"bottom"`, `"bottom-start"`, `"left-end"`
+ * @returns An object with `side` and `align` keys for Radix Tooltip positioning
+ * @internal
+ */
+function parsePlacement(placement?: Placement): {
+  side: Side | undefined;
+  align: Align | undefined;
+} {
+  if (!placement) {
+    return { side: undefined, align: undefined };
+  }
+  const parts = placement.split('-');
+  const side = parts[0] as Side;
+  const align = (parts[1] as Align) ?? undefined;
+  return { side, align };
+}
 
+/**
+ * A text component that truncates its content after a configurable number
+ * of lines and displays the full text in a tooltip on hover.
+ *
+ * @remarks
+ * Uses Radix UI Tooltip primitives (via shadcn/ui) and Tailwind CSS utility
+ * classes. The dynamic `-webkit-line-clamp` value is applied through an
+ * inline style because the `line` prop accepts any number, not only the
+ * fixed set provided by Tailwind's `line-clamp-*` utilities.
+ *
+ * @example
+ * ```tsx
+ * <OverflowTooltip text="A very long label that will be truncated" />
+ * <OverflowTooltip text="Two-line clamp" line={2} placement="bottom" />
+ * <OverflowTooltip text="Truncated" title="Full custom tooltip" />
+ * ```
+ *
+ * @public
+ */
 export function OverflowTooltip(props: Props) {
-  const classes = useStyles(props);
+  const { text, title, line = 1, placement, className } = props;
+  const { side, align } = parsePlacement(placement);
 
   return (
-    <Tooltip
-      title={props.title ?? (props.text || '')}
-      placement={props.placement}
-      classes={props.tooltipClasses}
-    >
-      <Typography className={classes.typo} variant="inherit">
-        {props.text}
-      </Typography>
-    </Tooltip>
+    <TooltipProvider>
+      <ShadcnTooltip>
+        <TooltipTrigger asChild>
+          <span
+            className={cn(
+              'inline-block max-w-full overflow-hidden text-ellipsis text-inherit',
+              className,
+            )}
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: line,
+              WebkitBoxOrient: 'vertical' as const,
+              overflow: 'hidden',
+            }}
+          >
+            {text}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side={side} align={align}>
+          {title ?? text ?? ''}
+        </TooltipContent>
+      </ShadcnTooltip>
+    </TooltipProvider>
   );
 }
