@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import { useTheme } from '@material-ui/core/styles';
 import type {} from 'react-syntax-highlighter';
 import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
 import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
 import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 
+import { cn } from '../../lib/utils';
 import { CopyTextButton } from '../CopyTextButton';
 
 /**
@@ -91,12 +90,16 @@ export function CodeSnippet(props: CodeSnippetProps) {
     customStyle,
     showCopyCodeButton = false,
   } = props;
-  const theme = useTheme();
-  const mode = theme.palette.type === 'dark' ? dark : docco;
-  const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
+  // Detect dark mode via data attribute on document root — the theme provider
+  // triggers re-renders on theme change, so a synchronous read is sufficient.
+  const isDark =
+    typeof document !== 'undefined' &&
+    document.documentElement.dataset.themeMode === 'dark';
+  const mode = isDark ? dark : docco;
+  const highlightColor = isDark ? '#256bf3' : '#e6ffed';
 
   return (
-    <Box position="relative">
+    <div className={cn('relative', 'font-mono')}>
       <LightAsync
         customStyle={customStyle}
         language={language}
@@ -104,7 +107,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
         showLineNumbers={showLineNumbers}
         wrapLines
         wrapLongLines={wrapLongLines}
-        lineNumberStyle={{ color: theme.palette.textVerySubtle }}
+        lineNumberStyle={{ color: 'var(--muted-foreground)' }}
         lineProps={(lineNumber: number) =>
           highlightedNumbers?.includes(lineNumber)
             ? {
@@ -118,10 +121,10 @@ export function CodeSnippet(props: CodeSnippetProps) {
         {text}
       </LightAsync>
       {showCopyCodeButton && (
-        <Box position="absolute" top={0} right={0}>
+        <div className="absolute top-0 right-0">
           <CopyTextButton text={text} />
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }
