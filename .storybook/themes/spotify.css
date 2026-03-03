@@ -185,8 +185,9 @@
 
   .bui-PluginHeaderToolbarWrapper {
     padding: 0;
-    border: none;
     height: 32px;
+    border: none;
+    background: none;
   }
 
   .bui-PluginHeaderTabsWrapper {
@@ -194,6 +195,7 @@
     padding: 0;
     margin-left: -8px;
     border: none;
+    background: none;
   }
 
   .bui-Input {
