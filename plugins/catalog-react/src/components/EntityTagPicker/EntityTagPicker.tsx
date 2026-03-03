@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '@backstage/core-components';
 import { EntityTagFilter } from '../../filters';
 import { EntityAutocompletePicker } from '../EntityAutocompletePicker/EntityAutocompletePicker';
 import { catalogReactTranslationRef } from '../../translation';
@@ -30,14 +30,8 @@ export type EntityTagPickerProps = {
   hidden?: boolean;
 };
 
-const useStyles = makeStyles(
-  { input: {} },
-  { name: 'CatalogReactEntityTagPicker' },
-);
-
 /** @public */
 export const EntityTagPicker = (props: EntityTagPickerProps) => {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return (
@@ -47,7 +41,7 @@ export const EntityTagPicker = (props: EntityTagPickerProps) => {
       path="metadata.tags"
       Filter={EntityTagFilter}
       showCounts={props.showCounts}
-      InputProps={{ className: classes.input }}
+      InputProps={{ className: cn('') }}
       initialSelectedOptions={props.initialFilter ? props.initialFilter : []}
       hidden={props.hidden}
     />
