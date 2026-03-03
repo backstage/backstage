@@ -36,7 +36,7 @@ Each action includes:
 - id: The action identifier
 - description: What the action does
 - schema: Input and output JSON schemas
-- examples: Usage examples (if available)`,
+- examples: Usage examples when available`,
     schema: {
       input: z => z.object({}).describe('No input is required'),
       output: z =>

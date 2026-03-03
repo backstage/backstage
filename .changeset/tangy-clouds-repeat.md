@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': minor
 ---
 
-create scaffolder MCP action to list all installed scaffolder template actions
+Added a new `list-scaffolder-actions` action that returns all installed scaffolder actions with their schemas and examples

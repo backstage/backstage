@@ -16,17 +16,22 @@
 import { createListScaffolderActionsAction } from './createListScaffolderActionsAction';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
-import type {
-  Action,
-  ListActionsResponse,
-} from '@backstage/plugin-scaffolder-common';
+import type { ListActionsResponse } from '@backstage/plugin-scaffolder-common';
+
+type ListActionsOutput = {
+  actions: Array<{
+    id: string;
+    description: string;
+    schema: { input: object; output: object };
+    examples: Array<{ description: string; example: string }>;
+  }>;
+};
 
 describe('createListScaffolderActionsAction', () => {
-  it('should list all scaffolder actions successfully', async () => {
+  it('should list all scaffolder actions sorted by id with full properties', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockScaffolderService = scaffolderServiceMock.mock();
-    const mockActions = createMockActions();
-    mockScaffolderService.listActions.mockResolvedValue(mockActions);
+    mockScaffolderService.listActions.mockResolvedValue(createMockActions());
 
     createListScaffolderActionsAction({
       actionsRegistry: mockActionsRegistry,
@@ -38,23 +43,17 @@ describe('createListScaffolderActionsAction', () => {
       input: {},
     });
 
-    // Verify output structure
-    expect(result.output).toHaveProperty('actions');
-    const output = result.output as any;
-    expect(Array.isArray(output.actions)).toBe(true);
+    const output = result.output as ListActionsOutput;
     expect(output.actions).toHaveLength(3);
 
-    // Verify actions are sorted by id
-    const actionIds = output.actions.map((a: any) => a.id);
+    const actionIds = output.actions.map(a => a.id);
     expect(actionIds).toEqual([
       'catalog:register',
       'debug:log',
       'fetch:template',
     ]);
 
-    // Verify action structure
-    const firstAction = output.actions[0];
-    expect(firstAction).toEqual({
+    expect(output.actions[0]).toEqual({
       id: 'catalog:register',
       description: 'Registers entities in the catalog',
       schema: {
@@ -82,13 +81,13 @@ describe('createListScaffolderActionsAction', () => {
       input: {},
     });
 
-    const output = result.output as any;
+    const output = result.output as ListActionsOutput;
     expect(output.actions).toHaveLength(1);
     expect(output.actions[0]).toEqual({
       id: 'minimal-action',
-      description: '', // Empty string when no description
-      schema: { input: {}, output: {} }, // Default empty schema
-      examples: [], // Empty array when no examples
+      description: '',
+      schema: { input: {}, output: {} },
+      examples: [],
     });
   });
 
@@ -107,135 +106,30 @@ describe('createListScaffolderActionsAction', () => {
       input: {},
     });
 
-    const output = result.output as any;
+    const output = result.output as ListActionsOutput;
     expect(output.actions).toEqual([]);
   });
 
-  it('should maintain consistent sorting across multiple calls', async () => {
+  it('should propagate errors from the scaffolder service', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockScaffolderService = scaffolderServiceMock.mock();
-    mockScaffolderService.listActions.mockResolvedValue([
-      createMockListAction('z-action', 'Last alphabetically'),
-      createMockListAction('a-action', 'First alphabetically'),
-      createMockListAction('middle-action', 'Middle alphabetically'),
-    ]);
+    mockScaffolderService.listActions.mockRejectedValue(
+      new Error('Service unavailable'),
+    );
 
     createListScaffolderActionsAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
     });
 
-    const result1 = await mockActionsRegistry.invoke({
-      id: 'test:list-scaffolder-actions',
-      input: {},
-    });
-    const result2 = await mockActionsRegistry.invoke({
-      id: 'test:list-scaffolder-actions',
-      input: {},
-    });
-
-    const output1 = result1.output as any;
-    const output2 = result2.output as any;
-    const ids1 = output1.actions.map((a: any) => a.id);
-    const ids2 = output2.actions.map((a: any) => a.id);
-
-    expect(ids1).toEqual(['a-action', 'middle-action', 'z-action']);
-    expect(ids1).toEqual(ids2);
-  });
-
-  it('should include all action properties in the output', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockScaffolderService = scaffolderServiceMock.mock();
-    const complexAction = {
-      id: 'complex-action',
-      description: 'A complex action with all properties',
-      schema: {
-        input: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-            count: { type: 'number' },
-          },
-        },
-        output: {
-          type: 'object',
-          properties: {
-            result: { type: 'string' },
-          },
-        },
-      },
-      examples: [
-        {
-          description: 'Example 1',
-          example: 'example content 1',
-        },
-        {
-          description: 'Example 2',
-          example: 'example content 2',
-        },
-      ],
-    };
-    mockScaffolderService.listActions.mockResolvedValue([
-      complexAction as Action,
-    ]);
-
-    createListScaffolderActionsAction({
-      actionsRegistry: mockActionsRegistry,
-      scaffolderService: mockScaffolderService,
-    });
-
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:list-scaffolder-actions',
-      input: {},
-    });
-
-    const output = result.output as any;
-    expect(output.actions[0]).toEqual({
-      id: 'complex-action',
-      description: 'A complex action with all properties',
-      schema: {
-        input: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-            count: { type: 'number' },
-          },
-        },
-        output: {
-          type: 'object',
-          properties: {
-            result: { type: 'string' },
-          },
-        },
-      },
-      examples: [
-        {
-          description: 'Example 1',
-          example: 'example content 1',
-        },
-        {
-          description: 'Example 2',
-          example: 'example content 2',
-        },
-      ],
-    });
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:list-scaffolder-actions',
+        input: {},
+      }),
+    ).rejects.toThrow('Service unavailable');
   });
 });
-
-function createMockListAction(
-  id: string,
-  description: string,
-): ListActionsResponse[number] {
-  return {
-    id,
-    description,
-    schema: {
-      input: { type: 'object' },
-      output: { type: 'object' },
-    },
-    examples: [],
-  };
-}
 
 function createMockActions(): ListActionsResponse {
   return [
