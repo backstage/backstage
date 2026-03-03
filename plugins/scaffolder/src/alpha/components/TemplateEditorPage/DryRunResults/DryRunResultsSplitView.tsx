@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
 import { Children, ReactNode } from 'react';
-import classNames from 'classnames';
+import { Separator } from '@backstage/core-components';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'grid',
-    gridTemplateColumns: '280px auto 3fr',
-    gridTemplateRows: '1fr',
-  },
-  child: {
-    overflowY: 'auto',
-    height: '100%',
-    minHeight: 0,
-  },
-  firstChild: {
-    background: theme.palette.background.paper,
-  },
-}));
-
+/**
+ * A reusable two-pane split view layout rendered as a CSS grid with a fixed
+ * 280 px left pane, a visual separator, and a fluid right pane (3 fr).
+ *
+ * Exactly two children must be provided — the first is placed in the
+ * narrow left pane (e.g. a file tree) and the second fills the wider
+ * right pane (e.g. file content preview). Both panes scroll independently.
+ *
+ * @public
+ */
 export function DryRunResultsSplitView(props: { children: ReactNode }) {
-  const classes = useStyles();
   const childArray = Children.toArray(props.children);
 
   if (childArray.length !== 2) {
@@ -44,12 +35,12 @@ export function DryRunResultsSplitView(props: { children: ReactNode }) {
   }
 
   return (
-    <div className={classes.root}>
-      <div className={classNames(classes.child, classes.firstChild)}>
+    <div className="grid grid-cols-[280px_auto_3fr] grid-rows-[1fr]">
+      <div className="overflow-y-auto h-full min-h-0 bg-card">
         {childArray[0]}
       </div>
-      <Divider orientation="horizontal" />
-      <div className={classes.child}>{childArray[1]}</div>
+      <Separator orientation="vertical" />
+      <div className="overflow-y-auto h-full min-h-0">{childArray[1]}</div>
     </div>
   );
 }
