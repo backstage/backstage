@@ -23,6 +23,7 @@ import {
   cloneElement,
   useCallback,
 } from 'react';
+import type { LiHTMLAttributes, HTMLAttributes } from 'react';
 
 import {
   getComponentData,
@@ -32,9 +33,7 @@ import {
   useAnalytics,
 } from '@backstage/core-plugin-api';
 import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
-
-import List, { ListProps } from '@material-ui/core/List';
-import ListItem, { ListItemProps } from '@material-ui/core/ListItem';
+import { cn } from '@backstage/core-components';
 
 import { DefaultResultListItem } from './components/DefaultResultListItem';
 
@@ -83,7 +82,7 @@ export type SearchResultListItemExtensionProps<Props extends {} = {}> = Props &
       rank?: number;
       result?: SearchDocument;
       noTrack?: boolean;
-    } & Omit<ListItemProps, 'button'>
+    } & Omit<LiHTMLAttributes<HTMLLIElement>, 'children'>
   >;
 
 /**
@@ -94,14 +93,7 @@ export type SearchResultListItemExtensionProps<Props extends {} = {}> = Props &
 export const SearchResultListItemExtension = (
   props: SearchResultListItemExtensionProps,
 ) => {
-  const {
-    rank,
-    result,
-    noTrack,
-    children,
-    alignItems = 'flex-start',
-    ...rest
-  } = props;
+  const { rank, result, noTrack, children, className, ...rest } = props;
   const analytics = useAnalytics();
 
   const handleClickCapture = useCallback(() => {
@@ -114,14 +106,13 @@ export const SearchResultListItemExtension = (
   }, [rank, result, noTrack, analytics]);
 
   return (
-    <ListItem
-      divider
-      alignItems={alignItems}
+    <li
+      className={cn('flex items-start border-b border-border py-2', className)}
       onClickCapture={handleClickCapture}
       {...rest}
     >
       {children}
-    </ListItem>
+    </li>
   );
 };
 
@@ -231,7 +222,10 @@ export const useSearchResultListItemExtensions = (children: ReactNode) => {
  * @public
  * Props for {@link SearchResultListItemExtensions}
  */
-export type SearchResultListItemExtensionsProps = Omit<ListProps, 'results'> & {
+export type SearchResultListItemExtensionsProps = Omit<
+  HTMLAttributes<HTMLUListElement>,
+  'results'
+> & {
   /**
    * Search result list.
    */
@@ -248,5 +242,9 @@ export const SearchResultListItemExtensions = (
 ) => {
   const { results, children, ...rest } = props;
   const render = useSearchResultListItemExtensions(children);
-  return <List {...rest}>{results.map(render)}</List>;
+  return (
+    <ul className="list-none p-0 m-0" {...rest}>
+      {results.map(render)}
+    </ul>
+  );
 };

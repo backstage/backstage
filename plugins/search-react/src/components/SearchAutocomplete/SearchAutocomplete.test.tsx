@@ -240,7 +240,7 @@ describe('SearchAutocomplete', () => {
     await userEvent.click(screen.getByPlaceholderText(`Search in ${title}`));
 
     await waitFor(() => {
-      expect(screen.getAllByTitle('Option icon')).toHaveLength(3);
+      expect(screen.getAllByLabelText('Option icon')).toHaveLength(3);
       expect(screen.getByText('hello-world')).toBeInTheDocument();
       expect(
         screen.getByText('Hello World example for gRPC'),
