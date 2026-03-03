@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import { type IconComponent } from '@backstage/core-plugin-api';
+import type { IconComponent } from '@backstage/core-plugin-api';
 import { renderInTestApp } from '@backstage/test-utils';
 import { mockBreakpoint } from '@backstage/core-components/testUtils';
 import { PlusCircle, Home, Layers, BookOpen } from 'lucide-react';
 import { fireEvent } from '@testing-library/react';
+import { Sidebar } from './Bar';
+import { SidebarItem } from './Items';
+import { MobileSidebar } from './MobileSidebar';
+import { SidebarPage } from './Page';
+import { SidebarGroup } from './SidebarGroup';
 
 /*
  * Cast lucide-react icons to Backstage's IconComponent type for sidebar test
@@ -30,11 +35,6 @@ const CreateComponentIcon = PlusCircle as unknown as IconComponent;
 const HomeIcon = Home as unknown as IconComponent;
 const LayersIcon = Layers as unknown as IconComponent;
 const LibraryBooks = BookOpen as unknown as IconComponent;
-import { Sidebar } from './Bar';
-import { SidebarItem } from './Items';
-import { MobileSidebar } from './MobileSidebar';
-import { SidebarPage } from './Page';
-import { SidebarGroup } from './SidebarGroup';
 
 const MobileSidebarWithGroups = () => (
   <SidebarPage>
