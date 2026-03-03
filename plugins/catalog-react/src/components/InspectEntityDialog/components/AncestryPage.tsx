@@ -20,6 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
+  cn,
   DependencyGraph,
   DependencyGraphTypes,
   Link,
@@ -27,10 +28,6 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { useApi, useApp, useRouteRef } from '@backstage/core-plugin-api';
-import Box from '@material-ui/core/Box';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import { makeStyles } from '@material-ui/core/styles';
-import classNames from 'classnames';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
@@ -40,36 +37,6 @@ import { entityRouteRef } from '../../../routes';
 import { EntityKindIcon } from './EntityKindIcon';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-
-const useStyles = makeStyles(theme => ({
-  node: {
-    fill: theme.palette.grey[300],
-    stroke: theme.palette.grey[300],
-    '&.primary': {
-      fill: theme.palette.primary.light,
-      stroke: theme.palette.primary.light,
-    },
-    '&.secondary': {
-      fill: theme.palette.secondary.light,
-      stroke: theme.palette.secondary.light,
-    },
-  },
-  text: {
-    fill: theme.palette.getContrastText(theme.palette.grey[300]),
-    '&.primary': {
-      fill: theme.palette.primary.contrastText,
-    },
-    '&.secondary': {
-      fill: theme.palette.secondary.contrastText,
-    },
-    '&.focused': {
-      fontWeight: 'bold',
-    },
-  },
-  clickable: {
-    cursor: 'pointer',
-  },
-}));
 
 type NodeType = Entity & { root: boolean };
 
@@ -106,7 +73,6 @@ function useAncestry(root: Entity): {
 }
 
 function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
-  const classes = useStyles();
   const navigate = useNavigate();
   const entityRoute = useRouteRef(entityRouteRef);
   const [width, setWidth] = useState(0);
@@ -157,36 +123,35 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
     );
   };
 
+  /* SVG fill/stroke use CSS custom properties inline because SVG elements
+     do not support Tailwind utility classes for fill and stroke. */
+  const nodeFill = node.root ? 'hsl(var(--secondary))' : 'hsl(var(--primary))';
+  const textFill = node.root
+    ? 'hsl(var(--secondary-foreground))'
+    : 'hsl(var(--primary-foreground))';
+
   return (
-    <g onClick={onClick} className={classes.clickable}>
+    <g onClick={onClick} className={cn('cursor-pointer')}>
       <rect
-        className={classNames(
-          classes.node,
-          node.root ? 'secondary' : 'primary',
-        )}
+        style={{ fill: nodeFill, stroke: nodeFill }}
         width={paddedWidth}
         height={paddedHeight}
         rx={10}
       />
       {hasKindIcon && (
-        <EntityKindIcon
-          kind={node.kind}
-          y={padding}
-          x={padding}
-          width={iconSize}
-          height={iconSize}
-          className={classNames(
-            classes.text,
-            node.root ? 'secondary' : 'primary',
-          )}
-        />
+        <g style={{ color: textFill }}>
+          <EntityKindIcon
+            kind={node.kind}
+            y={padding}
+            x={padding}
+            width={iconSize}
+            height={iconSize}
+          />
+        </g>
       )}
       <text
         ref={idRef}
-        className={classNames(
-          classes.text,
-          node.root ? 'secondary' : 'primary',
-        )}
+        style={{ fill: textFill }}
         y={paddedHeight / 2}
         x={paddedIconWidth + (width + padding * 2) / 2}
         textAnchor="middle"
@@ -209,10 +174,10 @@ export function AncestryPage(props: { entity: Entity }) {
 
   return (
     <>
-      <DialogContentText variant="h2">
+      <h2 className="text-2xl font-semibold">
         {t('inspectEntityDialog.ancestryPage.title')}
-      </DialogContentText>
-      <DialogContentText gutterBottom>
+      </h2>
+      <p className="mb-4 text-muted-foreground">
         {t('inspectEntityDialog.ancestryPage.description', {
           processorsLink: (
             <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
@@ -220,8 +185,8 @@ export function AncestryPage(props: { entity: Entity }) {
             </Link>
           ),
         })}
-      </DialogContentText>
-      <Box mt={4}>
+      </p>
+      <div className="mt-4">
         <DependencyGraph
           nodes={nodes}
           edges={edges}
@@ -229,7 +194,7 @@ export function AncestryPage(props: { entity: Entity }) {
           direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
           zoom="enable-on-click"
         />
-      </Box>
+      </div>
     </>
   );
 }
