@@ -14,51 +14,14 @@
  * limitations under the License.
  */
 import { IconComponent } from '@backstage/core-plugin-api';
-import Card from '@material-ui/core/Card';
-import List from '@material-ui/core/List';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import SettingsIcon from '@material-ui/icons/Settings';
-import { Fragment } from 'react';
+import { cn } from '@backstage/core-components';
+import { Settings, Type } from 'lucide-react';
+import { type ComponentType, Fragment } from 'react';
 import {
   TranslationFunction,
   useTranslationRef,
 } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
-
-import AllIcon from '@material-ui/icons/FontDownload';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      backgroundColor: 'rgba(0, 0, 0, .11)',
-      boxShadow: 'none',
-      margin: theme.spacing(1, 0, 1, 0),
-    },
-    title: {
-      margin: theme.spacing(1, 0, 0, 1),
-      textTransform: 'uppercase',
-      fontSize: 12,
-      fontWeight: 'bold',
-    },
-    listIcon: {
-      minWidth: 30,
-      color: theme.palette.text.primary,
-    },
-    menuItem: {
-      minHeight: theme.spacing(6),
-    },
-    groupWrapper: {
-      margin: theme.spacing(1, 1, 2, 1),
-    },
-  }),
-  {
-    name: 'ScaffolderReactOwnerListPicker',
-  },
-);
 
 export type ButtonGroup = {
   name: string;
@@ -79,12 +42,12 @@ function getFilterGroups(
         {
           id: 'owned',
           label: t('ownerListPicker.options.owned'),
-          icon: SettingsIcon,
+          icon: Settings as unknown as IconComponent,
         },
         {
           id: 'all',
           label: t('ownerListPicker.options.all'),
-          icon: AllIcon,
+          icon: Type as unknown as IconComponent,
         },
       ],
     },
@@ -96,47 +59,50 @@ export const OwnerListPicker = (props: {
   onSelectOwner: (id: 'owned' | 'all') => void;
 }) => {
   const { filter, onSelectOwner } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const filterGroups = getFilterGroups(t);
   return (
-    <Card className={classes.root}>
+    <div className="bg-black/[.11] shadow-none my-2 rounded-md">
       {filterGroups.map(group => (
         <Fragment key={group.name}>
-          <Typography
-            variant="subtitle2"
-            component="span"
-            className={classes.title}
-          >
+          <span className="text-xs font-bold uppercase ml-2 mt-2 block text-muted-foreground">
             {group.name}
-          </Typography>
-          <Card className={classes.groupWrapper}>
-            <List disablePadding dense role="menu">
-              {group.items.map((item, index) => (
-                <MenuItem
-                  key={item.id}
-                  divider={index !== group.items.length - 1}
-                  ContainerProps={{ role: 'menuitem' }}
-                  onClick={() => onSelectOwner(item.id as 'owned' | 'all')}
-                  selected={item.id === filter}
-                  className={classes.menuItem}
-                  data-testid={`owner-picker-${item.id}`}
-                >
-                  {item.icon && (
-                    <ListItemIcon className={classes.listIcon}>
-                      <item.icon fontSize="small" />
-                    </ListItemIcon>
-                  )}
-                  <ListItemText>
-                    <Typography variant="body1">{item.label}</Typography>
-                  </ListItemText>
-                </MenuItem>
-              ))}
-            </List>
-          </Card>
+          </span>
+          <div className="mx-2 mt-2 mb-4 rounded-md border bg-card">
+            <ul className="m-0 p-0 list-none" role="menu">
+              {group.items.map((item, index) => {
+                /* Lucide icons use className for sizing instead of MUI's fontSize prop */
+                const Icon = item.icon as unknown as ComponentType<{
+                  className?: string;
+                }>;
+                return (
+                  <li key={item.id} role="menuitem">
+                    <button
+                      type="button"
+                      onClick={() => onSelectOwner(item.id as 'owned' | 'all')}
+                      className={cn(
+                        'flex w-full items-center min-h-[48px] px-4 py-2 text-sm cursor-pointer bg-transparent hover:bg-accent',
+                        item.id === filter && 'bg-accent',
+                        index !== group.items.length - 1 &&
+                          'border-b border-border',
+                      )}
+                      data-testid={`owner-picker-${item.id}`}
+                    >
+                      {item.icon && (
+                        <span className="min-w-[30px] text-foreground flex items-center">
+                          <Icon className="h-4 w-4" />
+                        </span>
+                      )}
+                      <span className="text-sm">{item.label}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </Fragment>
       ))}
-    </Card>
+    </div>
   );
 };
