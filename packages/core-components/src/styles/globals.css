@@ -118,6 +118,13 @@
       'Liberation Mono', 'Courier New', monospace; /* BUI: --bui-font-monospace */
 
     /* ----------------------------------------------------------
+     * Diagram Node Tokens (Backstage-specific)
+     *
+     * Used for SystemDiagramCard and other entity graph visualizations.
+     * ---------------------------------------------------------- */
+    --gold: #FFD600; /* API node fill in system diagrams */
+
+    /* ----------------------------------------------------------
      * Status Tokens (Backstage-specific)
      *
      * Used for catalog health indicators and CI/CD status displays.
@@ -226,6 +233,11 @@
     --border: #434343; /* BUI dark: --bui-border-1 */
     --input: #585858; /* BUI dark: --bui-border-2 (slightly more visible for inputs) */
     --ring: #9cc9ff; /* Match dark primary for focus ring visibility */
+
+    /* ----------------------------------------------------------
+     * Diagram Node Tokens (dark mode)
+     * ---------------------------------------------------------- */
+    --gold: #FFD600; /* API node fill in system diagrams — same in dark mode */
 
     /* ----------------------------------------------------------
      * Status Tokens (dark mode)

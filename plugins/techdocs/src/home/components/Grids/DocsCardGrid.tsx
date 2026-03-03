@@ -23,10 +23,6 @@ import {
   ItemCardGrid,
   ItemCardHeader,
 } from '@backstage/core-components';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 
 /**
  * Props for {@link DocsCardGrid}
@@ -52,14 +48,19 @@ export const DocsCardGrid = (props: DocsCardGridProps) => {
       {!entities?.length
         ? null
         : entities.map((entity, index: number) => (
-            <Card key={index}>
-              <CardMedia>
+            <div
+              key={index}
+              className="rounded-xl border border-border bg-card text-card-foreground shadow flex flex-col"
+            >
+              <div>
                 <ItemCardHeader
                   title={entity.metadata.title ?? entity.metadata.name}
                 />
-              </CardMedia>
-              <CardContent>{entity.metadata.description}</CardContent>
-              <CardActions>
+              </div>
+              <div className="p-4 flex-1">
+                {entity.metadata.description}
+              </div>
+              <div className="flex items-center p-2">
                 <LinkButton
                   to={getRouteToReaderPageFor({
                     namespace: toLowerMaybe(
@@ -74,8 +75,8 @@ export const DocsCardGrid = (props: DocsCardGridProps) => {
                 >
                   Read Docs
                 </LinkButton>
-              </CardActions>
-            </Card>
+              </div>
+            </div>
           ))}
     </ItemCardGrid>
   );

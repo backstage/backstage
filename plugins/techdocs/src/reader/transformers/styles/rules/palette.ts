@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { RuleOptions } from './types';
-import { Theme } from '@material-ui/core/styles';
+import { RuleOptions, TechDocsTheme } from './types';
 
-const themeHashes: Record<Theme['palette']['type'], ReadonlyArray<string>> = {
+const themeHashes: Record<TechDocsTheme['palette']['type'], ReadonlyArray<string>> = {
   dark: ['#only-light', '#gh-light-mode-only'],
   light: ['#only-dark', '#gh-dark-mode-only'],
 };

@@ -15,9 +15,45 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import { useStylesTransformer } from './transformer';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
+import { useStylesTransformer } from './transformer';
+import {
+  TechDocsThemeContext,
+  defaultTechDocsTheme,
+} from './TechDocsThemeContext';
+import type { TechDocsTheme } from './rules/types';
+
+/**
+ * Helper that produces a TechDocsTheme with the given overrides deeply merged
+ * onto the default theme.  Only typography overrides are supported because that
+ * is all existing tests require.
+ */
+function createTestTheme(
+  overrides: {
+    typography?: Partial<
+      TechDocsTheme['typography'] & {
+        h1?: Partial<TechDocsTheme['typography']['h1']>;
+      }
+    >;
+  } = {},
+): TechDocsTheme {
+  return {
+    ...defaultTechDocsTheme,
+    typography: {
+      ...defaultTechDocsTheme.typography,
+      ...(overrides.typography ?? {}),
+      h1: {
+        ...defaultTechDocsTheme.typography.h1,
+        ...(overrides.typography?.h1 ?? {}),
+      },
+      h2: defaultTechDocsTheme.typography.h2,
+      h3: defaultTechDocsTheme.typography.h3,
+      h4: defaultTechDocsTheme.typography.h4,
+      h5: defaultTechDocsTheme.typography.h5,
+      h6: defaultTechDocsTheme.typography.h6,
+    },
+  };
+}
 
 describe('Transformers > Styles', () => {
   it('should return a function that injects all styles into a given dom element', () => {
@@ -53,15 +89,13 @@ describe('Transformers > Styles', () => {
   });
 
   it('should use headers relative font-size value as the factor for the md-typeset variable', () => {
-    const theme = createTheme({
-      typography: {
-        h1: {
-          fontSize: '20rem',
-        },
-      },
+    const theme = createTestTheme({
+      typography: { h1: { fontSize: '20rem' } },
     });
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <TechDocsThemeContext.Provider value={theme}>
+        {children}
+      </TechDocsThemeContext.Provider>
     );
     const { result } = renderHook(() => useStylesTransformer(), { wrapper });
 
@@ -81,15 +115,13 @@ describe('Transformers > Styles', () => {
 
   it('should resolve header sizes that are variables', () => {
     document.body.style.setProperty('--font-size-h1', '20rem');
-    const theme = createTheme({
-      typography: {
-        h1: {
-          fontSize: 'var(--font-size-h1)',
-        },
-      },
+    const theme = createTestTheme({
+      typography: { h1: { fontSize: 'var(--font-size-h1)' } },
     });
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <TechDocsThemeContext.Provider value={theme}>
+        {children}
+      </TechDocsThemeContext.Provider>
     );
     const { result } = renderHook(() => useStylesTransformer(), { wrapper });
 
@@ -108,16 +140,13 @@ describe('Transformers > Styles', () => {
   });
 
   it('should convert pixel header sizes to REM and reduce by 60%', () => {
-    const theme = createTheme({
-      typography: {
-        htmlFontSize: 16,
-        h1: {
-          fontSize: 100,
-        },
-      },
+    const theme = createTestTheme({
+      typography: { htmlFontSize: 16, h1: { fontSize: 100 } },
     });
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <TechDocsThemeContext.Provider value={theme}>
+        {children}
+      </TechDocsThemeContext.Provider>
     );
     const { result } = renderHook(() => useStylesTransformer(), { wrapper });
 

@@ -17,7 +17,6 @@
 import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
-import Button from '@material-ui/core/Button';
 import {
   fireEvent,
   screen,
@@ -143,9 +142,9 @@ it('should update filter values when a new entityName is provided', async () => 
     const [entityName, setEntityName] = useState(entityId);
     return (
       <ApiProvider apis={apiRegistry}>
-        <Button onClick={() => setEntityName(newEntityId)}>
+        <button type="button" onClick={() => setEntityName(newEntityId)}>
           Update Entity
-        </Button>
+        </button>
         <TechDocsSearch entityId={entityName} debounceTime={0} />
       </ApiProvider>
     );

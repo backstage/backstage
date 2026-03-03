@@ -21,11 +21,21 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
 
+/** Map MUI-style fontSize values to Lucide pixel sizes */
+const ICON_SIZE_MAP: Record<string, number> = {
+  small: 20,
+  medium: 24,
+  large: 35,
+  inherit: 24,
+};
+
 /**
  * Wrapper bridging lucide-react's ForwardRefExoticComponent to Backstage's
  * IconComponent type which expects ComponentType<{ fontSize?: ... }>.
  */
-const HomeIcon: IconComponent = props => <Home {...props} />;
+const HomeIcon: IconComponent = ({ fontSize = 'medium', ...rest }) => (
+  <Home size={ICON_SIZE_MAP[fontSize] ?? 24} {...rest} />
+);
 
 export const catalogNavItem = NavItemBlueprint.make({
   params: {

@@ -91,16 +91,14 @@ describe('<CatalogKindHeader />', () => {
       </ApiProvider>,
     );
 
-    const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
+    const input = screen.getByText('Components');
+    fireEvent.mouseDown(input);
 
-    for (const entity of entities) {
+    entities.map(entity => {
       expect(
-        await screen.findByRole('option', {
-          name: `${pluralize(entity.kind)}`,
-        }),
+        screen.getByRole('option', { name: `${pluralize(entity.kind)}` }),
       ).toBeInTheDocument();
-    }
+    });
   });
 
   it('renders unknown kinds provided in query parameters', async () => {
@@ -127,10 +125,10 @@ describe('<CatalogKindHeader />', () => {
       </ApiProvider>,
     );
 
-    const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
+    const input = screen.getByText('Components');
+    fireEvent.mouseDown(input);
 
-    const option = await screen.findByRole('option', { name: 'Templates' });
+    const option = screen.getByRole('option', { name: 'Templates' });
     fireEvent.click(option);
 
     expect(updateFilters).toHaveBeenCalledWith({
@@ -183,11 +181,11 @@ describe('<CatalogKindHeader />', () => {
       </ApiProvider>,
     );
 
-    const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
+    const input = screen.getByText('Components');
+    fireEvent.mouseDown(input);
 
     expect(
-      await screen.findByRole('option', { name: 'Components' }),
+      screen.getByRole('option', { name: 'Components' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Systems' })).toBeInTheDocument();
     expect(
@@ -207,11 +205,9 @@ describe('<CatalogKindHeader />', () => {
     );
 
     expect(screen.getByText('Frobs')).toBeInTheDocument();
-    const trigger = screen.getByRole('combobox');
-    fireEvent.click(trigger);
+    const input = screen.getByText('Frobs');
+    fireEvent.mouseDown(input);
 
-    expect(
-      await screen.findByRole('option', { name: 'Systems' }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Systems' })).toBeInTheDocument();
   });
 });

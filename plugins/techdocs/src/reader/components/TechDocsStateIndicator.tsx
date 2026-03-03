@@ -14,30 +14,53 @@
  * limitations under the License.
  */
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@backstage/core-components';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { useTechDocsReader } from './TechDocsReaderProvider';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    marginBottom: theme.spacing(2),
-  },
-  message: {
-    // `word-break: break-word` is deprecated, but gives legacy support to browsers not supporting `overflow-wrap` yet
-    // https://developer.mozilla.org/en-US/docs/Web/CSS/word-break
-    wordBreak: 'break-word',
-    overflowWrap: 'anywhere',
-  },
-}));
+/** Alert severity to Tailwind class mapping */
+const severityStyles: Record<string, string> = {
+  info: 'border-info-foreground/40 text-info-foreground bg-info',
+  success: 'border-success-foreground/40 text-success-foreground bg-success',
+  error: 'border-destructive/40 text-destructive bg-destructive/10',
+};
+
+function StateAlertBox({
+  severity,
+  icon,
+  action,
+  className,
+  children,
+}: {
+  severity: string;
+  icon?: React.ReactNode;
+  action?: React.ReactNode;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      role="alert"
+      className={cn(
+        'flex items-center rounded-md border px-4 py-3 text-sm',
+        severityStyles[severity] ?? severityStyles.info,
+        className,
+      )}
+    >
+      {icon && <span className="mr-3 shrink-0">{icon}</span>}
+      <span className="flex-1 break-words [overflow-wrap:anywhere]">
+        {children}
+      </span>
+      {action && <span className="ml-3 shrink-0">{action}</span>}
+    </div>
+  );
+}
 
 export const TechDocsStateIndicator = () => {
   let StateAlert: JSX.Element | null = null;
-  const classes = useStyles();
 
   const {
     state,
@@ -49,63 +72,62 @@ export const TechDocsStateIndicator = () => {
 
   if (state === 'INITIAL_BUILD') {
     StateAlert = (
-      <Alert
-        classes={{ root: classes.root }}
-        variant="outlined"
+      <StateAlertBox
         severity="info"
-        icon={<CircularProgress size="24px" />}
+        className="mb-4"
+        icon={<Loader2 className="h-6 w-6 animate-spin" />}
         action={<TechDocsBuildLogs buildLog={buildLog} />}
       >
         Documentation is accessed for the first time and is being prepared. The
         subsequent loads are much faster.
-      </Alert>
+      </StateAlertBox>
     );
   }
 
   if (state === 'CONTENT_STALE_REFRESHING') {
     StateAlert = (
-      <Alert
-        variant="outlined"
+      <StateAlertBox
         severity="info"
-        icon={<CircularProgress size="24px" />}
+        className="mb-4"
+        icon={<Loader2 className="h-6 w-6 animate-spin" />}
         action={<TechDocsBuildLogs buildLog={buildLog} />}
-        classes={{ root: classes.root }}
       >
         A newer version of this documentation is being prepared and will be
         available shortly.
-      </Alert>
+      </StateAlertBox>
     );
   }
 
   if (state === 'CONTENT_STALE_READY') {
     StateAlert = (
-      <Alert
-        variant="outlined"
+      <StateAlertBox
         severity="success"
+        className="mb-4"
         action={
-          <Button color="inherit" onClick={() => contentReload()}>
+          <button
+            className="text-inherit underline underline-offset-2 hover:opacity-80"
+            onClick={() => contentReload()}
+          >
             Refresh
-          </Button>
+          </button>
         }
-        classes={{ root: classes.root }}
       >
         A newer version of this documentation is now available, please refresh
         to view.
-      </Alert>
+      </StateAlertBox>
     );
   }
 
   if (state === 'CONTENT_STALE_ERROR') {
     StateAlert = (
-      <Alert
-        variant="outlined"
+      <StateAlertBox
         severity="error"
+        className="mb-4"
         action={<TechDocsBuildLogs buildLog={buildLog} />}
-        classes={{ root: classes.root, message: classes.message }}
       >
         Building a newer version of this documentation failed.{' '}
         {syncErrorMessage}
-      </Alert>
+      </StateAlertBox>
     );
   }
 
@@ -113,15 +135,14 @@ export const TechDocsStateIndicator = () => {
     StateAlert = (
       <>
         {syncErrorMessage && (
-          <Alert
-            variant="outlined"
+          <StateAlertBox
             severity="error"
+            className="mb-4"
             action={<TechDocsBuildLogs buildLog={buildLog} />}
-            classes={{ root: classes.root, message: classes.message }}
           >
             Building a newer version of this documentation failed.{' '}
             {syncErrorMessage}
-          </Alert>
+          </StateAlertBox>
         )}
         <TechDocsNotFound errorMessage={contentErrorMessage} />
       </>

@@ -15,36 +15,8 @@
  */
 
 import { LogViewer } from '@backstage/core-components';
-import Button from '@material-ui/core/Button';
-import Drawer from '@material-ui/core/Drawer';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Close from '@material-ui/icons/Close';
+import { X } from 'lucide-react';
 import { useState } from 'react';
-
-const useDrawerStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paper: {
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
-        width: '75%',
-      },
-      [theme.breakpoints.up('md')]: {
-        width: '50%',
-      },
-      padding: theme.spacing(2.5),
-    },
-    root: {
-      height: '100%',
-      overflow: 'hidden',
-    },
-    logs: {
-      background: theme.palette.background.default,
-    },
-  }),
-);
 
 export const TechDocsBuildLogsDrawerContent = ({
   buildLog,
@@ -53,62 +25,54 @@ export const TechDocsBuildLogsDrawerContent = ({
   buildLog: string[];
   onClose: () => void;
 }) => {
-  const classes = useDrawerStyles();
   const logText =
     buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n');
   return (
-    <Grid
-      container
-      direction="column"
-      className={classes.root}
-      spacing={0}
-      wrap="nowrap"
-    >
-      <Grid
-        item
-        container
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={0}
-        wrap="nowrap"
-      >
-        <Typography variant="h5">Build Details</Typography>
-        <IconButton
-          key="dismiss"
+    <div className="flex h-full flex-col overflow-hidden">
+      <div className="flex items-center justify-between">
+        <h5 className="text-lg font-semibold">Build Details</h5>
+        <button
           title="Close the drawer"
           onClick={onClose}
-          color="inherit"
+          className="inline-flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
         >
-          <Close />
-        </IconButton>
-      </Grid>
-      <Grid item xs>
-        <LogViewer text={logText} classes={{ root: classes.logs }} />
-      </Grid>
-    </Grid>
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+      <div className="flex-1 min-h-0 mt-2">
+        <LogViewer text={logText} classes={{ root: 'bg-background' }} />
+      </div>
+    </div>
   );
 };
 
 export const TechDocsBuildLogs = ({ buildLog }: { buildLog: string[] }) => {
-  const classes = useDrawerStyles();
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <Button color="inherit" onClick={() => setOpen(true)}>
-        Show Build Logs
-      </Button>
-      <Drawer
-        classes={{ paper: classes.paper }}
-        anchor="right"
-        open={open}
-        onClose={() => setOpen(false)}
+      <button
+        className="text-inherit underline underline-offset-2 hover:opacity-80"
+        onClick={() => setOpen(true)}
       >
-        <TechDocsBuildLogsDrawerContent
-          buildLog={buildLog}
-          onClose={() => setOpen(false)}
-        />
-      </Drawer>
+        Show Build Logs
+      </button>
+      {open && (
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 z-50 bg-black/50"
+            onClick={() => setOpen(false)}
+          />
+          {/* Drawer panel */}
+          <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-3/4 md:w-1/2 bg-card p-5 shadow-lg">
+            <TechDocsBuildLogsDrawerContent
+              buildLog={buildLog}
+              onClose={() => setOpen(false)}
+            />
+          </div>
+        </>
+      )}
     </>
   );
 };

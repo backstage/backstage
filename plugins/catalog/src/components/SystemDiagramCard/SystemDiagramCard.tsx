@@ -62,7 +62,7 @@ const nodeStyles: Record<string, string> = {
   domainNode: 'fill-[var(--primary)] stroke-[var(--border)]',
   systemNode: 'fill-[coral] stroke-[var(--border)]',
   componentNode: 'fill-[yellowgreen] stroke-[var(--border)]',
-  apiNode: 'fill-[var(--gold,#FFD600)] stroke-[var(--border)]',
+  apiNode: 'fill-[var(--gold)] stroke-[var(--border)]',
   resourceNode: 'fill-[grey] stroke-[var(--border)]',
 };
 

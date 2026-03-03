@@ -15,11 +15,10 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { useTheme } from '@material-ui/core/styles';
 import { useSidebarPinState } from '@backstage/core-components';
 import { Transformer } from '../transformer';
 import { rules } from './rules';
-import type { TechDocsTheme } from './rules/types';
+import { useTechDocsTheme } from './TechDocsThemeContext';
 
 /**
  * Sidebar pinned state to be used in computing style injections.
@@ -32,7 +31,7 @@ const useSidebar = () => useSidebarPinState();
  */
 const useRuleStyles = () => {
   const sidebar = useSidebar();
-  const theme = useTheme() as unknown as TechDocsTheme;
+  const theme = useTechDocsTheme();
 
   return useMemo(() => {
     const options = { theme, sidebar };

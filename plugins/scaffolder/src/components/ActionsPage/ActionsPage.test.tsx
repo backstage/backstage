@@ -630,6 +630,7 @@ describe('TemplatePage', () => {
       rendered.getByPlaceholderText('Search for an action'),
       'create',
     );
+    await userEvent.keyboard('[ArrowDown][Enter]');
     expect(
       rendered.getByRole('heading', { name: 'githut:repo:create' }),
     ).toBeInTheDocument();
@@ -638,7 +639,7 @@ describe('TemplatePage', () => {
     ).not.toBeInTheDocument();
 
     // should show all actions when clearing the search
-    await userEvent.click(rendered.getByRole('button', { name: 'Clear' }));
+    await userEvent.click(rendered.getByTitle('Clear'));
     expect(
       rendered.getByRole('heading', { name: 'githut:repo:create' }),
     ).toBeInTheDocument();

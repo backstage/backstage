@@ -20,7 +20,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
+import {
+  ShadcnButton as Button,
+  Content,
+  ErrorPanel,
+  Header,
+  Page,
+} from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import {
@@ -277,8 +283,9 @@ function OngoingTaskContent(props: {
             <div className="rounded-xl border border-border bg-card text-card-foreground shadow">
               <div className="p-4">
                 <div className="flex flex-row justify-end">
-                  <button
-                    className="mr-2 inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 disabled:pointer-events-none disabled:opacity-50"
+                  <Button
+                    variant="outline"
+                    className="mr-2"
                     disabled={
                       !cancelEnabled ||
                       (cancelStatus !== 'not-executed' && !isRetryableTask) ||
@@ -288,33 +295,35 @@ function OngoingTaskContent(props: {
                     data-testid="cancel-button"
                   >
                     {t('ongoingTask.cancelButtonTitle')}
-                  </button>
+                  </Button>
                   {isRetryableTask && (
-                    <button
-                      className="mr-2 inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 disabled:pointer-events-none disabled:opacity-50"
+                    <Button
+                      variant="outline"
+                      className="mr-2"
                       disabled={cancelEnabled || !canRetry}
                       onClick={triggerRetry}
                       data-testid="retry-button"
                     >
                       {t('ongoingTask.retryButtonTitle')}
-                    </button>
+                    </Button>
                   )}
-                  <button
-                    className="mr-2 inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+                  <Button
+                    variant="outline"
+                    className="mr-2"
                     onClick={() => setLogVisibleState(!logsVisible)}
                   >
                     {logsVisible
                       ? t('ongoingTask.hideLogsButtonTitle')
                       : t('ongoingTask.showLogsButtonTitle')}
-                  </button>
-                  <button
-                    className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 disabled:pointer-events-none disabled:opacity-50"
+                  </Button>
+                  <Button
+                    variant="default"
                     disabled={cancelEnabled || !canStartOver}
                     onClick={startOver}
                     data-testid="start-over-button"
                   >
                     {t('ongoingTask.startOverButtonTitle')}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

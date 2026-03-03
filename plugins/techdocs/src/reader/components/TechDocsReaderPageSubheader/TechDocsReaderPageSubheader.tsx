@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Toolbar from '@material-ui/core/Toolbar';
-import { ToolbarProps } from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
-import Menu from '@material-ui/core/Menu';
-import Box from '@material-ui/core/Box';
-import SettingsIcon from '@material-ui/icons/Settings';
+import { Settings } from 'lucide-react';
 
 import {
   TechDocsAddonLocations as locations,
@@ -31,17 +24,13 @@ import {
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    gridArea: 'pageSubheader',
-    flexDirection: 'column',
-    minHeight: 'auto',
-    padding: theme.spacing(3, 3, 0),
-    '@media print': {
-      display: 'none',
-    },
-  },
-}));
+/**
+ * Props accepted by the subheader toolbar container element.
+ * Replaces the former MUI ToolbarProps with standard HTML div attributes.
+ * @public
+ */
+export type TechDocsSubheaderToolbarProps =
+  React.HTMLAttributes<HTMLDivElement>;
 
 /**
  * Renders the reader page subheader.
@@ -49,18 +38,29 @@ const useStyles = makeStyles(theme => ({
  * @public
  */
 export const TechDocsReaderPageSubheader = (props: {
-  toolbarProps?: ToolbarProps;
+  toolbarProps?: TechDocsSubheaderToolbarProps;
 }) => {
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = useCallback(() => {
+    setOpen(prev => !prev);
   }, []);
 
-  const handleClose = useCallback(() => {
-    setAnchorEl(null);
-  }, []);
+  /* Close the settings dropdown when clicking outside */
+  useEffect(() => {
+    if (!open) return undefined;
+    const onMouseDown = (event: globalThis.MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [open]);
 
   const {
     entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
@@ -79,40 +79,48 @@ export const TechDocsReaderPageSubheader = (props: {
   // No entity metadata = 404. Don't render subheader on 404.
   if (entityMetadataLoading === false && !entityMetadata) return null;
 
+  const { className: toolbarClassName, ...restToolbarProps } =
+    props.toolbarProps ?? {};
+
   return (
-    <Toolbar classes={classes} {...props.toolbarProps}>
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        width="100%"
-        flexWrap="wrap"
-      >
+    <div
+      role="toolbar"
+      className={[
+        'flex flex-col min-h-0 px-6 pt-6 pb-0 print:hidden',
+        toolbarClassName,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      style={{ gridArea: 'pageSubheader' }}
+      {...restToolbarProps}
+    >
+      <div className="flex justify-end w-full flex-wrap">
         {subheaderAddons}
         {settingsAddons ? (
-          <>
-            <Tooltip title="Settings">
-              <IconButton
-                aria-controls="tech-docs-reader-page-settings"
-                aria-haspopup="true"
-                onClick={handleClick}
-              >
-                <SettingsIcon />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              id="tech-docs-reader-page-settings"
-              getContentAnchorEl={null}
-              anchorEl={anchorEl}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              keepMounted
+          <div className="relative" ref={menuRef}>
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              aria-controls="tech-docs-reader-page-settings"
+              aria-haspopup="true"
+              aria-expanded={open}
+              onClick={handleClick}
+              title="Settings"
             >
-              <div>{settingsAddons}</div>
-            </Menu>
-          </>
+              <Settings className="h-5 w-5" />
+            </button>
+            {open && (
+              <div
+                id="tech-docs-reader-page-settings"
+                className="absolute right-0 top-full mt-1 z-50 min-w-[8rem] rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
+                role="menu"
+              >
+                {settingsAddons}
+              </div>
+            )}
+          </div>
         ) : null}
-      </Box>
-    </Toolbar>
+      </div>
+    </div>
   );
 };

@@ -25,12 +25,22 @@ import {
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { searchTranslationRef } from '../../translation';
 
+/** Map MUI-style fontSize values to Lucide pixel sizes */
+const ICON_SIZE_MAP: Record<string, number> = {
+  small: 20,
+  medium: 24,
+  large: 35,
+  inherit: 24,
+};
+
 /**
  * Wraps the lucide-react Search icon to conform to Backstage's IconComponent type.
  * Lucide icons use LucideProps (size, strokeWidth, etc.) while IconComponent expects
  * { fontSize?: 'medium' | 'large' | 'small' | 'inherit' }.
  */
-const SearchIcon: IconComponent = props => <Search {...props} />;
+const SearchIcon: IconComponent = ({ fontSize = 'medium', ...rest }) => (
+  <Search size={ICON_SIZE_MAP[fontSize] ?? 24} {...rest} />
+);
 
 /**
  * Props for {@link SidebarSearchModal}.

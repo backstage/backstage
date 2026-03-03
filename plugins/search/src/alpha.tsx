@@ -68,11 +68,21 @@ import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
 
+/** Map MUI-style fontSize values to Lucide pixel sizes */
+const ICON_SIZE_MAP: Record<string, number> = {
+  small: 20,
+  medium: 24,
+  large: 35,
+  inherit: 24,
+};
+
 /**
  * Wrapper bridging lucide-react's ForwardRefExoticComponent to Backstage's
  * IconComponent type which expects ComponentType<{ fontSize?: ... }>.
  */
-const SearchIcon: IconComponent = props => <Search {...props} />;
+const SearchIcon: IconComponent = ({ fontSize = 'medium', ...rest }) => (
+  <Search size={ICON_SIZE_MAP[fontSize] ?? 24} {...rest} />
+);
 
 /** @alpha */
 export const searchApi = ApiBlueprint.make({
