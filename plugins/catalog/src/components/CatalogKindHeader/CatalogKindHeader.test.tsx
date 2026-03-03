@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -31,6 +31,84 @@ import {
 import { CatalogKindHeader } from './CatalogKindHeader';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import pluralize from 'pluralize';
+
+/* ------------------------------------------------------------------
+ * JSDOM polyfills required by Radix UI primitives
+ * ------------------------------------------------------------------ */
+
+// Radix Select's trigger handler checks event.pointerType !== '' before
+// opening the dropdown.  JSDOM's PointerEvent may leave pointerType as ''
+// by default, which causes Radix to reject the interaction.
+if (
+  typeof globalThis.PointerEvent === 'undefined' ||
+  !new PointerEvent('pointerdown', { pointerType: 'mouse' }).pointerType
+) {
+  (globalThis as any).PointerEvent = class extends MouseEvent {
+    readonly pointerType: string;
+    readonly pointerId: number;
+    readonly width: number;
+    readonly height: number;
+    readonly pressure: number;
+    readonly tiltX: number;
+    readonly tiltY: number;
+    constructor(type: string, init: PointerEventInit = {}) {
+      super(type, init);
+      this.pointerType = init.pointerType ?? 'mouse';
+      this.pointerId = init.pointerId ?? 0;
+      this.width = init.width ?? 1;
+      this.height = init.height ?? 1;
+      this.pressure = init.pressure ?? 0;
+      this.tiltX = init.tiltX ?? 0;
+      this.tiltY = init.tiltY ?? 0;
+    }
+  };
+}
+
+// Radix's portal-rendered content may use ResizeObserver for positioning.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  (globalThis as any).ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+// DOMRect.fromRect is used by Radix for collision-aware positioning.
+if (typeof DOMRect === 'undefined' || !DOMRect.fromRect) {
+  (globalThis as any).DOMRect = {
+    fromRect: () => ({
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    }),
+  };
+}
+
+// Radix Select scrolls the selected item into view when opening; JSDOM
+// elements don't implement scrollIntoView.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
+// Radix uses hasPointerCapture / setPointerCapture / releasePointerCapture
+// for pointer event management. JSDOM may not implement these.
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = function () {
+    return false;
+  };
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = function () {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = function () {};
+}
 
 const entities: Entity[] = [
   {
@@ -81,6 +159,24 @@ const apis = TestApiRegistry.from(
   [errorApiRef, errorApi],
 );
 
+/**
+ * Helper: open the Radix Select dropdown via its combobox trigger.
+ *
+ * Radix Select's trigger handler checks `event.pointerType !== ''`
+ * before toggling. In JSDOM we dispatch a real PointerEvent to satisfy
+ * this guard, then wait for the portal-rendered listbox to appear.
+ */
+async function openSelect() {
+  const trigger = screen.getByRole('combobox');
+  // Focus the trigger first
+  trigger.focus();
+  // Radix Select handles keyboard: Space/Enter toggles, ArrowDown opens
+  // Keyboard is more reliable in JSDOM than pointer events
+  fireEvent.keyDown(trigger, { key: 'ArrowDown', code: 'ArrowDown' });
+  // Wait for the portal-rendered listbox to appear
+  await waitFor(() => expect(screen.getByRole('listbox')).toBeInTheDocument());
+}
+
 describe('<CatalogKindHeader />', () => {
   it('renders available kinds', async () => {
     await renderWithEffects(
@@ -91,12 +187,14 @@ describe('<CatalogKindHeader />', () => {
       </ApiProvider>,
     );
 
-    const input = screen.getByText('Components');
-    fireEvent.mouseDown(input);
+    await openSelect();
 
+    const listbox = screen.getByRole('listbox');
     entities.map(entity => {
       expect(
-        screen.getByRole('option', { name: `${pluralize(entity.kind)}` }),
+        within(listbox).getByRole('option', {
+          name: `${pluralize(entity.kind)}`,
+        }),
       ).toBeInTheDocument();
     });
   });
@@ -125,15 +223,17 @@ describe('<CatalogKindHeader />', () => {
       </ApiProvider>,
     );
 
-    const input = screen.getByText('Components');
-    fireEvent.mouseDown(input);
+    await openSelect();
 
-    const option = screen.getByRole('option', { name: 'Templates' });
+    const listbox = screen.getByRole('listbox');
+    const option = within(listbox).getByRole('option', { name: 'Templates' });
     fireEvent.click(option);
 
-    expect(updateFilters).toHaveBeenCalledWith({
-      kind: new EntityKindFilter('template', 'Template'),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenCalledWith({
+        kind: new EntityKindFilter('template', 'Template'),
+      }),
+    );
   });
 
   it('responds to external queryParameters changes', async () => {
@@ -181,15 +281,17 @@ describe('<CatalogKindHeader />', () => {
       </ApiProvider>,
     );
 
-    const input = screen.getByText('Components');
-    fireEvent.mouseDown(input);
+    await openSelect();
 
+    const listbox = screen.getByRole('listbox');
     expect(
-      screen.getByRole('option', { name: 'Components' }),
+      within(listbox).getByRole('option', { name: 'Components' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Systems' })).toBeInTheDocument();
     expect(
-      screen.queryByRole('option', { name: 'Templates' }),
+      within(listbox).getByRole('option', { name: 'Systems' }),
+    ).toBeInTheDocument();
+    expect(
+      within(listbox).queryByRole('option', { name: 'Templates' }),
     ).not.toBeInTheDocument();
   });
 
@@ -205,9 +307,12 @@ describe('<CatalogKindHeader />', () => {
     );
 
     expect(screen.getByText('Frobs')).toBeInTheDocument();
-    const input = screen.getByText('Frobs');
-    fireEvent.mouseDown(input);
 
-    expect(screen.getByRole('option', { name: 'Systems' })).toBeInTheDocument();
+    await openSelect();
+
+    const listbox = screen.getByRole('listbox');
+    expect(
+      within(listbox).getByRole('option', { name: 'Systems' }),
+    ).toBeInTheDocument();
   });
 });
