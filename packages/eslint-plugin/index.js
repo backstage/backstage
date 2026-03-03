@@ -30,12 +30,7 @@ const plugin = {
     name: pkg.name,
     version: pkg.version,
   },
-  configs: {
-    recommended: {
-      plugins: ['@backstage'],
-      rules: recommendedRules,
-    },
-  },
+  configs: {}, // Defined below
   rules: {
     'no-forbidden-package-imports': require('./rules/no-forbidden-package-imports'),
     'no-relative-monorepo-imports': require('./rules/no-relative-monorepo-imports'),
