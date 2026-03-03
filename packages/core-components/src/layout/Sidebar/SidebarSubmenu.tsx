@@ -14,87 +14,14 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import classnames from 'classnames';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 
-import {
-  SidebarConfigContext,
-  SidebarItemWithSubmenuContext,
-  SubmenuConfig,
-} from './config';
+import { cn } from '../../lib/utils';
+import { SidebarConfigContext, SidebarItemWithSubmenuContext } from './config';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
 
 /** @public */
 export type SidebarSubmenuClassKey = 'root' | 'drawer' | 'drawerOpen' | 'title';
-
-const useStyles = makeStyles<
-  Theme,
-  { submenuConfig: SubmenuConfig; left: number }
->(
-  theme => ({
-    root: {
-      zIndex: 1000,
-      position: 'relative',
-      overflow: 'visible',
-      width: theme.spacing(7) + 1,
-    },
-    drawer: props => ({
-      display: 'flex',
-      flexFlow: 'column nowrap',
-      alignItems: 'flex-start',
-      position: 'fixed',
-      opacity: 0,
-      [theme.breakpoints.up('sm')]: {
-        marginLeft: props.left,
-        transition: theme.transitions.create(['margin-left', 'opacity'], {
-          easing: theme.transitions.easing.sharp,
-          duration: props.submenuConfig.defaultOpenDelayMs,
-        }),
-      },
-      top: 0,
-      bottom: 0,
-      padding: 0,
-      background: theme.palette.navigation.submenu?.background ?? '#404040',
-      overflowX: 'hidden',
-      msOverflowStyle: 'none',
-      scrollbarWidth: 'none',
-      cursor: 'default',
-      width: props.submenuConfig.drawerWidthClosed,
-      transitionDelay: `${props.submenuConfig.defaultOpenDelayMs}ms`,
-      '& > *': {
-        flexShrink: 0,
-      },
-      '&::-webkit-scrollbar': {
-        display: 'none',
-      },
-    }),
-    drawerOpen: props => ({
-      marginLeft: props.left,
-      opacity: 1,
-      width: props.submenuConfig.drawerWidthOpen,
-      [theme.breakpoints.down('xs')]: {
-        width: '100%',
-        position: 'relative',
-        paddingLeft: theme.spacing(3),
-        left: 0,
-        top: 0,
-      },
-    }),
-    title: {
-      fontSize: theme.typography.h5.fontSize,
-      fontWeight: theme.typography.fontWeightMedium,
-      color: theme.palette.navigation.color,
-      padding: theme.spacing(2.5),
-      [theme.breakpoints.down('xs')]: {
-        display: 'none',
-      },
-    },
-  }),
-  { name: 'BackstageSidebarSubmenu' },
-);
 
 /**
  * Holds a title for text Header of a sidebar submenu and children
@@ -118,7 +45,6 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen
     : sidebarConfig.drawerWidthClosed;
-  const classes = useStyles({ left, submenuConfig });
 
   const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
@@ -128,15 +54,31 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   }, [isHoveredOn]);
 
   return (
-    <Box
-      className={classnames(classes.drawer, {
-        [classes.drawerOpen]: isSubmenuOpen,
-      })}
+    <div
+      className={cn(
+        'flex flex-col items-start fixed opacity-0 top-0 bottom-0 p-0 overflow-x-hidden cursor-default shrink-0',
+        '[scrollbar-width:none] [-ms-overflow-style:none] [&>*]:shrink-0 [&::-webkit-scrollbar]:hidden',
+        'bg-[var(--sidebar-submenu-bg,#404040)]',
+        'transition-none sm:transition-[margin-left,opacity,width]',
+        isSubmenuOpen &&
+          'opacity-100 max-sm:w-full max-sm:relative max-sm:pl-6 max-sm:left-0 max-sm:top-0',
+      )}
+      style={{
+        marginLeft: left,
+        width: isSubmenuOpen
+          ? submenuConfig.drawerWidthOpen
+          : submenuConfig.drawerWidthClosed,
+        transitionDuration: `${submenuConfig.defaultOpenDelayMs}ms`,
+        transitionDelay: isSubmenuOpen
+          ? '0ms'
+          : `${submenuConfig.defaultOpenDelayMs}ms`,
+        transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.6, 1)',
+      }}
     >
-      <Typography variant="h5" component="span" className={classes.title}>
+      <span className="text-xl font-medium text-[var(--sidebar-nav-color,#b5b5b5)] p-2.5 max-sm:hidden">
         {props.title}
-      </Typography>
+      </span>
       {props.children}
-    </Box>
+    </div>
   );
 };
