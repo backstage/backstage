@@ -14,24 +14,40 @@
  * limitations under the License.
  */
 
-import { forwardRef, type HTMLAttributes } from 'react';
+import * as React from 'react';
 import { cn } from '../../lib/utils';
 
 /**
  * Card container — the primary surface component for InfoCard, ItemCard,
  * and entity detail panels throughout Backstage.
  *
+ * Renders a rounded, bordered surface with card-level background and
+ * foreground color tokens. Compose with CardHeader, CardTitle,
+ * CardDescription, CardContent, and CardFooter for structured layouts.
+ *
+ * @example
+ * ```tsx
+ * <Card>
+ *   <CardHeader>
+ *     <CardTitle>Service overview</CardTitle>
+ *     <CardDescription>Catalog entity details</CardDescription>
+ *   </CardHeader>
+ *   <CardContent>…</CardContent>
+ *   <CardFooter>…</CardFooter>
+ * </Card>
+ * ```
+ *
  * @public
  */
-const Card = forwardRef<
+const Card = React.forwardRef<
   HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
     data-slot="card"
     className={cn(
-      'rounded-xl border bg-card text-card-foreground shadow',
+      'rounded-xl border border-border bg-card text-card-foreground shadow',
       className,
     )}
     {...props}
@@ -39,10 +55,15 @@ const Card = forwardRef<
 ));
 Card.displayName = 'Card';
 
-/** Card header section with title and description. @public */
-const CardHeader = forwardRef<
+/**
+ * Card header section — wraps CardTitle and CardDescription in a
+ * flex-column layout with consistent internal spacing and padding.
+ *
+ * @public
+ */
+const CardHeader = React.forwardRef<
   HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -53,10 +74,15 @@ const CardHeader = forwardRef<
 ));
 CardHeader.displayName = 'CardHeader';
 
-/** Card title text. @public */
-const CardTitle = forwardRef<
+/**
+ * Card title — renders as a semibold, tightly-tracked heading element
+ * suitable for card header regions.
+ *
+ * @public
+ */
+const CardTitle = React.forwardRef<
   HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -67,10 +93,15 @@ const CardTitle = forwardRef<
 ));
 CardTitle.displayName = 'CardTitle';
 
-/** Card description text. @public */
-const CardDescription = forwardRef<
+/**
+ * Card description — secondary text rendered below CardTitle in a
+ * muted foreground color at a smaller font size.
+ *
+ * @public
+ */
+const CardDescription = React.forwardRef<
   HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -81,10 +112,15 @@ const CardDescription = forwardRef<
 ));
 CardDescription.displayName = 'CardDescription';
 
-/** Card main content area. @public */
-const CardContent = forwardRef<
+/**
+ * Card content area — the main body section of the card with horizontal
+ * padding and no top padding (relies on CardHeader above for spacing).
+ *
+ * @public
+ */
+const CardContent = React.forwardRef<
   HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -95,10 +131,15 @@ const CardContent = forwardRef<
 ));
 CardContent.displayName = 'CardContent';
 
-/** Card footer for actions. @public */
-const CardFooter = forwardRef<
+/**
+ * Card footer — a horizontally-aligned flex container for action buttons
+ * and links, replacing MUI CardActions.
+ *
+ * @public
+ */
+const CardFooter = React.forwardRef<
   HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -109,4 +150,11 @@ const CardFooter = forwardRef<
 ));
 CardFooter.displayName = 'CardFooter';
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+};
