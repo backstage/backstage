@@ -13,36 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
+import type { ComponentType } from 'react';
 import { OverflowTooltip } from './OverflowTooltip';
+import { TooltipProvider } from '../ui/tooltip';
 
 export default {
   title: 'Data Display/OverflowTooltip',
   component: OverflowTooltip,
   tags: ['!manifest'],
+  decorators: [
+    (Story: ComponentType) => (
+      <TooltipProvider>
+        <Story />
+      </TooltipProvider>
+    ),
+  ],
 };
 
 const text =
   'Lorem Ipsum is simply sample text of the printing and typesetting industry.';
 
 export const Default = () => (
-  <Box maxWidth="200px">
+  <div className="max-w-[200px]">
     <OverflowTooltip text={text} />
-  </Box>
+  </div>
 );
 
 export const MultiLine = () => (
-  <Box maxWidth="200px">
+  <div className="max-w-[200px]">
     <OverflowTooltip text={text} line={2} />
-  </Box>
+  </div>
 );
 
 export const DifferentTitle = () => (
-  <Box maxWidth="200px">
+  <div className="max-w-[200px]">
     <OverflowTooltip
       title="Visit loremipsum.io for more info"
       text={text}
       line={2}
     />
-  </Box>
+  </div>
 );
