@@ -15,7 +15,7 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
-import LanguageIcon from '@material-ui/icons/Language';
+import { Globe } from 'lucide-react';
 import { EntityLinksEmptyState } from './EntityLinksEmptyState';
 import { LinksGridList } from './LinksGridList';
 import { ColumnBreakpoints } from './types';
@@ -30,6 +30,12 @@ export interface EntityLinksCardProps {
   variant?: InfoCardVariants;
 }
 
+/**
+ * Adapts the Lucide Globe icon to the Backstage IconComponent type contract.
+ * LucideIcon props differ from IconComponent's fontSize union type.
+ */
+const DefaultLinkIcon: IconComponent = props => <Globe {...props} />;
+
 export const EntityLinksCard = (props: EntityLinksCardProps) => {
   const { cols = undefined, variant } = props;
   const { entity } = useEntity();
@@ -37,7 +43,7 @@ export const EntityLinksCard = (props: EntityLinksCardProps) => {
   const { t } = useTranslationRef(catalogTranslationRef);
 
   const iconResolver = (key?: string): IconComponent =>
-    key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
+    key ? app.getSystemIcon(key) ?? DefaultLinkIcon : DefaultLinkIcon;
 
   const links = entity?.metadata?.links;
 
