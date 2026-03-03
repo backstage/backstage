@@ -22,8 +22,6 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { EntityLabelsEmptyState } from './EntityLabelsEmptyState';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -33,26 +31,15 @@ export interface EntityLabelsCardProps {
   title?: string;
 }
 
-const useStyles = makeStyles(_ => ({
-  key: {
-    fontWeight: 'bold',
-  },
-}));
-
 export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
   const { variant, title } = props;
   const { entity } = useEntity();
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   const columns: TableColumn<{ key: string; value: string }>[] = [
     {
       render: row => {
-        return (
-          <Typography className={classes.key} variant="body2">
-            {row.key}
-          </Typography>
-        );
+        return <span className="text-sm font-bold">{row.key}</span>;
       },
     },
     {
