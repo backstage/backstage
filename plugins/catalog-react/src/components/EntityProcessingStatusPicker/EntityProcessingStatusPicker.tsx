@@ -15,36 +15,22 @@
  */
 
 import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { makeStyles } from '@material-ui/core/styles';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import { useState } from 'react';
 import { useEntityList } from '../../hooks';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
+import { cn } from '@backstage/core-components';
+import { CheckSquare2, Square } from 'lucide-react';
 
 /** @public */
 export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
-const useStyles = makeStyles(
-  {
-    root: {},
-    input: {},
-    label: {},
-  },
-  { name: 'CatalogReactEntityProcessingStatusPickerPicker' },
-);
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
+const icon = <Square className="h-4 w-4 text-muted-foreground" />;
+const checkedIcon = <CheckSquare2 className="h-4 w-4 text-primary" />;
 
 /** @public */
 export const EntityProcessingStatusPicker = () => {
-  const classes = useStyles();
   const { updateFilters } = useEntityList();
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
@@ -67,7 +53,7 @@ export const EntityProcessingStatusPicker = () => {
   const availableAdvancedItems = ['Is Orphan', 'Has Error'];
 
   return (
-    <Box className={classes.root} pb={1} pt={1}>
+    <div className={cn('py-2')}>
       <CatalogAutocomplete<string, true>
         label={t('entityProcessingStatusPicker.title')}
         multiple
@@ -80,22 +66,16 @@ export const EntityProcessingStatusPicker = () => {
           errorChange(value.includes('Has Error'));
         }}
         renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-            }
-            onClick={event => event.preventDefault()}
-            label={option}
-          />
+          <div className="flex items-center gap-2 cursor-pointer">
+            {selected ? checkedIcon : icon}
+            {/* eslint-disable-next-line react/forbid-elements */}
+            <span className="text-sm">{option}</span>
+          </div>
         )}
         name="processing-status-picker"
-        LabelProps={{ className: classes.label }}
-        TextFieldProps={{ className: classes.input }}
+        LabelProps={{ className: 'font-bold text-sm' }}
+        TextFieldProps={{ className: '' }}
       />
-    </Box>
+    </div>
   );
 };
