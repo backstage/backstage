@@ -18,6 +18,7 @@ import { useElementFilter } from '@backstage/core-plugin-api';
 import { X as CloseIcon, Menu as MenuIcon } from 'lucide-react';
 import { orderBy } from 'lodash';
 import {
+  cloneElement,
   useEffect,
   useState,
   useContext,
@@ -195,7 +196,12 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
           style={{ height: `${sidebarConfig.mobileSidebarHeight}px` }}
           data-testid="mobile-sidebar-root"
         >
-          {sidebarGroups}
+          {/* Inject the value (index) prop into each SidebarGroup so that
+              MobileSidebarGroup knows its position — replicates the behavior
+              that MUI BottomNavigation provided via React.cloneElement. */}
+          {sidebarGroups.map((group, index) =>
+            cloneElement(group, { value: index, key: group.key ?? index }),
+          )}
         </nav>
       </MobileSidebarContext.Provider>
     </SidebarOpenStateProvider>

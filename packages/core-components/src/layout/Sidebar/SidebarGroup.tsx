@@ -69,7 +69,13 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
 
-  const handleClick = () => {
+  const handleClick = (e: { preventDefault: () => void }) => {
+    // Overlay-type groups (no `to` prop) should not trigger link navigation —
+    // they only toggle the overlay menu open/closed. Prevent default to stop
+    // React Router from processing a navigation that resets component state.
+    if (!to) {
+      e.preventDefault();
+    }
     const numValue = value as number;
     if (numValue === selectedMenuItemIndex) {
       setSelectedMenuItemIndex(-1);
