@@ -17,26 +17,7 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  .bui-PluginHeader {
-    display: block;
-  }
-
-  .bui-PluginHeaderToolbar {
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0px;
-      right: 0px;
-      height: 16px;
-      background-color: var(--bui-bg-app);
-      z-index: 0;
-    }
-  }
-
   .bui-PluginHeaderToolbarWrapper {
-    position: relative;
-    z-index: 1;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -77,10 +58,6 @@
   }
 
   .bui-PluginHeaderToolbarControls {
-    position: absolute;
-    right: var(--bui-space-5);
-    top: 50%;
-    transform: translateY(-50%);
     display: flex;
     flex-direction: row;
     align-items: center;
