@@ -105,12 +105,16 @@ export const MetadataTableItem = ({
 
 interface StyleProps extends WithStyles {
   children?: ReactNode;
+  className?: string;
 }
 
 export const MetadataList = withStyles(listStyles, {
   name: 'BackstageMetadataTableList',
-})(({ classes, children }: StyleProps) => (
-  <List disablePadding className={classes.root}>
+})(({ classes, children, className }: StyleProps) => (
+  <List
+    disablePadding
+    className={`${classes.root}${className ? ` ${className}` : ''}`}
+  >
     {children}
   </List>
 ));

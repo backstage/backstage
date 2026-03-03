@@ -16,7 +16,6 @@
 
 import { ReactNode, isValidElement, Fragment, ReactElement } from 'react';
 import startCase from 'lodash/startCase';
-import Typography from '@material-ui/core/Typography';
 
 import {
   MetadataList,
@@ -26,45 +25,20 @@ import {
 } from './MetadataTable';
 import { CodeSnippet } from '../CodeSnippet';
 import jsyaml from 'js-yaml';
-import {
-  Theme,
-  createStyles,
-  WithStyles,
-  withStyles,
-} from '@material-ui/core/styles';
+import { cn } from '../../lib/utils';
 
 export type StructuredMetadataTableListClassKey = 'root';
 
-const listStyle = createStyles({
-  root: {
-    margin: '0 0',
-    listStyleType: 'none',
-  },
-});
-
 export type StructuredMetadataTableNestedListClassKey = 'root';
-const nestedListStyle = (theme: Theme) =>
-  createStyles({
-    root: {
-      ...listStyle.root,
-      paddingLeft: theme.spacing(1),
-    },
-  });
 
-interface StyleProps extends WithStyles {
-  children?: ReactNode;
-}
 // Sub Components
-const StyledList = withStyles(listStyle, {
-  name: 'BackstageStructuredMetadataTableList',
-})(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
-const StyledNestedList = withStyles(nestedListStyle, {
-  name: 'BackstageStructuredMetadataTableNestedList',
-})(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
+const StyledList = ({ children }: { children?: ReactNode }) => (
+  <MetadataList className={cn('m-0 list-none')}>{children}</MetadataList>
+);
+
+const StyledNestedList = ({ children }: { children?: ReactNode }) => (
+  <MetadataList className={cn('m-0 list-none pl-2')}>{children}</MetadataList>
+);
 
 function renderList(list: Array<any>, options: Options, nested: boolean) {
   const values = list.map((item: any, index: number) => (
@@ -88,9 +62,7 @@ function renderMap(
     const value = toValue(map[key], options, true);
     return (
       <MetadataListItem key={key}>
-        <Typography variant="body2" component="span">
-          {`${options.titleFormat(key)}: `}
-        </Typography>
+        <span className="text-sm">{`${options.titleFormat(key)}: `}</span>
         {value}
       </MetadataListItem>
     );
@@ -138,11 +110,7 @@ function toValue(
   if (typeof value === 'boolean') {
     return <Fragment>{value ? '✅' : '❌'}</Fragment>;
   }
-  return (
-    <Typography variant="body2" component="span">
-      {value}
-    </Typography>
-  );
+  return <span className="text-sm">{value}</span>;
 }
 const ItemValue = ({ value, options }: { value: any; options: Options }) => (
   <Fragment>{toValue(value, options, false)}</Fragment>
