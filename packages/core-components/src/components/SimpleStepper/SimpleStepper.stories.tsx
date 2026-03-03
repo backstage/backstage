@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import TextField from '@material-ui/core/TextField';
+import { Input } from '../ui/input';
 import { useState } from 'react';
 import { SimpleStepper, StepperProps } from './SimpleStepper';
 import { SimpleStepperStep } from './SimpleStepperStep';
@@ -57,8 +57,7 @@ export const ConditionalButtons = (args: StepperProps) => {
           canNext: () => required,
         }}
       >
-        <TextField
-          variant="outlined"
+        <Input
           placeholder="Required*"
           onChange={e => setRequired(!!e.target.value)}
         />
