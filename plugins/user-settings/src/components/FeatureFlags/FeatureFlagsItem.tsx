@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Switch from '@material-ui/core/Switch';
-import Tooltip from '@material-ui/core/Tooltip';
+import {
+  Switch,
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@backstage/core-components';
 import { FeatureFlag } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
@@ -48,21 +49,52 @@ export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => {
   const { t } = useTranslationRef(userSettingsTranslationRef);
 
   return (
-    <ListItem divider button onClick={() => toggleHandler(flag.name)}>
-      <ListItemIcon>
-        <Tooltip
-          placement="top"
-          arrow
-          title={
-            enabled
+    <div
+      className="flex items-center gap-3 border-b border-border px-4 py-3 cursor-pointer transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      onClick={() => toggleHandler(flag.name)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleHandler(flag.name);
+        }
+      }}
+    >
+      <div className="flex items-center shrink-0">
+        <ShadcnTooltip>
+          <TooltipTrigger asChild>
+            {/* eslint-disable-next-line react/forbid-elements -- replacing MUI Typography with Tailwind-styled span during shadcn/ui migration */}
+            <span>
+              <Switch
+                checked={enabled}
+                onCheckedChange={() => toggleHandler(flag.name)}
+                name={flag.name}
+                aria-label={
+                  enabled
+                    ? t('featureFlags.flagItem.title.disable')
+                    : t('featureFlags.flagItem.title.enable')
+                }
+              />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            {enabled
               ? t('featureFlags.flagItem.title.disable')
-              : t('featureFlags.flagItem.title.enable')
-          }
-        >
-          <Switch color="primary" checked={enabled} name={flag.name} />
-        </Tooltip>
-      </ListItemIcon>
-      <ListItemText primary={flag.name} secondary={getSecondaryText(flag, t)} />
-    </ListItem>
+              : t('featureFlags.flagItem.title.enable')}
+          </TooltipContent>
+        </ShadcnTooltip>
+      </div>
+      <div className="flex flex-col min-w-0">
+        {/* eslint-disable-next-line react/forbid-elements -- replacing MUI Typography with Tailwind-styled span during shadcn/ui migration */}
+        <span className="text-sm font-medium text-foreground truncate">
+          {flag.name}
+        </span>
+        {/* eslint-disable-next-line react/forbid-elements -- replacing MUI Typography with Tailwind-styled span during shadcn/ui migration */}
+        <span className="text-xs text-muted-foreground truncate">
+          {getSecondaryText(flag, t)}
+        </span>
+      </div>
+    </div>
   );
 };
