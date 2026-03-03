@@ -23,7 +23,7 @@
 import { useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Link } from '../../components/Link';
-import { CodeSnippet } from '../../components/CodeSnippet';
+import { CodeSnippet } from '../../components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { coreComponentsTranslationRef } from '../../translation';
 
@@ -50,8 +50,7 @@ export function StackDetails(props: IStackDetailsProps) {
     return (
       <h6
         className={cn(
-          'text-base font-medium pb-5',
-          'max-sm:pb-4 max-sm:text-lg',
+          'text-base font-semibold pb-10 max-sm:pb-8 max-sm:text-2xl',
         )}
       >
         <Link to="#" onClick={() => setDetailsOpen(true)}>
@@ -65,8 +64,7 @@ export function StackDetails(props: IStackDetailsProps) {
     <>
       <h6
         className={cn(
-          'text-base font-medium pb-5',
-          'max-sm:pb-4 max-sm:text-lg',
+          'text-base font-semibold pb-10 max-sm:pb-8 max-sm:text-2xl',
         )}
       >
         <Link to="#" onClick={() => setDetailsOpen(false)}>
