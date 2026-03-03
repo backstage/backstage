@@ -96,7 +96,11 @@ export function CodeSnippet(props: CodeSnippetProps) {
     typeof document !== 'undefined' &&
     document.documentElement.dataset.themeMode === 'dark';
   const mode = isDark ? dark : docco;
-  const highlightColor = isDark ? '#256bf3' : '#e6ffed';
+  // Use CSS custom property tokens for line-highlight colors, with hardcoded
+  // fallbacks for environments where the global token stylesheet is not loaded.
+  const highlightColor = isDark
+    ? 'var(--primary, #256bf3)'
+    : 'var(--success, #e6ffed)';
 
   return (
     <div className={cn('relative', 'font-mono')}>

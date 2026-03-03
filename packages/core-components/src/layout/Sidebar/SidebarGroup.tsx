@@ -115,7 +115,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
       }
     >
       {icon}
-      <span className="sr-only">{label}</span>
+      <span className="text-xs truncate max-w-full">{label}</span>
     </Link>
   );
 };

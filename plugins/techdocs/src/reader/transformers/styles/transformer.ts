@@ -100,27 +100,29 @@ const useTechDocsTheme = (): TechDocsTheme => {
         },
         primary: {
           main: get('--primary') || '#1f5493',
-          light: themeMode === 'dark' ? '#64b5f6' : '#42a5f5',
-          dark: themeMode === 'dark' ? '#1565c0' : '#1e88e5',
+          light:
+            get('--ring') || (themeMode === 'dark' ? '#64b5f6' : '#42a5f5'),
+          dark:
+            get('--primary') || (themeMode === 'dark' ? '#1565c0' : '#1e88e5'),
           contrastText: get('--primary-foreground') || '#ffffff',
         },
         secondary: {
-          light: '#ce93d8',
-          dark: '#7b1fa2',
+          light: get('--secondary') || '#ce93d8',
+          dark: get('--secondary-foreground') || '#7b1fa2',
         },
         success: {
-          main: '#4caf50',
-          light: '#81c784',
-          dark: '#388e3c',
+          main: get('--status-ok') || '#4caf50',
+          light: get('--success-foreground') || '#81c784',
+          dark: get('--status-ok') || '#388e3c',
         },
         error: {
-          light: '#e57373',
-          dark: '#d32f2f',
+          light: get('--status-error') || '#e57373',
+          dark: get('--destructive') || '#d32f2f',
         },
         warning: {
-          main: '#ed6c02',
-          light: '#ff9800',
-          dark: '#e65100',
+          main: get('--status-warning') || '#ed6c02',
+          light: get('--status-warning') || '#ff9800',
+          dark: get('--warning-foreground') || '#e65100',
         },
         action: {
           hover:
@@ -141,42 +143,49 @@ const useTechDocsTheme = (): TechDocsTheme => {
         '0px 3px 3px -2px rgba(0,0,0,0.2),0px 3px 4px 0px rgba(0,0,0,0.14),0px 1px 8px 0px rgba(0,0,0,0.12)',
       ],
       typography: {
-        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+        fontFamily:
+          get('--font-sans') || '"Roboto", "Helvetica", "Arial", sans-serif',
         h1: {
           fontSize: '2.125rem',
           fontWeight: 300,
           lineHeight: 1.167,
-          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+          fontFamily:
+            get('--font-sans') || '"Roboto", "Helvetica", "Arial", sans-serif',
         },
         h2: {
           fontSize: '1.5rem',
           fontWeight: 300,
           lineHeight: 1.235,
-          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+          fontFamily:
+            get('--font-sans') || '"Roboto", "Helvetica", "Arial", sans-serif',
         },
         h3: {
           fontSize: '1.25rem',
           fontWeight: 400,
           lineHeight: 1.334,
-          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+          fontFamily:
+            get('--font-sans') || '"Roboto", "Helvetica", "Arial", sans-serif',
         },
         h4: {
           fontSize: '1.125rem',
           fontWeight: 400,
           lineHeight: 1.4,
-          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+          fontFamily:
+            get('--font-sans') || '"Roboto", "Helvetica", "Arial", sans-serif',
         },
         h5: {
           fontSize: '1rem',
           fontWeight: 400,
           lineHeight: 1.5,
-          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+          fontFamily:
+            get('--font-sans') || '"Roboto", "Helvetica", "Arial", sans-serif',
         },
         h6: {
           fontSize: '0.875rem',
           fontWeight: 500,
           lineHeight: 1.6,
-          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+          fontFamily:
+            get('--font-sans') || '"Roboto", "Helvetica", "Arial", sans-serif',
         },
         htmlFontSize: 16,
       },
