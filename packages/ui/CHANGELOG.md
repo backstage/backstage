@@ -1,5 +1,108 @@
 # @backstage/ui
 
+## 0.13.0-next.1
+
+### Minor Changes
+
+- 768f09d: **BREAKING**: Simplified the neutral background prop API for container components. The explicit `neutral-1`, `neutral-2`, `neutral-3`, and `neutral-auto` values have been removed from `ProviderBg`. They are replaced by a single `'neutral'` value that always auto-increments from the parent context, making it impossible to skip or pin to an explicit neutral level.
+
+  **Migration:**
+
+  Replace any explicit `bg="neutral-1"`, `bg="neutral-2"`, `bg="neutral-3"`, or `bg="neutral-auto"` props with `bg="neutral"`. To achieve a specific neutral level in stories or tests, use nested containers — each additional `bg="neutral"` wrapper increments by one level.
+
+  ```tsx
+  // Before
+  <Box bg="neutral-2">...</Box>
+
+  // After
+  <Box bg="neutral">
+    <Box bg="neutral">...</Box>
+  </Box>
+  ```
+
+  **Affected components:** Box, Flex, Grid, Card, Accordion, Popover, Tooltip, Dialog, Menu
+
+- b42fcdc: **BREAKING**: Removed `--bui-bg-popover` CSS token. Popover, Tooltip, Menu, and Dialog now use `--bui-bg-app` for their outer shell and `Box bg="neutral-1"` for content areas, providing better theme consistency and eliminating a redundant token.
+
+  **Migration:**
+
+  Replace any usage of `--bui-bg-popover` with `--bui-bg-neutral-1` (for content surfaces) or `--bui-bg-app` (for outer shells):
+
+  ```diff
+  - background: var(--bui-bg-popover);
+  + background: var(--bui-bg-neutral-1);
+  ```
+
+  **Affected components:** Popover, Tooltip, Menu, Dialog
+
+- bd3a76e: **BREAKING**: Data attributes rendered by components are now always lowercase. This affects CSS selectors targeting camelCase data attributes.
+
+  **Migration:**
+
+  Update any custom CSS selectors that target camelCase data attributes to use lowercase instead:
+
+  ```diff
+  - [data-startCollapsed='true'] { ... }
+  + [data-startcollapsed='true'] { ... }
+  ```
+
+  **Affected components:** SearchField
+
+- 95702ab: **BREAKING**: Removed deprecated types `ComponentDefinition`, `ClassNamesMap`, `DataAttributeValues`, and `DataAttributesMap` from the public API. These were internal styling infrastructure types that have been replaced by the `defineComponent` system.
+
+  **Migration:**
+
+  Remove any direct usage of these types. Component definitions now use `defineComponent()` and their shapes are not part of the public API contract.
+
+  ```diff
+  - import type { ComponentDefinition, ClassNamesMap } from '@backstage/ui';
+  ```
+
+  If you were reading `definition.dataAttributes`, use `definition.propDefs` instead — props with `dataAttribute: true` in `propDefs` are the equivalent.
+
+### Patch Changes
+
+- 58224d3: Fixed neutral-1 hover & pressed state in light mode.
+- 95702ab: Migrated all components from `useStyles` to `useDefinition` hook. Exported `OwnProps` types for each component, enabling better type composition for consumers.
+
+  **Affected components:** Avatar, Checkbox, Container, Dialog, FieldError, FieldLabel, Flex, FullPage, Grid, HeaderPage, Link, Menu, PasswordField, PluginHeader, Popover, RadioGroup, SearchField, Select, Skeleton, Switch, Table, TablePagination, Tabs, TagGroup, Text, TextField, ToggleButton, ToggleButtonGroup, Tooltip, VisuallyHidden
+
+- 4c2c350: Removed the `transition` on `Container` padding to prevent an unwanted animation when the viewport is resized.
+
+  Affected components: Container
+
+- d4fa5b4: Fixed tab `matchStrategy` matching to ignore query parameters and hash fragments in tab `href` values. Previously, tabs with query params in their `href` (e.g., `/page?group=foo`) would never show as active since matching compared the full `href` string against `location.pathname` which never includes query params.
+
+  **Affected components:** Tabs, PluginHeader
+
+- 36987db: Fixed handling of the `style` prop on `Button`, `ButtonIcon`, and `ButtonLink` so that it is now correctly forwarded to the underlying element instead of being silently dropped.
+
+  **Affected components:** Button, ButtonIcon, ButtonLink
+
+- 95702ab: Fixed Link variant default from `'body'` to `'body-medium'` to match actual CSS selectors. The previous default did not correspond to a valid variant value.
+
+  **Affected components:** Link
+
+- 9027b10: Fixed scroll overflow in Menu and Select popover content when constrained by viewport height.
+
+  **Affected components:** Menu, Select
+
+- 4105a78: Merged the internal `PluginHeaderToolbar` component into `PluginHeader`, removing the separate component and its associated types (`PluginHeaderToolbarOwnProps`, `PluginHeaderToolbarProps`) and definition (`PluginHeaderToolbarDefinition`). This is an internal refactor with no changes to the public API of `PluginHeader`.
+
+  **Affected components:** PluginHeader
+
+- b303857: Fixed `isRequired` prop not being passed to the underlying React Aria field components in TextField, SearchField, and PasswordField. Previously, `isRequired` was consumed locally for the secondary label text but never forwarded, which meant the input elements lacked `aria-required="true"` and React Aria's built-in required validation was not activated.
+
+  **Affected components:** TextField, SearchField, PasswordField
+
+- cd3cb0f: Improved `useBreakpoint` performance by sharing a single set of `matchMedia` listeners across all component instances instead of creating independent listeners per hook call.
+- 36987db: Extended `AlertProps`, `ContainerProps`, `DialogBodyProps`, and `FieldLabelProps` with native div element props to allow passing attributes like `aria-*` and `data-*`.
+
+  **Affected components:** Alert, Container, DialogBody, FieldLabel
+
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12
+
 ## 0.12.1-next.0
 
 ### Patch Changes

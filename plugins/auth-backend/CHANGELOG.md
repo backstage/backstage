@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-backend
 
+## 0.27.1-next.1
+
+### Patch Changes
+
+- 1ccad86: Added `who-am-i` action to the auth backend actions registry. Returns the catalog entity and user info for the currently authenticated user.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.14-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.27.1-next.0
 
 ### Patch Changes

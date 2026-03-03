@@ -1,5 +1,42 @@
 # @backstage/plugin-catalog-backend
 
+## 3.5.0-next.1
+
+### Minor Changes
+
+- a6b2819: Added `query-catalog-entities` action to the catalog backend actions registry. Supports predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 972f686: Added support for predicate-based filtering on the `/entities/by-refs` endpoint via the `query` field in the request body. Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 56c908e: Added support for predicate-based filtering on the `/entity-facets` endpoint via a new `POST` method. Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+- 51e23eb: Added predicate-based entity filtering via POST /entities/by-query endpoint.
+
+  Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$hasPrefix`, and (partially) `$contains` operators for expressive entity queries. Integrated into the existing `queryEntities` flow with full cursor-based pagination, permission enforcement, and `totalItems` support.
+
+  The catalog client's `queryEntities()` method automatically routes to the POST endpoint when a `query` predicate is provided.
+
+### Patch Changes
+
+- 72747b4: Deprecated two processors as they have been moved to the Community Plugins repo with their own backend modules:
+
+  - `AnnotateScmSlugEntityProcessor`: Use `@backstage-community/plugin-catalog-backend-module-annotate-scm-slug` instead
+  - `CodeOwnersProcessor`: Use `@backstage-community/plugin-catalog-backend-module-codeowners` instead
+
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-openapi-utils@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
 ## 3.5.0-next.0
 
 ### Minor Changes
