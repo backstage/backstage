@@ -15,30 +15,41 @@
  */
 
 import { useElementFilter } from '@backstage/core-plugin-api';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
+import { cn } from '@backstage/core-components';
 
-const useStyles = makeStyles(theme => ({
-  value: {
-    fontWeight: 'bold',
-    overflow: 'hidden',
-    lineHeight: '24px',
-    wordBreak: 'break-word',
-  },
-  label: {
-    color: theme.palette.text.secondary,
-    textTransform: 'uppercase',
-    fontSize: '10px',
-    fontWeight: 'bold',
-    letterSpacing: 0.5,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-  },
-}));
+/**
+ * Converts MUI Grid breakpoint-based column sizes to Tailwind CSS
+ * responsive col-span utility classes.
+ *
+ * @remarks
+ * MUI Grid uses `xs`, `sm`, `md`, `lg`, `xl` props with 1-12 column spans.
+ * Tailwind uses `col-span-{n}` with responsive prefixes (`sm:`, `md:`, etc.).
+ * The `xs` breakpoint maps to the base (un-prefixed) class since Tailwind is
+ * mobile-first.
+ *
+ * @param gridSizes - Optional record of breakpoint keys to column span numbers
+ * @returns A space-separated string of Tailwind col-span classes
+ */
+function gridSizesToClassName(gridSizes?: Record<string, number>): string {
+  if (!gridSizes) return 'col-span-12 sm:col-span-6 lg:col-span-4';
+  const mapping: Record<string, string> = {
+    xs: 'col-span',
+    sm: 'sm:col-span',
+    md: 'md:col-span',
+    lg: 'lg:col-span',
+    xl: 'xl:col-span',
+  };
+  return Object.entries(gridSizes)
+    .map(([breakpoint, span]) => {
+      const prefix = mapping[breakpoint];
+      return prefix ? `${prefix}-${span}` : '';
+    })
+    .filter(Boolean)
+    .join(' ');
+}
 
 /**
  * Props for {@link AboutField}.
@@ -56,7 +67,6 @@ export interface AboutFieldProps {
 /** @public */
 export function AboutField(props: AboutFieldProps) {
   const { label, value, gridSizes, children, className } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   const childElements = useElementFilter(children, c => c.getElements());
@@ -66,16 +76,16 @@ export function AboutField(props: AboutFieldProps) {
     childElements.length > 0 ? (
       childElements
     ) : (
-      <Typography variant="body2" className={classes.value}>
+      <p className="text-sm font-bold overflow-hidden leading-6 break-words">
         {value || t('aboutCard.unknown')}
-      </Typography>
+      </p>
     );
   return (
-    <Grid item {...gridSizes} className={className}>
-      <Typography variant="h2" className={classes.label}>
+    <div className={cn(gridSizesToClassName(gridSizes), className)}>
+      <h2 className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.5px] overflow-hidden whitespace-nowrap">
         {label}
-      </Typography>
+      </h2>
       {content}
-    </Grid>
+    </div>
   );
 }
