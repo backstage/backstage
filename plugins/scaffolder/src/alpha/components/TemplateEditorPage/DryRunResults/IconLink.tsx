@@ -13,49 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import { LinkProps } from '@material-ui/core/Link';
-import LanguageIcon from '@material-ui/icons/Language';
+import { Globe } from 'lucide-react';
 
 import { IconComponent } from '@backstage/core-plugin-api';
-import { Link } from '@backstage/core-components';
+import { cn, Link } from '@backstage/core-components';
 
-const useStyles = makeStyles({
-  svgIcon: {
-    display: 'inline-block',
-    '& svg': {
-      display: 'inline-block',
-      fontSize: 'inherit',
-      verticalAlign: 'baseline',
-    },
-  },
-});
+/**
+ * Props for the {@link IconLink} component.
+ *
+ * @remarks
+ * Defines an icon-accompanied hyperlink with optional text label.
+ * The `Icon` prop accepts any Backstage `IconComponent`. When omitted,
+ * the component renders the default Globe icon from lucide-react.
+ */
+export type IconLinkProps = {
+  /** URL the link points to */
+  href: string;
+  /** Display text — falls back to `href` when omitted */
+  text?: string;
+  /** Optional icon component rendered before the link text */
+  Icon?: IconComponent;
+  /** Anchor target attribute (e.g. `"_blank"`) */
+  target?: string;
+  /** Anchor rel attribute (e.g. `"noopener noreferrer"`) */
+  rel?: string;
+};
 
-export const IconLink = (
-  props: {
-    href: string;
-    text?: string;
-    Icon?: IconComponent;
-  } & LinkProps,
-) => {
+/**
+ * Default prop values for {@link IconLink}.
+ *
+ * @remarks
+ * Supplies a Globe icon as the default icon via lucide-react, cast to
+ * the Backstage `IconComponent` contract.
+ */
+export const defaultIconLinkProps: Omit<IconLinkProps, 'href' | 'text'> = {
+  Icon: Globe as unknown as IconComponent,
+};
+
+/**
+ * A compact icon + label link component used in scaffolder dry-run results.
+ *
+ * @remarks
+ * Renders an inline flex row containing an optional icon followed by a
+ * clickable link. Uses Tailwind CSS utility classes for layout instead
+ * of MUI Grid, and the Backstage `Link` component for routing-aware
+ * navigation.
+ */
+export const IconLink = (props: IconLinkProps) => {
   const { href, text, Icon, ...linkProps } = props;
 
-  const classes = useStyles();
-
   return (
-    <Grid container direction="row" spacing={1}>
-      <Grid item>
-        <Typography component="div" className={classes.svgIcon}>
-          {Icon ? <Icon /> : <LanguageIcon />}
-        </Typography>
-      </Grid>
-      <Grid item>
+    <div className={cn('flex flex-row items-center gap-2')}>
+      <span
+        className={cn(
+          'inline-block',
+          '[&_svg]:inline-block [&_svg]:text-[inherit] [&_svg]:align-baseline',
+        )}
+      >
+        {Icon ? <Icon /> : <Globe />}
+      </span>
+      <span className="text-sm">
         <Link to={href} {...linkProps}>
           {text || href}
         </Link>
-      </Grid>
-    </Grid>
+      </span>
+    </div>
   );
 };
