@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { Select } from '@backstage/core-components';
+import {
+  ShadcnSelect,
+  SelectTrigger,
+  SelectContent,
+  ShadcnSelectItem,
+  SelectValue,
+} from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import Box from '@material-ui/core/Box';
 import { useEffect, useMemo, useState } from 'react';
 import { EntityKindFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
@@ -128,13 +133,27 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
   }));
 
   return hidden ? null : (
-    <Box pb={1} pt={1}>
-      <Select
-        label={t('entityKindPicker.title')}
-        items={items}
-        selected={selectedKind.toLocaleLowerCase('en-US')}
-        onChange={value => setSelectedKind(String(value))}
-      />
-    </Box>
+    <div className="py-2">
+      <div className="space-y-1">
+        <label className="text-sm font-medium leading-none">
+          {t('entityKindPicker.title')}
+        </label>
+        <ShadcnSelect
+          value={selectedKind.toLocaleLowerCase('en-US')}
+          onValueChange={value => setSelectedKind(String(value))}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={t('entityKindPicker.title')} />
+          </SelectTrigger>
+          <SelectContent>
+            {items.map(item => (
+              <ShadcnSelectItem key={item.value} value={item.value}>
+                {item.label}
+              </ShadcnSelectItem>
+            ))}
+          </SelectContent>
+        </ShadcnSelect>
+      </div>
+    </div>
   );
 };

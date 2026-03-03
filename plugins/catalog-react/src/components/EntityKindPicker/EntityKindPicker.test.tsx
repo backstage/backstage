@@ -20,12 +20,21 @@ import { ApiProvider } from '@backstage/core-app-api';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { mockApis } from '@backstage/frontend-test-utils';
-import { fireEvent, waitFor, screen, within } from '@testing-library/react';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { capitalize } from 'lodash';
 import { catalogApiRef } from '../../api';
 import { EntityKindFilter } from '../../filters';
 import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityKindPicker } from './EntityKindPicker';
+
+// Radix UI primitives use scrollIntoView and hasPointerCapture which jsdom does not implement.
+// Mock them to prevent TypeError in the test environment.
+beforeAll(() => {
+  Element.prototype.scrollIntoView = jest.fn();
+  Element.prototype.hasPointerCapture = jest.fn(() => false);
+  Element.prototype.setPointerCapture = jest.fn();
+  Element.prototype.releasePointerCapture = jest.fn();
+});
 
 const entities: Entity[] = [
   {
@@ -83,8 +92,9 @@ describe('<EntityKindPicker/>', () => {
     );
     expect(screen.getByText('Kind')).toBeInTheDocument();
 
-    const input = screen.getByTestId('select');
-    fireEvent.mouseDown(within(input).getByRole('button'));
+    // Radix Select trigger has role="combobox"
+    const trigger = screen.getByRole('combobox');
+    fireEvent.click(trigger);
 
     await waitFor(() => screen.getByText('Domain'));
 
@@ -111,8 +121,9 @@ describe('<EntityKindPicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    const input = screen.getByTestId('select');
-    fireEvent.mouseDown(within(input).getByRole('button'));
+    // Radix Select trigger has role="combobox"
+    const trigger = screen.getByRole('combobox');
+    fireEvent.click(trigger);
 
     await waitFor(() => screen.getByText('Domain'));
     fireEvent.click(screen.getByText('Domain'));
@@ -167,8 +178,9 @@ describe('<EntityKindPicker/>', () => {
       </ApiProvider>,
     );
 
-    const input = screen.getByTestId('select');
-    fireEvent.mouseDown(within(input).getByRole('button'));
+    // Radix Select trigger has role="combobox"
+    const trigger = screen.getByRole('combobox');
+    fireEvent.click(trigger);
 
     expect(
       screen.getByRole('option', { name: 'Component' }),
@@ -192,8 +204,9 @@ describe('<EntityKindPicker/>', () => {
 
     expect(screen.getByText('Frob')).toBeInTheDocument();
 
-    const input = screen.getByTestId('select');
-    fireEvent.mouseDown(within(input).getByRole('button'));
+    // Radix Select trigger has role="combobox"
+    const trigger = screen.getByRole('combobox');
+    fireEvent.click(trigger);
     expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
   });
 });
