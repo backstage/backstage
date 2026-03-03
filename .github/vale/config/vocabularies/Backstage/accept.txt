@@ -468,6 +468,7 @@ subfolders
 subheader
 subheaders
 subkey
+submenu
 subpage
 subpath
 subpaths
