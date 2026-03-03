@@ -14,20 +14,47 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from 'react';
+import * as React from 'react';
 import { Progress as ProgressPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/utils';
 
 /**
- * Accessible progress bar built on Radix Progress primitive.
- * Replaces MUI LinearProgress across loading states.
+ * Accessible progress bar component built on Radix UI Progress primitive,
+ * styled with Tailwind CSS following the shadcn/ui new-york convention.
+ *
+ * Replaces MUI `LinearProgress` across loading states, including the
+ * ProxiedSignInPage and AutoLogout countdown components.
+ *
+ * @remarks
+ * The component renders a horizontal progress track with an animated
+ * indicator that translates along the X axis based on the current `value`.
+ * Radix UI's Progress primitive provides built-in ARIA `progressbar` role,
+ * `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` attributes
+ * for assistive technology support.
+ *
+ * Named `ProgressIndicator` to avoid naming conflict with the existing
+ * Backstage `Progress` component exported from `../Progress/`.
+ *
+ * @example
+ * ```tsx
+ * import { ProgressIndicator } from '../ui/progress';
+ *
+ * // Determinate progress (0–100)
+ * <ProgressIndicator value={65} />
+ *
+ * // Indeterminate / starting state
+ * <ProgressIndicator value={0} />
+ *
+ * // With custom className override
+ * <ProgressIndicator value={40} className="h-3 bg-muted" />
+ * ```
  *
  * @public
  */
-const ShadcnProgress = forwardRef<
-  ComponentRef<typeof ProgressPrimitive.Root>,
-  ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
+const ProgressIndicator = React.forwardRef<
+  React.ComponentRef<typeof ProgressPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
 >(({ className, value, ...props }, ref) => (
   <ProgressPrimitive.Root
     ref={ref}
@@ -45,6 +72,6 @@ const ShadcnProgress = forwardRef<
     />
   </ProgressPrimitive.Root>
 ));
-ShadcnProgress.displayName = 'ShadcnProgress';
+ProgressIndicator.displayName = 'ProgressIndicator';
 
-export { ShadcnProgress };
+export { ProgressIndicator };
