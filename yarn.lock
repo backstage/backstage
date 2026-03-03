@@ -3824,8 +3824,6 @@ __metadata:
     "@types/estree": "npm:^1.0.5"
     eslint: "npm:^8.57.1"
     minimatch: "npm:^10.2.1"
-  peerDependencies:
-    eslint: ^8.57.1 || ^9.0.0 || ^10.0.0
   languageName: unknown
   linkType: soft
 
