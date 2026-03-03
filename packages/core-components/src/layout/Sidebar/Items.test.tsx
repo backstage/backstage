@@ -21,7 +21,7 @@ import {
 } from '@backstage/test-utils';
 import { createEvent, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { type IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { Home, PlusCircle } from 'lucide-react';
 
 /**
