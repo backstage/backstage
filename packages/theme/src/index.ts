@@ -15,7 +15,7 @@
  */
 
 /**
- * {@link https://mui.com | material-ui} theme for use with Backstage
+ * Unified theming for Backstage — Material UI themes for backward compatibility and CSS custom property tokens for shadcn/ui
  *
  * @packageDocumentation
  */
