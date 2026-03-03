@@ -23,6 +23,14 @@ import {
   Text,
   Flex,
 } from '@backstage/ui';
+import { makeStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
+
+const useStyles = makeStyles({
+  root: {
+    height: '100%',
+  },
+});
 
 /** @public */
 export interface EntityInfoCardProps {
@@ -36,9 +44,10 @@ export interface EntityInfoCardProps {
 /** @public */
 export function EntityInfoCard(props: EntityInfoCardProps) {
   const { title, headerActions, footerActions, children, className } = props;
+  const classes = useStyles();
 
   return (
-    <Card className={className}>
+    <Card className={classNames(classes.root, className)}>
       {title && (
         <CardHeader>
           <Flex justify="between" align="center">
