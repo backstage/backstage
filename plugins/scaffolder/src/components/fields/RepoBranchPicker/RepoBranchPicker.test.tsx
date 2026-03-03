@@ -378,7 +378,7 @@ describe('RepoBranchPicker', () => {
         </Wrapper>,
       );
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
+        container.getElementsByClassName('text-muted-foreground'),
       ).toHaveLength(0);
     });
 
@@ -401,7 +401,7 @@ describe('RepoBranchPicker', () => {
         </Wrapper>,
       );
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
+        container.getElementsByClassName('text-muted-foreground'),
       ).toHaveLength(1);
       expect(getByText(description.fromSchema)).toBeInTheDocument();
       expect(queryByText(description.fromUiSchema)).toBe(null);
@@ -429,7 +429,7 @@ describe('RepoBranchPicker', () => {
         </Wrapper>,
       );
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
+        container.getElementsByClassName('text-muted-foreground'),
       ).toHaveLength(1);
       expect(queryByText(description.fromSchema)).toBe(null);
       expect(getByText(description.fromUiSchema)).toBeInTheDocument();
