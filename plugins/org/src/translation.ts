@@ -45,9 +45,7 @@ export const orgTranslationRef = createTranslationRef({
     ownershipCard: {
       title: 'Ownership',
       aggregateRelationsToggle: {
-        directRelations: 'Direct Relations',
-        aggregatedRelations: 'Aggregated Relations',
-        ariaLabel: 'Ownership Type Switch',
+        label: 'Include indirect ownership',
       },
     },
     userProfileCard: {

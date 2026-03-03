@@ -333,10 +333,7 @@ const userPage = (
           <EntityUserProfileCard />
         </Grid>
         <Grid item xs={12} md={6}>
-          <EntityOwnershipCard
-            variant="gridItem"
-            entityFilterKind={customEntityFilterKind}
-          />
+          <EntityOwnershipCard entityFilterKind={customEntityFilterKind} />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -352,10 +349,7 @@ const groupPage = (
           <EntityGroupProfileCard />
         </Grid>
         <Grid item xs={12} md={6}>
-          <EntityOwnershipCard
-            variant="gridItem"
-            entityFilterKind={customEntityFilterKind}
-          />
+          <EntityOwnershipCard entityFilterKind={customEntityFilterKind} />
         </Grid>
         <Grid item xs={12} md={6}>
           <EntityMembersListCard />

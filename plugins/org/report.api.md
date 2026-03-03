@@ -6,7 +6,6 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 
 // @public (undocumented)
@@ -33,13 +32,11 @@ export const EntityMembersListCard: (props: {
 
 // @public (undocumented)
 export const EntityOwnershipCard: (props: {
-  variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
-  maxScrollHeight?: string;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -90,13 +87,11 @@ export { orgPlugin as plugin };
 
 // @public (undocumented)
 export const OwnershipCard: (props: {
-  variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
-  maxScrollHeight?: string;
 }) => JSX_2.Element;
 
 // @public (undocumented)
