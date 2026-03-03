@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
 import { Content } from '../../layout/Content';
-import { HeaderTabs } from '../../layout/HeaderTabs';
+import { ShadcnTabs, TabsList, TabsTrigger } from '../ui/tabs';
+import { cn } from '../../lib/utils';
 import { SubRoute } from './types';
 import { Link } from '../Link';
 
@@ -64,33 +64,51 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
 export function RoutedTabs(props: { routes: SubRoute[] }) {
   const { routes } = props;
-
   const { index, route, element } = useSelectedSubRoute(routes);
-  const headerTabs = useMemo(
-    () =>
-      routes.map(t => {
-        const { path, title, tabProps } = t;
-        let to = path;
-        // Remove trailing /*
-        to = to.replace(/\/\*$/, '');
-        // And remove leading / for relative navigation
-        to = to.replace(/^\//, '');
-        return {
-          id: path,
-          label: title,
-          tabProps: {
-            component: Link,
-            to,
-            ...tabProps,
-          },
-        };
-      }),
-    [routes],
-  );
+  const currentTabValue = routes[index]?.path ?? routes[0]?.path ?? '';
 
   return (
     <>
-      <HeaderTabs tabs={headerTabs} selectedIndex={index} />
+      <ShadcnTabs value={currentTabValue}>
+        <TabsList
+          className={cn(
+            'bg-transparent h-auto w-full justify-start',
+            'rounded-none border-b border-border p-0',
+            '[grid-area:pageSubheader]',
+          )}
+        >
+          {routes.map(t => {
+            const { path, title, tabProps } = t;
+            let to = path;
+            // Remove trailing /*
+            to = to.replace(/\/\*$/, '');
+            // And remove leading / for relative navigation
+            to = to.replace(/^\//, '');
+            const { className: tabClassName, ...restTabProps } = tabProps ?? {};
+            return (
+              <TabsTrigger
+                key={path}
+                {...restTabProps}
+                value={path}
+                asChild
+                className={cn(
+                  'rounded-none border-b-2 border-transparent px-3 py-3',
+                  'text-xs font-bold uppercase text-muted-foreground',
+                  'shadow-none transition-colors',
+                  'data-[state=active]:border-primary',
+                  'data-[state=active]:bg-transparent',
+                  'data-[state=active]:text-foreground',
+                  'data-[state=active]:shadow-none',
+                  'hover:text-foreground',
+                  tabClassName,
+                )}
+              >
+                <Link to={to}>{title}</Link>
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
+      </ShadcnTabs>
       <Content>
         <Helmet title={route?.title} />
         {element}
