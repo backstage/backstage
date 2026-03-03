@@ -95,6 +95,91 @@ Check the [Tailwind CSS typography docs][9] for information on how to use
 font families, sizes, weights, and line heights, as well as recommendations
 about accessibility.
 
+## Component Authoring Patterns
+
+The shadcn/ui components in `packages/core-components/src/components/ui/`
+follow two important patterns that all new component contributions should
+adopt for consistency and composability.
+
+### `React.forwardRef` Pattern
+
+All shadcn/ui primitive components use `React.forwardRef` to enable ref
+forwarding. This is critical for composability — parent components and
+libraries (such as Radix UI primitives, form libraries, and animation
+libraries) often need to attach refs to underlying DOM elements. Without
+`forwardRef`, composition breaks silently.
+
+When creating a new component, always wrap it with `forwardRef` and spread
+the ref onto the outermost DOM element:
+
+```tsx
+import { forwardRef, type HTMLAttributes } from 'react';
+import { cn } from '../../lib/utils';
+
+const MyComponent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      data-slot="my-component"
+      className={cn('rounded-lg border bg-card p-4', className)}
+      {...props}
+    />
+  ),
+);
+MyComponent.displayName = 'MyComponent';
+
+export { MyComponent };
+```
+
+Key points:
+
+- The first generic parameter (`HTMLDivElement`) is the ref type matching
+  the root DOM element.
+- The second generic parameter is the props type (extend `HTMLAttributes`
+  for standard div-based components, or `ButtonHTMLAttributes` for buttons).
+- Always set `displayName` to improve React DevTools readability.
+- Always spread `...props` onto the root element so consumers can pass
+  standard HTML attributes (e.g., `aria-label`, `id`, `data-testid`).
+
+### `data-slot` Attribute Pattern
+
+Every shadcn/ui component in the Backstage codebase includes a `data-slot`
+attribute on its root DOM element. This is the standard shadcn/ui convention
+for identifying styled sub-elements within compound components.
+
+The `data-slot` attribute serves two purposes:
+
+1. **Styling hooks:** Theme authors can target specific component slots
+   via CSS attribute selectors (e.g., `[data-slot="card-header"]`) for
+   advanced customization beyond CSS custom property tokens.
+2. **Debugging and testing:** The attribute provides a stable, semantic
+   identifier for each component part, useful for test selectors and
+   browser DevTools inspection.
+
+For compound components (components with multiple sub-parts), each part
+gets its own `data-slot` value:
+
+```tsx
+// Card compound component — each part has a unique data-slot value
+<div data-slot="card" className={cn('rounded-lg border bg-card', className)}>
+  <div data-slot="card-header" className="flex flex-col gap-1.5 p-6">
+    <h3 data-slot="card-title" className="font-semibold leading-none">
+      {title}
+    </h3>
+  </div>
+  <div data-slot="card-content" className="p-6 pt-0">
+    {children}
+  </div>
+  <div data-slot="card-footer" className="flex items-center p-6 pt-0">
+    {footer}
+  </div>
+</div>
+```
+
+When creating new components, use kebab-case for `data-slot` values and
+ensure they are unique within the component (e.g., `"my-component"`,
+`"my-component-header"`, `"my-component-content"`).
+
 [1]: http://backstage.io/storybook
 [2]: https://ui.shadcn.com/docs/components
 [3]: https://tailwindcss.com/docs/container

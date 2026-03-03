@@ -126,28 +126,30 @@ Tokens are defined in `packages/core-components/src/styles/globals.css` and foll
 
 ```css
 :root {
-  --background: 0 0% 97%;
-  --foreground: 0 0% 0%;
-  --primary: 214 55% 35%;
-  --primary-foreground: 0 0% 100%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 0%;
-  --border: 0 0% 85%;
-  --ring: 214 55% 35%;
+  --background: #f8f8f8;
+  --foreground: #000000;
+  --primary: #1f5493;
+  --primary-foreground: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --border: #d5d5d5;
+  --ring: #1f5493;
   --radius: 0.5rem;
-  --font-sans: system-ui, -apple-system, sans-serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono',
+    'Courier New', monospace;
   /* ... additional tokens */
 }
 
 [data-theme-mode='dark'] {
-  --background: 0 0% 7%;
-  --foreground: 0 0% 95%;
-  --primary: 214 55% 55%;
-  --primary-foreground: 0 0% 100%;
-  --card: 0 0% 12%;
-  --card-foreground: 0 0% 95%;
-  --border: 0 0% 20%;
+  --background: #333333;
+  --foreground: #ffffff;
+  --primary: #9cc9ff;
+  --primary-foreground: #101821;
+  --card: #3d3d3d;
+  --card-foreground: #ffffff;
+  --border: #434343;
   /* ... dark mode overrides */
 }
 ```

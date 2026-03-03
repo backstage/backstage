@@ -12,7 +12,7 @@ The shadcn/ui primitive components live in `src/components/ui/` as first-party c
 | **Styling**         | [Tailwind CSS](https://tailwindcss.com/) with `cn()` helper (`clsx` + `tailwind-merge`)                   | Utility-first styling with zero CSS-in-JS runtime                       |
 | **Icons**           | [Lucide React](https://lucide.dev/) (`lucide-react`)                                                      | Tree-shakeable, consistent SVG icon set                                 |
 | **Data Tables**     | [`@tanstack/react-table`](https://tanstack.com/table)                                                     | Headless table state management (sorting, filtering, pagination)        |
-| **Toasts**          | [Sonner](https://sonner.emilkowal.dev/) (`sonner`)                                                        | Animated, stackable toast notifications                                 |
+| **Toasts**          | [Sonner](https://sonner.emilkowal.ski/) (`sonner`)                                                        | Animated, stackable toast notifications                                 |
 | **Command Palette** | [cmdk](https://cmdk.paco.me/)                                                                             | Keyboard-first command dialog (⌘K)                                      |
 | **Theming**         | CSS custom properties                                                                                     | Light/dark mode via `[data-theme-mode]` selector, WCAG 2.1 AA compliant |
 

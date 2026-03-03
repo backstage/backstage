@@ -62,6 +62,34 @@ The following CSS custom property tokens drive the shadcn/ui component styling a
 | `--input`              | Input field border color                   |
 | `--ring`               | Focus ring color                           |
 
+### Sidebar Tokens
+
+The collapsible sidebar uses dedicated CSS custom property tokens for its branded navigation experience. These tokens allow you to customize the sidebar independently from the main application theme:
+
+| Token Name                     | Description                                           |
+| ------------------------------ | ----------------------------------------------------- |
+| `--sidebar-background`         | Sidebar background color (primary blue in light mode) |
+| `--sidebar-foreground`         | Sidebar text and icon color                           |
+| `--sidebar-primary`            | Active/selected sidebar item color                    |
+| `--sidebar-primary-foreground` | Text color on active sidebar items                    |
+| `--sidebar-accent`             | Sidebar hover/accent background color                 |
+| `--sidebar-accent-foreground`  | Text color on sidebar accent backgrounds              |
+| `--sidebar-border`             | Sidebar divider/border color                          |
+| `--sidebar-ring`               | Focus ring color within the sidebar context           |
+
+### Status Indicator Tokens
+
+Status indicator tokens drive catalog health displays, CI/CD pipeline status, and progress indicators. These are direct indicator colors used for status dots, progress bars, and pipeline visualizations. Components using these tokens **must** also use shape or icon differentiation alongside color to meet WCAG 2.1 AA color-independence requirements:
+
+| Token Name         | Description                                |
+| ------------------ | ------------------------------------------ |
+| `--status-ok`      | Healthy/passing status indicator color     |
+| `--status-warning` | Warning status indicator color             |
+| `--status-error`   | Error/failing status indicator color       |
+| `--status-running` | In-progress/running status indicator color |
+| `--status-pending` | Pending/queued status indicator color      |
+| `--status-aborted` | Aborted/cancelled status indicator color   |
+
 ## Creating custom themes
 
 Backstage supports three theming systems. The **primary** system uses CSS custom properties to style shadcn/ui components, **Backstage UI (BUI)** uses CSS variables with `--bui-*` tokens, and the **legacy MUI** system uses JavaScript-based themes via `UnifiedThemeProvider`. During the transition, you may need to maintain themes in multiple places depending on which systems your plugins use.
