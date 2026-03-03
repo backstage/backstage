@@ -87,8 +87,8 @@ import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import {
   DatabaseTaskStore,
+  DefaultTemplateActionRegistry,
   TaskWorker,
-  TemplateActionRegistry,
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
@@ -130,6 +130,7 @@ import {
   scaffolderTaskRules,
   scaffolderTemplateRules,
 } from './rules';
+import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * RouterOptions
@@ -162,7 +163,7 @@ export interface RouterOptions {
   events?: EventsService;
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
-  templateActionRegistry: TemplateActionRegistry;
+  actionsRegistry: ActionsService;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -210,7 +211,7 @@ export async function createRouter(
     auth,
     httpAuth,
     auditor,
-    templateActionRegistry,
+    actionsRegistry,
   } = options;
 
   const concurrentTasksLimit =
@@ -268,6 +269,11 @@ export async function createRouter(
     taskBroker = options.taskBroker;
   }
 
+  const actionRegistry = new DefaultTemplateActionRegistry(
+    actionsRegistry,
+    logger,
+  );
+
   const templateExtensions = {
     additionalTemplateFilters: convertFiltersToRecord(
       additionalTemplateFilters,
@@ -285,7 +291,7 @@ export async function createRouter(
 
     const worker = await TaskWorker.create({
       taskBroker,
-      templateActionRegistry,
+      actionRegistry,
       integrations,
       logger,
       auditor,
@@ -301,7 +307,7 @@ export async function createRouter(
   }
 
   for (const action of actions) {
-    templateActionRegistry.register(action);
+    actionRegistry.register(action);
   }
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
@@ -318,7 +324,7 @@ export async function createRouter(
   }
 
   const dryRunner = createDryRunner({
-    templateActionRegistry,
+    actionRegistry,
     integrations,
     logger,
     auditor,
@@ -439,7 +445,7 @@ export async function createRouter(
       const credentials = await httpAuth.credentials(req);
 
       try {
-        const list = await templateActionRegistry.list({ credentials });
+        const list = await actionRegistry.list({ credentials });
         const actionsList = Array.from(list.values())
           .map(action => {
             return {

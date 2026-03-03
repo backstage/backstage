@@ -53,7 +53,6 @@ import {
   createFilesystemReadDirAction,
   createFilesystemRenameAction,
   createWaitAction,
-  DefaultTemplateActionRegistry,
 } from './scaffolder';
 import { createRouter } from './service/router';
 import { loggerToWinstonLogger } from './util/loggerToWinstonLogger';
@@ -173,13 +172,6 @@ export const scaffolderPlugin = createBackendPlugin({
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
 
-        // Create the action registry early so we can use it for both
-        // the router and the MCP actions
-        const templateActionRegistry = new DefaultTemplateActionRegistry(
-          actionsRegistry,
-          logger,
-        );
-
         const templateExtensions = {
           additionalTemplateFilters: convertFiltersToRecord(
             additionalTemplateFilters,
@@ -250,7 +242,7 @@ export const scaffolderPlugin = createBackendPlugin({
           additionalWorkspaceProviders,
           events,
           auditor,
-          templateActionRegistry, // Pass the pre-created TemplateActionRegistry
+          actionsRegistry,
         });
         httpRouter.use(router);
       },

@@ -67,8 +67,7 @@ describe('TaskWorker', () => {
 
   const integrations: ScmIntegrations = {} as ScmIntegrations;
 
-  const templateActionRegistry: TemplateActionRegistry =
-    {} as TemplateActionRegistry;
+  const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
   const workingDirectory = '/tmp/scaffolder';
 
   const workflowRunner: NunjucksWorkflowRunner = {
@@ -93,7 +92,7 @@ describe('TaskWorker', () => {
       workingDirectory,
       integrations,
       taskBroker: broker,
-      templateActionRegistry,
+      actionRegistry,
     });
 
     await broker.dispatch({
@@ -124,7 +123,7 @@ describe('TaskWorker', () => {
       workingDirectory,
       integrations,
       taskBroker: broker,
-      templateActionRegistry,
+      actionRegistry,
     });
 
     const { taskId } = await broker.dispatch({
@@ -164,7 +163,7 @@ describe('TaskWorker', () => {
       workingDirectory,
       integrations,
       taskBroker: broker,
-      templateActionRegistry,
+      actionRegistry,
       auditor,
       config: mockServices.rootConfig({
         data: {
@@ -212,8 +211,7 @@ describe('Concurrent TaskWorker', () => {
 
   const integrations: ScmIntegrations = {} as ScmIntegrations;
 
-  const templateActionRegistry: TemplateActionRegistry =
-    {} as TemplateActionRegistry;
+  const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
   const workingDirectory = os.tmpdir();
   let asyncTasksCount = 0;
 
@@ -261,7 +259,7 @@ describe('Concurrent TaskWorker', () => {
       workingDirectory,
       integrations,
       taskBroker: broker,
-      templateActionRegistry,
+      actionRegistry,
       concurrentTasksLimit: expectedConcurrentTasks,
     });
 
@@ -279,8 +277,7 @@ describe('Concurrent TaskWorker', () => {
 describe('Cancellable TaskWorker', () => {
   let storage: DatabaseTaskStore;
   const integrations: ScmIntegrations = {} as ScmIntegrations;
-  const templateActionRegistry: TemplateActionRegistry =
-    {} as TemplateActionRegistry;
+  const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
   const workingDirectory = os.tmpdir();
 
   let myTask: TaskContext | undefined = undefined;
@@ -309,7 +306,7 @@ describe('Cancellable TaskWorker', () => {
       workingDirectory,
       integrations,
       taskBroker,
-      templateActionRegistry,
+      actionRegistry,
     });
 
     const steps = [...Array(10)].map(n => ({

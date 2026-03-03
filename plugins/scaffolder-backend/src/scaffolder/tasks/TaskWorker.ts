@@ -55,7 +55,7 @@ export type TaskWorkerOptions = {
  */
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
-  templateActionRegistry: TemplateActionRegistry;
+  actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: LoggerService;
@@ -115,7 +115,7 @@ export class TaskWorker {
       logger,
       auditor,
       config,
-      templateActionRegistry,
+      actionRegistry,
       integrations,
       workingDirectory,
       additionalTemplateFilters,
@@ -126,7 +126,7 @@ export class TaskWorker {
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
-      templateActionRegistry,
+      actionRegistry,
       integrations,
       logger,
       auditor,
