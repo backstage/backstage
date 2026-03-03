@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 import { useEffect } from 'react';
-import { Progress, Select, SelectItem } from '@backstage/core-components';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import { cn, Progress, Select, SelectItem } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/esm/useAsync';
@@ -69,10 +67,11 @@ export const RepoUrlPickerHost = (props: {
 
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !host}
+      <div
+        className={cn(
+          'mt-4 mb-2',
+          rawErrors?.length > 0 && !host && 'text-destructive',
+        )}
       >
         <Select
           native
@@ -84,10 +83,10 @@ export const RepoUrlPickerHost = (props: {
           data-testid="host-select"
         />
 
-        <FormHelperText>
+        <p className="mt-1 text-sm text-muted-foreground">
           {t('fields.repoUrlPicker.host.description')}
-        </FormHelperText>
-      </FormControl>
+        </p>
+      </div>
     </>
   );
 };
