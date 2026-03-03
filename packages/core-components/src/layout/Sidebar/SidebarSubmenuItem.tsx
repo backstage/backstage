@@ -137,6 +137,8 @@ export type SidebarSubmenuItemDropdownItem = {
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
+ * startComponent: Optional custom component to add to the beginning of the menu item (non-dropdown items only)
+ * endComponent: Optional custom component to add to the end of the menu item (non-dropdown items only)
  *
  * @public
  */
@@ -148,6 +150,8 @@ export type SidebarSubmenuItemProps = {
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
   initialShowDropdown?: boolean;
+  startComponent?: React.ReactNode;
+  endComponent?: React.ReactNode;
 };
 
 /**
@@ -156,7 +160,16 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
+  const {
+    title,
+    subtitle,
+    to,
+    icon: Icon,
+    dropdownItems,
+    exact,
+    startComponent,
+    endComponent,
+  } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
@@ -257,6 +270,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           onClick={closeSubmenu}
           onTouchStart={e => e.stopPropagation()}
         >
+          {startComponent}
           {Icon && <Icon fontSize="small" />}
           <Typography
             variant="subtitle1"
@@ -275,6 +289,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
               </Typography>
             )}
           </Typography>
+          {endComponent}
         </Link>
       </Tooltip>
     </Box>
