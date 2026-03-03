@@ -21,6 +21,7 @@ import { PluginHeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
 import { useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
+import { Box } from '../Box';
 import { Link } from 'react-aria-components';
 import { RiShapesLine } from '@remixicon/react';
 import { Text } from '../Text';
@@ -115,7 +116,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
         </div>
       </div>
       {tabs && (
-        <div className={classes.tabs}>
+        <Box bg="neutral" className={classes.tabs}>
           <Tabs onSelectionChange={onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (
@@ -130,7 +131,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
               ))}
             </TabList>
           </Tabs>
-        </div>
+        </Box>
       )}
     </header>
   );

@@ -22,7 +22,6 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--bui-bg-neutral-1);
     padding-inline: var(--bui-space-5);
     border-bottom: 1px solid var(--bui-border-1);
     color: var(--bui-fg-primary);
@@ -67,6 +66,5 @@
   .bui-PluginHeaderTabsWrapper {
     padding-inline: var(--bui-space-3);
     border-bottom: 1px solid var(--bui-border-1);
-    background-color: var(--bui-bg-neutral-1);
   }
 }

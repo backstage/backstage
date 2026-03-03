@@ -1968,6 +1968,7 @@ export const SearchFieldDefinition: {
     readonly input: 'bui-SearchFieldInput';
     readonly inputIcon: 'bui-SearchFieldInputIcon';
   };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly startCollapsed: {
       readonly dataAttribute: true;
@@ -2534,6 +2535,7 @@ export const TextFieldDefinition: {
     readonly inputIcon: 'bui-InputIcon';
     readonly inputAction: 'bui-InputAction';
   };
+  readonly bg: 'consumer';
   readonly propDefs: {
     readonly size: {
       readonly dataAttribute: true;
