@@ -14,17 +14,77 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from 'react';
+import * as React from 'react';
 import { NavigationMenu as NavigationMenuPrimitive } from 'radix-ui';
+import { cva } from 'class-variance-authority';
 import { ChevronDown } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
 
-/* eslint-disable @typescript-eslint/no-use-before-define -- NavigationMenuViewport is co-defined below in this module */
-/** Root NavigationMenu container. @public */
-const NavigationMenu = forwardRef<
-  ComponentRef<typeof NavigationMenuPrimitive.Root>,
-  ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>
+/* -------------------------------------------------------------------------
+ * navigationMenuTriggerStyle
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Shared Tailwind CSS class string generator for navigation menu trigger and
+ * link styling. Built with `class-variance-authority` to enable type-safe
+ * variant composition if extended in the future.
+ *
+ * @remarks
+ * Provides consistent hover, focus, active, and disabled states across
+ * navigation menu trigger elements. Applied by {@link NavigationMenuTrigger}
+ * automatically and available for use on {@link NavigationMenuLink} when a
+ * trigger-like visual style is desired.
+ *
+ * @example
+ * ```tsx
+ * <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+ *   Dashboard
+ * </NavigationMenuLink>
+ * ```
+ *
+ * @public
+ */
+const navigationMenuTriggerStyle = cva(
+  'group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50',
+);
+
+/* -------------------------------------------------------------------------
+ * NavigationMenu (Root)
+ * ------------------------------------------------------------------------- */
+
+/* eslint-disable @typescript-eslint/no-use-before-define --
+   NavigationMenuViewport is co-defined below in this module and referenced
+   inside the NavigationMenu root component. */
+
+/**
+ * Root NavigationMenu container built on the Radix UI NavigationMenu
+ * primitive. Automatically renders a {@link NavigationMenuViewport} as a
+ * sibling of `children` to host sub-menu content panels.
+ *
+ * @remarks
+ * Replaces MUI `BottomNavigation` / `BottomNavigationAction` for sidebar
+ * navigation and mobile bottom navigation in Backstage. Radix primitives
+ * supply built-in keyboard navigation, ARIA attributes, and sub-menu
+ * management out of the box.
+ *
+ * @example
+ * ```tsx
+ * <NavigationMenu>
+ *   <NavigationMenuList>
+ *     <NavigationMenuItem>
+ *       <NavigationMenuTrigger>Catalog</NavigationMenuTrigger>
+ *       <NavigationMenuContent>…</NavigationMenuContent>
+ *     </NavigationMenuItem>
+ *   </NavigationMenuList>
+ * </NavigationMenu>
+ * ```
+ *
+ * @public
+ */
+const NavigationMenu = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>
 >(({ className, children, ...props }, ref) => (
   <NavigationMenuPrimitive.Root
     ref={ref}
@@ -40,12 +100,22 @@ const NavigationMenu = forwardRef<
   </NavigationMenuPrimitive.Root>
 ));
 NavigationMenu.displayName = 'NavigationMenu';
+
 /* eslint-enable @typescript-eslint/no-use-before-define */
 
-/** Navigation menu item list. @public */
-const NavigationMenuList = forwardRef<
-  ComponentRef<typeof NavigationMenuPrimitive.List>,
-  ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.List>
+/* -------------------------------------------------------------------------
+ * NavigationMenuList
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Horizontal list container for navigation menu items. Wraps
+ * `NavigationMenuPrimitive.List` with consistent flex layout and spacing.
+ *
+ * @public
+ */
+const NavigationMenuList = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.List>
 >(({ className, ...props }, ref) => (
   <NavigationMenuPrimitive.List
     ref={ref}
@@ -59,21 +129,53 @@ const NavigationMenuList = forwardRef<
 ));
 NavigationMenuList.displayName = 'NavigationMenuList';
 
-const NavigationMenuItem = NavigationMenuPrimitive.Item;
+/* -------------------------------------------------------------------------
+ * NavigationMenuItem
+ * ------------------------------------------------------------------------- */
 
-/** Shared Tailwind classes for navigation menu trigger/link styling. */
-const navigationMenuTriggerStyle =
-  'group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50';
+/**
+ * Individual navigation menu item wrapping `NavigationMenuPrimitive.Item`.
+ * Serves as a container for a trigger + content pair or a standalone link.
+ *
+ * @public
+ */
+const NavigationMenuItem = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Item>
+>(({ className, ...props }, ref) => (
+  <NavigationMenuPrimitive.Item
+    ref={ref}
+    data-slot="navigation-menu-item"
+    className={cn(className)}
+    {...props}
+  />
+));
+NavigationMenuItem.displayName = 'NavigationMenuItem';
 
-/** Trigger that opens a navigation sub-menu. @public */
-const NavigationMenuTrigger = forwardRef<
-  ComponentRef<typeof NavigationMenuPrimitive.Trigger>,
-  ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>
+/* -------------------------------------------------------------------------
+ * NavigationMenuTrigger
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Trigger button that opens a navigation sub-menu. Includes a
+ * {@link https://lucide.dev/icons/chevron-down | ChevronDown} icon that
+ * rotates 180° when the associated content panel is open.
+ *
+ * @remarks
+ * Uses {@link navigationMenuTriggerStyle} for base styling. The chevron icon
+ * is decorative (`aria-hidden`) and animated via the Radix
+ * `data-[state=open]` attribute.
+ *
+ * @public
+ */
+const NavigationMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => (
   <NavigationMenuPrimitive.Trigger
     ref={ref}
     data-slot="navigation-menu-trigger"
-    className={cn(navigationMenuTriggerStyle, 'group', className)}
+    className={cn(navigationMenuTriggerStyle(), 'group', className)}
     {...props}
   >
     {children}{' '}
@@ -85,10 +187,25 @@ const NavigationMenuTrigger = forwardRef<
 ));
 NavigationMenuTrigger.displayName = 'NavigationMenuTrigger';
 
-/** Content panel for navigation sub-menu. @public */
-const NavigationMenuContent = forwardRef<
-  ComponentRef<typeof NavigationMenuPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Content>
+/* -------------------------------------------------------------------------
+ * NavigationMenuContent
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Content panel for a navigation sub-menu. Slides in/out with directional
+ * animation based on the Radix `data-motion` attribute.
+ *
+ * @remarks
+ * On medium-and-above viewports the content is absolutely positioned;
+ * on narrow screens it takes full width. Animations use Tailwind CSS
+ * `animate-in` / `animate-out` utilities driven by
+ * `data-[motion^=from-]` and `data-[motion^=to-]` selectors.
+ *
+ * @public
+ */
+const NavigationMenuContent = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Content>
 >(({ className, ...props }, ref) => (
   <NavigationMenuPrimitive.Content
     ref={ref}
@@ -106,14 +223,68 @@ const NavigationMenuContent = forwardRef<
 ));
 NavigationMenuContent.displayName = 'NavigationMenuContent';
 
-const NavigationMenuLink = NavigationMenuPrimitive.Link;
+/* -------------------------------------------------------------------------
+ * NavigationMenuLink
+ * ------------------------------------------------------------------------- */
 
-/** Viewport for rendered navigation content. @public */
-const NavigationMenuViewport = forwardRef<
-  ComponentRef<typeof NavigationMenuPrimitive.Viewport>,
-  ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Viewport>
+/**
+ * Accessible link primitive within a navigation menu. Wraps
+ * `NavigationMenuPrimitive.Link` with a `data-slot` attribute for
+ * consistent identification and styling hooks.
+ *
+ * @remarks
+ * Use `asChild` when composing with React Router `<Link>` or other routing
+ * primitives. Apply `navigationMenuTriggerStyle()` to the `className` when
+ * a trigger-like visual appearance is desired on standalone links.
+ *
+ * @example
+ * ```tsx
+ * <NavigationMenuLink asChild>
+ *   <Link to="/catalog">Catalog</Link>
+ * </NavigationMenuLink>
+ * ```
+ *
+ * @public
+ */
+const NavigationMenuLink = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Link>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Link>
 >(({ className, ...props }, ref) => (
-  <div className={cn('absolute left-0 top-full flex justify-center')}>
+  <NavigationMenuPrimitive.Link
+    ref={ref}
+    data-slot="navigation-menu-link"
+    className={cn(className)}
+    {...props}
+  />
+));
+NavigationMenuLink.displayName = 'NavigationMenuLink';
+
+/* -------------------------------------------------------------------------
+ * NavigationMenuViewport
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Viewport container for rendered navigation content panels. Positioned
+ * below the navigation menu bar and animated on open/close.
+ *
+ * @remarks
+ * Automatically rendered by the {@link NavigationMenu} root component. It is
+ * also exported separately for advanced layout customizations where the
+ * viewport must be placed independently from the root. The viewport height
+ * and width are driven by CSS custom properties set by the Radix primitive:
+ * `--radix-navigation-menu-viewport-height` and
+ * `--radix-navigation-menu-viewport-width`.
+ *
+ * @public
+ */
+const NavigationMenuViewport = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Viewport>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Viewport>
+>(({ className, ...props }, ref) => (
+  <div
+    className={cn('absolute left-0 top-full flex justify-center')}
+    data-slot="navigation-menu-viewport-wrapper"
+  >
     <NavigationMenuPrimitive.Viewport
       className={cn(
         'origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-popover text-popover-foreground shadow',
@@ -122,6 +293,7 @@ const NavigationMenuViewport = forwardRef<
         'md:w-[var(--radix-navigation-menu-viewport-width)]',
         className,
       )}
+      data-slot="navigation-menu-viewport"
       ref={ref}
       {...props}
     />
@@ -129,10 +301,25 @@ const NavigationMenuViewport = forwardRef<
 ));
 NavigationMenuViewport.displayName = 'NavigationMenuViewport';
 
-/** Active indicator bar under the current item. @public */
-const NavigationMenuIndicator = forwardRef<
-  ComponentRef<typeof NavigationMenuPrimitive.Indicator>,
-  ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Indicator>
+/* -------------------------------------------------------------------------
+ * NavigationMenuIndicator
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Active indicator positioned at the bottom of the current navigation item.
+ * Contains a small rotated diamond shape that slides horizontally to track
+ * the active trigger.
+ *
+ * @remarks
+ * The indicator is animated via Radix `data-[state=visible]` and
+ * `data-[state=hidden]` attributes for smooth fade-in/fade-out transitions.
+ * The diamond is rendered as a rotated `div` with `bg-border` background.
+ *
+ * @public
+ */
+const NavigationMenuIndicator = React.forwardRef<
+  React.ElementRef<typeof NavigationMenuPrimitive.Indicator>,
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Indicator>
 >(({ className, ...props }, ref) => (
   <NavigationMenuPrimitive.Indicator
     ref={ref}
@@ -148,6 +335,10 @@ const NavigationMenuIndicator = forwardRef<
   </NavigationMenuPrimitive.Indicator>
 ));
 NavigationMenuIndicator.displayName = 'NavigationMenuIndicator';
+
+/* -------------------------------------------------------------------------
+ * Exports
+ * ------------------------------------------------------------------------- */
 
 export {
   navigationMenuTriggerStyle,
