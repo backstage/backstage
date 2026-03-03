@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { cn } from '../../lib/utils';
 import { PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 
@@ -31,57 +29,18 @@ export type ContentHeaderClassKey =
   | 'description'
   | 'title';
 
-const useStyles = (props: ContentHeaderProps) =>
-  makeStyles(
-    theme => ({
-      container: {
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        marginBottom: theme.spacing(2),
-        textAlign: props.textAlign,
-      },
-      leftItemsBox: {
-        flex: '1 1 auto',
-        minWidth: 0,
-        overflow: 'visible',
-      },
-      rightItemsBox: {
-        flex: '0 1 auto',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        marginLeft: theme.spacing(1),
-        minWidth: 0,
-        overflow: 'visible',
-      },
-      description: {},
-      title: {
-        display: 'inline-flex',
-        marginBottom: 0,
-      },
-    }),
-    { name: 'BackstageContentHeader' },
-  );
-
 type ContentHeaderTitleProps = {
   title?: string;
   className?: string;
 };
 
 const ContentHeaderTitle = ({ title, className }: ContentHeaderTitleProps) => (
-  <Typography
-    variant="h4"
-    component="h2"
-    className={className}
+  <h2
+    className={cn('text-xl font-semibold', className)}
     data-testid="header-title"
   >
     {title}
-  </Typography>
+  </h2>
 );
 
 type ContentHeaderDescriptionProps = {
@@ -94,13 +53,12 @@ const ContentHeaderDescription = ({
   className,
 }: ContentHeaderDescriptionProps) =>
   description ? (
-    <Typography
-      variant="body2"
-      className={className}
+    <p
+      className={cn('text-sm text-muted-foreground', className)}
       data-testid="header-description"
     >
       {description}
-    </Typography>
+    </p>
   ) : null;
 
 type ContentHeaderProps = {
@@ -127,33 +85,38 @@ export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
     descriptionComponent: DescriptionComponent = undefined,
     textAlign = 'left',
   } = props;
-  const classes = useStyles({ textAlign })();
 
   const renderedTitle = TitleComponent ? (
     TitleComponent
   ) : (
-    <ContentHeaderTitle title={title} className={classes.title} />
+    <ContentHeaderTitle title={title} className="inline-flex mb-0" />
   );
 
   const renderedDescription = DescriptionComponent ? (
     DescriptionComponent
   ) : (
-    <ContentHeaderDescription
-      description={description}
-      className={classes.description}
-    />
+    <ContentHeaderDescription description={description} />
   );
 
   return (
     <>
       <Helmet title={title} />
-      <Box className={classes.container}>
-        <Box className={classes.leftItemsBox}>
+      <div
+        className={cn(
+          'w-full flex flex-row flex-wrap justify-end items-center mb-4',
+          textAlign === 'left' && 'text-left',
+          textAlign === 'center' && 'text-center',
+          textAlign === 'right' && 'text-right',
+        )}
+      >
+        <div className="flex-auto min-w-0 overflow-visible">
           {renderedTitle}
           {renderedDescription}
-        </Box>
-        <Box className={classes.rightItemsBox}>{children}</Box>
-      </Box>
+        </div>
+        <div className="flex-initial flex flex-row flex-wrap items-center ml-2 min-w-0 overflow-visible">
+          {children}
+        </div>
+      </div>
     </>
   );
 }
