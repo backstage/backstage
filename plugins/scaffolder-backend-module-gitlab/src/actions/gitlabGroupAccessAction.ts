@@ -187,7 +187,7 @@ export const createGitlabGroupAccessAction = (options: {
           fn: async () => {
             if (action === 'add') {
               try {
-                await api.GroupMembers.add(path, userId, accessLevel);
+                await api.GroupMembers.add(path, accessLevel, { userId });
               } catch (error: any) {
                 // If member already exists, try to edit instead
                 if (error.cause?.response?.status === 409) {
