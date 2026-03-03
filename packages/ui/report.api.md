@@ -243,7 +243,13 @@ export type AlertOwnProps = {
 };
 
 // @public
-export interface AlertProps extends MarginProps, AlertOwnProps {}
+export interface AlertProps
+  extends MarginProps,
+    AlertOwnProps,
+    Omit<
+      React.ComponentPropsWithoutRef<'div'>,
+      keyof AlertOwnProps | keyof MarginProps
+    > {}
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -441,7 +447,6 @@ export const ButtonDefinition: {
     readonly iconEnd: {};
     readonly children: {};
     readonly className: {};
-    readonly style: {};
   };
 };
 
@@ -475,7 +480,6 @@ export const ButtonIconDefinition: {
     };
     readonly icon: {};
     readonly className: {};
-    readonly style: {};
   };
 };
 
@@ -486,12 +490,11 @@ export type ButtonIconOwnProps = {
   icon?: ReactElement;
   loading?: boolean;
   className?: string;
-  style?: CSSProperties;
 };
 
 // @public
 export interface ButtonIconProps
-  extends Omit<ButtonProps_2, 'children' | 'className' | 'style'>,
+  extends Omit<ButtonProps_2, keyof ButtonIconOwnProps>,
     ButtonIconOwnProps {}
 
 // @public (undocumented)
@@ -522,7 +525,6 @@ export const ButtonLinkDefinition: {
     readonly iconEnd: {};
     readonly children: {};
     readonly className: {};
-    readonly style: {};
   };
 };
 
@@ -534,12 +536,11 @@ export type ButtonLinkOwnProps = {
   iconEnd?: ReactElement;
   children?: ReactNode;
   className?: string;
-  style?: CSSProperties;
 };
 
 // @public
 export interface ButtonLinkProps
-  extends Omit<LinkProps_2, 'children' | 'className' | 'style'>,
+  extends Omit<LinkProps_2, keyof ButtonLinkOwnProps>,
     ButtonLinkOwnProps {}
 
 // @public (undocumented)
@@ -552,12 +553,11 @@ export type ButtonOwnProps = {
   loading?: boolean;
   children?: ReactNode;
   className?: string;
-  style?: CSSProperties;
 };
 
 // @public
 export interface ButtonProps
-  extends Omit<ButtonProps_2, 'children' | 'className' | 'style'>,
+  extends Omit<ButtonProps_2, keyof ButtonOwnProps>,
     ButtonOwnProps {}
 
 // @public
@@ -876,7 +876,9 @@ export type ContainerOwnProps = {
 };
 
 // @public (undocumented)
-export interface ContainerProps extends ContainerOwnProps {
+export interface ContainerProps
+  extends ContainerOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof ContainerOwnProps> {
   // (undocumented)
   mb?: SpaceProps['mb'];
   // (undocumented)
@@ -950,7 +952,9 @@ export type DialogBodyOwnProps = {
 };
 
 // @public
-export interface DialogBodyProps extends DialogBodyOwnProps {}
+export interface DialogBodyProps
+  extends DialogBodyOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof DialogBodyOwnProps> {}
 
 // @public
 export const DialogDefinition: {
@@ -1092,7 +1096,9 @@ export type FieldLabelOwnProps = {
 };
 
 // @public (undocumented)
-export interface FieldLabelProps extends FieldLabelOwnProps {}
+export interface FieldLabelProps
+  extends FieldLabelOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof FieldLabelOwnProps> {}
 
 // @public (undocumented)
 export interface FilterState<TFilter> {
