@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
+import { Input, Label, cn } from '@backstage/core-components';
 
 import { BaseRepoBranchPickerProps } from './types';
 
@@ -37,19 +35,34 @@ export const DefaultRepoBranchPicker = ({
   const { branch } = state;
 
   return (
-    <FormControl
-      margin="normal"
-      required={required}
-      error={rawErrors?.length > 0 && !branch}
-    >
-      <TextField
+    <div className="mt-4 space-y-2">
+      <Label
+        htmlFor="branchInput"
+        className={cn(
+          required && "after:content-['*'] after:ml-0.5 after:text-destructive",
+        )}
+      >
+        Branch
+      </Label>
+      <Input
         id="branchInput"
-        label="Branch"
+        placeholder="Enter branch name..."
         disabled={isDisabled}
         onChange={e => onChange({ branch: e.target.value })}
         value={branch}
+        required={required}
+        className={cn(rawErrors?.length > 0 && !branch && 'border-destructive')}
       />
-      <FormHelperText>The branch of the repository</FormHelperText>
-    </FormControl>
+      <p
+        className={cn(
+          'text-sm',
+          rawErrors?.length > 0 && !branch
+            ? 'text-destructive'
+            : 'text-muted-foreground',
+        )}
+      >
+        The branch of the repository
+      </p>
+    </div>
   );
 };
