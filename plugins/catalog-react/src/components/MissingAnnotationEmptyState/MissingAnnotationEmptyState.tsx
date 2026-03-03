@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import { CodeSnippet, Link, EmptyState } from '@backstage/core-components';
+import {
+  CodeSnippet,
+  EmptyState,
+  Button,
+  cn,
+} from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import {
   TranslationFunction,
@@ -29,18 +30,6 @@ import { catalogReactTranslationRef } from '../../translation';
 
 /** @public */
 export type MissingAnnotationEmptyStateClassKey = 'code';
-
-const useStyles = makeStyles(
-  theme => ({
-    code: {
-      borderRadius: 6,
-      margin: theme.spacing(2, 0),
-      background:
-        theme.palette.type === 'dark' ? '#444' : theme.palette.common.white,
-    },
-  }),
-  { name: 'BackstageMissingAnnotationEmptyState' },
-);
 
 function generateYamlExample(
   annotations: string[],
@@ -116,7 +105,6 @@ export function MissingAnnotationEmptyState(props: {
   const url =
     readMoreUrl ||
     'https://backstage.io/docs/features/software-catalog/well-known-annotations';
-  const classes = useStyles();
 
   const entityKind = entity?.kind || 'Component';
   const { yamlText, lineNumbers } = generateYamlExample(annotations, entity);
@@ -127,10 +115,10 @@ export function MissingAnnotationEmptyState(props: {
       description={generateDescription(annotations, entityKind, t)}
       action={
         <>
-          <Typography variant="body1">
+          <p className="text-base text-foreground">
             {t('missingAnnotationEmptyState.annotationYaml', { entityKind })}
-          </Typography>
-          <Box className={classes.code}>
+          </p>
+          <div className={cn('rounded-md my-4 bg-background dark:bg-muted')}>
             <CodeSnippet
               text={yamlText}
               language="yaml"
@@ -138,10 +126,8 @@ export function MissingAnnotationEmptyState(props: {
               highlightedNumbers={lineNumbers}
               customStyle={{ background: 'inherit', fontSize: '115%' }}
             />
-          </Box>
-          <Button color="primary" component={Link} to={url}>
-            {t('missingAnnotationEmptyState.readMore')}
-          </Button>
+          </div>
+          <Button to={url}>{t('missingAnnotationEmptyState.readMore')}</Button>
         </>
       }
     />
