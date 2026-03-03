@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { RuleOptions, TechDocsTheme } from './types';
+import { RuleOptions } from './types';
+import type { TechDocsTheme } from './types';
 
-const themeHashes: Record<TechDocsTheme['palette']['type'], ReadonlyArray<string>> = {
+const themeHashes: Record<
+  TechDocsTheme['palette']['type'],
+  ReadonlyArray<string>
+> = {
   dark: ['#only-light', '#gh-light-mode-only'],
   light: ['#only-dark', '#gh-dark-mode-only'],
 };
