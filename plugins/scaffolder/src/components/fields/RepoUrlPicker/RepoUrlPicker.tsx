@@ -19,9 +19,6 @@ import {
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { AzureRepoPicker } from './AzureRepoPicker';
@@ -35,7 +32,7 @@ import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { RepoUrlPickerFieldSchema } from './schema';
 import { RepoUrlPickerState } from './types';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
-import { MarkdownContent } from '@backstage/core-components';
+import { MarkdownContent, Separator } from '@backstage/core-components';
 
 export { RepoUrlPickerSchema } from './schema';
 
@@ -173,15 +170,15 @@ export const RepoUrlPicker = (
   return (
     <>
       {schema.title && (
-        <Box my={1}>
-          <Typography variant="h5">{schema.title}</Typography>
-          <Divider />
-        </Box>
+        <div className="my-4">
+          <h5 className="text-lg font-semibold">{schema.title}</h5>
+          <Separator />
+        </div>
       )}
       {description && (
-        <Typography variant="body1">
+        <div className="text-sm text-muted-foreground">
           <MarkdownContent content={description} />
-        </Typography>
+        </div>
       )}
       <RepoUrlPickerHost
         host={state.host}

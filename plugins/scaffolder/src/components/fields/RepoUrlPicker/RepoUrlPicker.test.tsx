@@ -461,8 +461,10 @@ describe('RepoUrlPicker', () => {
           <Form {...props} />
         </Wrapper>,
       );
+      /* After the MUI-to-shadcn migration, the description wrapper is a plain
+         div with Tailwind utility classes instead of a MUI Typography element. */
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
+        container.querySelectorAll('div.text-sm.text-muted-foreground'),
       ).toHaveLength(0);
     });
 
@@ -486,8 +488,10 @@ describe('RepoUrlPicker', () => {
           <Form {...props} />
         </Wrapper>,
       );
+      /* Verify the schema description is rendered inside our Tailwind-styled
+         wrapper (div.text-sm.text-muted-foreground) that replaced MUI Typography. */
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
+        container.querySelectorAll('div.text-sm.text-muted-foreground'),
       ).toHaveLength(1);
       expect(getByText(description.fromSchema)).toBeInTheDocument();
       expect(queryByText(description.fromUiSchema)).toBe(null);
@@ -514,8 +518,10 @@ describe('RepoUrlPicker', () => {
           <Form {...props} />
         </Wrapper>,
       );
+      /* Verify the uiSchema description is rendered inside our Tailwind-styled
+         wrapper (div.text-sm.text-muted-foreground) that replaced MUI Typography. */
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
+        container.querySelectorAll('div.text-sm.text-muted-foreground'),
       ).toHaveLength(1);
       expect(queryByText(description.fromSchema)).toBe(null);
       expect(getByText(description.fromUiSchema)).toBeInTheDocument();
