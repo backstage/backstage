@@ -15,13 +15,11 @@
  */
 import { alertApiRef, AlertMessage, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import Alert from '@material-ui/lab/Alert';
+import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { cn } from '../../lib/utils';
 import { coreComponentsTranslationRef } from '../../translation';
+import { Toaster } from '../ui/toast';
 
 /**
  * Properties for {@link AlertDisplay}
@@ -105,33 +103,67 @@ export function AlertDisplay(props: AlertDisplayProps) {
     setMessages(msgs => msgs.filter(msg => msg !== firstMessage));
   };
 
+  // Map AlertMessage severity to Tailwind CSS token classes for border, background, and text color
+  const severityClasses: Record<string, string> = {
+    error: 'border-destructive bg-destructive text-destructive-foreground',
+    warning: 'border-warning bg-warning text-warning-foreground',
+    info: 'border-info bg-info text-info-foreground',
+    success: 'border-success bg-success text-success-foreground',
+  };
+
+  const severity = firstMessage.severity ?? 'info';
+  const severityClass = severityClasses[severity] ?? severityClasses.info;
+
+  // Map anchorOrigin to Tailwind positioning classes
+  const verticalClass = anchorOrigin.vertical === 'top' ? 'top-4' : 'bottom-4';
+
+  const horizontalPositionMap: Record<string, string> = {
+    left: 'left-4',
+    right: 'right-4',
+    center: 'left-1/2 -translate-x-1/2',
+  };
+  const horizontalClass =
+    horizontalPositionMap[anchorOrigin.horizontal] ??
+    horizontalPositionMap.center;
+
   return (
-    <Snackbar open anchorOrigin={anchorOrigin}>
-      <Alert
-        action={
-          <IconButton
-            color="inherit"
-            size="small"
+    <>
+      <Toaster />
+      <div
+        className={cn('fixed z-50', verticalClass, horizontalClass)}
+        role="alert"
+      >
+        <div
+          className={cn(
+            'flex items-center gap-2 rounded-lg border px-4 py-3 shadow-lg',
+            severityClass,
+          )}
+        >
+          <span className="text-sm">
+            {String(firstMessage.message)}
+            {messages.length > 1 && (
+              <em>
+                {' '}
+                {t('alertDisplay.message', {
+                  count: messages.length - 1,
+                })}
+              </em>
+            )}
+          </span>
+          <button
+            type="button"
+            className={cn(
+              'ml-auto inline-flex shrink-0 items-center justify-center rounded-sm p-0.5',
+              'opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-1 focus:ring-ring',
+            )}
             onClick={handleClose}
             data-testid="error-button-close"
           >
-            <CloseIcon />
-          </IconButton>
-        }
-        severity={firstMessage.severity}
-      >
-        <Typography component="span">
-          {String(firstMessage.message)}
-          {messages.length > 1 && (
-            <em>
-              {' '}
-              {t('alertDisplay.message', {
-                count: messages.length - 1,
-              })}
-            </em>
-          )}
-        </Typography>
-      </Alert>
-    </Snackbar>
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
