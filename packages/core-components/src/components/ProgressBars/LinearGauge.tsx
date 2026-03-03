@@ -77,7 +77,11 @@ export function LinearGauge(props: Props) {
     <TooltipProvider>
       <ShadcnTooltip>
         <TooltipTrigger asChild>
-          <span className="inline-block w-full" aria-label={`${percent}%`}>
+          <span
+            className="inline-block w-full"
+            title={`${percent}%`}
+            aria-label={`${percent}%`}
+          >
             <Line
               percent={percent}
               strokeWidth={lineWidth}
