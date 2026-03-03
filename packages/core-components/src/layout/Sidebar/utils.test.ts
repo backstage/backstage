@@ -123,7 +123,7 @@ describe('isLocationMatching', () => {
   });
 
   describe('hash matching', () => {
-    it('return true when hash does not match, but hashMatch is not enabled', async () => {
+    it('return true when hash does not match, but matchHash is not enabled', async () => {
       currentLocation = {
         pathname: '/toolbox',
         search: '?x=foo&y=bar',
@@ -141,7 +141,7 @@ describe('isLocationMatching', () => {
       );
     });
 
-    it('return false when hash does not match, and hashMatch is enabled', async () => {
+    it('return false when hash does not match, and matchHash is enabled', async () => {
       currentLocation = {
         pathname: '/toolbox',
         search: '?x=foo&y=bar',
@@ -159,7 +159,7 @@ describe('isLocationMatching', () => {
       );
     });
 
-    it('return true when hash does match, and hashMatch is enabled', async () => {
+    it('return true when hash does match, and matchHash is enabled', async () => {
       currentLocation = {
         pathname: '/toolbox',
         search: '?x=foo&y=bar',
