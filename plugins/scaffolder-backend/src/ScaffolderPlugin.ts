@@ -223,6 +223,7 @@ export const scaffolderPlugin = createBackendPlugin({
         createScaffolderActions({
           actionsRegistry: actionsRegistryService,
           scaffolderService,
+          auth,
         });
 
         const router = await createRouter({
