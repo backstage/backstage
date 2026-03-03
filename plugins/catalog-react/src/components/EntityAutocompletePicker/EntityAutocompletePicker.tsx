@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import { TextFieldProps } from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '@backstage/core-components';
 import { useEffect, useMemo, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
@@ -50,7 +48,7 @@ export type EntityAutocompletePickerProps<
   path: string;
   showCounts?: boolean;
   Filter: { new (values: string[]): NonNullable<T[Name]> };
-  InputProps?: TextFieldProps;
+  InputProps?: Record<string, any>;
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
   hidden?: boolean;
@@ -58,17 +56,6 @@ export type EntityAutocompletePickerProps<
 
 /** @public */
 export type CatalogReactEntityAutocompletePickerClassKey = 'root' | 'label';
-
-const useStyles = makeStyles(
-  {
-    root: {},
-    label: {
-      textTransform: 'none',
-      fontWeight: 'bold',
-    },
-  },
-  { name: 'CatalogReactEntityAutocompletePicker' },
-);
 
 /** @public */
 export function EntityAutocompletePicker<
@@ -86,7 +73,6 @@ export function EntityAutocompletePicker<
     filtersForAvailableValues = ['kind'],
     hidden,
   } = props;
-  const classes = useStyles();
 
   const {
     updateFilters,
@@ -166,7 +152,7 @@ export function EntityAutocompletePicker<
   }
 
   return hidden ? null : (
-    <Box className={classes.root} pb={1} pt={1}>
+    <div className={cn('py-2')}>
       <CatalogAutocomplete<string, true>
         multiple
         disableCloseOnSelect
@@ -187,6 +173,6 @@ export function EntityAutocompletePicker<
           />
         )}
       />
-    </Box>
+    </div>
   );
 }
