@@ -16,7 +16,7 @@
 
 import { WidgetProps } from '@rjsf/utils';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
-import TextField from '@material-ui/core/TextField';
+import { Input } from '@backstage/core-components';
 import { ChangeEvent, useMemo, useState } from 'react';
 import debounce from 'lodash/debounce';
 
@@ -58,20 +58,28 @@ export const SecretWidget = (
   };
 
   return (
-    <TextField
-      id={title}
-      label={title}
-      aria-describedby={title}
-      onChange={handleChange}
-      value={localValue}
-      type="password"
-      autoComplete="off"
-      required={required}
-      disabled={disabled}
-      inputProps={{
-        minLength,
-        maxLength,
-      }}
-    />
+    <div className="grid w-full gap-1.5">
+      {title && (
+        <label
+          htmlFor={title}
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          {title}
+          {required && <span className="text-destructive ml-0.5">*</span>}
+        </label>
+      )}
+      <Input
+        id={title}
+        aria-describedby={title}
+        onChange={handleChange}
+        value={localValue}
+        type="password"
+        autoComplete="off"
+        required={required}
+        disabled={disabled}
+        minLength={minLength}
+        maxLength={maxLength}
+      />
+    </div>
   );
 };
