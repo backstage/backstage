@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-/**
- * HeaderTabs — migrated from MUI Tabs/Tab/makeStyles to Tailwind utility
- * classes and native HTML elements with accessible `data-state` attributes.
- * Radix Tabs primitives are available in `ui/tabs.tsx` for future adoption;
- * this component preserves the existing imperative `onChange(index)` API
- * for backward compatibility with consumers across Backstage.
- *
- * Supports the `tabProps.component` pattern used by RoutedTabs to render
- * tabs as `<Link>` elements (anchor tags) for react-router navigation.
- */
-
+import {
+  ShadcnTabs as Tabs,
+  TabsList,
+  TabsTrigger,
+} from '../../components/ui/tabs';
 import { cn } from '../../lib/utils';
 import {
-  createElement,
+  ComponentPropsWithoutRef,
   useCallback,
   useEffect,
   useState,
 } from 'react';
+
+// TODO(blam): Remove this implementation when the Tabs are ready
+// This is just a temporary solution to implementing tabs for now
 
 /** @public */
 export type HeaderTabsClassKey =
@@ -40,10 +37,23 @@ export type HeaderTabsClassKey =
   | 'selected'
   | 'tabRoot';
 
+/**
+ * Describes a single tab entry for the {@link HeaderTabs} component.
+ *
+ * @remarks
+ * The `tabProps` field accepts standard HTML button attributes plus Radix UI's
+ * `asChild` prop, which replaces the former MUI `component` prop pattern.
+ * When `asChild` is `true`, the `TabsTrigger` merges its accessibility
+ * attributes into the first child element instead of rendering its own button.
+ *
+ * @public
+ */
 export type Tab = {
   id: string;
   label: string;
-  tabProps?: Record<string, any>;
+  tabProps?: Omit<ComponentPropsWithoutRef<'button'>, 'value'> & {
+    asChild?: boolean;
+  };
 };
 
 type HeaderTabsProps = {
@@ -55,21 +65,37 @@ type HeaderTabsProps = {
 /**
  * Horizontal Tabs component
  *
- * @public
+ * @remarks
+ * Migrated from MUI Tabs/Tab/makeStyles to shadcn/Radix Tabs primitives
+ * with Tailwind CSS utility classes. The external API is preserved:
+ * `tabs[]` array with string IDs, numeric `onChange(index)` callback,
+ * and optional `selectedIndex` for controlled mode.
  *
+ * Radix Tabs uses a string-based `value` internally, so the component
+ * bridges between the numeric index API (for backward compatibility)
+ * and the string-based tab ID that Radix expects.
+ *
+ * @public
  */
 export function HeaderTabs(props: HeaderTabsProps) {
   const { tabs, onChange, selectedIndex } = props;
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);
 
-  const handleChange = useCallback(
-    (index: number) => {
+  /**
+   * Bridges Radix's string-based `onValueChange` callback to the numeric
+   * index API that consumers expect from `onChange(index)`. Looks up the
+   * tab ID in the `tabs` array to find the corresponding numeric index.
+   */
+  const handleValueChange = useCallback(
+    (value: string) => {
+      const index = tabs.findIndex(tab => tab.id === value);
+      if (index === -1) return;
       if (selectedIndex === undefined) {
         setSelectedTab(index);
       }
       if (onChange) onChange(index);
     },
-    [selectedIndex, onChange],
+    [tabs, selectedIndex, onChange],
   );
 
   useEffect(() => {
@@ -78,68 +104,61 @@ export function HeaderTabs(props: HeaderTabsProps) {
     }
   }, [selectedIndex]);
 
+  const currentTabId = tabs[selectedTab]?.id ?? tabs[0]?.id ?? '';
+
   return (
     <div
       className={cn(
-        'bg-card pl-3 min-w-0',
         '[grid-area:pageSubheader]',
+        'bg-background',
+        'pl-6',
+        'min-w-0',
       )}
     >
-      <div
-        role="tablist"
-        aria-label="tabs"
-        className="flex overflow-x-auto scrollbar-none"
-      >
-        {tabs.map((tab, index) => {
-          const isActive = (selectedIndex ?? selectedTab) === index;
-          const { component, ...restTabProps } = tab.tabProps ?? {};
-
-          /**
-           * Common attributes applied to the tab element, whether it's
-           * a plain <button> or a custom component (e.g. <Link>).
-           */
-          const commonProps: Record<string, any> = {
-            key: tab.id,
-            role: 'tab',
-            'data-testid': `header-tab-${index}`,
-            'data-state': isActive ? 'active' : 'inactive',
-            'aria-selected': isActive ? 'true' : 'false',
-            tabIndex: isActive ? 0 : -1,
-            className: cn(
-              'px-3 py-3 text-xs uppercase font-bold whitespace-nowrap',
-              'transition-colors border-b-2 border-transparent',
-              'text-muted-foreground',
-              'hover:bg-accent hover:text-foreground',
-              isActive && 'text-foreground border-b-primary',
-            ),
-            onClick: () => handleChange(index),
-            ...restTabProps,
-          };
-
-          /**
-           * When tabProps.component is specified (e.g. `Link`), render
-           * using that component so the tab becomes an <a> tag with
-           * proper href / react-router navigation. Otherwise, render
-           * a standard <button>.
-           */
-          if (component) {
-            return createElement(
-              component,
-              commonProps,
-              <span>{tab.label}</span>,
-            );
-          }
-
-          return (
-            <button
-              {...commonProps}
-              type="button"
+      <Tabs value={currentTabId} onValueChange={handleValueChange}>
+        <TabsList
+          className={cn(
+            'bg-transparent',
+            'h-auto',
+            'w-full',
+            'justify-start',
+            'rounded-none',
+            'border-b',
+            'border-border',
+            'p-0',
+          )}
+        >
+          {tabs.map((tab, index) => (
+            <TabsTrigger
+              key={tab.id}
+              value={tab.id}
+              data-testid={`header-tab-${index}`}
+              className={cn(
+                'text-xs',
+                'uppercase',
+                'font-bold',
+                'px-3',
+                'py-3',
+                'text-muted-foreground',
+                'rounded-none',
+                'border-b-2',
+                'border-transparent',
+                'shadow-none',
+                'transition-colors',
+                'data-[state=active]:text-foreground',
+                'data-[state=active]:border-primary',
+                'data-[state=active]:bg-transparent',
+                'data-[state=active]:shadow-none',
+                'hover:bg-accent',
+                'hover:text-foreground',
+              )}
+              {...tab.tabProps}
             >
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
     </div>
   );
 }
