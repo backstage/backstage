@@ -137,7 +137,7 @@ export type SidebarSubmenuItemDropdownItem = {
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
- * exact: Match query string in URL when testing for "active" menu item
+ * exact: Match query parameters in URL exactly (otherwise subset match is used)
  * matchHash: Match hash in URL (e.g. 'toolbox#my-tool') when testing for "active" menu item
  *
  * @public
