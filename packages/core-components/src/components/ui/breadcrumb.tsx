@@ -14,25 +14,60 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentProps, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+import * as React from 'react';
 import { Slot } from 'radix-ui';
 import { ChevronRight, MoreHorizontal } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
 
-/** Root breadcrumb nav container. @public */
-const Breadcrumb = forwardRef<
+/**
+ * Root breadcrumb navigation container.
+ *
+ * @remarks
+ * Renders a `<nav>` landmark with `aria-label="breadcrumb"` for assistive
+ * technologies. Wraps the entire breadcrumb trail and provides semantic
+ * navigation context.
+ *
+ * @example
+ * ```tsx
+ * <Breadcrumb>
+ *   <BreadcrumbList>
+ *     <BreadcrumbItem>
+ *       <BreadcrumbLink href="/">Home</BreadcrumbLink>
+ *     </BreadcrumbItem>
+ *     <BreadcrumbSeparator />
+ *     <BreadcrumbItem>
+ *       <BreadcrumbPage>Current</BreadcrumbPage>
+ *     </BreadcrumbItem>
+ *   </BreadcrumbList>
+ * </Breadcrumb>
+ * ```
+ *
+ * @public
+ */
+const Breadcrumb = React.forwardRef<
   HTMLElement,
-  ComponentPropsWithoutRef<'nav'> & { separator?: ReactNode }
+  React.ComponentPropsWithoutRef<'nav'> & {
+    /** Optional custom separator element rendered between items */
+    separator?: React.ReactNode;
+  }
 >(({ ...props }, ref) => (
   <nav ref={ref} aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
 ));
 Breadcrumb.displayName = 'Breadcrumb';
 
-/** Ordered list wrapper inside a Breadcrumb. @public */
-const BreadcrumbList = forwardRef<
+/**
+ * Ordered list wrapper inside a Breadcrumb.
+ *
+ * @remarks
+ * Renders an `<ol>` element styled as a horizontal flex layout with
+ * responsive gap spacing. Provides the list context for breadcrumb items.
+ *
+ * @public
+ */
+const BreadcrumbList = React.forwardRef<
   HTMLOListElement,
-  ComponentPropsWithoutRef<'ol'>
+  React.ComponentPropsWithoutRef<'ol'>
 >(({ className, ...props }, ref) => (
   <ol
     ref={ref}
@@ -46,10 +81,18 @@ const BreadcrumbList = forwardRef<
 ));
 BreadcrumbList.displayName = 'BreadcrumbList';
 
-/** Individual breadcrumb item container. @public */
-const BreadcrumbItem = forwardRef<
+/**
+ * Individual breadcrumb item container.
+ *
+ * @remarks
+ * Renders an `<li>` element within the breadcrumb list. Each item typically
+ * contains either a {@link BreadcrumbLink} or a {@link BreadcrumbPage}.
+ *
+ * @public
+ */
+const BreadcrumbItem = React.forwardRef<
   HTMLLIElement,
-  ComponentPropsWithoutRef<'li'>
+  React.ComponentPropsWithoutRef<'li'>
 >(({ className, ...props }, ref) => (
   <li
     ref={ref}
@@ -60,27 +103,62 @@ const BreadcrumbItem = forwardRef<
 ));
 BreadcrumbItem.displayName = 'BreadcrumbItem';
 
-/** Breadcrumb link — supports asChild for React Router Link delegation. @public */
-const BreadcrumbLink = forwardRef<
+/**
+ * Breadcrumb link component with asChild composition support.
+ *
+ * @remarks
+ * When `asChild` is false (default), renders a native `<a>` anchor element.
+ * When `asChild` is true, uses Radix UI's {@link Slot} primitive to merge
+ * all link props (className, href, ref, etc.) into the child element. This
+ * enables composing BreadcrumbLink with React Router's `<Link>` for
+ * client-side navigation.
+ *
+ * @example
+ * ```tsx
+ * // Native anchor
+ * <BreadcrumbLink href="/catalog">Catalog</BreadcrumbLink>
+ *
+ * // React Router Link via asChild
+ * <BreadcrumbLink asChild>
+ *   <Link to="/catalog">Catalog</Link>
+ * </BreadcrumbLink>
+ * ```
+ *
+ * @public
+ */
+const BreadcrumbLink = React.forwardRef<
   HTMLAnchorElement,
-  ComponentPropsWithoutRef<'a'> & { asChild?: boolean }
+  React.ComponentPropsWithoutRef<'a'> & {
+    /** When true, merges props into child element instead of rendering an anchor */
+    asChild?: boolean;
+  }
 >(({ asChild, className, ...props }, ref) => {
   const Comp = asChild ? Slot.Root : 'a';
+
   return (
     <Comp
       ref={ref}
       data-slot="breadcrumb-link"
       className={cn('transition-colors hover:text-foreground', className)}
-      {...(props as any)}
+      {...(props as React.HTMLAttributes<HTMLAnchorElement>)}
     />
   );
 });
 BreadcrumbLink.displayName = 'BreadcrumbLink';
 
-/** Non-interactive breadcrumb label representing the current page. @public */
-const BreadcrumbPage = forwardRef<
+/**
+ * Non-interactive breadcrumb label representing the current page.
+ *
+ * @remarks
+ * Renders with `aria-current="page"` and `aria-disabled="true"` to
+ * indicate the current location in the breadcrumb trail. Styled distinctly
+ * from links to visually communicate that it is not clickable.
+ *
+ * @public
+ */
+const BreadcrumbPage = React.forwardRef<
   HTMLSpanElement,
-  ComponentPropsWithoutRef<'span'>
+  React.ComponentPropsWithoutRef<'span'>
 >(({ className, ...props }, ref) => (
   <span
     ref={ref}
@@ -94,12 +172,22 @@ const BreadcrumbPage = forwardRef<
 ));
 BreadcrumbPage.displayName = 'BreadcrumbPage';
 
-/** Separator between breadcrumb items. @public */
+/**
+ * Visual separator between breadcrumb items.
+ *
+ * @remarks
+ * Renders a `<li>` with `role="presentation"` and `aria-hidden="true"` so
+ * screen readers skip it. Defaults to a {@link ChevronRight} icon when no
+ * children are provided. SVG children are sized to 3.5 (14px) via CSS
+ * child selectors.
+ *
+ * @public
+ */
 const BreadcrumbSeparator = ({
   children,
   className,
   ...props
-}: ComponentProps<'li'>) => (
+}: React.ComponentProps<'li'>) => (
   <li
     role="presentation"
     aria-hidden="true"
@@ -112,11 +200,20 @@ const BreadcrumbSeparator = ({
 );
 BreadcrumbSeparator.displayName = 'BreadcrumbSeparator';
 
-/** Ellipsis indicator for collapsed breadcrumb items. @public */
+/**
+ * Ellipsis indicator for collapsed breadcrumb items.
+ *
+ * @remarks
+ * Renders a {@link MoreHorizontal} icon to indicate that intermediate
+ * breadcrumb items have been collapsed due to overflow. Includes a
+ * visually hidden "More" label for screen reader accessibility.
+ *
+ * @public
+ */
 const BreadcrumbEllipsis = ({
   className,
   ...props
-}: ComponentProps<'span'>) => (
+}: React.ComponentProps<'span'>) => (
   <span
     role="presentation"
     aria-hidden="true"
