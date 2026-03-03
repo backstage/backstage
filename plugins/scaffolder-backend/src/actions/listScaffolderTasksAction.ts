@@ -54,10 +54,13 @@ Pagination is supported via limit and offset.
             ),
           limit: z
             .number()
+            .min(1)
+            .max(1000)
             .describe('The maximum number of tasks to return for pagination')
             .optional(),
           offset: z
             .number()
+            .min(0)
             .describe('The offset to start from for pagination')
             .optional(),
         }),
