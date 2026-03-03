@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from 'react';
+import * as React from 'react';
 import { Avatar as AvatarPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/utils';
 
 /**
- * Root Avatar container with rounded styling.
- * Built on Radix Avatar for accessible image + fallback composition.
+ * Root Avatar container providing a rounded, fixed-size wrapper for avatar
+ * content. Built on the Radix UI Avatar primitive for accessible image +
+ * fallback composition with built-in image load state management.
+ *
+ * @remarks
+ * Named `ShadcnAvatar` to avoid conflicts with the existing Backstage
+ * `Avatar` component exported from `../Avatar/Avatar.tsx`.
+ *
+ * @example
+ * ```tsx
+ * <ShadcnAvatar>
+ *   <AvatarImage src="/user-photo.jpg" alt="User Name" />
+ *   <AvatarFallback>UN</AvatarFallback>
+ * </ShadcnAvatar>
+ * ```
  *
  * @public
  */
-const ShadcnAvatar = forwardRef<
-  ComponentRef<typeof AvatarPrimitive.Root>,
-  ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
+const ShadcnAvatar = React.forwardRef<
+  React.ComponentRef<typeof AvatarPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Root
     ref={ref}
@@ -42,12 +55,21 @@ const ShadcnAvatar = forwardRef<
 ShadcnAvatar.displayName = 'ShadcnAvatar';
 
 /**
- * Avatar image rendered inside the Avatar root.
+ * Avatar image rendered inside the ShadcnAvatar root container. Handles
+ * asynchronous image loading and reports load status to the parent Avatar
+ * primitive, enabling the AvatarFallback to display when the image is
+ * unavailable.
+ *
+ * @example
+ * ```tsx
+ * <AvatarImage src="/photo.jpg" alt="Description" />
+ * ```
+ *
  * @public
  */
-const AvatarImage = forwardRef<
-  ComponentRef<typeof AvatarPrimitive.Image>,
-  ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
+const AvatarImage = React.forwardRef<
+  React.ComponentRef<typeof AvatarPrimitive.Image>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
@@ -59,12 +81,21 @@ const AvatarImage = forwardRef<
 AvatarImage.displayName = 'AvatarImage';
 
 /**
- * Fallback rendered when the avatar image is unavailable or loading.
+ * Fallback content displayed when the avatar image is unavailable, fails to
+ * load, or is still loading. Typically renders initials or a placeholder icon
+ * centered within the avatar container.
+ *
+ * @example
+ * ```tsx
+ * <AvatarFallback>AB</AvatarFallback>
+ * <AvatarFallback delayMs={500}>AB</AvatarFallback>
+ * ```
+ *
  * @public
  */
-const AvatarFallback = forwardRef<
-  ComponentRef<typeof AvatarPrimitive.Fallback>,
-  ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
+const AvatarFallback = React.forwardRef<
+  React.ComponentRef<typeof AvatarPrimitive.Fallback>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Fallback
     ref={ref}
