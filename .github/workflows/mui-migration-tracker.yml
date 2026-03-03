@@ -1,4 +1,4 @@
-name: MUI to BUI Migration Tracker
+name: MUI to shadcn/ui Migration Tracker
 
 on:
   schedule:
@@ -14,7 +14,7 @@ permissions:
 jobs:
   update-migration-progress:
     runs-on: ubuntu-latest
-    name: Update Migration Progress Issue
+    name: Update shadcn/ui Migration Progress Issue
 
     steps:
       - name: Harden Runner
@@ -39,8 +39,87 @@ jobs:
       - name: Run migration analysis
         id: analysis
         run: |
-          # Run the migration script and save markdown output
-          yarn mui-to-bui --markdown > migration-report.md
+          # MUI to shadcn/ui Migration Analysis Script
+          echo "# MUI to shadcn/ui Migration Progress" > migration-report.md
+          echo "" >> migration-report.md
+          echo "_Report generated on $(date -u '+%Y-%m-%d %H:%M UTC')_" >> migration-report.md
+          echo "" >> migration-report.md
+
+          # --- MUI Import Removal Tracking ---
+          echo "## MUI Import Removal" >> migration-report.md
+          echo "" >> migration-report.md
+          echo "| Import | Files Remaining |" >> migration-report.md
+          echo "|--------|----------------|" >> migration-report.md
+
+          MUI_CORE=$(grep -rl "@material-ui/core" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`@material-ui/core\` | $MUI_CORE |" >> migration-report.md
+
+          MUI_ICONS=$(grep -rl "@material-ui/icons" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`@material-ui/icons\` | $MUI_ICONS |" >> migration-report.md
+
+          MUI_LAB=$(grep -rl "@material-ui/lab" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`@material-ui/lab\` | $MUI_LAB |" >> migration-report.md
+
+          MUI_STYLES=$(grep -rl "@material-ui/styles" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`@material-ui/styles\` | $MUI_STYLES |" >> migration-report.md
+
+          MAT_TABLE=$(grep -rl "@material-table/core" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`@material-table/core\` | $MAT_TABLE |" >> migration-report.md
+
+          RJSF_MUI=$(grep -rl "@rjsf/material-ui" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`@rjsf/material-ui\` | $RJSF_MUI |" >> migration-report.md
+
+          POPUP_STATE=$(grep -rl "material-ui-popup-state" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`material-ui-popup-state\` | $POPUP_STATE |" >> migration-report.md
+
+          # Exclude packages/theme from @mui/material count (retained for backward compat)
+          MUI5=$(grep -rl "@mui/material" --include="*.ts" --include="*.tsx" packages/ plugins/ | grep -v "packages/theme/" | wc -l)
+          echo "| \`@mui/material\` (excl. packages/theme) | $MUI5 |" >> migration-report.md
+
+          MUI_TOTAL=$((MUI_CORE + MUI_ICONS + MUI_LAB + MUI_STYLES + MAT_TABLE + RJSF_MUI + POPUP_STATE + MUI5))
+          echo "" >> migration-report.md
+          echo "**Total files with MUI imports: $MUI_TOTAL**" >> migration-report.md
+          echo "" >> migration-report.md
+
+          # --- CSS-in-JS Removal Tracking ---
+          echo "## CSS-in-JS Removal" >> migration-report.md
+          echo "" >> migration-report.md
+          echo "| Pattern | Files Remaining |" >> migration-report.md
+          echo "|---------|----------------|" >> migration-report.md
+
+          MAKE_STYLES=$(grep -rl "makeStyles" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`makeStyles\` | $MAKE_STYLES |" >> migration-report.md
+
+          WITH_STYLES=$(grep -rl "withStyles" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`withStyles\` | $WITH_STYLES |" >> migration-report.md
+
+          CREATE_STYLES=$(grep -rl "createStyles" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`createStyles\` | $CREATE_STYLES |" >> migration-report.md
+
+          CSS_IN_JS_TOTAL=$((MAKE_STYLES + WITH_STYLES + CREATE_STYLES))
+          echo "" >> migration-report.md
+          echo "**Total files with CSS-in-JS patterns: $CSS_IN_JS_TOTAL**" >> migration-report.md
+          echo "" >> migration-report.md
+
+          # --- shadcn/ui Adoption Tracking ---
+          echo "## shadcn/ui Adoption" >> migration-report.md
+          echo "" >> migration-report.md
+          echo "| Metric | Files |" >> migration-report.md
+          echo "|--------|-------|" >> migration-report.md
+
+          SHADCN_UI=$(grep -rl "components/ui/" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| shadcn/ui component imports (\`components/ui/\`) | $SHADCN_UI |" >> migration-report.md
+
+          RADIX=$(grep -rl "from 'radix-ui'" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| Radix UI imports (\`radix-ui\`) | $RADIX |" >> migration-report.md
+
+          LUCIDE=$(grep -rl "lucide-react" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| Lucide icon imports (\`lucide-react\`) | $LUCIDE |" >> migration-report.md
+
+          CN_HELPER=$(grep -rl "cn(" --include="*.ts" --include="*.tsx" packages/ plugins/ | wc -l)
+          echo "| \`cn()\` helper usage | $CN_HELPER |" >> migration-report.md
+
+          echo "" >> migration-report.md
 
           # Read the report into an environment variable (escape for GitHub Actions)
           echo "REPORT<<EOF" >> $GITHUB_ENV
@@ -63,7 +142,7 @@ jobs:
                 body: reportBody
               });
 
-              console.log(`✅ Successfully updated issue #${issueNumber}`);
+              console.log(`✅ Successfully updated issue #${issueNumber} with shadcn/ui migration report`);
             } catch (error) {
               console.error(`❌ Error updating issue: ${error.message}`);
               throw error;
