@@ -72,24 +72,24 @@
     --primary-foreground: #FFFFFF;
 
     /* Secondary color
-     * --secondary: Subtle surface for secondary actions
+     * --secondary: Subtle surface for secondary actions (neutralBg)
      * --secondary-foreground: Text on secondary surfaces
-     * Contrast ratio: #000000 on #F8F8F8 ≈ 19.2:1 — WCAG AAA */
-    --secondary: #F8F8F8;
+     * Contrast ratio: #000000 on #F5F5F5 ≈ 18.7:1 — WCAG AAA */
+    --secondary: #F5F5F5;
     --secondary-foreground: #000000;
 
     /* Muted/subtle surfaces
-     * --muted: Muted background aligned with BUI --bui-bg-neutral-2
+     * --muted: Muted background (neutralBg from generatePaletteTokens)
      * --muted-foreground: Subtle text (palettes.light.textSubtle)
-     * Contrast ratio: #6E6E6E on #F8F8F8 ≈ 5.3:1 — WCAG AA */
-    --muted: #F8F8F8;
+     * Contrast ratio: #6E6E6E on #F5F5F5 ≈ 4.9:1 — WCAG AA */
+    --muted: #F5F5F5;
     --muted-foreground: #6E6E6E;
 
     /* Accent surfaces
-     * --accent: Subtle accent highlight background
+     * --accent: Subtle accent highlight background (neutralBg)
      * --accent-foreground: Text on accent surfaces
-     * Contrast ratio: #000000 on #F8F8F8 ≈ 19.2:1 — WCAG AAA */
-    --accent: #F8F8F8;
+     * Contrast ratio: #000000 on #F5F5F5 ≈ 18.7:1 — WCAG AAA */
+    --accent: #F5F5F5;
     --accent-foreground: #000000;
 
     /* Destructive/error
@@ -117,7 +117,7 @@
      *   DEFAULT_FONT_FAMILY
      * --font-mono: aligned with BUI --bui-font-monospace
      * ======================================== */
-    --font-sans: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-mono: ui-monospace, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
 
     /* ========================================

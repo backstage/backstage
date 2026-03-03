@@ -105,6 +105,18 @@ type BackstageTailwindConfig = Config & {
 const config: BackstageTailwindConfig = {
   /*
    * ---------------------------------------------------------------------------
+   * Dark mode
+   * ---------------------------------------------------------------------------
+   * Uses a selector strategy with Backstage's `[data-theme-mode="dark"]`
+   * data attribute, matching the root Tailwind configuration and the
+   * established `useApplyThemeAttributes` convention. Without this setting,
+   * Tailwind's `dark:` variants would fall back to the default `media`
+   * strategy (prefers-color-scheme) instead of the Backstage selector.
+   */
+  darkMode: ['selector', '[data-theme-mode="dark"]'],
+
+  /*
+   * ---------------------------------------------------------------------------
    * Content paths
    * ---------------------------------------------------------------------------
    * Scans TypeScript and TSX source files within both the app package and
