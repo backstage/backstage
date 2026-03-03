@@ -16,11 +16,8 @@
 
 import { renderHook } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { useStylesTransformer } from './transformer';
-import {
-  TechDocsThemeContext,
-  defaultTechDocsTheme,
-} from './TechDocsThemeContext';
+import { useStylesTransformer, TechDocsThemeProvider } from './transformer';
+import { defaultTechDocsTheme } from './TechDocsThemeContext';
 import type { TechDocsTheme } from './rules/types';
 
 /**
@@ -93,9 +90,7 @@ describe('Transformers > Styles', () => {
       typography: { h1: { fontSize: '20rem' } },
     });
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <TechDocsThemeContext.Provider value={theme}>
-        {children}
-      </TechDocsThemeContext.Provider>
+      <TechDocsThemeProvider theme={theme}>{children}</TechDocsThemeProvider>
     );
     const { result } = renderHook(() => useStylesTransformer(), { wrapper });
 
@@ -119,9 +114,7 @@ describe('Transformers > Styles', () => {
       typography: { h1: { fontSize: 'var(--font-size-h1)' } },
     });
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <TechDocsThemeContext.Provider value={theme}>
-        {children}
-      </TechDocsThemeContext.Provider>
+      <TechDocsThemeProvider theme={theme}>{children}</TechDocsThemeProvider>
     );
     const { result } = renderHook(() => useStylesTransformer(), { wrapper });
 
@@ -144,9 +137,7 @@ describe('Transformers > Styles', () => {
       typography: { htmlFontSize: 16, h1: { fontSize: 100 } },
     });
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <TechDocsThemeContext.Provider value={theme}>
-        {children}
-      </TechDocsThemeContext.Provider>
+      <TechDocsThemeProvider theme={theme}>{children}</TechDocsThemeProvider>
     );
     const { result } = renderHook(() => useStylesTransformer(), { wrapper });
 
