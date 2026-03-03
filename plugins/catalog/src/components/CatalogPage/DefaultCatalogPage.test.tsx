@@ -30,7 +30,7 @@ import {
   mockApis,
   renderInTestApp,
 } from '@backstage/test-utils';
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import { LayoutDashboard } from 'lucide-react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
@@ -263,7 +263,7 @@ describe('DefaultCatalogPage', () => {
     const actions: TableProps<CatalogTableRow>['actions'] = [
       () => {
         return {
-          icon: () => <DashboardIcon fontSize="small" />,
+          icon: () => <LayoutDashboard size={16} />,
           tooltip: 'Foo Action',
           disabled: false,
           onClick: () => jest.fn(),
@@ -271,7 +271,7 @@ describe('DefaultCatalogPage', () => {
       },
       () => {
         return {
-          icon: () => <DashboardIcon fontSize="small" />,
+          icon: () => <LayoutDashboard size={16} />,
           tooltip: 'Bar Action',
           disabled: true,
           onClick: () => jest.fn(),
@@ -288,9 +288,7 @@ describe('DefaultCatalogPage', () => {
     ).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
-    await expect(
-      screen.findByTitle(/Bar Action/),
-    ).resolves.toBeDisabled();
+    await expect(screen.findByTitle(/Bar Action/)).resolves.toBeDisabled();
   }, 20_000);
 
   // this test right now causes some red lines in the log output when running tests
