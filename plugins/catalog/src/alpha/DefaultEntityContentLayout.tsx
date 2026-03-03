@@ -15,7 +15,6 @@
  */
 
 import { Fragment } from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntitySwitch } from '../components/EntitySwitch';
 import {
@@ -30,111 +29,10 @@ import {
   EntityProcessingErrorsPanel,
   hasCatalogProcessingErrors,
 } from '../components/EntityProcessingErrorsPanel';
-import { HorizontalScrollGrid } from '@backstage/core-components';
+import { HorizontalScrollGrid, cn } from '@backstage/core-components';
 
 // Module-level flag to ensure deprecation warning is only logged once
 let hasLoggedSummaryWarning = false;
-
-const useStyles = makeStyles<
-  Theme,
-  { infoCards: boolean; summaryCards: boolean; contentCards: boolean }
->(theme => ({
-  root: {
-    display: 'flex',
-    flexFlow: 'column nowrap',
-    gap: theme.spacing(3),
-  },
-  warningArea: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.spacing(2),
-    marginBottom: theme.spacing(3),
-    '&:empty': {
-      marginBottom: 0,
-      display: 'none',
-    },
-  },
-  mainContent: {
-    display: 'flex',
-    flexFlow: 'column',
-    gap: theme.spacing(3),
-    alignItems: 'stretch',
-    minWidth: 0,
-  },
-  infoArea: {
-    display: 'flex',
-    flexFlow: 'column nowrap',
-    alignItems: 'stretch',
-    gap: theme.spacing(3),
-    minWidth: 0,
-    '& > *': {
-      flexShrink: 0,
-      flexGrow: 0,
-    },
-  },
-  summaryArea: {
-    minWidth: 0,
-    margin: theme.spacing(1), // To counteract MUI negative grid margin
-  },
-  summaryCard: {
-    flex: '0 0 auto',
-    width: '100%',
-    '& + &': {
-      marginLeft: theme.spacing(3),
-    },
-  },
-  contentArea: {
-    display: 'flex',
-    flexFlow: 'column',
-    gap: theme.spacing(3),
-    alignItems: 'stretch',
-    minWidth: 0,
-  },
-  [theme.breakpoints.up('md')]: {
-    root: {
-      display: 'grid',
-      gap: theme.spacing(3),
-      gridTemplateAreas: ({ summaryCards }) => `
-        "${summaryCards ? 'summary' : 'content'} info"
-        "content info"
-      `,
-      gridTemplateColumns: ({ infoCards }) => (infoCards ? '2fr 1fr' : '1fr'),
-      alignItems: 'start',
-    },
-    mainContent: {
-      display: 'contents',
-    },
-    contentArea: {
-      gridArea: 'content',
-    },
-    summaryArea: {
-      gridArea: 'summary',
-      margin: theme.spacing(1), // To counteract MUI negative grid margin
-    },
-    infoArea: {
-      gridArea: 'info',
-      position: 'sticky',
-      top: theme.spacing(3),
-      // this is a little unfortunate, but it's required to make the info cards scrollable
-      // in a fixed container of the full height when it's stuck.
-      // 100% doesn't work as that's the height of the entire layout, which is what powers the card scrolling.
-      maxHeight: '100vh',
-      overflowY: 'auto',
-      alignSelf: 'start',
-      alignItems: 'stretch',
-      // Hide the scrollbar for the inner info cards
-      // kind of an accessibility nightmare, but we see.
-      scrollbarWidth: 'none',
-      msOverflowStyle: 'none',
-      '&::-webkit-scrollbar': {
-        display: 'none',
-      },
-    },
-    summaryCard: {
-      width: 'auto',
-    },
-  },
-}));
 
 export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
   const { cards } = props;
@@ -155,15 +53,16 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
     );
   }
 
-  const classes = useStyles({
-    infoCards: !!infoCards.length,
-    summaryCards: !!summaryCards.length,
-    contentCards: !!contentCards.length,
-  });
+  // Compute dynamic grid template values for md+ responsive breakpoint.
+  // These are used via inline style because grid-template-areas/columns
+  // are determined by which card types are present in the layout.
+  const hasInfoCards = infoCards.length > 0;
+  const hasSummaryCards = summaryCards.length > 0;
 
   return (
     <>
-      <div className={classes.warningArea}>
+      {/* Warning area: flex column with gap, collapses when empty */}
+      <div className="flex flex-col gap-4 mb-6 empty:mb-0 empty:hidden">
         <EntitySwitch>
           <EntitySwitch.Case if={isOrphan}>
             <EntityOrphanWarning />
@@ -182,9 +81,32 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
           </EntitySwitch.Case>
         </EntitySwitch>
       </div>
-      <div className={classes.root}>
-        {infoCards.length > 0 ? (
-          <div className={classes.infoArea}>
+      {/* Root layout: flex column on mobile, CSS grid on md+ with dynamic template areas */}
+      <div
+        className={cn(
+          'flex flex-col flex-nowrap gap-6',
+          'md:grid md:gap-6 md:items-start',
+        )}
+        style={{
+          gridTemplateAreas: hasSummaryCards
+            ? '"summary info" "content info"'
+            : '"content info" "content info"',
+          gridTemplateColumns: hasInfoCards ? '2fr 1fr' : '1fr',
+        }}
+      >
+        {hasInfoCards ? (
+          <div
+            className={cn(
+              // Base: vertical flex layout with no-shrink children
+              'flex flex-col flex-nowrap items-stretch gap-6 min-w-0',
+              '[&>*]:shrink-0 [&>*]:grow-0',
+              // md+: sticky sidebar with hidden scrollbar for info cards
+              'md:[grid-area:info] md:sticky md:top-6',
+              'md:max-h-screen md:overflow-y-auto md:self-start md:items-stretch',
+              'md:[scrollbar-width:none] md:[-ms-overflow-style:none]',
+              'md:[&::-webkit-scrollbar]:hidden',
+            )}
+          >
             {infoCards.map((card, index) => (
               <Fragment key={card.element.key ?? index}>
                 {card.element}
@@ -192,14 +114,21 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
             ))}
           </div>
         ) : null}
-        <div className={classes.mainContent}>
-          {summaryCards.length > 0 ? (
-            <div className={classes.summaryArea}>
+        {/* Main content wrapper: flex on mobile, display:contents on md+ to
+            allow children to participate directly in the parent grid */}
+        <div
+          className={cn(
+            'flex flex-col gap-6 items-stretch min-w-0',
+            'md:contents',
+          )}
+        >
+          {hasSummaryCards ? (
+            <div className={cn('min-w-0 m-2', 'md:[grid-area:summary] md:m-2')}>
               <HorizontalScrollGrid scrollStep={400} scrollSpeed={100}>
                 {summaryCards.map((card, index) => (
                   <div
                     key={card.element.key ?? index}
-                    className={classes.summaryCard}
+                    className={cn('flex-none w-full [&+&]:ml-6', 'md:w-auto')}
                   >
                     {card.element}
                   </div>
@@ -208,7 +137,12 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
             </div>
           ) : null}
           {contentCards.length > 0 ? (
-            <div className={classes.contentArea}>
+            <div
+              className={cn(
+                'flex flex-col gap-6 items-stretch min-w-0',
+                'md:[grid-area:content]',
+              )}
+            >
               {contentCards.map((card, index) => (
                 <Fragment key={card.element.key ?? index}>
                   {card.element}
