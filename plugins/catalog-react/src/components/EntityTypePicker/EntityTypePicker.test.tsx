@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, waitFor, screen, within } from '@testing-library/react';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityTypePicker } from './EntityTypePicker';
 import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
@@ -76,6 +76,20 @@ const apis = TestApiRegistry.from(
   [alertApiRef, mockApis.alert()],
 );
 
+// Radix Select uses scrollIntoView and pointer-capture APIs not available in jsdom
+beforeAll(() => {
+  Element.prototype.scrollIntoView = jest.fn();
+  if (!Element.prototype.hasPointerCapture) {
+    Element.prototype.hasPointerCapture = jest.fn().mockReturnValue(false);
+  }
+  if (!Element.prototype.setPointerCapture) {
+    Element.prototype.setPointerCapture = jest.fn();
+  }
+  if (!Element.prototype.releasePointerCapture) {
+    Element.prototype.releasePointerCapture = jest.fn();
+  }
+});
+
 describe('<EntityTypePicker/>', () => {
   it('renders available entity types', async () => {
     await renderInTestApp(
@@ -89,10 +103,12 @@ describe('<EntityTypePicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(screen.getByText('Type')).toBeInTheDocument();
+    // shadcn Select renders a combobox trigger; the label "Type" is the placeholder
+    // which is hidden when a value ('all') is selected by default
+    const trigger = screen.getByRole('combobox');
+    expect(trigger).toBeInTheDocument();
 
-    const input = screen.getByTestId('select');
-    fireEvent.mouseDown(within(input).getByRole('button'));
+    fireEvent.click(trigger);
 
     await waitFor(() => screen.getByText('service'));
 
@@ -115,8 +131,8 @@ describe('<EntityTypePicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    const input = screen.getByTestId('select');
-    fireEvent.mouseDown(within(input).getByRole('button'));
+    const trigger = screen.getByRole('combobox');
+    fireEvent.click(trigger);
 
     await waitFor(() => screen.getByText('service'));
     fireEvent.click(screen.getByText('service'));
@@ -125,7 +141,7 @@ describe('<EntityTypePicker/>', () => {
       type: new EntityTypeFilter(['service']),
     });
 
-    fireEvent.mouseDown(within(input).getByRole('button'));
+    fireEvent.click(trigger);
     fireEvent.click(screen.getByText('all'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({ type: undefined });
