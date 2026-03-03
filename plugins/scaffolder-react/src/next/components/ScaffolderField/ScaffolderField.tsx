@@ -58,7 +58,7 @@ export const ScaffolderField = (
     errors,
     help,
     rawDescription,
-    required,
+    required: _required,
     disabled,
   } = props;
 
