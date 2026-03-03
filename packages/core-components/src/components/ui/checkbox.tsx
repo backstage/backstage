@@ -14,22 +14,47 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from 'react';
+import * as React from 'react';
 import { Checkbox as CheckboxPrimitive } from 'radix-ui';
 import { Check } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
 
 /**
- * Checkbox built on Radix UI Checkbox primitive.
- * Replaces MUI Checkbox across OAuthRequestDialog, scaffolder forms,
- * and data table row selection.
+ * Accessible checkbox component built on the Radix UI Checkbox primitive,
+ * styled with Tailwind CSS following the shadcn/ui new-york convention.
+ *
+ * @remarks
+ * Replaces MUI {@link https://v4.mui.com/components/checkboxes/ | Checkbox}
+ * across OAuthRequestDialog, data-table row selection, and form fields.
+ *
+ * Features provided by the Radix primitive:
+ * - Built-in keyboard toggling via Space key
+ * - ARIA `checkbox` role with `checked` / `unchecked` / `indeterminate` states
+ * - Form-field association through native `name` and `value` props
+ *
+ * @example
+ * ```tsx
+ * import { Checkbox } from '../components/ui/checkbox';
+ *
+ * // Basic controlled usage
+ * <Checkbox checked={isSelected} onCheckedChange={setIsSelected} />
+ *
+ * // Disabled state
+ * <Checkbox disabled />
+ *
+ * // With a label (pair with Radix Label or html <label>)
+ * <div className="flex items-center gap-2">
+ *   <Checkbox id="terms" />
+ *   <label htmlFor="terms">Accept terms</label>
+ * </div>
+ * ```
  *
  * @public
  */
-const ShadcnCheckbox = forwardRef<
-  ComponentRef<typeof CheckboxPrimitive.Root>,
-  ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
+const Checkbox = React.forwardRef<
+  React.ComponentRef<typeof CheckboxPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
 >(({ className, ...props }, ref) => (
   <CheckboxPrimitive.Root
     ref={ref}
@@ -46,10 +71,10 @@ const ShadcnCheckbox = forwardRef<
     <CheckboxPrimitive.Indicator
       className={cn('flex items-center justify-center text-current')}
     >
-      <Check className="h-4 w-4" />
+      <Check className="h-3.5 w-3.5" />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ));
-ShadcnCheckbox.displayName = 'ShadcnCheckbox';
+Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
-export { ShadcnCheckbox };
+export { Checkbox };
