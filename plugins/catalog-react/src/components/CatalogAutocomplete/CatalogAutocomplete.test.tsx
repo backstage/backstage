@@ -30,7 +30,7 @@ describe('CatalogAutocomplete', () => {
         label="Test Label"
       />,
     );
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 
   it('renders the expand icon', () => {
@@ -54,7 +54,7 @@ describe('CatalogAutocomplete', () => {
       />,
     );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     await user.click(input);
 
     for (const option of mockOptions) {
@@ -72,7 +72,7 @@ describe('CatalogAutocomplete', () => {
       />,
     );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     expect(input).toBeRequired();
   });
 
@@ -94,7 +94,7 @@ describe('CatalogAutocomplete', () => {
       <CatalogAutocomplete name="test-autocomplete" options={mockOptions} />,
     );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     expect(input).toBeInTheDocument();
   });
 
@@ -107,7 +107,7 @@ describe('CatalogAutocomplete', () => {
       />,
     );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     await user.click(input);
 
     const optionToSelect = await screen.findByText('Option 1');

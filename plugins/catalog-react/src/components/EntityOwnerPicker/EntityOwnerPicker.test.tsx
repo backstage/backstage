@@ -413,7 +413,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       owners: undefined,
     });
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.change(input, { target: { value: 'Some-Owner' } });
 
     await waitFor(() =>

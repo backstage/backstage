@@ -79,6 +79,9 @@ export function SidebarPage(props: SidebarPageProps) {
   // MUI breakpoints.down('xs') = max-width: 599.95px; noSsr: true means initially false
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
+    if (typeof window.matchMedia !== 'function') {
+      return undefined;
+    }
     const mql = window.matchMedia('(max-width: 599.95px)');
     setIsMobile(mql.matches);
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
