@@ -15,30 +15,13 @@
  */
 
 import { ResponseError } from '@backstage/errors';
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import { cn } from '../../lib/utils';
+import { Separator } from '../ui/separator';
 import { CodeSnippet } from '../CodeSnippet';
 import { CopyTextButton } from '../CopyTextButton';
 import { ErrorPanel, ErrorPanelProps } from '../ErrorPanel';
 
 export type ResponseErrorPanelClassKey = 'text' | 'divider';
-
-const useStyles = makeStyles(
-  theme => ({
-    text: {
-      fontFamily: 'monospace',
-      whiteSpace: 'pre',
-      overflowX: 'auto',
-      marginRight: theme.spacing(2),
-    },
-    divider: {
-      margin: theme.spacing(2),
-    },
-  }),
-  { name: 'BackstageResponseErrorPanel' },
-);
 
 /**
  * Renders a warning panel as the effect of a failed server request.
@@ -49,7 +32,6 @@ const useStyles = makeStyles(
  */
 export function ResponseErrorPanel(props: ErrorPanelProps) {
   const { title, error, defaultExpanded } = props;
-  const classes = useStyles();
 
   if (error.name !== 'ResponseError') {
     return (
@@ -77,23 +59,31 @@ export function ResponseErrorPanel(props: ErrorPanelProps) {
       error={{ name: errorString, message: messageString, stack: stackString }}
     >
       {requestString && (
-        <ListItem alignItems="flex-start">
-          <ListItemText
-            classes={{ secondary: classes.text }}
-            primary="Request"
-            secondary={request ? `${requestString}` : undefined}
-          />
+        <div className="flex items-start px-4 py-2">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground">Request</p>
+            {request && (
+              <p
+                className={cn(
+                  'text-sm text-muted-foreground font-mono whitespace-pre overflow-x-auto mr-4',
+                )}
+              >
+                {requestString}
+              </p>
+            )}
+          </div>
           <CopyTextButton text={requestString} />
-        </ListItem>
+        </div>
       )}
       <>
-        <Divider component="li" className={classes.divider} />
-        <ListItem alignItems="flex-start">
-          <ListItemText
-            classes={{ secondary: classes.text }}
-            primary="Full Error as JSON"
-          />
-        </ListItem>
+        <Separator className="my-4" />
+        <div className="flex items-start px-4 py-2">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground">
+              Full Error as JSON
+            </p>
+          </div>
+        </div>
         <CodeSnippet language="json" text={jsonString} showCopyCodeButton />
       </>
     </ErrorPanel>
