@@ -17,8 +17,12 @@ import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 import { parseEntityRef } from '@backstage/catalog-model';
-import { Link } from '@backstage/core-components';
+import { Link, ShadcnButton as Button } from '@backstage/core-components';
+import { Link2 } from 'lucide-react';
 import { ScaffolderTaskOutput } from '../../../api';
+
+/** Wrap lucide Link2 icon to satisfy Backstage's IconComponent contract */
+const LinkIcon: IconComponent = () => <Link2 />;
 
 export const LinkOutputs = (props: { output: ScaffolderTaskOutput }) => {
   const { links = [] } = props.output;
@@ -44,8 +48,11 @@ export const LinkOutputs = (props: { output: ScaffolderTaskOutput }) => {
           const Icon = iconResolver(icon);
           return (
             <Link to={url} key={i} className="no-underline hover:no-underline">
-              <Button startIcon={<Icon />} component="div" color="primary">
-                {title}
+              <Button variant="default" asChild>
+                <span className="inline-flex items-center gap-2" role="button">
+                  <Icon />
+                  {title}
+                </span>
               </Button>
             </Link>
           );
