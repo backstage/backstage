@@ -23,6 +23,11 @@ import { Config } from '@backstage/config';
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
 const DEFAULT_PROVIDER_ID = 'default';
 
+/**
+ * Configuration for the Bitbucket Server Entity Provider.
+ *
+ * @public
+ */
 export type BitbucketServerEntityProviderConfig = {
   id: string;
   host: string;
