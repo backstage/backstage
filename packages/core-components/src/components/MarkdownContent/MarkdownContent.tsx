@@ -111,9 +111,9 @@ const components: Options['components'] = {
   h5: headingRenderer,
   h6: headingRenderer,
 
-  a: ({ href, children, ...props }) =>
+  a: ({ href, children, title, target, rel }) =>
     href ? (
-      <Link {...(props as any)} to={href}>
+      <Link to={href} title={title} target={target} rel={rel}>
         {children}
       </Link>
     ) : (
