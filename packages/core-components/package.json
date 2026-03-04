@@ -63,7 +63,6 @@
     "@backstage/version-bridge": "workspace:^",
     "@dagrejs/dagre": "^1.1.4",
     "@date-io/core": "^1.3.13",
-
     "@react-hookz/web": "^24.0.0",
     "@tanstack/react-table": "^8.21.3",
     "@testing-library/react": "^16.0.0",
