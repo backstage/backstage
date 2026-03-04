@@ -576,7 +576,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">379 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">387 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -2905,7 +2905,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
       <div class="badges">
         <label for="c-7-backstage-ui-card-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-7-backstage-ui-card-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-7-backstage-ui-card-stories" class="badge ok as-toggle">16 stories</label>
         
       </div>
     </div>
@@ -2959,56 +2959,60 @@ className?: string</code></pre>
               </div>
               
               
-              <pre><code>const Default = () =&gt; &lt;Card&gt;
+              <pre><code>const Default = () =&gt; &lt;Card&gt;Hello world&lt;/Card&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">DefaultWithHeader</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const DefaultWithHeader = () =&gt; &lt;Card&gt;
     &lt;CardHeader&gt;Header&lt;/CardHeader&gt;
     &lt;CardBody&gt;Body&lt;/CardBody&gt;
-    &lt;CardFooter&gt;Footer&lt;/CardFooter&gt;
 &lt;/Card&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">CustomSize</span>
+                <span class="ex-name">LongBody</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const CustomSize = () =&gt; &lt;Card
-    style={{
-      width: &#39;300px&#39;,
-      height: &#39;200px&#39;,
-    }} /&gt;;</code></pre>
+              <pre><code>const LongBody = () =&gt; (
+  &lt;Card style={{ width: &#39;300px&#39;, height: &#39;200px&#39; }}&gt;{content}&lt;/Card&gt;
+);</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">WithLongBody</span>
+                <span class="ex-name">LongBodyHeader</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithLongBody = () =&gt; (
+              <pre><code>const LongBodyHeader = () =&gt; (
   &lt;Card style={{ width: &#39;300px&#39;, height: &#39;200px&#39; }}&gt;
     &lt;CardHeader&gt;
       &lt;Text&gt;Header&lt;/Text&gt;
     &lt;/CardHeader&gt;
-    &lt;CardBody&gt;
-      &lt;Text&gt;
-        This is the first paragraph of a long body text that demonstrates how
-        the Card component handles extensive content. The card should adjust
-        accordingly to display all the text properly while maintaining its
-        structure.
-      &lt;/Text&gt;
-      &lt;Text&gt;
-        Here&#39;s a second paragraph that adds more content to our card body.
-        Having multiple paragraphs helps to visualize how spacing works within
-        the card component.
-      &lt;/Text&gt;
-      &lt;Text&gt;
-        This third paragraph continues to add more text to ensure we have a
-        proper demonstration of a card with significant content. This makes it
-        easier to test scrolling behavior and overall layout when content
-        exceeds the initial view.
-      &lt;/Text&gt;
-    &lt;/CardBody&gt;
+    &lt;CardBody&gt;{content}&lt;/CardBody&gt;
+  &lt;/Card&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">LongBodyHeaderFooter</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LongBodyHeaderFooter = () =&gt; (
+  &lt;Card style={{ width: &#39;300px&#39;, height: &#39;200px&#39; }}&gt;
+    &lt;CardHeader&gt;
+      &lt;Text&gt;Header&lt;/Text&gt;
+    &lt;/CardHeader&gt;
+    &lt;CardBody&gt;{content}&lt;/CardBody&gt;
     &lt;CardFooter&gt;
       &lt;Text&gt;Footer&lt;/Text&gt;
     &lt;/CardFooter&gt;
@@ -3017,33 +3021,80 @@ className?: string</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">WithListRow</span>
+                <span class="ex-name">ListRow</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithListRow = () =&gt; (
+              <pre><code>const ListRow = () =&gt; (
+  &lt;Card style={{ width: &#39;300px&#39;, height: &#39;200px&#39; }}&gt;
+    &lt;CardBody&gt;{listRowContent}&lt;/CardBody&gt;
+  &lt;/Card&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">ListRowHeader</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ListRowHeader = () =&gt; (
+  &lt;Card style={{ width: &#39;300px&#39;, height: &#39;200px&#39; }}&gt;
+    &lt;CardHeader&gt;
+      &lt;Text&gt;Header&lt;/Text&gt;
+    &lt;/CardHeader&gt;
+    &lt;CardBody&gt;{listRowContent}&lt;/CardBody&gt;
+  &lt;/Card&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">ListRowFooter</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ListRowFooter = () =&gt; (
+  &lt;Card style={{ width: &#39;300px&#39;, height: &#39;200px&#39; }}&gt;
+    &lt;CardBody&gt;{listRowContent}&lt;/CardBody&gt;
+    &lt;CardFooter&gt;
+      &lt;Text&gt;Footer&lt;/Text&gt;
+    &lt;/CardFooter&gt;
+  &lt;/Card&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">ListRowHeaderFooter</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ListRowHeaderFooter = () =&gt; (
   &lt;Card style={{ width: &#39;300px&#39;, height: &#39;200px&#39; }}&gt;
     &lt;CardHeader&gt;
       &lt;Text&gt;Header&lt;/Text&gt;
     &lt;/CardHeader&gt;
     &lt;CardBody&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
-      &lt;ListRow&gt;Hello world&lt;/ListRow&gt;
+      &lt;Flex direction=&quot;column&quot; gap=&quot;1&quot;&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+        &lt;ListRowComponent&gt;Hello world&lt;/ListRowComponent&gt;
+      &lt;/Flex&gt;
     &lt;/CardBody&gt;
     &lt;CardFooter&gt;
       &lt;Text&gt;Footer&lt;/Text&gt;
@@ -3159,6 +3210,106 @@ className?: string</code></pre>
         &lt;/Box&gt;
     &lt;/Box&gt;
 &lt;/Flex&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Interactive</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Interactive = () =&gt; (
+  &lt;Card
+    style={{ width: &#39;300px&#39; }}
+    onPress={() =&gt; alert(&#39;Card pressed&#39;)}
+    label=&quot;View component details&quot;
+  &gt;
+    &lt;CardHeader&gt;
+      &lt;Text weight=&quot;bold&quot;&gt;Interactive Card&lt;/Text&gt;
+    &lt;/CardHeader&gt;
+    &lt;CardBody&gt;
+      &lt;Text&gt;
+        Click anywhere on this card to trigger the press handler. The entire
+        card surface is interactive.
+      &lt;/Text&gt;
+    &lt;/CardBody&gt;
+    &lt;CardFooter&gt;
+      &lt;Text variant=&quot;body-small&quot; color=&quot;secondary&quot;&gt;
+        Click to interact
+      &lt;/Text&gt;
+    &lt;/CardFooter&gt;
+  &lt;/Card&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">InteractiveAsLink</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const InteractiveAsLink = () =&gt; (
+  &lt;Card
+    style={{ width: &#39;300px&#39; }}
+    href=&quot;https://backstage.io&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener noreferrer&quot;
+    title=&quot;Open Backstage documentation&quot;
+    label=&quot;Open Backstage documentation&quot;
+  &gt;
+    &lt;CardHeader&gt;Link Card&lt;/CardHeader&gt;
+    &lt;CardBody&gt;
+      &lt;Text&gt;
+        This card navigates to a URL when clicked. The entire card surface
+        acts as a link.
+      &lt;/Text&gt;
+    &lt;/CardBody&gt;
+    &lt;CardFooter&gt;Opens backstage.io&lt;/CardFooter&gt;
+  &lt;/Card&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">InteractiveWithNestedButtons</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const InteractiveWithNestedButtons = () =&gt; (
+  &lt;Card
+    style={{ width: &#39;300px&#39; }}
+    onPress={() =&gt; alert(&#39;Card pressed&#39;)}
+    label=&quot;View plugin details&quot;
+  &gt;
+    &lt;CardHeader&gt;
+      &lt;Text weight=&quot;bold&quot;&gt;Card with Actions&lt;/Text&gt;
+    &lt;/CardHeader&gt;
+    &lt;CardBody&gt;
+      &lt;Text&gt;
+        Clicking the card background triggers the card press handler. The
+        buttons below remain independently interactive.
+      &lt;/Text&gt;
+    &lt;/CardBody&gt;
+    &lt;CardFooter&gt;
+      &lt;Flex gap=&quot;2&quot;&gt;
+        &lt;Button
+          size=&quot;small&quot;
+          variant=&quot;secondary&quot;
+          onPress={() =&gt; alert(&#39;Primary action&#39;)}
+        &gt;
+          Primary
+        &lt;/Button&gt;
+        &lt;Button
+          size=&quot;small&quot;
+          variant=&quot;tertiary&quot;
+          onPress={() =&gt; alert(&#39;Secondary action&#39;)}
+        &gt;
+          Secondary
+        &lt;/Button&gt;
+      &lt;/Flex&gt;
+    &lt;/CardFooter&gt;
+  &lt;/Card&gt;
+);</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
