@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
-import Button from '@material-ui/core/Button';
-import DescriptionIcon from '@material-ui/icons/Description';
+import { ShadcnButton as Button } from '@backstage/core-components';
+import { FileText } from 'lucide-react';
 import { ScaffolderTaskOutput } from '../../../api';
+
+/** Wrap lucide FileText icon to satisfy Backstage's IconComponent contract */
+const FileTextIcon: IconComponent = () => <FileText />;
 
 export const TextOutputs = (props: {
   output: ScaffolderTaskOutput;
@@ -32,7 +35,7 @@ export const TextOutputs = (props: {
   const app = useApp();
 
   const iconResolver = (key?: string): IconComponent =>
-    app.getSystemIcon(key!) ?? DescriptionIcon;
+    app.getSystemIcon(key!) ?? FileTextIcon;
 
   return (
     <>
@@ -43,16 +46,14 @@ export const TextOutputs = (props: {
           return (
             <Button
               key={i}
-              startIcon={<Icon />}
-              component="div"
-              color="primary"
+              variant={index === i ? 'outline' : 'ghost'}
               onClick={() => {
                 if (index !== i) {
                   setIndex?.(i);
                 }
               }}
-              variant={index === i ? 'outlined' : undefined}
             >
+              <Icon />
               {title}
             </Button>
           );
