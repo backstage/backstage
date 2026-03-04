@@ -15,30 +15,25 @@
  */
 
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import Popover from '@material-ui/core/Popover';
-import { makeStyles } from '@material-ui/core/styles';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import Description from '@material-ui/icons/Description';
-import Edit from '@material-ui/icons/Edit';
-import List from '@material-ui/icons/List';
-import Functions from '@material-ui/icons/Functions';
-import MoreVert from '@material-ui/icons/MoreVert';
-import { SyntheticEvent, useState } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
+import {
+  MoreVertical,
+  PlusCircle,
+  Pencil,
+  FunctionSquare,
+  FileText,
+  List as ListIcon,
+} from 'lucide-react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
-
-const useStyles = makeStyles(theme => ({
-  button: {
-    color: theme.page.fontColor,
-  },
-}));
 
 /**
  * @alpha
@@ -65,9 +60,6 @@ export function ScaffolderPageContextMenu(
     onCreateClicked,
     onTemplatingExtensionsClicked,
   } = props;
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
-
   const { allowed: canManageTemplates } = usePermission({
     permission: templateManagementPermission,
   });
@@ -84,93 +76,51 @@ export function ScaffolderPageContextMenu(
     return null;
   }
 
-  const onOpen = (event: SyntheticEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const onClose = () => {
-    setAnchorEl(undefined);
-  };
-
   return (
-    <>
-      <IconButton
-        id="long-menu"
-        aria-label={t('scaffolderPageContextMenu.moreLabel')}
-        aria-controls="long-menu"
-        aria-expanded={!!anchorEl}
-        aria-haspopup="true"
-        role="button"
-        onClick={onOpen}
-        data-testid="menu-button"
-        color="inherit"
-        className={classes.button}
-      >
-        <MoreVert />
-      </IconButton>
-      <Popover
-        aria-labelledby="long-menu"
-        open={Boolean(anchorEl)}
-        onClose={onClose}
-        anchorEl={anchorEl}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <MenuList>
-          {onCreateClicked && (
-            <MenuItem onClick={onCreateClicked}>
-              <ListItemIcon>
-                <CreateComponentIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={t('scaffolderPageContextMenu.createLabel')}
-              />
-            </MenuItem>
-          )}
-          {onEditorClicked && canManageTemplates && (
-            <MenuItem onClick={onEditorClicked}>
-              <ListItemIcon>
-                <Edit fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={t('scaffolderPageContextMenu.editorLabel')}
-              />
-            </MenuItem>
-          )}
-          {onTemplatingExtensionsClicked && (
-            <MenuItem onClick={onTemplatingExtensionsClicked}>
-              <ListItemIcon>
-                <Functions fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={t(
-                  'scaffolderPageContextMenu.templatingExtensionsLabel',
-                )}
-              />
-            </MenuItem>
-          )}
-          {onActionsClicked && (
-            <MenuItem onClick={onActionsClicked}>
-              <ListItemIcon>
-                <Description fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={t('scaffolderPageContextMenu.actionsLabel')}
-              />
-            </MenuItem>
-          )}
-          {onTasksClicked && (
-            <MenuItem onClick={onTasksClicked}>
-              <ListItemIcon>
-                <List fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={t('scaffolderPageContextMenu.tasksLabel')}
-              />
-            </MenuItem>
-          )}
-        </MenuList>
-      </Popover>
-    </>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t('scaffolderPageContextMenu.moreLabel')}
+          data-testid="menu-button"
+          className="text-foreground"
+        >
+          <MoreVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {onCreateClicked && (
+          <DropdownMenuItem onClick={onCreateClicked}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            {t('scaffolderPageContextMenu.createLabel')}
+          </DropdownMenuItem>
+        )}
+        {onEditorClicked && canManageTemplates && (
+          <DropdownMenuItem onClick={onEditorClicked}>
+            <Pencil className="mr-2 h-4 w-4" />
+            {t('scaffolderPageContextMenu.editorLabel')}
+          </DropdownMenuItem>
+        )}
+        {onTemplatingExtensionsClicked && (
+          <DropdownMenuItem onClick={onTemplatingExtensionsClicked}>
+            <FunctionSquare className="mr-2 h-4 w-4" />
+            {t('scaffolderPageContextMenu.templatingExtensionsLabel')}
+          </DropdownMenuItem>
+        )}
+        {onActionsClicked && (
+          <DropdownMenuItem onClick={onActionsClicked}>
+            <FileText className="mr-2 h-4 w-4" />
+            {t('scaffolderPageContextMenu.actionsLabel')}
+          </DropdownMenuItem>
+        )}
+        {onTasksClicked && (
+          <DropdownMenuItem onClick={onTasksClicked}>
+            <ListIcon className="mr-2 h-4 w-4" />
+            {t('scaffolderPageContextMenu.tasksLabel')}
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
