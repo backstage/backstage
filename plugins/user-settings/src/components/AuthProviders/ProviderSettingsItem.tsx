@@ -15,14 +15,12 @@
  */
 
 import { useEffect, useState } from 'react';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import {
+  ShadcnButton as Button,
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@backstage/core-components';
 import {
   ApiRef,
   SessionApi,
@@ -87,70 +85,74 @@ export const ProviderSettingsItem = (props: {
   }, [api]);
 
   return (
-    <ListItem>
-      <ListItemIcon>
+    <li className="flex items-center gap-4 px-4 py-3">
+      {/* Icon area — replaces MUI ListItemIcon */}
+      <div className="flex shrink-0 items-center text-muted-foreground">
         <Icon />
-      </ListItemIcon>
-      <ListItemText
-        primary={title}
-        secondary={
-          <Tooltip placement="top" arrow title={description}>
-            <Grid container spacing={6}>
-              <Grid item>
+      </div>
+
+      {/* Content area — replaces MUI ListItemText */}
+      <div className="min-w-0 flex-1">
+        <ShadcnTooltip>
+          <TooltipTrigger asChild>
+            <div>
+              <p className="text-sm font-medium leading-none">{title}</p>
+              <div className="mt-2 flex items-start gap-4">
+                {/* Avatar section */}
                 <ProviderSettingsAvatar size={48} picture={profile.picture} />
-              </Grid>
-              <Grid item xs={12} sm container>
-                <Grid item xs container direction="column" spacing={2}>
-                  <Grid item xs>
-                    {profile.displayName && (
-                      <Typography
-                        variant="subtitle1"
-                        color="textPrimary"
-                        gutterBottom
-                      >
-                        {profile.displayName}
-                      </Typography>
-                    )}
-                    {profile.email && (
-                      <Typography variant="body2" color="textSecondary">
-                        {profile.email}
-                      </Typography>
-                    )}
-                    <Typography variant="body2" color="textSecondary">
-                      {description}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Tooltip>
-        }
-        secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
-      />
-      <ListItemSecondaryAction>
-        <Tooltip
-          placement="top"
-          arrow
-          title={
-            signedIn
-              ? t('providerSettingsItem.title.signOut', { title })
-              : t('providerSettingsItem.title.signIn', { title })
-          }
-        >
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              const action = signedIn ? api.signOut() : api.signIn();
-              action.catch(error => errorApi.post(error));
-            }}
-          >
-            {signedIn
-              ? t('providerSettingsItem.buttonTitle.signOut')
-              : t('providerSettingsItem.buttonTitle.signIn')}
-          </Button>
-        </Tooltip>
-      </ListItemSecondaryAction>
-    </ListItem>
+                {/* Profile info section */}
+                <div className="flex flex-col gap-1">
+                  {profile.displayName && (
+                    <p className="text-sm font-medium text-foreground">
+                      {profile.displayName}
+                    </p>
+                  )}
+                  {profile.email && (
+                    <p className="text-xs text-muted-foreground">
+                      {profile.email}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground">{description}</p>
+                </div>
+              </div>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>{description}</p>
+          </TooltipContent>
+        </ShadcnTooltip>
+      </div>
+
+      {/* Action area — replaces MUI ListItemSecondaryAction */}
+      <div className="shrink-0">
+        <ShadcnTooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              title={
+                signedIn
+                  ? t('providerSettingsItem.title.signOut', { title })
+                  : t('providerSettingsItem.title.signIn', { title })
+              }
+              onClick={() => {
+                const action = signedIn ? api.signOut() : api.signIn();
+                action.catch(error => errorApi.post(error));
+              }}
+            >
+              {signedIn
+                ? t('providerSettingsItem.buttonTitle.signOut')
+                : t('providerSettingsItem.buttonTitle.signIn')}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>
+              {signedIn
+                ? t('providerSettingsItem.title.signOut', { title })
+                : t('providerSettingsItem.title.signIn', { title })}
+            </p>
+          </TooltipContent>
+        </ShadcnTooltip>
+      </div>
+    </li>
   );
 };
