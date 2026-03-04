@@ -96,6 +96,7 @@ export const Toolbar = ({ version }: ToolbarProps) => {
         <a
           href="https://www.npmjs.com/package/@backstage/ui"
           target="_blank"
+          rel="noopener noreferrer"
           className={styles.bubble}
           data-hide-tablet
         >
@@ -104,16 +105,20 @@ export const Toolbar = ({ version }: ToolbarProps) => {
         <a
           href="https://github.com/backstage/backstage/tree/master/packages/ui"
           target="_blank"
+          rel="noopener noreferrer"
           className={styles.bubble}
           data-hide-tablet
+          aria-label="View source on GitHub"
         >
           <RiGithubLine size={16} />
         </a>
         <a
           href="https://discord.gg/backstage-687207715902193673"
           target="_blank"
+          rel="noopener noreferrer"
           className={styles.bubble}
           data-hide-tablet
+          aria-label="Join Backstage on Discord"
         >
           <RiDiscordLine size={16} />
         </a>
