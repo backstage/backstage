@@ -603,9 +603,12 @@ export interface CardBodyProps
 
 // @public (undocumented)
 export type CardButtonVariant = {
-  onPress: () => void;
+  onPress: NonNullable<ButtonProps_2['onPress']>;
   href?: never;
   label: string;
+  target?: never;
+  rel?: never;
+  download?: never;
 };
 
 // @public
@@ -695,19 +698,22 @@ export type CardLinkVariant = {
   onPress?: never;
   label: string;
   target?: string;
-};
-
-// @public
-export type CardOwnProps = {
-  children?: ReactNode;
-  className?: string;
-  onPress?: () => void;
-  href?: string;
-  label?: string;
-  target?: string;
   rel?: string;
   download?: boolean | string;
 };
+
+// @public
+export type CardOwnProps = Pick<
+  CardBaseProps & (CardButtonVariant | CardLinkVariant | CardStaticVariant),
+  | 'children'
+  | 'className'
+  | 'onPress'
+  | 'href'
+  | 'label'
+  | 'target'
+  | 'rel'
+  | 'download'
+>;
 
 // @public
 export type CardProps = CardBaseProps &
@@ -719,6 +725,9 @@ export type CardStaticVariant = {
   onPress?: never;
   href?: never;
   label?: never;
+  target?: never;
+  rel?: never;
+  download?: never;
 };
 
 // @public (undocumented)

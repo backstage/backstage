@@ -15,21 +15,7 @@
  */
 
 import type { ReactNode } from 'react';
-
-/**
- * Flat own-props shape used by the component definition system.
- * @public
- */
-export type CardOwnProps = {
-  children?: ReactNode;
-  className?: string;
-  onPress?: () => void;
-  href?: string;
-  label?: string;
-  target?: string;
-  rel?: string;
-  download?: boolean | string;
-};
+import type { ButtonProps as RAButtonProps } from 'react-aria-components';
 
 /** @public */
 export type CardBaseProps = { children?: ReactNode; className?: string };
@@ -37,10 +23,13 @@ export type CardBaseProps = { children?: ReactNode; className?: string };
 /** @public */
 export type CardButtonVariant = {
   /** Handler called when the card is pressed. Makes the card interactive as a button. */
-  onPress: () => void;
+  onPress: NonNullable<RAButtonProps['onPress']>;
   href?: never;
   /** Accessible label announced by screen readers for the interactive card. */
   label: string;
+  target?: never;
+  rel?: never;
+  download?: never;
 };
 
 /** @public */
@@ -52,6 +41,10 @@ export type CardLinkVariant = {
   label: string;
   /** Specifies where to open the linked URL (e.g. `_blank` for a new tab). */
   target?: string;
+  /** Relationship between the current document and the linked URL (e.g. `noopener`). */
+  rel?: string;
+  /** Prompts the user to save the linked URL. Pass `true` for default filename or a string for a custom filename. */
+  download?: boolean | string;
 };
 
 /** @public */
@@ -59,6 +52,9 @@ export type CardStaticVariant = {
   onPress?: never;
   href?: never;
   label?: never;
+  target?: never;
+  rel?: never;
+  download?: never;
 };
 
 /**
@@ -69,6 +65,23 @@ export type CardStaticVariant = {
 export type CardProps = CardBaseProps &
   Omit<React.HTMLAttributes<HTMLDivElement>, 'onPress'> &
   (CardButtonVariant | CardLinkVariant | CardStaticVariant);
+
+/**
+ * Flat own-props shape used by the component definition system.
+ * Derived from the Card variant types so it automatically stays in sync with CardProps.
+ * @public
+ */
+export type CardOwnProps = Pick<
+  CardBaseProps & (CardButtonVariant | CardLinkVariant | CardStaticVariant),
+  | 'children'
+  | 'className'
+  | 'onPress'
+  | 'href'
+  | 'label'
+  | 'target'
+  | 'rel'
+  | 'download'
+>;
 
 /** @public */
 export type CardHeaderOwnProps = {
