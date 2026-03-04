@@ -1,6 +1,6 @@
 ---
 '@backstage/plugin-catalog': major
-'@backstage/plugin-org': major
+'@backstage/plugin-org': minor
 ---
 
 Migrated `EntityAboutCard`, `EntityLinksCard`, `EntityLabelsCard`, `GroupProfileCard`, and `UserProfileCard` from MUI/InfoCard to use the new BUI card layout and BUI components where possible.
