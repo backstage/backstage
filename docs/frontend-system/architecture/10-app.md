@@ -42,6 +42,8 @@ A common type of data that is shared between extensions is React elements and co
 
 ## Feature Discovery
 
+For a practical guide on how to install plugins in your app, see [Installing Plugins](../building-apps/05-installing-plugins.md).
+
 App feature discovery lets you automatically discover and install features provided by dependencies in your app. In practice, it means that you don't need to manually `import` features in code, but they are instead installed as soon as you add them as a dependency in your `package.json`.
 
 Because feature discovery needs to interact with the compilation process, it is only available when using the `@backstage/cli` to build your app. It is hooked into the WebPack compilation process by scanning your app package for compatible dependencies, which are then made part of the app compilation bundle.
