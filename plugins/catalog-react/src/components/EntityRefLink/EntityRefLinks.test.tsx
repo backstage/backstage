@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TooltipProvider } from '@backstage/core-components';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { entityRouteRef } from '../../routes';
@@ -28,11 +29,16 @@ describe('<EntityRefLinks />', () => {
         name: 'software',
       },
     ];
-    await renderInTestApp(<EntityRefLinks entityRefs={entityNames} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+    await renderInTestApp(
+      <TooltipProvider>
+        <EntityRefLinks entityRefs={entityNames} />
+      </TooltipProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
-    });
+    );
     expect(screen.getByText('software').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
@@ -52,11 +58,16 @@ describe('<EntityRefLinks />', () => {
         name: 'interface',
       },
     ];
-    await renderInTestApp(<EntityRefLinks entityRefs={entityNames} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+    await renderInTestApp(
+      <TooltipProvider>
+        <EntityRefLinks entityRefs={entityNames} />
+      </TooltipProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
-    });
+    );
     expect(screen.getByText(',')).toBeInTheDocument();
     expect(screen.getByText('software').closest('a')).toHaveAttribute(
       'href',

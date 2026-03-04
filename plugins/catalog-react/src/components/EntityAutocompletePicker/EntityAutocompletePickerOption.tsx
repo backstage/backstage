@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import { Checkbox, cn } from '@backstage/core-components';
 import { memo } from 'react';
 
 interface Props {
@@ -26,22 +23,27 @@ interface Props {
   showCounts: boolean;
 }
 
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
 function OptionCheckbox({ selected }: { selected: boolean }) {
-  return <Checkbox icon={icon} checkedIcon={checkedIcon} checked={selected} />;
+  return <Checkbox checked={selected} className="h-4 w-4" />;
 }
 
 export const EntityAutocompletePickerOption = memo((props: Props) => {
   const { selected, value, availableOptions, showCounts } = props;
-  const label = showCounts ? `${value} (${availableOptions?.[value]})` : value;
+  const labelText = showCounts
+    ? `${value} (${availableOptions?.[value]})`
+    : value;
 
   return (
-    <FormControlLabel
-      control={<OptionCheckbox selected={selected} />}
-      label={label}
+    // Keyboard interaction is handled by the parent Autocomplete listbox;
+    // the onClick here only calls preventDefault() to avoid redundant toggling.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
+    <label
+      className={cn('flex items-center gap-2 cursor-pointer text-sm')}
       onClick={event => event.preventDefault()}
-    />
+    >
+      <OptionCheckbox selected={selected} />
+      {/* eslint-disable-next-line react/forbid-elements -- migrated from MUI Typography to Tailwind text */}
+      <span>{labelText}</span>
+    </label>
   );
 });

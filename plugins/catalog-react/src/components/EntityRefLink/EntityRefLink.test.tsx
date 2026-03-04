@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TooltipProvider } from '@backstage/core-components';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { entityRouteRef } from '../../routes';
@@ -34,11 +35,16 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
-    await renderInTestApp(<EntityRefLink entityRef={entity} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+    await renderInTestApp(
+      <TooltipProvider>
+        <EntityRefLink entityRef={entity} />
+      </TooltipProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
-    });
+    );
     expect(screen.getByText('software').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
@@ -59,11 +65,16 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
-    await renderInTestApp(<EntityRefLink entityRef={entity} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+    await renderInTestApp(
+      <TooltipProvider>
+        <EntityRefLink entityRef={entity} />
+      </TooltipProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
-    });
+    );
     expect(screen.getByText('test/software').closest('a')).toHaveAttribute(
       'href',
       '/catalog/test/component/software',
@@ -85,7 +96,9 @@ describe('<EntityRefLink />', () => {
       },
     };
     await renderInTestApp(
-      <EntityRefLink entityRef={entity} defaultKind="Component" />,
+      <TooltipProvider>
+        <EntityRefLink entityRef={entity} defaultKind="Component" />
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -104,11 +117,16 @@ describe('<EntityRefLink />', () => {
       namespace: 'default',
       name: 'software',
     };
-    await renderInTestApp(<EntityRefLink entityRef={entityName} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+    await renderInTestApp(
+      <TooltipProvider>
+        <EntityRefLink entityRef={entityName} />
+      </TooltipProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
-    });
+    );
     expect(screen.getByText('software').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
@@ -121,11 +139,16 @@ describe('<EntityRefLink />', () => {
       namespace: 'test',
       name: 'software',
     };
-    await renderInTestApp(<EntityRefLink entityRef={entityName} />, {
-      mountedRoutes: {
-        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+    await renderInTestApp(
+      <TooltipProvider>
+        <EntityRefLink entityRef={entityName} />
+      </TooltipProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
-    });
+    );
     expect(screen.getByText('test/software').closest('a')).toHaveAttribute(
       'href',
       '/catalog/test/component/software',
@@ -139,7 +162,9 @@ describe('<EntityRefLink />', () => {
       name: 'software',
     };
     await renderInTestApp(
-      <EntityRefLink entityRef={entityName} defaultKind="component" />,
+      <TooltipProvider>
+        <EntityRefLink entityRef={entityName} defaultKind="component" />
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -159,9 +184,11 @@ describe('<EntityRefLink />', () => {
       name: 'software',
     };
     await renderInTestApp(
-      <EntityRefLink entityRef={entityName} defaultKind="component">
-        Custom Children
-      </EntityRefLink>,
+      <TooltipProvider>
+        <EntityRefLink entityRef={entityName} defaultKind="component">
+          Custom Children
+        </EntityRefLink>
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -181,9 +208,11 @@ describe('<EntityRefLink />', () => {
       name: 'softw#are',
     };
     await renderInTestApp(
-      <EntityRefLink entityRef={entityName} defaultKind="component">
-        Custom Children
-      </EntityRefLink>,
+      <TooltipProvider>
+        <EntityRefLink entityRef={entityName} defaultKind="component">
+          Custom Children
+        </EntityRefLink>
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
