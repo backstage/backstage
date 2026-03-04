@@ -98,7 +98,7 @@
     transition: all 200ms;
 
     &[data-focus-visible] {
-      outline: 2px solid var(--bui-bg-solid);
+      outline: 2px solid var(--bui-ring);
       outline-offset: 2px;
     }
 

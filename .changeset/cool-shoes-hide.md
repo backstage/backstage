@@ -4,4 +4,4 @@
 
 Added RangeSlider component for selecting numeric ranges.
 
-Affected components: RangeSlider
+**Affected components:** RangeSlider
