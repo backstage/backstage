@@ -15,10 +15,10 @@
  */
 
 import { readJsonSchema } from './jsonsSchema/readJsonSchema';
+import { CatalogModelOp } from './operations';
 import {
   CatalogModelBuilder,
   CatalogModelExtension,
-  CatalogModelOp,
   OpaqueCatalogModelExtension,
 } from './types';
 
@@ -49,6 +49,7 @@ class CatalogModelBuilderImpl implements CatalogModelBuilder {
  * it) can then be registered with the catalog itself, where they will be merged
  * and validated into one unified model.
  *
+ * @alpha
  * @remarks
  * @example
  *

@@ -23,6 +23,7 @@ import {
 /**
  * Compiles a set of catalog model extensions into a single catalog model.
  *
+ * @alpha
  * @param extensions - The extensions to compile.
  * @returns The compiled catalog model.
  */
@@ -33,5 +34,5 @@ export function compileCatalogModel(
     OpaqueCatalogModelExtension.toInternal(externalExtension);
   }
 
-  return {};
+  return {} as any;
 }

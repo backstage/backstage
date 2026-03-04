@@ -14,16 +14,5 @@
  * limitations under the License.
  */
 
-export { compileCatalogModel } from './compileCatalogModel';
-export { createCatalogModelExtension } from './createCatalogModelExtension';
-export type {
-  CatalogModelKind,
-  CatalogModelKindDefinition,
-  CreateCatalogModelKindInternals,
-} from './createCatalogModelKind';
-export type {
-  CatalogModel,
-  CatalogModelBuilder,
-  CatalogModelExtension,
-  CatalogModelSchema,
-} from './types';
+export type { CatalogModelRegistryService } from './CatalogModelRegistryService';
+export { catalogModelRegistryServiceRef } from './catalogModelRegistryServiceRef';

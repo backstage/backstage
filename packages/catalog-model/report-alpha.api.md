@@ -12,6 +12,25 @@ export interface AlphaEntity extends Entity {
 }
 
 // @alpha
+export interface CatalogModelBuilder {
+  addJsonSchema(schema: unknown): void;
+}
+
+// @alpha
+export interface CatalogModelExtension {
+  // (undocumented)
+  readonly $$type: '@backstage/CatalogModelExtension';
+  // (undocumented)
+  readonly modelName: string;
+}
+
+// @alpha
+export function createCatalogModelExtension(options: {
+  modelName: string;
+  factory: (model: CatalogModelBuilder) => void;
+}): CatalogModelExtension;
+
+// @alpha
 export type EntityStatus = {
   items?: EntityStatusItem[];
 };

@@ -18,6 +18,184 @@ import { OpaqueType } from '@internal/opaque';
 import { CatalogModelOp } from './operations';
 
 /**
+ * A namespace containing type definitions that roughly resemble JSON Schema,
+ * used by catalog model kind definitions.
+ *
+ * @alpha
+ */
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace CatalogModelSchema {
+  /**
+   * Common fields shared by all property definitions.
+   */
+  export interface CommonTypeMeta {
+    /**
+     * A human-readable description of the property.
+     */
+    description?: string;
+  }
+
+  /**
+   * A relation-type field definition.
+   */
+  export interface RelationType {
+    type: 'relation';
+    /**
+     * If the given shorthand ref did not have a kind, use this kind as the
+     * default. If no default kind is specified, the ref must contain a kind.
+     */
+    defaultKind?: string;
+    /**
+     * If the given shorthand ref did not have a namespace, either inherit the
+    //  * namespace of the entity itself, or choose the default namespace.
+     */
+    defaultNamespace?: 'default' | 'inherit';
+    /**
+     * Only allow relations to be specified to the given kinds. This list must
+     * include the default kind, if any.
+     */
+    allowedKinds?: string[];
+    /**
+     * The names for the outgoing direction (from the current entity toward
+     * the one being referenced).
+     */
+    outgoing: {
+      /**
+       * The technical type of the relation, e.g. "ownedBy"
+       */
+      type: string;
+      /**
+       * The singular human readable form of the relation name, e.g. "owner".
+       *
+       * @remarks
+       *
+       * This represents the count of the other end of the relation -
+       * essentially based on how many relations of this type that are
+       * present.
+       */
+      singular: string;
+      /**
+       * The plural human readable form of the relation name, e.g. "owners".
+       *
+       * @remarks
+       *
+       * This represents the count of the other end of the relation -
+       * essentially based on how many relations of this type that are
+       * present.
+       */
+      plural: string;
+    };
+    /**
+     * The names for the incoming direction (from the one being referenced
+     * toward the current entity).
+     */
+    incoming: {
+      /**
+       * The technical type of the relation, e.g. "ownerOf"
+       */
+      type: string;
+      /**
+       * The singular human readable form of the relation name, e.g. "owns".
+       *
+       * @remarks
+       *
+       * This represents the count of the other end of the relation -
+       * essentially based on how many relations of this type that are
+       * present.
+       */
+      singular: string;
+      /**
+       * The plural human readable form of the relation name, e.g. "owns".
+       *
+       * @remarks
+       *
+       * This represents the count of the other end of the relation -
+       * essentially based on how many relations of this type that are
+       * present.
+       */
+      plural: string;
+    };
+  }
+
+  /**
+   * An object type definition with properties, resembling a JSON Schema object.
+   */
+  export interface ObjectType {
+    type: 'object';
+    /**
+     * Whether additional properties are allowed beyond the ones specified.
+     *
+     * @default true
+     */
+    allowAdditionalProperties?: boolean;
+    /**
+     * The list of required property names. Properties not in this list will
+     * be optional in the resulting type.
+     */
+    required?: readonly string[];
+    /**
+     * The properties of the object.
+     */
+    properties: {
+      [key: string]: PropertyDefinition;
+    };
+  }
+
+  export interface StringType {
+    type: 'string';
+    // minLength?: number;
+    // maxLength?: number;
+    // pattern?: string | RegExp;
+  }
+
+  export interface NumberType {
+    type: 'number' | 'integer';
+    // minimum?: number;
+    // exclusiveMinimum?: number;
+    // maximum?: number;
+    // exclusiveMaximum?: number;
+    // multipleOf?: number;
+  }
+
+  export interface BooleanType {
+    type: 'boolean';
+  }
+
+  export interface EnumType {
+    type: 'enum';
+    values: readonly (string | number | boolean | null)[];
+  }
+
+  export interface ConstType {
+    type: 'const';
+    value: string | number | boolean | null;
+  }
+
+  /**
+   * A single-value (non-array) type definition.
+   */
+  export type AnyItemType =
+    | StringType
+    | NumberType
+    | BooleanType
+    | EnumType
+    | ConstType
+    | ObjectType
+    | RelationType;
+
+  /**
+   * Type-specific portion of a property definition, forming a discriminated union
+   * on the `type` field.
+   */
+  export type AnyType = AnyItemType | { type: 'array'; items?: AnyItemType };
+
+  /**
+   * A property definition for a catalog model kind spec field.
+   */
+  export type PropertyDefinition = AnyType & CommonTypeMeta;
+}
+
+/**
  * The opaque type that represents a catalog model extension.
  *
  * @remarks
