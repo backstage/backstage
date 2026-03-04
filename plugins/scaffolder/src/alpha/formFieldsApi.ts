@@ -16,24 +16,13 @@
 
 import {
   ApiBlueprint,
-  createApiRef,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import {
   FormFieldBlueprint,
-  type FormField,
+  formFieldsApiRef,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { OpaqueFormField } from '@internal/scaffolder';
-
-/** @alpha */
-export interface ScaffolderFormFieldsApi {
-  loadFormFields(): Promise<FormField[]>;
-}
-
-/** @alpha */
-const formFieldsApiRef = createApiRef<ScaffolderFormFieldsApi>({
-  id: 'plugin.scaffolder.form-fields-loader',
-});
 
 export const formFieldsApi = ApiBlueprint.makeWithOverrides({
   name: 'form-fields',
@@ -69,4 +58,7 @@ export const formFieldsApi = ApiBlueprint.makeWithOverrides({
   },
 });
 
-export { formFieldsApiRef };
+export {
+  formFieldsApiRef,
+  type ScaffolderFormFieldsApi,
+} from '@backstage/plugin-scaffolder-react/alpha';

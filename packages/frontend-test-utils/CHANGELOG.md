@@ -1,5 +1,11 @@
 # @backstage/frontend-test-utils
 
+## 0.5.1
+
+### Patch Changes
+
+- cb9e631: Fixed type inference of `TestApiPair` when using tuple syntax by wrapping `MockWithApiFactory` in `NoInfer`.
+
 ## 0.5.0
 
 ### Minor Changes
