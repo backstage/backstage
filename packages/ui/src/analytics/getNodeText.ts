@@ -18,11 +18,17 @@ import { type ReactNode, isValidElement, Children } from 'react';
 
 /**
  * Recursively extracts text content from a React node tree.
- * Returns undefined if no text content is found (e.g. icon-only children).
+ * Returns undefined if no text content is found (e.g. icon-only children
+ * or render functions).
  *
  * @public
  */
-export function getNodeText(node: ReactNode): string | undefined {
+export function getNodeText(
+  node: ReactNode | ((...args: any[]) => ReactNode),
+): string | undefined {
+  if (typeof node === 'function') {
+    return undefined;
+  }
   if (Array.isArray(node)) {
     const text = Children.map(node, getNodeText)?.filter(Boolean).join(' ');
     return text || undefined;
