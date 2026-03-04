@@ -15,16 +15,20 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import { makeStyles } from '@material-ui/core/styles';
-import { ComponentProps, useEffect, useState, ReactNode, useMemo } from 'react';
+import {
+  ShadcnDialog,
+  ShadcnDialogContent,
+  ShadcnDialogTitle,
+  DialogHeader,
+  DialogFooter,
+  ShadcnTabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  ShadcnButton,
+  cn,
+} from '@backstage/core-components';
+import { ComponentProps, useEffect, useState, useMemo } from 'react';
 import { AncestryPage } from './components/AncestryPage';
 import { ColocatedPage } from './components/ColocatedPage';
 import { JsonPage } from './components/JsonPage';
@@ -32,58 +36,6 @@ import { OverviewPage } from './components/OverviewPage';
 import { YamlPage } from './components/YamlPage';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-
-const useStyles = makeStyles(theme => ({
-  fullHeightDialog: {
-    height: 'calc(100% - 64px)',
-  },
-  root: {
-    display: 'flex',
-    flexGrow: 1,
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
-  },
-  tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-    flexShrink: 0,
-  },
-  tabContents: {
-    flexGrow: 1,
-    overflowX: 'auto',
-  },
-}));
-
-function TabPanel(props: {
-  children?: ReactNode;
-  index: number;
-  value: number;
-}) {
-  const { children, value, index, ...other } = props;
-  const classes = useStyles();
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      className={classes.tabContents}
-      {...other}
-    >
-      {value === index && (
-        <Box pl={3} pr={3}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
-}
 
 type TabKey = 'overview' | 'ancestry' | 'colocated' | 'json' | 'yaml';
 
@@ -104,7 +56,6 @@ export function InspectEntityDialog(props: {
   onClose: () => void;
   onSelect?: (tab: string) => void;
 }) {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const tabNames: TabNames = useMemo(
@@ -133,58 +84,71 @@ export function InspectEntityDialog(props: {
   }
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="xl"
+    <ShadcnDialog
       open={props.open}
-      onClose={props.onClose}
-      aria-labelledby="entity-inspector-dialog-title"
-      PaperProps={{ className: classes.fullHeightDialog }}
+      onOpenChange={open => {
+        if (!open) props.onClose();
+      }}
     >
-      <DialogTitle id="entity-inspector-dialog-title">
-        {t('inspectEntityDialog.title')}
-      </DialogTitle>
-      <DialogContent dividers>
-        <div className={classes.root}>
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={activeTab}
-            onChange={(_, tabIndex) => {
-              setActiveTab(tabIndex);
-              props.onSelect?.(tabs[tabIndex]);
+      <ShadcnDialogContent
+        className={cn('max-w-screen-xl w-full h-[calc(100%-64px)]')}
+      >
+        <DialogHeader>
+          <ShadcnDialogTitle id="entity-inspector-dialog-title">
+            {t('inspectEntityDialog.title')}
+          </ShadcnDialogTitle>
+        </DialogHeader>
+        <div className="flex-1 overflow-hidden border-t border-b border-border">
+          <ShadcnTabs
+            defaultValue={props.initialTab ?? 'overview'}
+            value={tabs[activeTab]}
+            onValueChange={value => {
+              const idx = tabs.indexOf(value as TabKey);
+              if (idx >= 0) {
+                setActiveTab(idx);
+                props.onSelect?.(value);
+              }
             }}
-            aria-label={t('inspectEntityDialog.tabsAriaLabel')}
-            className={classes.tabs}
+            className={cn('flex grow w-full bg-card')}
+            orientation="vertical"
           >
-            {tabs.map((tab, index) => (
-              <Tab key={tab} label={tabNames[tab]} {...a11yProps(index)} />
+            <TabsList
+              className={cn(
+                'flex flex-col h-auto border-r border-border shrink-0 rounded-none bg-transparent',
+              )}
+            >
+              {tabs.map(tab => (
+                <TabsTrigger key={tab} value={tab}>
+                  {tabNames[tab]}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {tabs.map(tab => (
+              <TabsContent
+                key={tab}
+                value={tab}
+                className="grow overflow-x-auto mt-0"
+              >
+                <div className="px-3">
+                  {tab === 'overview' && <OverviewPage entity={props.entity} />}
+                  {tab === 'ancestry' && <AncestryPage entity={props.entity} />}
+                  {tab === 'colocated' && (
+                    <ColocatedPage entity={props.entity} />
+                  )}
+                  {tab === 'json' && <JsonPage entity={props.entity} />}
+                  {tab === 'yaml' && <YamlPage entity={props.entity} />}
+                </div>
+              </TabsContent>
             ))}
-          </Tabs>
-
-          <TabPanel value={activeTab} index={0}>
-            <OverviewPage entity={props.entity} />
-          </TabPanel>
-          <TabPanel value={activeTab} index={1}>
-            <AncestryPage entity={props.entity} />
-          </TabPanel>
-          <TabPanel value={activeTab} index={2}>
-            <ColocatedPage entity={props.entity} />
-          </TabPanel>
-          <TabPanel value={activeTab} index={3}>
-            <JsonPage entity={props.entity} />
-          </TabPanel>
-          <TabPanel value={activeTab} index={4}>
-            <YamlPage entity={props.entity} />
-          </TabPanel>
+          </ShadcnTabs>
         </div>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={props.onClose} color="primary">
-          {t('inspectEntityDialog.closeButtonTitle')}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <DialogFooter>
+          <ShadcnButton onClick={props.onClose} variant="default">
+            {t('inspectEntityDialog.closeButtonTitle')}
+          </ShadcnButton>
+        </DialogFooter>
+      </ShadcnDialogContent>
+    </ShadcnDialog>
   );
 }
 
