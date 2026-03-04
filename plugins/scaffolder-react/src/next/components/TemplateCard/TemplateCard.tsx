@@ -18,12 +18,12 @@ import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { IconComponent, useAnalytics } from '@backstage/core-plugin-api';
 import { getEntityRelations } from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  Separator,
+} from '@backstage/core-components';
 import { useCallback } from 'react';
 import { CardHeader } from './CardHeader';
 import { usePermission } from '@backstage/plugin-permission-react';
@@ -32,10 +32,6 @@ import { TemplateCardContent } from './TemplateCardContent';
 import { TemplateCardTags } from './TemplateCardTags';
 import { TemplateCardLinks } from './TemplateCardLinks';
 import { TemplateCardActions } from './TemplateCardActions';
-
-const useStyles = makeStyles<Theme>(() => ({
-  actionContainer: { padding: '16px', flex: 1, alignItems: 'flex-end' },
-}));
 
 /**
  * The Props for the {@link TemplateCard} component
@@ -57,7 +53,6 @@ export interface TemplateCardProps {
  */
 export const TemplateCard = (props: TemplateCardProps) => {
   const { additionalLinks, onSelected, template } = props;
-  const styles = useStyles();
   const analytics = useAnalytics();
   const ownedByRelations = getEntityRelations(template, RELATION_OWNED_BY);
   const hasTags = !!template.metadata.tags?.length;
@@ -77,12 +72,15 @@ export const TemplateCard = (props: TemplateCardProps) => {
     <Card>
       <CardHeader template={template} data-testid="template-card-header" />
       <CardContent>
-        <Grid container spacing={2} data-testid="template-card-content">
+        <div
+          className="grid grid-cols-1 gap-2"
+          data-testid="template-card-content"
+        >
           <TemplateCardContent template={template} />
           {displayDefaultDivider && (
-            <Grid item xs={12}>
-              <Divider data-testid="template-card-separator" />
-            </Grid>
+            <div className="col-span-full">
+              <Separator data-testid="template-card-separator" />
+            </div>
           )}
           {hasTags && <TemplateCardTags template={template} />}
           {hasLinks && (
@@ -91,10 +89,10 @@ export const TemplateCard = (props: TemplateCardProps) => {
               additionalLinks={additionalLinks}
             />
           )}
-        </Grid>
+        </div>
       </CardContent>
-      <CardActions
-        className={styles.actionContainer}
+      <CardFooter
+        className="p-4 flex-1 items-end"
         data-testid="template-card-actions"
       >
         <TemplateCardActions
@@ -102,7 +100,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
           handleChoose={handleChoose}
           ownedByRelations={ownedByRelations}
         />
-      </CardActions>
+      </CardFooter>
     </Card>
   );
 };
