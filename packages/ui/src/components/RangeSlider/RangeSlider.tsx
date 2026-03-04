@@ -144,28 +144,30 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
         {...rest}
         ref={ref}
       >
-        <div className={clsx(classNames.header, styles[classNames.header])}>
-          <FieldLabel
-            label={label}
-            secondaryLabel={secondaryLabelText}
-            description={description}
-          />
-          {showValueLabel && (
-            <SliderOutput
-              className={clsx(classNames.output, styles[classNames.output])}
-            >
-              {({ state }) => {
-                const values = state.values;
-                if (values.length === 2) {
-                  return `${formatValue(values[0])} - ${formatValue(
-                    values[1],
-                  )}`;
-                }
-                return formatValue(values[0]);
-              }}
-            </SliderOutput>
-          )}
-        </div>
+        {(label || showValueLabel) && (
+          <div className={clsx(classNames.header, styles[classNames.header])}>
+            <FieldLabel
+              label={label}
+              secondaryLabel={secondaryLabelText}
+              description={description}
+            />
+            {showValueLabel && (
+              <SliderOutput
+                className={clsx(classNames.output, styles[classNames.output])}
+              >
+                {({ state }) => {
+                  const values = state.values;
+                  if (values.length === 2) {
+                    return `${formatValue(values[0])} - ${formatValue(
+                      values[1],
+                    )}`;
+                  }
+                  return formatValue(values[0]);
+                }}
+              </SliderOutput>
+            )}
+          </div>
+        )}
         <SliderTrack
           className={clsx(classNames.track, styles[classNames.track])}
         >
