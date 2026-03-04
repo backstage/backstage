@@ -16,7 +16,7 @@
 
 import { EmptyState } from './EmptyState';
 import { renderInTestApp } from '@backstage/test-utils';
-import Button from '@material-ui/core/Button';
+import { Button } from '../ui/button';
 import { screen } from '@testing-library/react';
 
 describe('<EmptyState />', () => {
