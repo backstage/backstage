@@ -46,22 +46,47 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    useEffect(() => {
-      const valueArray = props.value ?? props.defaultValue;
-      if (valueArray && valueArray.length !== 2) {
-        console.warn(
-          `RangeSlider requires exactly 2 values [min, max], but received ${valueArray.length} values`,
-        );
-      }
-    }, [props.value, props.defaultValue]);
-
     const minValue = props.minValue ?? 0;
     const maxValue = props.maxValue ?? 100;
+
+    // Validate and normalize defaultValue to ensure it's always a 2-tuple
+    const rawDefaultValue = props.defaultValue;
+    const normalizedDefaultValue: [number, number] =
+      Array.isArray(rawDefaultValue) &&
+      rawDefaultValue.length === 2 &&
+      typeof rawDefaultValue[0] === 'number' &&
+      typeof rawDefaultValue[1] === 'number'
+        ? [rawDefaultValue[0], rawDefaultValue[1]]
+        : [minValue, maxValue];
+
+    useEffect(() => {
+      if (
+        rawDefaultValue &&
+        (!Array.isArray(rawDefaultValue) ||
+          rawDefaultValue.length !== 2 ||
+          typeof rawDefaultValue[0] !== 'number' ||
+          typeof rawDefaultValue[1] !== 'number')
+      ) {
+        console.warn(
+          `RangeSlider requires exactly 2 numeric values [min, max], but received invalid defaultValue. Falling back to [${minValue}, ${maxValue}].`,
+        );
+      }
+      const valueArray = props.value;
+      if (
+        valueArray &&
+        (!Array.isArray(valueArray) ||
+          valueArray.length !== 2 ||
+          typeof valueArray[0] !== 'number' ||
+          typeof valueArray[1] !== 'number')
+      ) {
+        console.warn(
+          `RangeSlider requires exactly 2 numeric values [min, max], but received invalid value.`,
+        );
+      }
+    }, [props.value, rawDefaultValue, minValue, maxValue]);
+
     const uncontrolledDefaultValue =
-      props.value === undefined
-        ? ((props.defaultValue ??
-            ([minValue, maxValue] as [number, number])) as [number, number])
-        : undefined;
+      props.value === undefined ? normalizedDefaultValue : undefined;
     const { defaultValue: _ignoredDefault, ...propsWithoutDefault } = props;
 
     const { classNames, dataAttributes, style, cleanedProps } = useStyles(
@@ -127,6 +152,10 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
           className={clsx(classNames.track, styles[classNames.track])}
         >
           {({ state }) => {
+            // Safeguard: ensure we have at least 2 values for range slider
+            if (state.values.length < 2) {
+              return null;
+            }
             const start = state.getThumbPercent(0);
             const end = state.getThumbPercent(1);
             const rangePercent = (end - start) * 100;
