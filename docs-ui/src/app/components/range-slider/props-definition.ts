@@ -45,7 +45,7 @@ export const rangeSliderPropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: ['[number, number]'],
     description: 'Initial value as an array [min, max] for uncontrolled usage.',
-    default: '[0, 100]',
+    default: '[minValue, maxValue]',
   },
   onChange: {
     type: 'enum',

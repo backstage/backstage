@@ -49,7 +49,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
     useEffect(() => {
       const valueArray = props.value ?? props.defaultValue;
       if (valueArray && valueArray.length !== 2) {
-        console.error(
+        console.warn(
           `RangeSlider requires exactly 2 values [min, max], but received ${valueArray.length} values`,
         );
       }
