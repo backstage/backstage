@@ -31,5 +31,6 @@ export const RangeSliderDefinition = {
   },
   dataAttributes: {
     disabled: [true, false] as const,
+    orientation: ['horizontal', 'vertical'] as const,
   },
 } as const satisfies ComponentDefinition;
