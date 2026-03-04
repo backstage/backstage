@@ -337,11 +337,12 @@ export const MenuItem = (props: MenuItemProps) => {
         className={classes.root}
         {...dataAttributes}
         textValue={typeof children === 'string' ? children : undefined}
+        {...restProps}
         onAction={() => {
+          restProps.onAction?.();
           handleAction();
           window.open(href, '_blank', 'noopener,noreferrer');
         }}
-        {...restProps}
       >
         <div className={classes.itemWrapper}>
           <div className={classes.itemContent}>
@@ -362,8 +363,11 @@ export const MenuItem = (props: MenuItemProps) => {
       {...dataAttributes}
       href={href}
       textValue={typeof children === 'string' ? children : undefined}
-      onAction={handleAction}
       {...restProps}
+      onAction={() => {
+        restProps.onAction?.();
+        handleAction();
+      }}
     >
       <div className={classes.itemWrapper}>
         <div className={classes.itemContent}>
