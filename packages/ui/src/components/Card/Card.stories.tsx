@@ -231,6 +231,39 @@ export const BgOnProviders = meta.story({
   ),
 });
 
+export const InteractiveWithScrollableBody = meta.story({
+  render: () => (
+    <Card
+      style={{ width: '300px', height: '220px' }}
+      onPress={() => alert('Card pressed')}
+      label="View details"
+    >
+      <CardHeader>
+        <Text weight="bold">Scrollable Interactive Card</Text>
+      </CardHeader>
+      <CardBody>
+        <Text>
+          This is the first paragraph of a long body text that demonstrates how
+          the Card component handles extensive content. The card should adjust
+          accordingly to display all the text properly while maintaining its
+          structure.
+        </Text>
+        <Text>
+          Here's a second paragraph that adds more content to our card body.
+          Having multiple paragraphs helps to visualize how spacing works within
+          the card component.
+        </Text>
+        <Text>
+          This third paragraph continues to add more text to ensure we have a
+          proper demonstration of a card with significant content. This makes it
+          easier to test scrolling behavior and overall layout when content
+          exceeds the initial view.
+        </Text>
+      </CardBody>
+    </Card>
+  ),
+});
+
 export const Interactive = meta.story({
   render: () => (
     <Card

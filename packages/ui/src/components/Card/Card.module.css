@@ -30,12 +30,29 @@
     position: relative;
   }
 
+  /*
+   * Cursor and hover tint are applied at the card level so they cover the
+   * entire surface — including CardBody which sits above the overlay.
+   */
+  .bui-Card[data-interactive] {
+    cursor: pointer;
+
+    &:hover::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: color-mix(in srgb, currentColor 5%, transparent);
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 3;
+    }
+  }
+
   .bui-CardOverlay {
     position: absolute;
     inset: 0;
     z-index: 1;
     background: transparent;
-    cursor: pointer;
     border-radius: inherit;
     border: none;
     padding: 0;
@@ -48,7 +65,10 @@
       outline-offset: -2px;
     }
 
-    &:hover::after,
+    /*
+     * Keep focus tint for keyboard navigation (hover tint has moved to the
+     * card container above).
+     */
     &[data-focused]::after {
       content: '';
       position: absolute;
@@ -60,13 +80,24 @@
   }
 
   /*
-   * Interactive elements inside the card must sit above the overlay so they
-   * remain independently clickable. The overlay handles the rest of the surface.
+   * CardBody and interactive elements must sit above the overlay (z-index: 1)
+   * so that:
+   *   - scroll events reach CardBody's overflow container
+   *   - buttons/links/inputs remain independently clickable
+   * Text clicks in CardBody that bypass the overlay are caught by the
+   * container-level onClick in Card.tsx.
    */
   .bui-Card[data-interactive]
-    :is(button, a[href], [role='button'], [role='link'], input, select, textarea):not(
-      .bui-CardOverlay
-    ) {
+    :is(
+      button,
+      a[href],
+      [role='button'],
+      [role='link'],
+      input,
+      select,
+      textarea,
+      .bui-CardBody
+    ):not(.bui-CardOverlay) {
     position: relative;
     z-index: 2;
   }

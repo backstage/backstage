@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useCallback } from 'react';
 import { Button as RAButton, Link as RALink } from 'react-aria-components';
 import { useDefinition } from '../../hooks/useDefinition';
 import {
@@ -46,6 +46,29 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
   const { classes, children, onPress, href, label } = ownProps;
   const isInteractive = !!(onPress || href);
 
+  // CardBody sits above the overlay (z-index: 2) so that scroll events reach
+  // its overflow container. As a result, text clicks inside CardBody bypass
+  // the overlay and bubble up to here instead. We fire the card action only
+  // when the click did not originate from a nested interactive element.
+  const { onClick: userOnClick, ...restPropsWithoutClick } =
+    restProps as React.HTMLAttributes<HTMLDivElement>;
+
+  const handleContainerClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      userOnClick?.(e);
+      if (!isInteractive) return;
+      const target = e.target as HTMLElement;
+      if (
+        target.closest?.(
+          'button, a[href], input, select, textarea, [role="button"], [role="link"]',
+        )
+      )
+        return;
+      onPress?.();
+    },
+    [userOnClick, isInteractive, onPress],
+  );
+
   return (
     <Box
       bg="neutral"
@@ -53,16 +76,23 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
       className={classes.root}
       data-interactive={isInteractive || undefined}
       {...dataAttributes}
-      {...restProps}
+      {...restPropsWithoutClick}
+      onClick={handleContainerClick}
     >
       {href && (
-        <RALink className={classes.overlay} href={href} aria-label={label} />
+        <RALink
+          className={classes.overlay}
+          href={href}
+          aria-label={label}
+          onClick={e => e.stopPropagation()}
+        />
       )}
       {onPress && !href && (
         <RAButton
           className={classes.overlay}
           onPress={onPress}
           aria-label={label}
+          onClick={e => e.stopPropagation()}
         />
       )}
       {children}
