@@ -96,6 +96,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.moreButtonAriaLabel': 'more';
     readonly 'entityLabelsCard.title': 'Labels';
     readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
+    readonly 'entityLabelsCard.columnKeyLabel': 'Label';
+    readonly 'entityLabelsCard.columnValueLabel': 'Value';
     readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLabels.ownerLabel': 'Owner';
     readonly 'entityLabels.warningPanelTitle': 'Entity not found';

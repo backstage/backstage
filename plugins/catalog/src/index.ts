@@ -23,7 +23,6 @@
 export * from './apis';
 
 export type {
-  AboutCardProps,
   AboutContentProps,
   AboutFieldProps,
 } from './components/AboutCard';
