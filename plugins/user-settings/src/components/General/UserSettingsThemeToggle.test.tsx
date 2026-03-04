@@ -19,6 +19,7 @@ import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 import { ApiProvider, AppThemeSelector } from '@backstage/core-app-api';
+import { TooltipProvider } from '@backstage/core-components';
 
 const mockTheme: AppTheme = {
   id: 'light-theme',
@@ -38,7 +39,9 @@ describe('<UserSettingsThemeToggle />', () => {
 
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
-        <UserSettingsThemeToggle />
+        <TooltipProvider>
+          <UserSettingsThemeToggle />
+        </TooltipProvider>
       </ApiProvider>,
     );
 
