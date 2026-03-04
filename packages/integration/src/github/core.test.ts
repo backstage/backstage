@@ -176,5 +176,49 @@ describe('github core', () => {
         ),
       ).toEqual('https://ghe.mycompany.net/raw/a/b/branchname/path/to/c.yaml');
     });
+
+    it('rejects URLs with encoded path traversal sequences', () => {
+      const config: GithubIntegrationConfig = {
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/octocat/Hello-World/blob/main/%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fuser/repos',
+          config,
+          tokenCredentials,
+        ),
+      ).toThrow(/path traversal/);
+    });
+
+    it('rejects URLs with literal path traversal in filepath', () => {
+      const config: GithubIntegrationConfig = {
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      // Literal ../ is normalized by the URL constructor before git-url-parse
+      // sees it, so it fails with the existing validation instead
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/octocat/Hello-World/blob/main/../../user/repos',
+          config,
+          tokenCredentials,
+        ),
+      ).toThrow(/Incorrect URL/);
+    });
+
+    it('rejects raw endpoint URLs with path traversal', () => {
+      const config: GithubIntegrationConfig = {
+        host: 'github.com',
+        rawBaseUrl: 'https://raw.githubusercontent.com',
+      };
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/octocat/Hello-World/blob/main/%2e%2e%2f%2e%2e%2fuser/repos',
+          config,
+          tokenCredentials,
+        ),
+      ).toThrow(/path traversal/);
+    });
   });
 });
