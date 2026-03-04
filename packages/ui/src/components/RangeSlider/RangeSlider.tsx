@@ -123,6 +123,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
 
     const {
       className,
+      label: _ignoredLabel,
       description,
       secondaryLabel,
       showValueLabel = false,
