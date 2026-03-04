@@ -26,6 +26,7 @@ import { RiCloseCircleLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import { TagGroupDefinition, TagDefinition } from './definition';
 import { createRoutingRegistration } from '../InternalLinkProvider';
+import { getNodeText } from '../../analytics/getNodeText';
 
 const { RoutingProvider, useRoutingRegistrationEffect } =
   createRoutingRegistration();
@@ -60,7 +61,7 @@ export const TagGroup = <T extends object>(props: TagGroupProps<T>) => {
  * @public
  */
 export const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {
-  const { ownProps, restProps, dataAttributes } = useDefinition(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     TagDefinition,
     props,
   );
@@ -68,6 +69,19 @@ export const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {
   const textValue = typeof children === 'string' ? children : undefined;
 
   useRoutingRegistrationEffect(href);
+
+  const handlePress = () => {
+    if (href) {
+      const text =
+        (props as React.AriaAttributes)['aria-label'] ??
+        textValue ??
+        getNodeText(children) ??
+        String(href);
+      analytics.captureEvent('click', text, {
+        attributes: { to: String(href) },
+      });
+    }
+  };
 
   return (
     <ReactAriaTag
@@ -77,6 +91,10 @@ export const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {
       href={href}
       {...dataAttributes}
       {...restProps}
+      onPress={e => {
+        handlePress();
+        restProps.onPress?.(e);
+      }}
     >
       {({ allowsRemoving }) => (
         <>
