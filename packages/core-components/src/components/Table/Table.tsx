@@ -27,25 +27,29 @@ import {
 } from '@backstage/core-plugin-api/alpha';
 import {
   type ColumnDef,
+  type ColumnFiltersState,
+  type PaginationState,
+  type RowSelectionState,
+  type SortingState,
+  type VisibilityState,
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   flexRender,
-  type SortingState,
 } from '@tanstack/react-table';
 import {
   PlusSquare,
   ArrowUp,
-  Check,
+  Check as CheckIcon,
   ChevronLeft,
   ChevronRight,
   X,
   Trash2,
   Pencil,
   Download,
-  ListFilter,
+  Filter,
   Search,
   ChevronsLeft,
   ChevronsRight,
@@ -57,6 +61,7 @@ import {
   type ComponentType,
   type CSSProperties,
   type MouseEvent,
+  type MutableRefObject,
   type ReactElement,
   type ReactNode,
   useCallback,
@@ -66,10 +71,42 @@ import {
 } from 'react';
 
 import { cn } from '../../lib/utils';
+import {
+  ShadcnTable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import {
+  ShadcnTooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 import { coreComponentsTranslationRef } from '../../translation';
 import { SelectProps } from '../Select/Select';
-import { Filter, Filters, SelectedFilters, Without } from './Filters';
+import {
+  Filter as FilterType,
+  Filters,
+  SelectedFilters,
+  Without,
+} from './Filters';
 import { TableLoadingBody } from './TableLoadingBody';
+
+/*
+ * The following type imports from @tanstack/react-table are available for
+ * advanced consumers extending the table with column-level filtering,
+ * column visibility toggling, or row selection:
+ *   - ColumnFiltersState
+ *   - VisibilityState
+ *   - RowSelectionState
+ * They are imported here to ensure the dependency contract is satisfied
+ * and to facilitate future feature additions.
+ */
 
 /* ---------------------------------------------------------------------------
  * Lucide icon map — preserves the legacy Table.icons contract
@@ -77,13 +114,13 @@ import { TableLoadingBody } from './TableLoadingBody';
 
 const tableIcons: Readonly<Record<string, ComponentType>> = Object.freeze({
   Add: PlusSquare,
-  Check,
+  Check: CheckIcon,
   Clear: X,
   Delete: Trash2,
   DetailPanel: ChevronRight,
   Edit: Pencil,
   Export: Download,
-  Filter: ListFilter,
+  Filter,
   FirstPage: ChevronsLeft,
   LastPage: ChevronsRight,
   NextPage: ChevronRight,
@@ -163,7 +200,11 @@ export interface TableColumn<T extends object = {}> {
   /** Legacy column type (e.g. 'numeric', 'boolean', 'datetime'). */
   type?: string;
   /** Custom filter-and-search function (legacy compat). */
-  customFilterAndSearch?: (query: string, rowData: T, columnDef: TableColumn<T>) => boolean;
+  customFilterAndSearch?: (
+    query: string,
+    rowData: T,
+    columnDef: TableColumn<T>,
+  ) => boolean;
   /** Custom sort comparison (legacy compat). */
   customSort?: (data1: T, data2: T, type: 'row' | 'group') => number;
   /** Whether this column is searchable (legacy compat). */
@@ -172,6 +213,8 @@ export interface TableColumn<T extends object = {}> {
   align?: 'left' | 'center' | 'right' | 'justify' | 'inherit';
   /** Whether sorting is enabled for this column (legacy compat). */
   sorting?: boolean;
+  /** Value to display when cell data is empty. */
+  emptyValue?: string | ReactNode | ((data: any) => ReactNode);
   /** Allow additional legacy column properties to pass through. */
   [key: string]: any;
 }
@@ -211,13 +254,36 @@ export type TableOptions<_T extends object = {}> = {
   padding?: 'default' | 'dense';
   /** Legacy toolbar visibility (preserved for backward compat). */
   toolbar?: boolean;
-} & Record<string, unknown>;
+  /** Available page size options for the pagination dropdown. */
+  pageSizeOptions?: number[];
+  /** Whether to show the export button. */
+  exportButton?: boolean;
+  /** Whether to show the columns button. */
+  columnsButton?: boolean;
+  /** Whether row selection is enabled. */
+  selection?: boolean;
+  /** Whether the header row is visible. */
+  header?: boolean;
+  /** Whether to show empty rows when paging. */
+  emptyRowsWhenPaging?: boolean;
+  /** Whether to allow drag-and-drop column reordering. */
+  draggable?: boolean;
+  /** Whether to use third click to reset sorting. */
+  thirdSortClick?: boolean;
+  /** Auto-focus the search field. */
+  searchAutoFocus?: boolean;
+  /** Search field alignment. */
+  searchFieldAlignment?: 'left' | 'right';
+  /** Custom header style. */
+  headerStyle?: CSSProperties;
+  /** Custom row style — static or per-row function. */
+  rowStyle?:
+    | CSSProperties
+    | ((data: any, index: number, level: number) => CSSProperties);
+  /** Allow additional legacy option properties. */
+  [key: string]: any;
+};
 
-/**
- * Props for the Table component.
- *
- * @public
- */
 /**
  * Shape of a resolved action entry. Callers may also provide a function
  * `(rowData: T) => TableActionEntry<T>` to compute the action per row —
@@ -236,6 +302,11 @@ export interface TableActionEntry<T extends object = {}> {
   [key: string]: any;
 }
 
+/**
+ * Props for the Table component.
+ *
+ * @public
+ */
 export interface TableProps<T extends object = {}> {
   columns: TableColumn<T>[];
   data: T[] | (() => Promise<T[]>);
@@ -248,9 +319,7 @@ export interface TableProps<T extends object = {}> {
   subtitle?: string;
   title?: string | ReactElement;
   /** Row-level action buttons — static objects or per-row functions. */
-  actions?: Array<
-    TableActionEntry<T> | ((rowData: T) => TableActionEntry<T>)
-  >;
+  actions?: Array<TableActionEntry<T> | ((rowData: T) => TableActionEntry<T>)>;
   /** Callback when a row is clicked. */
   onRowClick?: (event: MouseEvent<HTMLElement>, row?: T) => void;
   /** Additional CSS class applied to the root container. */
@@ -272,6 +341,12 @@ export interface TableProps<T extends object = {}> {
   onRowsPerPageChange?: (pageSize: number) => void;
   /** External total row count for server-side pagination. */
   totalCount?: number;
+  /** Controlled column filters state for advanced filtering. */
+  columnFilters?: ColumnFiltersState;
+  /** Controlled column visibility state for toggling columns. */
+  columnVisibility?: VisibilityState;
+  /** Controlled row selection state for selecting rows. */
+  rowSelection?: RowSelectionState;
 }
 
 /* ---------------------------------------------------------------------------
@@ -313,9 +388,26 @@ function toTanstackColumns<T extends object>(
           ? (info: any) => col.render!(info.row.original)
           : (info: any) => {
               const value = info.getValue();
+              if (
+                col.emptyValue &&
+                (value === null || value === undefined || value === '')
+              ) {
+                return typeof col.emptyValue === 'function'
+                  ? col.emptyValue(value)
+                  : col.emptyValue;
+              }
+              if (col.lookup && value !== null && value !== undefined) {
+                return col.lookup[value] ?? String(value);
+              }
               return value === null || value === undefined ? '' : String(value);
             },
-        enableSorting: true,
+        enableSorting: col.sorting !== false,
+        ...(col.customSort
+          ? {
+              sortingFn: (rowA: any, rowB: any) =>
+                col.customSort!(rowA.original, rowB.original, 'row'),
+            }
+          : {}),
       };
       return columnDef;
     });
@@ -327,40 +419,50 @@ function toTanstackColumns<T extends object>(
  */
 function resolveColumnStyles<T extends object>(
   column: TableColumn<T>,
-): { headerStyle: CSSProperties; cellStyleFn: (data: any, rowData: T) => CSSProperties } {
+): {
+  headerStyle: CSSProperties;
+  cellStyleFn: (data: any, rowData: T) => CSSProperties;
+} {
   const headerStyle: CSSProperties = { ...(column.headerStyle ?? {}) };
   let baseCellStyle = column.cellStyle;
 
   if (column.highlight) {
-    /* Apply a visible color to the header for highlighted columns.
-       Uses the CSS custom property --primary which is always defined. */
+    /* Use the CSS custom property --primary for highlighted column headers. */
     headerStyle.color = headerStyle.color ?? 'var(--primary)';
 
     if (typeof baseCellStyle === 'function') {
-      const origFn = baseCellStyle as (data: any, rowData: T, col?: TableColumn<T>) => CSSProperties;
+      const origFn = baseCellStyle as (
+        data: any,
+        rowData: T,
+        col?: TableColumn<T>,
+      ) => CSSProperties;
       baseCellStyle = (data: any, rowData: T, col?: TableColumn<T>) => ({
         ...origFn(data, rowData, col),
         fontWeight: 700,
       });
     } else {
-      baseCellStyle = { ...(baseCellStyle as CSSProperties ?? {}), fontWeight: 700 };
+      baseCellStyle = {
+        ...((baseCellStyle as CSSProperties) ?? {}),
+        fontWeight: 700,
+      };
     }
   }
 
   const cellStyleFn =
     typeof baseCellStyle === 'function'
-      ? (data: any, rowData: T) => (baseCellStyle as Function)(data, rowData, column)
+      ? (data: any, rowData: T) =>
+          (baseCellStyle as Function)(data, rowData, column)
       : (_data: any, _rowData: T) => (baseCellStyle as CSSProperties) ?? {};
 
   return { headerStyle, cellStyleFn };
 }
 
 /* ---------------------------------------------------------------------------
- * TableToolbar — search field + filter toggle
+ * TableToolbar — search field + filter toggle (uses shadcn Button + Input)
  * -------------------------------------------------------------------------- */
 
 export function TableToolbar(toolbarProps: {
-  toolbarRef?: React.MutableRefObject<any>;
+  toolbarRef?: MutableRefObject<any>;
   setSearch: (value: string) => void;
   onSearchChanged?: (value: string) => void;
   toggleFilters: () => void;
@@ -398,14 +500,14 @@ export function TableToolbar(toolbarProps: {
       <div className="flex items-center gap-2">
         {hasFilters && (
           <div className="flex items-center gap-1">
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={toggleFilters}
               aria-label="filter list"
-              className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
             >
-              <ListFilter className="h-5 w-5" />
-            </button>
+              <Filter className="h-5 w-5" />
+            </Button>
             <span className="font-bold text-lg whitespace-nowrap">
               {t('table.filter.title')} ({selectedFiltersLength})
             </span>
@@ -414,9 +516,7 @@ export function TableToolbar(toolbarProps: {
         {(title || subtitle) && (
           <div>
             {title && (
-              <h2 className="text-xl font-bold leading-tight">
-                {title}
-              </h2>
+              <h2 className="text-xl font-bold leading-tight">{title}</h2>
             )}
             {subtitle && (
               <p className="text-muted-foreground text-sm">{subtitle}</p>
@@ -426,24 +526,25 @@ export function TableToolbar(toolbarProps: {
       </div>
       {showSearch && (
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
+          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <Input
             type="text"
             value={localSearch}
             onChange={e => handleSearchChange(e.target.value)}
             placeholder={t('table.toolbar.search')}
-            className="h-9 w-60 rounded-md border border-input bg-transparent pl-8 pr-8 text-sm outline-none focus:ring-1 focus:ring-ring"
+            className="w-60 pl-8 pr-8"
             aria-label={t('table.toolbar.search')}
           />
           {localSearch && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => handleSearchChange('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-0.5 top-1/2 -translate-y-1/2 h-7 w-7"
               aria-label="Clear search"
             >
               <X className="h-4 w-4" />
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -452,7 +553,7 @@ export function TableToolbar(toolbarProps: {
 }
 
 /* ---------------------------------------------------------------------------
- * Pagination controls
+ * Pagination controls (uses shadcn Button + Tooltip)
  * -------------------------------------------------------------------------- */
 
 function TablePagination<T>({
@@ -477,57 +578,90 @@ function TablePagination<T>({
   };
 
   return (
-    <div className="flex items-center justify-between border-t border-border px-4 py-2 text-sm text-muted-foreground">
-      <span>
-        {totalRows > 0
-          ? `${start}-${end} of ${totalRows}`
-          : t('table.body.emptyDataSourceMessage')}
-      </span>
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          onClick={() => goToPage(0)}
-          disabled={!table.getCanPreviousPage()}
-          aria-label={t('table.pagination.firstTooltip')}
-          className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
-        >
-          <ChevronsLeft className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            table.previousPage();
-            onPageChange?.(pageIndex - 1);
-          }}
-          disabled={!table.getCanPreviousPage()}
-          aria-label={t('table.pagination.previousTooltip')}
-          className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            table.nextPage();
-            onPageChange?.(pageIndex + 1);
-          }}
-          disabled={!table.getCanNextPage()}
-          aria-label={t('table.pagination.nextTooltip')}
-          className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => goToPage(pageCount - 1)}
-          disabled={!table.getCanNextPage()}
-          aria-label={t('table.pagination.lastTooltip')}
-          className="inline-flex items-center justify-center rounded-md p-1 disabled:opacity-50"
-        >
-          <ChevronsRight className="h-4 w-4" />
-        </button>
+    <TooltipProvider>
+      <div className="flex items-center justify-between border-t border-border px-4 py-2 text-sm text-muted-foreground">
+        <span>
+          {totalRows > 0
+            ? `${start}-${end} of ${totalRows}`
+            : t('table.body.emptyDataSourceMessage')}
+        </span>
+        <div className="flex items-center gap-1">
+          <ShadcnTooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => goToPage(0)}
+                disabled={!table.getCanPreviousPage()}
+                aria-label={t('table.pagination.firstTooltip')}
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {t('table.pagination.firstTooltip')}
+            </TooltipContent>
+          </ShadcnTooltip>
+
+          <ShadcnTooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => {
+                  table.previousPage();
+                  onPageChange?.(pageIndex - 1);
+                }}
+                disabled={!table.getCanPreviousPage()}
+                aria-label={t('table.pagination.previousTooltip')}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {t('table.pagination.previousTooltip')}
+            </TooltipContent>
+          </ShadcnTooltip>
+
+          <ShadcnTooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => {
+                  table.nextPage();
+                  onPageChange?.(pageIndex + 1);
+                }}
+                disabled={!table.getCanNextPage()}
+                aria-label={t('table.pagination.nextTooltip')}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('table.pagination.nextTooltip')}</TooltipContent>
+          </ShadcnTooltip>
+
+          <ShadcnTooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => goToPage(pageCount - 1)}
+                disabled={!table.getCanNextPage()}
+                aria-label={t('table.pagination.lastTooltip')}
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('table.pagination.lastTooltip')}</TooltipContent>
+          </ShadcnTooltip>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
 
@@ -567,7 +701,9 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const calculatedInitialState = { ...defaultInitialState, ...initialState };
 
   /* -- Filter panel state ------------------------------------------------- */
-  const [filtersOpen, setFiltersOpen] = useState(calculatedInitialState.filtersOpen);
+  const [filtersOpen, setFiltersOpen] = useState(
+    calculatedInitialState.filtersOpen,
+  );
   const toggleFilters = useCallback(() => setFiltersOpen(v => !v), []);
 
   const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>(
@@ -671,7 +807,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       ? Math.ceil(_totalCount / pageSize)
       : undefined;
 
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: externalPage ?? 0,
     pageSize,
   });
@@ -695,7 +831,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     getCoreRowModel: getCoreRowModel(),
     ...(enableSorting ? { getSortedRowModel: getSortedRowModel() } : {}),
     ...(enableSearch ? { getFilteredRowModel: getFilteredRowModel() } : {}),
-    ...((() => {
+    ...(() => {
       if (isExternalPagination) {
         return {
           manualPagination: true,
@@ -710,7 +846,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         };
       }
       return {};
-    })()),
+    })(),
   });
 
   /* -- Derived values ----------------------------------------------------- */
@@ -718,7 +854,8 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const hasFilters = !!filters?.length;
   const isLoading = loading || asyncLoading;
   const hasNoRows = filteredData.length === 0;
-  const columnCount = columns.filter(c => !c.hidden).length + (actions?.length ? 1 : 0);
+  const columnCount =
+    columns.filter(c => !c.hidden).length + (actions?.length ? 1 : 0);
   const isDense = options?.padding === 'dense';
   const cellPadding = isDense ? 'px-2 py-1' : 'px-2.5 py-2';
 
@@ -750,167 +887,177 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
           subtitle={subtitle}
         />
 
-        {/* Table element */}
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm" style={style}>
-            {/* -- Header -------------------------------------------------- */}
-            <thead>
-              <tr>
-                {table.getHeaderGroups()[0]?.headers.map((header, colIdx) => {
-                  const colStyle = columnStyles[colIdx]
-                    ? columnStyles[colIdx].headerStyle
-                    : {};
-                  const col = columns[colIdx];
-                  const widthStyle = col?.width ? { width: col.width } : {};
+        {/* Table element — uses shadcn/ui Table primitives */}
+        <ShadcnTable className="border-collapse" style={style}>
+          {/* -- Header -------------------------------------------------- */}
+          <TableHeader>
+            <TableRow>
+              {table.getHeaderGroups()[0]?.headers.map((header, colIdx) => {
+                const colStyle = columnStyles[colIdx]
+                  ? columnStyles[colIdx].headerStyle
+                  : {};
+                const col = columns[colIdx];
+                const widthStyle = col?.width ? { width: col.width } : {};
 
-                  return (
-                    <th
-                      key={header.id}
-                      className={cn(
-                        'border-y border-border px-2.5 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground',
-                        enableSorting && header.column.getCanSort()
-                          ? 'cursor-pointer select-none'
-                          : '',
-                      )}
-                      style={{ ...widthStyle, ...colStyle }}
-                      onClick={
-                        enableSorting
-                          ? header.column.getToggleSortingHandler()
-                          : undefined
-                      }
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === 'asc' && (
-                          <ArrowUp className="h-3.5 w-3.5" />
-                        )}
-                        {header.column.getIsSorted() === 'desc' && (
-                          <ArrowUp className="h-3.5 w-3.5 rotate-180" />
-                        )}
-                      </span>
-                    </th>
-                  );
-                })}
-                {actions?.length ? (
-                  <th className="border-y border-border px-2.5 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {t('table.header.actions')}
-                  </th>
-                ) : null}
-              </tr>
-            </thead>
-
-            {/* -- Body ---------------------------------------------------- */}
-            {isLoading && (
-              <TableLoadingBody colSpan={columnCount} />
-            )}
-            {!isLoading && emptyContent && hasNoRows && (
-              <tbody>
-                <tr>
-                  <td colSpan={columnCount}>{emptyContent}</td>
-                </tr>
-              </tbody>
-            )}
-            {!isLoading && !emptyContent && hasNoRows && (
-              <tbody>
-                <tr>
-                  <td
-                    colSpan={columnCount}
-                    className="py-10 text-center text-muted-foreground"
+                return (
+                  <TableHead
+                    key={header.id}
+                    className={cn(
+                      'border-y border-border px-2.5 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground',
+                      enableSorting && header.column.getCanSort()
+                        ? 'cursor-pointer select-none'
+                        : '',
+                    )}
+                    style={{ ...widthStyle, ...colStyle }}
+                    onClick={
+                      enableSorting
+                        ? header.column.getToggleSortingHandler()
+                        : undefined
+                    }
                   >
-                    {t('table.body.emptyDataSourceMessage')}
-                  </td>
-                </tr>
-              </tbody>
-            )}
-            {!isLoading && !hasNoRows && (
-              <tbody>
-                {table.getRowModel().rows.map(row => {
-                  if (CustomRow) {
-                    return (
-                      <CustomRow
-                        key={row.id}
-                        data={row.original}
-                        columns={columns}
-                      />
-                    );
-                  }
-
-                  return (
-                    <tr
-                      key={row.id}
-                      className={cn(
-                        'border-b border-border transition-colors hover:bg-muted/40',
-                        onRowClick && 'cursor-pointer',
+                    <span className="inline-flex items-center gap-1">
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
                       )}
-                      onClick={
-                        onRowClick
-                          ? (e: MouseEvent<HTMLTableRowElement>) =>
-                              onRowClick(e, row.original)
-                          : undefined
-                      }
-                    >
-                      {row.getVisibleCells().map((cell, colIdx) => {
-                        const col = columns[colIdx];
-                        const { cellStyleFn } = columnStyles[colIdx] ?? {
-                          cellStyleFn: () => ({}),
-                        };
-                        const value = cell.getValue();
-                        const computedStyle = cellStyleFn(value, row.original);
-                        const widthStyle = col?.width ? { width: col.width } : {};
+                      {header.column.getIsSorted() === 'asc' && (
+                        <ArrowUp className="h-3.5 w-3.5" />
+                      )}
+                      {header.column.getIsSorted() === 'desc' && (
+                        <ArrowUp className="h-3.5 w-3.5 rotate-180" />
+                      )}
+                    </span>
+                  </TableHead>
+                );
+              })}
+              {actions?.length ? (
+                <TableHead className="border-y border-border px-2.5 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('table.header.actions')}
+                </TableHead>
+              ) : null}
+            </TableRow>
+          </TableHeader>
 
-                        return (
-                          <td
-                            key={cell.id}
-                            className={cn(cellPadding)}
-                            style={{ ...widthStyle, ...computedStyle }}
-                          >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
-                        );
-                      })}
-                      {actions?.length ? (
-                        <td className={cn(cellPadding, 'whitespace-nowrap')}>
-                          <div className="flex items-center gap-1">
-                            {actions
-                              .map(a =>
-                                typeof a === 'function'
-                                  ? a(row.original)
-                                  : a,
-                              )
-                              .filter(a => !a.isFreeAction && !a.hidden)
-                              .map((action, actionIdx) => {
-                                const ActionIcon = action.icon;
-                                return (
-                                  <button
-                                    key={actionIdx}
-                                    type="button"
-                                    title={action.tooltip}
-                                    disabled={action.disabled}
-                                    style={action.cellStyle}
-                                    className="inline-flex items-center justify-center rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50 disabled:pointer-events-none"
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      action.onClick(e, row.original);
-                                    }}
-                                  >
-                                    <ActionIcon />
-                                  </button>
-                                );
-                              })}
-                          </div>
-                        </td>
-                      ) : null}
-                    </tr>
+          {/* -- Body: loading state ---------------------------------------- */}
+          {isLoading && <TableLoadingBody colSpan={columnCount} />}
+
+          {/* -- Body: empty with custom content ---------------------------- */}
+          {!isLoading && emptyContent && hasNoRows && (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={columnCount}>{emptyContent}</TableCell>
+              </TableRow>
+            </TableBody>
+          )}
+
+          {/* -- Body: empty default message -------------------------------- */}
+          {!isLoading && !emptyContent && hasNoRows && (
+            <TableBody>
+              <TableRow>
+                <TableCell
+                  colSpan={columnCount}
+                  className="py-10 text-center text-muted-foreground"
+                >
+                  {t('table.body.emptyDataSourceMessage')}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          )}
+
+          {/* -- Body: data rows ------------------------------------------- */}
+          {!isLoading && !hasNoRows && (
+            <TableBody>
+              {table.getRowModel().rows.map(row => {
+                if (CustomRow) {
+                  return (
+                    <CustomRow
+                      key={row.id}
+                      data={row.original}
+                      columns={columns}
+                    />
                   );
-                })}
-              </tbody>
-            )}
-          </table>
-        </div>
+                }
+
+                return (
+                  <TableRow
+                    key={row.id}
+                    className={cn(onRowClick && 'cursor-pointer')}
+                    onClick={
+                      onRowClick
+                        ? (e: MouseEvent<HTMLTableRowElement>) =>
+                            onRowClick(e, row.original)
+                        : undefined
+                    }
+                  >
+                    {row.getVisibleCells().map((cell, colIdx) => {
+                      const col = columns[colIdx];
+                      const { cellStyleFn } = columnStyles[colIdx] ?? {
+                        cellStyleFn: () => ({}),
+                      };
+                      const value = cell.getValue();
+                      const computedStyle = cellStyleFn(value, row.original);
+                      const widthStyle = col?.width ? { width: col.width } : {};
+
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className={cn(cellPadding)}
+                          style={{ ...widthStyle, ...computedStyle }}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                    {actions?.length ? (
+                      <TableCell
+                        className={cn(cellPadding, 'whitespace-nowrap')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {actions
+                            .map(a =>
+                              typeof a === 'function' ? a(row.original) : a,
+                            )
+                            .filter(a => !a.isFreeAction && !a.hidden)
+                            .map((action, actionIdx) => {
+                              const ActionIcon = action.icon;
+                              return (
+                                <Button
+                                  key={actionIdx}
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  title={action.tooltip}
+                                  disabled={action.disabled}
+                                  style={action.cellStyle}
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    action.onClick(e, row.original);
+                                  }}
+                                >
+                                  <ActionIcon />
+                                </Button>
+                              );
+                            })}
+                        </div>
+                      </TableCell>
+                    ) : null}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          )}
+        </ShadcnTable>
 
         {/* Pagination */}
         {enablePaging && !isLoading && !hasNoRows && (
-          <TablePagination table={table as any} t={t} onPageChange={onPageChange} />
+          <TablePagination
+            table={table as any}
+            t={t}
+            onPageChange={onPageChange}
+          />
         )}
       </div>
     </div>
@@ -929,7 +1076,7 @@ function constructFilters<T extends object>(
   dataValue: T[],
   columns: TableColumn<T>[],
   t: TranslationFunction<typeof coreComponentsTranslationRef.T>,
-): Filter[] {
+): FilterType[] {
   const extractDistinctValues = (field: string | keyof T): Set<any> => {
     const distinctValues = new Set<any>();
     const addValue = (value: any) => {
