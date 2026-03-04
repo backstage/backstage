@@ -67,6 +67,7 @@ async function renderScalableSidebar() {
             />
             <SidebarSubmenuItem
               title="Start and End Components"
+              to="#"
               startComponent={
                 <div data-testid="my-start-component">[START]</div>
               }
