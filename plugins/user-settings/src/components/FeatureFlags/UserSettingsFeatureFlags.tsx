@@ -15,11 +15,7 @@
  */
 
 import { useRef, useCallback, useState } from 'react';
-import List from '@material-ui/core/List';
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { X } from 'lucide-react';
 import { EmptyFlags } from './EmptyFlags';
 import { FlagItem } from './FeatureFlagsItem';
 import {
@@ -29,8 +25,11 @@ import {
   FeatureFlagState,
   useApi,
 } from '@backstage/core-plugin-api';
-import { InfoCard } from '@backstage/core-components';
-import ClearIcon from '@material-ui/icons/Clear';
+import {
+  InfoCard,
+  Input,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
 
@@ -46,7 +45,7 @@ export const sortFlags = (
 /** @public */
 export const UserSettingsFeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
-  const inputRef = useRef<HTMLElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const initialFeatureFlags = featureFlagsApi.getRegisteredFlags();
   const initialFeatureFlagsSorted = sortFlags(
@@ -97,43 +96,44 @@ export const UserSettingsFeatureFlags = () => {
   });
 
   const Header = () => (
-    <Grid container style={{ justifyContent: 'space-between' }}>
-      <Grid item xs={6} md={8}>
-        <Typography variant="h5">{t('featureFlags.title')}</Typography>
-        <Typography variant="subtitle1">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex-1">
+        <h5 className="text-lg font-semibold tracking-tight text-foreground">
+          {t('featureFlags.title')}
+        </h5>
+        {/* eslint-disable-next-line react/forbid-elements -- migrating from MUI Typography to semantic HTML */}
+        <p className="text-sm text-muted-foreground">
           {t('featureFlags.description')}
-        </Typography>
-      </Grid>
+        </p>
+      </div>
       {featureFlags.length >= 10 && (
-        <Grid item xs={6} md={4}>
-          <TextField
-            label={t('featureFlags.filterTitle')}
-            style={{ display: 'flex', justifyContent: 'flex-end' }}
-            inputRef={ref => ref && ref.focus()}
-            InputProps={{
-              ...(filterInput.length && {
-                endAdornment: (
-                  <IconButton
-                    aria-label={t('featureFlags.clearFilter')}
-                    onClick={clearFilterInput}
-                    edge="end"
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                ),
-              }),
-            }}
-            onChange={e => setFilterInput(e.target.value)}
+        <div className="relative w-full sm:max-w-xs">
+          <Input
+            placeholder={t('featureFlags.filterTitle')}
+            ref={inputRef}
             value={filterInput}
+            onChange={e => setFilterInput(e.target.value)}
+            className="pr-9"
           />
-        </Grid>
+          {filterInput.length > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+              aria-label={t('featureFlags.clearFilter')}
+              onClick={clearFilterInput}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       )}
-    </Grid>
+    </div>
   );
 
   return (
     <InfoCard title={<Header />}>
-      <List dense>
+      <ul className="divide-y divide-border">
         {filteredFeatureFlags.map(featureFlag => {
           const enabled = Boolean(state[featureFlag.name]);
 
@@ -146,7 +146,7 @@ export const UserSettingsFeatureFlags = () => {
             />
           );
         })}
-      </List>
+      </ul>
     </InfoCard>
   );
 };
