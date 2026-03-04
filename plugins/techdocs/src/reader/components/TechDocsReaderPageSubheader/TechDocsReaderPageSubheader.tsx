@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React from 'react';
 
 import { Settings } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
 
 import {
   TechDocsAddonLocations as locations,
@@ -25,43 +31,13 @@ import {
 } from '@backstage/plugin-techdocs-react';
 
 /**
- * Props accepted by the subheader toolbar container element.
- * Replaces the former MUI ToolbarProps with standard HTML div attributes.
- * @public
- */
-export type TechDocsSubheaderToolbarProps =
-  React.HTMLAttributes<HTMLDivElement>;
-
-/**
  * Renders the reader page subheader.
  * Please use the Tech Docs add-ons to customize it
  * @public
  */
 export const TechDocsReaderPageSubheader = (props: {
-  toolbarProps?: TechDocsSubheaderToolbarProps;
+  toolbarProps?: React.HTMLAttributes<HTMLDivElement>;
 }) => {
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  const handleClick = useCallback(() => {
-    setOpen(prev => !prev);
-  }, []);
-
-  /* Close the settings dropdown when clicking outside */
-  useEffect(() => {
-    if (!open) return undefined;
-    const onMouseDown = (event: globalThis.MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', onMouseDown);
-    return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [open]);
-
   const {
     entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
   } = useTechDocsReaderPage();
@@ -79,46 +55,24 @@ export const TechDocsReaderPageSubheader = (props: {
   // No entity metadata = 404. Don't render subheader on 404.
   if (entityMetadataLoading === false && !entityMetadata) return null;
 
-  const { className: toolbarClassName, ...restToolbarProps } =
-    props.toolbarProps ?? {};
-
   return (
     <div
-      role="toolbar"
-      className={[
-        'flex flex-col min-h-0 px-6 pt-6 pb-0 print:hidden',
-        toolbarClassName,
-      ]
-        .filter(Boolean)
-        .join(' ')}
-      style={{ gridArea: 'pageSubheader' }}
-      {...restToolbarProps}
+      className="[grid-area:pageSubheader] flex flex-col min-h-0 px-6 pt-6 print:hidden"
+      {...props.toolbarProps}
     >
       <div className="flex justify-end w-full flex-wrap">
         {subheaderAddons}
         {settingsAddons ? (
-          <div className="relative" ref={menuRef}>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-              aria-controls="tech-docs-reader-page-settings"
-              aria-haspopup="true"
-              aria-expanded={open}
-              onClick={handleClick}
-              title="Settings"
-            >
-              <Settings className="h-5 w-5" />
-            </button>
-            {open && (
-              <div
-                id="tech-docs-reader-page-settings"
-                className="absolute right-0 top-full mt-1 z-50 min-w-[8rem] rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
-                role="menu"
-              >
-                {settingsAddons}
-              </div>
-            )}
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Settings">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <div>{settingsAddons}</div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : null}
       </div>
     </div>
