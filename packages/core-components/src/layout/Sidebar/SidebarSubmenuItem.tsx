@@ -137,8 +137,8 @@ export type SidebarSubmenuItemDropdownItem = {
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
- * startComponent: Optional custom component to add to the beginning of the menu item (non-dropdown items only)
- * endComponent: Optional custom component to add to the end of the menu item (non-dropdown items only)
+ * startComponent: Optional custom component to add to the beginning of the menu item
+ * endComponent: Optional custom component to add to the end of the menu item
  *
  * @public
  */
@@ -204,6 +204,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
               isActive ? classes.selected : undefined,
             )}
           >
+            {startComponent}
             {Icon && <Icon fontSize="small" />}
             <Typography
               variant="subtitle1"
@@ -222,6 +223,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                 </Typography>
               )}
             </Typography>
+            {endComponent}
             {showDropDown ? (
               <ArrowDropUpIcon className={classes.dropdownArrow} />
             ) : (
