@@ -15,6 +15,7 @@
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
+import { JsonValue } from '@backstage/types';
 
 export const createExecuteTemplateAction = ({
   actionsRegistry,
@@ -32,7 +33,7 @@ export const createExecuteTemplateAction = ({
       idempotent: false,
     },
     description: `Executes a Scaffolder template with its template ref and input parameter values.
-The template is run on behalf of the calling user, respecting their RBAC permissions.
+The template is run using the credentials provided to this action, and respects any RBAC permissions associated with those credentials.
 Returns a taskId that can be used to track execution progress.`,
     schema: {
       input: z =>
@@ -61,7 +62,7 @@ Returns a taskId that can be used to track execution progress.`,
       const { taskId } = await scaffolderService.scaffold(
         {
           templateRef: input.templateRef,
-          values: input.values as { [key: string]: any },
+          values: input.values as Record<string, JsonValue>,
         },
         { credentials },
       );
