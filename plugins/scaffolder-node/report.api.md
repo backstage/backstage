@@ -391,6 +391,7 @@ export interface ScaffolderService {
       createdBy?: string;
       limit?: number;
       offset?: number;
+      status?: ScaffolderTaskStatus;
     },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{
