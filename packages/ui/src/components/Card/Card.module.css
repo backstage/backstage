@@ -51,6 +51,7 @@
    */
   .bui-Card[data-interactive] {
     cursor: pointer;
+    overflow: hidden;
 
     &::after {
       content: '';

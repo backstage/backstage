@@ -24,7 +24,6 @@ import {
   CardFooterDefinition,
 } from './definition';
 import type {
-  CardOwnProps,
   CardProps,
   CardHeaderProps,
   CardBodyProps,
@@ -40,8 +39,7 @@ import { Box } from '../Box/Box';
 export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
   const { ownProps, restProps, dataAttributes } = useDefinition(
     CardDefinition,
-    props as CardOwnProps &
-      Omit<React.HTMLAttributes<HTMLDivElement>, 'onPress'>,
+    props,
   );
   const { classes, children, onPress, href, label, target, rel, download } =
     ownProps;

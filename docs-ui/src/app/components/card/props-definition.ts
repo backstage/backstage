@@ -32,7 +32,7 @@ export const cardPropDefs: Record<string, PropDef> = {
     type: 'string',
     responsive: false,
     description:
-      'Accessible label announced by screen readers for the interactive overlay. Required when onPress is provided.',
+      'Accessible label announced by screen readers for the interactive overlay. Required when onPress or href is provided.',
   },
   ...classNamePropDefs,
   ...stylePropDefs,
