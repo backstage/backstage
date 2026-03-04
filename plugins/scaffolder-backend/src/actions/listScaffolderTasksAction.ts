@@ -65,6 +65,17 @@ Pagination is supported via limit and offset.
             .min(0)
             .describe('The offset to start from for pagination')
             .optional(),
+          status: z
+            .enum([
+              'open',
+              'processing',
+              'completed',
+              'failed',
+              'cancelled',
+              'skipped',
+            ])
+            .optional()
+            .describe('Filter tasks by status'),
         }),
       output: z =>
         z
@@ -112,6 +123,7 @@ Pagination is supported via limit and offset.
           createdBy,
           limit: input.limit,
           offset: input.offset,
+          status: input.status,
         },
         { credentials },
       );
