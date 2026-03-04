@@ -15,6 +15,7 @@
  */
 
 import { forwardRef } from 'react';
+import { Button as RAButton, Link as RALink } from 'react-aria-components';
 import { useDefinition } from '../../hooks/useDefinition';
 import {
   CardDefinition,
@@ -40,16 +41,36 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
     CardDefinition,
     props,
   );
-  const { classes, children } = ownProps;
+  const { classes, children, onPress, href, label, target, rel, download } =
+    ownProps;
+  const isInteractive = !!(onPress || href);
 
   return (
     <Box
       bg="neutral"
       ref={ref}
       className={classes.root}
+      data-interactive={isInteractive || undefined}
       {...dataAttributes}
       {...restProps}
     >
+      {href && (
+        <RALink
+          className={classes.overlay}
+          href={href}
+          target={target}
+          rel={rel}
+          download={download}
+          aria-label={label}
+        />
+      )}
+      {onPress && !href && (
+        <RAButton
+          className={classes.overlay}
+          onPress={onPress}
+          aria-label={label}
+        />
+      )}
       {children}
     </Box>
   );

@@ -565,6 +565,12 @@ export const Card: ForwardRefExoticComponent<
   CardProps & RefAttributes<HTMLDivElement>
 >;
 
+// @public (undocumented)
+export type CardBaseProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
 // @public
 export const CardBody: ForwardRefExoticComponent<
   CardBodyProps & RefAttributes<HTMLDivElement>
@@ -595,6 +601,16 @@ export interface CardBodyProps
   extends CardBodyOwnProps,
     React.HTMLAttributes<HTMLDivElement> {}
 
+// @public (undocumented)
+export type CardButtonVariant = {
+  onPress: NonNullable<ButtonProps_2['onPress']>;
+  href?: never;
+  label: string;
+  target?: never;
+  rel?: never;
+  download?: never;
+};
+
 // @public
 export const CardDefinition: {
   readonly styles: {
@@ -602,10 +618,17 @@ export const CardDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Card';
+    readonly overlay: 'bui-CardOverlay';
   };
   readonly propDefs: {
     readonly children: {};
     readonly className: {};
+    readonly onPress: {};
+    readonly href: {};
+    readonly label: {};
+    readonly target: {};
+    readonly rel: {};
+    readonly download: {};
   };
 };
 
@@ -670,15 +693,42 @@ export interface CardHeaderProps
     React.HTMLAttributes<HTMLDivElement> {}
 
 // @public (undocumented)
-export type CardOwnProps = {
-  children?: ReactNode;
-  className?: string;
+export type CardLinkVariant = {
+  href: string;
+  onPress?: never;
+  label: string;
+  target?: string;
+  rel?: string;
+  download?: boolean | string;
 };
 
 // @public
-export interface CardProps
-  extends CardOwnProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+export type CardOwnProps = Pick<
+  CardBaseProps & (CardButtonVariant | CardLinkVariant | CardStaticVariant),
+  | 'children'
+  | 'className'
+  | 'onPress'
+  | 'href'
+  | 'label'
+  | 'target'
+  | 'rel'
+  | 'download'
+>;
+
+// @public
+export type CardProps = CardBaseProps &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'onPress'> &
+  (CardButtonVariant | CardLinkVariant | CardStaticVariant);
+
+// @public (undocumented)
+export type CardStaticVariant = {
+  onPress?: never;
+  href?: never;
+  label?: never;
+  target?: never;
+  rel?: never;
+  download?: never;
+};
 
 // @public (undocumented)
 export const Cell: {
