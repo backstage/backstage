@@ -20,7 +20,7 @@ nav:
       - System Model: 'features/software-catalog/system-model.md'
       - Authentication in Backstage: 'auth/index.md'
       - Backend System overview: 'backend-system/index.md'
-      - New Frontend System overview: 'frontend-system/architecure/index.md'
+      - New Frontend System overview: 'frontend-system/architecture/index.md'
       - Security & Threat Model: 'overview/threat-model.md'
       - Release & Versioning Policy: 'overview/versioning-policy.md'
       - Logo assets: 'overview/logos.md/index.md'
