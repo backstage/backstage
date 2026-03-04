@@ -20,9 +20,7 @@ import {
   createExtensionBlueprint,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import { DropdownMenuItem } from '@backstage/core-components';
 import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
 import {
   FilterPredicate,
@@ -86,10 +84,10 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
         }
 
         return (
-          <MenuItem {...menuItemProps} onClick={handleClick}>
-            <ListItemIcon>{params.icon}</ListItemIcon>
-            <ListItemText primary={title} />
-          </MenuItem>
+          <DropdownMenuItem {...menuItemProps} onClick={handleClick}>
+            <span className="mr-2 h-4 w-4 shrink-0">{params.icon}</span>
+            <span>{title}</span>
+          </DropdownMenuItem>
         );
       };
 
