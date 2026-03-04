@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import List from '@material-ui/core/List';
-import Button from '@material-ui/core/Button';
 import { useMemo, useState } from 'react';
 import useObservable from 'react-use/esm/useObservable';
-import LoginRequestListItem from './LoginRequestListItem';
 import {
   useApi,
   configApiRef,
   oauthRequestApiRef,
 } from '@backstage/core-plugin-api';
-import Typography from '@material-ui/core/Typography';
-import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { coreComponentsTranslationRef } from '../../translation';
+import {
+  ShadcnDialog,
+  ShadcnDialogContent,
+  DialogHeader,
+  DialogFooter,
+  ShadcnDialogTitle,
+  DialogDescription,
+} from '../ui/dialog';
+import { Button } from '../ui/button';
+import { cn } from '../../lib/utils';
+import LoginRequestListItem from './LoginRequestListItem';
 
 export type OAuthRequestDialogClassKey =
   | 'dialog'
@@ -39,29 +41,7 @@ export type OAuthRequestDialogClassKey =
   | 'contentList'
   | 'actionButtons';
 
-const useStyles = makeStyles(
-  theme => ({
-    dialog: {
-      paddingTop: theme.spacing(1),
-    },
-    title: {
-      minWidth: 0,
-    },
-    titleHeading: {
-      fontSize: theme.typography.h6.fontSize,
-    },
-    contentList: {
-      padding: 0,
-    },
-    actionButtons: {
-      padding: theme.spacing(2, 0),
-    },
-  }),
-  { name: 'OAuthRequestDialog' },
-);
-
 export function OAuthRequestDialog(_props: {}) {
-  const classes = useStyles();
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
   const configApi = useApi(configApiRef);
@@ -80,49 +60,43 @@ export function OAuthRequestDialog(_props: {}) {
   };
 
   return (
-    <Dialog
-      open={Boolean(requests.length)}
-      fullWidth
-      maxWidth="xs"
-      classes={{ paper: classes.dialog }}
-      aria-labelledby="oauth-req-dialog-title"
-    >
-      <main>
-        <DialogTitle
-          classes={{ root: classes.title }}
-          id="oauth-req-dialog-title"
-        >
-          <Typography
-            className={classes.titleHeading}
-            variant="h1"
-            variantMapping={{ h1: 'span' }}
-          >
-            {t('oauthRequestDialog.title')}
-          </Typography>
-          {authRedirect ? (
-            <Typography>{t('oauthRequestDialog.authRedirectTitle')}</Typography>
-          ) : null}
-        </DialogTitle>
+    <ShadcnDialog open={Boolean(requests.length)}>
+      <ShadcnDialogContent
+        className={cn('pt-4 max-w-xs w-full')}
+        aria-labelledby="oauth-req-dialog-title"
+      >
+        <main>
+          <DialogHeader className="min-w-0" id="oauth-req-dialog-title">
+            <ShadcnDialogTitle className="text-base font-semibold">
+              {t('oauthRequestDialog.title')}
+            </ShadcnDialogTitle>
+            {authRedirect ? (
+              <DialogDescription>
+                {t('oauthRequestDialog.authRedirectTitle')}
+              </DialogDescription>
+            ) : null}
+          </DialogHeader>
 
-        <DialogContent dividers classes={{ root: classes.contentList }}>
-          <List>
-            {requests.map(request => (
-              <LoginRequestListItem
-                key={request.provider.title}
-                request={request}
-                busy={busy}
-                setBusy={setBusy}
-              />
-            ))}
-          </List>
-        </DialogContent>
-      </main>
+          <div className="border-y border-border p-0">
+            <ul className="divide-y divide-border">
+              {requests.map(request => (
+                <LoginRequestListItem
+                  key={request.provider.title}
+                  request={request}
+                  busy={busy}
+                  setBusy={setBusy}
+                />
+              ))}
+            </ul>
+          </div>
+        </main>
 
-      <DialogActions classes={{ root: classes.actionButtons }}>
-        <Button onClick={handleRejectAll}>
-          {t('oauthRequestDialog.rejectAll')}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <DialogFooter className="py-4 px-0">
+          <Button variant="ghost" onClick={handleRejectAll}>
+            {t('oauthRequestDialog.rejectAll')}
+          </Button>
+        </DialogFooter>
+      </ShadcnDialogContent>
+    </ShadcnDialog>
   );
 }
