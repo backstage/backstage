@@ -23,7 +23,8 @@ import {
 } from '@backstage/test-utils';
 import { Search } from 'lucide-react';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ReactNode } from 'react';
 import { EntityContextMenu } from './EntityContextMenu';
 
@@ -48,13 +49,14 @@ describe('ComponentContextMenu', () => {
       />,
     );
 
+    // Use userEvent for Radix DropdownMenu pointer event compatibility
     const button = await screen.findByTestId('menu-button');
     expect(button).toBeInTheDocument();
-    fireEvent.click(button);
+    await userEvent.click(button);
 
     const unregister = await screen.findByText('Unregister entity');
     expect(unregister).toBeInTheDocument();
-    fireEvent.click(unregister);
+    await userEvent.click(unregister);
 
     expect(mockCallback).toHaveBeenCalled();
   });
@@ -70,16 +72,18 @@ describe('ComponentContextMenu', () => {
       />,
     );
 
+    // Use userEvent for Radix DropdownMenu pointer event compatibility
     const button = await screen.findByTestId('menu-button');
     expect(button).toBeInTheDocument();
-    fireEvent.click(button);
+    await userEvent.click(button);
 
-    const unregister = screen.getByText('Unregister entity');
+    const unregister = await screen.findByText('Unregister entity');
     expect(unregister).toBeInTheDocument();
 
     const unregisterSpanItem = screen.getByText(/Unregister entity/);
-    const unregisterMenuListItem =
-      unregisterSpanItem?.parentElement?.parentElement;
+    // With Radix DropdownMenuItem, the <span> text is a direct child of the
+    // <div role="menuitem"> element that carries the aria-disabled attribute.
+    const unregisterMenuListItem = unregisterSpanItem?.parentElement;
     expect(unregisterMenuListItem).toHaveAttribute('aria-disabled');
   });
 
@@ -93,13 +97,14 @@ describe('ComponentContextMenu', () => {
       />,
     );
 
+    // Use userEvent for Radix DropdownMenu pointer event compatibility
     const button = await screen.findByTestId('menu-button');
     expect(button).toBeInTheDocument();
-    fireEvent.click(button);
+    await userEvent.click(button);
 
-    const unregister = await screen.findByText('Inspect entity');
-    expect(unregister).toBeInTheDocument();
-    fireEvent.click(unregister);
+    const inspect = await screen.findByText('Inspect entity');
+    expect(inspect).toBeInTheDocument();
+    await userEvent.click(inspect);
 
     expect(mockCallback).toHaveBeenCalled();
   });
@@ -119,13 +124,14 @@ describe('ComponentContextMenu', () => {
       />,
     );
 
+    // Use userEvent for Radix DropdownMenu pointer event compatibility
     const button = await screen.findByTestId('menu-button');
     expect(button).toBeInTheDocument();
-    fireEvent.click(button);
+    await userEvent.click(button);
 
     const item = await screen.findByText('HELLO');
     expect(item).toBeInTheDocument();
-    fireEvent.click(item);
+    await userEvent.click(item);
 
     expect(extra.onClick).toHaveBeenCalled();
   });
