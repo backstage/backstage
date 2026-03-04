@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import { Button } from '../../components/ui/button';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { GridItem } from './styles';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
@@ -90,14 +89,14 @@ const Component: ProviderComponent = ({
         title="Guest"
         variant="fullHeight"
         actions={
-          <Button color="primary" variant="outlined" onClick={handle}>
+          <Button variant="outline" onClick={handle}>
             {t('signIn.guestProvider.enter')}
           </Button>
         }
       >
-        <Typography variant="body1" style={{ whiteSpace: 'pre-line' }}>
+        <p className="text-base text-foreground whitespace-pre-line">
           {t('signIn.guestProvider.subtitle')}
-        </Typography>
+        </p>
       </InfoCard>
     </GridItem>
   );
