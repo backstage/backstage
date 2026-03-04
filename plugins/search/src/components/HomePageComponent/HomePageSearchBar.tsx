@@ -46,20 +46,16 @@ export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
     handleSearch({ query: ref.current?.value ?? '' });
   }, [handleSearch]);
 
+  const { className, ...restProps } = props;
+
   return (
     <SearchBarBase
+      {...restProps}
       value={query}
       onSubmit={handleSubmit}
       onChange={setQuery}
-      inputProps={{ ref }}
-      InputProps={{
-        ...props.InputProps,
-        className: cn(
-          'text-2xl border border-[#555] rounded-md',
-          props.InputProps?.className,
-        ),
-      }}
-      {...props}
+      ref={ref}
+      className={cn('text-2xl border border-[#555] rounded-md', className)}
     />
   );
 };

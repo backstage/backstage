@@ -56,8 +56,7 @@ export const CustomStyles = () => {
     <div className="grid place-items-center gap-6">
       <div className="flex w-full items-center">
         <HomePageSearchBar
-          className="flex max-w-[60vw] bg-[var(--background)] shadow-sm py-2 rounded-full mx-auto"
-          InputProps={{ className: 'border-none' }}
+          className="flex max-w-[60vw] bg-[var(--background)] shadow-sm py-2 rounded-full mx-auto border-none"
           placeholder="Search"
         />
       </div>

@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useCallback, useMemo } from 'react';
+import React, { ChangeEvent, useCallback, useMemo } from 'react';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
-import Autocomplete, {
-  AutocompleteProps,
-  AutocompleteRenderInputParams,
-} from '@material-ui/lab/Autocomplete';
-import {
-  AutocompleteChangeDetails,
-  AutocompleteChangeReason,
-} from '@material-ui/lab/useAutocomplete';
+import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
+import AutocompleteRenderInputParams from '@material-ui/lab/AutocompleteRenderInputParams';
+import AutocompleteChangeDetails from '@material-ui/lab/AutocompleteChangeDetails';
+import AutocompleteChangeReason from '@material-ui/lab/AutocompleteChangeReason';
 
 import { SearchContextProvider, useSearch } from '../../context';
 import { SearchBar, SearchBarProps } from '../SearchBar';
@@ -137,23 +132,48 @@ export const SearchAutocomplete = withContext(
 
     const renderInput = useCallback(
       ({
-        InputProps: { ref, className, endAdornment },
+        InputProps: { ref: anchorRef, className, endAdornment },
         InputLabelProps,
+        inputProps: {
+          ref: inputRef,
+          onChange: _acOnChange,
+          value: _acValue,
+          ...safeInputAttrs
+        },
         ...params
-      }: AutocompleteRenderInputParams) => (
-        <SearchBar
-          {...params}
-          ref={ref}
-          clearButton={false}
-          value={inputValue}
-          placeholder={inputPlaceholder}
-          debounceTime={inputDebounceTime}
-          endAdornment={
-            loading ? <SearchAutocompleteLoadingAdornment /> : endAdornment
-          }
-          InputProps={{ className }}
-        />
-      ),
+      }: AutocompleteRenderInputParams) => {
+        // Merge anchorRef (InputProps.ref — needed by Autocomplete for popup
+        // positioning via setAnchorEl) with inputRef (inputProps.ref — needed
+        // by useAutocomplete for focus management) so both point to the
+        // native <input>.
+        const mergedRef = (node: HTMLInputElement | null) => {
+          if (typeof anchorRef === 'function') anchorRef(node);
+          else if (anchorRef)
+            (
+              anchorRef as React.MutableRefObject<HTMLInputElement | null>
+            ).current = node;
+          if (typeof inputRef === 'function') inputRef(node);
+          else if (inputRef)
+            (
+              inputRef as React.MutableRefObject<HTMLInputElement | null>
+            ).current = node;
+        };
+        return (
+          <SearchBar
+            {...params}
+            {...(safeInputAttrs as React.InputHTMLAttributes<HTMLInputElement>)}
+            ref={mergedRef}
+            clearButton={false}
+            value={inputValue}
+            placeholder={inputPlaceholder}
+            debounceTime={inputDebounceTime}
+            endAdornment={
+              loading ? <SearchAutocompleteLoadingAdornment /> : endAdornment
+            }
+            className={className}
+          />
+        );
+      },
       [loading, inputValue, inputPlaceholder, inputDebounceTime],
     );
 
