@@ -55,7 +55,7 @@ export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
       onSubmit={handleSubmit}
       onChange={setQuery}
       ref={ref}
-      className={cn('text-2xl border border-[#555] rounded-md', className)}
+      className={cn('text-2xl border border-border rounded-md', className)}
     />
   );
 };

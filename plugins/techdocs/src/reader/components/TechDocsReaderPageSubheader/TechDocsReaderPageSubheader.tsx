@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import type { HTMLAttributes } from 'react';
 
 import { Settings } from 'lucide-react';
 import {
@@ -31,12 +31,21 @@ import {
 } from '@backstage/plugin-techdocs-react';
 
 /**
+ * Props type for the subheader toolbar container.
+ * Replaces the former MUI `ToolbarProps` dependency with standard
+ * `HTMLAttributes<HTMLDivElement>` for the underlying div element.
+ *
+ * @public
+ */
+export type TechDocsSubheaderToolbarProps = HTMLAttributes<HTMLDivElement>;
+
+/**
  * Renders the reader page subheader.
  * Please use the Tech Docs add-ons to customize it
  * @public
  */
 export const TechDocsReaderPageSubheader = (props: {
-  toolbarProps?: React.HTMLAttributes<HTMLDivElement>;
+  toolbarProps?: TechDocsSubheaderToolbarProps;
 }) => {
   const {
     entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
@@ -57,6 +66,7 @@ export const TechDocsReaderPageSubheader = (props: {
 
   return (
     <div
+      role="toolbar"
       className="[grid-area:pageSubheader] flex flex-col min-h-0 px-6 pt-6 print:hidden"
       {...props.toolbarProps}
     >

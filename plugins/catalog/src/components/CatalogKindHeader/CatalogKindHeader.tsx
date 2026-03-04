@@ -103,7 +103,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
       value={selectedKind.toLocaleLowerCase('en-US')}
       onValueChange={value => setSelectedKind(value)}
     >
-      <SelectTrigger className="text-[2.125rem] font-normal leading-[1.235] tracking-[0.00735em] border-none shadow-none h-auto bg-transparent focus:ring-0 px-0 w-auto inline-flex gap-2">
+      <SelectTrigger className="text-4xl font-normal border-none shadow-none h-auto bg-transparent focus:ring-0 px-0 w-auto inline-flex gap-2">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

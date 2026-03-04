@@ -25,6 +25,8 @@ import {
   PropsWithChildren,
   ReactElement,
   ReactNode,
+  useCallback,
+  useRef,
   useState,
 } from 'react';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
@@ -90,20 +92,45 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
   // Bridge between Radix onValueChange and existing onChange API.
   // MUI Tabs used onChange(event, value) while Radix Tabs uses onValueChange(value).
   // We create a synthetic event and attempt to preserve numeric value types.
-  const handleValueChange = (newValue: string) => {
-    if (onChange) {
-      const syntheticEvent = {} as ChangeEvent<{}>;
-      // Preserve numeric type when original values were numeric
-      const numericValue = Number(newValue);
-      const resolvedValue =
-        !isNaN(numericValue) && String(numericValue) === newValue
-          ? numericValue
-          : newValue;
-      onChange(syntheticEvent, resolvedValue);
-    } else {
-      selectIndex(newValue);
-    }
-  };
+  const handleValueChange = useCallback(
+    (newValue: string) => {
+      if (onChange) {
+        const syntheticEvent = {} as ChangeEvent<{}>;
+        // Preserve numeric type when original values were numeric
+        const numericValue = Number(newValue);
+        const resolvedValue =
+          !isNaN(numericValue) && String(numericValue) === newValue
+            ? numericValue
+            : newValue;
+        onChange(syntheticEvent, resolvedValue);
+      } else {
+        selectIndex(newValue);
+      }
+    },
+    [onChange],
+  );
+
+  // Deduplication: Radix TabsTrigger fires onMouseDown and onFocus internally,
+  // both of which invoke context.onValueChange. Combined with our onClick
+  // handler (needed for fireEvent.click compatibility in tests), a single
+  // user-click can trigger handleValueChange 2-3 times. We use a ref guard
+  // that suppresses duplicate calls for the same value within the same
+  // browser task (cleared via setTimeout(0) after the current event cycle).
+  const dedupeValueRef = useRef<string | null>(null);
+  const dedupeClearRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleValueChangeOnce = useCallback(
+    (newValue: string) => {
+      if (dedupeValueRef.current === newValue) return;
+      dedupeValueRef.current = newValue;
+      clearTimeout(dedupeClearRef.current);
+      dedupeClearRef.current = setTimeout(() => {
+        dedupeValueRef.current = null;
+      }, 0);
+      handleValueChange(newValue);
+    },
+    [handleValueChange],
+  );
 
   // Extract selected tab content (preserving existing manual selection behavior —
   // only the selected tab's children are rendered, not hidden/shown via CSS)
@@ -134,7 +161,7 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
     <Card>
       <ErrorBoundary {...errProps}>
         {title && <BoldHeader title={title} />}
-        <ShadcnTabs value={currentValue}>
+        <ShadcnTabs value={currentValue} onValueChange={handleValueChangeOnce}>
           <TabsList
             className={cn(
               'h-auto min-h-[24px] w-full justify-start',
@@ -153,7 +180,7 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
                     key={tabValue}
                     value={tabValue}
                     disabled={child.props.disabled}
-                    onClick={() => handleValueChange(tabValue)}
+                    onClick={() => handleValueChangeOnce(tabValue)}
                     className={cn(
                       'min-w-[48px] min-h-[24px] mr-4 py-1 px-0',
                       'text-sm normal-case',

@@ -51,7 +51,15 @@ const ActionItem = ({
         // Prevent menu from closing on click to match original behavior
         event.preventDefault();
         if (onClick) {
-          onClick(event as unknown as MouseEvent<HTMLElement>);
+          /* Radix onSelect provides a native Event; the legacy prop expects
+             React.MouseEvent<HTMLElement>. Create a minimal adapter that
+             satisfies the caller rather than an unsafe double-cast. */
+          const syntheticEvent = {
+            ...event,
+            currentTarget: event.currentTarget as HTMLElement,
+            target: event.target as HTMLElement,
+          } as unknown as MouseEvent<HTMLElement>;
+          onClick(syntheticEvent);
         }
       }}
       className={cn(
@@ -97,7 +105,7 @@ export function HeaderActionMenu(props: HeaderActionMenuProps) {
           size="icon"
           data-testid="header-action-menu"
           className={cn(
-            'text-white h-14 w-14 -mr-1 p-0',
+            'text-inherit h-14 w-14 -mr-1 p-0',
             'hover:bg-white/10 focus-visible:ring-white/50',
           )}
         >

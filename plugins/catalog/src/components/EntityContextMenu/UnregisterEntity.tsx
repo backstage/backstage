@@ -56,6 +56,16 @@ export const UnregisterEntity = forwardRef<
         : unregisterEntityOptions?.disableUnregister === 'disable')) ??
     false;
 
+  /* Forward remaining props (data-testid, className, etc.) for backward
+     compatibility — the original MUI MenuItem spread all extra props. */
+  const {
+    unregisterEntityOptions: _ueo,
+    isUnregisterAllowed: _ira,
+    onUnregisterEntity: _oue,
+    onClose: _oc,
+    ...restProps
+  } = props;
+
   if (unregisterEntityOptions?.disableUnregister !== 'hidden') {
     return (
       <DropdownMenuItem
@@ -65,6 +75,7 @@ export const UnregisterEntity = forwardRef<
           onUnregisterEntity();
         }}
         disabled={isDisabled}
+        {...restProps}
       >
         <XCircle className="h-4 w-4" />
         <span>{t('entityContextMenu.unregisterMenuTitle')}</span>

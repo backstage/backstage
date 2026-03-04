@@ -24,6 +24,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
 import { ShadcnButton as Button, cn } from '@backstage/core-components';
+import { Check } from 'lucide-react';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
 import { customizeValidator } from '@rjsf/validator-ajv8';
@@ -224,7 +225,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           aria-label="Validating"
           className="h-1 w-full overflow-hidden rounded-full bg-primary/20"
         >
-          <div className="h-full w-1/3 animate-[indeterminate_1.5s_ease-in-out_infinite] rounded-full bg-primary" />
+          <div className="h-full w-1/3 animate-[backstage-indeterminate_1.5s_ease-in-out_infinite] rounded-full bg-primary" />
         </div>
       )}
       <nav aria-label="Template steps" className="overflow-x-auto py-6">
@@ -258,7 +259,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                   }}
                   disabled={!isClickable}
                 >
-                  {isCompleted ? '✓' : index + 1}
+                  {isCompleted ? <Check className="h-4 w-4" /> : index + 1}
                 </button>
                 {/* Step label */}
                 <span

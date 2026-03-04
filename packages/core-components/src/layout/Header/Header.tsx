@@ -15,7 +15,12 @@
  */
 
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { CSSProperties, PropsWithChildren, ReactNode, type Ref } from 'react';
+import {
+  CSSProperties,
+  type MutableRefObject,
+  PropsWithChildren,
+  ReactNode,
+} from 'react';
 import { Helmet } from 'react-helmet';
 import { cn } from '../../lib/utils';
 import {
@@ -54,6 +59,12 @@ export type HeaderClassKey =
  * Shadow depth (`shadow-md`) approximates MUI `theme.shadows[4]`.
  * Padding `p-6` = 1.5rem ≈ MUI `theme.spacing(3)` (24 px).
  * Font size `text-2xl` = 1.5rem matches MUI `theme.typography.h3.fontSize`.
+ *
+ * **Note on CSS variable fallbacks:** The `#ffffff` hex fallback in
+ * `var(--page-font-color, #ffffff)` is intentional — it serves as a last-resort
+ * default when the Page component does not set `--page-font-color`. This is
+ * safe because the Header is always rendered on a dark gradient background
+ * where white text is the correct default.
  */
 const headerClasses = {
   header: cn(
@@ -139,7 +150,7 @@ const TitleFragment = ({ pageTitle, classes, tooltip }: TitleFragmentProps) => {
 
   const FinalTitle = (
     <h1
-      ref={contentRef as unknown as Ref<HTMLHeadingElement>}
+      ref={contentRef as MutableRefObject<HTMLHeadingElement | null>}
       tabIndex={-1}
       className={classes.title}
     >

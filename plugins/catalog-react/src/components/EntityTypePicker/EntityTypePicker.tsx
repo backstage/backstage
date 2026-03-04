@@ -74,6 +74,9 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
 
   return hidden ? null : (
     <div className="py-2">
+      <label className="text-sm font-medium text-muted-foreground mb-1 block">
+        {t('entityTypePicker.title')}
+      </label>
       <ShadcnSelect
         value={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
         onValueChange={value =>

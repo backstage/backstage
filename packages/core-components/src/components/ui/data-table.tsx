@@ -53,6 +53,12 @@ import {
 import { Button } from './button';
 import { Input } from './input';
 import { Skeleton } from './skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+} from './dropdown-menu';
 
 // ---------------------------------------------------------------------------
 // Re-export key @tanstack/react-table types for consumer convenience.
@@ -210,9 +216,6 @@ export function DataTable<TData, TValue = unknown>({
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState('');
 
-  // Track open/close for the column-visibility dropdown
-  const [columnMenuOpen, setColumnMenuOpen] = useState(false);
-
   // Memoize skeleton rows to avoid re-creating the array on every render
   const skeletonRows = useMemo(
     () => Array.from({ length: pageSize > 0 ? Math.min(pageSize, 10) : 5 }),
@@ -350,60 +353,31 @@ export function DataTable<TData, TValue = unknown>({
           {!enableSearch && <div className="flex-1" />}
 
           {enableColumnVisibility && (
-            <div className="relative">
-              <Button
-                variant="outline"
-                size="sm"
-                className="ml-auto gap-1"
-                onClick={() => setColumnMenuOpen(prev => !prev)}
-                aria-expanded={columnMenuOpen}
-                aria-haspopup="true"
-              >
-                <Settings2 className="h-4 w-4" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Columns
-                </span>
-              </Button>
-
-              {columnMenuOpen && (
-                <div
-                  className={cn(
-                    'absolute right-0 top-full z-50 mt-1 min-w-[10rem]',
-                    'rounded-md border border-border bg-popover p-2 shadow-md',
-                  )}
-                  role="menu"
-                >
-                  {table
-                    .getAllColumns()
-                    .filter(col => col.getCanHide())
-                    .map(col => (
-                      <button
-                        key={col.id}
-                        type="button"
-                        className={cn(
-                          'flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm',
-                          'cursor-pointer hover:bg-accent text-left',
-                        )}
-                        role="menuitemcheckbox"
-                        aria-checked={col.getIsVisible()}
-                        onClick={() =>
-                          col.toggleVisibility(!col.getIsVisible())
-                        }
-                      >
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-input pointer-events-none"
-                          checked={col.getIsVisible()}
-                          readOnly
-                          tabIndex={-1}
-                          aria-hidden="true"
-                        />
-                        <span className="capitalize">{col.id}</span>
-                      </button>
-                    ))}
-                </div>
-              )}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="ml-auto gap-1">
+                  <Settings2 className="h-4 w-4" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Columns
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[10rem]">
+                {table
+                  .getAllColumns()
+                  .filter(col => col.getCanHide())
+                  .map(col => (
+                    <DropdownMenuCheckboxItem
+                      key={col.id}
+                      checked={col.getIsVisible()}
+                      onCheckedChange={value => col.toggleVisibility(!!value)}
+                      className="capitalize"
+                    >
+                      {col.id}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       )}
@@ -554,6 +528,12 @@ function SortIndicator({ direction }: { direction: false | 'asc' | 'desc' }) {
  *
  * @typeParam TData - The row data type
  * @typeParam TValue - The column value type
+ *
+ * @remarks
+ * This component already renders sort indicator icons (ArrowUp / ArrowDown /
+ * ArrowUpDown) based on the column's current sort state. Consumers should
+ * **not** add their own inline sort icons in the column definition when using
+ * this header, as doing so would produce duplicate sort indicators.
  *
  * @example
  * ```tsx

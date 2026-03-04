@@ -23,7 +23,7 @@ import {
 } from '../../components/ui/card';
 import { Separator } from '../../components/ui/separator';
 import { cn } from '../../lib/utils';
-import React, { ReactNode } from 'react';
+import { createElement, type ReactNode, useMemo } from 'react';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 
@@ -138,11 +138,8 @@ export function InfoCard(props: Props): JSX.Element {
     actionsTopRight,
     className,
     noPadding,
-    // Kept in the destructure for public API compatibility; no longer used
-    // directly since shadcn CardTitle/CardDescription do not accept
-    // MUI-style typography prop objects.
-    titleTypographyProps: _titleTypographyProps,
-    subheaderTypographyProps: _subheaderTypographyProps,
+    titleTypographyProps,
+    subheaderTypographyProps,
   } = props;
 
   /*
@@ -173,8 +170,9 @@ export function InfoCard(props: Props): JSX.Element {
   /**
    * Renders the subtitle region containing the subheader text and/or icon.
    * Returns null when neither is provided so the container div is omitted.
+   * Memoized to avoid duplicate calls per render cycle.
    */
-  const cardSubTitle = () => {
+  const subTitleContent = useMemo(() => {
     if (!subheader && !icon) {
       return null;
     }
@@ -185,7 +183,35 @@ export function InfoCard(props: Props): JSX.Element {
         {icon}
       </div>
     );
-  };
+  }, [subheader, icon]);
+
+  /**
+   * Extract style overrides from typography props for backward compatibility.
+   * shadcn CardTitle / CardDescription do not accept MUI-style typography prop
+   * objects directly, so we map `style`, `className`, and common props into
+   * the rendered elements as inline styles / className strings.
+   */
+  const titleStyleProps = useMemo(() => {
+    if (!titleTypographyProps) return {} as Record<string, any>;
+    const {
+      style,
+      className: cls,
+      component,
+      ...rest
+    } = titleTypographyProps as Record<string, any>;
+    return { style, className: cls, component, extra: rest };
+  }, [titleTypographyProps]);
+
+  const subheaderStyleProps = useMemo(() => {
+    if (!subheaderTypographyProps) return {} as Record<string, any>;
+    const {
+      style,
+      className: cls,
+      component,
+      ...rest
+    } = subheaderTypographyProps as Record<string, any>;
+    return { style, className: cls, component, extra: rest };
+  }, [subheaderTypographyProps]);
 
   const errProps: ErrorBoundaryProps =
     errorBoundaryProps || (slackChannel ? { slackChannel } : {});
@@ -201,17 +227,52 @@ export function InfoCard(props: Props): JSX.Element {
           >
             <div className="flex items-start justify-between">
               <div>
-                <CardTitle className="font-bold">{title}</CardTitle>
-                {cardSubTitle() && <div className="pt-2">{cardSubTitle()}</div>}
+                {titleStyleProps.component ? (
+                  createElement(
+                    titleStyleProps.component,
+                    {
+                      className: cn(
+                        'font-semibold leading-none tracking-tight font-bold',
+                        titleStyleProps.className,
+                      ),
+                      style: titleStyleProps.style,
+                      'data-slot': 'card-title',
+                    },
+                    title,
+                  )
+                ) : (
+                  <CardTitle
+                    className={cn('font-bold', titleStyleProps.className)}
+                    style={titleStyleProps.style}
+                  >
+                    {title}
+                  </CardTitle>
+                )}
+                {subTitleContent &&
+                  (subheaderStyleProps.component ? (
+                    createElement(
+                      subheaderStyleProps.component,
+                      {
+                        className: cn('pt-2', subheaderStyleProps.className),
+                        style: subheaderStyleProps.style,
+                      },
+                      subTitleContent,
+                    )
+                  ) : (
+                    <div
+                      className={cn('pt-2', subheaderStyleProps.className)}
+                      style={subheaderStyleProps.style}
+                    >
+                      {subTitleContent}
+                    </div>
+                  ))}
               </div>
               {action && <div className="ml-auto">{action}</div>}
             </div>
           </CardHeader>
         )}
         {actionsTopRight && (
-          <div className="inline-block float-right pt-16 pr-16">
-            {actionsTopRight}
-          </div>
+          <div className="flex justify-end pt-4 pr-4">{actionsTopRight}</div>
         )}
         {divider && <Separator />}
         <CardContent

@@ -42,6 +42,7 @@ import {
 import {
   PlusSquare,
   ArrowUp,
+  ArrowDown,
   Check as CheckIcon,
   ChevronLeft,
   ChevronRight,
@@ -81,6 +82,7 @@ import {
 } from '../ui/table';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { Checkbox } from '../ui/checkbox';
 import {
   ShadcnTooltip,
   TooltipContent,
@@ -799,6 +801,62 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const enablePaging = options?.paging !== false;
   const enableSorting = options?.sorting !== false;
   const enableSearch = options?.search !== false;
+  const enableSelection = options?.selection === true;
+
+  /* -- Row selection state ------------------------------------------------ */
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
+  /* -- Warn about unimplemented options ----------------------------------- */
+  useEffect(() => {
+    if (options?.exportButton) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'Table: options.exportButton is not yet implemented in the @tanstack/react-table migration. CSV export is not available.',
+      );
+    }
+    if (options?.columnsButton) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'Table: options.columnsButton is not yet implemented in the @tanstack/react-table migration. Column visibility toggle is not available.',
+      );
+    }
+    // Only run on mount or when these options change
+  }, [options?.exportButton, options?.columnsButton]);
+
+  /* -- Selection checkbox column ------------------------------------------ */
+  const selectionColumn = useMemo<ColumnDef<T, unknown>[]>(() => {
+    if (!enableSelection) return [];
+    return [
+      {
+        id: '__selection__',
+        header: ({ table: tbl }) => (
+          <Checkbox
+            checked={
+              tbl.getIsAllPageRowsSelected() ||
+              (tbl.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={value => tbl.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={value => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
+    ];
+  }, [enableSelection]);
+
+  /* -- Merge selection column with data columns --------------------------- */
+  const allTanstackColumns = useMemo(
+    () => [...selectionColumn, ...tanstackColumns],
+    [selectionColumn, tanstackColumns],
+  );
 
   /* -- External (server-side) pagination mode ----------------------------- */
   const isExternalPagination = externalPage !== undefined;
@@ -820,12 +878,15 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
   const table = useReactTable<T>({
     data: filteredData,
-    columns: tanstackColumns,
+    columns: allTanstackColumns,
     state: {
       sorting,
       globalFilter: search,
+      ...(enableSelection ? { rowSelection } : {}),
       ...(isExternalPagination ? { pagination } : {}),
     },
+    enableRowSelection: enableSelection,
+    onRowSelectionChange: enableSelection ? setRowSelection : undefined,
     onSortingChange: setSorting,
     onGlobalFilterChange: setSearch,
     getCoreRowModel: getCoreRowModel(),
@@ -855,7 +916,9 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const isLoading = loading || asyncLoading;
   const hasNoRows = filteredData.length === 0;
   const columnCount =
-    columns.filter(c => !c.hidden).length + (actions?.length ? 1 : 0);
+    columns.filter(c => !c.hidden).length +
+    (enableSelection ? 1 : 0) +
+    (actions?.length ? 1 : 0);
   const isDense = options?.padding === 'dense';
   const cellPadding = isDense ? 'px-2 py-1' : 'px-2.5 py-2';
 
@@ -893,15 +956,33 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
           <TableHeader>
             <TableRow>
               {table.getHeaderGroups()[0]?.headers.map((header, colIdx) => {
-                const colStyle = columnStyles[colIdx]
-                  ? columnStyles[colIdx].headerStyle
-                  : {};
-                const col = columns[colIdx];
+                /* When row-selection is enabled the first column is the
+                   synthetic __selection__ column — offset style lookup. */
+                const dataColIdx = enableSelection ? colIdx - 1 : colIdx;
+                const colStyle =
+                  dataColIdx >= 0 && columnStyles[dataColIdx]
+                    ? columnStyles[dataColIdx].headerStyle
+                    : {};
+                const col = dataColIdx >= 0 ? columns[dataColIdx] : undefined;
                 const widthStyle = col?.width ? { width: col.width } : {};
+
+                /* Compute aria-sort for screen-reader accessibility. */
+                let ariaSort: 'ascending' | 'descending' | 'none' | undefined;
+                if (header.column.getCanSort()) {
+                  const sortDirection = header.column.getIsSorted();
+                  if (sortDirection === 'asc') {
+                    ariaSort = 'ascending';
+                  } else if (sortDirection === 'desc') {
+                    ariaSort = 'descending';
+                  } else {
+                    ariaSort = 'none';
+                  }
+                }
 
                 return (
                   <TableHead
                     key={header.id}
+                    aria-sort={ariaSort}
                     className={cn(
                       'border-y border-border px-2.5 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground',
                       enableSorting && header.column.getCanSort()
@@ -924,7 +1005,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                         <ArrowUp className="h-3.5 w-3.5" />
                       )}
                       {header.column.getIsSorted() === 'desc' && (
-                        <ArrowUp className="h-3.5 w-3.5 rotate-180" />
+                        <ArrowDown className="h-3.5 w-3.5" />
                       )}
                     </span>
                   </TableHead>
@@ -990,10 +1071,14 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                     }
                   >
                     {row.getVisibleCells().map((cell, colIdx) => {
-                      const col = columns[colIdx];
-                      const { cellStyleFn } = columnStyles[colIdx] ?? {
-                        cellStyleFn: () => ({}),
-                      };
+                      /* Offset for the synthetic selection column */
+                      const dataColIdx = enableSelection ? colIdx - 1 : colIdx;
+                      const col =
+                        dataColIdx >= 0 ? columns[dataColIdx] : undefined;
+                      const { cellStyleFn } =
+                        dataColIdx >= 0 && columnStyles[dataColIdx]
+                          ? columnStyles[dataColIdx]
+                          : { cellStyleFn: () => ({}) };
                       const value = cell.getValue();
                       const computedStyle = cellStyleFn(value, row.original);
                       const widthStyle = col?.width ? { width: col.width } : {};
