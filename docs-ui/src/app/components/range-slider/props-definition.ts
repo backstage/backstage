@@ -37,24 +37,24 @@ export const rangeSliderPropDefs: Record<string, PropDef> = {
   },
   value: {
     type: 'enum',
-    values: ['number[]'],
+    values: ['[number, number]'],
     description:
       'Controlled value as an array [min, max]. Use with onChange for controlled behavior.',
   },
   defaultValue: {
     type: 'enum',
-    values: ['number[]'],
+    values: ['[number, number]'],
     description: 'Initial value as an array [min, max] for uncontrolled usage.',
     default: '[0, 100]',
   },
   onChange: {
     type: 'enum',
-    values: ['(value: number[]) => void'],
+    values: ['(value: [number, number]) => void'],
     description: 'Called when the slider range changes.',
   },
   onChangeEnd: {
     type: 'enum',
-    values: ['(value: number[]) => void'],
+    values: ['(value: [number, number]) => void'],
     description:
       'Called when the user stops dragging, useful for triggering actions only on final values.',
   },
