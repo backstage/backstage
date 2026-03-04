@@ -14,29 +14,11 @@
  * limitations under the License.
  */
 
-import { UserIcon } from '@backstage/core-components';
+import { UserIcon, ShadcnButton as Button } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
-import Button from '@material-ui/core/Button';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
-
-const useStyles = makeStyles<Theme>(theme => ({
-  footer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    flex: 1,
-    alignItems: 'center',
-  },
-  ownedBy: {
-    display: 'flex',
-    alignItems: 'center',
-    flex: 1,
-    color: theme.palette.link,
-  },
-  actionContainer: { padding: '16px', flex: 1, alignItems: 'flex-end' },
-}));
 
 /**
  * The Props for the {@link TemplateCardActions} component
@@ -53,12 +35,14 @@ export const TemplateCardActions = ({
   ownedByRelations,
 }: TemplateCardActionsProps) => {
   const { t } = useTranslationRef(scaffolderReactTranslationRef);
-  const styles = useStyles();
 
   return (
-    <div className={styles.footer} data-testid="template-card-actions--footer">
+    <div
+      className="flex flex-1 items-center justify-between"
+      data-testid="template-card-actions--footer"
+    >
       <div
-        className={styles.ownedBy}
+        className="flex flex-1 items-center text-[var(--link-color,hsl(var(--primary)))]"
         data-testid="template-card-actions--ownedby"
       >
         {ownedByRelations.length > 0 && (
@@ -75,9 +59,8 @@ export const TemplateCardActions = ({
       </div>
       {canCreateTask ? (
         <Button
-          size="small"
-          variant="outlined"
-          color="primary"
+          variant="outline"
+          size="sm"
           data-testid="template-card-actions--create"
           onClick={handleChoose}
         >
