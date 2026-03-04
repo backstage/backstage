@@ -623,6 +623,9 @@ export const CardDefinition: {
     readonly onPress: {};
     readonly href: {};
     readonly label: {};
+    readonly target: {};
+    readonly rel: {};
+    readonly download: {};
   };
 };
 
@@ -690,7 +693,8 @@ export interface CardHeaderProps
 export type CardLinkVariant = {
   href: string;
   onPress?: never;
-  label?: string;
+  label: string;
+  target?: string;
 };
 
 // @public
@@ -700,6 +704,9 @@ export type CardOwnProps = {
   onPress?: () => void;
   href?: string;
   label?: string;
+  target?: string;
+  rel?: string;
+  download?: boolean | string;
 };
 
 // @public

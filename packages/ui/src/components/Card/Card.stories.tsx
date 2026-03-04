@@ -27,49 +27,64 @@ const meta = preview.meta({
 });
 
 export const Default = meta.story({
+  render: args => <Card {...args}>Hello world</Card>,
+});
+
+export const DefaultWithHeader = meta.story({
   render: args => (
     <Card {...args}>
       <CardHeader>Header</CardHeader>
       <CardBody>Body</CardBody>
-      <CardFooter>Footer</CardFooter>
     </Card>
   ),
 });
 
-export const CustomSize = Default.extend({
-  args: {
-    style: {
-      width: '300px',
-      height: '200px',
-    },
-  },
+const content = (
+  <>
+    <Text>
+      This is the first paragraph of a long body text that demonstrates how the
+      Card component handles extensive content. The card should adjust
+      accordingly to display all the text properly while maintaining its
+      structure.
+    </Text>
+    <Text>
+      Here's a second paragraph that adds more content to our card body. Having
+      multiple paragraphs helps to visualize how spacing works within the card
+      component.
+    </Text>
+    <Text>
+      This third paragraph continues to add more text to ensure we have a proper
+      demonstration of a card with significant content. This makes it easier to
+      test scrolling behavior and overall layout when content exceeds the
+      initial view.
+    </Text>
+  </>
+);
+
+export const LongBody = meta.story({
+  render: () => (
+    <Card style={{ width: '300px', height: '200px' }}>{content}</Card>
+  ),
 });
 
-export const WithLongBody = meta.story({
+export const LongBodyHeader = meta.story({
   render: () => (
     <Card style={{ width: '300px', height: '200px' }}>
       <CardHeader>
         <Text>Header</Text>
       </CardHeader>
-      <CardBody>
-        <Text>
-          This is the first paragraph of a long body text that demonstrates how
-          the Card component handles extensive content. The card should adjust
-          accordingly to display all the text properly while maintaining its
-          structure.
-        </Text>
-        <Text>
-          Here's a second paragraph that adds more content to our card body.
-          Having multiple paragraphs helps to visualize how spacing works within
-          the card component.
-        </Text>
-        <Text>
-          This third paragraph continues to add more text to ensure we have a
-          proper demonstration of a card with significant content. This makes it
-          easier to test scrolling behavior and overall layout when content
-          exceeds the initial view.
-        </Text>
-      </CardBody>
+      <CardBody>{content}</CardBody>
+    </Card>
+  ),
+});
+
+export const LongBodyHeaderFooter = meta.story({
+  render: () => (
+    <Card style={{ width: '300px', height: '200px' }}>
+      <CardHeader>
+        <Text>Header</Text>
+      </CardHeader>
+      <CardBody>{content}</CardBody>
       <CardFooter>
         <Text>Footer</Text>
       </CardFooter>
@@ -77,7 +92,7 @@ export const WithLongBody = meta.story({
   ),
 });
 
-const ListRow = ({ children }: { children: React.ReactNode }) => {
+const ListRowComponent = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
       style={{
@@ -89,7 +104,6 @@ const ListRow = ({ children }: { children: React.ReactNode }) => {
         paddingInline: 'var(--bui-space-3)',
         borderRadius: 'var(--bui-radius-2)',
         fontSize: 'var(--bui-font-size-3)',
-        marginBottom: 'var(--bui-space-1)',
       }}
     >
       {children}
@@ -97,29 +111,76 @@ const ListRow = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const WithListRow = meta.story({
+const listRowContent = (
+  <Flex direction="column" gap="1">
+    <ListRowComponent>Hello world</ListRowComponent>
+    <ListRowComponent>Hello world</ListRowComponent>
+    <ListRowComponent>Hello world</ListRowComponent>
+    <ListRowComponent>Hello world</ListRowComponent>
+    <ListRowComponent>Hello world</ListRowComponent>
+    <ListRowComponent>Hello world</ListRowComponent>
+    <ListRowComponent>Hello world</ListRowComponent>
+    <ListRowComponent>Hello world</ListRowComponent>
+    <ListRowComponent>Hello world</ListRowComponent>
+    <ListRowComponent>Hello world</ListRowComponent>
+  </Flex>
+);
+
+export const ListRow = meta.story({
+  render: () => (
+    <Card style={{ width: '300px', height: '200px' }}>
+      <CardBody>{listRowContent}</CardBody>
+    </Card>
+  ),
+});
+
+export const ListRowHeader = meta.story({
+  render: () => (
+    <Card style={{ width: '300px', height: '200px' }}>
+      <CardHeader>
+        <Text>Header</Text>
+      </CardHeader>
+      <CardBody>{listRowContent}</CardBody>
+    </Card>
+  ),
+});
+
+export const ListRowFooter = meta.story({
+  render: () => (
+    <Card style={{ width: '300px', height: '200px' }}>
+      <CardBody>{listRowContent}</CardBody>
+      <CardFooter>
+        <Text>Footer</Text>
+      </CardFooter>
+    </Card>
+  ),
+});
+
+export const ListRowHeaderFooter = meta.story({
   render: () => (
     <Card style={{ width: '300px', height: '200px' }}>
       <CardHeader>
         <Text>Header</Text>
       </CardHeader>
       <CardBody>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
-        <ListRow>Hello world</ListRow>
+        <Flex direction="column" gap="1">
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+          <ListRowComponent>Hello world</ListRowComponent>
+        </Flex>
       </CardBody>
       <CardFooter>
         <Text>Footer</Text>
@@ -231,39 +292,6 @@ export const BgOnProviders = meta.story({
   ),
 });
 
-export const InteractiveWithScrollableBody = meta.story({
-  render: () => (
-    <Card
-      style={{ width: '300px', height: '220px' }}
-      onPress={() => alert('Card pressed')}
-      label="View details"
-    >
-      <CardHeader>
-        <Text weight="bold">Scrollable Interactive Card</Text>
-      </CardHeader>
-      <CardBody>
-        <Text>
-          This is the first paragraph of a long body text that demonstrates how
-          the Card component handles extensive content. The card should adjust
-          accordingly to display all the text properly while maintaining its
-          structure.
-        </Text>
-        <Text>
-          Here's a second paragraph that adds more content to our card body.
-          Having multiple paragraphs helps to visualize how spacing works within
-          the card component.
-        </Text>
-        <Text>
-          This third paragraph continues to add more text to ensure we have a
-          proper demonstration of a card with significant content. This makes it
-          easier to test scrolling behavior and overall layout when content
-          exceeds the initial view.
-        </Text>
-      </CardBody>
-    </Card>
-  ),
-});
-
 export const Interactive = meta.story({
   render: () => (
     <Card
@@ -294,22 +322,19 @@ export const InteractiveAsLink = meta.story({
     <Card
       style={{ width: '300px' }}
       href="https://backstage.io"
+      target="_blank"
+      rel="noopener noreferrer"
+      title="Open Backstage documentation"
       label="Open Backstage documentation"
     >
-      <CardHeader>
-        <Text weight="bold">Link Card</Text>
-      </CardHeader>
+      <CardHeader>Link Card</CardHeader>
       <CardBody>
         <Text>
           This card navigates to a URL when clicked. The entire card surface
           acts as a link.
         </Text>
       </CardBody>
-      <CardFooter>
-        <Text variant="body-small" color="secondary">
-          Opens backstage.io
-        </Text>
-      </CardFooter>
+      <CardFooter>Opens backstage.io</CardFooter>
     </Card>
   ),
 });

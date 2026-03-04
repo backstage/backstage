@@ -39,6 +39,9 @@ export const CardDefinition = defineComponent<CardOwnProps>()({
     onPress: {},
     href: {},
     label: {},
+    target: {},
+    rel: {},
+    download: {},
   },
 });
 
