@@ -15,9 +15,7 @@
  */
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import { Card } from '@backstage/core-components';
 import { Component, ReactNode, useMemo, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import yaml from 'yaml';
@@ -36,12 +34,6 @@ import { useDryRun } from './DryRunContext';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 
 import { scaffolderTranslationRef } from '../../../translation';
-
-const useStyles = makeStyles({
-  containerWrapper: {
-    width: '100%',
-  },
-});
 
 interface ErrorBoundaryProps {
   invalidator: unknown;
@@ -100,7 +92,6 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
     fieldExtensions = [],
     layouts = [],
   } = props;
-  const classes = useStyles();
   const apiHolder = useApiHolder();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -178,9 +169,9 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
   );
 
   return (
-    <div className={classes.containerWrapper}>
+    <div className="w-full">
       {steps ? (
-        <Paper variant="outlined">
+        <Card className="border">
           <ErrorBoundary invalidator={steps} setErrorText={setErrorText}>
             <Stepper
               manifest={{ steps, title: 'Template Editor' }}
@@ -193,11 +184,11 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
               formProps={props.formProps}
             />
           </ErrorBoundary>
-        </Paper>
+        </Card>
       ) : (
-        <Typography variant="body1" color="textSecondary">
+        <p className="text-base text-muted-foreground">
           {t('templateEditorForm.stepper.emptyText')}
-        </Typography>
+        </p>
       )}
     </div>
   );
