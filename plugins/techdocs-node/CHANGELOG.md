@@ -1,5 +1,13 @@
 # @backstage/plugin-techdocs-node
 
+## 1.14.3
+
+### Patch Changes
+
+- cfbe895: Removed `INHERIT` from the `ALLOWED_MKDOCS_KEYS` set to address a security concern with MkDocs configuration inheritance.
+- Updated dependencies
+  - @backstage/integration@1.20.1
+
 ## 1.14.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 1.20.1
+
+### Patch Changes
+
+- de6c467: Fixed a security vulnerability where path traversal sequences in SCM URLs could be used to access unintended API endpoints using server-side integration credentials.
+
 ## 1.20.0
 
 ### Minor Changes
