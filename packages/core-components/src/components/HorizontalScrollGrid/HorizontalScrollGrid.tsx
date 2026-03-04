@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import classNames from 'classnames';
+import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   MutableRefObject,
   useState,
@@ -28,28 +24,33 @@ import {
   PropsWithChildren,
 } from 'react';
 
-const generateGradientStops = (themeType: 'dark' | 'light') => {
-  // 97% corresponds to the theme.palette.background.default for the light theme
-  // 16% for the dark theme
-  const luminance = themeType === 'dark' ? '16%' : '97%';
-  // Generated with https://larsenwork.com/easing-gradients/
+/**
+ * Generates CSS gradient stops that fade from the page background to transparent.
+ *
+ * @remarks
+ * Uses CSS `color-mix()` with `var(--background)` custom property so the gradient
+ * automatically adapts to light and dark themes with zero JavaScript runtime for
+ * theme detection. The stop percentages are preserved from the original easing
+ * gradient (generated via https://larsenwork.com/easing-gradients/).
+ */
+const generateGradientStops = () => {
   return `
-    hsl(0, 0%, ${luminance}) 0%,
-    hsla(0, 0%, ${luminance}, 0.987) 8.1%,
-    hsla(0, 0%, ${luminance}, 0.951) 15.5%,
-    hsla(0, 0%, ${luminance}, 0.896) 22.5%,
-    hsla(0, 0%, ${luminance}, 0.825) 29%,
-    hsla(0, 0%, ${luminance}, 0.741) 35.3%,
-    hsla(0, 0%, ${luminance}, 0.648) 41.2%,
-    hsla(0, 0%, ${luminance}, 0.55) 47.1%,
-    hsla(0, 0%, ${luminance}, 0.45) 52.9%,
-    hsla(0, 0%, ${luminance}, 0.352) 58.8%,
-    hsla(0, 0%, ${luminance}, 0.259) 64.7%,
-    hsla(0, 0%, ${luminance}, 0.175) 71%,
-    hsla(0, 0%, ${luminance}, 0.104) 77.5%,
-    hsla(0, 0%, ${luminance}, 0.049) 84.5%,
-    hsla(0, 0%, ${luminance}, 0.013) 91.9%,
-    hsla(0, 0%, ${luminance}, 0) 100%
+    var(--background) 0%,
+    color-mix(in srgb, var(--background) 98.7%, transparent) 8.1%,
+    color-mix(in srgb, var(--background) 95.1%, transparent) 15.5%,
+    color-mix(in srgb, var(--background) 89.6%, transparent) 22.5%,
+    color-mix(in srgb, var(--background) 82.5%, transparent) 29%,
+    color-mix(in srgb, var(--background) 74.1%, transparent) 35.3%,
+    color-mix(in srgb, var(--background) 64.8%, transparent) 41.2%,
+    color-mix(in srgb, var(--background) 55%, transparent) 47.1%,
+    color-mix(in srgb, var(--background) 45%, transparent) 52.9%,
+    color-mix(in srgb, var(--background) 35.2%, transparent) 58.8%,
+    color-mix(in srgb, var(--background) 25.9%, transparent) 64.7%,
+    color-mix(in srgb, var(--background) 17.5%, transparent) 71%,
+    color-mix(in srgb, var(--background) 10.4%, transparent) 77.5%,
+    color-mix(in srgb, var(--background) 4.9%, transparent) 84.5%,
+    color-mix(in srgb, var(--background) 1.3%, transparent) 91.9%,
+    transparent 100%
   `;
 };
 
@@ -73,56 +74,6 @@ export type HorizontalScrollGridClassKey =
   | 'button'
   | 'buttonLeft'
   | 'buttonRight';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      position: 'relative',
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      alignItems: 'center',
-    },
-    container: {
-      overflow: 'auto',
-      scrollbarWidth: 0 as any, // hide in FF
-      '&::-webkit-scrollbar': {
-        display: 'none', // hide in Chrome
-      },
-    },
-    fade: {
-      position: 'absolute',
-      width: fadeSize,
-      height: `calc(100% + ${fadePadding}px)`,
-      transition: 'opacity 300ms',
-      pointerEvents: 'none',
-    },
-    fadeLeft: {
-      left: -fadePadding,
-      background: `linear-gradient(90deg, ${generateGradientStops(
-        theme.palette.type,
-      )})`,
-    },
-    fadeRight: {
-      right: -fadePadding,
-      background: `linear-gradient(270deg, ${generateGradientStops(
-        theme.palette.type,
-      )})`,
-    },
-    fadeHidden: {
-      opacity: 0,
-    },
-    button: {
-      position: 'absolute',
-    },
-    buttonLeft: {
-      left: -theme.spacing(2),
-    },
-    buttonRight: {
-      right: -theme.spacing(2),
-    },
-  }),
-  { name: 'BackstageHorizontalScrollGrid' },
-);
 
 // Returns scroll distance from left and right
 function useScrollDistance(
@@ -218,7 +169,6 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
     children,
     ...otherProps
   } = props;
-  const classes = useStyles(props);
   const ref = useRef<HTMLElement>();
 
   const [scrollLeft, scrollRight] = useScrollDistance(ref);
@@ -232,45 +182,70 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
     setScrollTarget(forwards ? scrollStep : -scrollStep);
   };
 
+  // Fade gradient backgrounds using CSS custom property for theme-aware colors.
+  // var(--background) resolves to the correct color in both light and dark modes.
+  const fadeLeftStyle = {
+    width: fadeSize,
+    height: `calc(100% + ${fadePadding}px)`,
+    background: `linear-gradient(90deg, ${generateGradientStops()})`,
+  };
+
+  const fadeRightStyle = {
+    width: fadeSize,
+    height: `calc(100% + ${fadePadding}px)`,
+    background: `linear-gradient(270deg, ${generateGradientStops()})`,
+  };
+
   return (
-    <Box {...otherProps} className={classes.root}>
-      <Grid
-        container
-        direction="row"
-        wrap="nowrap"
-        className={classes.container}
+    <div
+      {...otherProps}
+      className={cn('relative flex flex-row flex-nowrap items-center')}
+    >
+      <div
+        className={cn(
+          'overflow-auto flex flex-row flex-nowrap',
+          '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        )}
         ref={ref as any}
       >
         {children}
-      </Grid>
-      <Box
-        className={classNames(classes.fade, classes.fadeLeft, {
-          [classes.fadeHidden]: scrollLeft === 0,
-        })}
+      </div>
+      <div
+        className={cn(
+          'absolute pointer-events-none transition-opacity duration-300 left-[-10px]',
+          scrollLeft === 0 && 'opacity-0',
+        )}
+        style={fadeLeftStyle}
       />
-      <Box
-        className={classNames(classes.fade, classes.fadeRight, {
-          [classes.fadeHidden]: scrollRight === 0,
-        })}
+      <div
+        className={cn(
+          'absolute pointer-events-none transition-opacity duration-300 right-[-10px]',
+          scrollRight === 0 && 'opacity-0',
+        )}
+        style={fadeRightStyle}
       />
       {scrollLeft > 0 && (
-        <IconButton
+        <Button
+          variant="ghost"
+          size="icon"
           title="Scroll Left"
           onClick={() => handleScrollClick(false)}
-          className={classNames(classes.button, classes.buttonLeft, {})}
+          className={cn('absolute -left-4')}
         >
-          <ChevronLeftIcon />
-        </IconButton>
+          <ChevronLeft />
+        </Button>
       )}
       {scrollRight > 0 && (
-        <IconButton
+        <Button
+          variant="ghost"
+          size="icon"
           title="Scroll Right"
           onClick={() => handleScrollClick(true)}
-          className={classNames(classes.button, classes.buttonRight, {})}
+          className={cn('absolute -right-4')}
         >
-          <ChevronRightIcon />
-        </IconButton>
+          <ChevronRight />
+        </Button>
       )}
-    </Box>
+    </div>
   );
 }
