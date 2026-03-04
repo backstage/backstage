@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import {
@@ -28,6 +28,14 @@ import { SearchContextProvider } from '../../context';
 
 import { SearchPagination } from './SearchPagination';
 import { configApiRef } from '@backstage/core-plugin-api';
+
+// Mock DOM APIs not available in jsdom that Radix UI primitives require
+beforeAll(() => {
+  window.HTMLElement.prototype.scrollIntoView = jest.fn();
+  window.HTMLElement.prototype.hasPointerCapture = jest.fn();
+  window.HTMLElement.prototype.setPointerCapture = jest.fn();
+  window.HTMLElement.prototype.releasePointerCapture = jest.fn();
+});
 
 describe('SearchPagination', () => {
   const configApiMock = mockApis.config({
@@ -87,14 +95,18 @@ describe('SearchPagination', () => {
       </TestApiProvider>,
     );
 
-    await userEvent.click(screen.getByText('25'));
+    // Radix Select uses pointer events; open via its combobox trigger
+    const selectTrigger = screen.getByRole('combobox');
+    fireEvent.pointerDown(selectTrigger, { pointerType: 'mouse', button: 0 });
 
-    const options = screen.getAllByRole('option');
-    expect(options).toHaveLength(4);
-    expect(options[0]).toHaveTextContent('10');
-    expect(options[1]).toHaveTextContent('25');
-    expect(options[2]).toHaveTextContent('50');
-    expect(options[3]).toHaveTextContent('100');
+    await waitFor(() => {
+      const options = screen.getAllByRole('option');
+      expect(options).toHaveLength(4);
+      expect(options[0]).toHaveTextContent('10');
+      expect(options[1]).toHaveTextContent('25');
+      expect(options[2]).toHaveTextContent('50');
+      expect(options[3]).toHaveTextContent('100');
+    });
   });
 
   it('Accept custom page limit label', async () => {
@@ -165,14 +177,18 @@ describe('SearchPagination', () => {
       </TestApiProvider>,
     );
 
-    await userEvent.click(screen.getByText('25'));
+    // Radix Select uses pointer events; open via its combobox trigger
+    const selectTrigger = screen.getByRole('combobox');
+    fireEvent.pointerDown(selectTrigger, { pointerType: 'mouse', button: 0 });
 
-    const options = screen.getAllByRole('option');
-    expect(options).toHaveLength(4);
-    expect(options[0]).toHaveTextContent('5');
-    expect(options[1]).toHaveTextContent('10');
-    expect(options[2]).toHaveTextContent('20');
-    expect(options[3]).toHaveTextContent('25');
+    await waitFor(() => {
+      const options = screen.getAllByRole('option');
+      expect(options).toHaveLength(4);
+      expect(options[0]).toHaveTextContent('5');
+      expect(options[1]).toHaveTextContent('10');
+      expect(options[2]).toHaveTextContent('20');
+      expect(options[3]).toHaveTextContent('25');
+    });
   });
 
   it('Set page limit in the context', async () => {
@@ -195,18 +211,26 @@ describe('SearchPagination', () => {
       </TestApiProvider>,
     );
 
-    await userEvent.click(screen.getByText('25'));
+    // Radix Select uses pointer events; open via its combobox trigger
+    const selectTrigger = screen.getByRole('combobox');
+    fireEvent.pointerDown(selectTrigger, { pointerType: 'mouse', button: 0 });
 
-    await userEvent.click(screen.getByText('10'));
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: '10' })).toBeInTheDocument();
+    });
 
-    expect(searchApiMock.query).toHaveBeenCalledWith(
-      expect.objectContaining({
-        pageLimit: 10,
-      }),
-      {
-        signal: expect.any(AbortSignal),
-      },
-    );
+    fireEvent.click(screen.getByRole('option', { name: '10' }));
+
+    await waitFor(() => {
+      expect(searchApiMock.query).toHaveBeenCalledWith(
+        expect.objectContaining({
+          pageLimit: 10,
+        }),
+        {
+          signal: expect.any(AbortSignal),
+        },
+      );
+    });
   });
 
   it('Set page cursor in the context', async () => {
@@ -278,15 +302,24 @@ describe('SearchPagination', () => {
       </TestApiProvider>,
     );
 
-    await userEvent.click(screen.getByText('25')); // first click to open the options
-    await userEvent.click(screen.getByText('10')); // second click to select the option
+    // Radix Select uses pointer events; open via its combobox trigger
+    const selectTrigger = screen.getByRole('combobox');
+    fireEvent.pointerDown(selectTrigger, { pointerType: 'mouse', button: 0 });
 
-    expect(searchApiMock.query).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        pageCursor: undefined,
-        pageLimit: 10,
-      }),
-      { signal: expect.any(AbortSignal) },
-    );
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: '10' })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('option', { name: '10' }));
+
+    await waitFor(() => {
+      expect(searchApiMock.query).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          pageCursor: undefined,
+          pageLimit: 10,
+        }),
+        { signal: expect.any(AbortSignal) },
+      );
+    });
   });
 });
