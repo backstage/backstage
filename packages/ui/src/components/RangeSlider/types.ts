@@ -19,10 +19,10 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
 export interface RangeSliderProps
-  extends Omit<AriaSliderProps<number[]>, 'children'>,
+  extends Omit<AriaSliderProps<[number, number]>, 'children'>,
     Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   /**
-   * Whether to show value labels above the thumbs
+   * Whether to show a value label in the header next to the field label
    * @defaultValue false
    */
   showValueLabel?: boolean;

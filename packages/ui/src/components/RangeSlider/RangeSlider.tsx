@@ -46,14 +46,30 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
+    useEffect(() => {
+      const valueArray = props.value ?? props.defaultValue;
+      if (valueArray && valueArray.length !== 2) {
+        console.error(
+          `RangeSlider requires exactly 2 values [min, max], but received ${valueArray.length} values`,
+        );
+      }
+    }, [props.value, props.defaultValue]);
+
+    const minValue = props.minValue ?? 0;
+    const maxValue = props.maxValue ?? 100;
+    const {
+      defaultValue = [minValue, maxValue] as [number, number],
+      ...propsWithoutDefault
+    } = props;
+
     const { classNames, dataAttributes, style, cleanedProps } = useStyles(
       RangeSliderDefinition,
       {
-        minValue: 0,
-        maxValue: 100,
+        minValue,
+        maxValue,
         step: 1,
-        defaultValue: [0, 100],
-        ...props,
+        defaultValue,
+        ...propsWithoutDefault,
       },
     );
 
@@ -106,30 +122,40 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
         <SliderTrack
           className={clsx(classNames.track, styles[classNames.track])}
         >
-          {({ state }) => (
-            <>
-              <div
-                className={clsx(
-                  classNames.trackFill,
-                  styles[classNames.trackFill],
-                )}
-                style={{
-                  left: `${state.getThumbPercent(0) * 100}%`,
-                  width: `${
-                    (state.getThumbPercent(1) - state.getThumbPercent(0)) * 100
-                  }%`,
-                }}
-              />
-              <SliderThumb
-                index={0}
-                className={clsx(classNames.thumb, styles[classNames.thumb])}
-              />
-              <SliderThumb
-                index={1}
-                className={clsx(classNames.thumb, styles[classNames.thumb])}
-              />
-            </>
-          )}
+          {({ state }) => {
+            const start = state.getThumbPercent(0);
+            const end = state.getThumbPercent(1);
+            const rangePercent = (end - start) * 100;
+            const isVertical = state.orientation === 'vertical';
+            const trackFillStyle = isVertical
+              ? {
+                  bottom: `${start * 100}%`,
+                  height: `${rangePercent}%`,
+                }
+              : {
+                  left: `${start * 100}%`,
+                  width: `${rangePercent}%`,
+                };
+            return (
+              <>
+                <div
+                  className={clsx(
+                    classNames.trackFill,
+                    styles[classNames.trackFill],
+                  )}
+                  style={trackFillStyle}
+                />
+                <SliderThumb
+                  index={0}
+                  className={clsx(classNames.thumb, styles[classNames.thumb])}
+                />
+                <SliderThumb
+                  index={1}
+                  className={clsx(classNames.thumb, styles[classNames.thumb])}
+                />
+              </>
+            );
+          }}
         </SliderTrack>
         <FieldError />
       </AriaSlider>
