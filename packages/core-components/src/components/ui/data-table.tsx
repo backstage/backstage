@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { useState, type ReactNode } from 'react';
+import { useState, useMemo, type KeyboardEvent } from 'react';
 import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
   type VisibilityState,
-  type PaginationState,
-  type RowSelectionState,
-  type Table as ReactTable,
+  type Row,
+  type Column,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -30,95 +29,197 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Settings2,
+  Search,
+} from 'lucide-react';
 
 import { cn } from '../../lib/utils';
 import {
   ShadcnTable,
-  TableBody,
-  TableCell,
-  TableHead,
   TableHeader,
+  TableBody,
   TableRow,
+  TableHead,
+  TableCell,
 } from './table';
 import { Button } from './button';
+import { Input } from './input';
+import { Skeleton } from './skeleton';
+
+// ---------------------------------------------------------------------------
+// Re-export key @tanstack/react-table types for consumer convenience.
+// Consumers can import these directly from this module rather than
+// depending on @tanstack/react-table themselves.
+// ---------------------------------------------------------------------------
+export type {
+  ColumnDef,
+  SortingState,
+  ColumnFiltersState,
+  VisibilityState,
+  Row,
+};
+
+// ---------------------------------------------------------------------------
+// DataTableProps — Public interface for the DataTable component
+// ---------------------------------------------------------------------------
 
 /**
- * Properties for the DataTable component.
+ * Properties for the {@link DataTable} component.
  *
- * @typeParam TData - The row data type
+ * @typeParam TData - The row data type that determines the shape of each row
+ * @typeParam TValue - The value type for column definitions (defaults to `unknown`)
+ *
+ * @remarks
+ * This interface replaces the `MaterialTableProps` / `TableProps` interface
+ * previously used with `@material-table/core`. All features — sorting,
+ * filtering, pagination, row selection, and column visibility — are driven
+ * by `@tanstack/react-table` v8 headless state.
+ *
  * @public
  */
-export interface DataTableProps<TData> {
-  /** TanStack column definitions */
-  columns: ColumnDef<TData, any>[];
-  /** Row data array */
+export interface DataTableProps<TData, TValue = unknown> {
+  /** TanStack column definitions describing headers, accessors, and cell renderers. */
+  columns: ColumnDef<TData, TValue>[];
+
+  /** Array of row data objects to display in the table. */
   data: TData[];
-  /** Initial sorting state */
-  initialSorting?: SortingState;
-  /** Enable row selection */
-  enableRowSelection?: boolean;
-  /** Enable pagination (defaults to true) */
-  enablePagination?: boolean;
-  /** Page size options (defaults to [5, 10, 20, 50]) */
-  pageSizeOptions?: number[];
-  /** Callback when row selection changes */
-  onRowSelectionChange?: (selection: RowSelectionState) => void;
-  /** Title text displayed above the table */
-  title?: string;
-  /** Optional subtitle text */
-  subtitle?: string;
-  /** Content rendered in the toolbar area (e.g., filters, search) */
-  toolbarContent?: ReactNode;
-  /** Message shown when the table has no data */
+
+  /**
+   * When `true`, skeleton placeholder rows replace data rows to indicate
+   * a loading state. Defaults to `false`.
+   */
+  isLoading?: boolean;
+
+  /**
+   * Message displayed when the table contains no rows and is not loading.
+   * Defaults to `"No results."`.
+   */
   emptyStateMessage?: string;
-  /** Additional class names for the root container */
+
+  /**
+   * Placeholder text for the global search input field.
+   * Defaults to `"Search..."`.
+   */
+  searchPlaceholder?: string;
+
+  /** Show a global search input in the toolbar. Defaults to `false`. */
+  enableSearch?: boolean;
+
+  /** Show pagination controls below the table. Defaults to `true`. */
+  enablePagination?: boolean;
+
+  /** Allow columns to be sorted by clicking headers. Defaults to `true`. */
+  enableSorting?: boolean;
+
+  /**
+   * Show a column-visibility toggle button in the toolbar, allowing users
+   * to show/hide individual columns. Defaults to `false`.
+   */
+  enableColumnVisibility?: boolean;
+
+  /** Allow rows to be selected via checkboxes. Defaults to `false`. */
+  enableRowSelection?: boolean;
+
+  /**
+   * Number of rows displayed per page. Applies only when `enablePagination`
+   * is `true`. Defaults to `20`.
+   */
+  pageSize?: number;
+
+  /** Additional CSS class names applied to the root wrapper element. */
   className?: string;
+
+  /**
+   * Callback invoked when a data row is clicked. Receives the
+   * `@tanstack/react-table` `Row` instance for the clicked row.
+   */
+  onRowClick?: (row: Row<TData>) => void;
 }
 
+// ---------------------------------------------------------------------------
+// DataTable — Main component
+// ---------------------------------------------------------------------------
+
 /**
- * Full-featured data table built on @tanstack/react-table with shadcn/ui styling.
- * Replaces @material-table/core throughout Backstage for catalog tables,
- * entity lists, and administrative data grids.
+ * A full-featured, accessible data table built on `@tanstack/react-table` v8
+ * and styled with shadcn/ui Tailwind primitives. Replaces `@material-table/core`
+ * throughout the Backstage developer portal for catalog tables, entity lists,
+ * scaffolder task grids, and TechDocs document tables.
  *
- * Supports sorting, column filtering, pagination, row selection, and
- * column visibility — all rendered with accessible Tailwind-styled markup.
+ * @remarks
+ * Features:
+ * - **Sorting** — click column headers to toggle ascending / descending / none
+ * - **Global search** — free-text filter across all columns via the toolbar input
+ * - **Pagination** — first / prev / next / last page controls with row count
+ * - **Row selection** — opt-in row checkboxes with selected-row count display
+ * - **Column visibility** — opt-in toggle dropdown to show / hide columns
+ * - **Loading state** — skeleton placeholder rows while data is being fetched
+ * - **Empty state** — configurable message when no rows match filters
+ * - **Row click** — optional callback for row navigation
+ *
+ * The component is generic over `TData` and `TValue`, preserving full
+ * type-safety for column definitions and row accessors.
  *
  * @typeParam TData - The row data type
- * @public
+ * @typeParam TValue - The column value type
  *
  * @example
  * ```tsx
+ * import { DataTable, type ColumnDef } from './ui/data-table';
+ *
+ * interface Entity { name: string; kind: string; owner: string }
+ *
  * const columns: ColumnDef<Entity>[] = [
  *   { accessorKey: 'name', header: 'Name' },
  *   { accessorKey: 'kind', header: 'Kind' },
+ *   { accessorKey: 'owner', header: 'Owner' },
  * ];
- * <DataTable columns={columns} data={entities} title="Catalog" />
+ *
+ * <DataTable columns={columns} data={entities} enableSearch enablePagination />
  * ```
+ *
+ * @public
  */
-export function DataTable<TData>({
+export function DataTable<TData, TValue = unknown>({
   columns,
   data,
-  initialSorting = [],
-  enableRowSelection = false,
-  enablePagination = true,
-  pageSizeOptions = [5, 10, 20, 50],
-  onRowSelectionChange,
-  title,
-  subtitle,
-  toolbarContent,
+  isLoading = false,
   emptyStateMessage = 'No results.',
+  searchPlaceholder = 'Search...',
+  enableSearch = false,
+  enablePagination = true,
+  enableSorting = true,
+  enableColumnVisibility = false,
+  enableRowSelection = false,
+  pageSize = 20,
   className,
-}: DataTableProps<TData>) {
-  const [sorting, setSorting] = useState<SortingState>(initialSorting);
+  onRowClick,
+}: DataTableProps<TData, TValue>) {
+  // ----- Internal state managed by @tanstack/react-table -----
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: pageSizeOptions[0] ?? 10,
-  });
+  const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState('');
 
+  // Track open/close for the column-visibility dropdown
+  const [columnMenuOpen, setColumnMenuOpen] = useState(false);
+
+  // Memoize skeleton rows to avoid re-creating the array on every render
+  const skeletonRows = useMemo(
+    () => Array.from({ length: pageSize > 0 ? Math.min(pageSize, 10) : 5 }),
+    [pageSize],
+  );
+
+  // ----- Table instance -----
   const table = useReactTable({
     data,
     columns,
@@ -127,181 +228,378 @@ export function DataTable<TData>({
       columnFilters,
       columnVisibility,
       rowSelection,
-      ...(enablePagination ? { pagination } : {}),
+      globalFilter,
     },
     enableRowSelection,
+    enableSorting,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: (updater) => {
-      setRowSelection(updater);
-      if (onRowSelectionChange) {
-        const next = typeof updater === 'function' ? updater(rowSelection) : updater;
-        onRowSelectionChange(next);
-      }
-    },
-    ...(enablePagination ? { onPaginationChange: setPagination } : {}),
+    onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getSortedRowModel: enableSorting ? getSortedRowModel() : undefined,
     getFilteredRowModel: getFilteredRowModel(),
-    ...(enablePagination ? { getPaginationRowModel: getPaginationRowModel() } : {}),
+    getPaginationRowModel: enablePagination
+      ? getPaginationRowModel()
+      : undefined,
+    initialState: {
+      pagination: {
+        pageSize,
+        pageIndex: 0,
+      },
+    },
   });
 
+  // ----- Helper: sort direction icon -----
+  function renderSortIcon(sorted: false | 'asc' | 'desc') {
+    if (sorted === 'desc') {
+      return <ArrowDown className="h-4 w-4" aria-hidden="true" />;
+    }
+    if (sorted === 'asc') {
+      return <ArrowUp className="h-4 w-4" aria-hidden="true" />;
+    }
+    return (
+      <ArrowUpDown
+        className="h-4 w-4 text-muted-foreground"
+        aria-hidden="true"
+      />
+    );
+  }
+
+  // ----- Helper: table body content (loading / rows / empty) -----
+  function renderTableBody() {
+    if (isLoading) {
+      return skeletonRows.map((_unused, rowIdx) => (
+        <TableRow key={`skeleton-${rowIdx}`}>
+          {columns.map((_col, colIdx) => (
+            <TableCell key={`skeleton-${rowIdx}-${colIdx}`}>
+              <Skeleton className="h-4 w-full" />
+            </TableCell>
+          ))}
+        </TableRow>
+      ));
+    }
+
+    const rows = table.getRowModel().rows;
+
+    if (!rows?.length) {
+      return (
+        <TableRow>
+          <TableCell
+            colSpan={columns.length}
+            className="h-24 text-center text-muted-foreground"
+          >
+            {emptyStateMessage}
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    return rows.map(row => (
+      <TableRow
+        key={row.id}
+        data-state={row.getIsSelected() ? 'selected' : undefined}
+        className={cn(onRowClick && 'cursor-pointer')}
+        onClick={() => onRowClick?.(row)}
+        onKeyDown={
+          onRowClick
+            ? (e: KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onRowClick(row);
+                }
+              }
+            : undefined
+        }
+        tabIndex={onRowClick ? 0 : undefined}
+      >
+        {row.getVisibleCells().map(cell => (
+          <TableCell key={cell.id}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+      </TableRow>
+    ));
+  }
+
+  // ---------- Render ----------
+
   return (
-    <div data-slot="data-table" className={cn('space-y-4', className)}>
-      {/* Toolbar */}
-      {(title || toolbarContent) && (
-        <div className="flex items-center justify-between">
-          {title && (
-            <div>
-              <h3 className="text-lg font-semibold">{title}</h3>
-              {subtitle && (
-                <p className="text-sm text-muted-foreground">{subtitle}</p>
+    <div data-slot="data-table-root" className={cn('w-full', className)}>
+      {/* ----- Toolbar: search + column visibility ----- */}
+      {(enableSearch || enableColumnVisibility) && (
+        <div
+          className="flex items-center gap-2 py-4"
+          data-slot="data-table-toolbar"
+        >
+          {enableSearch && (
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={searchPlaceholder}
+                value={globalFilter}
+                onChange={e => setGlobalFilter(e.target.value)}
+                className="pl-8"
+                aria-label={searchPlaceholder}
+              />
+            </div>
+          )}
+
+          {/* Spacer pushes column-visibility to the right when search is off */}
+          {!enableSearch && <div className="flex-1" />}
+
+          {enableColumnVisibility && (
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-auto gap-1"
+                onClick={() => setColumnMenuOpen(prev => !prev)}
+                aria-expanded={columnMenuOpen}
+                aria-haspopup="true"
+              >
+                <Settings2 className="h-4 w-4" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Columns
+                </span>
+              </Button>
+
+              {columnMenuOpen && (
+                <div
+                  className={cn(
+                    'absolute right-0 top-full z-50 mt-1 min-w-[10rem]',
+                    'rounded-md border border-border bg-popover p-2 shadow-md',
+                  )}
+                  role="menu"
+                >
+                  {table
+                    .getAllColumns()
+                    .filter(col => col.getCanHide())
+                    .map(col => (
+                      <button
+                        key={col.id}
+                        type="button"
+                        className={cn(
+                          'flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm',
+                          'cursor-pointer hover:bg-accent text-left',
+                        )}
+                        role="menuitemcheckbox"
+                        aria-checked={col.getIsVisible()}
+                        onClick={() =>
+                          col.toggleVisibility(!col.getIsVisible())
+                        }
+                      >
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-input pointer-events-none"
+                          checked={col.getIsVisible()}
+                          readOnly
+                          tabIndex={-1}
+                          aria-hidden="true"
+                        />
+                        <span className="capitalize">{col.id}</span>
+                      </button>
+                    ))}
+                </div>
               )}
             </div>
           )}
-          {toolbarContent && <div className="flex items-center gap-2">{toolbarContent}</div>}
         </div>
       )}
 
-      {/* Table */}
-      <div className="rounded-md border">
+      {/* ----- Table ----- */}
+      <div className="rounded-md border border-border" data-slot="data-table">
         <ShadcnTable>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
                   <TableHead key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
+                    {header.isPlaceholder ? null : (
+                      <div
+                        className={cn(
+                          header.column.getCanSort() &&
+                            'cursor-pointer select-none flex items-center gap-1',
+                        )}
+                        onClick={header.column.getToggleSortingHandler()}
+                        role={header.column.getCanSort() ? 'button' : undefined}
+                        tabIndex={header.column.getCanSort() ? 0 : undefined}
+                        onKeyDown={
+                          header.column.getCanSort()
+                            ? (e: KeyboardEvent) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  header.column.toggleSorting();
+                                }
+                              }
+                            : undefined
+                        }
+                      >
+                        {flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
+                        {/* Inline sort indicator */}
+                        {header.column.getCanSort() &&
+                          renderSortIcon(header.column.getIsSorted())}
+                      </div>
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  {emptyStateMessage}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+
+          <TableBody>{renderTableBody()}</TableBody>
         </ShadcnTable>
       </div>
 
-      {/* Pagination */}
+      {/* ----- Pagination footer ----- */}
       {enablePagination && (
-        <DataTablePagination table={table} pageSizeOptions={pageSizeOptions} />
+        <div
+          className="flex items-center justify-between gap-2 py-4"
+          data-slot="data-table-pagination"
+        >
+          <div className="text-sm text-muted-foreground">
+            {enableRowSelection &&
+              `${table.getFilteredSelectedRowModel().rows.length} of `}
+            {table.getFilteredRowModel().rows.length} row(s)
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+              aria-label="Go to first page"
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              aria-label="Go to previous page"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+
+            <span className="text-sm tabular-nums">
+              Page {table.getState().pagination.pageIndex + 1} of{' '}
+              {table.getPageCount()}
+            </span>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              aria-label="Go to next page"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+              aria-label="Go to last page"
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );
 }
 
-/** Pagination controls for the DataTable. @internal */
-function DataTablePagination<TData>({
-  table,
-  pageSizeOptions,
-}: {
-  table: ReactTable<TData>;
-  pageSizeOptions: number[];
-}) {
+// ---------------------------------------------------------------------------
+// SortIndicator — Shared icon renderer for sort direction
+// ---------------------------------------------------------------------------
+
+/** Renders the appropriate sort direction icon. @internal */
+function SortIndicator({ direction }: { direction: false | 'asc' | 'desc' }) {
+  if (direction === 'desc') {
+    return <ArrowDown className="h-4 w-4" aria-hidden="true" />;
+  }
+  if (direction === 'asc') {
+    return <ArrowUp className="h-4 w-4" aria-hidden="true" />;
+  }
   return (
-    <div className="flex items-center justify-between px-2">
-      <div className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length > 0 && (
-          <span>
-            {table.getFilteredSelectedRowModel().rows.length} of{' '}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </span>
-        )}
-      </div>
-      <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
-          <select
-            className="h-8 w-[70px] rounded-md border border-input bg-transparent px-2 py-1 text-sm"
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
-          >
-            {pageSizeOptions.map(size => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="icon"
-            className="hidden h-8 w-8 lg:flex"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <span className="sr-only">Go to first page</span>
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <span className="sr-only">Go to previous page</span>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <span className="sr-only">Go to next page</span>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="hidden h-8 w-8 lg:flex"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            <span className="sr-only">Go to last page</span>
-            <ChevronsRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+    <ArrowUpDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// DataTableColumnHeader — Reusable sortable column header helper
+// ---------------------------------------------------------------------------
+
+/**
+ * A reusable column header component that renders sort indicator icons
+ * based on the current sort state of the column.
+ *
+ * @remarks
+ * Designed to be used within `@tanstack/react-table` column definitions
+ * as the `header` property. Shows:
+ * - `ArrowUp` when sorted ascending
+ * - `ArrowDown` when sorted descending
+ * - `ArrowUpDown` when unsorted (indicating the column is sortable)
+ *
+ * Clicking the header toggles the sort direction. If the column is not
+ * sortable, only the title text is rendered.
+ *
+ * @typeParam TData - The row data type
+ * @typeParam TValue - The column value type
+ *
+ * @example
+ * ```tsx
+ * const columns: ColumnDef<Entity>[] = [
+ *   {
+ *     accessorKey: 'name',
+ *     header: ({ column }) => (
+ *       <DataTableColumnHeader column={column} title="Name" />
+ *     ),
+ *   },
+ * ];
+ * ```
+ *
+ * @public
+ */
+export function DataTableColumnHeader<TData, TValue>({
+  column,
+  title,
+  className,
+}: {
+  column: Column<TData, TValue>;
+  title: string;
+  className?: string;
+}) {
+  if (!column.getCanSort()) {
+    return <div className={cn(className)}>{title}</div>;
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-1 cursor-pointer select-none',
+        className,
+      )}
+      onClick={column.getToggleSortingHandler()}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          column.toggleSorting();
+        }
+      }}
+    >
+      <span>{title}</span>
+      <SortIndicator direction={column.getIsSorted()} />
     </div>
   );
 }
