@@ -100,8 +100,12 @@ describe('OngoingTask', () => {
     const cancelOptionLabel = 'Cancel';
     const { getByTestId } = rendered;
 
+    // Radix DropdownMenu triggers open on pointerDown, not click
     await act(async () => {
-      fireEvent.click(getByTestId('menu-button'));
+      fireEvent.pointerDown(getByTestId('menu-button'), {
+        button: 0,
+        ctrlKey: false,
+      });
     });
     expect(getByTestId('cancel-task')).not.toHaveAttribute(
       'aria-disabled',
@@ -115,7 +119,10 @@ describe('OngoingTask', () => {
 
     expect(mockScaffolderApi.cancelTask).toHaveBeenCalled();
     await act(async () => {
-      fireEvent.click(getByTestId('menu-button'));
+      fireEvent.pointerDown(getByTestId('menu-button'), {
+        button: 0,
+        ctrlKey: false,
+      });
     });
 
     await waitFor(() => {
@@ -178,8 +185,12 @@ describe('OngoingTask', () => {
     const { getByTestId } = rendered;
     expect(getByTestId('cancel-button')).toBeDisabled();
 
+    // Radix DropdownMenu triggers open on pointerDown, not click
     await act(async () => {
-      fireEvent.click(getByTestId('menu-button'));
+      fireEvent.pointerDown(getByTestId('menu-button'), {
+        button: 0,
+        ctrlKey: false,
+      });
     });
     expect(getByTestId('cancel-task')).toHaveAttribute('aria-disabled');
   });
