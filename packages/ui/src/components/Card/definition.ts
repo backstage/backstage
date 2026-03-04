@@ -31,10 +31,14 @@ export const CardDefinition = defineComponent<CardOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Card',
+    overlay: 'bui-CardOverlay',
   },
   propDefs: {
     children: {},
     className: {},
+    onPress: {},
+    href: {},
+    label: {},
   },
 });
 
