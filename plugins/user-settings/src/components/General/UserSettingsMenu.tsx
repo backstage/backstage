@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useState } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import SignOutIcon from '@material-ui/icons/MeetingRoom';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { LogOut, MoreVertical } from 'lucide-react';
+import {
+  ShadcnButton as Button,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@backstage/core-components';
 import {
   identityApiRef,
   errorApiRef,
@@ -34,44 +35,33 @@ import { userSettingsTranslationRef } from '../../translation';
 export const UserSettingsMenu = () => {
   const errorApi = useApi(errorApiRef);
   const identityApi = useApi(identityApiRef);
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const { t } = useTranslationRef(userSettingsTranslationRef);
   const analytics = useAnalytics();
 
-  const handleOpen = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(undefined);
-    setOpen(false);
-  };
-
   return (
-    <>
-      <IconButton
-        data-testid="user-settings-menu"
-        aria-label={t('signOutMenu.moreIconTitle')}
-        onClick={handleOpen}
-      >
-        <MoreVertIcon />
-      </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          data-testid="user-settings-menu"
+          aria-label={t('signOutMenu.moreIconTitle')}
+        >
+          <MoreVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
           data-testid="sign-out"
           onClick={() => {
             identityApi.signOut().catch(error => errorApi.post(error));
             analytics.captureEvent('signOut', 'success');
           }}
         >
-          <ListItemIcon>
-            <SignOutIcon />
-          </ListItemIcon>
+          <LogOut className="mr-2 h-4 w-4" />
           {t('signOutMenu.title')}
-        </MenuItem>
-      </Menu>
-    </>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

@@ -21,7 +21,8 @@ import {
   mockApis,
 } from '@backstage/test-utils';
 import { errorApiRef, identityApiRef } from '@backstage/core-plugin-api';
-import { fireEvent, waitFor, screen } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { UserSettingsMenu } from './UserSettingsMenu';
 
 describe('<UserSettingsMenu />', () => {
@@ -29,7 +30,8 @@ describe('<UserSettingsMenu />', () => {
     await renderInTestApp(<UserSettingsMenu />);
 
     const menuButton = screen.getByLabelText('more');
-    fireEvent.click(menuButton);
+    // Radix DropdownMenu uses pointer events; userEvent properly dispatches them
+    await userEvent.click(menuButton);
 
     expect(screen.getByText('Sign Out')).toBeInTheDocument();
   });
@@ -51,8 +53,9 @@ describe('<UserSettingsMenu />', () => {
     );
 
     const menuButton = screen.getByLabelText('more');
-    fireEvent.click(menuButton);
-    fireEvent.click(screen.getByText('Sign Out'));
+    // Radix DropdownMenu uses pointer events; userEvent properly dispatches them
+    await userEvent.click(menuButton);
+    await userEvent.click(screen.getByText('Sign Out'));
 
     await waitFor(() => {
       expect(mockErrorApi.getErrors()).toHaveLength(1);
