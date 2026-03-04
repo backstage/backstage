@@ -16,11 +16,16 @@
 
 import React, { ChangeEvent, useCallback, useMemo } from 'react';
 
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
-import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
-import AutocompleteRenderInputParams from '@material-ui/lab/AutocompleteRenderInputParams';
-import AutocompleteChangeDetails from '@material-ui/lab/AutocompleteChangeDetails';
-import AutocompleteChangeReason from '@material-ui/lab/AutocompleteChangeReason';
+import Autocomplete, {
+  AutocompleteProps,
+  AutocompleteRenderInputParams,
+} from '@material-ui/lab/Autocomplete';
+import {
+  AutocompleteChangeDetails,
+  AutocompleteChangeReason,
+} from '@material-ui/lab/useAutocomplete';
 
 import { SearchContextProvider, useSearch } from '../../context';
 import { SearchBar, SearchBarProps } from '../SearchBar';
