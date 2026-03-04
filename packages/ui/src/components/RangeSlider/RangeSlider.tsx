@@ -59,6 +59,18 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
         ? [rawDefaultValue[0], rawDefaultValue[1]]
         : [minValue, maxValue];
 
+    // Validate and normalize controlled value to ensure it's always a 2-tuple
+    const rawValue = props.value;
+    const normalizedValue: [number, number] | undefined =
+      rawValue === undefined
+        ? undefined
+        : Array.isArray(rawValue) &&
+          rawValue.length === 2 &&
+          typeof rawValue[0] === 'number' &&
+          typeof rawValue[1] === 'number'
+        ? [rawValue[0], rawValue[1]]
+        : [minValue, maxValue];
+
     useEffect(() => {
       if (
         rawDefaultValue &&
@@ -71,23 +83,26 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
           `RangeSlider requires exactly 2 numeric values [min, max], but received invalid defaultValue. Falling back to [${minValue}, ${maxValue}].`,
         );
       }
-      const valueArray = props.value;
       if (
-        valueArray &&
-        (!Array.isArray(valueArray) ||
-          valueArray.length !== 2 ||
-          typeof valueArray[0] !== 'number' ||
-          typeof valueArray[1] !== 'number')
+        rawValue !== undefined &&
+        (!Array.isArray(rawValue) ||
+          rawValue.length !== 2 ||
+          typeof rawValue[0] !== 'number' ||
+          typeof rawValue[1] !== 'number')
       ) {
         console.warn(
-          `RangeSlider requires exactly 2 numeric values [min, max], but received invalid value.`,
+          `RangeSlider requires exactly 2 numeric values [min, max], but received invalid value. Falling back to [${minValue}, ${maxValue}].`,
         );
       }
-    }, [props.value, rawDefaultValue, minValue, maxValue]);
+    }, [rawValue, rawDefaultValue, minValue, maxValue]);
 
     const uncontrolledDefaultValue =
-      props.value === undefined ? normalizedDefaultValue : undefined;
-    const { defaultValue: _ignoredDefault, ...propsWithoutDefault } = props;
+      normalizedValue === undefined ? normalizedDefaultValue : undefined;
+    const {
+      defaultValue: _ignoredDefault,
+      value: _ignoredValue,
+      ...propsWithoutDefault
+    } = props;
 
     const { classNames, dataAttributes, style, cleanedProps } = useStyles(
       RangeSliderDefinition,
@@ -98,6 +113,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
         ...(uncontrolledDefaultValue !== undefined
           ? { defaultValue: uncontrolledDefaultValue }
           : {}),
+        ...(normalizedValue !== undefined ? { value: normalizedValue } : {}),
         ...propsWithoutDefault,
       },
     );
@@ -152,10 +168,6 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
           className={clsx(classNames.track, styles[classNames.track])}
         >
           {({ state }) => {
-            // Safeguard: ensure we have at least 2 values for range slider
-            if (state.values.length < 2) {
-              return null;
-            }
             const start = state.getThumbPercent(0);
             const end = state.getThumbPercent(1);
             const rangePercent = (end - start) * 100;
