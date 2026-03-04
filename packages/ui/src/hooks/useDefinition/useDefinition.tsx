@@ -19,6 +19,8 @@ import clsx from 'clsx';
 import { useBreakpoint } from '../useBreakpoint';
 import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
 import { resolveDefinitionProps, processUtilityProps } from './helpers';
+import { useAnalytics } from '../../analytics/useAnalytics';
+import { noopTracker } from '../../analytics/useAnalytics';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -82,6 +84,14 @@ export function useDefinition<
     (definition.utilityProps ?? []) as readonly UtilityKeys<D>[],
   );
 
+  // Analytics: conditionally call useAnalytics based on definition flag
+  // Safe: definition is a module-level constant, condition never changes at runtime
+  let analytics = noopTracker;
+  if (definition.analytics) {
+    const tracker = useAnalytics();
+    analytics = ownPropsResolved.noTrack ? noopTracker : tracker;
+  }
+
   const utilityTarget = options?.utilityTarget ?? 'root';
   const classNameTarget = options?.classNameTarget ?? 'root';
 
@@ -120,5 +130,6 @@ export function useDefinition<
     restProps,
     dataAttributes,
     utilityStyle,
+    ...(definition.analytics ? { analytics } : {}),
   } as unknown as UseDefinitionResult<D, P>;
 }
