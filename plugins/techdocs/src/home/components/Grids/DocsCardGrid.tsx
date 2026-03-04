@@ -22,6 +22,9 @@ import {
   LinkButton,
   ItemCardGrid,
   ItemCardHeader,
+  Card,
+  CardContent,
+  CardFooter,
 } from '@backstage/core-components';
 
 /**
@@ -48,19 +51,14 @@ export const DocsCardGrid = (props: DocsCardGridProps) => {
       {!entities?.length
         ? null
         : entities.map((entity, index: number) => (
-            <div
-              key={index}
-              className="rounded-xl border border-border bg-card text-card-foreground shadow flex flex-col"
-            >
+            <Card key={index}>
               <div>
                 <ItemCardHeader
                   title={entity.metadata.title ?? entity.metadata.name}
                 />
               </div>
-              <div className="p-4 flex-1">
-                {entity.metadata.description}
-              </div>
-              <div className="flex items-center p-2">
+              <CardContent>{entity.metadata.description}</CardContent>
+              <CardFooter>
                 <LinkButton
                   to={getRouteToReaderPageFor({
                     namespace: toLowerMaybe(
@@ -75,8 +73,8 @@ export const DocsCardGrid = (props: DocsCardGridProps) => {
                 >
                   Read Docs
                 </LinkButton>
-              </div>
-            </div>
+              </CardFooter>
+            </Card>
           ))}
     </ItemCardGrid>
   );

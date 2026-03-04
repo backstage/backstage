@@ -17,6 +17,7 @@
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
+import { TooltipProvider } from '@backstage/core-components';
 import { DocsTable } from './DocsTable';
 import { rootDocsRouteRef } from '../../../routes';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
@@ -47,42 +48,44 @@ describe('DocsTable test', () => {
 
   it('should render documents passed', async () => {
     await renderInTestApp(
-      <DocsTable
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-            },
-            spec: {
-              owner: 'user:owned',
-            },
-            relations: [
-              {
-                targetRef: 'user:default/owned',
-                type: 'ownedBy',
+      <TooltipProvider>
+        <DocsTable
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
               },
-            ],
-          },
-          {
-            apiVersion: 'version',
-            kind: 'TestKind2',
-            metadata: {
-              name: 'testName2',
-            },
-            spec: {
-              owner: 'not-owned@example.com',
-            },
-            relations: [
-              {
-                targetRef: 'user:default/not-owned',
-                type: 'ownedBy',
+              spec: {
+                owner: 'user:owned',
               },
-            ],
-          },
-        ]}
-      />,
+              relations: [
+                {
+                  targetRef: 'user:default/owned',
+                  type: 'ownedBy',
+                },
+              ],
+            },
+            {
+              apiVersion: 'version',
+              kind: 'TestKind2',
+              metadata: {
+                name: 'testName2',
+              },
+              spec: {
+                owner: 'not-owned@example.com',
+              },
+              relations: [
+                {
+                  targetRef: 'user:default/not-owned',
+                  type: 'ownedBy',
+                },
+              ],
+            },
+          ]}
+        />
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -107,27 +110,29 @@ describe('DocsTable test', () => {
     getOptionalBooleanMock.mockReturnValue(true);
 
     await renderInTestApp(
-      <DocsTable
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-              namespace: 'SomeNamespace',
-            },
-            spec: {
-              owner: 'user:owned',
-            },
-            relations: [
-              {
-                targetRef: 'user:default/owned',
-                type: 'ownedBy',
+      <TooltipProvider>
+        <DocsTable
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+                namespace: 'SomeNamespace',
               },
-            ],
-          },
-        ]}
-      />,
+              spec: {
+                owner: 'user:owned',
+              },
+              relations: [
+                {
+                  targetRef: 'user:default/owned',
+                  type: 'ownedBy',
+                },
+              ],
+            },
+          ]}
+        />
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -146,12 +151,17 @@ describe('DocsTable test', () => {
   });
 
   it('should render empty state if no owned documents exist', async () => {
-    await renderInTestApp(<DocsTable entities={[]} />, {
-      mountedRoutes: {
-        '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
-        '/catalog/:namespace/:kind/:name': entityRouteRef,
+    await renderInTestApp(
+      <TooltipProvider>
+        <DocsTable entities={[]} />
+      </TooltipProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
       },
-    });
+    );
 
     expect(await screen.findByText('No documents to show')).toBeInTheDocument();
   });
