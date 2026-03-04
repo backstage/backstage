@@ -32,7 +32,7 @@ Requires the `@backstage/plugin-catalog-backend-module-unprocessed` module to be
 yarn --cwd packages/app add @backstage/plugin-catalog-unprocessed-entities
 ```
 
-Once installed, the plugin is automatically available in your app through the default package discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
 You can optionally add unprocessed entities as a tab in DevTools through configuration:
 

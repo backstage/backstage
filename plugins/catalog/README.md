@@ -20,7 +20,7 @@ plugin, if you previously removed it.
 yarn --cwd packages/app add @backstage/plugin-catalog
 ```
 
-Once installed, the plugin is automatically available in your app through the default package discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
 ## Old Frontend System
 

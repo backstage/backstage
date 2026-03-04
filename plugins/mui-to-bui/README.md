@@ -12,7 +12,7 @@ Add the dependency to your app:
 yarn --cwd packages/app add @backstage/plugin-mui-to-bui
 ```
 
-Once installed, the plugin is automatically available in your app through the default package discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
 ## Accessing the Themer page
 

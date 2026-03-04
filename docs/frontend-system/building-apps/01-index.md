@@ -65,7 +65,7 @@ Linking routes from different plugins requires this configuration. You can do th
 
 ### Install plugins
 
-Plugins are typically installed by adding them as dependencies of your app package and relying on package discovery to automatically detect them. For details on how this works, including how to manually install plugins or control which packages are discovered, see [Installing Plugins](./05-installing-plugins.md).
+Plugins are typically installed by adding them as dependencies of your app package and relying on feature discovery to automatically detect them. For details on how this works, including how to manually install plugins or control which packages are discovered, see [Installing Plugins](./05-installing-plugins.md).
 
 ### Configure extensions individually
 
@@ -79,7 +79,7 @@ Previously you would customize the application routes, components, apis, sidebar
 
 ### Install features manually
 
-Most plugins are installed automatically through [package discovery](./05-installing-plugins.md#package-discovery). Manual installation is needed if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. In order to manually install a feature, you must import it and pass it to the `createApp` function:
+Most plugins are installed automatically through [feature discovery](./05-installing-plugins.md#feature-discovery). Manual installation is needed if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. In order to manually install a feature, you must import it and pass it to the `createApp` function:
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-defaults';

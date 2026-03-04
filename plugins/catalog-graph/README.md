@@ -27,7 +27,7 @@ The plugin comes with these features:
 yarn --cwd packages/app add @backstage/plugin-catalog-graph
 ```
 
-Once installed, the plugin is automatically available in your app through the default package discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
 To enable the entity relations graph card on the catalog entity page, add the following configuration:
 

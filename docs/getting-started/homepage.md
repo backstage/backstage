@@ -32,7 +32,7 @@ Now, let's get started by installing the home plugin and creating a simple homep
 yarn --cwd packages/app add @backstage/plugin-home
 ```
 
-Once installed, the plugin is automatically available in your app through the default package discovery. For more details and alternative installation methods, see [installing plugins](../frontend-system/building-apps/05-installing-plugins.md).
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](../frontend-system/building-apps/05-installing-plugins.md).
 
 ### 2. Configure the homepage as your root route
 

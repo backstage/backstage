@@ -21,7 +21,7 @@ This plugin must be explicitly added to a Backstage app, along with its peer bac
 yarn --cwd packages/app add @backstage/plugin-kubernetes
 ```
 
-Once installed, the plugin is automatically available in your app through the default package discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
 It requires configuration in the Backstage `app-config.yaml` to connect to a Kubernetes API control plane.
 

@@ -11,7 +11,7 @@ For App Integrators, the system is designed to be composable to give total freed
 yarn --cwd packages/app add @backstage/plugin-home
 ```
 
-Once installed, the plugin is automatically available in your app through the default package discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
 The plugin will automatically provide:
 
