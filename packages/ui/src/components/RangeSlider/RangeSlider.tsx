@@ -38,6 +38,9 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
       'aria-labelledby': ariaLabelledBy,
     } = props;
 
+    // Extract isRequired early since it's inherited from AriaSliderProps
+    const isRequired = 'isRequired' in props ? props.isRequired : undefined;
+
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
         console.warn(
@@ -73,7 +76,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
 
     useEffect(() => {
       if (
-        rawDefaultValue &&
+        rawDefaultValue !== undefined &&
         (!Array.isArray(rawDefaultValue) ||
           rawDefaultValue.length !== 2 ||
           typeof rawDefaultValue[0] !== 'number' ||
@@ -122,7 +125,6 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
       className,
       description,
       secondaryLabel,
-      isRequired,
       showValueLabel = false,
       formatValue = (val: number) => val.toString(),
       ...rest

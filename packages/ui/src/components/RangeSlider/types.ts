@@ -31,9 +31,4 @@ export interface RangeSliderProps
    * Format the value for display
    */
   formatValue?: (value: number) => string;
-
-  /**
-   * Whether the slider is required (displays "Required" in the label)
-   */
-  isRequired?: boolean;
 }
