@@ -30,6 +30,7 @@ import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import Observable from 'zen-observable';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TooltipProvider } from '@backstage/core-components';
 
 const mountedRoutes = {
   mountedRoutes: {
@@ -46,28 +47,30 @@ describe('CardHeader', () => {
     expect(pageTheme).toBeDefined();
 
     const { getByText } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [
-            starredEntitiesApiRef,
-            new DefaultStarredEntitiesApi({
-              storageApi: mockApis.storage(),
-            }),
-          ],
-        ]}
-      >
-        <CardHeader
-          template={{
-            apiVersion: 'scaffolder.backstage.io/v1beta3',
-            kind: 'Template',
-            metadata: { name: 'bob' },
-            spec: {
-              steps: [],
-              type: 'service',
-            },
-          }}
-        />
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider
+          apis={[
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: mockApis.storage(),
+              }),
+            ],
+          ]}
+        >
+          <CardHeader
+            template={{
+              apiVersion: 'scaffolder.backstage.io/v1beta3',
+              kind: 'Template',
+              metadata: { name: 'bob' },
+              spec: {
+                steps: [],
+                type: 'service',
+              },
+            }}
+          />
+        </TestApiProvider>
+      </TooltipProvider>,
       mountedRoutes,
     );
 
@@ -78,28 +81,30 @@ describe('CardHeader', () => {
 
   it('should render the type', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [
-            starredEntitiesApiRef,
-            new DefaultStarredEntitiesApi({
-              storageApi: mockApis.storage(),
-            }),
-          ],
-        ]}
-      >
-        <CardHeader
-          template={{
-            apiVersion: 'scaffolder.backstage.io/v1beta3',
-            kind: 'Template',
-            metadata: { name: 'bob' },
-            spec: {
-              steps: [],
-              type: 'service',
-            },
-          }}
-        />
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider
+          apis={[
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: mockApis.storage(),
+              }),
+            ],
+          ]}
+        >
+          <CardHeader
+            template={{
+              apiVersion: 'scaffolder.backstage.io/v1beta3',
+              kind: 'Template',
+              metadata: { name: 'bob' },
+              spec: {
+                steps: [],
+                type: 'service',
+              },
+            }}
+          />
+        </TestApiProvider>
+      </TooltipProvider>,
       mountedRoutes,
     );
 
@@ -123,9 +128,11 @@ describe('CardHeader', () => {
     };
 
     const { getByRole } = await renderInTestApp(
-      <TestApiProvider apis={[[starredEntitiesApiRef, starredEntitiesApi]]}>
-        <CardHeader template={mockTemplate} />
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider apis={[[starredEntitiesApiRef, starredEntitiesApi]]}>
+          <CardHeader template={mockTemplate} />
+        </TestApiProvider>
+      </TooltipProvider>,
       mountedRoutes,
     );
 
@@ -140,28 +147,30 @@ describe('CardHeader', () => {
 
   it('renders TemplateDetailButton with link to entity page', async () => {
     const { getByTitle } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [
-            starredEntitiesApiRef,
-            new DefaultStarredEntitiesApi({
-              storageApi: mockApis.storage(),
-            }),
-          ],
-        ]}
-      >
-        <CardHeader
-          template={{
-            apiVersion: 'scaffolder.backstage.io/v1beta3',
-            kind: 'Template',
-            metadata: { name: 'test-template', namespace: 'default' },
-            spec: {
-              steps: [],
-              type: 'service',
-            },
-          }}
-        />
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider
+          apis={[
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: mockApis.storage(),
+              }),
+            ],
+          ]}
+        >
+          <CardHeader
+            template={{
+              apiVersion: 'scaffolder.backstage.io/v1beta3',
+              kind: 'Template',
+              metadata: { name: 'test-template', namespace: 'default' },
+              spec: {
+                steps: [],
+                type: 'service',
+              },
+            }}
+          />
+        </TestApiProvider>
+      </TooltipProvider>,
       mountedRoutes,
     );
 
@@ -172,28 +181,30 @@ describe('CardHeader', () => {
 
   it('should render the name of the entity', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [
-            starredEntitiesApiRef,
-            new DefaultStarredEntitiesApi({
-              storageApi: mockApis.storage(),
-            }),
-          ],
-        ]}
-      >
-        <CardHeader
-          template={{
-            apiVersion: 'scaffolder.backstage.io/v1beta3',
-            kind: 'Template',
-            metadata: { name: 'bob' },
-            spec: {
-              steps: [],
-              type: 'service',
-            },
-          }}
-        />
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider
+          apis={[
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: mockApis.storage(),
+              }),
+            ],
+          ]}
+        >
+          <CardHeader
+            template={{
+              apiVersion: 'scaffolder.backstage.io/v1beta3',
+              kind: 'Template',
+              metadata: { name: 'bob' },
+              spec: {
+                steps: [],
+                type: 'service',
+              },
+            }}
+          />
+        </TestApiProvider>
+      </TooltipProvider>,
       mountedRoutes,
     );
 
@@ -202,28 +213,30 @@ describe('CardHeader', () => {
 
   it('should render the title of the entity in favor of the name if it is provided', async () => {
     const { getByText } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [
-            starredEntitiesApiRef,
-            new DefaultStarredEntitiesApi({
-              storageApi: mockApis.storage(),
-            }),
-          ],
-        ]}
-      >
-        <CardHeader
-          template={{
-            apiVersion: 'scaffolder.backstage.io/v1beta3',
-            kind: 'Template',
-            metadata: { name: 'bob', title: 'Iamtitle' },
-            spec: {
-              steps: [],
-              type: 'service',
-            },
-          }}
-        />
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider
+          apis={[
+            [
+              starredEntitiesApiRef,
+              new DefaultStarredEntitiesApi({
+                storageApi: mockApis.storage(),
+              }),
+            ],
+          ]}
+        >
+          <CardHeader
+            template={{
+              apiVersion: 'scaffolder.backstage.io/v1beta3',
+              kind: 'Template',
+              metadata: { name: 'bob', title: 'Iamtitle' },
+              spec: {
+                steps: [],
+                type: 'service',
+              },
+            }}
+          />
+        </TestApiProvider>
+      </TooltipProvider>,
       mountedRoutes,
     );
 
