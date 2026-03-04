@@ -33,7 +33,7 @@ Commands:
 ### `backstage-cli build-workspace`
 
 ```
-Usage: backstage-cli build-workspace
+Usage: backstage-cli build-workspace <workspace-dir> [packages...]
 
 Options:
   --always-pack
@@ -511,7 +511,7 @@ Options:
 ### `backstage-cli repo start`
 
 ```
-Usage: backstage-cli repo start
+Usage: backstage-cli repo start [packages...]
 
 Options:
   --config <string>

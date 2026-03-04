@@ -23,7 +23,7 @@ export async function findRoleFromCommand(opts: {
   role?: string;
 }): Promise<PackageRole> {
   if (opts.role) {
-    return PackageRoles.getRoleInfo(opts.role)?.role;
+    return PackageRoles.getRoleInfo(opts.role).role;
   }
 
   const pkg = await fs.readJson(targetPaths.resolve('package.json'));
