@@ -38,15 +38,23 @@ export interface RelationDefinition {
    */
   allowedKinds?: string[];
   /**
-   * The type of relation that is generated for the outgoing direction (from the
-   * current entity toward the one being referenced).
+   * The names for the outgoing direction (from the current entity toward
+   * the one being referenced).
    */
-  outgoingType: string;
+  outgoing: {
+    type: string;
+    singular: string;
+    plural: string;
+  };
   /**
-   * The type of relation that is generated for the incoming direction (from the
-   * one being referenced toward the current entity).
+   * The names for the incoming direction (from the one being referenced
+   * toward the current entity).
    */
-  incomingType: string;
+  incoming: {
+    type: string;
+    singular: string;
+    plural: string;
+  };
 }
 
 /**

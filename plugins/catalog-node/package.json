@@ -69,12 +69,15 @@
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@opentelemetry/api": "^1.9.0",
+    "express": "^4.22.0",
+    "express-promise-router": "^4.1.0",
     "lodash": "^4.17.21",
     "yaml": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "@types/express": "^4.17.6",
     "msw": "^1.0.0"
   },
   "peerDependencies": {

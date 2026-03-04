@@ -105,3 +105,4 @@ export type { CatalogPermissionExtensionPoint } from './extensions';
 export { catalogPermissionExtensionPoint } from './extensions';
 
 export * from './scmEvents';
+export * from './model';
