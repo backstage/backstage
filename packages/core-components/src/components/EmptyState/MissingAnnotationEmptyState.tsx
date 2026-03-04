@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
 
 import { CodeSnippet } from '../CodeSnippet';
 import { Link } from '../Link';
@@ -47,18 +45,6 @@ type Props = {
   annotation: string | string[];
   readMoreUrl?: string;
 };
-
-const useStyles = makeStyles(
-  theme => ({
-    code: {
-      borderRadius: 6,
-      margin: theme.spacing(2, 0),
-      background:
-        theme.palette.type === 'dark' ? '#444' : theme.palette.common.white,
-    },
-  }),
-  { name: 'BackstageMissingAnnotationEmptyState' },
-);
 
 function generateLineNumbers(lineCount: number) {
   return Array.from(Array(lineCount + 1).keys(), i => i + ANNOTATION_LINE);
@@ -100,7 +86,6 @@ export function MissingAnnotationEmptyState(props: Props) {
   const url =
     readMoreUrl ||
     'https://backstage.io/docs/features/software-catalog/well-known-annotations';
-  const classes = useStyles();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   return (
@@ -110,10 +95,10 @@ export function MissingAnnotationEmptyState(props: Props) {
       description={useGenerateDescription(annotations)}
       action={
         <>
-          <Typography variant="body1">
+          <p className="text-base text-foreground">
             {t('emptyState.missingAnnotation.actionTitle')}
-          </Typography>
-          <Box className={classes.code}>
+          </p>
+          <div className={cn('rounded-md my-4 bg-card')}>
             <CodeSnippet
               text={generateComponentYaml(annotations)}
               language="yaml"
@@ -121,9 +106,9 @@ export function MissingAnnotationEmptyState(props: Props) {
               highlightedNumbers={generateLineNumbers(annotations.length)}
               customStyle={{ background: 'inherit', fontSize: '115%' }}
             />
-          </Box>
-          <Button color="primary" component={Link} to={url}>
-            {t('emptyState.missingAnnotation.readMore')}
+          </div>
+          <Button variant="default" asChild>
+            <Link to={url}>{t('emptyState.missingAnnotation.readMore')}</Link>
           </Button>
         </>
       }
