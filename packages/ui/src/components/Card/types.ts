@@ -26,6 +26,9 @@ export type CardOwnProps = {
   onPress?: () => void;
   href?: string;
   label?: string;
+  target?: string;
+  rel?: string;
+  download?: boolean | string;
 };
 
 /** @public */
@@ -46,7 +49,9 @@ export type CardLinkVariant = {
   href: string;
   onPress?: never;
   /** Accessible label announced by screen readers for the interactive card. */
-  label?: string;
+  label: string;
+  /** Specifies where to open the linked URL (e.g. `_blank` for a new tab). */
+  target?: string;
 };
 
 /** @public */
