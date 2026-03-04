@@ -820,6 +820,22 @@ const appPlugin: OverridableFrontendPlugin<
         element: JSX.Element;
       };
     }>;
+    'app-root-wrapper:app/analytics': OverridableExtensionDefinition<{
+      kind: 'app-root-wrapper';
+      name: 'analytics';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        (props: { children: ReactNode }) => JSX.Element | null,
+        'app.root.wrapper',
+        {}
+      >;
+      inputs: {};
+      params: {
+        Component?: [error: 'Use the `component` parameter instead'];
+        component: (props: { children: ReactNode }) => JSX.Element | null;
+      };
+    }>;
     'component:app/core-error-display': OverridableExtensionDefinition<{
       kind: 'component';
       name: 'core-error-display';
