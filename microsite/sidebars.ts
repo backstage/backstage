@@ -54,7 +54,7 @@ export default {
       'features/software-catalog/system-model',
       'auth/index',
       'backend-system/index',
-      'frontend-system/architecure/index',
+      'frontend-system/architecture/index',
       'overview/threat-model',
       'overview/versioning-policy',
       'overview/logos.md/index',
