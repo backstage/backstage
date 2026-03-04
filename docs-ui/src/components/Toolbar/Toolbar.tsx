@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   RiArrowDownSLine,
+  RiDiscordLine,
   RiGithubLine,
   RiMoonLine,
   RiSearchLine,
@@ -107,6 +108,14 @@ export const Toolbar = ({ version }: ToolbarProps) => {
           data-hide-tablet
         >
           <RiGithubLine size={16} />
+        </a>
+        <a
+          href="https://discord.gg/backstage-687207715902193673"
+          target="_blank"
+          className={styles.bubble}
+          data-hide-tablet
+        >
+          <RiDiscordLine size={16} />
         </a>
         <ToggleButtonGroup
           defaultSelectedKeys={['light']}
