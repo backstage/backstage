@@ -15,8 +15,7 @@
  */
 
 import { WarningPanel } from './WarningPanel';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { Button } from '../ui/button';
 import { Link } from '../Link';
 
 export default {
@@ -40,7 +39,7 @@ export const Default = () => (
 
 export const Children = () => (
   <WarningPanel title="Could not contact backend system">
-    <Typography>
+    <p className="text-sm">
       Supports custom children - for example these text elements. This can be
       used to hide/expose stack traces for warnings, like this example:
       <br />
@@ -56,8 +55,8 @@ export const Children = () => (
       (/home/user/github/backstage/node_modules/sucrase/dist/parser/traverser/expression.js:118:43)
       at parseExprListItem
       (/home/user/github/backstage/node_modules/sucrase/dist/parser/traverser/expression.js:969:5)
-    </Typography>
-    <Button variant="contained">Learn More</Button>
+    </p>
+    <Button>Learn More</Button>
   </WarningPanel>
 );
 
