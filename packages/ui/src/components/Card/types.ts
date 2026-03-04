@@ -16,10 +16,44 @@
 
 import type { ReactNode } from 'react';
 
-/** @public */
+/**
+ * Flat own-props shape used by the component definition system.
+ * @public
+ */
 export type CardOwnProps = {
   children?: ReactNode;
   className?: string;
+  onPress?: () => void;
+  href?: string;
+  label?: string;
+};
+
+/** @public */
+export type CardBaseProps = { children?: ReactNode; className?: string };
+
+/** @public */
+export type CardButtonVariant = {
+  /** Handler called when the card is pressed. Makes the card interactive as a button. */
+  onPress: () => void;
+  href?: never;
+  /** Accessible label announced by screen readers for the interactive card. */
+  label: string;
+};
+
+/** @public */
+export type CardLinkVariant = {
+  /** URL to navigate to. Makes the card interactive as a link. */
+  href: string;
+  onPress?: never;
+  /** Accessible label announced by screen readers for the interactive card. */
+  label?: string;
+};
+
+/** @public */
+export type CardStaticVariant = {
+  onPress?: never;
+  href?: never;
+  label?: never;
 };
 
 /**
@@ -27,9 +61,9 @@ export type CardOwnProps = {
  *
  * @public
  */
-export interface CardProps
-  extends CardOwnProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+export type CardProps = CardBaseProps &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'onPress'> &
+  (CardButtonVariant | CardLinkVariant | CardStaticVariant);
 
 /** @public */
 export type CardHeaderOwnProps = {

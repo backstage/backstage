@@ -565,6 +565,12 @@ export const Card: ForwardRefExoticComponent<
   CardProps & RefAttributes<HTMLDivElement>
 >;
 
+// @public (undocumented)
+export type CardBaseProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
 // @public
 export const CardBody: ForwardRefExoticComponent<
   CardBodyProps & RefAttributes<HTMLDivElement>
@@ -595,6 +601,13 @@ export interface CardBodyProps
   extends CardBodyOwnProps,
     React.HTMLAttributes<HTMLDivElement> {}
 
+// @public (undocumented)
+export type CardButtonVariant = {
+  onPress: () => void;
+  href?: never;
+  label: string;
+};
+
 // @public
 export const CardDefinition: {
   readonly styles: {
@@ -602,10 +615,14 @@ export const CardDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Card';
+    readonly overlay: 'bui-CardOverlay';
   };
   readonly propDefs: {
     readonly children: {};
     readonly className: {};
+    readonly onPress: {};
+    readonly href: {};
+    readonly label: {};
   };
 };
 
@@ -670,15 +687,32 @@ export interface CardHeaderProps
     React.HTMLAttributes<HTMLDivElement> {}
 
 // @public (undocumented)
-export type CardOwnProps = {
-  children?: ReactNode;
-  className?: string;
+export type CardLinkVariant = {
+  href: string;
+  onPress?: never;
+  label?: string;
 };
 
 // @public
-export interface CardProps
-  extends CardOwnProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+export type CardOwnProps = {
+  children?: ReactNode;
+  className?: string;
+  onPress?: () => void;
+  href?: string;
+  label?: string;
+};
+
+// @public
+export type CardProps = CardBaseProps &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'onPress'> &
+  (CardButtonVariant | CardLinkVariant | CardStaticVariant);
+
+// @public (undocumented)
+export type CardStaticVariant = {
+  onPress?: never;
+  href?: never;
+  label?: never;
+};
 
 // @public (undocumented)
 export const Cell: {

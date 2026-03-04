@@ -231,6 +231,94 @@ export const BgOnProviders = meta.story({
   ),
 });
 
+export const Interactive = meta.story({
+  render: () => (
+    <Card
+      style={{ width: '300px' }}
+      onPress={() => alert('Card pressed')}
+      label="View component details"
+    >
+      <CardHeader>
+        <Text weight="bold">Interactive Card</Text>
+      </CardHeader>
+      <CardBody>
+        <Text>
+          Click anywhere on this card to trigger the press handler. The entire
+          card surface is interactive.
+        </Text>
+      </CardBody>
+      <CardFooter>
+        <Text variant="body-small" color="secondary">
+          Click to interact
+        </Text>
+      </CardFooter>
+    </Card>
+  ),
+});
+
+export const InteractiveAsLink = meta.story({
+  render: () => (
+    <Card
+      style={{ width: '300px' }}
+      href="https://backstage.io"
+      label="Open Backstage documentation"
+    >
+      <CardHeader>
+        <Text weight="bold">Link Card</Text>
+      </CardHeader>
+      <CardBody>
+        <Text>
+          This card navigates to a URL when clicked. The entire card surface
+          acts as a link.
+        </Text>
+      </CardBody>
+      <CardFooter>
+        <Text variant="body-small" color="secondary">
+          Opens backstage.io
+        </Text>
+      </CardFooter>
+    </Card>
+  ),
+});
+
+export const InteractiveWithNestedButtons = meta.story({
+  render: () => (
+    <Card
+      style={{ width: '300px' }}
+      onPress={() => alert('Card pressed')}
+      label="View plugin details"
+    >
+      <CardHeader>
+        <Text weight="bold">Card with Actions</Text>
+      </CardHeader>
+      <CardBody>
+        <Text>
+          Clicking the card background triggers the card press handler. The
+          buttons below remain independently interactive.
+        </Text>
+      </CardBody>
+      <CardFooter>
+        <Flex gap="2">
+          <Button
+            size="small"
+            variant="secondary"
+            onPress={() => alert('Primary action')}
+          >
+            Primary
+          </Button>
+          <Button
+            size="small"
+            variant="tertiary"
+            onPress={() => alert('Secondary action')}
+          >
+            Secondary
+          </Button>
+        </Flex>
+      </CardFooter>
+    </Card>
+  ),
+});
+
 export const CustomCardWithBox = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
