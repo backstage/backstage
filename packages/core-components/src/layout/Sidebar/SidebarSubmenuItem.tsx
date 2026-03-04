@@ -137,8 +137,8 @@ export type SidebarSubmenuItemDropdownItem = {
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
- * startComponent: Optional custom component to add to the beginning of the menu item
- * endComponent: Optional custom component to add to the end of the menu item
+ * startComponent: Optional custom component to add to the beginning of the menu item. NOTE: As this can be rendered inside a button or link element, please use non-interactive components or handle events appropriately!
+ * endComponent: Optional custom component to add to the end of the menu item. NOTE: As this can be rendered inside a button or link element, please use non-interactive components or handle events appropriately!
  *
  * @public
  */
