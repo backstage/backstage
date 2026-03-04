@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { ReactElement, ChangeEvent, useRef } from 'react';
+import { ReactElement, useRef } from 'react';
 import { capitalize } from 'lodash';
 import { v4 as uuid } from 'uuid';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormLabel from '@material-ui/core/FormLabel';
-import { makeStyles } from '@material-ui/core/styles';
-import { Select, SelectedItems } from '@backstage/core-components';
+import {
+  Checkbox,
+  cn,
+  Select,
+  SelectedItems,
+} from '@backstage/core-components';
 
 import { useSearch } from '../../context';
 import {
@@ -33,22 +33,6 @@ import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 import { ensureFilterValueWithLabel, FilterValue } from './types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { searchReactTranslationRef } from '../../translation';
-
-const useStyles = makeStyles({
-  label: {
-    textTransform: 'capitalize',
-  },
-  checkboxWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-  },
-  textWrapper: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-});
 
 /**
  * @public
@@ -92,7 +76,6 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
     values: givenValues = [],
     valuesDebounceMs,
   } = props;
-  const classes = useStyles();
   const { filters, setFilters } = useSearch();
   useDefaultFilterValue(name, defaultValue);
   const asyncValues =
@@ -108,11 +91,7 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
     valuesDebounceMs,
   );
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { value, checked },
-    } = e;
-
+  const handleChange = (value: string, checked: boolean) => {
     setFilters(prevFilters => {
       const { [name]: filter, ...others } = prevFilters;
       const rest = ((filter as string[]) || []).filter(i => i !== value);
@@ -122,36 +101,34 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
   };
 
   return (
-    <FormControl
-      className={className}
+    <fieldset
+      className={cn(
+        'w-full space-y-1',
+        loading && 'opacity-50 pointer-events-none',
+        className,
+      )}
       disabled={loading}
-      fullWidth
       data-testid="search-checkboxfilter-next"
     >
       {!!formLabel && (
-        <FormLabel className={classes.label}>{formLabel}</FormLabel>
+        <legend className="text-sm font-medium capitalize">{formLabel}</legend>
       )}
       {values.map(({ value, label }) => (
-        <FormControlLabel
+        <label
           key={value}
-          classes={{
-            root: classes.checkboxWrapper,
-            label: classes.textWrapper,
-          }}
-          label={label}
-          control={
-            <Checkbox
-              color="primary"
-              inputProps={{ 'aria-labelledby': label }}
-              value={value}
-              name={label}
-              onChange={handleChange}
-              checked={((filters[name] as string[]) ?? []).includes(value)}
-            />
-          }
-        />
+          className="flex w-full items-center gap-2 cursor-pointer"
+        >
+          <Checkbox
+            checked={((filters[name] as string[]) ?? []).includes(value)}
+            onCheckedChange={checked => handleChange(value, !!checked)}
+            aria-label={label}
+          />
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+            {label}
+          </span>
+        </label>
       ))}
-    </FormControl>
+    </fieldset>
   );
 };
 
@@ -200,11 +177,12 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
   const items = [allOption, ...values];
 
   return (
-    <FormControl
-      disabled={loading}
-      className={className}
-      variant="filled"
-      fullWidth
+    <div
+      className={cn(
+        'w-full',
+        loading && 'opacity-50 pointer-events-none',
+        className,
+      )}
       data-testid="search-selectfilter-next"
     >
       <Select
@@ -213,7 +191,7 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
         onChange={handleChange}
         items={items}
       />
-    </FormControl>
+    </div>
   );
 };
 
