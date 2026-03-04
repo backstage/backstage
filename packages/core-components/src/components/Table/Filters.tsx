@@ -21,6 +21,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
 import { Select } from '../Select';
 import { SelectProps } from '../Select/Select';
 import { coreComponentsTranslationRef } from '../../translation';
@@ -64,18 +66,18 @@ export const Filters = (props: Props) => {
   }, [selectedFilters, onChangeFilters]);
 
   return (
-    <div className="flex h-full w-[315px] flex-col mr-6">
-      <div className="flex items-center justify-between h-[60px] border-b border-border">
+    <div className={cn('h-full w-[315px] flex flex-col mr-6')}>
+      <div
+        className={cn(
+          'flex items-center h-[60px] justify-between border-b border-border',
+        )}
+      >
         <span className="font-bold text-lg">{t('table.filter.title')}</span>
-        <button
-          type="button"
-          onClick={handleClick}
-          className="text-primary text-sm font-medium hover:underline"
-        >
+        <Button variant="link" onClick={handleClick}>
           {t('table.filter.clearAll')}
-        </button>
+        </Button>
       </div>
-      <div className="flex flex-col gap-4 pt-4">
+      <div className={cn('flex flex-col space-y-4')}>
         {props.filters?.length &&
           props.filters.map(filter => (
             <Select
