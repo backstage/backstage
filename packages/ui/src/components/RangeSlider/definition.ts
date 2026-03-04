@@ -23,6 +23,7 @@ import type { ComponentDefinition } from '../../types';
 export const RangeSliderDefinition = {
   classNames: {
     root: 'bui-RangeSlider',
+    header: 'bui-RangeSliderHeader',
     track: 'bui-RangeSliderTrack',
     trackFill: 'bui-RangeSliderTrackFill',
     thumb: 'bui-RangeSliderThumb',

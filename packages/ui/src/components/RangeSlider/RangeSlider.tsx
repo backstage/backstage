@@ -57,10 +57,12 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
 
     const minValue = props.minValue ?? 0;
     const maxValue = props.maxValue ?? 100;
-    const {
-      defaultValue = [minValue, maxValue] as [number, number],
-      ...propsWithoutDefault
-    } = props;
+    const uncontrolledDefaultValue =
+      props.value === undefined
+        ? ((props.defaultValue ??
+            ([minValue, maxValue] as [number, number])) as [number, number])
+        : undefined;
+    const { defaultValue: _ignoredDefault, ...propsWithoutDefault } = props;
 
     const { classNames, dataAttributes, style, cleanedProps } = useStyles(
       RangeSliderDefinition,
@@ -68,7 +70,9 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
         minValue,
         maxValue,
         step: 1,
-        defaultValue,
+        ...(uncontrolledDefaultValue !== undefined
+          ? { defaultValue: uncontrolledDefaultValue }
+          : {}),
         ...propsWithoutDefault,
       },
     );
@@ -97,7 +101,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
         {...rest}
         ref={ref}
       >
-        <div className={styles['bui-RangeSliderHeader']}>
+        <div className={clsx(classNames.header, styles[classNames.header])}>
           <FieldLabel
             label={label}
             secondaryLabel={secondaryLabelText}
