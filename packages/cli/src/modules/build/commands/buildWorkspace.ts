@@ -21,10 +21,18 @@ import { warnDeprecatedFlags } from '../../../lib/warnDeprecatedFlags';
 import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
-  // Support legacy --alwaysYarnPack and --alwaysPack aliases
-  const normalizedArgs = args.map(a =>
-    a === '--alwaysYarnPack' || a === '--alwaysPack' ? '--always-pack' : a,
-  );
+  // Support legacy --alwaysYarnPack and --alwaysPack aliases (including =value form)
+  const normalizedArgs = args.map(a => {
+    for (const old of ['--alwaysYarnPack', '--alwaysPack']) {
+      if (a === old) {
+        return '--always-pack';
+      }
+      if (a.startsWith(`${old}=`)) {
+        return `--always-pack${a.substring(old.length)}`;
+      }
+    }
+    return a;
+  });
 
   const flagDefs = {
     alwaysPack: {
