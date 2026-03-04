@@ -104,11 +104,13 @@ export const MenuItemDefinition = defineComponent<MenuItemOwnProps>()({
     itemContent: 'bui-MenuItemContent',
     itemArrow: 'bui-MenuItemArrow',
   },
+  analytics: true,
   propDefs: {
     iconStart: {},
     children: {},
     color: { dataAttribute: true, default: 'primary' },
     href: {},
+    noTrack: {},
     className: {},
   },
 });
