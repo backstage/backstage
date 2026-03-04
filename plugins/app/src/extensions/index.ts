@@ -39,3 +39,4 @@ export {
 } from './components';
 export { PluginWrapperApi } from './PluginWrapperApi';
 export { PluginHeaderActionsApi } from './PluginHeaderActionsApi';
+export { analyticsWrapperExtension } from './AnalyticsWrapper';

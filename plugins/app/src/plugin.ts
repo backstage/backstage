@@ -40,6 +40,7 @@ import {
   ErrorDisplay,
   PageLayout,
   LegacyComponentsApi,
+  analyticsWrapperExtension,
 } from './extensions';
 import { apis } from './defaultApis';
 
@@ -73,5 +74,6 @@ export const appPlugin = createFrontendPlugin({
     ErrorDisplay,
     PageLayout,
     LegacyComponentsApi,
+    analyticsWrapperExtension,
   ],
 });
