@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import { Button } from '../../components/ui/button';
 import { InfoCard } from '../InfoCard/InfoCard';
 import {
   ProviderComponent,
@@ -75,12 +74,12 @@ const Component: ProviderComponent = ({
         variant="fullHeight"
         title={title}
         actions={
-          <Button color="primary" variant="outlined" onClick={handleLogin}>
+          <Button variant="outline" onClick={handleLogin}>
             {t('signIn.title')}
           </Button>
         }
       >
-        <Typography variant="body1">{message}</Typography>
+        <p className="text-base text-foreground">{message}</p>
       </InfoCard>
     </GridItem>
   );
