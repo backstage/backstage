@@ -15,13 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import { Link } from '@backstage/core-components';
+import { Badge, Link } from '@backstage/core-components';
 import {
   IndexableDocument,
   ResultHighlight,
@@ -35,23 +29,6 @@ export type CatalogSearchResultListItemClassKey =
   | 'item'
   | 'flexContainer'
   | 'itemText';
-
-const useStyles = makeStyles(
-  {
-    item: {
-      display: 'flex',
-    },
-    flexContainer: {
-      flexWrap: 'wrap',
-    },
-    itemText: {
-      width: '100%',
-      wordBreak: 'break-all',
-      marginBottom: '1rem',
-    },
-  },
-  { name: 'CatalogSearchResultListItem' },
-);
 
 /**
  * Props for {@link CatalogSearchResultListItem}.
@@ -73,23 +50,20 @@ export function CatalogSearchResultListItem(
   const result = props.result as any;
   const highlight = props.highlight as ResultHighlight;
 
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   if (!result) return null;
 
   return (
-    <div className={classes.item}>
+    <div className="flex">
       {props.icon && (
-        <ListItemIcon>
+        <div className="mr-4 flex items-center">
           {typeof props.icon === 'function' ? props.icon(result) : props.icon}
-        </ListItemIcon>
+        </div>
       )}
-      <div className={classes.flexContainer}>
-        <ListItemText
-          className={classes.itemText}
-          primaryTypographyProps={{ variant: 'h6' }}
-          primary={
+      <div className="flex flex-wrap">
+        <div className="w-full break-all mb-4">
+          <div className="text-lg font-semibold">
             <Link noTrack to={result.location}>
               {highlight?.fields.title ? (
                 <HighlightedSearchResultText
@@ -101,57 +75,49 @@ export function CatalogSearchResultListItem(
                 result.title
               )}
             </Link>
-          }
-          secondary={
-            <Typography
-              component="span"
-              style={{
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: props.lineClamp,
-                overflow: 'hidden',
-              }}
-              color="textSecondary"
-              variant="body2"
-            >
-              {highlight?.fields.text ? (
-                <HighlightedSearchResultText
-                  text={highlight.fields.text}
-                  preTag={highlight.preTag}
-                  postTag={highlight.postTag}
-                />
-              ) : (
-                result.text
-              )}
-            </Typography>
-          }
-        />
-        <Box>
+          </div>
+          <span
+            className="text-sm text-muted-foreground"
+            style={{
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: props.lineClamp,
+              overflow: 'hidden',
+            }}
+          >
+            {highlight?.fields.text ? (
+              <HighlightedSearchResultText
+                text={highlight.fields.text}
+                preTag={highlight.preTag}
+                postTag={highlight.postTag}
+              />
+            ) : (
+              result.text
+            )}
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1">
           {result.kind && (
-            <Chip
-              label={`${t('searchResultItem.kind')}: ${result.kind}`}
-              size="small"
-            />
+            <Badge variant="secondary">
+              {t('searchResultItem.kind')}: {result.kind}
+            </Badge>
           )}
           {result.type && (
-            <Chip
-              label={`${t('searchResultItem.type')}: ${result.type}`}
-              size="small"
-            />
+            <Badge variant="secondary">
+              {t('searchResultItem.type')}: {result.type}
+            </Badge>
           )}
           {result.lifecycle && (
-            <Chip
-              label={`${t('searchResultItem.lifecycle')}: ${result.lifecycle}`}
-              size="small"
-            />
+            <Badge variant="secondary">
+              {t('searchResultItem.lifecycle')}: {result.lifecycle}
+            </Badge>
           )}
           {result.owner && (
-            <Chip
-              label={`${t('searchResultItem.owner')}: ${result.owner}`}
-              size="small"
-            />
+            <Badge variant="secondary">
+              {t('searchResultItem.owner')}: {result.owner}
+            </Badge>
           )}
-        </Box>
+        </div>
       </div>
     </div>
   );
