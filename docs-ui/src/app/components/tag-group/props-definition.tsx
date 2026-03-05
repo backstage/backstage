@@ -84,6 +84,11 @@ export const tagPropDefs: Record<string, PropDef> = {
     type: 'boolean',
     description: 'Whether the tag is disabled.',
   },
+  noTrack: {
+    type: 'boolean',
+    description:
+      'Suppresses analytics event tracking for this component (if configured).',
+  },
   ...childrenPropDefs,
   ...classNamePropDefs,
 };

@@ -1,6 +1,6 @@
 import { CodeBlock } from '@/components/CodeBlock';
 import { Banner } from '@/components/Banner';
-import { snippet } from './snippets';
+import { snippet, analyticsSetupSnippet, analyticsNoTrackSnippet } from './snippets';
 
 # Installation
 
@@ -44,3 +44,25 @@ your plugin and import the components you need.
 />
 
 <CodeBlock lang="tsx" title="Let's get started 🚀" code={snippet} />
+
+## Analytics
+
+BUI components with navigation behavior — Link, ButtonLink, Tab, MenuItem, Tag, and Row — can fire analytics events when clicked. To enable this, you need to connect BUI's analytics layer to Backstage's analytics system.
+
+### Setup
+
+If you're using the **new frontend system**, analytics is wired automatically via `@backstage/plugin-app` — no setup required.
+
+For the **old frontend system**, the `AnalyticsProvider` is included in the app shell from `@backstage/core-app-api` and works out of the box.
+
+If you need to set up the provider manually (e.g. in a custom app shell), wrap your app content with the `AnalyticsProvider` and pass in Backstage's `useAnalytics` hook:
+
+<CodeBlock lang="tsx" code={analyticsSetupSnippet} />
+
+### How it works
+
+Once configured, BUI components fire a `click` event through Backstage's analytics system when a user navigates. Events include the link text as the subject and the destination URL in the attributes, along with any `AnalyticsContext` metadata (such as `pluginId`) from the component's position in the tree.
+
+To suppress tracking on an individual component, use the `noTrack` prop:
+
+<CodeBlock lang="tsx" code={analyticsNoTrackSnippet} />

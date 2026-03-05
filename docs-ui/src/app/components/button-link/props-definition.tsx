@@ -62,6 +62,11 @@ export const buttonLinkPropDefs: Record<string, PropDef> = {
       </>
     ),
   },
+  noTrack: {
+    type: 'boolean',
+    description:
+      'Suppresses analytics event tracking for this component (if configured).',
+  },
   onSurface: {
     type: 'enum',
     values: ['0', '1', '2', '3', 'danger', 'warning', 'success', 'auto'],

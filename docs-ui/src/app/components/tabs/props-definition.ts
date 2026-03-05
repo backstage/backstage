@@ -68,6 +68,11 @@ export const tabPropDefs: Record<string, PropDef> = {
     default: 'false',
     description: 'Disables this tab. Use for temporarily unavailable options.',
   },
+  noTrack: {
+    type: 'boolean',
+    description:
+      'Suppresses analytics event tracking for this component (if configured).',
+  },
   ...childrenPropDefs,
   ...classNamePropDefs,
 };
