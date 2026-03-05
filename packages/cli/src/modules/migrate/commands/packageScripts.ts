@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph, PackageRoles, PackageRole } from '@backstage/cli-node';
+import type { CommandContext } from '../../../wiring/types';
 
 const configArgPattern = /--config[=\s][^\s$]+/;
 
 const noStartRoles: PackageRole[] = ['cli', 'common-library'];
 
-export async function command() {
+export default async ({ args, info }: CommandContext) => {
+  cli({ help: info }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 
   await Promise.all(
@@ -56,14 +59,14 @@ export async function command() {
       // For test scripts we keep all existing flags except for --passWithNoTests, since that's now default
       const testCmd = ['test'];
       if (scripts.test?.startsWith('backstage-cli test')) {
-        const args = scripts.test
+        const testArgs = scripts.test
           .slice('backstage-cli test'.length)
           .split(' ')
           .filter(Boolean);
-        if (args.includes('--passWithNoTests')) {
-          args.splice(args.indexOf('--passWithNoTests'), 1);
+        if (testArgs.includes('--passWithNoTests')) {
+          testArgs.splice(testArgs.indexOf('--passWithNoTests'), 1);
         }
-        testCmd.push(...args);
+        testCmd.push(...testArgs);
       }
 
       const expectedScripts = {
@@ -104,4 +107,4 @@ export async function command() {
       }
     }),
   );
-}
+};

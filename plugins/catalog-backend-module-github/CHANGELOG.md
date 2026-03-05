@@ -1,5 +1,69 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.13.0-next.1
+
+### Minor Changes
+
+- b11c2cd: The default user transformer now prefers organization verified domain emails over the user's public GitHub email when populating the user entity profile. It also strips plus-addressed routing tags that GitHub adds to these emails.
+
+  If you want to retain the old behavior, you can do so with a custom user transformer using the `githubOrgEntityProviderTransformsExtensionPoint`:
+
+  ```ts
+  import { createBackendModule } from '@backstage/backend-plugin-api';
+  import { githubOrgEntityProviderTransformsExtensionPoint } from '@backstage/plugin-catalog-backend-module-github-org';
+  import { defaultUserTransformer } from '@backstage/plugin-catalog-backend-module-github';
+
+  export default createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'github-org-custom-transforms',
+    register(env) {
+      env.registerInit({
+        deps: {
+          transforms: githubOrgEntityProviderTransformsExtensionPoint,
+        },
+        async init({ transforms }) {
+          transforms.setUserTransformer(async (item, ctx) => {
+            const entity = await defaultUserTransformer(item, ctx);
+            if (entity && item.email) {
+              entity.spec.profile!.email = item.email;
+            }
+            return entity;
+          });
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-events-node@0.4.20-next.0
+
+## 0.12.3-next.0
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-events-node@0.4.20-next.0
+
 ## 0.12.2
 
 ### Patch Changes

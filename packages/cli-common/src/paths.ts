@@ -119,7 +119,23 @@ export function findOwnRootDir(ownDir: string) {
     );
   }
 
-  return resolvePath(ownDir, '../..');
+  const rootDir = findRootPath(ownDir, pkgJsonPath => {
+    try {
+      const content = fs.readFileSync(pkgJsonPath, 'utf8');
+      const data = JSON.parse(content);
+      return Boolean(data.workspaces);
+    } catch (error) {
+      throw new Error(
+        `Failed to read package.json at '${pkgJsonPath}', ${error}`,
+      );
+    }
+  });
+
+  if (!rootDir) {
+    throw new Error(`No monorepo root found when searching from '${ownDir}'`);
+  }
+
+  return rootDir;
 }
 
 // Hierarchical directory cache shared across all OwnPathsImpl instances.
@@ -197,11 +213,6 @@ class OwnPathsImpl implements OwnPaths {
   resolveRoot = (...paths: string[]): string => {
     return resolvePath(this.rootDir, ...paths);
   };
-}
-
-// Finds the root of a given package
-export function findOwnDir(searchDir: string) {
-  return OwnPathsImpl.findDir(searchDir);
 }
 
 // Used by the test utility in testUtils.ts to override targetPaths

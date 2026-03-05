@@ -19,11 +19,11 @@ import { resolve as resolvePath } from 'node:path';
 import {
   getModuleFederationRemoteOptions,
   serveBundle,
-} from '../../../../build/lib/bundler';
+} from '../../../lib/bundler';
 import { targetPaths } from '@backstage/cli-common';
 
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { hasReactDomClient } from '../../../../build/lib/bundler/hasReactDomClient';
+import { hasReactDomClient } from '../../../lib/bundler/hasReactDomClient';
 
 interface StartAppOptions {
   verifyVersions?: boolean;

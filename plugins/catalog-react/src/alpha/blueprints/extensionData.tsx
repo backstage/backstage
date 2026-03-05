@@ -47,6 +47,10 @@ export type EntityContentGroupDefinitions = Record<
   {
     title: string;
     icon?: string | ReactElement;
+    /** Other group IDs that should be treated as aliases for this group. */
+    aliases?: string[];
+    /** How to sort the content items within this group. Overrides the page-level default. */
+    contentOrder?: 'title' | 'natural';
   }
 >;
 

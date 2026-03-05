@@ -14,20 +14,81 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type {
+  TabsOwnProps,
+  TabListOwnProps,
+  TabOwnProps,
+  TabPanelOwnProps,
+  TabsIndicatorsOwnProps,
+} from './types';
+import styles from './Tabs.module.css';
 
 /**
  * Component definition for Tabs
  * @public
  */
-export const TabsDefinition = {
+export const TabsDefinition = defineComponent<TabsOwnProps>()({
+  styles,
   classNames: {
-    tabs: 'bui-Tabs',
-    tabList: 'bui-TabList',
-    tabListWrapper: 'bui-TabListWrapper',
-    tab: 'bui-Tab',
-    tabActive: 'bui-TabActive',
-    tabHovered: 'bui-TabHovered',
-    panel: 'bui-TabPanel',
+    root: 'bui-Tabs',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    className: {},
+    children: {},
+  },
+});
+
+/** @internal */
+export const TabListDefinition = defineComponent<TabListOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TabListWrapper',
+    tabList: 'bui-TabList',
+  },
+  propDefs: {
+    className: {},
+    children: {},
+  },
+});
+
+/** @internal */
+export const TabDefinition = defineComponent<TabOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-Tab',
+  },
+  propDefs: {
+    className: {},
+    matchStrategy: {},
+    href: {},
+    id: {},
+  },
+});
+
+/** @internal */
+export const TabPanelDefinition = defineComponent<TabPanelOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TabPanel',
+  },
+  propDefs: {
+    className: {},
+  },
+});
+
+/** @internal */
+export const TabsIndicatorsDefinition =
+  defineComponent<TabsIndicatorsOwnProps>()({
+    styles,
+    classNames: {
+      root: 'bui-TabActive',
+      hovered: 'bui-TabHovered',
+    },
+    propDefs: {
+      tabRefs: {},
+      tabsRef: {},
+      hoveredKey: {},
+      prevHoveredKey: {},
+    },
+  });

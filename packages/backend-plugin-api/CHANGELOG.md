@@ -1,5 +1,19 @@
 # @backstage/backend-plugin-api
 
+## 1.7.1-next.0
+
+### Patch Changes
+
+- 1ee5b28: Adds an alpha `MetricsService` to provide a unified interface for metrics instrumentation across Backstage plugins.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.14-next.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
 ## 1.7.0
 
 ### Minor Changes

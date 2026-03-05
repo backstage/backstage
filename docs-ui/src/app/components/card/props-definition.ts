@@ -15,6 +15,25 @@ const optionalChildrenPropDef: Record<string, PropDef> = {
 
 export const cardPropDefs: Record<string, PropDef> = {
   ...optionalChildrenPropDef,
+  onPress: {
+    type: 'enum',
+    values: ['() => void'],
+    responsive: false,
+    description:
+      'Handler called when the card is pressed. Makes the card interactive as a button. Requires label.',
+  },
+  href: {
+    type: 'string',
+    responsive: false,
+    description:
+      'URL to navigate to. Makes the card interactive as a link. Mutually exclusive with onPress.',
+  },
+  label: {
+    type: 'string',
+    responsive: false,
+    description:
+      'Accessible label announced by screen readers for the interactive overlay. Required when onPress or href is provided.',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };

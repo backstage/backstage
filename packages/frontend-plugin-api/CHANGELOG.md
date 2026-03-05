@@ -1,5 +1,15 @@
 # @backstage/frontend-plugin-api
 
+## 0.14.2-next.0
+
+### Patch Changes
+
+- 9c81af9: Made the `pluginId` property optional in the `FrontendFeature` type, allowing plugins published against older versions of the framework to be used without type errors.
+- Updated dependencies
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
 ## 0.14.0
 
 ### Minor Changes

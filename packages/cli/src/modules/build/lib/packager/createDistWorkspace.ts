@@ -44,7 +44,7 @@ import {
   PackageGraphNode,
   runConcurrentTasks,
 } from '@backstage/cli-node';
-import { createTypeDistProject } from '../../../../lib/typeDistProject';
+import { createTypeDistProject } from '../typeDistProject';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [

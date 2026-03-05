@@ -14,18 +14,41 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { TagGroupOwnProps, TagOwnProps } from './types';
+import styles from './TagGroup.module.css';
 
 /**
  * Component definition for TagGroup
  * @public
  */
-export const TagGroupDefinition = {
+export const TagGroupDefinition = defineComponent<TagGroupOwnProps>()({
+  styles,
   classNames: {
-    group: 'bui-TagGroup',
+    root: 'bui-TagGroup',
     list: 'bui-TagList',
-    tag: 'bui-Tag',
-    tagIcon: 'bui-TagIcon',
-    tagRemoveButton: 'bui-TagRemoveButton',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    items: {},
+    children: {},
+    renderEmptyState: {},
+    className: {},
+  },
+});
+
+/** @internal */
+export const TagDefinition = defineComponent<TagOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-Tag',
+    icon: 'bui-TagIcon',
+    removeButton: 'bui-TagRemoveButton',
+  },
+  propDefs: {
+    icon: {},
+    size: { dataAttribute: true, default: 'small' },
+    href: {},
+    children: {},
+    className: {},
+  },
+});

@@ -60,7 +60,10 @@ export type ExtensionDataContainer<UExtensionData extends ExtensionDataRef> =
       : never;
   };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Moved to {@link @backstage/frontend-app-api#ExtensionFactoryMiddleware}
+ */
 export type ExtensionFactoryMiddleware = (
   originalFactory: (contextOverrides?: {
     config?: JsonObject;

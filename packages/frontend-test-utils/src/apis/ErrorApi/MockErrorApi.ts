@@ -24,15 +24,16 @@ import { Observable } from '@backstage/types';
 /**
  * Constructor arguments for {@link MockErrorApi}
  * @public
+ * @deprecated Use `mockApis.error()` instead.
  */
 export type MockErrorApiOptions = {
-  // Need to be true if getErrors is used in testing.
   collect?: boolean;
 };
 
 /**
  * ErrorWithContext contains error and ErrorApiErrorContext
  * @public
+ * @deprecated Use the return type of `MockErrorApi.getErrors` instead.
  */
 export type ErrorWithContext = {
   error: ErrorApiError;
@@ -41,7 +42,10 @@ export type ErrorWithContext = {
 
 type Waiter = {
   pattern: RegExp;
-  resolve: (err: ErrorWithContext) => void;
+  resolve: (err: {
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
+  }) => void;
 };
 
 const nullObservable = {
@@ -56,12 +60,16 @@ const nullObservable = {
  * Mock implementation of the {@link core-plugin-api#ErrorApi} to be used in tests.
  * Includes withForError and getErrors methods for error testing.
  * @public
+ * @deprecated Use `mockApis.error()` instead.
  */
 export class MockErrorApi implements ErrorApi {
-  private readonly errors = new Array<ErrorWithContext>();
+  private readonly errors = new Array<{
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
+  }>();
   private readonly waiters = new Set<Waiter>();
 
-  constructor(private readonly options: MockErrorApiOptions = {}) {}
+  constructor(private readonly options: { collect?: boolean } = {}) {}
 
   post(error: ErrorApiError, context?: ErrorApiErrorContext) {
     if (this.options.collect) {
@@ -87,15 +95,18 @@ export class MockErrorApi implements ErrorApi {
     return nullObservable;
   }
 
-  getErrors(): ErrorWithContext[] {
+  getErrors(): { error: ErrorApiError; context?: ErrorApiErrorContext }[] {
     return this.errors;
   }
 
   waitForError(
     pattern: RegExp,
     timeoutMs: number = 2000,
-  ): Promise<ErrorWithContext> {
-    return new Promise<ErrorWithContext>((resolve, reject) => {
+  ): Promise<{ error: ErrorApiError; context?: ErrorApiErrorContext }> {
+    return new Promise<{
+      error: ErrorApiError;
+      context?: ErrorApiErrorContext;
+    }>((resolve, reject) => {
       setTimeout(() => {
         reject(new Error('Timed out waiting for error'));
       }, timeoutMs);

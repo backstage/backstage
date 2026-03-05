@@ -22,7 +22,7 @@ import yargs from 'yargs';
 import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'node:path';
 import { Command, OptionValues } from 'commander';
-import { Lockfile, PackageGraph } from '@backstage/cli-node';
+import { Lockfile, PackageGraph, SuccessCache } from '@backstage/cli-node';
 
 import {
   runCheck,
@@ -31,7 +31,6 @@ import {
   findOwnPaths,
   isChildPath,
 } from '@backstage/cli-common';
-import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
 type JestProject = {
   displayName: string;
@@ -305,11 +304,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     }--no-node-snapshot`;
   }
 
-  // This ensures that the process doesn't exit too early before stdout is flushed
   if (args.includes('--jest-help')) {
     removeOptionArg(args, '--jest-help');
     args.push('--help');
-    (process.stdout as any)._handle.setBlocking(true);
   }
 
   // This code path is enabled by the --successCache flag, which is specific to
@@ -333,7 +330,10 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       );
     }
 
-    const cache = new SuccessCache('test', opts.successCacheDir);
+    const cache = SuccessCache.create({
+      name: 'test',
+      basePath: opts.successCacheDir,
+    });
     const graph = await getPackageGraph();
 
     // Shared state for the bridge

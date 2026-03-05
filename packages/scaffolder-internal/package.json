@@ -1,6 +1,6 @@
 {
   "name": "@internal/scaffolder",
-  "version": "0.0.18",
+  "version": "0.0.19-next.0",
   "backstage": {
     "role": "web-library",
     "inline": true

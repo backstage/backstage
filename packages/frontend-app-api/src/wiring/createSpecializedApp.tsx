@@ -29,9 +29,9 @@ import {
   createApiFactory,
   routeResolutionApiRef,
   AppNode,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
 } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from './types';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -254,17 +254,6 @@ export type CreateSpecializedAppOptions = {
      * those APIs yourself.
      */
     apis?: ApiHolder;
-
-    /**
-     * If set to true, the system will silently accept and move on if
-     * encountering config for extensions that do not exist. The default is to
-     * reject such config to help catch simple mistakes.
-     *
-     * This flag can be useful in some scenarios where you have a dynamic set of
-     * extensions enabled at different times, but also increases the risk of
-     * accidentally missing e.g. simple typos in your config.
-     */
-    allowUnknownExtensionConfig?: boolean;
 
     /**
      * Applies one or more middleware on every extension, as they are added to

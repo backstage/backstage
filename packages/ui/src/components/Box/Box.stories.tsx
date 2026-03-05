@@ -353,17 +353,20 @@ export const BackgroundColors = meta.story({
   render: args => (
     <Flex align="center" style={{ flexWrap: 'wrap' }}>
       <Box {...args}>Default</Box>
-      <Box bg="neutral-1" {...args}>
-        Neutral 1
+      <Box bg="neutral" {...args}>
+        Neutral (level 1)
       </Box>
-      <Box bg="neutral-2" {...args}>
-        Neutral 2
+      <Box bg="neutral">
+        <Box bg="neutral" {...args}>
+          Neutral (level 2)
+        </Box>
       </Box>
-      <Box bg="neutral-3" {...args}>
-        Neutral 3
-      </Box>
-      <Box bg={{ initial: 'neutral-1', sm: 'neutral-2' }} {...args}>
-        Responsive Neutral
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" {...args}>
+            Neutral (level 3)
+          </Box>
+        </Box>
       </Box>
       <Box bg="danger" {...args}>
         Danger
@@ -381,11 +384,11 @@ export const BackgroundColors = meta.story({
 export const NestedNeutralColors = meta.story({
   args: { px: '6', py: '4', children: null },
   render: args => (
-    <Box {...args} bg="neutral-1">
+    <Box {...args} bg="neutral">
       <Button variant="secondary">Button (on neutral-1)</Button>
-      <Box {...args} bg="neutral-2" mt="4">
+      <Box {...args} bg="neutral" mt="4">
         <Button variant="secondary">Button (on neutral-2)</Button>
-        <Box {...args} bg="neutral-3" mt="4">
+        <Box {...args} bg="neutral" mt="4">
           <Button variant="secondary">Button (on neutral-3)</Button>
         </Box>
       </Box>

@@ -25,7 +25,7 @@ import type { LinkProps as AriaLinkProps } from 'react-aria-components';
 import type { ReactNode } from 'react';
 
 /** @public */
-export interface LinkProps extends AriaLinkProps {
+export type LinkOwnProps = {
   variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
   weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
   color?:
@@ -34,10 +34,12 @@ export interface LinkProps extends AriaLinkProps {
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
   standalone?: boolean;
-
-  // This is used to set the title attribute on the link
   title?: string;
-
-  // This is used to set the children of the link
   children?: ReactNode;
-}
+  className?: string;
+};
+
+/** @public */
+export interface LinkProps
+  extends Omit<AriaLinkProps, 'children' | 'className'>,
+    LinkOwnProps {}

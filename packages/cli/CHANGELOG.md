@@ -1,5 +1,61 @@
 # @backstage/cli
 
+## 0.36.0-next.1
+
+### Minor Changes
+
+- b36a60d: **BREAKING**: The `migrate package-exports` command has been removed. Use `repo fix` instead.
+
+### Patch Changes
+
+- 0d2d0f2: Internal refactor of CLI modularization, moving individual commands to be implemented with cleye.
+- 2fcba39: Internal refactor to move shared utilities into their consuming modules, reducing cross-module dependencies.
+- c85ac86: Internal refactor to split `loadCliConfig` into separate implementations for the build and config CLI modules, removing a cross-module dependency.
+- 61cb976: Migrated internal versioning utilities to use `@backstage/cli-node` instead of a local implementation.
+- 825c81d: Internal refactor of CLI command modules.
+- a9d23c4: Properly support `package.json` `workspaces` field
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+  - @backstage/cli-node@0.2.19-next.1
+  - @backstage/module-federation-common@0.1.2-next.0
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.2.2-next.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.2
+
+## 0.35.5-next.0
+
+### Patch Changes
+
+- 246877a: Updated dependency `bfj` to `^9.0.2`.
+- bba2e49: Internal refactor to use new concurrency utilities from `@backstage/cli-node`.
+- fd50cb3: Added `translations export` and `translations import` commands for managing translation files.
+
+  The `translations export` command discovers all `TranslationRef` definitions across frontend plugin dependencies and exports their default messages as JSON files. The `translations import` command generates `TranslationResource` wiring code from translated JSON files, ready to be plugged into the app.
+
+  Both commands support a `--pattern` option for controlling the message file layout, for example `--pattern '{lang}/{id}.json'` for language-based directory grouping.
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- 092b41f: Updated dependency `webpack` to `~5.105.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.0
+  - @backstage/cli-node@0.2.19-next.0
+  - @backstage/eslint-plugin@0.2.2-next.0
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/module-federation-common@0.1.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.2
+
 ## 0.35.4
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ReactElement, ReactNode, CSSProperties } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import type { LinkProps as RALinkProps } from 'react-aria-components';
 import type { Responsive } from '../../types';
 
@@ -26,7 +26,6 @@ export type ButtonLinkOwnProps = {
   iconEnd?: ReactElement;
   children?: ReactNode;
   className?: string;
-  style?: CSSProperties;
 };
 
 /**
@@ -35,5 +34,5 @@ export type ButtonLinkOwnProps = {
  * @public
  */
 export interface ButtonLinkProps
-  extends Omit<RALinkProps, 'children' | 'className' | 'style'>,
+  extends Omit<RALinkProps, keyof ButtonLinkOwnProps>,
     ButtonLinkOwnProps {}

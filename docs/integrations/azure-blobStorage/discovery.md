@@ -5,10 +5,6 @@ sidebar_label: Discovery
 description: Automatically discovering catalog entities from an Azure Blob Storage account
 ---
 
-:::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md).
-:::
-
 The Azure Blob Storage account integration has a special entity provider for discovering catalog
 entities located in a storage account container. If you have a container that contains multiple
 catalog files, and you want to automatically discover them, you can use this

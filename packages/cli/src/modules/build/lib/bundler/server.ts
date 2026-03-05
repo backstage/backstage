@@ -24,7 +24,7 @@ import { RspackDevServer } from '@rspack/dev-server';
 
 import { targetPaths } from '@backstage/cli-common';
 
-import { loadCliConfig } from '../../../config/lib/config';
+import { loadCliConfig } from '../config';
 import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';

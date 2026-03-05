@@ -21,7 +21,7 @@
     max-width: 120rem;
     padding-inline: var(--bui-space-4);
     margin-inline: auto;
-    transition: padding 0.2s ease-in-out;
+    padding-bottom: var(--bui-space-8);
   }
 
   @media (min-width: 640px) {

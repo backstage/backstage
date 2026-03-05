@@ -285,12 +285,12 @@ export interface ScaffolderApi {
    *
    * @param taskId - the id of the task
    */
-  retry?(
+  retry(
     taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{ id: string }>;
 
-  listTasks?(
+  listTasks(
     request: {
       filterByOwnership: 'owned' | 'all';
       limit?: number;
@@ -311,7 +311,7 @@ export interface ScaffolderApi {
   /**
    * Returns a structure describing the available templating extensions.
    */
-  listTemplatingExtensions?(
+  listTemplatingExtensions(
     options?: ScaffolderRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse>;
 
@@ -320,12 +320,12 @@ export interface ScaffolderApi {
     options?: ScaffolderRequestOptions,
   ): Observable<LogEvent>;
 
-  dryRun?(
+  dryRun(
     request: ScaffolderDryRunOptions,
     options?: ScaffolderRequestOptions,
   ): Promise<ScaffolderDryRunResponse>;
 
-  autocomplete?(
+  autocomplete(
     request: {
       token: string;
       provider: string;

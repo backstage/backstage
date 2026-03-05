@@ -479,6 +479,87 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
+  describe('POST /entities/by-query', () => {
+    it('queries entities with a predicate filter', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: {},
+        totalItems: 1,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ query: { kind: 'b' }, limit: 10 });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items,
+        totalItems: 1,
+        pageInfo: {},
+      });
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: { kind: 'b' },
+          limit: 10,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+
+    it('queries entities with an offset', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: {},
+        totalItems: 5,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ query: { kind: 'b' }, limit: 2, offset: 3 });
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: { kind: 'b' },
+          limit: 2,
+          offset: 3,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+
+    it('paginates with a cursor in the body', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      const cursor = mockCursor({ totalItems: 100, isPrevious: false });
+
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: { nextCursor: mockCursor() },
+        totalItems: 100,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ cursor: encodeCursor(cursor) });
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cursor,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+  });
+
   describe('GET /entities/by-uid/:uid', () => {
     it('can fetch entity by uid', async () => {
       const entity: Entity = {
@@ -641,6 +722,85 @@ describe('createRouter readonly disabled', () => {
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ items: [entity] });
+    });
+  });
+
+  describe('POST /entities/by-refs with query predicate', () => {
+    it('can fetch entities by refs with a predicate query', async () => {
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'component',
+        metadata: {
+          name: 'a',
+        },
+      };
+      const entityRef = stringifyEntityRef(entity);
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: { type: 'object', entities: [entity] },
+      });
+      const response = await request(app)
+        .post('/entities/by-refs')
+        .set('Content-Type', 'application/json')
+        .send(
+          JSON.stringify({
+            entityRefs: [entityRef],
+            query: { kind: 'Component' },
+          }),
+        );
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: [entityRef],
+        fields: undefined,
+        credentials: mockCredentials.user(),
+        filter: undefined,
+        query: { kind: 'Component' },
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ items: [entity] });
+    });
+
+    it('forwards both filter query param and body query predicate independently', async () => {
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'component',
+        metadata: {
+          name: 'a',
+        },
+      };
+      const entityRef = stringifyEntityRef(entity);
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: { type: 'object', entities: [entity] },
+      });
+      const response = await request(app)
+        .post('/entities/by-refs?filter=kind=Component')
+        .set('Content-Type', 'application/json')
+        .send(
+          JSON.stringify({
+            entityRefs: [entityRef],
+            query: { 'metadata.namespace': 'default' },
+          }),
+        );
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: [entityRef],
+        fields: undefined,
+        credentials: mockCredentials.user(),
+        filter: { key: 'kind', values: ['Component'] },
+        query: { 'metadata.namespace': 'default' },
+      });
+      expect(response.status).toEqual(200);
+    });
+
+    it('rejects invalid query predicate', async () => {
+      const response = await request(app)
+        .post('/entities/by-refs')
+        .set('Content-Type', 'application/json')
+        .send(
+          JSON.stringify({
+            entityRefs: ['component:default/a'],
+            query: { $invalid: 'bad' },
+          }),
+        );
+      expect(response.status).toEqual(400);
     });
   });
 
@@ -1107,6 +1267,89 @@ describe('createRouter readonly disabled', () => {
       expect(response.body.error.message).toMatch(
         /The given location.target is not a URL/,
       );
+    });
+  });
+
+  describe('GET /entity-facets', () => {
+    it('returns facets', async () => {
+      entitiesCatalog.facets.mockResolvedValue({
+        facets: { kind: [{ value: 'Component', count: 5 }] },
+      });
+
+      const response = await request(app).get('/entity-facets?facet=kind');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        facets: { kind: [{ value: 'Component', count: 5 }] },
+      });
+    });
+
+    it('returns facets with filter parameter', async () => {
+      entitiesCatalog.facets.mockResolvedValue({
+        facets: { 'spec.type': [{ value: 'service', count: 3 }] },
+      });
+
+      const response = await request(app).get(
+        '/entity-facets?facet=spec.type&filter=kind=Component',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        facets: { 'spec.type': [{ value: 'service', count: 3 }] },
+      });
+      expect(entitiesCatalog.facets).toHaveBeenCalledWith(
+        expect.objectContaining({
+          facets: ['spec.type'],
+          filter: { key: 'kind', values: ['Component'] },
+        }),
+      );
+    });
+  });
+
+  describe('POST /entity-facets', () => {
+    it('returns facets with predicate query', async () => {
+      entitiesCatalog.facets.mockResolvedValue({
+        facets: { 'spec.type': [{ value: 'service', count: 3 }] },
+      });
+
+      const response = await request(app)
+        .post('/entity-facets')
+        .send({
+          facets: ['spec.type'],
+          query: { kind: 'Component' },
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        facets: { 'spec.type': [{ value: 'service', count: 3 }] },
+      });
+      expect(entitiesCatalog.facets).toHaveBeenCalledWith(
+        expect.objectContaining({
+          facets: ['spec.type'],
+          query: { kind: 'Component' },
+        }),
+      );
+    });
+
+    it('returns facets without query predicate', async () => {
+      entitiesCatalog.facets.mockResolvedValue({
+        facets: { kind: [{ value: 'Component', count: 5 }] },
+      });
+
+      const response = await request(app)
+        .post('/entity-facets')
+        .send({ facets: ['kind'] });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        facets: { kind: [{ value: 'Component', count: 5 }] },
+      });
+    });
+
+    it('returns 400 for missing facets', async () => {
+      const response = await request(app)
+        .post('/entity-facets')
+        .send({ query: { kind: 'Component' } });
+
+      expect(response.status).toBe(400);
     });
   });
 });

@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { FieldLabelOwnProps } from './types';
+import styles from './FieldLabel.module.css';
 
 /**
  * Component definition for FieldLabel
  * @public
  */
-export const FieldLabelDefinition = {
+export const FieldLabelDefinition = defineComponent<FieldLabelOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-FieldLabelWrapper',
     label: 'bui-FieldLabel',
     secondaryLabel: 'bui-FieldSecondaryLabel',
     description: 'bui-FieldDescription',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    label: {},
+    secondaryLabel: {},
+    description: {},
+    htmlFor: {},
+    id: {},
+    className: {},
+  },
+});

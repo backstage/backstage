@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import { targetPaths } from '@backstage/cli-common';
 import fs from 'fs-extra';
 import { dirname, resolve as resolvePath } from 'node:path';
@@ -28,16 +29,38 @@ import {
 } from '../lib/extractTranslations';
 import {
   DEFAULT_LANGUAGE,
+  DEFAULT_MESSAGE_PATTERN,
   formatMessagePath,
   validatePattern,
 } from '../lib/messageFilePath';
+import type { CommandContext } from '../../../wiring/types';
 
-interface ExportOptions {
-  output: string;
-  pattern: string;
-}
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { output, pattern },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        output: {
+          type: String,
+          default: 'translations',
+          description: 'Output directory for exported messages and manifest',
+        },
+        pattern: {
+          type: String,
+          default: DEFAULT_MESSAGE_PATTERN,
+          description:
+            'File path pattern for message files, with {id} and {lang} placeholders',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-export default async (options: ExportOptions) => {
+  const options = { output, pattern };
+
   validatePattern(options.pattern);
 
   const targetPackageJson = await readTargetPackage(

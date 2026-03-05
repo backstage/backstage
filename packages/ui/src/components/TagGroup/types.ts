@@ -21,27 +21,50 @@ import type {
 } from 'react-aria-components';
 
 /**
+ * Own props for the TagGroup component.
+ *
+ * @public
+ */
+export type TagGroupOwnProps<T = object> = {
+  items?: ReactAriaTagListProps<T>['items'];
+  children?: ReactAriaTagListProps<T>['children'];
+  renderEmptyState?: ReactAriaTagListProps<T>['renderEmptyState'];
+  className?: string;
+};
+
+/**
  * Props for the TagGroup component.
  *
  * @public
  */
 export interface TagGroupProps<T>
-  extends Omit<ReactAriaTagGroupProps, 'children'>,
-    Pick<ReactAriaTagListProps<T>, 'items' | 'children' | 'renderEmptyState'> {}
+  extends TagGroupOwnProps<T>,
+    Omit<ReactAriaTagGroupProps, 'children' | keyof TagGroupOwnProps> {}
+
+/**
+ * Own props for the Tag component.
+ *
+ * @public
+ */
+export type TagOwnProps = {
+  /**
+   * The icon to display in the chip.
+   */
+  icon?: React.ReactNode;
+  /**
+   * The size of the chip.
+   */
+  size?: 'small' | 'medium';
+  href?: ReactAriaTagProps['href'];
+  children?: ReactAriaTagProps['children'];
+  className?: string;
+};
 
 /**
  * Props for the Tag component.
  *
  * @public
  */
-export interface TagProps extends ReactAriaTagProps {
-  /**
-   * The icon to display in the chip.
-   */
-  icon?: React.ReactNode;
-
-  /**
-   * The size of the chip.
-   */
-  size?: 'small' | 'medium';
-}
+export interface TagProps
+  extends TagOwnProps,
+    Omit<ReactAriaTagProps, keyof TagOwnProps> {}

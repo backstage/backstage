@@ -15,7 +15,7 @@
  */
 import { createCliPlugin } from '../../wiring/factory';
 import { Command } from 'commander';
-import { lazy } from '../../lib/lazy';
+import { lazy } from '../../wiring/lazy';
 import { NotImplementedError } from '@backstage/errors';
 
 export default createCliPlugin({

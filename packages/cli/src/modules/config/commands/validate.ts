@@ -14,16 +14,47 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { loadCliConfig } from '../lib/config';
+import type { CommandContext } from '../../../wiring/types';
 
-export default async (opts: OptionValues) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { config, lax, frontend, deprecated, strict, package: pkg },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        package: {
+          type: String,
+          description: 'Package to validate config for',
+        },
+        lax: {
+          type: Boolean,
+          description: 'Do not require environment variables to be set',
+        },
+        frontend: {
+          type: Boolean,
+          description: 'Only validate frontend config',
+        },
+        deprecated: { type: Boolean, description: 'Output deprecated keys' },
+        strict: { type: Boolean, description: 'Enable strict validation' },
+        config: {
+          type: [String],
+          description: 'Config files to load instead of app-config.yaml',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   await loadCliConfig({
-    args: opts.config,
-    fromPackage: opts.package,
-    mockEnv: opts.lax,
-    fullVisibility: !opts.frontend,
-    withDeprecatedKeys: opts.deprecated,
-    strict: opts.strict,
+    args: config,
+    fromPackage: pkg,
+    mockEnv: lax,
+    fullVisibility: !frontend,
+    withDeprecatedKeys: deprecated,
+    strict,
   });
 };

@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  fixPackageExports,
-  readFixablePackages,
-  writeFixedPackages,
-} from '../../maintenance/commands/repo/fix';
+import { cli } from 'cleye';
+import type { CommandContext } from '../../../wiring/types';
 
-export async function command() {
-  console.log(
-    'The `migrate package-exports` command is deprecated, use `repo fix` instead.',
+export default async ({ args, info }: CommandContext) => {
+  cli({ help: info }, undefined, args);
+  throw new Error(
+    'The `migrate package-exports` command has been removed, use `repo fix` instead.',
   );
-  const packages = await readFixablePackages();
-
-  for (const pkg of packages) {
-    fixPackageExports(pkg);
-  }
-
-  await writeFixedPackages(packages);
-}
+};

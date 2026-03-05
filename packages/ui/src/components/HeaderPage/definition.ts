@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { HeaderPageOwnProps } from './types';
+import styles from './HeaderPage.module.css';
 
 /**
  * Component definition for HeaderPage
  * @public
  */
-export const HeaderPageDefinition = {
+export const HeaderPageDefinition = defineComponent<HeaderPageOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-HeaderPage',
     content: 'bui-HeaderPageContent',
@@ -28,4 +31,11 @@ export const HeaderPageDefinition = {
     tabsWrapper: 'bui-HeaderPageTabsWrapper',
     controls: 'bui-HeaderPageControls',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    title: {},
+    customActions: {},
+    tabs: {},
+    breadcrumbs: {},
+    className: {},
+  },
+});

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph, PackageRoles } from '@backstage/cli-node';
+import type { CommandContext } from '../../../wiring/types';
 
 const REACT_ROUTER_DEPS = ['react-router', 'react-router-dom'];
 const REACT_ROUTER_RANGE = '6.0.0-beta.0 || ^6.3.0';
 
-export async function command() {
+export default async ({ args, info }: CommandContext) => {
+  cli({ help: info }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 
   await Promise.all(
@@ -56,4 +59,4 @@ export async function command() {
       }
     }),
   );
-}
+};
