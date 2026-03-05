@@ -14,35 +14,37 @@
  * limitations under the License.
  */
 
-import AddIcon from '@material-ui/icons/Add';
-import WarningIcon from '@material-ui/icons/Warning';
-import EditIcon from '@material-ui/icons/Edit';
-import Chip, { ChipProps } from '@material-ui/core/Chip';
+import { type ReactNode } from 'react';
+import { Plus, AlertTriangle, Pencil } from 'lucide-react';
+import { Badge, type BadgeProps } from '../ui/badge';
 
-const icons = {
-  AddIcon: <AddIcon />,
-  WarningIcon: <WarningIcon />,
-  EditIcon: <EditIcon />,
+const icons: Record<string, ReactNode> = {
+  Plus: <Plus className="h-3 w-3 mr-1" />,
+  AlertTriangle: <AlertTriangle className="h-3 w-3 mr-1" />,
+  Pencil: <Pencil className="h-3 w-3 mr-1" />,
   None: null,
 };
 
 const defaultArgs = {
-  label: 'Label',
-  size: 'medium',
-  variant: 'default',
+  children: 'Label',
+  variant: 'default' as const,
   icon: 'None',
 };
 
 export default {
-  title: 'Data Display/Chip',
-  component: Chip,
+  title: 'Data Display/Badge',
+  component: Badge,
   argTypes: {
-    size: {
-      options: ['small', 'medium'],
-      control: { type: 'select' },
-    },
     variant: {
-      options: ['default', 'outlined'],
+      options: [
+        'default',
+        'secondary',
+        'destructive',
+        'outline',
+        'success',
+        'warning',
+        'info',
+      ],
       control: { type: 'select' },
     },
     icon: {
@@ -56,10 +58,27 @@ export default {
   tags: ['!manifest'],
 };
 
-export const Default = (args: ChipProps) => <Chip {...args} />;
+export const Default = (args: BadgeProps & { icon?: ReactNode }) => {
+  const { icon, children, ...rest } = args;
+  return (
+    <Badge {...rest}>
+      {icon}
+      {children}
+    </Badge>
+  );
+};
 Default.args = defaultArgs;
 
-export const Deletable = (args: ChipProps) => (
-  <Chip {...args} onDelete={() => ({})} />
-);
-Deletable.args = defaultArgs;
+export const WithIcon = (args: BadgeProps & { icon?: ReactNode }) => {
+  const { icon, children, ...rest } = args;
+  return (
+    <Badge {...rest}>
+      {icon}
+      {children}
+    </Badge>
+  );
+};
+WithIcon.args = {
+  ...defaultArgs,
+  icon: 'Plus',
+};
