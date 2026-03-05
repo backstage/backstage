@@ -20,6 +20,7 @@ import type { DisclosureProps } from 'react-aria-components';
 import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import type { HeadingProps } from 'react-aria-components';
+import type { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import type { LinkProps as LinkProps_2 } from 'react-aria-components';
 import type { ListBoxItemProps } from 'react-aria-components';
@@ -1333,7 +1334,9 @@ export type GridItemOwnProps = {
 };
 
 // @public (undocumented)
-export interface GridItemProps extends GridItemOwnProps {
+export interface GridItemProps
+  extends GridItemOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
   colEnd?: Responsive<Columns>;
   // (undocumented)
@@ -1353,7 +1356,10 @@ export type GridOwnProps = {
 };
 
 // @public (undocumented)
-export interface GridProps extends SpaceProps, GridOwnProps {
+export interface GridProps
+  extends SpaceProps,
+    GridOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
   columns?: Responsive<Columns>;
   // (undocumented)
