@@ -86,7 +86,7 @@ export function createExtensionTester<
   },
 ): ExtensionTester<NonNullable<T['output']>>;
 
-// @public
+// @public @deprecated
 export type ErrorWithContext = {
   error: ErrorApiError;
   context?: ErrorApiErrorContext;
@@ -143,7 +143,7 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
   snapshot(): ExtensionSnapshotNode;
 }
 
-// @public
+// @public @deprecated
 export class MockAlertApi implements AlertApi {
   // (undocumented)
   alert$(): Observable<AlertMessage>;
@@ -157,7 +157,7 @@ export class MockAlertApi implements AlertApi {
   ): Promise<AlertMessage>;
 }
 
-// @public
+// @public @deprecated
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
   captureEvent(event: AnalyticsEvent): void;
@@ -200,18 +200,18 @@ export namespace mockApis {
         partialImpl?: Partial<DiscoveryApi> | undefined,
       ) => ApiMock<DiscoveryApi>;
   }
-  export function error(
-    options?: MockErrorApiOptions,
-  ): MockErrorApi & MockWithApiFactory<ErrorApi_2>;
+  export function error(options?: {
+    collect?: boolean;
+  }): MockErrorApi & MockWithApiFactory<ErrorApi_2>;
   export namespace error {
     const // (undocumented)
       mock: (
         partialImpl?: Partial<ErrorApi_2> | undefined,
       ) => ApiMock<ErrorApi_2>;
   }
-  export function featureFlags(
-    options?: MockFeatureFlagsApiOptions,
-  ): MockWithApiFactory<MockFeatureFlagsApi>;
+  export function featureFlags(options?: {
+    initialStates?: Record<string, FeatureFlagState>;
+  }): MockWithApiFactory<MockFeatureFlagsApi>;
   export namespace featureFlags {
     const mock: (
       partialImpl?: Partial<FeatureFlagsApi> | undefined,
@@ -272,7 +272,7 @@ export namespace mockApis {
   }
 }
 
-// @public
+// @public @deprecated
 export class MockConfigApi implements ConfigApi {
   constructor(input: { data: JsonObject });
   get<T = JsonValue>(key?: string): T;
@@ -293,28 +293,37 @@ export class MockConfigApi implements ConfigApi {
   keys(): string[];
 }
 
-// @public
+// @public @deprecated
 export class MockErrorApi implements ErrorApi {
-  constructor(options?: MockErrorApiOptions);
+  constructor(options?: { collect?: boolean });
   // (undocumented)
   error$(): Observable<{
     error: ErrorApiError;
     context?: ErrorApiErrorContext;
   }>;
   // (undocumented)
-  getErrors(): ErrorWithContext[];
+  getErrors(): {
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
+  }[];
   // (undocumented)
   post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
   // (undocumented)
-  waitForError(pattern: RegExp, timeoutMs?: number): Promise<ErrorWithContext>;
+  waitForError(
+    pattern: RegExp,
+    timeoutMs?: number,
+  ): Promise<{
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
+  }>;
 }
 
-// @public
+// @public @deprecated
 export type MockErrorApiOptions = {
   collect?: boolean;
 };
 
-// @public
+// @public @deprecated
 export class MockFeatureFlagsApi implements FeatureFlagsApi {
   constructor(options?: MockFeatureFlagsApiOptions);
   clearState(): void;
@@ -330,7 +339,7 @@ export class MockFeatureFlagsApi implements FeatureFlagsApi {
   setState(states: Record<string, FeatureFlagState>): void;
 }
 
-// @public
+// @public @deprecated
 export interface MockFeatureFlagsApiOptions {
   initialStates?: Record<string, FeatureFlagState>;
 }
@@ -359,7 +368,7 @@ export interface MockFetchApiOptions {
       };
 }
 
-// @public
+// @public @deprecated
 export class MockPermissionApi implements PermissionApi {
   constructor(
     requestHandler?: (
@@ -372,7 +381,7 @@ export class MockPermissionApi implements PermissionApi {
   ): Promise<EvaluatePermissionResponse>;
 }
 
-// @public
+// @public @deprecated
 export class MockStorageApi implements StorageApi {
   // (undocumented)
   static create(data?: JsonObject): MockStorageApi;
@@ -390,7 +399,7 @@ export class MockStorageApi implements StorageApi {
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
-// @public
+// @public @deprecated
 export class MockTranslationApi implements TranslationApi {
   // (undocumented)
   static create(): MockTranslationApi;
@@ -473,4 +482,48 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
 };
 
 export { withLogCollector };
+
+// Warnings were encountered during analysis:
+//
+// src/apis/AlertApi/MockAlertApi.d.ts:19:5 - (ae-undocumented) Missing documentation for "post".
+// src/apis/AlertApi/MockAlertApi.d.ts:20:5 - (ae-undocumented) Missing documentation for "alert$".
+// src/apis/AnalyticsApi/MockAnalyticsApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "captureEvent".
+// src/apis/AnalyticsApi/MockAnalyticsApi.d.ts:12:5 - (ae-undocumented) Missing documentation for "getEvents".
+// src/apis/ErrorApi/MockErrorApi.d.ts:33:5 - (ae-undocumented) Missing documentation for "post".
+// src/apis/ErrorApi/MockErrorApi.d.ts:34:5 - (ae-undocumented) Missing documentation for "error$".
+// src/apis/ErrorApi/MockErrorApi.d.ts:38:5 - (ae-undocumented) Missing documentation for "getErrors".
+// src/apis/ErrorApi/MockErrorApi.d.ts:42:5 - (ae-undocumented) Missing documentation for "waitForError".
+// src/apis/FeatureFlagsApi/MockFeatureFlagsApi.d.ts:31:5 - (ae-undocumented) Missing documentation for "registerFlag".
+// src/apis/FeatureFlagsApi/MockFeatureFlagsApi.d.ts:32:5 - (ae-undocumented) Missing documentation for "getRegisteredFlags".
+// src/apis/FeatureFlagsApi/MockFeatureFlagsApi.d.ts:33:5 - (ae-undocumented) Missing documentation for "isActive".
+// src/apis/FeatureFlagsApi/MockFeatureFlagsApi.d.ts:34:5 - (ae-undocumented) Missing documentation for "save".
+// src/apis/PermissionApi/MockPermissionApi.d.ts:15:5 - (ae-undocumented) Missing documentation for "authorize".
+// src/apis/StorageApi/MockStorageApi.d.ts:14:5 - (ae-undocumented) Missing documentation for "create".
+// src/apis/StorageApi/MockStorageApi.d.ts:15:5 - (ae-undocumented) Missing documentation for "forBucket".
+// src/apis/StorageApi/MockStorageApi.d.ts:16:5 - (ae-undocumented) Missing documentation for "snapshot".
+// src/apis/StorageApi/MockStorageApi.d.ts:17:5 - (ae-undocumented) Missing documentation for "set".
+// src/apis/StorageApi/MockStorageApi.d.ts:18:5 - (ae-undocumented) Missing documentation for "remove".
+// src/apis/StorageApi/MockStorageApi.d.ts:19:5 - (ae-undocumented) Missing documentation for "observe$".
+// src/apis/TranslationApi/MockTranslationApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "create".
+// src/apis/TranslationApi/MockTranslationApi.d.ts:13:5 - (ae-undocumented) Missing documentation for "getTranslation".
+// src/apis/TranslationApi/MockTranslationApi.d.ts:16:5 - (ae-undocumented) Missing documentation for "translation$".
+// src/apis/mockApis.d.ts:119:15 - (ae-undocumented) Missing documentation for "mock".
+// src/apis/mockApis.d.ts:155:15 - (ae-undocumented) Missing documentation for "mock".
+// src/apis/mockApis.d.ts:171:15 - (ae-undocumented) Missing documentation for "mock".
+// src/apis/mockApis.d.ts:192:15 - (ae-undocumented) Missing documentation for "mock".
+// src/apis/mockApis.d.ts:208:15 - (ae-undocumented) Missing documentation for "mock".
+// src/apis/mockApis.d.ts:224:15 - (ae-undocumented) Missing documentation for "mock".
+// src/apis/mockApis.d.ts:240:15 - (ae-undocumented) Missing documentation for "mock".
+// src/apis/mockApis.d.ts:254:15 - (ae-undocumented) Missing documentation for "mock".
+// src/app/createExtensionTester.d.ts:19:1 - (ae-undocumented) Missing documentation for "ExtensionQuery".
+// src/app/createExtensionTester.d.ts:22:5 - (ae-undocumented) Missing documentation for "node".
+// src/app/createExtensionTester.d.ts:23:5 - (ae-undocumented) Missing documentation for "instance".
+// src/app/createExtensionTester.d.ts:24:5 - (ae-undocumented) Missing documentation for "get".
+// src/app/createExtensionTester.d.ts:27:1 - (ae-undocumented) Missing documentation for "ExtensionTester".
+// src/app/createExtensionTester.d.ts:30:5 - (ae-undocumented) Missing documentation for "add".
+// src/app/createExtensionTester.d.ts:33:5 - (ae-undocumented) Missing documentation for "get".
+// src/app/createExtensionTester.d.ts:34:5 - (ae-undocumented) Missing documentation for "query".
+// src/app/createExtensionTester.d.ts:35:5 - (ae-undocumented) Missing documentation for "reactElement".
+// src/app/createExtensionTester.d.ts:49:1 - (ae-undocumented) Missing documentation for "createExtensionTester".
+// /Users/patriko/src/backstage/packages/version-bridge/src/lib/globalObject.ts:1:1 - (ae-wrong-input-file-type) Incorrect file type; API Extractor expects to analyze compiler outputs with the .d.ts file extension. Troubleshooting tips: https://api-extractor.com/link/dts-error
 ```
