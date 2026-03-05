@@ -1470,7 +1470,7 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @public @deprecated
 export const NavItemBlueprint: ExtensionBlueprint_2<{
   kind: 'nav-item';
   params: {
