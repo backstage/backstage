@@ -14,33 +14,37 @@
  * limitations under the License.
  */
 
-import Avatar from '@material-ui/core/Avatar';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import {
+  ShadcnAvatar,
+  AvatarImage,
+  AvatarFallback,
+  sidebarConfig,
+} from '@backstage/core-components';
 import { useUserProfile } from '../useUserProfileInfo';
-import { sidebarConfig } from '@backstage/core-components';
-
-const useStyles = makeStyles<Theme, { size: number }>(theme => ({
-  avatar: {
-    width: ({ size }) => size,
-    height: ({ size }) => size,
-    fontSize: ({ size }) => size * 0.7,
-    border: `1px solid ${theme.palette.textSubtle}`,
-  },
-}));
 
 /** @public */
 export const UserSettingsSignInAvatar = (props: { size?: number }) => {
   const { size } = props;
-
   const { iconSize } = sidebarConfig;
-  const classes = useStyles(size ? { size } : { size: iconSize });
+  const avatarSize = size ?? iconSize;
   const { profile } = useUserProfile();
 
   return (
-    <Avatar
-      src={profile.picture}
-      className={classes.avatar}
-      alt="Profile picture"
-    />
+    <ShadcnAvatar
+      style={{ width: avatarSize, height: avatarSize }}
+      className="border border-border"
+    >
+      <AvatarImage
+        src={profile.picture}
+        alt="Profile picture"
+        style={{ fontSize: avatarSize * 0.7 }}
+      />
+      <AvatarFallback
+        className="text-muted-foreground"
+        style={{ fontSize: avatarSize * 0.7 }}
+      >
+        {profile.displayName?.[0]?.toUpperCase() || '?'}
+      </AvatarFallback>
+    </ShadcnAvatar>
   );
 };
