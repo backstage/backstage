@@ -47,7 +47,7 @@
 
   /*
    * Cursor and hover tint are applied at the card level so they cover the
-   * entire surface. The overlay inherits the cursor via cursor: inherit.
+   * entire surface.
    */
   .bui-Card[data-interactive] {
     cursor: pointer;
