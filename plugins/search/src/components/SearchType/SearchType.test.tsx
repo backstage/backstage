@@ -74,7 +74,7 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByTestId('search-type-trigger'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -111,7 +111,9 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByRole('button'));
+      // When types are selected, Badge remove buttons also render.
+      // Use the trigger data-testid to locate the popover trigger specifically.
+      await userEvent.click(screen.getByTestId('search-type-trigger'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -121,9 +123,10 @@ describe('SearchType', () => {
         'aria-selected',
         'true',
       );
-      expect(
-        screen.getByRole('option', { name: values[1] }),
-      ).not.toHaveAttribute('aria-selected');
+      expect(screen.getByRole('option', { name: values[1] })).toHaveAttribute(
+        'aria-selected',
+        'false',
+      );
     });
 
     it('Renders correctly based on type filter defaultValue', async () => {
@@ -144,7 +147,9 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByRole('button'));
+      // defaultValue seeds types, which renders Badge remove buttons.
+      // Use the trigger data-testid to avoid multiple-button ambiguity.
+      await userEvent.click(screen.getByTestId('search-type-trigger'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -154,9 +159,10 @@ describe('SearchType', () => {
         'aria-selected',
         'true',
       );
-      expect(
-        screen.getByRole('option', { name: values[1] }),
-      ).not.toHaveAttribute('aria-selected');
+      expect(screen.getByRole('option', { name: values[1] })).toHaveAttribute(
+        'aria-selected',
+        'false',
+      );
     });
 
     it('Selecting a value sets type filter state', async () => {
@@ -177,9 +183,9 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      const button = screen.getByRole('button');
+      const trigger = screen.getByTestId('search-type-trigger');
 
-      await userEvent.click(button);
+      await userEvent.click(trigger);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -198,7 +204,10 @@ describe('SearchType', () => {
         );
       });
 
-      await userEvent.click(button);
+      // The Popover stays open in multi-select mode; clicking trigger toggles
+      // it closed, then a second click reopens it. Verify it can reopen.
+      await userEvent.click(trigger); // closes
+      await userEvent.click(trigger); // reopens
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -228,9 +237,10 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      const button = screen.getByRole('button');
+      // Pre-selected types render Badge remove buttons, use trigger testid
+      const trigger = screen.getByTestId('search-type-trigger');
 
-      await userEvent.click(button);
+      await userEvent.click(trigger);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -249,7 +259,10 @@ describe('SearchType', () => {
         );
       });
 
-      await userEvent.click(button);
+      // Popover stays open in multi-select mode; clicking trigger toggles
+      // closed, then second click reopens. Toggle close then reopen.
+      await userEvent.click(trigger); // closes
+      await userEvent.click(trigger); // reopens
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
