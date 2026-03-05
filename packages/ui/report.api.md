@@ -1214,7 +1214,10 @@ export type FlexOwnProps = {
 };
 
 // @public (undocumented)
-export interface FlexProps extends SpaceProps, FlexOwnProps {
+export interface FlexProps
+  extends SpaceProps,
+    FlexOwnProps,
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   // (undocumented)
