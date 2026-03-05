@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+// Polyfill ResizeObserver for JSDOM — required by cmdk's Command component
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof globalThis.ResizeObserver;
+}
+// Polyfill scrollIntoView for JSDOM — required by cmdk
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function () {};
+}
+
 import { waitFor } from '@testing-library/react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MyGroupsPicker } from './MyGroupsPicker';
@@ -38,6 +51,7 @@ import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import { TooltipProvider } from '@backstage/core-components';
 
 const mockIdentityApi = mockApis.identity({
   userEntityRef: 'user:default/bob',
@@ -117,7 +131,9 @@ describe('<MyGroupsPicker />', () => {
           ],
         ]}
       >
-        <MyGroupsPicker {...props} />
+        <TooltipProvider>
+          <MyGroupsPicker {...props} />
+        </TooltipProvider>
       </TestApiProvider>,
     );
 
@@ -194,7 +210,9 @@ describe('<MyGroupsPicker />', () => {
           ],
         ]}
       >
-        <MyGroupsPicker {...props} />
+        <TooltipProvider>
+          <MyGroupsPicker {...props} />
+        </TooltipProvider>
       </TestApiProvider>,
     );
 
@@ -256,7 +274,9 @@ describe('<MyGroupsPicker />', () => {
           ],
         ]}
       >
-        <MyGroupsPicker {...props} />
+        <TooltipProvider>
+          <MyGroupsPicker {...props} />
+        </TooltipProvider>
       </TestApiProvider>,
     );
 
@@ -321,7 +341,9 @@ describe('<MyGroupsPicker />', () => {
           ],
         ]}
       >
-        <MyGroupsPicker {...props} />
+        <TooltipProvider>
+          <MyGroupsPicker {...props} />
+        </TooltipProvider>
       </TestApiProvider>,
     );
 
@@ -359,7 +381,7 @@ describe('<MyGroupsPicker />', () => {
               ],
             ]}
           >
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
           </TestApiProvider>
         );
       };

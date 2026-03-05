@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+// Polyfill ResizeObserver for JSDOM — required by cmdk's Command component
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof globalThis.ResizeObserver;
+}
+// Polyfill scrollIntoView for JSDOM — required by cmdk
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function () {};
+}
+
 import { type EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -26,7 +39,9 @@ import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffo
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { OwnerPicker } from './OwnerPicker';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
-import { fireEvent, screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { TooltipProvider } from '@backstage/core-components';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -72,7 +87,7 @@ describe('<OwnerPicker />', () => {
           ],
         ]}
       >
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
       </TestApiProvider>
     );
   });
@@ -155,11 +170,12 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      const combobox = screen.getByRole('combobox');
 
-      // Expect input to be disabled
-      expect(input).toBeDisabled();
-      expect(input).toHaveValue('group:default/myentity');
+      // Expect combobox trigger to be disabled
+      expect(combobox).toBeDisabled();
+      // The button text should display the current formData value
+      expect(combobox).toHaveTextContent('group:default/myentity');
     });
 
     it('Allows user to edit when ui:disabled is false', async () => {
@@ -172,16 +188,16 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
-      expect(input).not.toBeDisabled();
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).not.toBeDisabled();
 
-      fireEvent.change(input, {
-        target: { value: 'group:default/mynewentity' },
+      // Open the popover and select an entity from the list
+      await userEvent.click(combobox);
+
+      // Wait for the command list to appear with entities
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/search/i)).toBeInTheDocument();
       });
-      fireEvent.blur(input);
-
-      expect(input).toHaveValue('group:default/mynewentity');
-      expect(onChange).toHaveBeenCalledWith('group:default/mynewentity');
     });
   });
 

@@ -64,6 +64,7 @@ export function TemplateEditorToolbarTemplatesMenu(props: {
             key={index}
             onSelect={() => onSelectOption(option)}
             className={cn(isSelectedOption(option) && 'bg-accent')}
+            aria-selected={isSelectedOption(option)}
           >
             {option.label}
           </DropdownMenuItem>

@@ -13,10 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// Polyfill pointer capture for JSDOM — required by Radix Select/Popover
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = function () {
+    return false;
+  };
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = function () {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = function () {};
+}
+// Polyfill scrollIntoView for JSDOM — required by Radix Select
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function () {};
+}
+
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import { fireEvent, within } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 
 describe('RepoUrlPickerHostField', () => {
   it('renders the default host properly', async () => {
@@ -28,7 +46,7 @@ describe('RepoUrlPickerHostField', () => {
         ],
       }),
     };
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
         <RepoUrlPickerHost
           hosts={['github.com']}
@@ -38,8 +56,13 @@ describe('RepoUrlPickerHostField', () => {
       </TestApiProvider>,
     );
 
-    expect(getByText('github.com')).toBeInTheDocument();
-    expect(mockOnChange).toHaveBeenCalledWith('github.com');
+    // Wait for the async integrations to load and onChange to be triggered
+    // with the auto-selected first host
+    await waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalledWith('github.com');
+    });
+    // The select trigger should exist and be disabled for single-host
+    expect(screen.getByTestId('host-select')).toBeDisabled();
   });
 
   it('should provide a dropdown when multiple hosts are returned that can be selected', async () => {
@@ -53,7 +76,7 @@ describe('RepoUrlPickerHostField', () => {
       }),
     };
 
-    const { getByRole, getByText, getByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
         <RepoUrlPickerHost
           hosts={['github.com', 'gitlab.com']}
@@ -63,12 +86,18 @@ describe('RepoUrlPickerHostField', () => {
       </TestApiProvider>,
     );
 
-    fireEvent.mouseDown(getByTestId('host-select'));
-    expect(getByText('gitlab.com')).toBeInTheDocument();
+    // Wait for async load
+    await waitFor(() => {
+      expect(screen.getByTestId('host-select')).toBeInTheDocument();
+    });
 
-    const listbox = within(getByRole('combobox'));
+    // Open the Radix Select by clicking the trigger
+    await userEvent.click(screen.getByTestId('host-select'));
 
-    expect(listbox.getAllByRole('option')).toHaveLength(2);
+    // Radix Select options are rendered in a portal with role="option"
+    await waitFor(() => {
+      expect(screen.getAllByRole('option')).toHaveLength(2);
+    });
   });
 
   it('should not display hosts that dont have integration config set correctly', async () => {
@@ -82,7 +111,7 @@ describe('RepoUrlPickerHostField', () => {
       }),
     };
 
-    const { getByRole, getByText, getByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
         <RepoUrlPickerHost
           hosts={['github.com', 'gitlab.com', 'notfound.host']}
@@ -92,12 +121,18 @@ describe('RepoUrlPickerHostField', () => {
       </TestApiProvider>,
     );
 
-    fireEvent.mouseDown(getByTestId('host-select'));
-    expect(getByText('gitlab.com')).toBeInTheDocument();
+    // Wait for async load
+    await waitFor(() => {
+      expect(screen.getByTestId('host-select')).toBeInTheDocument();
+    });
 
-    const listbox = within(getByRole('combobox'));
+    // Open the Radix Select
+    await userEvent.click(screen.getByTestId('host-select'));
 
-    expect(listbox.getAllByRole('option')).toHaveLength(2);
+    // Only hosts with matching integrations appear as options
+    await waitFor(() => {
+      expect(screen.getAllByRole('option')).toHaveLength(2);
+    });
   });
 
   it('disables the host select when isDisabled is true', async () => {
@@ -111,7 +146,7 @@ describe('RepoUrlPickerHostField', () => {
       }),
     };
 
-    const { getByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
         <RepoUrlPickerHost
           hosts={['github.com', 'gitlab.com']}
@@ -122,8 +157,9 @@ describe('RepoUrlPickerHostField', () => {
       </TestApiProvider>,
     );
 
-    const selectElement = getByTestId('host-select').querySelector('select');
-
-    expect(selectElement).toBeDisabled();
+    // Wait for async load, then check the Radix SelectTrigger is disabled
+    await waitFor(() => {
+      expect(screen.getByTestId('host-select')).toBeDisabled();
+    });
   });
 });

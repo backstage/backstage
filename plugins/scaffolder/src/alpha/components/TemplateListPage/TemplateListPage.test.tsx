@@ -34,6 +34,7 @@ import {
   TECHDOCS_EXTERNAL_ANNOTATION,
   TECHDOCS_EXTERNAL_PATH_ANNOTATION,
 } from '@backstage/plugin-techdocs-common';
+import { TooltipProvider } from '@backstage/core-components';
 
 const mountedRoutes = {
   mountedRoutes: {
@@ -86,7 +87,9 @@ describe('TemplateListPage', () => {
             [permissionApiRef, mockApis.permission()],
           ]}
         >
-          <TemplateListPage />
+          <TooltipProvider>
+            <TemplateListPage />
+          </TooltipProvider>
         </TestApiProvider>,
         mountedRoutes,
       );
@@ -124,7 +127,9 @@ describe('TemplateListPage', () => {
             [permissionApiRef, mockApis.permission()],
           ]}
         >
-          <TemplateListPage />
+          <TooltipProvider>
+            <TemplateListPage />
+          </TooltipProvider>
         </TestApiProvider>,
         mountedRoutes,
       );
@@ -163,7 +168,9 @@ describe('TemplateListPage', () => {
             [permissionApiRef, mockApis.permission()],
           ]}
         >
-          <TemplateListPage />
+          <TooltipProvider>
+            <TemplateListPage />
+          </TooltipProvider>
         </TestApiProvider>,
         mountedRoutes,
       );

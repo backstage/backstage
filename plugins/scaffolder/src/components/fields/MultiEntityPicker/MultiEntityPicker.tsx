@@ -29,11 +29,6 @@ import {
   EntityDisplayName,
   EntityRefPresentationSnapshot,
 } from '@backstage/plugin-catalog-react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, {
-  AutocompleteChangeReason,
-  createFilterOptions,
-} from '@material-ui/lab/Autocomplete';
 import { useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { FieldValidation } from '@rjsf/utils';
@@ -43,18 +38,26 @@ import {
   MultiEntityPickerUiOptions,
   MultiEntityPickerFilterQuery,
 } from './schema';
-import { VirtualizedListbox } from '../VirtualizedListbox';
 import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import {
+  cn,
+  ShadcnButton as Button,
+  Badge,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from '@backstage/core-components';
+import { X, ChevronsUpDown, Check } from 'lucide-react';
 
 export { MultiEntityPickerSchema } from './schema';
-
-// AutocompleteChangeReason events that can be triggered when a user inputs a freeSolo option
-const FREE_SOLO_EVENTS: readonly AutocompleteChangeReason[] = [
-  'blur',
-  'create-option',
-];
 
 /**
  * The underlying component that is rendered in the form for the `MultiEntityPicker`
@@ -82,6 +85,18 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     uiSchema['ui:options']?.defaultNamespace || undefined;
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
   const [noOfItemsSelected, setNoOfItemsSelected] = useState(0);
+
+  // Internal selected values state — mirrors formData but enables uncontrolled
+  // accumulation (like MUI Autocomplete's defaultValue pattern) so that
+  // multi-select toggling works even when the parent doesn't immediately
+  // update formData in response to onChange.
+  const [selectedValues, setSelectedValues] = useState<string[]>(
+    formData ?? [],
+  );
+  // Sync internal state when formData changes externally
+  useEffect(() => {
+    setSelectedValues(formData ?? []);
+  }, [formData]);
 
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
@@ -112,48 +127,101 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   // if not specified, maxItems defaults to undefined
   const maxItems = props.schema.maxItems;
 
-  const onSelect = useCallback(
-    (_: any, refs: (string | Entity)[], reason: AutocompleteChangeReason) => {
-      const values = refs
-        .map(ref => {
-          // If the ref is not a string, then it was a selected option in the picker
-          if (typeof ref !== 'string') {
-            // if ref does not exist: pass 'undefined' to trigger validation for required value
-            return ref ? stringifyEntityRef(ref as Entity) : undefined;
-          }
+  // Popover open state and search input state for the Command combobox
+  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState('');
 
-          // Add in default namespace, etc.
-          let entityRef = ref;
-          try {
-            // Attempt to parse the entity ref into it's full form.
-            entityRef = stringifyEntityRef(
-              parseEntityRef(ref as string, {
-                defaultKind,
-                defaultNamespace,
-              }),
-            );
-          } catch (err) {
-            // If the passed in value isn't an entity ref, do nothing.
-          }
+  /**
+   * Toggles an entity in/out of the selected values list.
+   * Replaces the MUI Autocomplete onChange handler with explicit toggle logic.
+   */
+  const onToggleEntity = useCallback(
+    (entityOrRef: string | Entity) => {
+      let entityRef: string;
+      if (typeof entityOrRef !== 'string') {
+        entityRef = entityOrRef
+          ? stringifyEntityRef(entityOrRef as Entity)
+          : '';
+      } else {
+        try {
+          entityRef = stringifyEntityRef(
+            parseEntityRef(entityOrRef, { defaultKind, defaultNamespace }),
+          );
+        } catch {
+          entityRef = entityOrRef;
+        }
+      }
 
-          // We need to check against formData here as that's the previous value for this field.
-          if (
-            // If value already matches what exists in form data, allow it
-            formData?.includes(ref) ||
-            // If arbitrary values are allowed and the reason is a free solo event, allow it
-            (allowArbitraryValues && FREE_SOLO_EVENTS.includes(reason))
-          ) {
-            return entityRef;
-          }
+      if (!entityRef) return;
 
-          return undefined;
-        })
-        .filter(ref => ref !== undefined) as string[];
+      // Toggle: if already selected, remove it; if not, add it
+      const isSelected = selectedValues.includes(entityRef);
+      let newValues: string[];
 
-      setNoOfItemsSelected(values.length);
-      onChange(values);
+      if (isSelected) {
+        newValues = selectedValues.filter((v: string) => v !== entityRef);
+      } else {
+        // Enforce maxItems
+        if (maxItems && selectedValues.length >= maxItems) return;
+        newValues = [...selectedValues, entityRef];
+      }
+
+      setSelectedValues(newValues);
+      setNoOfItemsSelected(newValues.length);
+      onChange(newValues);
     },
-    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
+    [onChange, selectedValues, defaultKind, defaultNamespace, maxItems],
+  );
+
+  /**
+   * Removes a specific entity ref from the selected values.
+   * Used by the dismiss (X) button on Badge components.
+   */
+  const onRemoveEntity = useCallback(
+    (entityRef: string) => {
+      const newValues = selectedValues.filter((v: string) => v !== entityRef);
+      setSelectedValues(newValues);
+      setNoOfItemsSelected(newValues.length);
+      onChange(newValues);
+    },
+    [onChange, selectedValues],
+  );
+
+  /**
+   * Adds a free-text entity reference when allowArbitraryValues is enabled.
+   * Triggered by pressing Enter in the CommandInput field.
+   */
+  const onAddFreeText = useCallback(
+    (value: string) => {
+      if (!value.trim()) return;
+
+      let entityRef = value;
+      try {
+        entityRef = stringifyEntityRef(
+          parseEntityRef(value, { defaultKind, defaultNamespace }),
+        );
+      } catch {
+        // If parsing fails and arbitrary values are not allowed, ignore
+        if (!allowArbitraryValues) return;
+      }
+
+      if (maxItems && selectedValues.length >= maxItems) return;
+      if (selectedValues.includes(entityRef)) return;
+
+      const newValues = [...selectedValues, entityRef];
+      setSelectedValues(newValues);
+      setNoOfItemsSelected(newValues.length);
+      onChange(newValues);
+      setInputValue('');
+    },
+    [
+      onChange,
+      selectedValues,
+      defaultKind,
+      defaultNamespace,
+      allowArbitraryValues,
+      maxItems,
+    ],
   );
 
   useEffect(() => {
@@ -170,58 +238,98 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
       disabled={isDisabled}
       errors={errors}
     >
-      <Autocomplete
-        multiple
-        filterSelectedOptions
-        disabled={
-          isDisabled ||
-          (required &&
-            !allowArbitraryValues &&
-            entities?.entities?.length === 1)
-        }
-        id={idSchema?.$id}
-        defaultValue={formData}
-        loading={loading}
-        onChange={onSelect}
-        options={entities?.entities || []}
-        renderOption={option => <EntityDisplayName entityRef={option} />}
-        getOptionLabel={option =>
-          // option can be a string due to freeSolo.
-          typeof option === 'string'
-            ? option
-            : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.entityRef!
-        }
-        getOptionDisabled={_options =>
-          maxItems ? noOfItemsSelected >= maxItems : false
-        }
-        autoSelect
-        freeSolo={allowArbitraryValues}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label={title}
-            disabled={isDisabled}
-            margin="dense"
-            FormHelperTextProps={{
-              margin: 'dense',
-              style: { marginLeft: 0 },
-            }}
-            variant="outlined"
-            required={required}
-            InputProps={{
-              ...params.InputProps,
-              required: formData?.length === 0 && required,
-            }}
-          />
-        )}
-        filterOptions={createFilterOptions<Entity>({
-          stringify: option =>
-            entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-              ?.primaryTitle!,
-        })}
-        ListboxComponent={VirtualizedListbox}
-      />
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            id={idSchema?.$id}
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            disabled={
+              isDisabled ||
+              (required &&
+                !allowArbitraryValues &&
+                entities?.entities?.length === 1)
+            }
+            className={cn(
+              'w-full justify-between min-h-[2.5rem] h-auto',
+              !selectedValues.length && 'text-muted-foreground',
+            )}
+          >
+            <div className="flex flex-wrap gap-1 items-center">
+              {selectedValues.length > 0 ? (
+                selectedValues.map((ref: string) => (
+                  <Badge key={ref} variant="secondary" className="mr-1">
+                    {entities?.entityRefToPresentation?.get(ref)
+                      ?.primaryTitle ?? ref}
+                    <button
+                      type="button"
+                      className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      onClick={e => {
+                        e.stopPropagation();
+                        onRemoveEntity(ref);
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))
+              ) : (
+                <span>{title}</span>
+              )}
+            </div>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command shouldFilter>
+            <CommandInput
+              placeholder={`Search ${title?.toLowerCase() ?? 'entities'}...`}
+              value={inputValue}
+              onValueChange={setInputValue}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && allowArbitraryValues && inputValue) {
+                  e.preventDefault();
+                  onAddFreeText(inputValue);
+                }
+              }}
+            />
+            <CommandList>
+              <CommandEmpty>
+                {loading ? 'Loading...' : 'No entities found.'}
+              </CommandEmpty>
+              <CommandGroup>
+                {(entities?.entities ?? []).map(entity => {
+                  const ref = stringifyEntityRef(entity);
+                  const presentation =
+                    entities?.entityRefToPresentation?.get(ref);
+                  const isSelected = selectedValues.includes(ref);
+                  const isMaxReached = maxItems
+                    ? noOfItemsSelected >= maxItems
+                    : false;
+
+                  return (
+                    <CommandItem
+                      key={ref}
+                      value={presentation?.primaryTitle ?? ref}
+                      disabled={!isSelected && isMaxReached}
+                      onSelect={() => onToggleEntity(entity)}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          isSelected ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      <EntityDisplayName entityRef={entity} />
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </ScaffolderField>
   );
 };
