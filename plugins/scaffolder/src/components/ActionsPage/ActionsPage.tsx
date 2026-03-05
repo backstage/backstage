@@ -16,29 +16,25 @@
 import { useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { Action, scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LinkIcon from '@material-ui/icons/Link';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
+import { Search, Link as LinkIcon, X } from 'lucide-react';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  cn,
   Content,
   EmptyState,
   ErrorPanel,
   Header,
+  Input,
   Link,
   MarkdownContent,
   Page,
   Progress,
+  ShadcnButton,
 } from '@backstage/core-components';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { useNavigate } from 'react-router-dom';
@@ -53,40 +49,17 @@ import { scaffolderTranslationRef } from '../../translation';
 import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
 import { ScaffolderUsageExamplesTable } from '../ScaffolderUsageExamplesTable';
 
-const useStyles = makeStyles(theme => ({
-  code: {
-    fontFamily: 'Menlo, monospace',
-    padding: theme.spacing(1),
-    backgroundColor:
-      theme.palette.type === 'dark'
-        ? theme.palette.grey[700]
-        : theme.palette.grey[300],
-    display: 'inline-block',
-    borderRadius: 5,
-    border: `1px solid ${theme.palette.grey[500]}`,
-    position: 'relative',
-  },
-
-  codeRequired: {
-    '&::after': {
-      position: 'absolute',
-      content: '"*"',
-      top: 0,
-      right: theme.spacing(0.5),
-      fontWeight: 'bolder',
-      color: theme.palette.error.light,
-    },
-  },
-  link: {
-    paddingLeft: theme.spacing(1),
-  },
-}));
+/** Tailwind utility class constants for code styling */
+const codeClasses =
+  'font-mono px-2 py-1 bg-muted inline-block rounded border border-border relative';
+const codeRequiredClasses =
+  "after:absolute after:content-['*'] after:top-0 after:right-1 after:font-bold after:text-destructive";
+const linkClasses = 'pl-2';
 
 export const ActionPageContent = () => {
   const api = useApi(scaffolderApiRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const classes = useStyles();
   const {
     loading,
     value = [],
@@ -96,6 +69,7 @@ export const ActionPageContent = () => {
   }, [api]);
 
   const [selectedAction, setSelectedAction] = useState<Action | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const expanded = useState<Expanded>({});
 
   useEffect(() => {
@@ -121,37 +95,49 @@ export const ActionPageContent = () => {
     );
   }
 
+  const filteredActions = selectedAction
+    ? [selectedAction]
+    : value.filter(
+        action =>
+          !searchQuery ||
+          action.id.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+
   return (
     <>
-      <Box pb={3}>
-        <Autocomplete
-          id="actions-autocomplete"
-          options={value}
-          loading={loading}
-          getOptionLabel={option => option.id}
-          renderInput={params => (
-            <TextField
-              {...params}
-              aria-label={t('actionsPage.content.searchFieldPlaceholder')}
-              placeholder={t('actionsPage.content.searchFieldPlaceholder')}
-              variant="outlined"
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
+      <div className="pb-6">
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="actions-autocomplete"
+            aria-label={t('actionsPage.content.searchFieldPlaceholder')}
+            placeholder={t('actionsPage.content.searchFieldPlaceholder')}
+            className="pl-9"
+            value={selectedAction?.id ?? searchQuery}
+            onChange={e => {
+              setSearchQuery(e.target.value);
+              setSelectedAction(null);
+            }}
+          />
+          {(selectedAction || searchQuery) && (
+            <ShadcnButton
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setSelectedAction(null);
+                setSearchQuery('');
               }}
-            />
+              title="Clear"
+              aria-label="Clear"
+            >
+              <X className="h-4 w-4" />
+            </ShadcnButton>
           )}
-          onChange={(_event, option) => {
-            setSelectedAction(option);
-          }}
-          fullWidth
-        />
-      </Box>
-      {(selectedAction ? [selectedAction] : value).map(action => {
+        </div>
+      </div>
+      {filteredActions.map(action => {
         if (action.id.startsWith('legacy:')) {
           return undefined;
         }
@@ -159,36 +145,40 @@ export const ActionPageContent = () => {
           SchemaRenderContext,
           'parentId'
         > = {
-          classes,
+          classes: {
+            code: codeClasses,
+            codeRequired: codeRequiredClasses,
+          },
           expanded,
-          headings: [<Typography variant="h6" component="h4" />],
+          headings: [
+            // eslint-disable-next-line jsx-a11y/heading-has-content -- heading template: content is injected via React.cloneElement in RenderSchema
+            <h4 className="text-base font-semibold" />,
+          ],
         };
         return (
-          <Box pb={3} key={action.id}>
-            <Box display="flex" alignItems="center">
-              <Typography
+          <div className="pb-6" key={action.id}>
+            <div className="flex items-center">
+              <h2
                 id={action.id.replaceAll(':', '-')}
-                variant="h5"
-                component="h2"
-                className={classes.code}
+                className={cn(codeClasses, 'text-xl font-semibold')}
               >
                 {action.id}
-              </Typography>
+              </h2>
               <Link
-                className={classes.link}
+                className={linkClasses}
                 to={`#${action.id.replaceAll(':', '-')}`}
               >
-                <LinkIcon />
+                <LinkIcon className="h-4 w-4" />
               </Link>
-            </Box>
+            </div>
             {action.description && (
               <MarkdownContent content={action.description} />
             )}
             {action.schema?.input && (
-              <Box pb={2}>
-                <Typography variant="h6" component="h3">
+              <div className="pb-4">
+                <h3 className="text-lg font-semibold">
                   {t('actionsPage.action.input')}
-                </Typography>
+                </h3>
                 <RenderSchema
                   strategy="properties"
                   context={{
@@ -197,13 +187,13 @@ export const ActionPageContent = () => {
                   }}
                   schema={action?.schema?.input}
                 />
-              </Box>
+              </div>
             )}
             {action.schema?.output && (
-              <Box pb={2}>
-                <Typography variant="h5" component="h3">
+              <div className="pb-4">
+                <h3 className="text-xl font-semibold">
                   {t('actionsPage.action.output')}
-                </Typography>
+                </h3>
                 <RenderSchema
                   strategy="properties"
                   context={{
@@ -212,23 +202,27 @@ export const ActionPageContent = () => {
                   }}
                   schema={action?.schema?.output}
                 />
-              </Box>
+              </div>
             )}
             {action.examples && (
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="h6" component="h3">
-                    {t('actionsPage.action.examples')}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box pb={2}>
-                    <ScaffolderUsageExamplesTable examples={action.examples} />
-                  </Box>
-                </AccordionDetails>
+              <Accordion type="single" collapsible>
+                <AccordionItem value={`${action.id}-examples`}>
+                  <AccordionTrigger>
+                    <h3 className="text-lg font-semibold">
+                      {t('actionsPage.action.examples')}
+                    </h3>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="pb-4">
+                      <ScaffolderUsageExamplesTable
+                        examples={action.examples}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
               </Accordion>
             )}
-          </Box>
+          </div>
         );
       })}
     </>
