@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-notifications-backend-module-slack': patch
+'@backstage/plugin-notifications-backend-module-slack': minor
 ---
 
-Fix skipped slack DMS for users when a group entity is a recipient
+**BREAKING**: Notifications sent to non-user entities no longer send Slack DMs to resolved users.

@@ -281,11 +281,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         parseEntityRef(notification.user),
       );
 
-      if (
-        entityRefs.some(e => parseEntityRef(e).kind === 'group') &&
-        !explicitUserEntityRefs.includes(normalizedUserRef)
-      ) {
-        // This user was resolved from a non-user entity and we've already sent a group channel message.
+      if (!explicitUserEntityRefs.includes(normalizedUserRef)) {
+        // This user was resolved from a non-user entity. Skip sending aDM.
         return;
       }
 
