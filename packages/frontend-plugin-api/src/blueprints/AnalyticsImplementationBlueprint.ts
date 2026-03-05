@@ -23,7 +23,7 @@ import {
 
 /**
  * @public
- * @deprecated Use {@link AnalyticsImplementationFactory} from `@backstage/plugin-app-react` instead.
+ * @deprecated Use `AnalyticsImplementationFactory` from `@backstage/plugin-app-react` instead.
  */
 export type AnalyticsImplementationFactory<
   Deps extends { [name in string]: unknown } = {},
@@ -41,7 +41,7 @@ const factoryDataRef =
  * Creates analytics implementations.
  *
  * @public
- * @deprecated Use {@link AnalyticsImplementationBlueprint} from `@backstage/plugin-app-react` instead.
+ * @deprecated Use `AnalyticsImplementationBlueprint` from `@backstage/plugin-app-react` instead.
  */
 export const AnalyticsImplementationBlueprint = createExtensionBlueprint({
   kind: 'analytics',
