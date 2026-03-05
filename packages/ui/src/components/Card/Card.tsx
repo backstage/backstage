@@ -90,6 +90,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
 
   return (
     <Box
+      as="article"
       bg="neutral"
       ref={ref}
       className={classes.root}
