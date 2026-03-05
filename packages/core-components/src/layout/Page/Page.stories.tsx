@@ -15,10 +15,7 @@
  */
 
 import { wrapInTestApp } from '@backstage/test-utils';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { Badge } from '../../components/ui/badge';
 import { useState } from 'react';
 import {
   GaugeCard,
@@ -77,22 +74,22 @@ const columns: TableColumn[] = [
     render: (row: Partial<TableData>) => (
       <>
         <Link to="#message-source">{row.branch}</Link>
-        <Typography variant="body2">{row.hash}</Typography>
+        <span className="text-sm text-muted-foreground">{row.hash}</span>
       </>
     ),
   },
   {
     title: 'Status',
     render: (row: Partial<TableData>) => (
-      <Box display="flex" alignItems="center">
+      <div className="flex items-center gap-1">
         <StatusOK />
-        <Typography variant="body2">{row.status}</Typography>
-      </Box>
+        <span className="text-sm">{row.status}</span>
+      </div>
     ),
   },
   {
     title: 'Tags',
-    render: () => <Chip label="Tag Name" />,
+    render: () => <Badge variant="secondary">Tag Name</Badge>,
     width: '10%',
   },
 ];
@@ -107,75 +104,67 @@ const tabs = [
 ];
 
 const DataGrid = () => (
-  <Grid container>
-    <Grid item xs container>
-      <Grid item xs={12}>
-        <InfoCard title="Trend">
-          <TrendLine data={[0.1, 0.5, 0.9, 1.0]} title="Trend over time" />
-        </InfoCard>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        container
-        spacing={2}
-        justifyContent="space-between"
-        direction="row"
-      >
-        <Grid item xs={12} md={6}>
-          <GaugeCard
-            title="GKE Usage Score"
-            subheader="This should be above 75%"
-            progress={0.87}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <GaugeCard
-            title="Deployment Score"
-            subheader="This should be above 40%"
-            progress={0.58}
-          />
-        </Grid>
-      </Grid>
-    </Grid>
-    <Grid item xs>
-      <InfoCard
-        title="Additional Information"
-        deepLink={{ title: 'Learn more about GKE', link: '' }}
-      >
-        <Typography variant="h6">Rightsize GKE deployment</Typography>
-        <Typography paragraph>
-          Services are considered underutilized in GKE when the average usage of
-          requested cores is less than 80%.
-        </Typography>
-        <Typography variant="h6">What can I do?</Typography>
-        <Typography paragraph>
-          Review requested core and limit settings. Check HPA target scaling
-          settings in <code>hpa.yaml</code>. The recommended value for&nbsp;
-          <code>targetCPUUtilizationPercentage</code> is <code>80</code>.
-        </Typography>
-        <Typography paragraph>
-          For single pods, there is of course no HPA. But it can also be useful
-          to think about a single pod out of a larger deployment, then modify
-          based on HPA requirements. Within a pod, each container has its own
-          CPU and memory requests and limits.
-        </Typography>
-        <Typography variant="h6">Definitions</Typography>
-        <Typography paragraph>
-          A request is a minimum reserved value; a container will never have
-          less than this amount allocated to it, even if it doesn't actually use
-          it. Requests are used for determining what nodes to schedule pods on
-          (bin-packing). The tension here is between not allocating resources we
-          don't need, and having easy-enough access to enough resources to be
-          able to function.
-        </Typography>
-        <Typography paragraph>
-          Contact <Link to="#cost-awareness">#cost-awareness</Link> for
-          information and support.
-        </Typography>
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="space-y-4">
+      <InfoCard title="Trend">
+        <TrendLine data={[0.1, 0.5, 0.9, 1.0]} title="Trend over time" />
       </InfoCard>
-    </Grid>
-  </Grid>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <GaugeCard
+          title="GKE Usage Score"
+          subheader="This should be above 75%"
+          progress={0.87}
+        />
+        <GaugeCard
+          title="Deployment Score"
+          subheader="This should be above 40%"
+          progress={0.58}
+        />
+      </div>
+    </div>
+    <InfoCard
+      title="Additional Information"
+      deepLink={{ title: 'Learn more about GKE', link: '' }}
+    >
+      <h6 className="text-base font-semibold">Rightsize GKE deployment</h6>
+      <p className="mb-4">
+        Services are considered underutilized in GKE when the average usage of
+        requested cores is less than 80%.
+      </p>
+      <h6 className="text-base font-semibold">What can I do?</h6>
+      <p className="mb-4">
+        Review requested core and limit settings. Check HPA target scaling
+        settings in{' '}
+        <code className="font-mono text-sm bg-muted px-1 rounded">
+          hpa.yaml
+        </code>
+        . The recommended value for&nbsp;
+        <code className="font-mono text-sm bg-muted px-1 rounded">
+          targetCPUUtilizationPercentage
+        </code>{' '}
+        is <code className="font-mono text-sm bg-muted px-1 rounded">80</code>.
+      </p>
+      <p className="mb-4">
+        For single pods, there is of course no HPA. But it can also be useful to
+        think about a single pod out of a larger deployment, then modify based
+        on HPA requirements. Within a pod, each container has its own CPU and
+        memory requests and limits.
+      </p>
+      <h6 className="text-base font-semibold">Definitions</h6>
+      <p className="mb-4">
+        A request is a minimum reserved value; a container will never have less
+        than this amount allocated to it, even if it doesn't actually use it.
+        Requests are used for determining what nodes to schedule pods on
+        (bin-packing). The tension here is between not allocating resources we
+        don't need, and having easy-enough access to enough resources to be able
+        to function.
+      </p>
+      <p className="mb-4">
+        Contact <Link to="#cost-awareness">#cost-awareness</Link> for
+        information and support.
+      </p>
+    </InfoCard>
+  </div>
 );
 
 const ExampleHeader = () => (
@@ -199,7 +188,7 @@ const ExampleContentHeader = ({ selectedTab }: { selectedTab?: number }) => (
 export const PluginWithData = () => {
   const [selectedTab, setSelectedTab] = useState<number>(2);
   return wrapInTestApp(() => (
-    <div style={{ border: '1px solid #ddd' }}>
+    <div className="border border-border">
       <Page themeId="tool">
         <ExampleHeader />
         <HeaderTabs
@@ -221,7 +210,7 @@ export const PluginWithData = () => {
 
 export const PluginWithTable = () => {
   return wrapInTestApp(() => (
-    <div style={{ border: '1px solid #ddd' }}>
+    <div className="border border-border">
       <Page themeId="tool">
         <ExampleHeader />
         <Content>
