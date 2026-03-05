@@ -14,48 +14,23 @@
  * limitations under the License.
  */
 
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-import CancelIcon from '@material-ui/icons/Cancel';
-import CheckIcon from '@material-ui/icons/Check';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DownloadIcon from '@material-ui/icons/GetApp';
+import { ShadcnButton as Button, cn } from '@backstage/core-components';
+import { XCircle, Check, Trash2, Download } from 'lucide-react';
 import { useDryRun } from '../DryRunContext';
 import { downloadBlob } from '../../../../lib/download';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../../translation';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    overflowY: 'auto',
-    background: theme.palette.background.default,
-  },
-  iconSuccess: {
-    minWidth: 0,
-    marginRight: theme.spacing(1),
-    color: theme.palette.status.ok,
-  },
-  iconFailure: {
-    minWidth: 0,
-    marginRight: theme.spacing(1),
-    color: theme.palette.status.error,
-  },
-}));
-
+/** Renders a scrollable list of dry run results with status icons and action buttons */
 export function DryRunResultsList() {
-  const classes = useStyles();
   const dryRun = useDryRun();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   return (
-    <List className={classes.root} dense>
+    <div className="overflow-y-auto bg-background" role="listbox">
       {dryRun.results.map(result => {
         const failed = result.log.some(l => l.body.status === 'failed');
+        const isSelected = dryRun.selectedResult?.id === result.id;
         let isLoading = false;
 
         async function downloadResult() {
@@ -68,49 +43,82 @@ export function DryRunResultsList() {
         }
 
         return (
-          <ListItem
-            button
+          <div
             key={result.id}
-            selected={dryRun.selectedResult?.id === result.id}
+            role="option"
+            tabIndex={0}
+            aria-selected={isSelected}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-accent transition-colors',
+              isSelected && 'bg-accent',
+            )}
             onClick={() => dryRun.selectResult(result.id)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                dryRun.selectResult(result.id);
+              }
+            }}
           >
-            <ListItemIcon
-              className={failed ? classes.iconFailure : classes.iconSuccess}
+            {/* Status icon */}
+            <div
+              className={cn(
+                'min-w-0 mr-1 shrink-0',
+                failed
+                  ? 'text-destructive'
+                  : 'text-green-600 dark:text-green-400',
+              )}
             >
-              {failed ? <CancelIcon /> : <CheckIcon />}
-            </ListItemIcon>
-            <ListItemText
-              primary={t('templateEditorPage.dryRunResultsList.title', {
+              {failed ? (
+                <XCircle className="h-5 w-5" />
+              ) : (
+                <Check className="h-5 w-5" />
+              )}
+            </div>
+
+            {/* Result label */}
+            <div className="text-sm flex-1 truncate">
+              {t('templateEditorPage.dryRunResultsList.title', {
                 resultId: `${result.id}`,
               })}
-            />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-1 shrink-0">
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label="download"
                 title={t(
                   'templateEditorPage.dryRunResultsList.downloadButtonTitle',
                 )}
                 disabled={isLoading}
-                onClick={() => downloadResult()}
+                onClick={e => {
+                  e.stopPropagation();
+                  downloadResult();
+                }}
               >
-                <DownloadIcon />
-              </IconButton>
-              <IconButton
-                edge="end"
+                <Download className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label="delete"
                 title={t(
                   'templateEditorPage.dryRunResultsList.deleteButtonTitle',
                 )}
-                onClick={() => dryRun.deleteResult(result.id)}
+                onClick={e => {
+                  e.stopPropagation();
+                  dryRun.deleteResult(result.id);
+                }}
               >
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         );
       })}
-    </List>
+    </div>
   );
 }
 

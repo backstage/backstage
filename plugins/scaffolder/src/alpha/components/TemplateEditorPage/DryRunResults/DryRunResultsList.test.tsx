@@ -74,7 +74,9 @@ describe('DryRunResultsList', () => {
         </SecretsContextProvider>
       </TestApiProvider>,
     );
-    expect(rendered.baseElement.querySelector('ul')).toBeEmptyDOMElement();
+    expect(
+      rendered.baseElement.querySelector('[role="listbox"]'),
+    ).toBeEmptyDOMElement();
   });
 
   it('adds new result items and deletes them', async () => {
