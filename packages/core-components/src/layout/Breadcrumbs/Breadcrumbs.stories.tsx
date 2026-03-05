@@ -64,9 +64,9 @@ export const OutsideOfHeader = () => {
         relationship.
       </p>
 
-      <Breadcrumbs color="primaryText" />
+      <Breadcrumbs />
 
-      <Breadcrumbs color="primaryText">
+      <Breadcrumbs>
         <Link to="/">General Page</Link>
         <Link to="/">Second Page</Link>
         <span>Current page</span>
@@ -78,7 +78,7 @@ export const OutsideOfHeader = () => {
         ellipses, expand the breadcrumbs out.
       </p>
 
-      <Breadcrumbs color="primaryText">
+      <Breadcrumbs>
         <Link to="/">General Page</Link>
         <Link to="/">Second Page</Link>
         <Link to="/">Third Page</Link>
@@ -93,7 +93,7 @@ export const OutsideOfHeader = () => {
       </p>
 
       <Popover open={open} onOpenChange={setOpen}>
-        <Breadcrumbs color="primaryText">
+        <Breadcrumbs>
           <Link to="/">General Page</Link>
           <PopoverTrigger asChild>
             <Link to="/" onClick={e => e.preventDefault()}>
