@@ -98,7 +98,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
               item.onClick();
             }}
           >
-            <item.Icon fontSize="small" />
+            <item.Icon />
             <span>{item.title}</span>
           </DropdownMenuItem>
         )),
@@ -149,7 +149,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
                 data-testid="menu-button"
                 className="text-foreground"
               >
-                <MoreVertical className="h-5 w-5" />
+                <MoreVertical className="h-4 w-4" />
               </ShadcnButton>
             </DropdownMenuTrigger>
           </TooltipTrigger>
