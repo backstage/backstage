@@ -576,7 +576,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">387 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">388 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -2905,7 +2905,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
       <div class="badges">
         <label for="c-7-backstage-ui-card-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-7-backstage-ui-card-stories" class="badge ok as-toggle">16 stories</label>
+        <label for="c-7-backstage-ui-card-stories" class="badge ok as-toggle">17 stories</label>
         
       </div>
     </div>
@@ -3307,6 +3307,31 @@ className?: string</code></pre>
           Secondary
         &lt;/Button&gt;
       &lt;/Flex&gt;
+    &lt;/CardFooter&gt;
+  &lt;/Card&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">InteractiveScrollable</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const InteractiveScrollable = () =&gt; (
+  &lt;Card
+    style={{ width: &#39;300px&#39;, height: &#39;200px&#39; }}
+    onPress={() =&gt; alert(&#39;Card pressed&#39;)}
+    label=&quot;View card details&quot;
+  &gt;
+    &lt;CardHeader&gt;
+      &lt;Text weight=&quot;bold&quot;&gt;Scrollable Interactive Card&lt;/Text&gt;
+    &lt;/CardHeader&gt;
+    &lt;CardBody&gt;{content}&lt;/CardBody&gt;
+    &lt;CardFooter&gt;
+      &lt;Text variant=&quot;body-small&quot; color=&quot;secondary&quot;&gt;
+        Card body scrolls while card remains clickable
+      &lt;/Text&gt;
     &lt;/CardFooter&gt;
   &lt;/Card&gt;
 );</code></pre>
