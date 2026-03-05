@@ -16,7 +16,6 @@
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { EntityRefLink } from '../EntityRefLink';
-import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode, useCallback, useState } from 'react';
 import {
   UseUnregisterEntityDialogState,
@@ -24,29 +23,32 @@ import {
 } from './useUnregisterEntityDialogState';
 
 import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import {
+  Progress,
+  ResponseErrorPanel,
+  // shadcn/ui Dialog primitives (conflict-safe names)
+  ShadcnDialog,
+  ShadcnDialogContent,
+  ShadcnDialogTitle,
+  DialogHeader,
+  DialogFooter,
+  DialogDescription,
+  // shadcn/ui Accordion primitives
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  // shadcn/ui Alert
+  Alert,
+  AlertDescription,
+  // shadcn/ui Button (aliased from ShadcnButton to avoid barrel collision with LinkButton)
+  ShadcnButton as Button,
+  // Tailwind class composition utility
+  cn,
+} from '@backstage/core-components';
 import { assertError } from '@backstage/errors';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import {
-  Accordion,
-  AccordionPanel,
-  AccordionTrigger,
-  Alert,
-  Box,
-  Button,
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  DialogHeader,
-  Text,
-} from '@backstage/ui';
-
-const useStyles = makeStyles({
-  bodyContent: {
-    overflowWrap: 'break-word',
-  },
-});
 
 type DialogHandlers = {
   state: UseUnregisterEntityDialogState;
@@ -123,25 +125,27 @@ function AdvancedDeleteAccordion({
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return (
-    <Box mt="4">
-      <Accordion>
-        <AccordionTrigger title={triggerTitle} />
-        <AccordionPanel>
-          <Text as="p">{description}</Text>
-          <Box mt="4">
-            <Button
-              variant="primary"
-              destructive
-              loading={busyAction === 'delete'}
-              isDisabled={busyAction !== null && busyAction !== 'delete'}
-              onPress={onDelete}
-            >
-              {t('unregisterEntityDialog.deleteButtonTitle')}
-            </Button>
-          </Box>
-        </AccordionPanel>
+    <div className="mt-4">
+      <Accordion type="single" collapsible>
+        <AccordionItem value="advanced">
+          <AccordionTrigger>{triggerTitle}</AccordionTrigger>
+          <AccordionContent>
+            <p className="text-sm">{description}</p>
+            <div className="mt-4">
+              <Button
+                variant="destructive"
+                disabled={busyAction !== null && busyAction !== 'delete'}
+                onClick={onDelete}
+              >
+                {busyAction === 'delete'
+                  ? '...'
+                  : t('unregisterEntityDialog.deleteButtonTitle')}
+              </Button>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
-    </Box>
+    </div>
   );
 }
 
@@ -160,14 +164,14 @@ function BootstrapBody({
 
   return (
     <>
-      <Alert
-        status="info"
-        icon
-        description={t('unregisterEntityDialog.bootstrapState.title', {
-          appTitle,
-          location,
-        })}
-      />
+      <Alert variant="info">
+        <AlertDescription>
+          {t('unregisterEntityDialog.bootstrapState.title', {
+            appTitle,
+            location,
+          })}
+        </AlertDescription>
+      </Alert>
       <AdvancedDeleteAccordion
         triggerTitle={t(
           'unregisterEntityDialog.bootstrapState.advancedOptions',
@@ -185,7 +189,11 @@ function BootstrapBody({
 function OnlyDeleteBody() {
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
-  return <Text as="p">{t('unregisterEntityDialog.onlyDeleteStateTitle')}</Text>;
+  return (
+    <p className="text-sm">
+      {t('unregisterEntityDialog.onlyDeleteStateTitle')}
+    </p>
+  );
 }
 
 function UnregisterBody({
@@ -203,7 +211,9 @@ function UnregisterBody({
 
   return (
     <>
-      <Text as="p">{t('unregisterEntityDialog.unregisterState.title')}</Text>
+      <p className="text-sm">
+        {t('unregisterEntityDialog.unregisterState.title')}
+      </p>
       <ul>
         {state.colocatedEntities.map((e: CompoundEntityRef) => (
           <li key={`${e.kind}:${e.namespace}/${e.name}`}>
@@ -211,15 +221,17 @@ function UnregisterBody({
           </li>
         ))}
       </ul>
-      <Text as="p">{t('unregisterEntityDialog.unregisterState.subTitle')}</Text>
+      <p className="text-sm">
+        {t('unregisterEntityDialog.unregisterState.subTitle')}
+      </p>
       <ul>
         <li>{state.location}</li>
       </ul>
-      <Text as="p">
+      <p className="text-sm">
         {t('unregisterEntityDialog.unregisterState.description', {
           appTitle,
         })}
-      </Text>
+      </p>
       <AdvancedDeleteAccordion
         triggerTitle={t(
           'unregisterEntityDialog.unregisterState.advancedOptions',
@@ -266,13 +278,13 @@ function useDialogContent(
         body: <OnlyDeleteBody />,
         actionButton: (
           <Button
-            variant="primary"
-            destructive
-            loading={busyAction === 'delete'}
-            isDisabled={busyAction !== null && busyAction !== 'delete'}
-            onPress={onDelete}
+            variant="destructive"
+            disabled={busyAction !== null && busyAction !== 'delete'}
+            onClick={onDelete}
           >
-            {t('unregisterEntityDialog.deleteButtonTitle')}
+            {busyAction === 'delete'
+              ? '...'
+              : t('unregisterEntityDialog.deleteButtonTitle')}
           </Button>
         ),
       };
@@ -288,23 +300,26 @@ function useDialogContent(
         ),
         actionButton: (
           <Button
-            variant="primary"
-            destructive
-            loading={busyAction === 'unregister'}
-            isDisabled={busyAction !== null && busyAction !== 'unregister'}
-            onPress={onUnregister}
+            variant="destructive"
+            disabled={busyAction !== null && busyAction !== 'unregister'}
+            onClick={onUnregister}
           >
-            {t('unregisterEntityDialog.unregisterState.unregisterButtonTitle')}
+            {busyAction === 'unregister'
+              ? '...'
+              : t(
+                  'unregisterEntityDialog.unregisterState.unregisterButtonTitle',
+                )}
           </Button>
         ),
       };
     default:
       return {
         body: (
-          <Alert
-            status="danger"
-            description={t('unregisterEntityDialog.errorStateTitle')}
-          />
+          <Alert variant="destructive">
+            <AlertDescription>
+              {t('unregisterEntityDialog.errorStateTitle')}
+            </AlertDescription>
+          </Alert>
         ),
         actionButton: null,
       };
@@ -328,7 +343,6 @@ function DialogContents({
   onConfirm: () => void;
   onClose: () => void;
 }) {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogReactTranslationRef);
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptionalString('app.title') ?? 'Backstage';
@@ -338,10 +352,17 @@ function DialogContents({
 
   return (
     <>
-      <DialogHeader>{t('unregisterEntityDialog.title')}</DialogHeader>
-      <DialogBody className={classes.bodyContent}>{body}</DialogBody>
+      <DialogHeader>
+        <ShadcnDialogTitle>
+          {t('unregisterEntityDialog.title')}
+        </ShadcnDialogTitle>
+        <DialogDescription className="sr-only">
+          {t('unregisterEntityDialog.title')}
+        </DialogDescription>
+      </DialogHeader>
+      <div className={cn('break-words', 'px-6 py-4')}>{body}</div>
       <DialogFooter>
-        <Button variant="secondary" onPress={onClose}>
+        <Button variant="outline" onClick={onClose}>
           {t('unregisterEntityDialog.cancelButtonTitle')}
         </Button>
         {actionButton}
@@ -355,18 +376,16 @@ export const UnregisterEntityDialog = (props: UnregisterEntityDialogProps) => {
   const { open, onConfirm, onClose, entity } = props;
 
   return (
-    <Dialog
-      isOpen={open}
-      onOpenChange={isOpen => !isOpen && onClose()}
-      width={600}
-    >
-      {open && (
-        <DialogContents
-          entity={entity}
-          onConfirm={onConfirm}
-          onClose={onClose}
-        />
-      )}
-    </Dialog>
+    <ShadcnDialog open={open} onOpenChange={isOpen => !isOpen && onClose()}>
+      <ShadcnDialogContent className="max-w-[600px]">
+        {open && (
+          <DialogContents
+            entity={entity}
+            onConfirm={onConfirm}
+            onClose={onClose}
+          />
+        )}
+      </ShadcnDialogContent>
+    </ShadcnDialog>
   );
 };
