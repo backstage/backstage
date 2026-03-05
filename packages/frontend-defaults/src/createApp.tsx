@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { JSX, lazy, ReactNode, Suspense } from 'react';
+import { JSX, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
+  ExtensionFactoryMiddleware,
   FrontendFeature,
   FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
@@ -29,8 +30,8 @@ import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseU
 import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
-  createSpecializedApp,
-  ExtensionFactoryMiddleware,
+  prepareSpecializedApp,
+  PreparedSpecializedApp,
   FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
@@ -58,6 +59,17 @@ export interface CreateAppOptions {
    * Advanced, more rarely used options.
    */
   advanced?: {
+    /**
+     * If set to true, the system will silently accept and move on if
+     * encountering config for extensions that do not exist. The default is to
+     * reject such config to help catch simple mistakes.
+     *
+     * This flag can be useful in some scenarios where you have a dynamic set of
+     * extensions enabled at different times, but also increases the risk of
+     * accidentally missing e.g. simple typos in your config.
+     */
+    allowUnknownExtensionConfig?: boolean;
+
     /**
      * Sets a custom config loader, replacing the builtin one.
      *
@@ -119,23 +131,22 @@ export function createApp(options?: CreateAppOptions): {
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
     });
 
-    const app = createSpecializedApp({
+    const preparedApp = prepareSpecializedApp({
       features: [appPlugin, ...loadedFeatures],
       config,
       bindRoutes: options?.bindRoutes,
       advanced: options?.advanced,
     });
 
-    const errorPage = maybeCreateErrorPage(app);
-    if (errorPage) {
-      return { default: () => errorPage };
+    if (preparedApp.getSignIn()) {
+      return {
+        default: () => <PreparedAppRoot preparedApp={preparedApp} />,
+      };
     }
 
-    const rootEl = app.tree.root.instance!.getData(
-      coreExtensionData.reactElement,
-    );
-
-    return { default: () => rootEl };
+    return {
+      default: () => renderFinalizedApp(preparedApp.finalize()),
+    };
   }
 
   const LazyApp = lazy(appLoader);
@@ -149,4 +160,61 @@ export function createApp(options?: CreateAppOptions): {
       );
     },
   };
+}
+
+function PreparedAppRoot(props: {
+  preparedApp: PreparedSpecializedApp;
+}): JSX.Element {
+  const signIn = props.preparedApp.getSignIn();
+  const [finalizeError, setFinalizeError] = useState<Error>();
+  const [finalizedApp, setFinalizedApp] = useState(() => {
+    if (!signIn) {
+      return props.preparedApp.finalize();
+    }
+    return undefined;
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    if (signIn) {
+      void signIn.complete
+        .then(async () => {
+          if (cancelled) {
+            return;
+          }
+          setFinalizedApp(props.preparedApp.finalize());
+        })
+        .catch(error => {
+          if (cancelled) {
+            return;
+          }
+          setFinalizeError(error);
+        });
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [props.preparedApp, signIn]);
+
+  if (finalizeError) {
+    throw finalizeError;
+  }
+
+  if (!finalizedApp) {
+    return signIn!.element;
+  }
+
+  return renderFinalizedApp(finalizedApp);
+}
+
+function renderFinalizedApp(
+  app: ReturnType<PreparedSpecializedApp['finalize']>,
+) {
+  const errorPage = maybeCreateErrorPage(app);
+  if (errorPage) {
+    return errorPage;
+  }
+
+  return app.tree.root.instance!.getData(coreExtensionData.reactElement)!;
 }

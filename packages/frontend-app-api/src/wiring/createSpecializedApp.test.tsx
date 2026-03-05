@@ -30,13 +30,26 @@ import {
   analyticsApiRef,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-import { screen, render } from '@testing-library/react';
-import { createSpecializedApp } from './createSpecializedApp';
+import { screen, render, waitFor } from '@testing-library/react';
+import {
+  createSpecializedApp,
+  prepareSpecializedApp,
+} from './createSpecializedApp';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
-import { configApiRef, featureFlagsApiRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  featureFlagsApiRef,
+  IdentityApi,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import { Fragment } from 'react';
+import { ComponentType, Fragment, useEffect } from 'react';
+import appPluginOriginal from '@backstage/plugin-app';
+
+const signInPageComponentDataRef = createExtensionDataRef<
+  ComponentType<{ onSignInSuccess(identity: IdentityApi): void }>
+>().with({ id: 'core.sign-in-page.component' });
 
 function makeAppPlugin(label: string = 'Test') {
   return createFrontendPlugin({
@@ -51,6 +64,14 @@ function makeAppPlugin(label: string = 'Test') {
   });
 }
 describe('createSpecializedApp', () => {
+  const appPlugin = appPluginOriginal.withOverrides({
+    extensions: [
+      appPluginOriginal.getExtension('app/layout').override({
+        factory: () => [coreExtensionData.reactElement(<div>App Layout</div>)],
+      }),
+    ],
+  });
+
   it('should render the root app', () => {
     const app = createSpecializedApp({
       features: [makeAppPlugin()],
@@ -154,80 +175,11 @@ describe('createSpecializedApp', () => {
       { name: 'b', pluginId: 'test', description: 'Feature B description' },
     ]);
 
-    expect(app.apis).toMatchInlineSnapshot(`
-      ApiResolver {
-        "apis": Map {
-          "core.featureflags" => {
-            "getRegisteredFlags": [Function],
-            "registerFlag": [Function],
-          },
-        },
-        "factories": ApiFactoryRegistry {
-          "factories": Map {
-            "core.featureflags" => {
-              "factory": {
-                "api": ApiRefImpl {
-                  "config": {
-                    "id": "core.featureflags",
-                  },
-                },
-                "deps": {},
-                "factory": [Function],
-              },
-              "priority": 10,
-            },
-            "core.app-tree" => {
-              "factory": {
-                "api": ApiRefImpl {
-                  "config": {
-                    "id": "core.app-tree",
-                  },
-                },
-                "deps": {},
-                "factory": [Function],
-              },
-              "priority": 100,
-            },
-            "core.config" => {
-              "factory": {
-                "api": ApiRefImpl {
-                  "config": {
-                    "id": "core.config",
-                  },
-                },
-                "deps": {},
-                "factory": [Function],
-              },
-              "priority": 100,
-            },
-            "core.route-resolution" => {
-              "factory": {
-                "api": ApiRefImpl {
-                  "config": {
-                    "id": "core.route-resolution",
-                  },
-                },
-                "deps": {},
-                "factory": [Function],
-              },
-              "priority": 100,
-            },
-            "core.identity" => {
-              "factory": {
-                "api": ApiRefImpl {
-                  "config": {
-                    "id": "core.identity",
-                  },
-                },
-                "deps": {},
-                "factory": [Function],
-              },
-              "priority": 100,
-            },
-          },
-        },
-      }
-    `);
+    expect(app.apis.get(featureFlagsApiRef)).toBeDefined();
+    expect(app.apis.get(featureFlagsApiRef)!.getRegisteredFlags()).toEqual(
+      flags,
+    );
+    expect(app.apis.get(identityApiRef)).toBeDefined();
   });
 
   it('should initialize the APIs in the correct order to allow for overrides', () => {
@@ -399,17 +351,27 @@ describe('createSpecializedApp', () => {
   });
 
   it('should use provided apis', async () => {
+    const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+    const providedApis = TestApiRegistry.from([
+      configApiRef,
+      new ConfigReader({ anything: 'config' }),
+    ]);
     const app = createSpecializedApp({
       advanced: {
-        apis: TestApiRegistry.from([
-          configApiRef,
-          new ConfigReader({ anything: 'config' }),
-        ]),
+        apis: providedApis,
       },
       features: [
         createFrontendPlugin({
           pluginId: 'test',
           extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: testApiRef,
+                  deps: {},
+                  factory: () => ({ value: 'from-extension' }),
+                }),
+            }),
             createExtension({
               attachTo: { id: 'root', input: 'app' },
               output: [coreExtensionData.reactElement],
@@ -431,22 +393,10 @@ describe('createSpecializedApp', () => {
 
     expect(screen.getByText('providedApis:config')).toBeInTheDocument();
 
-    expect(app.apis).toMatchInlineSnapshot(`
-      TestApiRegistry {
-        "apis": Map {
-          "core.config" => ConfigReader {
-            "context": "mock-config",
-            "data": {
-              "anything": "config",
-            },
-            "fallback": undefined,
-            "filteredKeys": undefined,
-            "notifiedFilteredKeys": Set {},
-            "prefix": "",
-          },
-        },
-      }
-    `);
+    expect(app.apis).not.toBe(providedApis);
+    expect(app.apis.get(configApiRef)!.getString('anything')).toBe('config');
+    expect(app.apis.get(identityApiRef)).toBeDefined();
+    expect(app.apis.get(testApiRef)).toBeUndefined();
   });
 
   it('should make the app structure available through the AppTreeApi', async () => {
@@ -880,6 +830,128 @@ describe('createSpecializedApp', () => {
       expect(info).toEqual({
         packageName: 'decorated:@backstage/frontend-app-api',
       });
+    });
+  });
+
+  describe('prepareSpecializedApp', () => {
+    it('should expose a sign-in page element and finalize with the captured identity', async () => {
+      const identityApi = {
+        getProfileInfo: async () => ({ displayName: 'Test User' }),
+        getBackstageIdentity: async () => ({
+          type: 'user' as const,
+          userEntityRef: 'user:default/test-user',
+          ownershipEntityRefs: ['user:default/test-user'],
+        }),
+        getCredentials: async () => ({ token: 'token' }),
+        signOut: async () => {},
+      };
+
+      const preparedApp = prepareSpecializedApp({
+        features: [
+          appPlugin,
+          createFrontendModule({
+            pluginId: 'app',
+            extensions: [
+              appPlugin.getExtension('sign-in-page:app').override({
+                factory: () => {
+                  function SignInPage(props: {
+                    onSignInSuccess(identity: IdentityApi): void;
+                  }) {
+                    useEffect(() => {
+                      props.onSignInSuccess(identityApi);
+                    }, [props]);
+                    return <div>Custom Sign In</div>;
+                  }
+
+                  return [signInPageComponentDataRef(SignInPage)];
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      const signIn = preparedApp.getSignIn();
+      expect(signIn).toBeDefined();
+      render(signIn!.element);
+      await expect(
+        screen.findByText('Custom Sign In'),
+      ).resolves.toBeInTheDocument();
+
+      await signIn!.complete;
+      const finalizedApp = preparedApp.finalize();
+      await waitFor(async () => {
+        await expect(
+          finalizedApp.apis.get(identityApiRef)!.getBackstageIdentity(),
+        ).resolves.toEqual({
+          type: 'user',
+          userEntityRef: 'user:default/test-user',
+          ownershipEntityRefs: ['user:default/test-user'],
+        });
+      });
+    });
+
+    it('should gate finalize behind internal async sign-in finalization', async () => {
+      const identityApi = {
+        getProfileInfo: async () => ({ displayName: 'Test User' }),
+        getBackstageIdentity: async () => ({
+          type: 'user' as const,
+          userEntityRef: 'user:default/test-user',
+          ownershipEntityRefs: ['user:default/test-user'],
+        }),
+        getCredentials: async () => ({ token: 'token' }),
+        signOut: async () => {},
+      };
+      let onSignInSuccess: ((identity: IdentityApi) => void) | undefined;
+
+      const preparedApp = prepareSpecializedApp({
+        features: [
+          appPlugin,
+          createFrontendModule({
+            pluginId: 'app',
+            extensions: [
+              appPlugin.getExtension('sign-in-page:app').override({
+                factory: () => {
+                  function SignInPage(props: {
+                    onSignInSuccess(identity: IdentityApi): void;
+                  }) {
+                    onSignInSuccess = props.onSignInSuccess;
+                    return <div>Custom Sign In</div>;
+                  }
+
+                  return [signInPageComponentDataRef(SignInPage)];
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      const signIn = preparedApp.getSignIn();
+      render(signIn!.element);
+      await expect(
+        screen.findByText('Custom Sign In'),
+      ).resolves.toBeInTheDocument();
+
+      expect(() => preparedApp.finalize()).toThrow(
+        'prepareSpecializedApp requires awaiting signIn.complete before calling finalize()',
+      );
+
+      onSignInSuccess!(identityApi);
+      expect(() => preparedApp.finalize()).toThrow(
+        'prepareSpecializedApp requires awaiting signIn.complete before calling finalize()',
+      );
+
+      await signIn!.complete;
+
+      const finalizedApp = preparedApp.finalize();
+      render(
+        finalizedApp.tree.root.instance!.getData(
+          coreExtensionData.reactElement,
+        ),
+      );
+
+      expect(screen.getByText('App Layout')).toBeInTheDocument();
     });
   });
 });
