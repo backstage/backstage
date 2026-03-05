@@ -16,10 +16,21 @@
 
 import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {
+  ShadcnButton as Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  Input,
+  cn,
+} from '@backstage/core-components';
+import { ChevronsUpDown, Check } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -82,32 +93,72 @@ export const GitHubRepoOwnerPicker = ({
   useDebounce(updateAvailableOwners, 500, [updateAvailableOwners]);
 
   return (
-    <FormControl
-      margin="normal"
-      required={required}
-      error={rawErrors?.length > 0 && !owner}
-    >
-      <Autocomplete
-        value={owner}
-        onChange={(_, newValue) => {
-          onChange({ owner: newValue || '' });
-        }}
-        disabled={isDisabled}
-        options={availableOwners}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label={schema?.title ?? t('fields.repoOwnerPicker.title')}
+    <div className="space-y-2">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
             disabled={isDisabled}
-            required={required}
-          />
-        )}
-        freeSolo
-        autoSelect
+            className={cn(
+              'w-full justify-between',
+              !owner && 'text-muted-foreground',
+            )}
+          >
+            {owner || (schema?.title ?? t('fields.repoOwnerPicker.title'))}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command>
+            <CommandInput
+              placeholder={schema?.title ?? t('fields.repoOwnerPicker.title')}
+            />
+            <CommandList>
+              <CommandEmpty>No owner found.</CommandEmpty>
+              <CommandGroup>
+                {availableOwners.map(availableOwner => (
+                  <CommandItem
+                    key={availableOwner}
+                    value={availableOwner}
+                    onSelect={currentValue => {
+                      onChange({ owner: currentValue });
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        owner === availableOwner ? 'opacity-100' : 'opacity-0',
+                      )}
+                    />
+                    {availableOwner}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {/* Free text input for manual owner entry (preserves freeSolo behavior) */}
+      <Input
+        id="ownerInput"
+        placeholder={schema?.title ?? t('fields.repoOwnerPicker.title')}
+        value={owner ?? ''}
+        onChange={e => onChange({ owner: e.target.value })}
+        disabled={isDisabled}
+        required={required}
+        className={cn(rawErrors?.length > 0 && !owner && 'border-destructive')}
       />
-      <FormHelperText>
+      <p
+        className={cn(
+          'text-sm',
+          rawErrors?.length > 0 && !owner
+            ? 'text-destructive'
+            : 'text-muted-foreground',
+        )}
+      >
         {schema?.description ?? t('fields.repoOwnerPicker.description')}
-      </FormHelperText>
-    </FormControl>
+      </p>
+    </div>
   );
 };
