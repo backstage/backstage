@@ -59,10 +59,6 @@ export const PageBlueprint = createExtensionBlueprint({
   },
   *factory(
     params: {
-      /**
-       * @deprecated Use the `path` param instead.
-       */
-      defaultPath?: [Error: `Use the 'path' param instead`];
       path: string;
       title?: string;
       icon?: IconElement;
