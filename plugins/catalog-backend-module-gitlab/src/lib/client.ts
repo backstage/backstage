@@ -41,7 +41,7 @@ interface ListProjectOptions extends CommonListOptions {
   archived?: boolean;
   group?: string;
   membership?: boolean;
-  topics?: string;
+  topic?: string;
   last_activity_after?: string;
 }
 
