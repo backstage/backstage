@@ -13,14 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Select, SelectItem } from '@backstage/core-components';
+import {
+  Select,
+  SelectItem,
+  ShadcnButton as Button,
+  Label,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  cn,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { ChevronsUpDown, Check } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -44,6 +56,7 @@ export const GitlabRepoPicker = (
   const [availableGroups, setAvailableGroups] = useState<
     { title: string; id: string }[]
   >([]);
+  const [ownerOpen, setOwnerOpen] = useState(false);
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
@@ -118,10 +131,11 @@ export const GitlabRepoPicker = (
 
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !owner}
+      <div
+        className={cn(
+          'mt-4 mb-2',
+          rawErrors?.length > 0 && !owner && 'text-destructive',
+        )}
       >
         {allowedOwners?.length ? (
           <>
@@ -139,31 +153,68 @@ export const GitlabRepoPicker = (
               selected={owner}
               items={ownerItems}
             />
-            <FormHelperText>
+            <p className="mt-1 text-sm text-muted-foreground">
               {t('fields.gitlabRepoPicker.owner.description')}
-            </FormHelperText>
+            </p>
           </>
         ) : (
-          <Autocomplete
-            value={owner}
-            onChange={(_, newValue) => {
-              onChange({ owner: newValue || '' });
-            }}
-            options={availableGroups.map(group => group.title)}
-            renderInput={params => (
-              <TextField
-                {...params}
-                label={t('fields.gitlabRepoPicker.owner.title')}
-                disabled={isDisabled}
-                required
-              />
-            )}
-            freeSolo
-            disabled={isDisabled}
-            autoSelect
-          />
+          <div className="space-y-2">
+            <Label>{t('fields.gitlabRepoPicker.owner.title')}</Label>
+            <Popover open={ownerOpen} onOpenChange={setOwnerOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={ownerOpen}
+                  disabled={isDisabled}
+                  className="w-full justify-between font-normal"
+                >
+                  {owner || t('fields.gitlabRepoPicker.owner.title')}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <Command>
+                  <CommandInput
+                    placeholder={t('fields.gitlabRepoPicker.owner.title')}
+                    onValueChange={val => {
+                      onChange({ owner: val });
+                    }}
+                  />
+                  <CommandList>
+                    <CommandEmpty>No group found.</CommandEmpty>
+                    <CommandGroup>
+                      {availableGroups.map(group => (
+                        <CommandItem
+                          key={group.id}
+                          value={group.title}
+                          onSelect={currentValue => {
+                            onChange({ owner: currentValue });
+                            setOwnerOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              owner === group.title
+                                ? 'opacity-100'
+                                : 'opacity-0',
+                            )}
+                          />
+                          {group.title}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            <p className="text-sm text-muted-foreground">
+              {t('fields.gitlabRepoPicker.owner.description')}
+            </p>
+          </div>
         )}
-      </FormControl>
+      </div>
     </>
   );
 };
