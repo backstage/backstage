@@ -15,49 +15,15 @@
  */
 
 import { Loader2 } from 'lucide-react';
-import { cn } from '@backstage/core-components';
+import {
+  Alert,
+  AlertDescription,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { useTechDocsReader } from './TechDocsReaderProvider';
-
-/** Alert severity to Tailwind class mapping */
-const severityStyles: Record<string, string> = {
-  info: 'border-info-foreground/40 text-info-foreground bg-info',
-  success: 'border-success-foreground/40 text-success-foreground bg-success',
-  error: 'border-destructive/40 text-destructive bg-destructive/10',
-};
-
-function StateAlertBox({
-  severity,
-  icon,
-  action,
-  className,
-  children,
-}: {
-  severity: string;
-  icon?: React.ReactNode;
-  action?: React.ReactNode;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      role="alert"
-      className={cn(
-        'flex items-center rounded-md border px-4 py-3 text-sm',
-        severityStyles[severity] ?? severityStyles.info,
-        className,
-      )}
-    >
-      {icon && <span className="mr-3 shrink-0">{icon}</span>}
-      <span className="flex-1 break-words [overflow-wrap:anywhere]">
-        {children}
-      </span>
-      {action && <span className="ml-3 shrink-0">{action}</span>}
-    </div>
-  );
-}
 
 export const TechDocsStateIndicator = () => {
   let StateAlert: JSX.Element | null = null;
@@ -72,62 +38,73 @@ export const TechDocsStateIndicator = () => {
 
   if (state === 'INITIAL_BUILD') {
     StateAlert = (
-      <StateAlertBox
-        severity="info"
-        className="mb-4"
-        icon={<Loader2 className="h-6 w-6 animate-spin" />}
-        action={<TechDocsBuildLogs buildLog={buildLog} />}
-      >
-        Documentation is accessed for the first time and is being prepared. The
-        subsequent loads are much faster.
-      </StateAlertBox>
+      <Alert variant="info" className="mb-4">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 shrink-0">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+          <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+            Documentation is accessed for the first time and is being prepared.
+            The subsequent loads are much faster.
+          </AlertDescription>
+          <div className="ml-auto shrink-0">
+            <TechDocsBuildLogs buildLog={buildLog} />
+          </div>
+        </div>
+      </Alert>
     );
   }
 
   if (state === 'CONTENT_STALE_REFRESHING') {
     StateAlert = (
-      <StateAlertBox
-        severity="info"
-        className="mb-4"
-        icon={<Loader2 className="h-6 w-6 animate-spin" />}
-        action={<TechDocsBuildLogs buildLog={buildLog} />}
-      >
-        A newer version of this documentation is being prepared and will be
-        available shortly.
-      </StateAlertBox>
+      <Alert variant="info" className="mb-4">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 shrink-0">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+          <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+            A newer version of this documentation is being prepared and will be
+            available shortly.
+          </AlertDescription>
+          <div className="ml-auto shrink-0">
+            <TechDocsBuildLogs buildLog={buildLog} />
+          </div>
+        </div>
+      </Alert>
     );
   }
 
   if (state === 'CONTENT_STALE_READY') {
     StateAlert = (
-      <StateAlertBox
-        severity="success"
-        className="mb-4"
-        action={
-          <button
-            className="text-inherit underline underline-offset-2 hover:opacity-80"
-            onClick={() => contentReload()}
-          >
-            Refresh
-          </button>
-        }
-      >
-        A newer version of this documentation is now available, please refresh
-        to view.
-      </StateAlertBox>
+      <Alert variant="success" className="mb-4">
+        <div className="flex items-start gap-3">
+          <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+            A newer version of this documentation is now available, please
+            refresh to view.
+          </AlertDescription>
+          <div className="ml-auto shrink-0">
+            <Button variant="ghost" onClick={() => contentReload()}>
+              Refresh
+            </Button>
+          </div>
+        </div>
+      </Alert>
     );
   }
 
   if (state === 'CONTENT_STALE_ERROR') {
     StateAlert = (
-      <StateAlertBox
-        severity="error"
-        className="mb-4"
-        action={<TechDocsBuildLogs buildLog={buildLog} />}
-      >
-        Building a newer version of this documentation failed.{' '}
-        {syncErrorMessage}
-      </StateAlertBox>
+      <Alert variant="destructive" className="mb-4">
+        <div className="flex items-start gap-3">
+          <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+            Building a newer version of this documentation failed.{' '}
+            {syncErrorMessage}
+          </AlertDescription>
+          <div className="ml-auto shrink-0">
+            <TechDocsBuildLogs buildLog={buildLog} />
+          </div>
+        </div>
+      </Alert>
     );
   }
 
@@ -135,14 +112,17 @@ export const TechDocsStateIndicator = () => {
     StateAlert = (
       <>
         {syncErrorMessage && (
-          <StateAlertBox
-            severity="error"
-            className="mb-4"
-            action={<TechDocsBuildLogs buildLog={buildLog} />}
-          >
-            Building a newer version of this documentation failed.{' '}
-            {syncErrorMessage}
-          </StateAlertBox>
+          <Alert variant="destructive" className="mb-4">
+            <div className="flex items-start gap-3">
+              <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+                Building a newer version of this documentation failed.{' '}
+                {syncErrorMessage}
+              </AlertDescription>
+              <div className="ml-auto shrink-0">
+                <TechDocsBuildLogs buildLog={buildLog} />
+              </div>
+            </div>
+          </Alert>
         )}
         <TechDocsNotFound errorMessage={contentErrorMessage} />
       </>
