@@ -2733,9 +2733,9 @@ export interface ToggleButtonProps
   extends Omit<ToggleButtonProps_2, 'children' | 'className'>,
     ToggleButtonOwnProps {}
 
-// @public (undocumented)
+// @public
 export const Timeline: ForwardRefExoticComponent<
-  TimelineProps & RefAttributes<HTMLDivElement>
+  TimelineProps & RefAttributes<HTMLOListElement>
 >;
 
 // @public
@@ -2752,9 +2752,9 @@ export const TimelineDefinition: {
   };
 };
 
-// @public (undocumented)
+// @public
 export const TimelineItem: ForwardRefExoticComponent<
-  TimelineItemProps & RefAttributes<HTMLDivElement>
+  TimelineItemProps & RefAttributes<HTMLLIElement>
 >;
 
 // @public
@@ -2781,7 +2781,7 @@ export const TimelineItemDefinition: {
   };
 };
 
-// @public (undocumented)
+// @public
 export interface TimelineItemProps {
   className?: string;
   description?: ReactNode;
@@ -2790,7 +2790,7 @@ export interface TimelineItemProps {
   title: ReactNode;
 }
 
-// @public (undocumented)
+// @public
 export interface TimelineProps {
   children: ReactNode;
   className?: string;

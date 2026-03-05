@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-import { forwardRef, Ref } from 'react';
+import { forwardRef } from 'react';
 import type { TimelineProps, TimelineItemProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { TimelineDefinition, TimelineItemDefinition } from './definition';
 
 /**
  * Timeline component for displaying chronological events
+ *
+ * @remarks
+ * Renders as an ordered list for semantic HTML and better accessibility.
+ * Use TimelineItem components as children to display individual events.
+ *
  * @public
  */
-export const Timeline = forwardRef(
-  (props: TimelineProps, ref: Ref<HTMLDivElement>) => {
+export const Timeline = forwardRef<HTMLOListElement, TimelineProps>(
+  (props, ref) => {
     const { ownProps, restProps } = useDefinition(TimelineDefinition, props);
     const { classes, children } = ownProps;
 
     return (
-      <div ref={ref} className={classes.root} {...restProps}>
+      <ol ref={ref} className={classes.root} {...restProps}>
         {children}
-      </div>
+      </ol>
     );
   },
 );
@@ -40,10 +45,15 @@ Timeline.displayName = 'Timeline';
 
 /**
  * TimelineItem component for individual timeline events
+ *
+ * @remarks
+ * Renders as a list item with marker (icon/circle), connecting line,
+ * and content area for title, timestamp, and description.
+ *
  * @public
  */
-export const TimelineItem = forwardRef(
-  (props: TimelineItemProps, ref: Ref<HTMLDivElement>) => {
+export const TimelineItem = forwardRef<HTMLLIElement, TimelineItemProps>(
+  (props, ref) => {
     const { ownProps, restProps } = useDefinition(
       TimelineItemDefinition,
       props,
@@ -51,13 +61,9 @@ export const TimelineItem = forwardRef(
     const { classes, title, description, timestamp, icon } = ownProps;
 
     return (
-      <div ref={ref} className={classes.root} {...restProps}>
+      <li ref={ref} className={classes.root} {...restProps}>
         <div className={classes.marker}>
-          {icon ? (
-            <div className={classes.icon}>{icon}</div>
-          ) : (
-            <div className={classes.icon} />
-          )}
+          <div className={classes.icon}>{icon}</div>
           <div className={classes.line} />
         </div>
         <div className={classes.content}>
@@ -67,7 +73,7 @@ export const TimelineItem = forwardRef(
             <div className={classes.description}>{description}</div>
           )}
         </div>
-      </div>
+      </li>
     );
   },
 );
