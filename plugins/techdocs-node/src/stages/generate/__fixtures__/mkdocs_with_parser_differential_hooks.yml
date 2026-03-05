@@ -1,0 +1,16 @@
+# This file intentionally uses duplicate merge keys (<<) which is technically
+# invalid YAML, but is accepted by most parsers with different behaviors:
+# - js-yaml: uses the first merge key value (hooks: null)
+# - PyYAML: uses the last merge key value (hooks: [custom_hook.py])
+# This tests that sanitization catches hooks regardless of parser interpretation.
+site_name: Test
+plugins:
+  - techdocs-core
+extra:
+  null_hooks: &null_hooks
+    hooks: null
+  array_hooks: &array_hooks
+    hooks:
+      - custom_hook.py
+<<: *null_hooks
+<<: *array_hooks

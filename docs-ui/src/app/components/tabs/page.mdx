@@ -1,0 +1,116 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import {
+  tabsPropDefs,
+  tabListPropDefs,
+  tabPropDefs,
+  tabPanelPropDefs,
+} from './props-definition';
+import {
+  tabsUsageSnippet,
+  defaultSnippet,
+  defaultSelectedKeySnippet,
+  disabledTabsSnippet,
+  orientationSnippet,
+  urlNavigationSnippet,
+} from './snippets';
+import {
+  Default,
+  DefaultSelectedKey,
+  DisabledTabs,
+  Orientation,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TabsDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+export const reactAriaUrls = {
+  tabs: 'https://react-aria.adobe.com/Tabs',
+};
+
+<PageTitle
+  title="Tabs"
+  description="A tabbed interface supporting local state and URL-based navigation."
+/>
+
+<Snippet py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={tabsUsageSnippet} />
+
+## API reference
+
+### Tabs
+
+Container that groups the tab list and panels.
+
+<PropsTable data={tabsPropDefs} />
+
+<ReactAriaLink component="Tabs" href={reactAriaUrls.tabs} />
+
+### TabList
+
+Container for the tab buttons.
+
+<PropsTable data={tabListPropDefs} />
+
+<ReactAriaLink component="TabList" href={reactAriaUrls.tabs} />
+
+### Tab
+
+Individual tab button. Add `href` to enable URL-based tab selection.
+
+<PropsTable data={tabPropDefs} />
+
+<ReactAriaLink component="Tab" href={reactAriaUrls.tabs} />
+
+### TabPanel
+
+Content panel associated with a tab.
+
+<PropsTable data={tabPanelPropDefs} />
+
+<ReactAriaLink component="TabPanel" href={reactAriaUrls.tabs} />
+
+## Examples
+
+### Default selected
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<DefaultSelectedKey />}
+  code={defaultSelectedKeySnippet}
+/>
+
+### Disabled tabs
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<DisabledTabs />}
+  code={disabledTabsSnippet}
+/>
+
+### Vertical orientation
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Orientation />}
+  code={orientationSnippet}
+/>
+
+### URL-based navigation
+
+Add `href` to Tab components to enable URL-based tab selection. The active tab is determined by the current route.
+
+<CodeBlock code={urlNavigationSnippet} />
+
+<Theming definition={TabsDefinition} />
+
+<ChangelogComponent component="tabs" />

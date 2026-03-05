@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-kubernetes-backend
+  title: '@backstage/plugin-kubernetes-backend'
+  description: A Backstage backend plugin that integrates towards Kubernetes
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: kubernetes-maintainers

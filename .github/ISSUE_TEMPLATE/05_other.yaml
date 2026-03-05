@@ -1,0 +1,24 @@
+name: '❓ Other'
+description: 'Something not captured by any other template'
+labels:
+  - needs:triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template can be used to create issues that don't fit any of the other templates. Valid examples include meta issues or other task tracking issues to help coordinate work, or informative issues that are kept for search purposes.
+
+        Do not use this template to submit support or help requests, as they will be closed. Please use other forums such as our [Community Discord](https://discord.gg/backstage-687207715902193673) instead.
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: '📝 Acknowledgement'
+      options:
+        - label: I acknowledge that issues using this template may be closed without further explanation.
+          required: true
+  - type: textarea
+    id: contents
+    attributes:
+      label: Content
+    validations:
+      required: true

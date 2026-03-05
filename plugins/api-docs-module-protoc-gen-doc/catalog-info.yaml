@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-api-docs-module-protoc-gen-doc
+  title: '@backstage/plugin-api-docs-module-protoc-gen-doc'
+  description: >-
+    Additional functionalities for the api-docs plugin that renders the output
+    of the protoc-gen-doc
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin-module
+  owner: maintainers

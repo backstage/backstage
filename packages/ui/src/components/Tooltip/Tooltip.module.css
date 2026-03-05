@@ -1,0 +1,116 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-Tooltip {
+    --tooltip-border-radius: 4px;
+    box-shadow: var(--bui-shadow);
+    border-radius: var(--tooltip-border-radius);
+    background: var(--bui-bg-app);
+    border: 1px solid var(--bui-border-1);
+    forced-color-adjust: none;
+    outline: none;
+    max-width: 240px;
+    /* fixes FF gap */
+    transform: translate3d(0, 0, 0);
+    transition: transform 200ms, opacity 200ms;
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    color: var(--bui-fg-primary);
+
+    &[data-entering],
+    &[data-exiting] {
+      transform: var(--origin);
+      opacity: 0;
+    }
+
+    --tooltip-offset: var(--bui-space-3);
+
+    &[data-placement='top'] {
+      margin-bottom: var(--tooltip-offset);
+      --origin: translateY(4px);
+    }
+
+    &[data-placement='right'] {
+      margin-left: var(--tooltip-offset);
+      --origin: translateX(-4px);
+    }
+
+    &[data-placement='bottom'] {
+      margin-top: var(--tooltip-offset);
+      --origin: translateY(-4px);
+    }
+
+    &[data-placement='left'] {
+      margin-right: var(--tooltip-offset);
+      --origin: translateX(4px);
+    }
+  }
+
+  .bui-TooltipContent {
+    padding: var(--bui-space-2) var(--bui-space-3);
+    border-radius: var(--tooltip-border-radius);
+  }
+
+  .bui-TooltipArrow {
+    & svg {
+      display: block;
+
+      /* The tooltip is rendered overlaying the main
+      tooltip element by 1px. This causes the borders
+      to overlap, which causes minor visual artifacts
+      with transparent border colors. To mitigate this,
+      we split the stroke and fill across separate
+      elements in order to guarantee that the stroke is
+      always overlaying a consistent color. */
+      use:nth-of-type(1) {
+        fill: var(--bui-bg-app);
+      }
+      use:nth-of-type(2) {
+        fill: var(--bui-bg-neutral-1);
+      }
+
+      path {
+        fill: var(--bui-border-1);
+      }
+
+      /* The arrow svg overlaps the tooltip by 2px, so we
+      need to adjust the margins accordingly. */
+      --tooltip-arrow-overlap: -2px;
+    }
+
+    &[data-placement='top'] svg {
+      margin-top: var(--tooltip-arrow-overlap);
+    }
+
+    &[data-placement='bottom'] svg {
+      margin-bottom: var(--tooltip-arrow-overlap);
+      transform: rotate(180deg);
+    }
+
+    &[data-placement='right'] svg {
+      margin-right: var(--tooltip-arrow-overlap);
+      transform: rotate(90deg);
+    }
+
+    &[data-placement='left'] svg {
+      margin-left: var(--tooltip-arrow-overlap);
+      transform: rotate(-90deg);
+    }
+  }
+}

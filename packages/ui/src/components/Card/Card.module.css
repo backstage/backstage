@@ -1,0 +1,212 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-Card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--bui-radius-3);
+    color: var(--bui-fg-primary);
+    overflow: auto;
+    min-height: 0;
+    width: 100%;
+    position: relative;
+    padding: var(--bui-space-3);
+  }
+
+  .bui-Card[data-bg='neutral-1'] {
+    --bui-card-bg: var(--bui-bg-neutral-1);
+  }
+
+  .bui-Card[data-bg='neutral-2'] {
+    --bui-card-bg: var(--bui-bg-neutral-2);
+  }
+
+  .bui-Card[data-bg='neutral-3'] {
+    --bui-card-bg: var(--bui-bg-neutral-3);
+  }
+
+  .bui-Card:has(.bui-CardHeader, .bui-CardBody, .bui-CardFooter) {
+    padding: 0;
+  }
+
+  /*
+   * Cursor and hover tint are applied at the card level so they cover the
+   * entire surface. The overlay inherits the cursor via cursor: inherit.
+   */
+  .bui-Card[data-interactive] {
+    cursor: pointer;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: color-mix(in srgb, currentColor 5%, transparent);
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 200ms ease-in-out;
+    }
+
+    &:hover::after {
+      opacity: 1;
+    }
+  }
+
+  .bui-CardOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: transparent;
+    border-radius: inherit;
+    border: none;
+    padding: 0;
+    appearance: none;
+    display: block;
+    width: 100%;
+    cursor: inherit;
+
+    &:focus-visible {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: -2px;
+    }
+
+    /*
+     * Keep focus tint for keyboard navigation (hover tint has moved to the
+     * card container above).
+     */
+    &[data-focused]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: color-mix(in srgb, currentColor 5%, transparent);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+  }
+
+  /*
+   * Nested interactive elements must sit above the overlay (z-index: 1) so
+   * that buttons, links, and inputs remain independently clickable.
+   * CardBody is intentionally excluded: it sits beneath the overlay so that
+   * card-surface clicks route through the overlay natively (preserving link
+   * semantics such as target and rel). Scroll is not supported for interactive
+   * cards as a result.
+   */
+  .bui-Card[data-interactive]
+    :is(
+      button,
+      a[href],
+      [role='button'],
+      [role='link'],
+      input,
+      select,
+      textarea,
+      .bui-Button
+    ):not(.bui-CardOverlay) {
+    position: relative;
+    z-index: 2;
+  }
+
+  /*
+   * The bottom scroll-shadow pseudo-element uses a reversed scroll-driven
+   * animation whose fill-before state is opacity: 1. When the card has no
+   * height constraint (nothing to scroll), the animation is permanently stuck
+   * in that fill-before state, making the shadow visible even though there is
+   * no overflow. Interactive cards never scroll, so we suppress it entirely.
+   * The selector mirrors .bui-Card:has(.bui-CardFooter) .bui-CardBody::after
+   * with an added attribute to win the specificity race.
+   */
+  .bui-Card[data-interactive]:has(.bui-CardFooter) .bui-CardBody::after {
+    display: none;
+  }
+
+  .bui-CardHeader {
+    padding-inline: var(--bui-space-3);
+    padding-block: var(--bui-space-3);
+  }
+
+  .bui-CardBody {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding-inline: var(--bui-space-3);
+    padding-block: var(--bui-space-3);
+  }
+
+  @keyframes bui-card-body-shadow {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .bui-Card:has(.bui-CardHeader) .bui-CardBody {
+    padding-block-start: 0;
+
+    &::before {
+      content: '';
+      position: sticky;
+      top: 0;
+      display: block;
+      height: 1.5rem;
+      margin-bottom: -1.5rem;
+      background: linear-gradient(
+        to bottom,
+        var(--bui-card-bg),
+        rgb(from var(--bui-card-bg) r g b / 0)
+      );
+      pointer-events: none;
+      opacity: 0;
+      animation: bui-card-body-shadow linear both;
+      animation-timeline: scroll();
+      animation-range: 0px 2.5rem;
+    }
+  }
+
+  .bui-Card:has(.bui-CardFooter) .bui-CardBody {
+    padding-block-end: 0;
+
+    &::after {
+      content: '';
+      position: sticky;
+      bottom: 0;
+      display: block;
+      height: 1.5rem;
+      margin-top: -1.5rem;
+      background: linear-gradient(
+        to top,
+        var(--bui-card-bg),
+        rgb(from var(--bui-card-bg) r g b / 0)
+      );
+      pointer-events: none;
+      animation: bui-card-body-shadow linear both reverse;
+      animation-timeline: scroll();
+      animation-range: calc(100% - 2.5rem) 100%;
+    }
+  }
+
+  .bui-CardFooter {
+    padding-inline: var(--bui-space-3);
+    padding-block: var(--bui-space-3);
+  }
+}

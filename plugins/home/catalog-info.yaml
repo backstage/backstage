@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-home
+  title: '@backstage/plugin-home'
+  description: A Backstage plugin that helps you build a home page
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: home-maintainers

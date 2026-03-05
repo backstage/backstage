@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "annotations": {
+      "deployment.kubernetes.io/revision": "2",
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"backstage.io/kubernetes-id\":\"dice-roller\"},\"name\":\"dice-roller\",\"namespace\":\"default\"},\"spec\":{\"replicas\":10,\"selector\":{\"matchLabels\":{\"app\":\"dice-roller\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"dice-roller\",\"backstage.io/kubernetes-id\":\"dice-roller\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n"
+    },
+    "creationTimestamp": "2020-09-23T12:00:55.000Z",
+    "generation": 3,
+    "labels": {
+      "backstage.io/kubernetes-id": "dice-roller"
+    },
+    "name": "dice-roller",
+    "namespace": "default",
+    "resourceVersion": "593230",
+    "selfLink": "/apis/apps/v1/namespaces/default/deployments/dice-roller",
+    "uid": "7551e949-42d1-4061-83c5-9da107186e47"
+  },
+  "spec": {
+    "progressDeadlineSeconds": 600,
+    "replicas": 10,
+    "revisionHistoryLimit": 10,
+    "selector": {
+      "matchLabels": {
+        "app": "dice-roller"
+      }
+    },
+    "strategy": {
+      "rollingUpdate": {
+        "maxSurge": "25%",
+        "maxUnavailable": "25%"
+      },
+      "type": "RollingUpdate"
+    },
+    "template": {
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "app": "dice-roller",
+          "backstage.io/kubernetes-id": "dice-roller"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "image": "nginx:1.14.2",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "nginx",
+            "ports": [
+              {
+                "containerPort": 80,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File"
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "terminationGracePeriodSeconds": 30
+      }
+    }
+  },
+  "status": {
+    "availableReplicas": 10,
+    "conditions": [
+      {
+        "lastTransitionTime": "2020-09-23T12:00:55.000Z",
+        "lastUpdateTime": "2020-09-24T11:39:28.000Z",
+        "message": "ReplicaSet \"dice-roller-6c8646bfd\" has successfully progressed.",
+        "reason": "NewReplicaSetAvailable",
+        "status": "True",
+        "type": "Progressing"
+      },
+      {
+        "lastTransitionTime": "2020-09-25T09:58:55.000Z",
+        "lastUpdateTime": "2020-09-25T09:58:55.000Z",
+        "message": "Deployment has minimum availability.",
+        "reason": "MinimumReplicasAvailable",
+        "status": "True",
+        "type": "Available"
+      }
+    ],
+    "observedGeneration": 3,
+    "readyReplicas": 10,
+    "replicas": 10,
+    "updatedReplicas": 10
+  }
+}

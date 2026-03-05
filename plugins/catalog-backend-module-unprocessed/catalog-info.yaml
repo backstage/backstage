@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-unprocessed
+  title: '@backstage/plugin-catalog-backend-module-unprocessed'
+  description: Backstage Catalog module to view unprocessed entities
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: catalog-maintainers

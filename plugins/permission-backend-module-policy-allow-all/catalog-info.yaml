@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-permission-backend-module-allow-all-policy
+  title: '@backstage/plugin-permission-backend-module-allow-all-policy'
+  description: Allow all policy backend module for the permission plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: permission-maintainers

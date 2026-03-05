@@ -1,0 +1,72 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.22.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-ANSIHTML-1296849:
+    - webpack-dev-server > ansi-html:
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+  SNYK-JS-ANSIREGEX-1583908:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+  SNYK-JS-CSSWHAT-1298035:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+  SNYK-JS-BROWSERSLIST-1090194:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+  SNYK-JS-ISSVG-1243891:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+  SNYK-JS-ISSVG-1085627:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+  SNYK-JS-POSTCSS-1255640:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+  SNYK-JS-POSTCSS-1090595:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+  SNYK-JS-WS-1296835:
+    - '*':
+        reason: Developer tools are not a valid target for ReDoS attacks
+        expires: 2022-03-06T17:18:55.019Z
+        created: 2021-09-06T17:18:55.027Z
+  'snyk:lic:npm:rollup-plugin-dts:LGPL-3.0':
+    - '*':
+        reason: This is a development dependency only and is therefore acceptable
+        expires: 2031-09-06T17:18:55.027Z
+        created: 2021-09-06T17:18:55.027Z
+  'snyk:lic:npm:axe-core:MPL-2.0':
+    - '*':
+        reason: This is a development dependency only and is therefore acceptable
+        expires: 2031-09-06T17:18:55.027Z
+        created: 2021-09-06T17:18:55.027Z
+  'snyk:lic:npm:eslint-plugin-deprecation:LGPL-3.0':
+    - '*':
+        reason: This is a development dependency only and is therefore acceptable
+        expires: 2032-03-22T13:37:00.000Z
+        created: 2022-03-22T13:37:00.000Z
+  SNYK-JS-UNSETVALUE-2400660:
+    - '*':
+        reason: >-
+          The pollution in this vulnerability does not allow injection of
+          arbitrary values and is therefore a negligible risk for a CLI.
+        expires: 2022-08-17T21:54:43.658Z
+        created: 2022-02-15T21:54:43.668Z
+patch: {}

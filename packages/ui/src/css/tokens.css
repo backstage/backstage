@@ -1,0 +1,215 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens {
+  /* Light theme tokens */
+  :root {
+    /* Font families */
+    --bui-font-regular: system-ui;
+    --bui-font-monospace: ui-monospace, 'Menlo', 'Monaco', 'Consolas',
+      'Liberation Mono', 'Courier New', monospace;
+
+    /* Font weights */
+    --bui-font-weight-regular: 400;
+    --bui-font-weight-bold: 600;
+
+    /* Font sizes */
+    --bui-font-size-1: 0.625rem; /* 10px */
+    --bui-font-size-2: 0.75rem; /* 12px */
+    --bui-font-size-3: 0.875rem; /* 14px */
+    --bui-font-size-4: 1rem; /* 16px */
+    --bui-font-size-5: 1.25rem; /* 20px */
+    --bui-font-size-6: 1.5rem; /* 24px */
+    --bui-font-size-7: 2rem; /* 32px */
+    --bui-font-size-8: 3rem; /* 48px */
+    --bui-font-size-9: 4rem; /* 64px */
+    --bui-font-size-10: 5.75rem; /* 92px */
+
+    /* Spacing */
+    --bui-space: 0.25rem; /* This is the spacing multiplier */
+    --bui-space-0_5: calc(var(--bui-space) * 0.5); /* 2px */
+    --bui-space-1: var(--bui-space); /* 4px */
+    --bui-space-1_5: calc(var(--bui-space) * 1.5); /* 6px */
+    --bui-space-2: calc(var(--bui-space) * 2); /* 8px */
+    --bui-space-3: calc(var(--bui-space) * 3); /* 12px */
+    --bui-space-4: calc(var(--bui-space) * 4); /* 16px */
+    --bui-space-5: calc(var(--bui-space) * 5); /* 20px */
+    --bui-space-6: calc(var(--bui-space) * 6); /* 24px */
+    --bui-space-7: calc(var(--bui-space) * 7); /* 28px */
+    --bui-space-8: calc(var(--bui-space) * 8); /* 32px */
+    --bui-space-9: calc(var(--bui-space) * 9); /* 36px */
+    --bui-space-10: calc(var(--bui-space) * 10); /* 40px */
+    --bui-space-11: calc(var(--bui-space) * 11); /* 44px */
+    --bui-space-12: calc(var(--bui-space) * 12); /* 48px */
+    --bui-space-13: calc(var(--bui-space) * 13); /* 52px */
+    --bui-space-14: calc(var(--bui-space) * 14); /* 56px */
+
+    /* Radius */
+    --bui-radius-1: calc(0.125rem);
+    --bui-radius-2: calc(0.25rem);
+    --bui-radius-3: calc(0.5rem);
+    --bui-radius-4: calc(0.75rem);
+    --bui-radius-5: calc(1rem);
+    --bui-radius-6: calc(1.25rem);
+    --bui-radius-full: 9999px;
+
+    /* Base Colors */
+    --bui-black: #000000;
+    --bui-white: #ffffff;
+
+    /* Solid background colors */
+    --bui-bg-solid: #1f5493;
+    --bui-bg-solid-hover: #163a66;
+    --bui-bg-solid-pressed: #0f2b4e;
+    --bui-bg-solid-disabled: #163a66;
+
+    /* Neutral background colors */
+    --bui-bg-app: #f8f8f8;
+
+    --bui-bg-neutral-1: #fff;
+    --bui-bg-neutral-1-hover: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-1-pressed: oklch(0% 0 0 / 12%);
+    --bui-bg-neutral-1-disabled: oklch(0% 0 0 / 6%);
+
+    --bui-bg-neutral-2: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-2-hover: oklch(0% 0 0 / 12%);
+    --bui-bg-neutral-2-pressed: oklch(0% 0 0 / 16%);
+    --bui-bg-neutral-2-disabled: oklch(0% 0 0 / 6%);
+
+    --bui-bg-neutral-3: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-3-hover: oklch(0% 0 0 / 12%);
+    --bui-bg-neutral-3-pressed: oklch(0% 0 0 / 16%);
+    --bui-bg-neutral-3-disabled: oklch(0% 0 0 / 6%);
+
+    --bui-bg-neutral-4: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-4-hover: oklch(0% 0 0 / 12%);
+    --bui-bg-neutral-4-pressed: oklch(0% 0 0 / 16%);
+    --bui-bg-neutral-4-disabled: oklch(0% 0 0 / 6%);
+
+    /* Status background colors */
+    --bui-bg-danger: #ffe2e2;
+    --bui-bg-warning: #ffedd5;
+    --bui-bg-success: #dcfce7;
+    --bui-bg-info: #dbeafe;
+
+    /* Foreground colors */
+    --bui-fg-primary: var(--bui-black);
+    --bui-fg-secondary: oklch(0% 0 0 / 50%);
+    --bui-fg-disabled: oklch(0% 0 0 / 28%);
+    --bui-fg-solid: var(--bui-white);
+    --bui-fg-solid-disabled: #98a8bc;
+
+    /* Foreground Statuses */
+    --bui-fg-danger-on-bg: #991919;
+    --bui-fg-warning-on-bg: #92310a;
+    --bui-fg-success-on-bg: #116932;
+    --bui-fg-info-on-bg: #173da6;
+    --bui-fg-danger: #ec3b18;
+    --bui-fg-warning: #ef7a32;
+    --bui-fg-success: #1ed760;
+    --bui-fg-info: #0d74ce;
+
+    /* Border colors */
+    --bui-border-1: #d5d5d5;
+    --bui-border-2: #bababa;
+    --bui-border-info: #7ea9d6;
+    --bui-border-danger: #f87a7a;
+    --bui-border-warning: #e36d05;
+    --bui-border-success: #53db83;
+
+    /* Special colors */
+    --bui-ring: #1f5493;
+    --bui-scrollbar: #a0a0a03b;
+    --bui-scrollbar-thumb: #a0a0a0;
+
+    /* Shadows */
+    --bui-shadow: 0 10px 15px -3px rgba(0 0 0 / 0.1),
+      0 4px 6px -4px rgba(0 0 0 / 0.1);
+
+    --bui-animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Dark theme tokens */
+  [data-theme-mode='dark'] {
+    /* Solid background colors */
+    --bui-bg-solid: #9cc9ff;
+    --bui-bg-solid-hover: #83b9fd;
+    --bui-bg-solid-pressed: #83b9fd;
+    --bui-bg-solid-disabled: #1b3d68;
+
+    /* Neutral background colors */
+    --bui-bg-app: #333333;
+
+    --bui-bg-neutral-1: oklch(100% 0 0 / 10%);
+    --bui-bg-neutral-1-hover: oklch(100% 0 0 / 14%);
+    --bui-bg-neutral-1-pressed: oklch(100% 0 0 / 20%);
+    --bui-bg-neutral-1-disabled: oklch(100% 0 0 / 10%);
+
+    --bui-bg-neutral-2: oklch(100% 0 0 / 6%);
+    --bui-bg-neutral-2-hover: oklch(100% 0 0 / 10%);
+    --bui-bg-neutral-2-pressed: oklch(100% 0 0 / 16%);
+    --bui-bg-neutral-2-disabled: oklch(100% 0 0 / 6%);
+
+    --bui-bg-neutral-3: oklch(100% 0 0 / 8%);
+    --bui-bg-neutral-3-hover: oklch(100% 0 0 / 12%);
+    --bui-bg-neutral-3-pressed: oklch(100% 0 0 / 20%);
+    --bui-bg-neutral-3-disabled: oklch(100% 0 0 / 8%);
+
+    --bui-bg-neutral-4: oklch(100% 0 0 / 8%);
+    --bui-bg-neutral-4-hover: oklch(100% 0 0 / 12%);
+    --bui-bg-neutral-4-pressed: oklch(100% 0 0 / 20%);
+    --bui-bg-neutral-4-disabled: oklch(100% 0 0 / 8%);
+
+    /* Status background colors */
+    --bui-bg-danger: #300c0c;
+    --bui-bg-warning: #302008;
+    --bui-bg-success: #042713;
+    --bui-bg-info: #132049;
+
+    /* Foreground colors */
+    --bui-fg-primary: var(--bui-white);
+    --bui-fg-secondary: oklch(100% 0 0 / 50%);
+    --bui-fg-disabled: oklch(100% 0 0 / 28%);
+    --bui-fg-solid: #101821;
+    --bui-fg-solid-disabled: #6191cc;
+
+    /* Foreground statuses */
+    --bui-fg-danger-on-bg: #fca5a5;
+    --bui-fg-warning-on-bg: #fdba74;
+    --bui-fg-success-on-bg: #86efac;
+    --bui-fg-info-on-bg: #a3cfff;
+    --bui-fg-danger: #ff5a30;
+    --bui-fg-warning: #ffa057;
+    --bui-fg-success: #1ed760;
+    --bui-fg-info: #70b8ff;
+
+    /* Border colors */
+    --bui-border-1: #434343;
+    --bui-border-2: #585858;
+    --bui-border-info: #7ea9d6;
+    --bui-border-danger: #f87a7a;
+    --bui-border-warning: #e36d05;
+    --bui-border-success: #53db83;
+
+    /* Special colors */
+    --bui-ring: #1f5493;
+    --bui-scrollbar: #3636363a;
+    --bui-scrollbar-thumb: #575757;
+
+    /* Shadows */
+    --bui-shadow: none;
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "plugin-test-backend-alpha-dynamic",
+  "version": "0.0.0",
+  "description": "A test dynamic backend module that exposes alpha API.",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "test-alpha",
+    "pluginPackages": [
+      "plugin-test-backend-alpha"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage",
+    "dynamic"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs.js",
+      "default": "./dist/index.cjs.js"
+    },
+    "./alpha": {
+      "require": "./dist/alpha.cjs.js",
+      "default": "./dist/alpha.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs.js",
+  "files": [
+    "dist",
+    "alpha"
+  ],
+  "bundleDependencies": true
+}

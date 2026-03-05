@@ -1,0 +1,63 @@
+name: Sync Snyk Monitoring
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/sync_snyk-monitor.yml'
+      - '**/.snyk'
+      - '**/package.json'
+      - 'yarn.lock'
+
+# This workflow synchronizes the packages in this repo along with policies in
+# each .snyk file with the remote state in our snyk org. It allows us to define
+# ignore policies in the .snyk files and then have them show up in the snyk web
+# UI, and also automatically adds any new packages that are created.
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Monitor and Synchronize Snyk Policies
+        uses: snyk/actions/node@9adf32b1121593767fc3c057af55b55db032dc04 # master
+        with:
+          command: monitor
+          args: >
+            --yarn-workspaces
+            --org=backstage-dgh
+            --strict-out-of-sync=false
+            --remote-repo-url=https://github.com/backstage/backstage
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          NODE_OPTIONS: --max-old-space-size=7168
+
+      # Above we run the `monitor` command, this runs the `test` command which is
+      # the one that generates the SARIF report that we can upload to GitHub.
+      - name: Create Snyk report
+        uses: snyk/actions/node@9adf32b1121593767fc3c057af55b55db032dc04 # master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        with:
+          args: >
+            --yarn-workspaces
+            --org=backstage-dgh
+            --strict-out-of-sync=false
+            --sarif-file-output=snyk.sarif
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          NODE_OPTIONS: --max-old-space-size=7168
+      - name: Upload Snyk report
+        uses: github/codeql-action/upload-sarif@f5c2471be782132e47a6e6f9c725e56730d6e9a3 # v3.32.3
+        with:
+          sarif_file: snyk.sarif

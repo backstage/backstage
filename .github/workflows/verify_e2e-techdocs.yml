@@ -1,0 +1,64 @@
+name: E2E Techdocs
+on:
+  pull_request:
+    paths:
+      - 'yarn.lock'
+      - '.github/workflows/verify_e2e-techdocs.yml'
+      - 'packages/techdocs-cli/**'
+      - 'packages/techdocs-cli-embedded-app/**'
+      - 'plugins/techdocs/**'
+  push:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x, 24.x]
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096 --experimental-vm-modules
+
+    name: Techdocs
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.9'
+
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: yarn install
+        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+      - name: build techdocs-cli
+        working-directory: packages/techdocs-cli
+        run: yarn build
+
+      - name: Install mkdocs & techdocs-core
+        run: python -m pip install mkdocs-techdocs-core==1.1.7 mkdocs==1.4.0
+
+      - name: techdocs-cli e2e test
+        working-directory: packages/techdocs-cli
+        run: yarn test:e2e:ci
+        env:
+          BACKSTAGE_TEST_DISABLE_DOCKER: 1

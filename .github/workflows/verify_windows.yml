@@ -1,0 +1,71 @@
+name: Verify Master Branch on Windows
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+  pull_request:
+    paths:
+      - '.github/workflows/verify_windows.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22.x, 24.x]
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=8192 --experimental-vm-modules
+      INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
+      INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
+      INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
+      INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: use node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      # Windows file operation slowness means there's no point caching this
+      - name: yarn install
+        run: yarn install --immutable
+
+      - name: lint
+        run: yarn backstage-cli repo lint --successCache
+
+      - name: type checking and declarations
+        run: yarn tsc:full
+
+      - name: verify type dependencies
+        run: yarn lint:type-deps
+
+      - name: test
+        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --successCache
+        env:
+          BACKSTAGE_TEST_DISABLE_DOCKER: 1
+
+      # credit: https://github.com/appleboy/discord-action/issues/3#issuecomment-731426861
+      - name: Discord notification
+        if: ${{ failure() }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          $MESSAGE=@"
+          {\"content\": \"Windows master build failed https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}\"}
+          "@
+          C:\msys64\usr\bin\curl.exe -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST $env:DISCORD_WEBHOOK --data $MESSAGE

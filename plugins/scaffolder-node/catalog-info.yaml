@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-node
+  title: '@backstage/plugin-scaffolder-node'
+  description: The plugin-scaffolder-node module for @backstage/plugin-scaffolder-backend
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

@@ -1,0 +1,41 @@
+.root {
+  margin-top: 40px;
+}
+
+.list {
+  display: flex;
+  gap: 24px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.tab {
+  all: unset;
+  cursor: pointer;
+  padding-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+
+  &[data-selected='false'] {
+    color: var(--secondary);
+  }
+
+  &[data-selected='false']:hover {
+    color: var(--primary);
+    transition: color 0.2s ease-in-out;
+  }
+}
+
+.indicator {
+  position: absolute;
+  bottom: -1px;
+  left: var(--active-tab-left);
+  width: var(--active-tab-width);
+  height: 1px;
+  background-color: var(--primary);
+  transition-property: left, width;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}

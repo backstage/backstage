@@ -1,0 +1,5 @@
+{
+  "main": "asset-types.js",
+  "types": "asset-types.d.ts",
+  "description": "Provides types for asset files that are handled by the Backstage CLI"
+}

@@ -1,0 +1,80 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { buttonIconPropDefs } from './props-definition';
+import {
+  buttonIconUsageSnippet,
+  variantsSnippet,
+  sizesSnippet,
+  disabledSnippet,
+  loadingSnippet,
+} from './snippets';
+import { Variants, Sizes, Disabled, Loading } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ButtonIconDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  button: 'https://react-aria.adobe.com/Button',
+};
+
+<PageTitle
+  title="ButtonIcon"
+  description="An icon-only button with primary, secondary, and tertiary variants."
+/>
+
+<Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
+
+## Usage
+
+<CodeBlock code={buttonIconUsageSnippet} />
+
+## API reference
+
+<PropsTable data={buttonIconPropDefs} />
+
+<ReactAriaLink component="Button" href={reactAriaUrls.button} />
+
+## Examples
+
+### Variants
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Variants />}
+  code={variantsSnippet}
+/>
+
+### Sizes
+
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
+
+### Disabled
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Disabled />}
+  code={disabledSnippet}
+/>
+
+### Loading
+
+Shows a spinner during async operations.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Loading />}
+  code={loadingSnippet}
+/>
+
+<Theming definition={ButtonIconDefinition} />
+
+<ChangelogComponent component="button-icon" />

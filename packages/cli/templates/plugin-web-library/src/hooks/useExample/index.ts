@@ -1,0 +1,1 @@
+export { useExample } from './useExample';

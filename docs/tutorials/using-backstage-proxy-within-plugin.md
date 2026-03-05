@@ -1,0 +1,253 @@
+---
+id: using-backstage-proxy-within-plugin
+title: Using the Backstage Proxy from Within a Plugin
+description: Guide on how to create a set of API bindings that interface with a backend via the backstage proxy
+---
+
+This guide walks you through setting up a simple proxy to an existing API that
+is deployed externally to backstage and sending requests to that API from within
+a backstage frontend plugin.
+
+If your plugin requires access to an API, backstage offers
+[3 options](../plugins/call-existing-api.md):
+
+1. you can
+   [access the API directly](../plugins/call-existing-api.md#issuing-requests-directly),
+1. you can create a [backend plugin](../plugins/backend-plugin.md) if you are
+   implementing the API alongside your frontend plugin
+1. you can configure backstage to proxy to an already existing API.
+
+**Table of Contents**
+
+- [Setting up the backstage proxy](#setting-up-the-backstage-proxy)
+- [Calling an API using the backstage proxy](#calling-an-api-using-the-backstage-proxy)
+  - [Option 1: Calling the proxy directly from the frontend plugin](#option-1-calling-the-proxy-directly-from-the-frontend-plugin)
+  - [Option 2: Defining the API client interface](#defining-the-api-client-interface)
+    - [Creating the API client](#creating-the-api-client)
+    - [Bundling your ApiRef with your plugin](#bundling-your-apiref-with-your-plugin)
+    - [Using the API in your components](#using-your-plugin-in-your-components)
+
+## Setting up the backstage proxy
+
+Let's say your plugin's API is hosted at _https://api.myawesomeservice.com/v1_,
+and you want to be able to access it within backstage at
+`/api/proxy/<your-proxy-uri>`, and add a default header called
+`X-Custom-Source`. You will need to add the following to `app-config.yaml`:
+
+```yaml
+proxy:
+  endpoints:
+    '/<your-proxy-uri>':
+      target: https://api.myawesomeservice.com/v1
+      headers:
+        X-Custom-Source: backstage
+```
+
+You can find more details about the proxy config options in the
+[proxying section](../plugins/proxying.md).
+
+# Calling an API using the backstage proxy
+
+If you followed the previous steps, you should now be able to access your API by
+calling `${backend-url}/api/proxy/<your-proxy-uri>`. The reason why
+`backend-url` is referenced is because the backstage backend creates and runs
+the proxy. Backstage is structured in such a way that you could run the
+backstage frontend independently of the backend. So when calling your API you
+need to prepend the backend URL to your http call.
+
+There are two recommended patterns for calling out to services: using
+`discoveryApi` and
+`fetchApi` directly from your frontend plugin or wrapping your calls in a [Utility API](../api/utility-apis.md).
+
+## Option 1: Calling the proxy directly from the frontend plugin
+
+From you frontend plugin use the `fetchApi` and `discoveryApi` to call the proper
+proxy endpoint:
+
+```tsx title="plugins/my-awesome-plugin/src/components/AwesomeUsersTable.tsx"
+import {
+  useApi,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
+import { Progress, Alert } from '@backstage/core-components';
+import useAsync from 'react-use/esm/useAsync';
+import { myAwesomeApiRef } from '../../api';
+
+export const AwesomeUsersTable = () => {
+  const fetchApi = useApi(fetchApiRef);
+  const discoveryApi = useApi(discoveryApiRef);
+
+  const { value, loading, error } = useAsync(async () => {
+    const baseUrl = await discoveryApi.getBaseUrl('proxy');
+    // As configured previously for the backend proxy
+    const resp = await fetchApi.fetch(`${baseUrl}/<your-proxy-uri>`);
+    if (!resp.ok) throw new Error(resp.statusText);
+    return resp.json();
+  }, [fetchApi, discoveryApi]);
+
+  // ...
+};
+```
+
+## Option 2: Defining the API client interface
+
+This section describes the steps to wrap your API client in a [Utility API](../api/utility-apis.md), which are:
+
+- use [`createApiRef`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.createApiRef.html) to create a
+  new [`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html)
+- register an [`ApiFactory`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiFactory.html) with
+  your plugin using
+  [`createApiFactory`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.createApiFactory.html). This
+  will wrap your API implementation, associate your `ApiRef` with your
+  implementation and tell backstage how to instantiate it
+- finally, you can use your API in your components by calling
+  [`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.useApi.html)
+
+### Defining the API client interface
+
+Continuing from the previous example, let's assume that
+_https://api.myawesomeservice.com/v1_ has the following endpoints:
+
+| Method                   | Description             |
+| :----------------------- | :---------------------- |
+| `GET /users`             | Returns a list of users |
+| `GET /users/{userId}`    | Returns a single user   |
+| `DELETE /users/{userId}` | Deletes a user          |
+
+Here is an example definition for this API following backstage's `apiRef` style:
+
+```ts
+/* src/api.ts */
+import { createApiRef } from '@backstage/core-plugin-api';
+
+export interface User {
+  name: string;
+  email: string;
+}
+
+export interface MyAwesomeApi {
+  url: string;
+  listUsers: () => Promise<List<User>>;
+  getUser: (userId: string) => Promise<User>;
+  deleteUser: (userId: string) => Promise<boolean>;
+}
+
+export const myAwesomeApiRef = createApiRef<MyAwesomeApi>({
+  id: 'plugin.my-awesome-api.service',
+});
+```
+
+### Creating the API client
+
+The `myAwesomeApiRef` is what you will use within backstage to reference the API
+client in your plugin. The API ref itself is a global singleton object that
+allows you to reference your instantiated API. The actual implementation would
+look something like this:
+
+```ts
+/* src/api.ts */
+
+/* ... */
+
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
+
+export class MyAwesomeApiClient implements MyAwesomeApi {
+  discoveryApi: DiscoveryApi;
+  fetchApi: FetchApi;
+
+  constructor({discoveryApi, fetchApi}: {discoveryApi: DiscoveryApi, fetchApi: FetchApi}) {
+    this.discoveryApi = discoveryApi;
+    this.fetchApi = FetchApi;
+  }
+
+  private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {
+    // As configured previously for the backend proxy
+    const proxyUri = `${await this.discoveryApi.getBaseUrl('proxy')}/<your-proxy-uri>`;
+
+    const resp = await this.fetchApi.fetch(`${proxyUri}${input}`, init);
+    if (!resp.ok) throw new Error(resp.statusText);
+    return await resp.json();
+  }
+
+  async listUsers(): Promise<List<User>> {
+    return await this.fetch<List<User>>('/users');
+  }
+
+  async getUser(userId: string): Promise<User> {
+    return await this.fetch<User>(`/users/${userId}`);
+  }
+
+  async deleteUser(userId: string): Promise<boolean> {
+    return await this.fetch<boolean>(
+      `/users/${userId}`,
+      { method: 'DELETE' }
+    );
+  }
+```
+
+> Check out the docs for more information on the
+> [DiscoveryApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.DiscoveryApi.html) or the
+> [FetchApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.FetchApi.html)
+
+### Bundling your ApiRef with your plugin
+
+The final piece in the puzzle is bundling the `myAwesomeApiRef` with a factory
+for `MyAwesomeApiClient` objects. This is usually done in the `plugin.ts` file
+inside the plugin's `src` directory. This is an example of what it'd look like,
+assuming you added the previous code in a file called `api.ts`:
+
+```ts
+/* src/plugin.ts */
+import { myAwesomeApiRef, MyAwesomeApiClient } from './api';
+import {
+  createPlugin,
+  createRouteRef,
+  createApiFactory,
+  createRoutableExtension,
+  createComponentExtension,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
+
+//...
+
+export const myCustomPlugin = createPlugin({
+  id: '<your-plugin-name>',
+
+  // Configure a factory for myAwesomeApiRef
+  apis: [
+    createApiFactory({
+      api: myAwesomeApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new MyAwesomeApiClient({ discoveryApi, fetchApi }),
+    }),
+  ],
+});
+```
+
+### Using the API in your components
+
+Now you should be able to access your API using the backstage hook
+[`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.useApi.html) from within your plugin code.
+
+```ts title="plugins/my-awesome-plugin/src/components/AwesomeUsersTable.tsx"
+import { useApi } from '@backstage/core-plugin-api';
+import { myAwesomeApiRef } from '../../api';
+import useAsync from 'react-use/esm/useAsync';
+
+export const AwesomeUsersTable = () => {
+  const apiClient = useApi(myAwesomeApiRef);
+
+  const { value, loading, error } = useAsync(async () => {
+    const users = await apiClient.listUsers();
+    return users;
+  }, [apiClient]);
+
+  // ...
+};
+```

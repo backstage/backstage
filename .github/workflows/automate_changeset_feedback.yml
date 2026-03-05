@@ -1,0 +1,46 @@
+name: Automate changeset feedback
+on:
+  pull_request_target:
+    branches: ['master']
+
+permissions:
+  pull-requests: write
+  actions: none
+  checks: none
+  contents: none
+  deployments: none
+  issues: none
+  packages: none
+  pages: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
+jobs:
+  feedback:
+    # prevent running towards forks and version packages
+    if: github.repository == 'backstage/backstage' && github.event.pull_request.user.login != 'backstage-service'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Fetch the commit that's merged into the base rather than the target ref
+          # This will let us diff only the contents of the PR, without fetching more history
+          ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
+      - name: fetch base
+        run: git fetch --depth 1 origin ${{ github.base_ref }}
+      - uses: backstage/actions/changeset-feedback@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
+        name: Generate feedback
+        with:
+          diff-ref: 'origin/master'
+          marker: <!-- changeset-feedback -->
+          issue-number: ${{ github.event.pull_request.number }}
+          bot-username: backstage-goalie[bot]
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}

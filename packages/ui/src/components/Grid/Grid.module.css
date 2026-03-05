@@ -1,0 +1,53 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-Grid {
+    display: grid;
+  }
+
+  .bui-Grid[data-bg='neutral-1'],
+  .bui-GridItem[data-bg='neutral-1'] {
+    background-color: var(--bui-bg-neutral-1);
+  }
+
+  .bui-Grid[data-bg='neutral-2'],
+  .bui-GridItem[data-bg='neutral-2'] {
+    background-color: var(--bui-bg-neutral-2);
+  }
+
+  .bui-Grid[data-bg='neutral-3'],
+  .bui-GridItem[data-bg='neutral-3'] {
+    background-color: var(--bui-bg-neutral-3);
+  }
+
+  .bui-Grid[data-bg='danger'],
+  .bui-GridItem[data-bg='danger'] {
+    background-color: var(--bui-bg-danger);
+  }
+
+  .bui-Grid[data-bg='warning'],
+  .bui-GridItem[data-bg='warning'] {
+    background-color: var(--bui-bg-warning);
+  }
+
+  .bui-Grid[data-bg='success'],
+  .bui-GridItem[data-bg='success'] {
+    background-color: var(--bui-bg-success);
+  }
+}

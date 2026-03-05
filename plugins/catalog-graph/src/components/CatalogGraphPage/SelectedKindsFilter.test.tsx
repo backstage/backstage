@@ -1,0 +1,120 @@
+/*
+ * Copyright 2021 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { renderWithEffects } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
+import { waitFor, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SelectedKindsFilter } from './SelectedKindsFilter';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+
+const catalogApi = catalogApiMock.mock({
+  getEntityFacets: jest.fn().mockResolvedValue({
+    facets: {
+      kind: [
+        { value: 'Component', count: 2 },
+        { value: 'System', count: 1 },
+        { value: 'API', count: 1 },
+        { value: 'Resource', count: 1 },
+      ],
+    },
+  }),
+});
+const apis = [
+  mockApis.alert(),
+  mockApis.translation(),
+  mockApis.error(),
+  catalogApi,
+] as const;
+
+describe('<SelectedKindsFilter/>', () => {
+  it('should not explode while loading', async () => {
+    const { baseElement } = await renderWithEffects(
+      <TestApiProvider apis={apis}>
+        <SelectedKindsFilter value={['api', 'component']} onChange={() => {}} />
+      </TestApiProvider>,
+    );
+    expect(baseElement).toBeInTheDocument();
+  });
+
+  it('should render current value', async () => {
+    await renderWithEffects(
+      <TestApiProvider apis={apis}>
+        <SelectedKindsFilter value={['api', 'component']} onChange={() => {}} />
+      </TestApiProvider>,
+    );
+
+    expect(screen.getByText('API')).toBeInTheDocument();
+    expect(screen.getByText('Component')).toBeInTheDocument();
+  });
+
+  it('should select value', async () => {
+    const onChange = jest.fn();
+    await renderWithEffects(
+      <TestApiProvider apis={apis}>
+        <SelectedKindsFilter value={['api', 'component']} onChange={onChange} />
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByLabelText('Open'));
+    await waitFor(() => expect(screen.getByText('System')).toBeInTheDocument());
+
+    await userEvent.click(screen.getByText('System'));
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(['api', 'component', 'system']);
+    });
+  });
+
+  it('should return undefined if all values are selected', async () => {
+    const onChange = jest.fn();
+    await renderWithEffects(
+      <TestApiProvider apis={apis}>
+        <SelectedKindsFilter
+          value={['api', 'component', 'system', 'domain']}
+          onChange={onChange}
+        />
+      </TestApiProvider>,
+    );
+    await userEvent.click(screen.getByLabelText('Open'));
+
+    await waitFor(() =>
+      expect(screen.getByText('Resource')).toBeInTheDocument(),
+    );
+
+    await userEvent.click(screen.getByText('Resource'));
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  it('should return all values when cleared', async () => {
+    const onChange = jest.fn();
+    await renderWithEffects(
+      <TestApiProvider apis={apis}>
+        <SelectedKindsFilter value={[]} onChange={onChange} />
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.tab();
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+});

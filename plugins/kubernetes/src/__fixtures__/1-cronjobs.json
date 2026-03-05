@@ -1,0 +1,446 @@
+{
+  "cronJobs": [
+    {
+      "metadata": {
+        "name": "dice-roller-cronjob",
+        "namespace": "default",
+        "uid": "9ea073bc-7a4b-4b99-8321-0305bce85568",
+        "resourceVersion": "1362732552",
+        "creationTimestamp": "2021-07-16T22:39:58Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "schedule": "30 5 * * *",
+        "startingDeadlineSeconds": 1800,
+        "concurrencyPolicy": "Forbid",
+        "suspend": false,
+        "jobTemplate": {
+          "metadata": { "creationTimestamp": null },
+          "spec": {
+            "backoffLimit": 2,
+            "template": {
+              "metadata": {
+                "creationTimestamp": null,
+                "labels": {
+                  "backstage.io/kubernetes-id": "dice-roller"
+                },
+                "annotations": {}
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "name": "busybox",
+                    "image": "busybox",
+                    "resources": {},
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "imagePullPolicy": "IfNotPresent",
+                    "command": ["/bin/sh", "-c", "date; echo Rolling a die!"]
+                  }
+                ],
+                "restartPolicy": "Never",
+                "terminationGracePeriodSeconds": 30,
+                "dnsPolicy": "ClusterFirst",
+                "securityContext": {},
+                "schedulerName": "default-scheduler"
+              }
+            }
+          }
+        },
+        "successfulJobsHistoryLimit": 2,
+        "failedJobsHistoryLimit": 2
+      },
+      "status": {
+        "active": [
+          {
+            "kind": "Job",
+            "namespace": "default",
+            "name": "dice-roller-cronjob-1637028600",
+            "uid": "32be1b89-5b53-45b2-aa84-277e75214f61",
+            "apiVersion": "batch/v1",
+            "resourceVersion": "1361174163"
+          }
+        ],
+        "lastScheduleTime": "2021-11-16T02:10:00Z"
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "metadata": {
+        "name": "dice-roller-cronjob-1637025000",
+        "namespace": "default",
+        "uid": "69d5d242-a9a4-47b8-b9c7-c536ae8f151a",
+        "resourceVersion": "1361029181",
+        "creationTimestamp": "2021-11-16T01:10:24Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "batch/v1",
+            "kind": "CronJob",
+            "name": "dice-roller-cronjob",
+            "uid": "9ea073bc-7a4b-4b99-8321-0305bce85568",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "parallelism": 1,
+        "completions": 1,
+        "backoffLimit": 2,
+        "selector": {
+          "matchLabels": {
+            "controller-uid": "69d5d242-a9a4-47b8-b9c7-c536ae8f151a"
+          }
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "backstage.io/kubernetes-id": "dice-roller",
+              "controller-uid": "69d5d242-a9a4-47b8-b9c7-c536ae8f151a",
+              "job-name": "dice-roller-cronjob-1637025000"
+            },
+            "annotations": {}
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": ["/bin/sh", "-c", "date; echo Rolling a die!"],
+                "image": "busybox",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "busybox",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "restartPolicy": "Never",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {},
+            "schedulerName": "default-scheduler"
+          }
+        }
+      },
+      "status": {
+        "conditions": [
+          {
+            "type": "Complete",
+            "status": "True",
+            "lastProbeTime": "2021-11-16T01:11:31Z",
+            "lastTransitionTime": "2021-11-16T01:11:31Z"
+          }
+        ],
+        "startTime": "2021-11-16T01:10:24Z",
+        "completionTime": "2021-11-16T01:11:31Z",
+        "succeeded": 1
+      }
+    },
+    {
+      "metadata": {
+        "name": "dice-roller-cronjob-1637028600",
+        "namespace": "default",
+        "uid": "32be1b89-5b53-45b2-aa84-277e75214f61",
+        "resourceVersion": "1361174166",
+        "creationTimestamp": "2021-11-16T02:10:22Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "batch/v1",
+            "kind": "CronJob",
+            "name": "dice-roller-cronjob",
+            "uid": "9ea073bc-7a4b-4b99-8321-0305bce85568",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "parallelism": 1,
+        "completions": 1,
+        "backoffLimit": 2,
+        "selector": {
+          "matchLabels": {
+            "controller-uid": "32be1b89-5b53-45b2-aa84-277e75214f61"
+          }
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "backstage.io/kubernetes-id": "dice-roller",
+              "controller-uid": "32be1b89-5b53-45b2-aa84-277e75214f61",
+              "job-name": "dice-roller-cronjob-1637028600"
+            },
+            "annotations": {}
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": ["/bin/sh", "-c", "date; echo Rolling a die!"],
+                "image": "busybox",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "busybox",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "restartPolicy": "Never",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {},
+            "schedulerName": "default-scheduler"
+          }
+        }
+      },
+      "status": { "startTime": "2021-11-16T02:10:22Z", "active": 1 }
+    }
+  ],
+  "pods": [
+    {
+      "metadata": {
+        "name": "dice-roller-cronjob-1637025000-gstc4",
+        "generateName": "dice-roller-cronjob-1637025000-",
+        "namespace": "default",
+        "uid": "3b0f2b65-5ae2-441a-beda-bdc92bcafaf0",
+        "resourceVersion": "1361029179",
+        "creationTimestamp": "2021-11-16T01:10:24Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "controller-uid": "69d5d242-a9a4-47b8-b9c7-c536ae8f151a",
+          "job-name": "dice-roller-cronjob-1637025000"
+        },
+        "annotations": {},
+        "ownerReferences": [
+          {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "name": "dice-roller-cronjob-1637025000",
+            "uid": "69d5d242-a9a4-47b8-b9c7-c536ae8f151a",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "volumes": [],
+        "containers": [
+          {
+            "command": ["/bin/sh", "-c", "date; echo Rolling a die!"],
+            "image": "busybox",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "busybox",
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File"
+          }
+        ],
+        "restartPolicy": "Never",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "nodeName": "minikube",
+        "securityContext": {},
+        "schedulerName": "default-scheduler",
+        "tolerations": [
+          {
+            "key": "node.kubernetes.io/not-ready",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          },
+          {
+            "key": "node.kubernetes.io/unreachable",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          }
+        ],
+        "priority": 0,
+        "enableServiceLinks": true
+      },
+      "status": {
+        "phase": "Succeeded",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2021-11-16T01:10:27Z",
+            "reason": "PodCompleted"
+          },
+          {
+            "type": "Ready",
+            "status": "False",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2021-11-16T01:11:31Z",
+            "reason": "PodCompleted"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "False",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2021-11-16T01:11:31Z",
+            "reason": "PodCompleted"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2021-11-16T01:10:24Z"
+          }
+        ],
+        "hostIP": "192.168.49.2",
+        "podIP": "172.17.0.25",
+        "podIPs": [{ "ip": "172.17.0.25" }],
+        "startTime": "2021-11-16T01:10:24Z",
+        "containerStatuses": [
+          {
+            "name": "busybox",
+            "state": {
+              "terminated": {
+                "exitCode": 0,
+                "reason": "Completed",
+                "startedAt": "2021-11-16T01:10:31Z",
+                "finishedAt": "2021-11-16T01:11:30Z",
+                "containerID": "docker://1062343e1bb3625e36717bc15617c1bbca976366c3c9dd87035c71f33d015615"
+              }
+            },
+            "lastState": {},
+            "ready": false,
+            "restartCount": 0,
+            "image": "busybox:latest/node",
+            "imageID": "docker-pullable://busybox@sha256:e7157b6d7ebbe2cce5eaa8cfe8aa4fa82d173999b9f90a9ec42e57323546c353",
+            "containerID": "docker://1062343e1bb3625e36717bc15617c1bbca976366c3c9dd87035c71f33d015615",
+            "started": false
+          }
+        ],
+        "qosClass": "Burstable"
+      }
+    },
+    {
+      "metadata": {
+        "name": "dice-roller-cronjob-1637028600-p4mlc",
+        "generateName": "dice-roller-cronjob-1637028600-",
+        "namespace": "default",
+        "uid": "acddd5d2-ac7f-473b-a9d8-17a89f99ac39",
+        "resourceVersion": "1361174579",
+        "creationTimestamp": "2021-11-16T02:10:22Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "controller-uid": "32be1b89-5b53-45b2-aa84-277e75214f61",
+          "job-name": "dice-roller-cronjob-1637028600"
+        },
+        "annotations": {},
+        "ownerReferences": [
+          {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "name": "dice-roller-cronjob-1637028600",
+            "uid": "32be1b89-5b53-45b2-aa84-277e75214f61",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ]
+      },
+      "spec": {
+        "volumes": [],
+        "containers": [
+          {
+            "command": ["/bin/sh", "-c", "date; echo Rolling a die!"],
+            "image": "busybox",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "busybox",
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File"
+          }
+        ],
+        "restartPolicy": "Never",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "nodeName": "minikube",
+        "securityContext": {},
+        "schedulerName": "default-scheduler",
+        "tolerations": [
+          {
+            "key": "node.kubernetes.io/not-ready",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          },
+          {
+            "key": "node.kubernetes.io/unreachable",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          }
+        ],
+        "priority": 0,
+        "enableServiceLinks": true
+      },
+      "status": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2021-11-16T02:10:25Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2021-11-16T02:10:35Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2021-11-16T02:10:35Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2021-11-16T02:10:22Z"
+          }
+        ],
+        "hostIP": "192.168.49.2",
+        "podIP": "172.17.0.25",
+        "podIPs": [{ "ip": "172.17.0.25" }],
+        "startTime": "2021-11-16T02:10:22Z",
+        "containerStatuses": [
+          {
+            "name": "busybox",
+            "state": {
+              "running": { "startedAt": "2021-11-16T02:10:31Z" }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "busybox:latest",
+            "imageID": "docker-pullable://busybox@sha256:e7157b6d7ebbe2cce5eaa8cfe8aa4fa82d173999b9f90a9ec42e57323546c353",
+            "containerID": "docker://1062343e1bb3625e36717bc15617c1bbca976366c3c9dd87035c71f33d015615",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      }
+    }
+  ]
+}

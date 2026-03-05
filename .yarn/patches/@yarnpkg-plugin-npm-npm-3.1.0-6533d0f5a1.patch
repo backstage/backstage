@@ -1,0 +1,11 @@
+diff --git a/lib/NpmHttpFetcher.d.ts b/lib/NpmHttpFetcher.d.ts
+index 015aeb8113776d0bc8d2d11154f02f0f2fd7d889..1398792d977fac7f10c7325a7a56d43914a26d17 100644
+--- a/lib/NpmHttpFetcher.d.ts
++++ b/lib/NpmHttpFetcher.d.ts
+@@ -9,5 +9,5 @@ export declare class NpmHttpFetcher implements Fetcher {
+         prefixPath: import("@yarnpkg/fslib").PortablePath;
+         checksum: string | null;
+     }>;
+-    fetchFromNetwork(locator: Locator, opts: FetchOptions): Promise<import("/home/runner/work/berry/berry/.yarn/__virtual__/@yarnpkg-libzip-virtual-4957b34c08/1/packages/yarnpkg-libzip").ZipFS>;
++    private fetchFromNetwork;
+ }

@@ -1,0 +1,2 @@
+)]}'
+{"training/gerrit":{"id":"training%2Fgerrit","state":"ACTIVE","web_links":[{"name":"browse","url":"","target":"_blank"}]},"training/sample":{"id":"training%2Fsample","state":"ACTIVE","web_links":[{"name":"browse","url":"","target":"_blank"}]}}

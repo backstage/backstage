@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: shuffle-api
+  description: Shuffle API
+  labels:
+    goVersion: go1.15.3
+    category: music
+  tags:
+    - go
+spec:
+  type: service
+  lifecycle: production
+  owner: user:guest
+  system: audio-playback

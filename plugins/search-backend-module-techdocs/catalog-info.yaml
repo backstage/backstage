@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-search-backend-module-techdocs
+  title: '@backstage/plugin-search-backend-module-techdocs'
+  description: A module for the search backend that exports techdocs modules
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: search-maintainers

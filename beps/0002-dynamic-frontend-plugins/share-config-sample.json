@@ -1,0 +1,17 @@
+{
+  "$schema": "./dependency-sharing-schema.json",
+  "shareModules": {
+    "foo-bar": {
+      "requiredVersion": "1.0.0"
+    },
+    "@bax/foo-bar": {
+      "requiredVersion": "1.0.0",
+      "singleton": true
+    },
+    "@bax-baz/foo-bar2": {
+      "requiredVersion": "^1.2.0",
+      "version": "1.4.0"
+    }
+  },
+  "excludeModules": ["foo-bar-baz"]
+}

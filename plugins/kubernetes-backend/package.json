@@ -1,0 +1,86 @@
+{
+  "name": "@backstage/plugin-kubernetes-backend",
+  "version": "0.21.2-next.1",
+  "description": "A Backstage backend plugin that integrates towards Kubernetes",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "kubernetes",
+    "pluginPackages": [
+      "@backstage/plugin-kubernetes",
+      "@backstage/plugin-kubernetes-backend",
+      "@backstage/plugin-kubernetes-common",
+      "@backstage/plugin-kubernetes-node",
+      "@backstage/plugin-kubernetes-react"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage",
+    "kubernetes"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/kubernetes-backend"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@aws-crypto/sha256-js": "^5.0.0",
+    "@aws-sdk/credential-providers": "^3.350.0",
+    "@azure/identity": "^4.0.0",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration-aws-node": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-kubernetes-common": "workspace:^",
+    "@backstage/plugin-kubernetes-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@google-cloud/container": "^5.0.0",
+    "@jest-mock/express": "^2.0.1",
+    "@kubernetes/client-node": "1.4.0",
+    "@smithy/signature-v4": "^4.1.0",
+    "@types/http-proxy-middleware": "^1.0.0",
+    "express": "^4.22.0",
+    "express-promise-router": "^4.1.0",
+    "fs-extra": "^11.2.0",
+    "http-proxy-middleware": "^2.0.6",
+    "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-permission-backend": "workspace:^",
+    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
+    "@types/express": "^4.17.6",
+    "msw": "^1.0.0",
+    "supertest": "^7.0.0",
+    "ws": "^8.18.0"
+  },
+  "configSchema": "config.d.ts"
+}

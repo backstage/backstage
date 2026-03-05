@@ -1,0 +1,42 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { switchPropDefs } from './props-definition';
+import { snippetUsage, defaultSnippet, disabledSnippet } from './snippets';
+import { Default, Disabled } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { SwitchDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  switch: 'https://react-aria.adobe.com/Switch',
+};
+
+<PageTitle
+  title="Switch"
+  description="A toggle control for on/off settings with label support."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={snippetUsage} />
+
+## API reference
+
+<PropsTable data={switchPropDefs} />
+
+<ReactAriaLink component="Switch" href={reactAriaUrls.switch} />
+
+## Examples
+
+### Disabled
+
+<Snippet align="center" py={4} preview={<Disabled />} code={disabledSnippet} />
+
+<Theming definition={SwitchDefinition} />
+
+<ChangelogComponent component="switch" />
