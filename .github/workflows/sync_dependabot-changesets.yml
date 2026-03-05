@@ -113,5 +113,5 @@ jobs:
       - name: Commit and push
         if: steps.verify.outputs.is_dependabot == 'true' && (steps.dedupe.outputs.changed == 'true' || steps.changeset.outputs.changed == 'true')
         run: |
-          git commit -C HEAD --amend --no-edit
+          git commit -C HEAD --amend --no-edit --no-verify
           git push --force
