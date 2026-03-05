@@ -58,7 +58,6 @@ export {
 export {
   type Extension,
   type ExtensionAttachTo,
-  type ExtensionAttachToSpec,
 } from './resolveExtensionDefinition';
 export {
   type ExtensionDataContainer,

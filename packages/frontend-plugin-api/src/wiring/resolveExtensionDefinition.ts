@@ -30,21 +30,13 @@ import {
 } from '@internal/frontend';
 
 /** @public */
-export type ExtensionAttachTo =
-  | { id: string; input: string }
-  | Array<{ id: string; input: string }>;
-
-/**
- * @deprecated Use {@link ExtensionAttachTo} instead.
- * @public
- */
-export type ExtensionAttachToSpec = ExtensionAttachTo;
+export type ExtensionAttachTo = { id: string; input: string };
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
   $$type: '@backstage/Extension';
   readonly id: string;
-  readonly attachTo: ExtensionAttachToSpec;
+  readonly attachTo: ExtensionAttachTo;
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }
@@ -149,45 +141,35 @@ function resolveExtensionId(
 }
 
 function resolveAttachTo(
-  attachTo: ExtensionDefinitionAttachTo | ExtensionDefinitionAttachTo[],
+  attachTo: ExtensionDefinitionAttachTo,
   namespace?: string,
-): ExtensionAttachToSpec {
-  const resolveSpec = (
-    spec: ExtensionDefinitionAttachTo,
-  ): { id: string; input: string } => {
-    if (OpaqueExtensionInput.isType(spec)) {
-      const { context } = OpaqueExtensionInput.toInternal(spec);
-      if (!context) {
-        throw new Error(
-          'Invalid input object without a parent extension used as attachment point',
-        );
-      }
-      return {
-        id: resolveExtensionId(context.kind, namespace, context.name),
-        input: context.input,
-      };
+): ExtensionAttachTo {
+  if (OpaqueExtensionInput.isType(attachTo)) {
+    const { context } = OpaqueExtensionInput.toInternal(attachTo);
+    if (!context) {
+      throw new Error(
+        'Invalid input object without a parent extension used as attachment point',
+      );
     }
-    if ('relative' in spec && spec.relative) {
-      return {
-        id: resolveExtensionId(
-          spec.relative.kind,
-          namespace,
-          spec.relative.name,
-        ),
-        input: spec.input,
-      };
-    }
-    if ('id' in spec) {
-      return { id: spec.id, input: spec.input };
-    }
-    throw new Error('Invalid attachment point specification');
-  };
-
-  if (Array.isArray(attachTo)) {
-    return attachTo.map(resolveSpec);
+    return {
+      id: resolveExtensionId(context.kind, namespace, context.name),
+      input: context.input,
+    };
   }
-
-  return resolveSpec(attachTo);
+  if ('relative' in attachTo && attachTo.relative) {
+    return {
+      id: resolveExtensionId(
+        attachTo.relative.kind,
+        namespace,
+        attachTo.relative.name,
+      ),
+      input: attachTo.input,
+    };
+  }
+  if ('id' in attachTo) {
+    return { id: attachTo.id, input: attachTo.input };
+  }
+  throw new Error('Invalid attachment point specification');
 }
 
 /** @internal */

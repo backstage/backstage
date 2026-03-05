@@ -488,40 +488,36 @@ export function createExtension<
       if (options.name) {
         parts.push(`name=${options.name}`);
       }
-      const attachTo = [options.attachTo]
-        .flat()
-        .map(aAny => {
-          const a = aAny as ExtensionDefinitionAttachTo;
-          if (OpaqueExtensionInput.isType(a)) {
-            const { context } = OpaqueExtensionInput.toInternal(a);
-            if (!context) {
-              return '<detached-input>';
-            }
-            let id = '<plugin>';
-            if (context?.kind) {
-              id = `${context?.kind}:${id}`;
-            }
-            if (context?.name) {
-              id = `${id}/${context?.name}`;
-            }
-            return `${id}@${context.input}`;
+      const a = options.attachTo;
+      let attachTo: string;
+      if (OpaqueExtensionInput.isType(a)) {
+        const { context } = OpaqueExtensionInput.toInternal(a);
+        if (!context) {
+          attachTo = '<detached-input>';
+        } else {
+          let id = '<plugin>';
+          if (context?.kind) {
+            id = `${context?.kind}:${id}`;
           }
-          if ('relative' in a && a.relative) {
-            let id = '<plugin>';
-            if (a.relative.kind) {
-              id = `${a.relative.kind}:${id}`;
-            }
-            if (a.relative.name) {
-              id = `${id}/${a.relative.name}`;
-            }
-            return `${id}@${a.input}`;
+          if (context?.name) {
+            id = `${id}/${context?.name}`;
           }
-          if ('id' in a) {
-            return `${a.id}@${a.input}`;
-          }
-          throw new Error('Invalid attachment point specification');
-        })
-        .join('+');
+          attachTo = `${id}@${context.input}`;
+        }
+      } else if ('relative' in a && a.relative) {
+        let id = '<plugin>';
+        if (a.relative.kind) {
+          id = `${a.relative.kind}:${id}`;
+        }
+        if (a.relative.name) {
+          id = `${id}/${a.relative.name}`;
+        }
+        attachTo = `${id}@${a.input}`;
+      } else if ('id' in a) {
+        attachTo = `${a.id}@${a.input}`;
+      } else {
+        throw new Error('Invalid attachment point specification');
+      }
       parts.push(`attachTo=${attachTo}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
     },

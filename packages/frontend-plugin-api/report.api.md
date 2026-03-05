@@ -924,7 +924,7 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
   // (undocumented)
   $$type: '@backstage/Extension';
   // (undocumented)
-  readonly attachTo: ExtensionAttachToSpec;
+  readonly attachTo: ExtensionAttachTo;
   // (undocumented)
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
   // (undocumented)
@@ -934,18 +934,10 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 }
 
 // @public (undocumented)
-export type ExtensionAttachTo =
-  | {
-      id: string;
-      input: string;
-    }
-  | Array<{
-      id: string;
-      input: string;
-    }>;
-
-// @public @deprecated (undocumented)
-export type ExtensionAttachToSpec = ExtensionAttachTo;
+export type ExtensionAttachTo = {
+  id: string;
+  input: string;
+};
 
 // @public (undocumented)
 export interface ExtensionBlueprint<

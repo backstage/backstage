@@ -139,43 +139,6 @@ describe('resolveExtensionDefinition', () => {
       id: 'test',
       input: 'children',
     });
-
-    // Test for backward compatibility - runtime still supports multiple attachment points
-    expect(
-      resolveExtensionDefinition(
-        OpaqueExtensionDefinition.toInternal({
-          ...baseDef,
-          attachTo: [
-            baseInpuf.withContext?.({
-              kind: 'k1',
-              input: 'children',
-            }),
-            baseInpuf.withContext?.({
-              kind: 'k2',
-              input: 'children',
-            }),
-            baseInpuf.withContext?.({
-              kind: 'k3',
-              input: 'children',
-            }),
-          ] as any,
-        }),
-        { namespace: 'test' },
-      ).attachTo,
-    ).toEqual([
-      {
-        id: 'k1:test',
-        input: 'children',
-      },
-      {
-        id: 'k2:test',
-        input: 'children',
-      },
-      {
-        id: 'k3:test',
-        input: 'children',
-      },
-    ]);
   });
 });
 

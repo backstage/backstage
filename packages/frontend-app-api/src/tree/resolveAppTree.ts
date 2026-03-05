@@ -153,7 +153,6 @@ export function resolveAppTree(
   }
 
   const orphans = new Array<SerializableAppNode>();
-  const clones = new Map<string, Array<SerializableAppNode>>();
 
   // A node with the provided rootNodeId must be found in the tree, and it must not be attached to anything
   let rootNode: AppNode | undefined = undefined;
@@ -164,46 +163,6 @@ export function resolveAppTree(
     // TODO: For now we simply ignore the attachTo spec of the root node, but it'd be cleaner if we could avoid defining it
     if (spec.id === rootNodeId) {
       rootNode = node;
-    } else if (Array.isArray(spec.attachTo)) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `Extension '${spec.id}' is using multiple attachment points which is deprecated and will be removed in a future release. ` +
-          `Use a Utility API instead to share functionality across multiple locations. ` +
-          `See https://backstage.io/docs/frontend-system/architecture/27-sharing-extensions for migration guidance.`,
-      );
-      let foundFirstParent = false;
-      for (const origAttachTo of spec.attachTo) {
-        let attachTo = origAttachTo;
-
-        if (!isValidAttachmentPoint(attachTo, nodes)) {
-          attachTo =
-            redirectTargetsByKey.get(makeRedirectKey(attachTo)) ?? attachTo;
-        }
-
-        const parent = nodes.get(attachTo.id);
-        if (parent) {
-          const cloneParents = clones.get(attachTo.id) ?? [];
-
-          if (!foundFirstParent) {
-            foundFirstParent = true;
-            node.setParent(parent, attachTo.input);
-          } else {
-            cloneParents.unshift(parent);
-          }
-
-          for (const extraParent of cloneParents) {
-            const clonedNode = new SerializableAppNode(spec);
-            clonedNode.setParent(extraParent, attachTo.input);
-            clones.set(
-              spec.id,
-              clones.get(spec.id)?.concat(clonedNode) ?? [clonedNode],
-            );
-          }
-        }
-      }
-      if (!foundFirstParent) {
-        orphans.push(node);
-      }
     } else {
       let attachTo = spec.attachTo;
       if (!isValidAttachmentPoint(attachTo, nodes)) {
