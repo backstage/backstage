@@ -21,6 +21,7 @@ import {
   scaffolderApiRef,
   SecretsContextProvider,
 } from '@backstage/plugin-scaffolder-react';
+import { TooltipProvider } from '@backstage/core-components';
 import { TemplateEditorPage } from './TemplateEditorPage';
 import { rootRouteRef } from '../../../routes';
 import { formDecoratorsApiRef } from '../../api';
@@ -34,17 +35,19 @@ describe('TemplateEditorPage', () => {
 
   it('Should render without exploding', async () => {
     await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [catalogApiRef, catalogApiMock],
-          [scaffolderApiRef, scaffolderApiMock],
-          [formDecoratorsApiRef, formDecoratorsApiMock],
-        ]}
-      >
-        <SecretsContextProvider>
-          <TemplateEditorPage />
-        </SecretsContextProvider>
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, catalogApiMock],
+            [scaffolderApiRef, scaffolderApiMock],
+            [formDecoratorsApiRef, formDecoratorsApiMock],
+          ]}
+        >
+          <SecretsContextProvider>
+            <TemplateEditorPage />
+          </SecretsContextProvider>
+        </TestApiProvider>
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/': rootRouteRef,
@@ -58,17 +61,19 @@ describe('TemplateEditorPage', () => {
 
   it('Should have an link back to the edit page', async () => {
     await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [catalogApiRef, catalogApiMock],
-          [scaffolderApiRef, scaffolderApiMock],
-          [formDecoratorsApiRef, formDecoratorsApiMock],
-        ]}
-      >
-        <SecretsContextProvider>
-          <TemplateEditorPage />
-        </SecretsContextProvider>
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, catalogApiMock],
+            [scaffolderApiRef, scaffolderApiMock],
+            [formDecoratorsApiRef, formDecoratorsApiMock],
+          ]}
+        >
+          <SecretsContextProvider>
+            <TemplateEditorPage />
+          </SecretsContextProvider>
+        </TestApiProvider>
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/': rootRouteRef,

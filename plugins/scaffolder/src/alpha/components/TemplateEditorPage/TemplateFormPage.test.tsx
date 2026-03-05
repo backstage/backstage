@@ -16,6 +16,7 @@
 
 import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { TooltipProvider } from '@backstage/core-components';
 import { TemplateFormPage } from './TemplateFormPage';
 import { rootRouteRef } from '../../../routes';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -25,9 +26,11 @@ describe('TemplateFormPage', () => {
 
   it('Should render without exploding', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
-        <TemplateFormPage />
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+          <TemplateFormPage />
+        </TestApiProvider>
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/': rootRouteRef,
@@ -41,9 +44,11 @@ describe('TemplateFormPage', () => {
 
   it('Should have an link back to the edit page', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
-        <TemplateFormPage />
-      </TestApiProvider>,
+      <TooltipProvider>
+        <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+          <TemplateFormPage />
+        </TestApiProvider>
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/': rootRouteRef,
