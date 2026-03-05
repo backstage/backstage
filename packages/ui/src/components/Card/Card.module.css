@@ -70,7 +70,7 @@
     }
   }
 
-  .bui-CardOverlay {
+  .bui-CardTrigger {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -120,7 +120,7 @@
       select,
       textarea,
       .bui-Button
-    ):not(.bui-CardOverlay) {
+    ):not(.bui-CardTrigger) {
     position: relative;
     z-index: 2;
   }
