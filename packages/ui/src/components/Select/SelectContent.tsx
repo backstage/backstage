@@ -30,6 +30,7 @@ import type { Option } from './types';
 interface SelectContentProps {
   searchable?: boolean;
   searchPlaceholder?: string;
+  onSearchChanged?: (search: string) => void;
   options?: Array<Option>;
 }
 
