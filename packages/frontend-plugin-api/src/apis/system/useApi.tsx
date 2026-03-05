@@ -19,7 +19,7 @@ import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { NotImplementedError } from '@backstage/errors';
 
-const emptyApiHolder: ApiHolder = { get: () => undefined };
+const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
 
 /**
  * React hook for retrieving {@link ApiHolder}, an API catalog.
