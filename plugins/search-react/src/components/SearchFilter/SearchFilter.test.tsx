@@ -253,7 +253,7 @@ describe('SearchFilter', () => {
         expect(screen.getByText(label)).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('combobox'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -286,13 +286,13 @@ describe('SearchFilter', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByRole('button')).toBeInTheDocument();
+        expect(screen.getByRole('combobox')).toBeInTheDocument();
         expect(
-          screen.getByRole('button').getAttribute('aria-disabled'),
+          screen.getByRole('combobox').getAttribute('aria-disabled'),
         ).not.toBe('true');
       });
 
-      await userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('combobox'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -333,7 +333,7 @@ describe('SearchFilter', () => {
         expect(screen.getByText(label)).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('combobox'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -345,9 +345,10 @@ describe('SearchFilter', () => {
       );
       expect(
         screen.getByRole('option', { name: values[1] }),
-      ).not.toHaveAttribute('aria-selected');
+      ).not.toHaveAttribute('aria-selected', 'true');
       expect(screen.getByRole('option', { name: 'All' })).not.toHaveAttribute(
         'aria-selected',
+        'true',
       );
     });
 
@@ -374,7 +375,7 @@ describe('SearchFilter', () => {
         expect(screen.getByText(label)).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('combobox'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -386,9 +387,10 @@ describe('SearchFilter', () => {
       );
       expect(
         screen.getByRole('option', { name: values[1] }),
-      ).not.toHaveAttribute('aria-selected');
+      ).not.toHaveAttribute('aria-selected', 'true');
       expect(screen.getByRole('option', { name: 'All' })).not.toHaveAttribute(
         'aria-selected',
+        'true',
       );
     });
 
@@ -410,9 +412,9 @@ describe('SearchFilter', () => {
         expect(screen.getByText(label)).toBeInTheDocument();
       });
 
-      const button = screen.getByRole('button');
+      const selectTrigger = screen.getByRole('combobox');
 
-      await userEvent.click(button);
+      await userEvent.click(selectTrigger);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -429,7 +431,7 @@ describe('SearchFilter', () => {
         );
       });
 
-      await userEvent.click(button);
+      await userEvent.click(selectTrigger);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -470,9 +472,9 @@ describe('SearchFilter', () => {
         expect(screen.getByText(label)).toBeInTheDocument();
       });
 
-      const button = screen.getByRole('button');
+      const selectTrigger = screen.getByRole('combobox');
 
-      await userEvent.click(button);
+      await userEvent.click(selectTrigger);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -489,7 +491,7 @@ describe('SearchFilter', () => {
         );
       });
 
-      await userEvent.click(button);
+      await userEvent.click(selectTrigger);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();

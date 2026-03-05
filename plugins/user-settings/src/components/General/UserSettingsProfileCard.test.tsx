@@ -19,7 +19,7 @@ import {
   TestApiRegistry,
   mockApis,
 } from '@backstage/test-utils';
-import { screen, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
