@@ -81,7 +81,7 @@ export type AnalyticsImplementation = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
-// @public
+// @public @deprecated
 export const AnalyticsImplementationBlueprint: ExtensionBlueprint_2<{
   kind: 'analytics';
   params: <TDeps extends { [name in string]: unknown }>(
@@ -104,7 +104,7 @@ export const AnalyticsImplementationBlueprint: ExtensionBlueprint_2<{
   };
 }>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type AnalyticsImplementationFactory<
   Deps extends {
     [name in string]: unknown;
