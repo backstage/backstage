@@ -264,5 +264,16 @@ export function generatePaletteTokens(
     // ── Navigation (sidebar) ─────────────────────────────────────
     '--sidebar-background': normalizeHex(palette.navigation.background),
     '--sidebar-foreground': normalizeHex(palette.navigation.color),
+
+    // ── Chart Tokens (data visualization) ────────────────────────
+    // Five distinct palette-derived colors for charts, graphs, and
+    // data visualization components. These follow the standard
+    // shadcn/ui chart-* convention and are dynamically generated
+    // from the active Backstage palette so they adapt to custom themes.
+    '--chart-1': normalizeHex(palette.primary.main),
+    '--chart-2': normalizeHex(palette.status.ok),
+    '--chart-3': normalizeHex(palette.status.warning),
+    '--chart-4': normalizeHex(palette.status.error),
+    '--chart-5': normalizeHex(palette.gold),
   };
 }

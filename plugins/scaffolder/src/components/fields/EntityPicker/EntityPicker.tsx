@@ -39,7 +39,7 @@ import {
   cn,
 } from '@backstage/core-components';
 import { ChevronsUpDown, Check } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -52,6 +52,16 @@ import { scaffolderTranslationRef } from '../../../translation';
 import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 
 export { EntityPickerSchema } from './schema';
+
+/**
+ * Maximum number of entity items rendered in the Command list at once.
+ * Prevents performance degradation for catalogs with thousands of entities.
+ * Users can narrow results using the search/filter input. The cmdk library
+ * handles filtering efficiently, but rendering thousands of DOM nodes
+ * simultaneously causes layout thrashing. This limit ensures smooth
+ * interaction even for very large catalogs.
+ */
+const MAX_RENDERED_ITEMS = 200;
 
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
@@ -78,9 +88,11 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
+  const autoSelect = uiSchema['ui:options']?.autoSelect ?? false;
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const autoSelectApplied = useRef(false);
 
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
@@ -207,6 +219,35 @@ export const EntityPicker = (props: EntityPickerProps) => {
     }
   }, [entities, onChange, selectedEntity, required, allowArbitraryValues]);
 
+  // autoSelect support: automatically selects the first matching entity when
+  // the entity list loads and the field has no current value. This restores
+  // the behavior of MUI Autocomplete's autoSelect option for the cmdk combobox.
+  useEffect(() => {
+    if (
+      autoSelect &&
+      !autoSelectApplied.current &&
+      !formData &&
+      entities?.catalogEntities &&
+      entities.catalogEntities.length > 0
+    ) {
+      autoSelectApplied.current = true;
+      onChange(stringifyEntityRef(entities.catalogEntities[0]));
+    }
+  }, [autoSelect, formData, entities, onChange]);
+
+  // Limit the rendered items to MAX_RENDERED_ITEMS to prevent performance
+  // degradation for very large catalogs. The cmdk search filter still operates
+  // over the full dataset — only DOM rendering is capped.
+  const catalogEntities = useMemo(
+    () => entities?.catalogEntities ?? [],
+    [entities?.catalogEntities],
+  );
+  const renderedEntities = useMemo(
+    () => catalogEntities.slice(0, MAX_RENDERED_ITEMS),
+    [catalogEntities],
+  );
+  const isTruncated = catalogEntities.length > MAX_RENDERED_ITEMS;
+
   return (
     <ScaffolderField
       rawErrors={rawErrors}
@@ -263,7 +304,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
                 {loading ? 'Loading...' : 'No entities found.'}
               </CommandEmpty>
               <CommandGroup>
-                {(entities?.catalogEntities || []).map(entity => {
+                {renderedEntities.map(entity => {
                   const ref = stringifyEntityRef(entity);
                   return (
                     <CommandItem
@@ -281,18 +322,26 @@ export const EntityPicker = (props: EntityPickerProps) => {
                     </CommandItem>
                   );
                 })}
+                {isTruncated && (
+                  <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                    Showing {MAX_RENDERED_ITEMS} of {catalogEntities.length}{' '}
+                    entities — type to filter
+                  </div>
+                )}
               </CommandGroup>
             </CommandList>
             {/* Free solo submission: if allowArbitraryValues and inputValue doesn't match any entity */}
             {allowArbitraryValues && inputValue && (
               <div className="border-t border-border p-1">
-                <button
+                <Button
                   type="button"
-                  className="w-full cursor-default rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start font-normal"
                   onClick={() => handleFreeSoloSubmit(inputValue)}
                 >
                   Use &quot;{inputValue}&quot;
-                </button>
+                </Button>
               </div>
             )}
           </Command>
@@ -300,14 +349,16 @@ export const EntityPicker = (props: EntityPickerProps) => {
       </Popover>
       {/* Clear button when value is set */}
       {formData && !isDisabled && (
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           aria-label="Clear"
           onClick={onClear}
-          className="mt-1 text-xs text-muted-foreground hover:text-foreground"
+          className="mt-1 h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
         >
           Clear
-        </button>
+        </Button>
       )}
     </ScaffolderField>
   );
