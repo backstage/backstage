@@ -619,7 +619,7 @@ export const CardDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Card';
-    readonly overlay: 'bui-CardOverlay';
+    readonly trigger: 'bui-CardTrigger';
   };
   readonly propDefs: {
     readonly children: {};
@@ -718,7 +718,7 @@ export type CardOwnProps = Pick<
 
 // @public
 export type CardProps = CardBaseProps &
-  Omit<React.HTMLAttributes<HTMLDivElement>, 'onPress'> &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> &
   (CardButtonVariant | CardLinkVariant | CardStaticVariant);
 
 // @public (undocumented)

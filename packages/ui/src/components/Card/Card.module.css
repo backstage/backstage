@@ -47,11 +47,10 @@
 
   /*
    * Cursor and hover tint are applied at the card level so they cover the
-   * entire surface. The overlay inherits the cursor via cursor: inherit.
+   * entire surface.
    */
   .bui-Card[data-interactive] {
     cursor: pointer;
-    overflow: hidden;
 
     &::after {
       content: '';
@@ -70,72 +69,22 @@
     }
   }
 
-  .bui-CardOverlay {
+  .bui-Card[data-interactive]:has(.bui-CardTrigger:focus-visible) {
+    outline: 2px solid var(--bui-ring);
+    outline-offset: -2px;
+  }
+
+  .bui-CardTrigger {
     position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: transparent;
-    border-radius: inherit;
-    border: none;
+    width: 1px;
+    height: 1px;
     padding: 0;
-    appearance: none;
-    display: block;
-    width: 100%;
-    cursor: inherit;
-
-    &:focus-visible {
-      outline: 2px solid var(--bui-ring);
-      outline-offset: -2px;
-    }
-
-    /*
-     * Keep focus tint for keyboard navigation (hover tint has moved to the
-     * card container above).
-     */
-    &[data-focused]::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: color-mix(in srgb, currentColor 5%, transparent);
-      border-radius: inherit;
-      pointer-events: none;
-    }
-  }
-
-  /*
-   * Nested interactive elements must sit above the overlay (z-index: 1) so
-   * that buttons, links, and inputs remain independently clickable.
-   * CardBody is intentionally excluded: it sits beneath the overlay so that
-   * card-surface clicks route through the overlay natively (preserving link
-   * semantics such as target and rel). Scroll is not supported for interactive
-   * cards as a result.
-   */
-  .bui-Card[data-interactive]
-    :is(
-      button,
-      a[href],
-      [role='button'],
-      [role='link'],
-      input,
-      select,
-      textarea,
-      .bui-Button
-    ):not(.bui-CardOverlay) {
-    position: relative;
-    z-index: 2;
-  }
-
-  /*
-   * The bottom scroll-shadow pseudo-element uses a reversed scroll-driven
-   * animation whose fill-before state is opacity: 1. When the card has no
-   * height constraint (nothing to scroll), the animation is permanently stuck
-   * in that fill-before state, making the shadow visible even though there is
-   * no overflow. Interactive cards never scroll, so we suppress it entirely.
-   * The selector mirrors .bui-Card:has(.bui-CardFooter) .bui-CardBody::after
-   * with an added attribute to win the specificity race.
-   */
-  .bui-Card[data-interactive]:has(.bui-CardFooter) .bui-CardBody::after {
-    display: none;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(100%);
+    white-space: nowrap;
+    border: 0;
   }
 
   .bui-CardHeader {
@@ -199,9 +148,11 @@
         rgb(from var(--bui-card-bg) r g b / 0)
       );
       pointer-events: none;
-      animation: bui-card-body-shadow linear both reverse;
-      animation-timeline: scroll();
-      animation-range: calc(100% - 2.5rem) 100%;
+      opacity: 0;
+      animation: bui-card-body-shadow linear forwards,
+        bui-card-body-shadow linear forwards reverse;
+      animation-timeline: scroll(), scroll();
+      animation-range: 0px 1px, calc(100% - 2.5rem) 100%;
     }
   }
 

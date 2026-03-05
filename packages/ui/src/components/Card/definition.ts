@@ -31,7 +31,7 @@ export const CardDefinition = defineComponent<CardOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Card',
-    overlay: 'bui-CardOverlay',
+    trigger: 'bui-CardTrigger',
   },
   propDefs: {
     children: {},

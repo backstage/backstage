@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import { Button as RAButton, Link as RALink } from 'react-aria-components';
+import { forwardRef, useCallback, useRef } from 'react';
+import { Button as RAButton } from 'react-aria-components';
 import { useDefinition } from '../../hooks/useDefinition';
 import {
   CardDefinition,
@@ -30,6 +30,10 @@ import type {
   CardFooterProps,
 } from './types';
 import { Box } from '../Box/Box';
+import { Link } from '../Link';
+
+const INTERACTIVE_ELEMENT_SELECTOR =
+  'a[href],button,input,select,textarea,[role="button"],[role="link"],[tabindex]:not([tabindex="-1"])';
 
 /**
  * Card component.
@@ -41,24 +45,66 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
     CardDefinition,
     props,
   );
-  const { classes, children, onPress, href, label, target, rel, download } =
-    ownProps;
+  const {
+    classes,
+    children,
+    onPress,
+    href,
+    label,
+    target: linkTarget,
+    rel,
+    download,
+  } = ownProps;
   const isInteractive = !!(onPress || href);
+
+  const triggerRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!isInteractive || !triggerRef.current) return;
+
+      // Don't delegate if the click target is the trigger itself
+      if (triggerRef.current.contains(e.target as Node)) return;
+
+      // Don't delegate if the user clicked a nested interactive element
+      const targetNode = e.target as Node | null;
+      const targetElement =
+        targetNode instanceof Element ? targetNode : targetNode?.parentElement;
+      if (targetElement?.closest(INTERACTIVE_ELEMENT_SELECTOR)) return;
+
+      // Don't delegate if the user is selecting text
+      if (window.getSelection()?.toString()) return;
+
+      triggerRef.current.dispatchEvent(
+        new MouseEvent('click', {
+          bubbles: false,
+          cancelable: true,
+          ctrlKey: e.ctrlKey,
+          metaKey: e.metaKey,
+          shiftKey: e.shiftKey,
+        }),
+      );
+    },
+    [isInteractive],
+  );
 
   return (
     <Box
+      as="article"
       bg="neutral"
       ref={ref}
       className={classes.root}
       data-interactive={isInteractive || undefined}
       {...dataAttributes}
       {...restProps}
+      onClick={isInteractive ? handleClick : undefined}
     >
       {href && (
-        <RALink
-          className={classes.overlay}
+        <Link
+          ref={triggerRef as React.Ref<HTMLAnchorElement>}
+          className={classes.trigger}
           href={href}
-          target={target}
+          target={linkTarget}
           rel={rel}
           download={download}
           aria-label={label}
@@ -66,7 +112,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
       )}
       {onPress && !href && (
         <RAButton
-          className={classes.overlay}
+          ref={triggerRef as React.Ref<HTMLButtonElement>}
+          className={classes.trigger}
           onPress={onPress}
           aria-label={label}
         />
