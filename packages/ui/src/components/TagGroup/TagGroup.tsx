@@ -92,8 +92,8 @@ export const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {
       {...dataAttributes}
       {...restProps}
       onPress={e => {
-        handlePress();
         restProps.onPress?.(e);
+        handlePress();
       }}
     >
       {({ allowsRemoving }) => (
