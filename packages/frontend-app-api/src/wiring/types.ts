@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-export {
-  createSpecializedApp,
-  type CreateSpecializedAppOptions,
-} from './createSpecializedApp';
-export { type FrontendPluginInfoResolver } from './createPluginInfoAttacher';
-export { type AppError, type AppErrorTypes } from './createErrorCollector';
-export { type ExtensionFactoryMiddleware } from './types';
+import { JsonObject } from '@backstage/types';
+import {
+  ApiHolder,
+  AppNode,
+  ExtensionDataContainer,
+  ExtensionDataRef,
+  ExtensionDataValue,
+} from '@backstage/frontend-plugin-api';
+
+/** @public */
+export type ExtensionFactoryMiddleware = (
+  originalFactory: (contextOverrides?: {
+    config?: JsonObject;
+  }) => ExtensionDataContainer<ExtensionDataRef>,
+  context: {
+    node: AppNode;
+    apis: ApiHolder;
+    config?: JsonObject;
+  },
+) => Iterable<ExtensionDataValue<any, any>>;

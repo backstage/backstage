@@ -1215,7 +1215,7 @@ export type ExtensionDefinitionParameters = {
   params?: object | ExtensionBlueprintDefineParams;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ExtensionFactoryMiddleware = (
   originalFactory: (contextOverrides?: {
     config?: JsonObject;
