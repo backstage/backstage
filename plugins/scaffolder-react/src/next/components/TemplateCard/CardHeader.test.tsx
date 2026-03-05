@@ -146,7 +146,7 @@ describe('CardHeader', () => {
   });
 
   it('renders TemplateDetailButton with link to entity page', async () => {
-    const { getByTitle } = await renderInTestApp(
+    const { getByRole } = await renderInTestApp(
       <TooltipProvider>
         <TestApiProvider
           apis={[
@@ -174,9 +174,13 @@ describe('CardHeader', () => {
       mountedRoutes,
     );
 
-    const detailButton = getByTitle('Show template entity details');
-    const link = detailButton.querySelector('a');
-    expect(link).toBeInTheDocument();
+    // After shadcn/ui migration, the detail button renders as a link element
+    // with aria-label via ShadcnButton asChild wrapping a Link component
+    const detailLink = getByRole('link', {
+      name: 'Show template entity details',
+    });
+    expect(detailLink).toBeInTheDocument();
+    expect(detailLink.tagName).toBe('A');
   });
 
   it('should render the name of the entity', async () => {
