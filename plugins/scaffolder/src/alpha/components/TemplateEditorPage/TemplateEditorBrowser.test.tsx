@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { renderInTestApp } from '@backstage/test-utils';
+import { TooltipProvider } from '@backstage/core-components';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MockFileSystemAccess } from '../../../lib/filesystem/MockFileSystemAccess';
@@ -23,15 +24,17 @@ import { TemplateEditorBrowser } from './TemplateEditorBrowser';
 describe('TemplateEditorBrowser', () => {
   it('should render files and expand dirs without exploding', async () => {
     await renderInTestApp(
-      <DirectoryEditorProvider
-        directory={MockFileSystemAccess.createMockDirectory({
-          'foo.txt': 'le foo',
-          'dir/bar.txt': 'le bar',
-          'dir/baz.txt': 'le baz',
-        })}
-      >
-        <TemplateEditorBrowser />
-      </DirectoryEditorProvider>,
+      <TooltipProvider>
+        <DirectoryEditorProvider
+          directory={MockFileSystemAccess.createMockDirectory({
+            'foo.txt': 'le foo',
+            'dir/bar.txt': 'le bar',
+            'dir/baz.txt': 'le baz',
+          })}
+        >
+          <TemplateEditorBrowser />
+        </DirectoryEditorProvider>
+      </TooltipProvider>,
     );
 
     await expect(screen.findByText('foo.txt')).resolves.toBeInTheDocument();

@@ -13,36 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import SaveIcon from '@material-ui/icons/Save';
+import {
+  ShadcnButton as Button,
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  Separator,
+} from '@backstage/core-components';
+import { X, RefreshCw, Save } from 'lucide-react';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 import { FileBrowser } from '../../../components/FileBrowser';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 
-const useStyles = makeStyles(
-  theme => ({
-    grid: {
-      '& svg': {
-        margin: theme.spacing(1),
-      },
-    },
-    closeButton: {
-      marginLeft: 'auto',
-    },
-  }),
-  { name: 'ScaffolderTemplateEditorBrowser' },
-);
-
 /** The local file browser for the template editor */
 export function TemplateEditorBrowser(props: { onClose?: () => void }) {
-  const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
   const changedFiles = directoryEditor?.files.filter(file => file.dirty);
   const { t } = useTranslationRef(scaffolderTranslationRef);
@@ -69,40 +54,53 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
 
   return (
     <>
-      <Grid className={classes.grid} container spacing={0} alignItems="center">
-        <Tooltip
-          title={t('templateEditorPage.templateEditorBrowser.saveIconTooltip')}
-        >
-          <IconButton
-            size="small"
-            disabled={directoryEditor.files.every(file => !file.dirty)}
-            onClick={() => directoryEditor.save()}
-          >
-            <SaveIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          title={t(
-            'templateEditorPage.templateEditorBrowser.reloadIconTooltip',
-          )}
-        >
-          <IconButton size="small" onClick={() => directoryEditor.reload()}>
-            <RefreshIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          title={t('templateEditorPage.templateEditorBrowser.closeIconTooltip')}
-        >
-          <IconButton
-            size="small"
-            className={classes.closeButton}
-            onClick={handleClose}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-      <Divider />
+      <div className="flex items-center [&_svg]:m-2">
+        <ShadcnTooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={directoryEditor.files.every(file => !file.dirty)}
+              onClick={() => directoryEditor.save()}
+            >
+              <Save className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {t('templateEditorPage.templateEditorBrowser.saveIconTooltip')}
+          </TooltipContent>
+        </ShadcnTooltip>
+        <ShadcnTooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => directoryEditor.reload()}
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {t('templateEditorPage.templateEditorBrowser.reloadIconTooltip')}
+          </TooltipContent>
+        </ShadcnTooltip>
+        <ShadcnTooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-auto"
+              onClick={handleClose}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {t('templateEditorPage.templateEditorBrowser.closeIconTooltip')}
+          </TooltipContent>
+        </ShadcnTooltip>
+      </div>
+      <Separator />
       <FileBrowser
         selected={directoryEditor.selectedFile?.path ?? ''}
         onSelect={directoryEditor.setSelectedFile}

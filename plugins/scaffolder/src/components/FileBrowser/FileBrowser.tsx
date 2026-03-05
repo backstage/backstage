@@ -94,7 +94,7 @@ function FileTreeItem({
   onSelect?: (path: string) => void;
   level?: number;
 }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   if (entry.type === 'file') {
     return (
