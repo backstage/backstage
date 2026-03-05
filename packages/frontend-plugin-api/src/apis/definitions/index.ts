@@ -48,5 +48,6 @@ export * from './OAuthRequestApi';
 export * from './RouteResolutionApi';
 export * from './StorageApi';
 export * from './AnalyticsApi';
+export * from './ToastApi';
 export * from './TranslationApi';
 export * from './PluginHeaderActionsApi';
