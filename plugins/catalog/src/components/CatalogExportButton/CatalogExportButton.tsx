@@ -16,11 +16,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import type { ButtonProps } from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormLabel from '@material-ui/core/FormLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -131,6 +135,31 @@ export const CatalogExportButton = ({
   const alertApi = useApi(alertApiRef);
   const [isExporting, setIsExporting] = useState(false);
 
+  const effectiveColumns = columns ?? DEFAULT_EXPORT_COLUMNS;
+  const [selectedColumnTitles, setSelectedColumnTitles] = useState<Set<string>>(
+    () => new Set(effectiveColumns.map(c => c.title)),
+  );
+  const selectedColumns = effectiveColumns.filter(c =>
+    selectedColumnTitles.has(c.title),
+  );
+
+  const handleOpenDialog = () => {
+    setSelectedColumnTitles(new Set(effectiveColumns.map(c => c.title)));
+    setOpen(true);
+  };
+
+  const toggleColumn = (title: string) => {
+    setSelectedColumnTitles(prev => {
+      const next = new Set(prev);
+      if (next.has(title)) {
+        next.delete(title);
+      } else {
+        next.add(title);
+      }
+      return next;
+    });
+  };
+
   const allExportTypes = [
     ...Object.values(CatalogExportType),
     ...Object.keys(customExporters ?? {}),
@@ -172,10 +201,10 @@ export const CatalogExportButton = ({
     await exportStream({
       exportFormat,
       filename: `catalog-export.${exportFormat}`,
-      columns: columns ?? DEFAULT_EXPORT_COLUMNS,
+      columns: selectedColumns,
       customExporter,
     });
-  }, [exportFormat, exportStream, columns, customExporters]);
+  }, [exportFormat, exportStream, selectedColumns, customExporters]);
 
   return (
     <>
@@ -183,7 +212,7 @@ export const CatalogExportButton = ({
         {...buttonProps}
         variant={buttonProps?.variant ?? 'outlined'}
         color={buttonProps?.color ?? 'default'}
-        onClick={buttonProps?.onClick ?? (() => setOpen(true))}
+        onClick={buttonProps?.onClick ?? handleOpenDialog}
         startIcon={buttonProps?.startIcon ?? <GetAppIcon />}
       >
         {buttonProps?.children ?? 'Export selection'}
@@ -220,6 +249,23 @@ export const CatalogExportButton = ({
                 ))}
               </Select>
             </FormControl>
+            <FormControl component="fieldset" style={{ marginTop: 16 }}>
+              <FormLabel component="legend">Columns</FormLabel>
+              <FormGroup>
+                {effectiveColumns.map(col => (
+                  <FormControlLabel
+                    key={col.entityFilterKey}
+                    control={
+                      <Checkbox
+                        checked={selectedColumnTitles.has(col.title)}
+                        onChange={() => toggleColumn(col.title)}
+                      />
+                    }
+                    label={col.title}
+                  />
+                ))}
+              </FormGroup>
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -228,7 +274,7 @@ export const CatalogExportButton = ({
             variant="contained"
             color="primary"
             onClick={() => handleExport()}
-            disabled={!exportFormat || loading}
+            disabled={!exportFormat || loading || selectedColumns.length === 0}
             startIcon={loading ? <CircularProgress size={16} /> : undefined}
           >
             {loading ? 'Exporting…' : 'Confirm'}

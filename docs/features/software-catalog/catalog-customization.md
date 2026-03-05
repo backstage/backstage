@@ -25,7 +25,7 @@ The `CatalogIndexPage` export feature was added in v1.48.0 of Backstage. To enab
 />
 ```
 
-This will enable CSV and JSON export of the catalog table, including the enabled catalog backend filters in the current user's view. The `CatalogExportButton` can also be embedded directly on your custom `CatalogIndexPage`, which will allow you to for instance put a [RequirePermission](https://backstage.io/docs/permissions/plugin-authors/05-frontend-authorization/#using-requirepermission) to limit which users can export from the catalog.
+This will enable CSV and JSON export of the catalog table, including the enabled catalog backend filters in the current user's view. When exporting, a dialog opens that lets you choose the export format and select which columns to include. All configured columns are pre-selected by default. The `CatalogExportButton` can also be embedded directly on your custom `CatalogIndexPage`, which will allow you to for instance put a [RequirePermission](https://backstage.io/docs/permissions/plugin-authors/05-frontend-authorization/#using-requirepermission) to limit which users can export from the catalog.
 
 :::info New Frontend System
 
@@ -62,7 +62,7 @@ export interface CatalogExportSettings {
 
 #### Custom Export Columns
 
-By default, the export includes Name, Type, Owner and Description columns. You can customize this:
+By default, the export includes Name, Type, Owner and Description columns. When the export dialog opens, all configured columns are shown as checkboxes and pre-selected — the user can deselect any columns they want to exclude before confirming the export. You can customize the available columns:
 
 ```tsx title="packages/app/src/App.tsx"
 import { CatalogIndexPage } from '@backstage/plugin-catalog';

@@ -36,8 +36,7 @@ const useStreamingExportMock = useStreamingExport as jest.Mock;
 const mockExportStream = jest.fn();
 
 const getComponent = (
-  onSuccess?: () => void,
-  onError?: (error: Error) => void,
+  settings?: Parameters<typeof CatalogExportButton>[0]['settings'],
 ) => (
   <TestApiProvider
     apis={[
@@ -47,12 +46,7 @@ const getComponent = (
   >
     <MemoryRouter>
       <EntityListProvider>
-        <CatalogExportButton
-          settings={{
-            onSuccess,
-            onError,
-          }}
-        />
+        <CatalogExportButton settings={settings} />
       </EntityListProvider>
     </MemoryRouter>
   </TestApiProvider>
@@ -116,7 +110,7 @@ describe('CatalogExportButton', () => {
     mockExportStream.mockResolvedValueOnce(undefined);
     const onSuccess = jest.fn();
 
-    render(getComponent(onSuccess));
+    render(getComponent({ onSuccess }));
 
     await userEvent.click(
       screen.getByRole('button', { name: /Export selection/i }),
@@ -170,7 +164,7 @@ describe('CatalogExportButton', () => {
       error: testError,
     });
 
-    render(getComponent(undefined, onError));
+    render(getComponent({ onError }));
 
     await userEvent.click(
       screen.getByRole('button', { name: /Export selection/i }),
@@ -239,26 +233,7 @@ describe('CatalogExportButton', () => {
       error: null,
     });
 
-    const getComponentWithColumns = () => (
-      <TestApiProvider
-        apis={[
-          [alertApiRef, mockAlertApi],
-          [catalogApiRef, {}],
-        ]}
-      >
-        <MemoryRouter>
-          <EntityListProvider>
-            <CatalogExportButton
-              settings={{
-                columns: customColumns,
-              }}
-            />
-          </EntityListProvider>
-        </MemoryRouter>
-      </TestApiProvider>
-    );
-
-    render(getComponentWithColumns());
+    render(getComponent({ columns: customColumns }));
 
     await userEvent.click(
       screen.getByRole('button', { name: /Export selection/i }),
@@ -275,32 +250,108 @@ describe('CatalogExportButton', () => {
     });
   });
 
+  it('shows column checkboxes for default columns in the dialog', async () => {
+    render(getComponent());
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+
+    expect(screen.getByRole('checkbox', { name: 'Name' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Type' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Owner' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Description' })).toBeChecked();
+  });
+
+  it('excludes deselected columns from the export', async () => {
+    mockExportStream.mockResolvedValueOnce(undefined);
+    render(getComponent());
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Type' }));
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Owner' }));
+
+    await userEvent.click(screen.getByRole('button', { name: /Confirm/i }));
+
+    await waitFor(() => {
+      expect(mockExportStream).toHaveBeenCalledWith(
+        expect.objectContaining({
+          columns: [
+            { entityFilterKey: 'metadata.name', title: 'Name' },
+            { entityFilterKey: 'metadata.description', title: 'Description' },
+          ],
+        }),
+      );
+    });
+  });
+
+  it('disables the Confirm button when no columns are selected', async () => {
+    render(getComponent());
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Name' }));
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Type' }));
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Owner' }));
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: 'Description' }),
+    );
+
+    expect(screen.getByRole('button', { name: /Confirm/i })).toBeDisabled();
+  });
+
+  it('resets column selection when dialog is reopened', async () => {
+    render(getComponent());
+
+    // Open dialog, deselect a column, close
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Type' }));
+    expect(screen.getByRole('checkbox', { name: 'Type' })).not.toBeChecked();
+    await userEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    // Reopen, column should be checked again
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+    expect(screen.getByRole('checkbox', { name: 'Type' })).toBeChecked();
+  });
+
+  it('shows column checkboxes for custom columns in the dialog', async () => {
+    const customColumns = [
+      { entityFilterKey: 'metadata.name', title: 'Name' },
+      { entityFilterKey: 'metadata.namespace', title: 'Namespace' },
+    ];
+
+    render(getComponent({ columns: customColumns }));
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Export selection/i }),
+    );
+
+    expect(screen.getByRole('checkbox', { name: 'Name' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Namespace' })).toBeChecked();
+    expect(
+      screen.queryByRole('checkbox', { name: 'Type' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('shows custom export types in the dialog', async () => {
     const customExporters = {
       xml: jest.fn(),
       yaml: jest.fn(),
     };
 
-    const getComponentWithCustomTypes = () => (
-      <TestApiProvider
-        apis={[
-          [alertApiRef, mockAlertApi],
-          [catalogApiRef, {}],
-        ]}
-      >
-        <MemoryRouter>
-          <EntityListProvider>
-            <CatalogExportButton
-              settings={{
-                customExporters,
-              }}
-            />
-          </EntityListProvider>
-        </MemoryRouter>
-      </TestApiProvider>
-    );
-
-    render(getComponentWithCustomTypes());
+    render(getComponent({ customExporters }));
 
     await userEvent.click(
       screen.getByRole('button', { name: /Export selection/i }),
@@ -332,26 +383,7 @@ describe('CatalogExportButton', () => {
       error: null,
     });
 
-    const getComponentWithCustomExporter = () => (
-      <TestApiProvider
-        apis={[
-          [alertApiRef, mockAlertApi],
-          [catalogApiRef, {}],
-        ]}
-      >
-        <MemoryRouter>
-          <EntityListProvider>
-            <CatalogExportButton
-              settings={{
-                customExporters,
-              }}
-            />
-          </EntityListProvider>
-        </MemoryRouter>
-      </TestApiProvider>
-    );
-
-    render(getComponentWithCustomExporter());
+    render(getComponent({ customExporters }));
 
     await userEvent.click(
       screen.getByRole('button', { name: /Export selection/i }),
