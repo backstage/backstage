@@ -118,7 +118,6 @@ jobs:
           publish-dir: './microsite/build'
           production-branch: master
           production-deploy: false
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: |
             Preview for PR #${{ needs.setup.outputs.pr-number }}
             Commit: ${{ needs.setup.outputs.git-ref }}
