@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Chip from '@material-ui/core/Chip';
 import { ReactNode } from 'react';
+import { Badge } from '../../components/ui/badge';
+import { Card, CardContent, CardFooter } from '../../components/ui/card';
 import { LinkButton } from '../../components/LinkButton/LinkButton';
 import { ItemCardHeader } from './ItemCardHeader';
 
@@ -37,48 +33,45 @@ type ItemCardProps = {
 };
 
 /**
- * This card type has been deprecated. Instead use plain Material UI Card and helpers
+ * This card type has been deprecated. Instead use shadcn Card and composable helpers
  * where appropriate.
  *
  *  @example
  * ```
  *   <Card>
- *     <CardMedia>
- *       <ItemCardHeader title="My Card" subtitle="neat!" />
- *     </CardMedia>
+ *     <ItemCardHeader title="My Card" subtitle="neat!" />
  *     <CardContent>
  *        Some text
  *     </CardContent>
- *     <CardActions>
- *       <Button color="primary" to="https://backstage.io">
- *         Get Started
+ *     <CardFooter>
+ *       <Button variant="default" asChild>
+ *         <a href="https://backstage.io">Get Started</a>
  *       </Button>
- *     </CardActions>
+ *     </CardFooter>
  *   </Card>
  * ```
  *
- * @deprecated Use plain Material UI `<Card>` and composable helpers instead.
- * @see https://v4.mui.com/components/cards/
+ * @deprecated Use shadcn `<Card>` and composable helpers instead.
  */
 export function ItemCard(props: ItemCardProps) {
   const { description, tags, title, type, subtitle, label, onClick, href } =
     props;
   return (
     <Card>
-      <CardMedia>
-        <ItemCardHeader title={title} subtitle={subtitle || type} />
-      </CardMedia>
+      <ItemCardHeader title={title} subtitle={subtitle || type} />
       <CardContent>
         {tags?.length ? (
-          <Box>
+          <div className="flex flex-wrap gap-1 mb-2">
             {tags.map((tag, i) => (
-              <Chip size="small" label={tag} key={i} />
+              <Badge variant="secondary" key={i}>
+                {tag}
+              </Badge>
             ))}
-          </Box>
+          </div>
         ) : null}
         {description}
       </CardContent>
-      <CardActions>
+      <CardFooter>
         {!href && (
           <LinkButton to="#" onClick={onClick} color="primary">
             {label}
@@ -89,7 +82,7 @@ export function ItemCard(props: ItemCardProps) {
             {label}
           </LinkButton>
         )}
-      </CardActions>
+      </CardFooter>
     </Card>
   );
 }
