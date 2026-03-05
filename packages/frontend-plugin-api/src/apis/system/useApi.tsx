@@ -32,7 +32,11 @@ export function useApiHolder(): ApiHolder {
     return emptyApiHolder;
   }
 
-  return versionedHolder.atVersion(1) ?? emptyApiHolder;
+  const apiHolder = versionedHolder.atVersion(1);
+  if (!apiHolder) {
+    throw new NotImplementedError('ApiContext v1 not available');
+  }
+  return apiHolder;
 }
 
 /**
