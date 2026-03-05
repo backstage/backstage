@@ -88,7 +88,6 @@ export const components: Page[] = [
   {
     title: 'RangeSlider',
     slug: 'range-slider',
-    status: 'new',
   },
   {
     title: 'SearchField',

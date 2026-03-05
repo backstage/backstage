@@ -38,8 +38,8 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
       'aria-labelledby': ariaLabelledBy,
     } = props;
 
-    // Extract isRequired early since it's inherited from AriaSliderProps
-    const isRequired = 'isRequired' in props ? props.isRequired : undefined;
+    // Extract isRequired from props (inherited from AriaSliderProps)
+    const isRequired = (props as any).isRequired;
 
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
