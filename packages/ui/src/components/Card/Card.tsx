@@ -67,8 +67,10 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
       if (triggerRef.current.contains(e.target as Node)) return;
 
       // Don't delegate if the user clicked a nested interactive element
-      const target = e.target as Element;
-      if (target.closest(INTERACTIVE_ELEMENT_SELECTOR)) return;
+      const targetNode = e.target as Node | null;
+      const targetElement =
+        targetNode instanceof Element ? targetNode : targetNode?.parentElement;
+      if (targetElement?.closest(INTERACTIVE_ELEMENT_SELECTOR)) return;
 
       // Don't delegate if the user is selecting text
       if (window.getSelection()?.toString()) return;
