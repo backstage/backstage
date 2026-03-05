@@ -80,7 +80,7 @@ export interface ScaffolderService {
       createdBy?: string;
       limit?: number;
       offset?: number;
-      status?: ScaffolderTaskStatus;
+      status?: ScaffolderTaskStatus | ScaffolderTaskStatus[];
     },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{

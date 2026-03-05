@@ -40,7 +40,7 @@ This allows you to list scaffolder tasks that have been created.
 Each task has a unique id, specification, and status (one of open, processing, completed, failed, cancelled, skipped).
 Each task includes a timestamp for when it was created, and an optional last heartbeat timestamp indicating the most recent activity.
 Set owned to true to return only tasks created by the current user; omit or set to false for all tasks the credentials can see.
-Pagination is supported via limit and offset.
+Filtering by one or multiple statuses is supported. Pagination is supported via limit and offset.
     `,
     schema: {
       input: z =>
@@ -66,16 +66,28 @@ Pagination is supported via limit and offset.
             .describe('The offset to start from for pagination')
             .optional(),
           status: z
-            .enum([
-              'open',
-              'processing',
-              'completed',
-              'failed',
-              'cancelled',
-              'skipped',
+            .union([
+              z.enum([
+                'open',
+                'processing',
+                'completed',
+                'failed',
+                'cancelled',
+                'skipped',
+              ]),
+              z.array(
+                z.enum([
+                  'open',
+                  'processing',
+                  'completed',
+                  'failed',
+                  'cancelled',
+                  'skipped',
+                ]),
+              ),
             ])
             .optional()
-            .describe('Filter tasks by status'),
+            .describe('Filter tasks by status, or an array of statuses'),
         }),
       output: z =>
         z
