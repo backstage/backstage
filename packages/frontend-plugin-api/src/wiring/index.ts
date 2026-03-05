@@ -31,7 +31,6 @@ export {
 } from './createExtensionInput';
 export {
   createExtensionDataRef,
-  type AnyExtensionDataRef,
   type ExtensionDataRef,
   type ExtensionDataRefToValue,
   type ExtensionDataValue,

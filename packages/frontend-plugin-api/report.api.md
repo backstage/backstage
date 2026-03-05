@@ -138,9 +138,6 @@ export type AnyApiFactory = ApiFactory<
 // @public
 export type AnyApiRef = ApiRef<unknown>;
 
-// @public @deprecated (undocumented)
-export type AnyExtensionDataRef = ExtensionDataRef;
-
 // @public
 export type AnyRouteRefParams =
   | {
@@ -1168,7 +1165,7 @@ export type ExtensionDataRef<
 };
 
 // @public (undocumented)
-export type ExtensionDataRefToValue<TDataRef extends AnyExtensionDataRef> =
+export type ExtensionDataRefToValue<TDataRef extends ExtensionDataRef> =
   TDataRef extends ExtensionDataRef<infer IData, infer IId, any>
     ? ExtensionDataValue<IData, IId>
     : never;
