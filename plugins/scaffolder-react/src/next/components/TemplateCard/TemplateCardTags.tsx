@@ -15,9 +15,7 @@
  */
 
 import type { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import Chip from '@material-ui/core/Chip';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
+import { Badge, Separator } from '@backstage/core-components';
 
 /**
  * The Props for the {@link TemplateCardTags} component
@@ -28,27 +26,27 @@ export interface TemplateCardTagsProps {
 }
 export const TemplateCardTags = ({ template }: TemplateCardTagsProps) => (
   <>
-    <Grid item xs={12}>
-      <Divider data-testid="template-card-separator--tags" />
-    </Grid>
-    <Grid item xs={12}>
-      <Grid container spacing={2} data-testid="template-card-tags">
+    <div className="col-span-full">
+      <Separator data-testid="template-card-separator--tags" />
+    </div>
+    <div className="col-span-full">
+      <div className="flex flex-wrap gap-2" data-testid="template-card-tags">
         {template.metadata.tags?.map(tag => (
-          <Grid
+          <div
             key={`grid-${tag}`}
-            item
             data-testid={`template-card-tag-item-${tag}`}
           >
-            <Chip
-              style={{ margin: 0 }}
-              size="small"
+            <Badge
+              variant="secondary"
+              className="m-0"
               data-testid={`template-card-tag-chip-${tag}`}
-              label={tag}
               key={tag}
-            />
-          </Grid>
+            >
+              {tag}
+            </Badge>
+          </div>
         ))}
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   </>
 );
