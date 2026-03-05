@@ -18,7 +18,6 @@ import { JSX, lazy, ReactNode, Suspense } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
   FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
@@ -31,6 +30,7 @@ import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
   createSpecializedApp,
+  ExtensionFactoryMiddleware,
   FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';

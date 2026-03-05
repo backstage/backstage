@@ -29,9 +29,9 @@ import {
   createApiFactory,
   routeResolutionApiRef,
   AppNode,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
 } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from './types';
 import {
   AnyApiFactory,
   ApiHolder,

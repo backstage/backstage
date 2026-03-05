@@ -4,10 +4,13 @@
 
 ```ts
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiHolder as ApiHolder_2 } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppTree } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
+import { ExtensionDataContainer } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionDataValue } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -176,6 +179,18 @@ export type CreateSpecializedAppOptions = {
     pluginInfoResolver?: FrontendPluginInfoResolver;
   };
 };
+
+// @public (undocumented)
+export type ExtensionFactoryMiddleware = (
+  originalFactory: (contextOverrides?: {
+    config?: JsonObject;
+  }) => ExtensionDataContainer<ExtensionDataRef>,
+  context: {
+    node: AppNode;
+    apis: ApiHolder_2;
+    config?: JsonObject;
+  },
+) => Iterable<ExtensionDataValue<any, any>>;
 
 // @public
 export type FrontendPluginInfoResolver = (ctx: {
