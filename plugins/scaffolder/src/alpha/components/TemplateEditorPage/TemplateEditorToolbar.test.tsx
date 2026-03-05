@@ -92,9 +92,13 @@ describe('TemplateEditorToolbar', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Custom Fields Explorer' }),
     );
-    expect(
-      screen.getByPlaceholderText('Choose Custom Field Extension'),
-    ).toHaveValue('EntityPicker');
+    // The field selector is now a combobox (Popover + Command) instead of MUI Autocomplete.
+    // The selected field name is displayed in the combobox trigger button text.
+    const combobox = screen.getByRole('combobox', {
+      name: 'Choose Custom Field Extension',
+    });
+    expect(combobox).toBeInTheDocument();
+    expect(combobox).toHaveTextContent('EntityPicker');
     expect(
       screen.getByRole('heading', { name: 'Template Spec' }),
     ).toBeInTheDocument();
