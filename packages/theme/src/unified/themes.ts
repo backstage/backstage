@@ -19,7 +19,6 @@ import {
   generatePaletteTokens,
   generateTypographyTokens,
 } from '../base';
-import type { BackstageTypography } from '../base';
 import { createUnifiedTheme } from './UnifiedTheme';
 
 /**
@@ -62,8 +61,8 @@ export const themes = {
  * @public
  */
 export function generateShadcnTokens(
-  palette: (typeof palettes)['light'] | (typeof palettes)['dark'],
-  typography?: BackstageTypography,
+  palette: typeof palettes.light | typeof palettes.dark,
+  typography?: Parameters<typeof generateTypographyTokens>[0],
 ): Record<string, string> {
   return {
     ...generatePaletteTokens(palette),
