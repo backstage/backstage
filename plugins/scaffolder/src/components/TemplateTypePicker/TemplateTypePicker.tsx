@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
 import capitalize from 'lodash/capitalize';
-import { Progress } from '@backstage/core-components';
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {
+  Progress,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  Checkbox,
+  cn,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
+import { ChevronDown } from 'lucide-react';
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /**
  * The component to select the `type` of `Template` that you will see in the table.
@@ -43,6 +47,7 @@ export const TemplateTypePicker = () => {
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const [open, setOpen] = useState(false);
 
   if (loading) return <Progress />;
 
@@ -56,37 +61,74 @@ export const TemplateTypePicker = () => {
     return null;
   }
 
+  /** Toggle a single type in or out of the multi-select filter. */
+  const toggleType = (type: string) => {
+    if (selectedTypes.includes(type)) {
+      setSelectedTypes(selectedTypes.filter(s => s !== type));
+    } else {
+      setSelectedTypes([...selectedTypes, type]);
+    }
+    setOpen(false);
+  };
+
   return (
-    <Box pb={1} pt={1}>
-      <Typography
-        variant="button"
-        component="label"
+    <div className="py-1">
+      <label
         htmlFor="categories-picker"
+        className="text-sm font-medium uppercase tracking-wide"
       >
         {t('templateTypePicker.title')}
-      </Typography>
-      <Autocomplete<string, true>
-        id="categories-picker"
-        multiple
-        options={availableTypes}
-        value={selectedTypes}
-        onChange={(_: object, value: string[]) => setSelectedTypes(value)}
-        renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-            }
-            label={capitalize(option)}
-          />
-        )}
-        size="small"
-        popupIcon={<ExpandMoreIcon data-testid="categories-picker-expand" />}
-        renderInput={params => <TextField {...params} variant="outlined" />}
-      />
-    </Box>
+      </label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            id="categories-picker"
+            variant="outline"
+            size="sm"
+            className={cn(
+              'w-full justify-between text-left font-normal',
+              selectedTypes.length === 0 && 'text-muted-foreground',
+            )}
+            data-testid="categories-picker-expand"
+          >
+            <span className="truncate">
+              {selectedTypes.length > 0
+                ? selectedTypes.map(s => capitalize(s)).join(', ')
+                : ''}
+            </span>
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Search types..." />
+            <CommandList>
+              <CommandEmpty>No types found.</CommandEmpty>
+              <CommandGroup>
+                {availableTypes.map(type => {
+                  const isSelected = selectedTypes.includes(type);
+                  return (
+                    <CommandItem
+                      key={type}
+                      value={type}
+                      onSelect={() => toggleType(type)}
+                    >
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={() => toggleType(type)}
+                        onClick={e => e.stopPropagation()}
+                        className="mr-2"
+                        aria-label={capitalize(type)}
+                      />
+                      <span>{capitalize(type)}</span>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };
