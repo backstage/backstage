@@ -74,7 +74,6 @@ describe('migrations', () => {
         .insert({
           entity_id: 'i1',
           hash: 'h',
-          stitch_ticket: '',
           final_entity: '{}',
           entity_ref: 'k:ns/n1',
         })
@@ -967,6 +966,22 @@ describe('migrations', () => {
         },
       ]);
 
+      // Insert final_entities rows (with stitch_ticket column that will be dropped)
+      await knex('final_entities').insert([
+        {
+          entity_id: 'id1',
+          entity_ref: 'component:default/with-stitch',
+          hash: 'h1',
+          stitch_ticket: 'old-ticket-1',
+        },
+        {
+          entity_id: 'id2',
+          entity_ref: 'component:default/no-stitch',
+          hash: 'h2',
+          stitch_ticket: 'old-ticket-2',
+        },
+      ]);
+
       // Verify initial state - stitch_queue table should NOT exist yet
       const preTableExists = await knex.schema.hasTable('stitch_queue');
       expect(preTableExists).toBe(false);
@@ -983,21 +998,25 @@ describe('migrations', () => {
       expect(refreshStateColumnInfo.next_stitch_at).toBeUndefined();
       expect(refreshStateColumnInfo.next_stitch_ticket).toBeUndefined();
 
+      // Verify stitch_ticket column was removed from final_entities
+      const finalEntitiesColumnInfo = await knex('final_entities').columnInfo();
+      expect(finalEntitiesColumnInfo.stitch_ticket).toBeUndefined();
+
       // Verify data was migrated correctly to stitch_queue
       const stitchQueueAfterUp = await knex('stitch_queue')
         .orderBy('entity_ref')
-        .select('entity_ref', 'stitch_ticket', 'next_stitch_at');
+        .select('entity_ref', 'latest_ticket', 'next_stitch_at');
 
       // Only entities with pending stitches should be in stitch_queue (id1 and id3)
       expect(stitchQueueAfterUp).toEqual([
         {
           entity_ref: 'component:default/orphan-stitch',
-          stitch_ticket: 'ticket-3',
+          latest_ticket: 'ticket-3',
           next_stitch_at: expect.anything(),
         },
         {
           entity_ref: 'component:default/with-stitch',
-          stitch_ticket: 'ticket-1',
+          latest_ticket: 'ticket-1',
           next_stitch_at: expect.anything(),
         },
       ]);
@@ -1008,6 +1027,12 @@ describe('migrations', () => {
       // Verify stitch_queue table was dropped
       const revertedTableExists = await knex.schema.hasTable('stitch_queue');
       expect(revertedTableExists).toBe(false);
+
+      // Verify stitch_ticket column was restored to final_entities
+      const revertedFinalEntitiesColumnInfo = await knex(
+        'final_entities',
+      ).columnInfo();
+      expect(revertedFinalEntitiesColumnInfo.stitch_ticket).not.toBeUndefined();
 
       // Verify next_stitch_at and next_stitch_ticket columns were restored to refresh_state
       const revertedRefreshColumnInfo = await knex(

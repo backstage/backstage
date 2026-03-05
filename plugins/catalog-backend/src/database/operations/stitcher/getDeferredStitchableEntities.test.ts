@@ -35,17 +35,17 @@ describe('getDeferredStitchableEntities', () => {
       await knex<DbStitchQueueRow>('stitch_queue').insert([
         {
           entity_ref: 'k:ns/future_stitch_time',
-          stitch_ticket: 't1',
+          latest_ticket: 't1',
           next_stitch_at: '2037-01-01T00:00:00.000',
         },
         {
           entity_ref: 'k:ns/past_stitch_time',
-          stitch_ticket: 't3',
+          latest_ticket: 't3',
           next_stitch_at: '1971-01-01T00:00:00.000',
         },
         {
           entity_ref: 'k:ns/past_stitch_time_again',
-          stitch_ticket: 't4',
+          latest_ticket: 't4',
           next_stitch_at: '1972-01-01T00:00:00.000',
         },
       ]);

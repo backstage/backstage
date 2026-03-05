@@ -135,7 +135,6 @@ export type DbRelationsRow = {
 export type DbFinalEntitiesRow = {
   entity_id: string;
   hash: string;
-  stitch_ticket: string;
   final_entity?: string;
   last_updated_at?: string | Date;
   entity_ref: string;
@@ -155,11 +154,18 @@ export type DbStitchQueueRow = {
    */
   entity_ref: string;
   /**
-   * A random value distinguishing stitch requests. Used for optimistic
-   * concurrency: when a stitch completes, the row is only deleted if the
-   * ticket still matches the one that was read at the start.
+   * A random value that changes with every new stitch request. Used for
+   * optimistic concurrency: when a stitch completes, the row is only deleted
+   * if this ticket still matches the active_ticket (meaning no new request
+   * came in while stitching was in progress).
    */
-  stitch_ticket: string;
+  latest_ticket: string;
+  /**
+   * Set when a stitcher picks up this item for processing. The stitcher
+   * compares this against latest_ticket before writing results; if they
+   * differ, a new stitch request arrived and the current work is abandoned.
+   */
+  active_ticket?: string | null;
   /**
    * The point in time when this entity should next be stitched.
    *
@@ -175,7 +181,7 @@ export type DbStitchQueueRow = {
    * future.
    *
    * Only when a stitch run is completed successfully, AND it's found that the
-   * stitch ticket has not changed since the start (which means that no new
+   * latest ticket has not changed since the start (which means that no new
    * request has been made behind our backs), does the row get deleted.
    */
   next_stitch_at: string | Date;

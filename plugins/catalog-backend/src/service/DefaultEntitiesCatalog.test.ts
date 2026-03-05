@@ -80,7 +80,6 @@ describe('DefaultEntitiesCatalog', () => {
       entity_ref: entityRef,
       final_entity: entityJson,
       hash: 'h',
-      stitch_ticket: '',
     });
 
     for (const parent of parents) {
@@ -118,7 +117,6 @@ describe('DefaultEntitiesCatalog', () => {
       entity_ref: entityRef,
       final_entity: entityJson,
       hash: 'h',
-      stitch_ticket: '',
     });
 
     for (const row of buildEntitySearch(id, entity)) {

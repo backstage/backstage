@@ -34,9 +34,13 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('The entity ref that needs stitching');
     table
-      .string('stitch_ticket')
+      .string('latest_ticket')
       .notNullable()
-      .comment('Random value distinguishing stitch requests');
+      .comment('Changes with every new stitch request');
+    table
+      .string('active_ticket')
+      .nullable()
+      .comment('Set when a stitcher picks up this item for processing');
     table
       .dateTime('next_stitch_at')
       .notNullable()
@@ -59,7 +63,7 @@ exports.up = async function up(knex) {
     await knex('stitch_queue').insert(
       batch.map(row => ({
         entity_ref: row.entity_ref,
-        stitch_ticket: row.next_stitch_ticket || '',
+        latest_ticket: row.next_stitch_ticket || '',
         next_stitch_at: row.next_stitch_at,
       })),
     );
@@ -77,6 +81,15 @@ exports.up = async function up(knex) {
       table.dropColumn('next_stitch_ticket');
     });
   }
+
+  // Step 4: Remove stitch_ticket from final_entities (now managed via stitch_queue)
+  if (isSQLite) {
+    await knex.raw('ALTER TABLE final_entities DROP COLUMN stitch_ticket');
+  } else {
+    await knex.schema.alterTable('final_entities', table => {
+      table.dropColumn('stitch_ticket');
+    });
+  }
 };
 
 /**
@@ -85,7 +98,16 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   const isSQLite = knex.client.config.client.includes('sqlite');
 
-  // Step 1: Add back the columns to refresh_state
+  // Step 1: Add back stitch_ticket to final_entities
+  await knex.schema.alterTable('final_entities', table => {
+    table
+      .text('stitch_ticket')
+      .notNullable()
+      .defaultTo('')
+      .comment('Optimistic concurrency ticket for stitching');
+  });
+
+  // Step 2: Add back the columns to refresh_state
   await knex.schema.alterTable('refresh_state', table => {
     table
       .dateTime('next_stitch_at')
@@ -97,7 +119,7 @@ exports.down = async function down(knex) {
       .comment('Random value distinguishing stitch requests');
   });
 
-  // Step 1b: Create partial index separately
+  // Step 2b: Create partial index separately
   if (isSQLite) {
     await knex.raw(`
       CREATE INDEX refresh_state_next_stitch_at_idx
@@ -112,13 +134,13 @@ exports.down = async function down(knex) {
     });
   }
 
-  // Step 2: Migrate stitch requests back from stitch_queue to refresh_state
+  // Step 3: Migrate stitch requests back from stitch_queue to refresh_state
   if (isSQLite) {
     const pendingStitches = await knex
       .select({
         entityRef: 'stitch_queue.entity_ref',
         nextStitchAt: 'stitch_queue.next_stitch_at',
-        stitchTicket: 'stitch_queue.stitch_ticket',
+        latestTicket: 'stitch_queue.latest_ticket',
       })
       .from('stitch_queue');
 
@@ -126,7 +148,7 @@ exports.down = async function down(knex) {
       await knex('refresh_state')
         .update({
           next_stitch_at: row.nextStitchAt,
-          next_stitch_ticket: row.stitchTicket,
+          next_stitch_ticket: row.latestTicket,
         })
         .where('entity_ref', row.entityRef);
     }
@@ -138,13 +160,13 @@ exports.down = async function down(knex) {
           .from('stitch_queue')
           .whereRaw('stitch_queue.entity_ref = refresh_state.entity_ref'),
         next_stitch_ticket: knex
-          .select('stitch_queue.stitch_ticket')
+          .select('stitch_queue.latest_ticket')
           .from('stitch_queue')
           .whereRaw('stitch_queue.entity_ref = refresh_state.entity_ref'),
       })
       .whereIn('entity_ref', knex.select('entity_ref').from('stitch_queue'));
   }
 
-  // Step 3: Drop the stitch_queue table
+  // Step 4: Drop the stitch_queue table
   await knex.schema.dropTable('stitch_queue');
 };

@@ -225,7 +225,7 @@ describe('DefaultLocationStore', () => {
           final_entity: '{}',
           hash: 'hash',
           last_updated_at: new Date(),
-          stitch_ticket: '',
+
           entity_ref: 'k:ns/n',
         });
 

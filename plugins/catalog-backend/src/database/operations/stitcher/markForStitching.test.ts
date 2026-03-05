@@ -76,14 +76,14 @@ describe('markForStitching', () => {
       await knex<DbStitchQueueRow>('stitch_queue').insert([
         {
           entity_ref: 'k:ns/four',
-          stitch_ticket: 'old',
+          latest_ticket: 'old',
           next_stitch_at: '1971-01-01T00:00:00.000',
         },
       ]);
 
       async function result() {
         return knex<DbStitchQueueRow>('stitch_queue')
-          .select('entity_ref', 'next_stitch_at', 'stitch_ticket')
+          .select('entity_ref', 'next_stitch_at', 'latest_ticket')
           .orderBy('entity_ref', 'asc');
       }
 
@@ -93,7 +93,7 @@ describe('markForStitching', () => {
         {
           entity_ref: 'k:ns/four',
           next_stitch_at: expect.anything(),
-          stitch_ticket: 'old',
+          latest_ticket: 'old',
         },
       ]);
 
@@ -111,7 +111,7 @@ describe('markForStitching', () => {
         {
           entity_ref: 'k:ns/four',
           next_stitch_at: expect.anything(),
-          stitch_ticket: 'old',
+          latest_ticket: 'old',
         },
       ]);
 
@@ -129,12 +129,12 @@ describe('markForStitching', () => {
         {
           entity_ref: 'k:ns/four',
           next_stitch_at: expect.anything(),
-          stitch_ticket: 'old',
+          latest_ticket: 'old',
         },
         {
           entity_ref: 'k:ns/one',
           next_stitch_at: expect.anything(),
-          stitch_ticket: expect.anything(),
+          latest_ticket: expect.anything(),
         },
       ]);
 
@@ -152,17 +152,17 @@ describe('markForStitching', () => {
         {
           entity_ref: 'k:ns/four',
           next_stitch_at: expect.anything(),
-          stitch_ticket: 'old',
+          latest_ticket: 'old',
         },
         {
           entity_ref: 'k:ns/one',
           next_stitch_at: expect.anything(),
-          stitch_ticket: expect.anything(),
+          latest_ticket: expect.anything(),
         },
         {
           entity_ref: 'k:ns/two',
           next_stitch_at: expect.anything(),
-          stitch_ticket: expect.anything(),
+          latest_ticket: expect.anything(),
         },
       ]);
 
@@ -180,29 +180,29 @@ describe('markForStitching', () => {
         {
           entity_ref: 'k:ns/four',
           next_stitch_at: expect.anything(),
-          stitch_ticket: expect.anything(),
+          latest_ticket: expect.anything(),
         },
         {
           entity_ref: 'k:ns/one',
           next_stitch_at: expect.anything(),
-          stitch_ticket: expect.anything(),
+          latest_ticket: expect.anything(),
         },
         {
           entity_ref: 'k:ns/three',
           next_stitch_at: expect.anything(),
-          stitch_ticket: expect.anything(),
+          latest_ticket: expect.anything(),
         },
         {
           entity_ref: 'k:ns/two',
           next_stitch_at: expect.anything(),
-          stitch_ticket: expect.anything(),
+          latest_ticket: expect.anything(),
         },
       ]);
 
       // Entity 4's ticket should have been updated (was 'old', now something else)
       const final = await result();
       const entity4Final = final.find(r => r.entity_ref === 'k:ns/four');
-      expect(entity4Final?.stitch_ticket).not.toEqual('old');
+      expect(entity4Final?.latest_ticket).not.toEqual('old');
     },
   );
 
@@ -260,28 +260,24 @@ describe('markForStitching', () => {
           final_entity: '{}',
           entity_ref: 'k:ns/one',
           hash: 'old',
-          stitch_ticket: 'old',
         },
         {
           entity_id: '2',
           final_entity: '{}',
           entity_ref: 'k:ns/two',
           hash: 'old',
-          stitch_ticket: 'old',
         },
         {
           entity_id: '3',
           final_entity: '{}',
           entity_ref: 'k:ns/three',
           hash: 'old',
-          stitch_ticket: 'old',
         },
         {
           entity_id: '4',
           final_entity: '{}',
           entity_ref: 'k:ns/four',
           hash: 'old',
-          stitch_ticket: 'old',
         },
       ]);
 
@@ -563,13 +559,13 @@ describe('markForStitching', () => {
 
       // Verify final state - all entities should have been marked for stitching
       const finalState = await knex<DbStitchQueueRow>('stitch_queue')
-        .select('entity_ref', 'next_stitch_at', 'stitch_ticket')
+        .select('entity_ref', 'next_stitch_at', 'latest_ticket')
         .orderBy('entity_ref');
 
       expect(finalState.length).toBeGreaterThan(0);
       finalState.forEach(row => {
         expect(row.next_stitch_at).not.toBeNull();
-        expect(row.stitch_ticket).not.toBeNull();
+        expect(row.latest_ticket).not.toBeNull();
       });
     },
   );
