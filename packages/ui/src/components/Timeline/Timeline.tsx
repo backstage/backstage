@@ -62,7 +62,7 @@ export const TimelineItem = forwardRef<HTMLLIElement, TimelineItemProps>(
 
     return (
       <li ref={ref} className={classes.root} {...restProps}>
-        <div className={classes.marker}>
+        <div className={classes.marker} aria-hidden="true">
           <div className={classes.icon}>{icon}</div>
           <div className={classes.line} />
         </div>
