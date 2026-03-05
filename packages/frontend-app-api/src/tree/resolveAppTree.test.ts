@@ -137,6 +137,60 @@ describe('buildAppTree', () => {
     `);
   });
 
+  it('should create a tree with clones', () => {
+    const tree = resolveAppTree(
+      'a',
+      [
+        { ...baseSpec, id: 'a' },
+        { ...baseSpec, id: 'b', attachTo: { id: 'a', input: 'x' } },
+        {
+          ...baseSpec,
+          id: 'c',
+          attachTo: [
+            { id: 'a', input: 'x' },
+            { id: 'b', input: 'x' },
+          ] as any,
+        },
+        {
+          ...baseSpec,
+          id: 'd',
+          attachTo: [
+            { id: 'b', input: 'x' },
+            { id: 'c', input: 'x' },
+          ] as any,
+        },
+      ],
+      collector,
+    );
+
+    expect(Array.from(tree.nodes.keys())).toEqual(['a', 'b', 'c', 'd']);
+
+    expect(String(tree.root)).toMatchInlineSnapshot(`
+      "<a>
+        x [
+          <b>
+            x [
+              <c>
+                x [
+                  <d />
+                ]
+              </c>
+              <d />
+            ]
+          </b>
+          <c>
+            x [
+              <d />
+            ]
+          </c>
+        ]
+      </a>"
+    `);
+
+    const orphans = Array.from(tree.orphans).map(String);
+    expect(orphans).toMatchInlineSnapshot(`[]`);
+  });
+
   it('should create a tree out of order', () => {
     const tree = resolveAppTree(
       'b',

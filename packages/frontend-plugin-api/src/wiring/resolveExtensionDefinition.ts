@@ -141,35 +141,45 @@ function resolveExtensionId(
 }
 
 function resolveAttachTo(
-  attachTo: ExtensionDefinitionAttachTo,
+  attachTo: ExtensionDefinitionAttachTo | ExtensionDefinitionAttachTo[],
   namespace?: string,
-): ExtensionAttachTo {
-  if (OpaqueExtensionInput.isType(attachTo)) {
-    const { context } = OpaqueExtensionInput.toInternal(attachTo);
-    if (!context) {
-      throw new Error(
-        'Invalid input object without a parent extension used as attachment point',
-      );
+): ExtensionAttachTo | ExtensionAttachTo[] {
+  const resolveSpec = (
+    spec: ExtensionDefinitionAttachTo,
+  ): { id: string; input: string } => {
+    if (OpaqueExtensionInput.isType(spec)) {
+      const { context } = OpaqueExtensionInput.toInternal(spec);
+      if (!context) {
+        throw new Error(
+          'Invalid input object without a parent extension used as attachment point',
+        );
+      }
+      return {
+        id: resolveExtensionId(context.kind, namespace, context.name),
+        input: context.input,
+      };
     }
-    return {
-      id: resolveExtensionId(context.kind, namespace, context.name),
-      input: context.input,
-    };
+    if ('relative' in spec && spec.relative) {
+      return {
+        id: resolveExtensionId(
+          spec.relative.kind,
+          namespace,
+          spec.relative.name,
+        ),
+        input: spec.input,
+      };
+    }
+    if ('id' in spec) {
+      return { id: spec.id, input: spec.input };
+    }
+    throw new Error('Invalid attachment point specification');
+  };
+
+  if (Array.isArray(attachTo)) {
+    return attachTo.map(resolveSpec);
   }
-  if ('relative' in attachTo && attachTo.relative) {
-    return {
-      id: resolveExtensionId(
-        attachTo.relative.kind,
-        namespace,
-        attachTo.relative.name,
-      ),
-      input: attachTo.input,
-    };
-  }
-  if ('id' in attachTo) {
-    return { id: attachTo.id, input: attachTo.input };
-  }
-  throw new Error('Invalid attachment point specification');
+
+  return resolveSpec(attachTo);
 }
 
 /** @internal */
@@ -195,7 +205,7 @@ export function resolveExtensionDefinition<
 
   return {
     ...rest,
-    attachTo: resolveAttachTo(attachTo, namespace),
+    attachTo: resolveAttachTo(attachTo, namespace) as ExtensionAttachTo,
     $$type: '@backstage/Extension',
     version: internalDefinition.version,
     id,
