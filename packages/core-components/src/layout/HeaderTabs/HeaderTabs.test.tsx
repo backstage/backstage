@@ -15,6 +15,8 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
+import { Badge } from '../../components/ui/badge';
+import { PropsWithChildren, forwardRef } from 'react';
 import { HeaderTabs } from './HeaderTabs';
 import userEvent from '@testing-library/user-event';
 
@@ -44,22 +46,41 @@ describe('<HeaderTabs />', () => {
     expect(docsTab).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('should pass custom tabProps to tab triggers', async () => {
-    // Verifies that extra attributes from tabProps are spread onto
-    // the Radix TabsTrigger element. This replaces the previous MUI
-    // component-wrapping test — the asChild pattern on Radix
-    // primitives is the new extensibility mechanism.
-    const customTabs = [
+  it('should render extension component to tab if one present', async () => {
+    // TextualBadge demonstrates using the shadcn Badge (variant="secondary")
+    // alongside tab content. Replaces the former MUI Badge wrapper pattern —
+    // shadcn Badge renders as a styled div with cva variant classes instead
+    // of MUI's complex Badge with badgeContent/overlap/color props.
+    const TextualBadge = forwardRef<HTMLButtonElement, PropsWithChildren<{}>>(
+      (props, ref) => (
+        <button ref={ref} {...props} type="button">
+          {props.children}
+          <Badge variant="secondary">three new alarms</Badge>
+        </button>
+      ),
+    );
+
+    const iconTab = [
       {
-        id: 'custom-tab',
+        id: 'icon-tab',
         label: 'Alarms',
         tabProps: { 'aria-label': 'Alarm notifications tab' },
       },
     ];
 
-    const rendered = await renderInTestApp(<HeaderTabs tabs={customTabs} />);
+    // Render HeaderTabs with a tab trigger and a TextualBadge that wraps
+    // a shadcn Badge notification counter. The Radix TabsTrigger spreads
+    // tabProps for extensibility while the TextualBadge shows that shadcn
+    // Badge renders correctly in the same component tree.
+    const rendered = await renderInTestApp(
+      <div>
+        <HeaderTabs tabs={iconTab} />
+        <TextualBadge>Alarm Details</TextualBadge>
+      </div>,
+    );
 
     expect(rendered.getByText('Alarms')).toBeInTheDocument();
+    expect(rendered.getByText('three new alarms')).toBeInTheDocument();
     expect(rendered.getByTestId('header-tab-0')).toHaveAttribute(
       'aria-label',
       'Alarm notifications tab',
