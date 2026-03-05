@@ -31,6 +31,7 @@ import {
 } from '@backstage/test-utils';
 import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
+import { TooltipProvider } from '@backstage/core-components';
 import { AboutCard } from './AboutCard';
 import { ConfigReader } from '@backstage/core-app-api';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
@@ -88,9 +89,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -145,9 +148,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -201,9 +206,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -244,9 +251,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -303,9 +312,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -372,9 +383,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -421,9 +434,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, mockApis.permission()],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -475,9 +490,11 @@ describe('<AboutCard />', () => {
           ],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -516,9 +533,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -571,9 +590,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -629,9 +650,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -686,9 +709,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -740,9 +765,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -794,9 +821,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -840,9 +869,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, mockApis.permission()],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -894,9 +925,11 @@ describe('<AboutCard />', () => {
             ],
           ]}
         >
-          <EntityProvider entity={entity}>
-            <AboutCard />
-          </EntityProvider>
+          <TooltipProvider>
+            <EntityProvider entity={entity}>
+              <AboutCard />
+            </EntityProvider>
+          </TooltipProvider>
         </TestApiProvider>
       </SWRConfig>,
       {
@@ -960,9 +993,11 @@ describe('<AboutCard />', () => {
             [permissionApiRef, {}],
           ]}
         >
-          <EntityProvider entity={entity}>
-            <AboutCard />
-          </EntityProvider>
+          <TooltipProvider>
+            <EntityProvider entity={entity}>
+              <AboutCard />
+            </EntityProvider>
+          </TooltipProvider>
         </TestApiProvider>,
         {
           mountedRoutes: {
@@ -1009,9 +1044,11 @@ describe('<AboutCard />', () => {
           [permissionApiRef, {}],
         ]}
       >
-        <EntityProvider entity={entity}>
-          <AboutCard />
-        </EntityProvider>
+        <TooltipProvider>
+          <EntityProvider entity={entity}>
+            <AboutCard />
+          </EntityProvider>
+        </TooltipProvider>
       </TestApiProvider>,
       {
         mountedRoutes: {
