@@ -15,8 +15,13 @@
  */
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {
+  Popover,
+  PopoverTrigger,
+  ShadcnButton as Button,
+  cn,
+} from '@backstage/core-components';
+import { ChevronsUpDown } from 'lucide-react';
 import useAsync from 'react-use/esm/useAsync';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
 
@@ -58,24 +63,22 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
         required={required}
         disabled={uiSchema['ui:disabled']}
       >
-        <Autocomplete
-          loading={loading}
-          renderInput={params => (
-            <TextField
-              {...params}
-              label={title}
-              margin="dense"
-              FormHelperTextProps={{
-                margin: 'dense',
-                style: { marginLeft: 0 },
-              }}
-              variant="outlined"
-              required={required}
-              InputProps={params.InputProps}
-            />
-          )}
-          options={[]}
-        />
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              disabled
+              className={cn(
+                'w-full justify-between font-normal',
+                'text-muted-foreground',
+              )}
+            >
+              {title}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+        </Popover>
       </ScaffolderField>
     );
 
