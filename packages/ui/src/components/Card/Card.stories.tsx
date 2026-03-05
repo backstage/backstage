@@ -381,8 +381,8 @@ export const InteractiveScrollable = meta.story({
   render: () => (
     <Card
       style={{ width: '300px', height: '200px' }}
-      href="https://backstage.io"
-      label="Open Backstage documentation"
+      onPress={() => alert('Card pressed')}
+      label="View card details"
     >
       <CardHeader>
         <Text weight="bold">Scrollable Interactive Card</Text>
