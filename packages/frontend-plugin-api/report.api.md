@@ -866,7 +866,7 @@ export interface DialogApiDialog<TResult = void> {
   result(): Promise<TResult>;
   update(
     elementOrComponent:
-      | React.JSX.Element
+      | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
   ): void;
 }
