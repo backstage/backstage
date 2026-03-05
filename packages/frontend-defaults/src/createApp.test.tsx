@@ -16,8 +16,11 @@
 
 import {
   AppTreeApi,
+  ApiBlueprint,
   appTreeApiRef,
   coreExtensionData,
+  createApiRef,
+  createExtensionDataRef,
   createExtension,
   PageBlueprint,
   createFrontendPlugin,
@@ -30,9 +33,17 @@ import { ThemeBlueprint } from '@backstage/plugin-app-react';
 import { screen, waitFor } from '@testing-library/react';
 import { createApp } from './createApp';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
-import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  featureFlagsApiRef,
+  IdentityApi,
+  useApi,
+} from '@backstage/core-plugin-api';
 import { default as appPluginOriginal } from '@backstage/plugin-app';
-import { useState, useEffect } from 'react';
+import { ComponentType, useState, useEffect } from 'react';
+
+const signInPageComponentDataRef = createExtensionDataRef<
+  ComponentType<{ onSignInSuccess(identity: IdentityApi): void }>
+>().with({ id: 'core.sign-in-page.component' });
 
 describe('createApp', () => {
   const appPlugin = appPluginOriginal.withOverrides({
@@ -82,6 +93,98 @@ describe('createApp', () => {
     await renderWithEffects(app.createRoot());
 
     await expect(screen.findByText('Derp')).resolves.toBeInTheDocument();
+  });
+
+  it('should provide app APIs to sign-in pages before finalization', async () => {
+    const signInApiRef = createApiRef<{ value: string }>({
+      id: 'test.sign-in-api',
+    });
+
+    const app = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPluginOriginal,
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: signInApiRef,
+                  deps: {},
+                  factory: () => ({ value: 'ok' }),
+                }),
+            }),
+          ],
+        }),
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            appPluginOriginal.getExtension('sign-in-page:app').override({
+              factory: () => {
+                const SignInPage = () => {
+                  const api = useApi(signInApiRef);
+                  return <div>Sign In API: {api.value}</div>;
+                };
+
+                return [signInPageComponentDataRef(SignInPage)];
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+    await expect(
+      screen.findByText('Sign In API: ok'),
+    ).resolves.toBeInTheDocument();
+  });
+
+  it('should provide feature flags to sign-in pages before finalization', async () => {
+    const app = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPluginOriginal,
+        createFrontendPlugin({
+          pluginId: 'test',
+          featureFlags: [{ name: 'test-flag' }],
+          extensions: [],
+        }),
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            appPluginOriginal.getExtension('sign-in-page:app').override({
+              factory: () => {
+                const SignInPage = () => {
+                  const flagsApi = useApi(featureFlagsApiRef);
+                  return (
+                    <div>
+                      Flags:{' '}
+                      {flagsApi
+                        .getRegisteredFlags()
+                        .map(flag => flag.name)
+                        .join(', ')}
+                    </div>
+                  );
+                };
+
+                return [signInPageComponentDataRef(SignInPage)];
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+    await expect(
+      screen.findByText('Flags: test-flag'),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should deduplicate features keeping the last received one', async () => {
@@ -283,9 +386,7 @@ describe('createApp', () => {
     ).resolves.toBeInTheDocument();
   });
 
-  it('should warn about unknown extension config', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
+  it('should allow unknown extension config if the flag is set', async () => {
     const app = createApp({
       features: [
         appPlugin,
@@ -302,6 +403,7 @@ describe('createApp', () => {
         }),
       ],
       advanced: {
+        allowUnknownExtensionConfig: true,
         configLoader: async () => ({
           config: mockApis.config({
             data: {
@@ -317,12 +419,6 @@ describe('createApp', () => {
     await renderWithEffects(app.createRoot());
 
     await expect(screen.findByText('Derp')).resolves.toBeInTheDocument();
-    expect(warnSpy).toHaveBeenCalledWith('App startup encountered warnings:');
-    expect(warnSpy).toHaveBeenCalledWith(
-      'INVALID_EXTENSION_CONFIG_KEY: Extension unknown:lols/wut does not exist',
-    );
-
-    warnSpy.mockRestore();
   });
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
@@ -427,9 +523,6 @@ describe('createApp', () => {
                   <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
                   <app-root-element:app/alert-display out=[core.reactElement] />
                   <app-root-element:app/dialog-display out=[core.reactElement] />
-                ]
-                signInPage [
-                  <sign-in-page:app />
                 ]
               </app/root>
             ]
