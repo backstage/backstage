@@ -1722,7 +1722,6 @@ export interface OverridableFrontendPlugin<
 export const PageBlueprint: ExtensionBlueprint_2<{
   kind: 'page';
   params: {
-    defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
     title?: string;
     icon?: IconElement;
