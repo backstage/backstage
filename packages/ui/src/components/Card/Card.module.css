@@ -148,9 +148,12 @@
         rgb(from var(--bui-card-bg) r g b / 0)
       );
       pointer-events: none;
-      animation: bui-card-body-shadow linear both reverse;
-      animation-timeline: scroll();
-      animation-range: calc(100% - 2.5rem) 100%;
+      opacity: 0;
+      animation:
+        bui-card-body-shadow linear forwards,
+        bui-card-body-shadow linear forwards reverse;
+      animation-timeline: scroll(), scroll();
+      animation-range: 0px 1px, calc(100% - 2.5rem) 100%;
     }
   }
 
