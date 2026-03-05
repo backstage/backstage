@@ -21,7 +21,6 @@ import {
 import { GitHubRepoOwnerPicker } from './GitHubRepoOwnerPicker';
 import { act, fireEvent, waitFor, screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import userEvent from '@testing-library/user-event';
 
 /*
  * Browser API polyfills for jsdom environment.
