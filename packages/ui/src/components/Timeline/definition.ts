@@ -14,22 +14,54 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { TimelineProps, TimelineItemProps } from './types';
+import styles from './Timeline.module.css';
 
 /**
  * Component definition for Timeline
  * @public
  */
-export const TimelineDefinition = {
+export const TimelineDefinition = defineComponent<TimelineProps>()({
+  styles,
   classNames: {
     root: 'bui-Timeline',
     item: 'bui-TimelineItem',
-    itemContent: 'bui-TimelineItemContent',
     itemMarker: 'bui-TimelineItemMarker',
     itemIcon: 'bui-TimelineItemIcon',
     itemLine: 'bui-TimelineItemLine',
+    itemContent: 'bui-TimelineItemContent',
+    itemTimestamp: 'bui-TimelineItemTimestamp',
     itemTitle: 'bui-TimelineItemTitle',
     itemDescription: 'bui-TimelineItemDescription',
-    itemTimestamp: 'bui-TimelineItemTimestamp',
   },
-} satisfies ComponentDefinition;
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for TimelineItem
+ * @public
+ */
+export const TimelineItemDefinition = defineComponent<TimelineItemProps>()({
+  styles,
+  classNames: {
+    root: 'bui-TimelineItem',
+    marker: 'bui-TimelineItemMarker',
+    icon: 'bui-TimelineItemIcon',
+    line: 'bui-TimelineItemLine',
+    content: 'bui-TimelineItemContent',
+    timestamp: 'bui-TimelineItemTimestamp',
+    title: 'bui-TimelineItemTitle',
+    description: 'bui-TimelineItemDescription',
+  },
+  propDefs: {
+    title: {},
+    description: {},
+    timestamp: {},
+    icon: {},
+    className: {},
+  },
+});

@@ -56,8 +56,4 @@ export interface TimelineItemProps {
    * Additional CSS class name
    */
   className?: string;
-  /**
-   * Whether this is the last item (affects line rendering)
-   */
-  isLast?: boolean;
 }

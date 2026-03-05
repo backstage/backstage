@@ -16,4 +16,4 @@
 
 export { Timeline, TimelineItem } from './Timeline';
 export type { TimelineProps, TimelineItemProps } from './types';
-export { TimelineDefinition } from './definition';
+export { TimelineDefinition, TimelineItemDefinition } from './definition';

@@ -8,8 +8,7 @@ export const timelinePropDefs: Record<string, PropDef> = {
     required: true,
   },
   className: {
-    type: 'enum',
-    values: ['string'],
+    type: 'string',
     description: 'Additional CSS class name',
   },
 };
@@ -37,14 +36,7 @@ export const timelineItemPropDefs: Record<string, PropDef> = {
     description: 'Icon or marker for the item',
   },
   className: {
-    type: 'enum',
-    values: ['string'],
+    type: 'string',
     description: 'Additional CSS class name',
-  },
-  isLast: {
-    type: 'enum',
-    values: ['boolean'],
-    description: 'Whether this is the last item (affects line rendering)',
-    default: 'false',
   },
 };

@@ -24,7 +24,6 @@ export function Basic() {
         title="Released v1.0.0"
         description="First stable release with core features"
         timestamp="Feb 1, 2024"
-        isLast
       />
     </Timeline>
   );
@@ -56,7 +55,6 @@ export function WithIcons() {
         description="Changes merged and deployed to production"
         timestamp="Just now"
         icon="✅"
-        isLast
       />
     </Timeline>
   );
@@ -77,7 +75,6 @@ export function WithoutTimestamps() {
       <TimelineItem
         title="Deployment"
         description="Deploy to production environment"
-        isLast
       />
     </Timeline>
   );
@@ -109,7 +106,6 @@ export function DetailedEvents() {
         description="Application is live and serving traffic. Health checks passing."
         timestamp="2024-03-04 14:38:20 UTC"
         icon="🎉"
-        isLast
       />
     </Timeline>
   );

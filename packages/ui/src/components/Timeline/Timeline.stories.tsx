@@ -46,7 +46,6 @@ export const Basic = meta.story({
         title="Released v1.0.0"
         description="First stable release with core features"
         timestamp="Feb 1, 2024"
-        isLast
       />
     </Timeline>
   ),
@@ -78,7 +77,6 @@ export const WithIcons = meta.story({
         description="Changes merged and deployed to production"
         timestamp="Just now"
         icon="✅"
-        isLast
       />
     </Timeline>
   ),
@@ -103,11 +101,7 @@ export const SimplifiedTimeline = meta.story({
         title="Out for delivery"
         timestamp="March 4, 2024 at 8:00 AM"
       />
-      <TimelineItem
-        title="Delivered"
-        timestamp="March 4, 2024 at 3:45 PM"
-        isLast
-      />
+      <TimelineItem title="Delivered" timestamp="March 4, 2024 at 3:45 PM" />
     </Timeline>
   ),
 });
@@ -127,7 +121,6 @@ export const WithoutTimestamps = meta.story({
       <TimelineItem
         title="Deployment"
         description="Deploy to production environment"
-        isLast
       />
     </Timeline>
   ),
@@ -141,7 +134,6 @@ export const SingleItem = meta.story({
         description="Welcome to Backstage! Your account was successfully created."
         timestamp="Today at 9:00 AM"
         icon="🎉"
-        isLast
       />
     </Timeline>
   ),
@@ -179,7 +171,6 @@ export const DetailedEvents = meta.story({
         description="Application is live and serving traffic. Health checks passing."
         timestamp="2024-03-04 14:40:00 UTC"
         icon="🎉"
-        isLast
       />
     </Timeline>
   ),

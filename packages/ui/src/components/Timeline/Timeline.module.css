@@ -58,7 +58,7 @@
     min-height: var(--bui-space-5);
   }
 
-  .bui-TimelineItem[data-last] .bui-TimelineItemLine {
+  .bui-TimelineItem:last-child .bui-TimelineItemLine {
     display: none;
   }
 
@@ -67,7 +67,7 @@
     padding-bottom: var(--bui-space-5);
   }
 
-  .bui-TimelineItem[data-last] .bui-TimelineItemContent {
+  .bui-TimelineItem:last-child .bui-TimelineItemContent {
     padding-bottom: 0;
   }
 
