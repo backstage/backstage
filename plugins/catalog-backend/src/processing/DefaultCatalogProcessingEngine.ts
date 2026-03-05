@@ -120,7 +120,7 @@ export class DefaultCatalogProcessingEngine {
     }
 
     const stopPipeline = this.startPipeline();
-    const stopCleanup = this.startOrphanCleanup();
+    const stopCleanup = await this.startOrphanCleanup();
 
     this.stopFunc = () => {
       stopPipeline();
@@ -349,7 +349,7 @@ export class DefaultCatalogProcessingEngine {
     });
   }
 
-  private startOrphanCleanup(): () => void {
+  private async startOrphanCleanup(): Promise<() => void> {
     const orphanStrategy =
       this.config.getOptionalString('catalog.orphanStrategy') ?? 'delete';
     if (orphanStrategy !== 'delete') {
@@ -373,7 +373,7 @@ export class DefaultCatalogProcessingEngine {
     };
 
     const abortController = new AbortController();
-    this.scheduler.scheduleTask({
+    await this.scheduler.scheduleTask({
       id: 'catalog_orphan_cleanup',
       frequency: { milliseconds: this.orphanCleanupIntervalMs },
       timeout: { milliseconds: this.orphanCleanupIntervalMs * 0.8 },
