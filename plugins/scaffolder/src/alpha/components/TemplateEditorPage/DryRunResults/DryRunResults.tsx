@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Divider from '@material-ui/core/Divider';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandLess';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  Separator,
+} from '@backstage/core-components';
 import { usePrevious } from '@react-hookz/web';
 import { useEffect, useState } from 'react';
 import { useDryRun } from '../DryRunContext';
@@ -29,27 +29,7 @@ import { DryRunResultsView } from './DryRunResultsView';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../../translation';
 
-const useStyles = makeStyles(theme => ({
-  header: {
-    height: 48,
-    minHeight: 0,
-    '&.Mui-expanded': {
-      height: 48,
-      minHeight: 0,
-    },
-  },
-  content: {
-    display: 'grid',
-    background: theme.palette.background.default,
-    gridTemplateColumns: '180px auto 1fr',
-    gridTemplateRows: '1fr',
-    padding: 0,
-    height: 400,
-  },
-}));
-
 export function DryRunResults() {
-  const classes = useStyles();
   const dryRun = useDryRun();
   const [expanded, setExpanded] = useState(false);
   const [hidden, setHidden] = useState(true);
@@ -67,27 +47,33 @@ export function DryRunResults() {
   }, [prevResultsLength, resultsLength]);
 
   return (
-    <>
+    <div
+      hidden={resultsLength === 0 && hidden}
+      onTransitionEnd={() => resultsLength === 0 && setHidden(true)}
+    >
       <Accordion
-        variant="outlined"
-        expanded={expanded}
-        hidden={resultsLength === 0 && hidden}
-        onChange={(_, exp) => setExpanded(exp)}
-        onTransitionEnd={() => resultsLength === 0 && setHidden(true)}
+        type="single"
+        collapsible
+        value={expanded ? 'dry-run' : ''}
+        onValueChange={val => setExpanded(val === 'dry-run')}
+        className="border border-border rounded-md"
       >
-        <AccordionSummary
-          className={classes.header}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography>{t('templateEditorPage.dryRunResults.title')}</Typography>
-        </AccordionSummary>
-        <Divider orientation="horizontal" />
-        <AccordionDetails className={classes.content}>
-          <DryRunResultsList />
-          <Divider orientation="horizontal" />
-          <DryRunResultsView />
-        </AccordionDetails>
+        <AccordionItem value="dry-run" className="border-b-0">
+          <AccordionTrigger className="h-12 min-h-0 px-4">
+            <span className="text-sm font-medium">
+              {t('templateEditorPage.dryRunResults.title')}
+            </span>
+          </AccordionTrigger>
+          <Separator orientation="horizontal" />
+          <AccordionContent forceMount hidden={!expanded} className="p-0">
+            <div className="grid grid-cols-[180px_auto_1fr] grid-rows-[1fr] h-[400px] bg-background">
+              <DryRunResultsList />
+              <Separator orientation="vertical" />
+              <DryRunResultsView />
+            </div>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
-    </>
+    </div>
   );
 }
