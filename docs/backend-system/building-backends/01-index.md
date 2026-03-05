@@ -2,7 +2,7 @@
 id: index
 title: Building Backends
 sidebar_label: Overview
-description: Building backends using the new backend system
+description: Building backends using the backend system
 ---
 
 :::note Note
