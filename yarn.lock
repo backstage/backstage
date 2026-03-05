@@ -5137,7 +5137,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion":
+"@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:^, @backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion"
   dependencies:
@@ -5205,6 +5205,7 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-incremental-ingestion": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@microsoft/microsoft-graph-types": "npm:^2.6.0"

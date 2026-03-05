@@ -19,4 +19,6 @@ export type {
   MicrosoftGraphOrgEntityProviderOptions,
   MicrosoftGraphOrgEntityProviderLegacyOptions,
 } from './MicrosoftGraphOrgEntityProvider';
+export { MicrosoftGraphOrgIncrementalEntityProvider } from './MicrosoftGraphOrgIncrementalEntityProvider';
+export type { MicrosoftGraphOrgIncrementalEntityProviderOptions } from './MicrosoftGraphOrgIncrementalEntityProvider';
 export { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';

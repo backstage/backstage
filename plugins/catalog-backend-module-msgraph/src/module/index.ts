@@ -19,3 +19,8 @@ export {
   microsoftGraphOrgEntityProviderTransformExtensionPoint,
   type MicrosoftGraphOrgEntityProviderTransformsExtensionPoint,
 } from './catalogModuleMicrosoftGraphOrgEntityProvider';
+export {
+  catalogModuleMicrosoftGraphOrgIncrementalEntityProvider,
+  microsoftGraphOrgIncrementalEntityProviderTransformExtensionPoint,
+  type MicrosoftGraphOrgIncrementalEntityProviderTransformsExtensionPoint,
+} from './catalogModuleMicrosoftGraphOrgIncrementalEntityProvider';
