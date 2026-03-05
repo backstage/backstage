@@ -65,29 +65,20 @@ Filtering by one or multiple statuses is supported. Pagination is supported via 
             .min(0)
             .describe('The offset to start from for pagination')
             .optional(),
-          status: z
-            .union([
-              z.enum([
-                'open',
-                'processing',
-                'completed',
-                'failed',
-                'cancelled',
-                'skipped',
-              ]),
-              z.array(
-                z.enum([
-                  'open',
-                  'processing',
-                  'completed',
-                  'failed',
-                  'cancelled',
-                  'skipped',
-                ]),
-              ),
-            ])
-            .optional()
-            .describe('Filter tasks by status, or an array of statuses'),
+          status: (() => {
+            const statusEnum = z.enum([
+              'open',
+              'processing',
+              'completed',
+              'failed',
+              'cancelled',
+              'skipped',
+            ]);
+            return z
+              .union([statusEnum, z.array(statusEnum).nonempty()])
+              .optional()
+              .describe('Filter tasks by status, or an array of statuses');
+          })(),
         }),
       output: z =>
         z
