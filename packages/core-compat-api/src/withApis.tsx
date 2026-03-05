@@ -15,49 +15,16 @@
  */
 
 import { ComponentType, PropsWithChildren } from 'react';
-import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
-import { useVersionedContext } from '@backstage/version-bridge';
-import { NotImplementedError } from '@backstage/errors';
-
-/**
- * React hook for retrieving {@link ApiHolder}, an API catalog.
- *
- * @public
- */
-export function useApiHolder(): ApiHolder {
-  const versionedHolder = useVersionedContext<{ 1: ApiHolder }>('api-context');
-  if (!versionedHolder) {
-    throw new NotImplementedError('API context is not available');
-  }
-
-  const apiHolder = versionedHolder.atVersion(1);
-  if (!apiHolder) {
-    throw new NotImplementedError('ApiContext v1 not available');
-  }
-  return apiHolder;
-}
-
-/**
- * React hook for retrieving APIs.
- *
- * @param apiRef - Reference of the API to use.
- * @public
- */
-export function useApi<T>(apiRef: ApiRef<T>): T {
-  const apiHolder = useApiHolder();
-
-  const api = apiHolder.get(apiRef);
-  if (!api) {
-    throw new NotImplementedError(`No implementation available for ${apiRef}`);
-  }
-  return api;
-}
+import {
+  ApiRef,
+  TypesToApiRefs,
+  useApiHolder,
+} from '@backstage/frontend-plugin-api';
 
 /**
  * Wrapper for giving component an API context.
  *
  * @param apis - APIs for the context.
- * @deprecated Use {@link withApis} from `@backstage/core-compat-api` instead.
  * @public
  */
 export function withApis<T extends {}>(apis: TypesToApiRefs<T>) {
@@ -71,13 +38,11 @@ export function withApis<T extends {}>(apis: TypesToApiRefs<T>) {
 
       for (const key in apis) {
         if (apis.hasOwnProperty(key)) {
-          const ref = apis[key];
+          const ref: ApiRef<T[typeof key]> = apis[key];
 
           const api = apiHolder.get(ref);
           if (!api) {
-            throw new NotImplementedError(
-              `No implementation available for ${ref}`,
-            );
+            throw new Error(`No implementation available for ${ref}`);
           }
           impls[key] = api;
         }
