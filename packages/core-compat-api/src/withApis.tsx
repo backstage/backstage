@@ -15,11 +15,8 @@
  */
 
 import { ComponentType, PropsWithChildren } from 'react';
-import {
-  ApiRef,
-  TypesToApiRefs,
-  useApiHolder,
-} from '@backstage/frontend-plugin-api';
+import { TypesToApiRefs, useApiHolder } from '@backstage/frontend-plugin-api';
+import { NotImplementedError } from '@backstage/errors';
 
 /**
  * Wrapper for giving component an API context.
@@ -37,12 +34,14 @@ export function withApis<T extends {}>(apis: TypesToApiRefs<T>) {
       const impls = {} as T;
 
       for (const key in apis) {
-        if (apis.hasOwnProperty(key)) {
-          const ref: ApiRef<T[typeof key]> = apis[key];
+        if (Object.hasOwn(apis, key)) {
+          const ref = apis[key];
 
           const api = apiHolder.get(ref);
           if (!api) {
-            throw new Error(`No implementation available for ${ref}`);
+            throw new NotImplementedError(
+              `No implementation available for ${ref}`,
+            );
           }
           impls[key] = api;
         }

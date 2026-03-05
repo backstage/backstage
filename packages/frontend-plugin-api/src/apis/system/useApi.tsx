@@ -57,7 +57,7 @@ export function useApi<T>(apiRef: ApiRef<T>): T {
  * Wrapper for giving component an API context.
  *
  * @param apis - APIs for the context.
- * @deprecated Use {@link withApis} from `@backstage/core-compat-api` instead.
+ * @deprecated Use `withApis` from `@backstage/core-compat-api` instead.
  * @public
  */
 export function withApis<T extends {}>(apis: TypesToApiRefs<T>) {
