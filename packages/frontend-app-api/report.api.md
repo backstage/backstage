@@ -169,7 +169,6 @@ export type CreateSpecializedAppOptions = {
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   advanced?: {
     apis?: ApiHolder;
-    allowUnknownExtensionConfig?: boolean;
     extensionFactoryMiddleware?:
       | ExtensionFactoryMiddleware
       | ExtensionFactoryMiddleware[];
