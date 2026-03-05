@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { LogViewer } from '@backstage/core-components';
+import {
+  LogViewer,
+  ShadcnButton as Button,
+  Sheet,
+  SheetContent,
+} from '@backstage/core-components';
 import { X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -28,18 +33,19 @@ export const TechDocsBuildLogsDrawerContent = ({
   const logText =
     buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n');
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex items-center justify-between">
-        <h5 className="text-lg font-semibold">Build Details</h5>
-        <button
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <h2 className="text-xl font-semibold">Build Details</h2>
+        <Button
+          variant="ghost"
+          size="icon"
           title="Close the drawer"
           onClick={onClose}
-          className="inline-flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground h-9 w-9"
         >
-          <X className="h-5 w-5" />
-        </button>
+          <X className="h-4 w-4" />
+        </Button>
       </div>
-      <div className="flex-1 min-h-0 mt-2">
+      <div className="flex-1 min-h-0">
         <LogViewer text={logText} classes={{ root: 'bg-background' }} />
       </div>
     </div>
@@ -51,28 +57,20 @@ export const TechDocsBuildLogs = ({ buildLog }: { buildLog: string[] }) => {
 
   return (
     <>
-      <button
-        className="text-inherit underline underline-offset-2 hover:opacity-80"
-        onClick={() => setOpen(true)}
-      >
+      <Button variant="ghost" onClick={() => setOpen(true)}>
         Show Build Logs
-      </button>
-      {open && (
-        <>
-          {/* Backdrop overlay */}
-          <div
-            className="fixed inset-0 z-50 bg-black/50"
-            onClick={() => setOpen(false)}
+      </Button>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent
+          side="right"
+          className="w-full sm:w-3/4 sm:max-w-none md:w-1/2 p-5"
+        >
+          <TechDocsBuildLogsDrawerContent
+            buildLog={buildLog}
+            onClose={() => setOpen(false)}
           />
-          {/* Drawer panel */}
-          <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-3/4 md:w-1/2 bg-card p-5 shadow-lg">
-            <TechDocsBuildLogsDrawerContent
-              buildLog={buildLog}
-              onClose={() => setOpen(false)}
-            />
-          </div>
-        </>
-      )}
+        </SheetContent>
+      </Sheet>
     </>
   );
 };
