@@ -91,7 +91,7 @@ import { CatalogExportButton } from '@backstage/plugin-catalog';
 
 #### Custom Export Formats
 
-You can add custom export format types beyond CSV and JSON by providing custom exporter functions. Custom exporters use **async generators** to enable true streaming downloads. Tje data is written to disk as it's generated, without buffering the entire export in memory in supported browsers.
+You can add custom export format types beyond CSV and JSON by providing custom exporter functions. Custom exporters use **async generators** to enable true streaming downloads. The data is written to disk as it's generated, without buffering the entire export in memory in supported browsers.
 
 ```tsx title="packages/app/src/App.tsx"
 import {
@@ -730,9 +730,9 @@ This will display an "Export selection" button on the catalog index page that al
 
 #### Advanced Configuration
 
-For advanced export customization like custom export formats, callbacks, or button styling, create a frontend module that provides a catalog export customizer extension:
+For advanced export customization like custom export formats, callbacks, or button styling, create a frontend module that provides a catalog export extension:
 
-```tsx title="src/catalogExportCustomization.tsx"
+```tsx title="src/catalogExportExtension.tsx"
 import {
   createExtension,
   createFrontendModule,
@@ -763,9 +763,9 @@ const yamlExporter: StreamingCustomExporter = (
   };
 };
 
-// Create the customizer extension
-const catalogExportCustomizer = createExtension({
-  name: 'catalog-export-customizer',
+// Create the extension
+const catalogExportExtension = createExtension({
+  name: 'catalog-export-extension',
   attachTo: { id: 'page:catalog', input: 'exportCustomizers' },
   output: [catalogExportCustomizationDataRef],
   factory() {
@@ -799,12 +799,12 @@ export default createFrontendModule({
 Then register this module in your app features:
 
 ```tsx title="packages/app-next/src/App.tsx"
-import catalogExportCustomization from './catalogExportCustomization';
+import catalogExportExtension from './catalogExportExtension';
 
 const app = createApp({
   features: [
     // ... other features
-    catalogExportCustomization,
+    catalogExportExtension,
   ],
 });
 ```
@@ -820,7 +820,7 @@ The `catalogExportCustomizationDataRef` supports the following properties:
 
 :::note Note
 
-Multiple extensions can provide export customizers, and they will be merged together. Custom exporters from different extensions are combined into a single exporter map.
+Custom exporters from different extensions are combined into a single exporter map.
 
 :::
 
