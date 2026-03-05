@@ -14,14 +14,37 @@
  * limitations under the License.
  */
 
+// cmdk and Radix Popover require APIs not available in JSDOM
+beforeAll(() => {
+  if (typeof window !== 'undefined') {
+    // ResizeObserver polyfill for Radix UI internals
+    if (!window.ResizeObserver) {
+      window.ResizeObserver = class ResizeObserver {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      } as unknown as typeof window.ResizeObserver;
+    }
+    // scrollIntoView polyfill for cmdk item scrolling
+    if (!Element.prototype.scrollIntoView) {
+      Element.prototype.scrollIntoView = jest.fn();
+    }
+    // hasPointerCapture polyfill for Radix primitives
+    if (!Element.prototype.hasPointerCapture) {
+      Element.prototype.hasPointerCapture = jest.fn().mockReturnValue(false);
+    }
+  }
+});
+
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
+import { TooltipProvider } from '@backstage/core-components';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
@@ -68,7 +91,7 @@ describe('<EntityPicker />', () => {
           ],
         ]}
       >
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
       </TestApiProvider>
     );
   });
@@ -110,16 +133,23 @@ describe('<EntityPicker />', () => {
     });
 
     it('updates even if there is not an exact match', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'squ' } });
-      fireEvent.blur(input);
+      // Type a partial match in the command input
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'squ' } });
+
+      // Use the free-solo "Use ..." button to submit the arbitrary value
+      const useButton = await screen.findByText(/Use "squ"/);
+      fireEvent.click(useButton);
 
       expect(onChange).toHaveBeenCalledWith('squ');
     });
@@ -303,11 +333,12 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      const combobox = screen.getByRole('combobox');
 
-      // Expect input to be disabled
-      expect(input).toBeDisabled();
-      expect(input).toHaveValue('component:default/myentity');
+      // Expect combobox trigger to be disabled
+      expect(combobox).toBeDisabled();
+      // The button text should display the current formData value
+      expect(combobox).toHaveTextContent('component:default/myentity');
     });
 
     it('Allows user to edit when ui:disabled is false', async () => {
@@ -320,15 +351,23 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
-      expect(input).not.toBeDisabled();
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).not.toBeDisabled();
 
-      fireEvent.change(input, {
+      // Open the combobox popover
+      fireEvent.click(combobox);
+
+      // Type in the command input and use the free-solo button
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, {
         target: { value: 'component:default/mynewentity' },
       });
-      fireEvent.blur(input);
 
-      expect(input).toHaveValue('component:default/mynewentity');
+      const useButton = await screen.findByText(
+        /Use "component:default\/mynewentity"/,
+      );
+      fireEvent.click(useButton);
+
       expect(onChange).toHaveBeenCalledWith('component:default/mynewentity');
     });
   });
@@ -398,19 +437,24 @@ describe('<EntityPicker />', () => {
     });
 
     it('default behavior', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      // Type partial match and blur
-      fireEvent.change(input, { target: { value: 'team' } });
-      fireEvent.blur(input);
+      // Type partial match in command input and submit via free-solo
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'team' } });
 
-      // Default behavior with freeSolo enabled processes the typed value
+      const useButton = await screen.findByText(/Use "team"/);
+      fireEvent.click(useButton);
+
+      // With defaultKind set, the value is resolved to a full entity ref
       expect(onChange).toHaveBeenCalledWith('group:default/team');
     });
 
@@ -426,20 +470,23 @@ describe('<EntityPicker />', () => {
         uiSchema,
       } as unknown as FieldProps<any>;
 
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // In the Popover+Command pattern, selection is always explicit.
+      // Opening and closing the popover without selecting does not trigger onChange.
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      // Type and blur - with autoSelect=false, the autocomplete won't auto-select on blur
-      fireEvent.change(input, { target: { value: 'team' } });
-      fireEvent.blur(input);
+      // Type but do not select — just close the popover by pressing Escape
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'team' } });
+      fireEvent.keyDown(searchInput, { key: 'Escape' });
 
-      // With autoSelect=false, onChange should not be called on blur
-      // This is the key difference - users must explicitly select an option
+      // onChange should not be called — no explicit selection was made
       expect(onChange).not.toHaveBeenCalled();
     });
 
@@ -455,19 +502,23 @@ describe('<EntityPicker />', () => {
         uiSchema,
       } as unknown as FieldProps<any>;
 
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox and submit via free-solo
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      // Type and blur
-      fireEvent.change(input, { target: { value: 'squad' } });
-      fireEvent.blur(input);
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'squad' } });
 
-      // With autoSelect=true and freeSolo, processes the typed value
+      const useButton = await screen.findByText(/Use "squad"/);
+      fireEvent.click(useButton);
+
+      // With defaultKind set, processes the typed value to a full entity ref
       expect(onChange).toHaveBeenCalledWith('group:default/squad');
     });
   });
@@ -492,31 +543,41 @@ describe('<EntityPicker />', () => {
     });
 
     it('returns the full entityRef when entity exists in the list', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open combobox and submit free-solo value matching an existing entity
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'team-a' } });
+
+      const useButton = await screen.findByText(/Use "team-a"/);
+      fireEvent.click(useButton);
 
       expect(onChange).toHaveBeenCalledWith('group:default/team-a');
     });
 
     it('returns the full entityRef when entity does not exist in the list', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open combobox and submit free-solo value for a non-existent entity
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-b' } });
-      fireEvent.blur(input);
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'team-b' } });
+
+      const useButton = await screen.findByText(/Use "team-b"/);
+      fireEvent.click(useButton);
 
       expect(onChange).toHaveBeenCalledWith('group:default/team-b');
     });
@@ -548,23 +609,21 @@ describe('<EntityPicker />', () => {
         })),
       });
 
-      const { getByRole, getByText } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox to show entity options
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 't' } });
-
-      expect(getByText('team a')).toBeInTheDocument();
-
-      fireEvent.change(input, { target: { value: 's' } });
-
-      expect(getByText('squad b')).toBeInTheDocument();
-
-      fireEvent.blur(input);
+      // Entity display names should be rendered in the command list
+      await waitFor(() => {
+        expect(screen.getByText('team a')).toBeInTheDocument();
+        expect(screen.getByText('squad b')).toBeInTheDocument();
+      });
     });
 
     it('renders selection title', async () => {
@@ -578,23 +637,21 @@ describe('<EntityPicker />', () => {
         })),
       });
 
-      const { getByRole, getByText } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox to show entity options
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 't' } });
-
-      expect(getByText('TEAM A')).toBeInTheDocument();
-
-      fireEvent.change(input, { target: { value: 's' } });
-
-      expect(getByText('SQUAD B')).toBeInTheDocument();
-
-      fireEvent.blur(input);
+      // Entity titles should be rendered in the command list
+      await waitFor(() => {
+        expect(screen.getByText('TEAM A')).toBeInTheDocument();
+        expect(screen.getByText('SQUAD B')).toBeInTheDocument();
+      });
     });
   });
 
@@ -630,16 +687,14 @@ describe('<EntityPicker />', () => {
       await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
-          <div data-testid="outside">Outside</div>
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
-
-      fireEvent.change(input, { target: { value: '' } });
-      fireEvent.blur(input);
-
-      expect(input).toHaveValue('');
+      // With no formData, the combobox shows the title and no Clear button appears
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toBeInTheDocument();
+      // onChange should not be called when no interaction occurs
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('User selects item', async () => {
@@ -649,48 +704,38 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open combobox and submit a free-solo value
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'team-a' } });
 
-      expect(input).toHaveValue('team-a');
+      const useButton = await screen.findByText(/Use "team-a"/);
+      fireEvent.click(useButton);
+
       expect(onChange).toHaveBeenCalledWith('team-a');
     });
 
     it('User selects item and enters clear input', async () => {
+      // Render with formData set to simulate a prior selection
+      props.formData = 'group:default/team-a';
+
       await renderInTestApp(
         <Wrapper>
-          <EntityPicker {...props} />
-          <div data-testid="outside">Outside</div>
+          <EntityPicker {...(props as any)} />
         </Wrapper>,
       );
 
-      // Open the Autocomplete dropdown
-      const input = screen.getByRole('textbox');
-      fireEvent.click(input);
+      // Verify the combobox displays the selected entity
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toHaveTextContent('group:default/team-a');
 
-      // Select an option from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
-
-      // Close the dropdown by clicking outside the Autocomplete component
-      const outside = screen.getByTestId('outside');
-      fireEvent.mouseDown(outside);
-
-      // Click back into the Autocomplete component
-      fireEvent.click(input);
-
-      // Verify that the selected option is displayed in the input
-      expect(input).toHaveValue('team-a');
-
-      // Click the Clear button to clear the input
+      // Click the Clear button to clear the selection
       const clearButton = screen.getByLabelText('Clear');
       fireEvent.click(clearButton);
 
-      // Verify that the input is empty
-      expect(input).toHaveValue('');
-
-      // Verify that the handleChange function was called with undefined
+      // Verify that onChange was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
@@ -727,16 +772,13 @@ describe('<EntityPicker />', () => {
       await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
-          <div data-testid="outside">Outside</div>
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
-
-      fireEvent.change(input, { target: { value: '' } });
-      fireEvent.blur(input);
-
-      expect(input).toHaveValue('');
+      // With no formData, the combobox shows the title
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toBeInTheDocument();
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('User selects item', async () => {
@@ -746,48 +788,38 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open combobox and submit a free-solo value
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'team-a' } });
 
-      expect(input).toHaveValue('team-a');
+      const useButton = await screen.findByText(/Use "team-a"/);
+      fireEvent.click(useButton);
+
       expect(onChange).toHaveBeenCalledWith('team-a');
     });
 
     it('User selects item and enters clear input', async () => {
+      // Render with formData set to simulate a prior selection
+      props.formData = 'group:default/team-a';
+
       await renderInTestApp(
         <Wrapper>
-          <EntityPicker {...props} />
-          <div data-testid="outside">Outside</div>
+          <EntityPicker {...(props as any)} />
         </Wrapper>,
       );
 
-      // Open the Autocomplete dropdown
-      const input = screen.getByRole('textbox');
-      fireEvent.click(input);
+      // Verify the combobox displays the selected entity
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toHaveTextContent('group:default/team-a');
 
-      // Select an option from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
-
-      // Close the dropdown by clicking outside the Autocomplete component
-      const outside = screen.getByTestId('outside');
-      fireEvent.mouseDown(outside);
-
-      // Click back into the Autocomplete component
-      fireEvent.click(input);
-
-      // Verify that the selected option is displayed in the input
-      expect(input).toHaveValue('team-a');
-
-      // Click the Clear button to clear the input
+      // Click the Clear button to clear the selection
       const clearButton = screen.getByLabelText('Clear');
       fireEvent.click(clearButton);
 
-      // Verify that the input is empty
-      expect(input).toHaveValue('');
-
-      // Verify that the handleChange function was called with undefined
+      // Verify that onChange was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
@@ -825,16 +857,13 @@ describe('<EntityPicker />', () => {
       await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
-          <div data-testid="outside">Outside</div>
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
-
-      fireEvent.change(input, { target: { value: '' } });
-      fireEvent.blur(input);
-
-      expect(input).toHaveValue('');
+      // With no formData, the combobox shows the title
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toBeInTheDocument();
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('User selects item', async () => {
@@ -844,48 +873,38 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open combobox and submit a free-solo value
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'team-a' } });
 
-      expect(input).toHaveValue('team-a');
+      const useButton = await screen.findByText(/Use "team-a"/);
+      fireEvent.click(useButton);
+
       expect(onChange).toHaveBeenCalledWith('team-a');
     });
 
     it('User selects item and enters clear input', async () => {
+      // Render with formData to simulate a prior selection
+      props.formData = 'group:default/team-a';
+
       await renderInTestApp(
         <Wrapper>
-          <EntityPicker {...props} />
-          <div data-testid="outside">Outside</div>
+          <EntityPicker {...(props as any)} />
         </Wrapper>,
       );
 
-      // Open the Autocomplete dropdown
-      const input = screen.getByRole('textbox');
-      fireEvent.click(input);
+      // Verify the combobox displays the selected entity
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toHaveTextContent('group:default/team-a');
 
-      // Select an option from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
-
-      // Close the dropdown by clicking outside the Autocomplete component
-      const outside = screen.getByTestId('outside');
-      fireEvent.mouseDown(outside);
-
-      // Click back into the Autocomplete component
-      fireEvent.click(input);
-
-      // Verify that the selected option is displayed in the input
-      expect(input).toHaveValue('team-a');
-
-      // Click the Clear button to clear the input
+      // Click the Clear button to clear the selection
       const clearButton = screen.getByLabelText('Clear');
       fireEvent.click(clearButton);
 
-      // Verify that the input is empty
-      expect(input).toHaveValue('');
-
-      // Verify that the handleChange function was called with undefined
+      // Verify that onChange was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
@@ -923,16 +942,13 @@ describe('<EntityPicker />', () => {
       await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
-          <div data-testid="outside">Outside</div>
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
-
-      fireEvent.change(input, { target: { value: '' } });
-      fireEvent.blur(input);
-
-      expect(input).toHaveValue('');
+      // With no formData, the combobox shows the title
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toBeInTheDocument();
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('User selects item', async () => {
@@ -942,48 +958,38 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open combobox and submit a free-solo value
+      const combobox = screen.getByRole('combobox');
+      fireEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'team-a' } });
 
-      expect(input).toHaveValue('team-a');
+      const useButton = await screen.findByText(/Use "team-a"/);
+      fireEvent.click(useButton);
+
       expect(onChange).toHaveBeenCalledWith('team-a');
     });
 
     it('User selects item and enters clear input', async () => {
+      // Render with formData to simulate a prior selection
+      props.formData = 'group:default/team-a';
+
       await renderInTestApp(
         <Wrapper>
-          <EntityPicker {...props} />
-          <div data-testid="outside">Outside</div>
+          <EntityPicker {...(props as any)} />
         </Wrapper>,
       );
 
-      // Open the Autocomplete dropdown
-      const input = screen.getByRole('textbox');
-      fireEvent.click(input);
+      // Verify the combobox displays the selected entity
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toHaveTextContent('group:default/team-a');
 
-      // Select an option from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
-
-      // Close the dropdown by clicking outside the Autocomplete component
-      const outside = screen.getByTestId('outside');
-      fireEvent.mouseDown(outside);
-
-      // Click back into the Autocomplete component
-      fireEvent.click(input);
-
-      // Verify that the selected option is displayed in the input
-      expect(input).toHaveValue('team-a');
-
-      // Click the Clear button to clear the input
+      // Click the Clear button to clear the selection
       const clearButton = screen.getByLabelText('Clear');
       fireEvent.click(clearButton);
 
-      // Verify that the input is empty
-      expect(input).toHaveValue('');
-
-      // Verify that the handleChange function was called with undefined
+      // Verify that onChange was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
     });
   });
