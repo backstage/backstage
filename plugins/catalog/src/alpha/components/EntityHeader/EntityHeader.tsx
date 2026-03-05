@@ -130,10 +130,7 @@ function EntityHeaderSubtitle(props: { parentEntityRelations?: string[] }) {
   }, [parentEntity, catalogApi]);
 
   return parentEntity ? (
-    <Breadcrumbs
-      separator=">"
-      className="text-xs uppercase mt-2 opacity-80 [&_span]:underline [&_span]:underline-offset-[3px]"
-    >
+    <Breadcrumbs className="text-xs uppercase mt-2 opacity-80 [&_span]:underline [&_span]:underline-offset-[3px]">
       {ancestorEntity && (
         <EntityRefLink entityRef={ancestorEntity.targetRef} disableTooltip />
       )}

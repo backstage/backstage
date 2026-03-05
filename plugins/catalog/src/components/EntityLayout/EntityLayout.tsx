@@ -317,7 +317,6 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         subtitle={
           parentEntity && (
             <Breadcrumbs
-              separator=">"
               className={cn(
                 'text-xs uppercase mt-2 opacity-80',
                 'text-inherit',

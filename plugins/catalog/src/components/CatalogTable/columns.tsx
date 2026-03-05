@@ -18,9 +18,12 @@ import {
   EntityRefLink,
   EntityRefLinks,
 } from '@backstage/plugin-catalog-react';
-import Chip from '@material-ui/core/Chip';
 import { CatalogTableRow } from './types';
-import { OverflowTooltip, TableColumn } from '@backstage/core-components';
+import {
+  Badge,
+  OverflowTooltip,
+  TableColumn,
+} from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { JsonArray } from '@backstage/types';
 import { EntityTableColumnTitle } from '@backstage/plugin-catalog-react/alpha';
@@ -169,13 +172,9 @@ export const columnFactories = Object.freeze({
         <>
           {entity.metadata.tags &&
             entity.metadata.tags.map(t => (
-              <Chip
-                key={t}
-                label={t}
-                size="small"
-                variant="outlined"
-                style={{ margin: '2px' }}
-              />
+              <Badge key={t} variant="outline" className="m-0.5">
+                {t}
+              </Badge>
             ))}
         </>
       ),
@@ -223,12 +222,9 @@ export const columnFactories = Object.freeze({
         return (
           <>
             {specifiedLabelValue && (
-              <Chip
-                key={specifiedLabelValue}
-                label={specifiedLabelValue}
-                size="small"
-                variant="outlined"
-              />
+              <Badge key={specifiedLabelValue} variant="outline">
+                {specifiedLabelValue}
+              </Badge>
             )}
           </>
         );
