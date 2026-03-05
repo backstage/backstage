@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import {
   ThemeProvider,
   StylesProvider,
@@ -59,6 +59,7 @@ const generateV4ClassName = createGenerateClassName({
 });
 
 import { useApplyThemeAttributes } from './useApplyThemeAttributes';
+import { generateShadcnTokens } from './themes';
 
 /**
  * Provides themes for all Material UI versions supported by the provided unified theme.
@@ -76,6 +77,35 @@ export function UnifiedThemeProvider(
   const themeMode = v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode;
 
   useApplyThemeAttributes(themeMode, themeName ?? 'backstage');
+
+  // Inject shadcn/ui CSS custom properties onto :root based on the active theme palette
+  useEffect(() => {
+    let palette: any;
+    if (v4Theme) {
+      palette = v4Theme.palette;
+    } else if (v5Theme) {
+      palette = v5Theme.palette;
+    }
+
+    if (!palette) {
+      return undefined;
+    }
+
+    const tokens = generateShadcnTokens(palette);
+    const root = document.documentElement;
+
+    const tokenKeys = Object.keys(tokens);
+    for (const key of tokenKeys) {
+      root.style.setProperty(key, tokens[key]);
+    }
+
+    // Cleanup: remove injected CSS custom properties on unmount
+    return () => {
+      for (const key of tokenKeys) {
+        root.style.removeProperty(key);
+      }
+    };
+  }, [v4Theme, v5Theme]);
 
   let result = children as JSX.Element;
 
