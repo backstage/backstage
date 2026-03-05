@@ -77,7 +77,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
 
       triggerRef.current.dispatchEvent(
         new MouseEvent('click', {
-          bubbles: true,
+          bubbles: false,
           cancelable: true,
           ctrlKey: e.ctrlKey,
           metaKey: e.metaKey,
@@ -95,9 +95,9 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
       ref={ref}
       className={classes.root}
       data-interactive={isInteractive || undefined}
-      onClick={isInteractive ? handleClick : undefined}
       {...dataAttributes}
       {...restProps}
+      onClick={isInteractive ? handleClick : undefined}
     >
       {href && (
         <Link

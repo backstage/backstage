@@ -717,7 +717,7 @@ export type CardOwnProps = Pick<
 
 // @public
 export type CardProps = CardBaseProps &
-  Omit<React.HTMLAttributes<HTMLDivElement>, 'onPress'> &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> &
   (CardButtonVariant | CardLinkVariant | CardStaticVariant);
 
 // @public (undocumented)
