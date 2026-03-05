@@ -35,21 +35,12 @@ jobs:
           corepack enable
           changed=false
 
-          # Root lockfile (Yarn 4)
-          if git diff --name-only HEAD~1 | grep -q '^yarn\.lock$'; then
-            yarn dedupe
-            if ! git diff --quiet yarn.lock; then
-              git add yarn.lock
-              changed=true
-            fi
-          fi
-
-          # Subdirectory lockfiles (Yarn Classic)
-          for dir in docs-ui microsite; do
-            if git diff --name-only HEAD~1 | grep -q "^${dir}/yarn.lock$"; then
-              npx yarn-deduplicate "$dir/yarn.lock"
-              if ! git diff --quiet "$dir/yarn.lock"; then
-                git add "$dir/yarn.lock"
+          for dir in . docs-ui microsite; do
+            if [ "$dir" = "." ]; then lockfile=yarn.lock; else lockfile="$dir/yarn.lock"; fi
+            if git diff --name-only HEAD~1 | grep -q "^${lockfile}$"; then
+              yarn --cwd "$dir" dedupe
+              if ! git diff --quiet "$lockfile"; then
+                git add "$lockfile"
                 changed=true
               fi
             fi
