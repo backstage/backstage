@@ -30,23 +30,34 @@ jobs:
         with:
           node-version: 22
       - name: Dedupe lockfiles
+        id: dedupe
         run: |
           corepack enable
+          changed=false
 
           # Root lockfile (Yarn 4)
           if git diff --name-only HEAD~1 | grep -q '^yarn\.lock$'; then
             yarn dedupe
-            git add yarn.lock
+            if ! git diff --quiet yarn.lock; then
+              git add yarn.lock
+              changed=true
+            fi
           fi
 
           # Subdirectory lockfiles (Yarn Classic)
           for dir in docs-ui microsite; do
             if git diff --name-only HEAD~1 | grep -q "^${dir}/yarn.lock$"; then
               npx yarn-deduplicate "$dir/yarn.lock"
-              git add "$dir/yarn.lock"
+              if ! git diff --quiet "$dir/yarn.lock"; then
+                git add "$dir/yarn.lock"
+                changed=true
+              fi
             fi
           done
+
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
       - name: Generate changeset
+        id: changeset
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
@@ -100,5 +111,9 @@ jobs:
             const { stdout: commitMessage } = await exec.getExecOutput('git show --pretty=format:%s -s HEAD');
             await createChangeset(fileName, commitMessage, packageNames);
             await exec.exec('git', ['add', fileName]);
-            await exec.exec('git commit -C HEAD --amend --no-edit');
-            await exec.exec('git push --force');
+            core.setOutput('changed', 'true');
+      - name: Commit and push
+        if: steps.dedupe.outputs.changed == 'true' || steps.changeset.outputs.changed == 'true'
+        run: |
+          git commit -C HEAD --amend --no-edit
+          git push --force
