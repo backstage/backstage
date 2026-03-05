@@ -66,6 +66,7 @@ export type { ErrorWithContext } from './ErrorApi/MockErrorApi';
 
 /**
  * @public
+ * @deprecated Use `mockApis.fetch()` instead.
  */
 export type { MockFetchApi } from './FetchApi';
 

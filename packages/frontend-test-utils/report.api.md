@@ -344,7 +344,7 @@ export interface MockFeatureFlagsApiOptions {
   initialStates?: Record<string, FeatureFlagState>;
 }
 
-// @public
+// @public @deprecated
 export class MockFetchApi implements FetchApi {
   constructor(options?: MockFetchApiOptions);
   get fetch(): typeof fetch;
