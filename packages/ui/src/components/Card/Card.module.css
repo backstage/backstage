@@ -149,8 +149,7 @@
       );
       pointer-events: none;
       opacity: 0;
-      animation:
-        bui-card-body-shadow linear forwards,
+      animation: bui-card-body-shadow linear forwards,
         bui-card-body-shadow linear forwards reverse;
       animation-timeline: scroll(), scroll();
       animation-range: 0px 1px, calc(100% - 2.5rem) 100%;
