@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import Popover from '@material-ui/core/Popover';
-import { makeStyles } from '@material-ui/core/styles';
-import Edit from '@material-ui/icons/Edit';
-import MoreVert from '@material-ui/icons/MoreVert';
-import { SyntheticEvent, useState } from 'react';
+import { Pencil, MoreVertical } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  ShadcnButton as Button,
+  Link,
+} from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
-import { Link } from '@backstage/core-components';
-
-const useStyles = makeStyles(theme => ({
-  button: {
-    color: theme.page.fontColor,
-  },
-}));
 
 export type TemplateWizardPageContextMenuProps = {
   editUrl?: string;
@@ -42,59 +34,33 @@ export function TemplateWizardPageContextMenu(
   props: TemplateWizardPageContextMenuProps,
 ) {
   const { editUrl } = props;
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   if (!editUrl) {
     return null;
   }
 
-  const onOpen = (event: SyntheticEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const onClose = () => {
-    setAnchorEl(undefined);
-  };
-
   return (
-    <>
-      <IconButton
-        id="long-menu"
-        aria-label="more"
-        aria-controls="long-menu"
-        aria-expanded={!!anchorEl}
-        aria-haspopup="true"
-        role="button"
-        onClick={onOpen}
-        data-testid="menu-button"
-        color="inherit"
-        className={classes.button}
-      >
-        <MoreVert />
-      </IconButton>
-      <Popover
-        aria-labelledby="long-menu"
-        open={Boolean(anchorEl)}
-        onClose={onClose}
-        anchorEl={anchorEl}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <MenuList>
-          <MenuItem component={Link} to={editUrl}>
-            <ListItemIcon>
-              <Edit fontSize="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary={t(
-                'templateWizardPage.pageContextMenu.editConfigurationTitle',
-              )}
-            />
-          </MenuItem>
-        </MenuList>
-      </Popover>
-    </>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="more"
+          data-testid="menu-button"
+          className="text-foreground"
+        >
+          <MoreVertical className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem asChild>
+          <Link to={editUrl}>
+            <Pencil className="mr-2 h-4 w-4" />
+            {t('templateWizardPage.pageContextMenu.editConfigurationTitle')}
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
