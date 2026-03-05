@@ -220,10 +220,16 @@ describe('<MyGroupsPicker />', () => {
       expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
     );
 
-    // Simulate user input
-    const inputField = getByRole('combobox');
-    await userEvent.click(inputField);
-    await userEvent.type(inputField, 'group');
+    // Open the combobox popover by clicking the trigger button
+    const comboboxButton = getByRole('combobox');
+    await userEvent.click(comboboxButton);
+
+    // Type into the Command search input inside the popover
+    const searchInput = document.querySelector(
+      '[cmdk-input]',
+    ) as HTMLInputElement;
+    expect(searchInput).toBeTruthy();
+    await userEvent.type(searchInput, 'group');
 
     // Wait for the dropdown elements to appear
     await waitFor(() => {
@@ -284,9 +290,16 @@ describe('<MyGroupsPicker />', () => {
       expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
     );
 
-    const inputField = getByRole('combobox');
-    await userEvent.click(inputField);
-    await userEvent.type(inputField, 'group');
+    // Open the combobox popover by clicking the trigger button
+    const comboboxButton = getByRole('combobox');
+    await userEvent.click(comboboxButton);
+
+    // Type into the Command search input inside the popover
+    const searchInput = document.querySelector(
+      '[cmdk-input]',
+    ) as HTMLInputElement;
+    expect(searchInput).toBeTruthy();
+    await userEvent.type(searchInput, 'group');
 
     await waitFor(() => {
       expect(
@@ -351,10 +364,11 @@ describe('<MyGroupsPicker />', () => {
       expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
     );
 
-    const inputField = getByRole('combobox');
-    const inputFieldValue = inputField?.querySelector('input')?.value;
-
-    expect(inputFieldValue).toEqual(userGroups[0].metadata.title);
+    // The combobox trigger button displays the selected entity's presentation title
+    const comboboxButton = getByRole('combobox');
+    await waitFor(() => {
+      expect(comboboxButton).toHaveTextContent(userGroups[0].metadata.title!);
+    });
   });
 
   describe('MyGroupsPicker description', () => {
