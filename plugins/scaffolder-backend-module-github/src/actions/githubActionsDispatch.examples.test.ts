@@ -93,7 +93,6 @@ describe('github:actions:dispatch', () => {
     ).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
-      return_run_details: false,
       workflow_id: workflowId,
       ref: branchOrTagName,
     });
@@ -120,7 +119,6 @@ describe('github:actions:dispatch', () => {
     ).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
-      return_run_details: false,
       workflow_id: workflowId,
       ref: branchOrTagName,
       inputs: workflowInputs,

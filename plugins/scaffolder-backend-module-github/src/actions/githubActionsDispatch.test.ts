@@ -101,7 +101,6 @@ describe('github:actions:dispatch', () => {
       repo: 'repo',
       workflow_id: workflowId,
       ref: branchOrTagName,
-      return_run_details: false,
     });
   });
 
@@ -129,7 +128,6 @@ describe('github:actions:dispatch', () => {
       workflow_id: workflowId,
       ref: branchOrTagName,
       inputs: workflowInputs,
-      return_run_details: false,
     });
   });
 

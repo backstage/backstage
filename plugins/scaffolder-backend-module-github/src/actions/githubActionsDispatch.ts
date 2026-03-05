@@ -126,14 +126,17 @@ export function createGithubActionsDispatchAction(options: {
         const runDetails = await ctx.checkpoint({
           key: `create.workflow.dispatch.${owner}.${repo}.${workflowId}`,
           fn: async () => {
-            const response = await client.rest.actions.createWorkflowDispatch({
+            const dispatchParams = {
               owner,
               repo,
               workflow_id: workflowId,
               ref: branchOrTagName,
               inputs: workflowInputs,
-              return_run_details: returnWorkflowRunDetails ?? false,
-            });
+              ...(returnWorkflowRunDetails ? { return_run_details: true } : {}),
+            };
+            const response = await client.rest.actions.createWorkflowDispatch(
+              dispatchParams,
+            );
 
             ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
 
@@ -151,8 +154,8 @@ export function createGithubActionsDispatchAction(options: {
               };
 
               return {
-                workflow_run_id: data.workflow_run_id,
-                run_url: data.run_url,
+                workflowRunId: data.workflow_run_id,
+                workflowRunUrl: data.run_url,
                 workflowRunHtmlUrl: data.html_url,
               };
             }
@@ -161,8 +164,8 @@ export function createGithubActionsDispatchAction(options: {
         });
 
         if (runDetails) {
-          ctx.output('workflowRunId', runDetails.workflow_run_id);
-          ctx.output('workflowRunUrl', runDetails.run_url);
+          ctx.output('workflowRunId', runDetails.workflowRunId);
+          ctx.output('workflowRunUrl', runDetails.workflowRunUrl);
           ctx.output('workflowRunHtmlUrl', runDetails.workflowRunHtmlUrl);
         }
       } catch (e) {
