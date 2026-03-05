@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import { CodeSnippet } from '@backstage/core-components';
+import { CodeSnippet, Button } from '@backstage/core-components';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -29,28 +26,13 @@ const ENTITY_YAML = `metadata:
 /** @public */
 export type EntityLabelsEmptyStateClassKey = 'code';
 
-const useStyles = makeStyles(
-  theme => ({
-    code: {
-      borderRadius: 6,
-      margin: theme.spacing(2, 0),
-      background:
-        theme.palette.type === 'dark' ? '#444' : theme.palette.common.white,
-    },
-  }),
-  { name: 'PluginCatalogEntityLabelsEmptyState' },
-);
-
 export function EntityLabelsEmptyState() {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
     <>
-      <Typography variant="body1">
-        {t('entityLabelsCard.emptyDescription')}
-      </Typography>
-      <div className={classes.code}>
+      <p className="text-base">{t('entityLabelsCard.emptyDescription')}</p>
+      <div className="rounded-md my-4 bg-background dark:bg-muted">
         <CodeSnippet
           text={ENTITY_YAML}
           language="yaml"
@@ -60,10 +42,8 @@ export function EntityLabelsEmptyState() {
         />
       </div>
       <Button
-        variant="contained"
-        color="primary"
-        target="_blank"
-        href="https://backstage.io/docs/features/software-catalog/descriptor-format#labels-optional"
+        variant="default"
+        to="https://backstage.io/docs/features/software-catalog/descriptor-format#labels-optional"
       >
         {t('entityLabelsCard.readMoreButtonTitle')}
       </Button>
