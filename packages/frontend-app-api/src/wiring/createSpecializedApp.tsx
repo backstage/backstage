@@ -29,22 +29,29 @@ import {
   createApiFactory,
   routeResolutionApiRef,
   AppNode,
+  ExtensionFactoryMiddleware,
   FrontendFeature,
+  createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-import { ExtensionFactoryMiddleware } from './types';
 import {
   AnyApiFactory,
   ApiHolder,
   ConfigApi,
   configApiRef,
   featureFlagsApiRef,
+  IdentityApi,
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '@backstage/core-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ApiProvider } from '../../../core-app-api/src';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider';
 import {
   createExtensionDataContainer,
   OpaqueFrontendPlugin,
 } from '@internal/frontend';
+import { ComponentType, JSX, ReactNode } from 'react';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -77,7 +84,7 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import { matchRoutes } from 'react-router-dom';
+import { BrowserRouter, matchRoutes } from 'react-router-dom';
 import {
   createPluginInfoAttacher,
   FrontendPluginInfoResolver,
@@ -111,6 +118,15 @@ function deduplicateFeatures(
     })
     .reverse();
 }
+
+type SignInPageProps = {
+  onSignInSuccess(identityApi: IdentityApi): void;
+  children?: ReactNode;
+};
+
+const signInPageComponentDataRef = createExtensionDataRef<
+  ComponentType<SignInPageProps>
+>().with({ id: 'core.sign-in-page.component' });
 
 // Helps delay callers from reaching out to the API before the app tree has been materialized
 class AppTreeApiProxy implements AppTreeApi {
@@ -222,6 +238,16 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
  */
 export type CreateSpecializedAppOptions = {
   /**
+   * A replacement API holder implementation to use.
+   *
+   * By default, a new API holder will be constructed automatically based on
+   * the other inputs. If you pass in a custom one here, none of that
+   * automation will take place - so you will have to take care to supply all
+   * those APIs yourself.
+   */
+  apis?: ApiHolder;
+
+  /**
    * The list of features to load.
    */
   features?: FrontendFeature[];
@@ -246,7 +272,7 @@ export type CreateSpecializedAppOptions = {
    */
   advanced?: {
     /**
-     * A replacement API holder implementation to use.
+     * @deprecated Use {@link CreateSpecializedAppOptions.apis} instead.
      *
      * By default, a new API holder will be constructed automatically based on
      * the other inputs. If you pass in a custom one here, none of that
@@ -254,6 +280,17 @@ export type CreateSpecializedAppOptions = {
      * those APIs yourself.
      */
     apis?: ApiHolder;
+
+    /**
+     * If set to true, the system will silently accept and move on if
+     * encountering config for extensions that do not exist. The default is to
+     * reject such config to help catch simple mistakes.
+     *
+     * This flag can be useful in some scenarios where you have a dynamic set of
+     * extensions enabled at different times, but also increases the risk of
+     * accidentally missing e.g. simple typos in your config.
+     */
+    allowUnknownExtensionConfig?: boolean;
 
     /**
      * Applies one or more middleware on every extension, as they are added to
@@ -273,6 +310,23 @@ export type CreateSpecializedAppOptions = {
   };
 };
 
+/**
+ * Result of {@link prepareSpecializedApp}.
+ *
+ * @public
+ */
+export type PreparedSpecializedApp = {
+  signIn?: {
+    element: JSX.Element;
+    identity: Promise<IdentityApi>;
+  };
+  finalize(): {
+    apis: ApiHolder;
+    tree: AppTree;
+    errors?: AppError[];
+  };
+};
+
 // Internal options type, not exported in the public API
 export interface CreateSpecializedAppInternalOptions
   extends CreateSpecializedAppOptions {
@@ -282,17 +336,19 @@ export interface CreateSpecializedAppInternalOptions
 }
 
 /**
- * Creates an empty app without any default features. This is a low-level API is
- * intended for use in tests or specialized setups. Typically you want to use
- * `createApp` from `@backstage/frontend-defaults` instead.
+ * Prepares an app without instantiating the full extension tree.
+ *
+ * @remarks
+ *
+ * This is useful for split sign-in flows where the sign-in page should be
+ * rendered first, and the full app finalized once an identity has been
+ * captured.
  *
  * @public
  */
-export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
-  apis: ApiHolder;
-  tree: AppTree;
-  errors?: AppError[];
-} {
+export function prepareSpecializedApp(
+  options?: CreateSpecializedAppOptions,
+): PreparedSpecializedApp {
   const internalOptions = options as CreateSpecializedAppInternalOptions;
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
@@ -326,60 +382,188 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   );
 
   const appIdentityProxy = new AppIdentityProxy();
-  const apis =
-    options?.advanced?.apis ??
-    createApiHolder({
-      factories,
-      staticFactories: [
-        createApiFactory(appTreeApiRef, appTreeApi),
-        createApiFactory(configApiRef, config),
-        createApiFactory(routeResolutionApiRef, routeResolutionApi),
-        createApiFactory(identityApiRef, appIdentityProxy),
-        ...(internalOptions?.__internal?.apiFactoryOverrides ?? []),
-      ],
-    });
+  const providedApis = options?.apis ?? options?.advanced?.apis;
+  const createPreparedApis = (identityApi?: IdentityApi) => {
+    const maybeIdentityApi =
+      identityApi ?? (appIdentityProxy as unknown as IdentityApi);
+    return (
+      providedApis ??
+      createApiHolder({
+        factories,
+        staticFactories: [
+          createApiFactory(appTreeApiRef, appTreeApi),
+          createApiFactory(configApiRef, config),
+          createApiFactory(routeResolutionApiRef, routeResolutionApi),
+          createApiFactory(identityApiRef, maybeIdentityApi),
+          ...(internalOptions?.__internal?.apiFactoryOverrides ?? []),
+        ],
+      })
+    );
+  };
 
+  const mergedExtensionFactoryMiddleware = mergeExtensionFactoryMiddleware(
+    options?.advanced?.extensionFactoryMiddleware,
+  );
+  const preparedApis = createPreparedApis();
+  registerFeatureFlags(preparedApis, features);
+
+  let capturedIdentityApi: IdentityApi | undefined;
+  let resolveIdentity: (identityApi: IdentityApi) => void = () => {};
+  const identity = new Promise<IdentityApi>(resolve => {
+    resolveIdentity = resolve;
+  });
+
+  const signInPageComponent = extractSignInPageComponent({
+    tree,
+    apis: preparedApis,
+    collector,
+    extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
+  });
+  const SignInPageComponent = signInPageComponent;
+  const signIn =
+    SignInPageComponent &&
+    ({
+      element: (
+        <ApiProvider apis={preparedApis}>
+          <AppThemeProvider>
+            <BrowserRouter
+              basename={appBasePath}
+              future={{
+                v7_relativeSplatPath: false,
+                v7_startTransition: false,
+              }}
+            >
+              <SignInPageComponent
+                onSignInSuccess={identityApi => {
+                  capturedIdentityApi = identityApi;
+                  resolveIdentity(identityApi);
+                }}
+              />
+            </BrowserRouter>
+          </AppThemeProvider>
+        </ApiProvider>
+      ),
+      identity,
+    } satisfies PreparedSpecializedApp['signIn']);
+
+  let finalized:
+    | { apis: ApiHolder; tree: AppTree; errors?: AppError[] }
+    | undefined;
+  return {
+    signIn,
+    finalize() {
+      if (finalized) {
+        return finalized;
+      }
+
+      if (capturedIdentityApi) {
+        removeSignInPageAttachment(tree);
+      }
+
+      const apis =
+        !providedApis && capturedIdentityApi
+          ? createPreparedApis(capturedIdentityApi)
+          : preparedApis;
+
+      if (apis !== preparedApis) {
+        registerFeatureFlags(apis, features);
+      }
+
+      // Now instantiate the entire tree, which will skip anything that's already been instantiated
+      instantiateAppNodeTree(
+        tree.root,
+        apis,
+        collector,
+        mergedExtensionFactoryMiddleware,
+      );
+
+      const routeInfo = extractRouteInfoFromAppNode(
+        tree.root,
+        createRouteAliasResolver(routeRefsById),
+      );
+
+      routeResolutionApi.initialize(routeInfo, routeRefsById.routes);
+      appTreeApi.initialize(routeInfo);
+
+      finalized = { apis, tree, errors: collector.collectErrors() };
+      return finalized;
+    },
+  };
+}
+
+/**
+ * Creates an empty app without any default features. This is a low-level API is
+ * intended for use in tests or specialized setups. Typically you want to use
+ * `createApp` from `@backstage/frontend-defaults` instead.
+ *
+ * @deprecated Use {@link prepareSpecializedApp} instead.
+ *
+ * @public
+ */
+export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
+  apis: ApiHolder;
+  tree: AppTree;
+  errors?: AppError[];
+} {
+  return prepareSpecializedApp(options).finalize();
+}
+
+function registerFeatureFlags(apis: ApiHolder, features: FrontendFeature[]) {
   const featureFlagApi = apis.get(featureFlagsApiRef);
-  if (featureFlagApi) {
-    for (const feature of features) {
-      if (OpaqueFrontendPlugin.isType(feature)) {
-        OpaqueFrontendPlugin.toInternal(feature).featureFlags.forEach(flag =>
-          featureFlagApi.registerFlag({
-            name: flag.name,
-            pluginId: feature.id,
-          }),
-        );
-      }
-      if (isInternalFrontendModule(feature)) {
-        toInternalFrontendModule(feature).featureFlags.forEach(flag =>
-          featureFlagApi.registerFlag({
-            name: flag.name,
-            pluginId: feature.pluginId,
-          }),
-        );
-      }
-    }
+  if (!featureFlagApi) {
+    return;
   }
 
-  // Now instantiate the entire tree, which will skip anything that's already been instantiated
+  for (const feature of features) {
+    if (OpaqueFrontendPlugin.isType(feature)) {
+      OpaqueFrontendPlugin.toInternal(feature).featureFlags.forEach(flag =>
+        featureFlagApi.registerFlag({
+          name: flag.name,
+          pluginId: feature.id,
+        }),
+      );
+    }
+    if (isInternalFrontendModule(feature)) {
+      toInternalFrontendModule(feature).featureFlags.forEach(flag =>
+        featureFlagApi.registerFlag({
+          name: flag.name,
+          pluginId: feature.pluginId,
+        }),
+      );
+    }
+  }
+}
+
+function extractSignInPageComponent(options: {
+  tree: AppTree;
+  apis: ApiHolder;
+  collector: ErrorCollector;
+  extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
+}): ComponentType<SignInPageProps> | undefined {
+  const appRootNode = options.tree.nodes.get('app/root');
+  const signInPageNode = appRootNode?.edges.attachments.get('signInPage')?.[0];
+  if (!signInPageNode) {
+    return undefined;
+  }
+
   instantiateAppNodeTree(
-    tree.root,
-    apis,
-    collector,
-    mergeExtensionFactoryMiddleware(
-      options?.advanced?.extensionFactoryMiddleware,
-    ),
+    signInPageNode,
+    options.apis,
+    options.collector,
+    options.extensionFactoryMiddleware,
   );
 
-  const routeInfo = extractRouteInfoFromAppNode(
-    tree.root,
-    createRouteAliasResolver(routeRefsById),
+  return signInPageNode.instance?.getData(signInPageComponentDataRef);
+}
+
+function removeSignInPageAttachment(tree: AppTree) {
+  const appRootNode = tree.nodes.get('app/root');
+  if (!appRootNode) {
+    return;
+  }
+  (appRootNode.edges.attachments as Map<string, AppNode[]>).delete(
+    'signInPage',
   );
-
-  routeResolutionApi.initialize(routeInfo, routeRefsById.routes);
-  appTreeApi.initialize(routeInfo);
-
-  return { apis, tree, errors: collector.collectErrors() };
 }
 
 function createApiFactories(options: {
