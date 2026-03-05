@@ -24,10 +24,13 @@ export function createGithubActionsDispatchAction(options: {
     workflowId: string;
     branchOrTagName: string;
     workflowInputs?: Record<string, string> | undefined;
+    returnWorkflowRunDetails?: boolean | undefined;
     token?: string | undefined;
   },
   {
-    [x: string]: any;
+    workflowRunId?: number | undefined;
+    workflowRunUrl?: string | undefined;
+    workflowRunHtmlUrl?: string | undefined;
   },
   'v2'
 >;
@@ -250,8 +253,8 @@ export function createGithubRepoCreateAction(options: {
               access: string;
             }
           | {
-              team: string;
               access: string;
+              team: string;
             }
         )[]
       | undefined;
@@ -441,8 +444,8 @@ export function createPublishGithubAction(options: {
               access: string;
             }
           | {
-              team: string;
               access: string;
+              team: string;
             }
         )[]
       | undefined;
