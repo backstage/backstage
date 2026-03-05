@@ -2,4 +2,4 @@
 '@backstage/frontend-defaults': minor
 ---
 
-**BREAKING**: Removed the `allowUnknownExtensionConfig` option from `createApp`. Unknown extension configuration now always produces a console warning instead.
+**BREAKING**: Removed the `allowUnknownExtensionConfig` option from `createApp`. This flag had no effect and was a no-op, so no behavioral changes are expected.
