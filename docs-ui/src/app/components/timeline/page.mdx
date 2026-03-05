@@ -1,0 +1,94 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { timelinePropDefs, timelineItemPropDefs } from './props-definition';
+import {
+  timelineUsageSnippet,
+  basicSnippet,
+  withIconsSnippet,
+  withoutTimestampsSnippet,
+  detailedEventsSnippet,
+} from './snippets';
+import {
+  Basic,
+  WithIcons,
+  WithoutTimestamps,
+  DetailedEvents,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TimelineDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Timeline"
+  description="A vertical timeline component for displaying chronological events with timestamps, descriptions, and optional icons."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  height={400}
+  preview={<Basic />}
+  code={basicSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={timelineUsageSnippet} lang="tsx" />
+
+## API reference
+
+### Timeline
+
+Container component for displaying chronological events. Renders a `<div>` element.
+
+<PropsTable data={timelinePropDefs} />
+
+### TimelineItem
+
+Individual timeline event with title, description, timestamp, and optional icon. Renders a `<div>` element.
+
+<PropsTable data={timelineItemPropDefs} />
+
+## Examples
+
+### With Icons
+
+Add visual indicators to timeline items using the `icon` prop.
+
+<Snippet
+  align="center"
+  py={4}
+  height={400}
+  preview={<WithIcons />}
+  code={withIconsSnippet}
+/>
+
+### Without Timestamps
+
+Timeline items can omit timestamps when they're not relevant.
+
+<Snippet
+  align="center"
+  py={4}
+  height={320}
+  preview={<WithoutTimestamps />}
+  code={withoutTimestampsSnippet}
+/>
+
+### Detailed Events
+
+Display rich content in timeline descriptions for complex event information.
+
+<Snippet
+  align="center"
+  py={4}
+  height={480}
+  preview={<DetailedEvents />}
+  code={detailedEventsSnippet}
+/>
+
+<Theming definition={TimelineDefinition} />
+
+<ChangelogComponent packageName="@backstage/ui" />

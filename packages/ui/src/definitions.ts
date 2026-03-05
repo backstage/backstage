@@ -61,5 +61,6 @@ export { TabsDefinition } from './components/Tabs/definition';
 export { TagGroupDefinition } from './components/TagGroup/definition';
 export { TextDefinition } from './components/Text/definition';
 export { TextFieldDefinition } from './components/TextField/definition';
+export { TimelineDefinition } from './components/Timeline/definition';
 export { TooltipDefinition } from './components/Tooltip/definition';
 export { VisuallyHiddenDefinition } from './components/VisuallyHidden/definition';

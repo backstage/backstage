@@ -122,6 +122,10 @@ export const components: Page[] = [
     slug: 'text-field',
   },
   {
+    title: 'Timeline',
+    slug: 'timeline',
+  },
+  {
     title: 'ToggleButton',
     slug: 'toggle-button',
   },
