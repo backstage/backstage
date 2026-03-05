@@ -282,7 +282,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       );
 
       if (!explicitUserEntityRefs.includes(normalizedUserRef)) {
-        // This user was resolved from a non-user entity. Skip sending aDM.
+        // This user was resolved from a non-user entity. Skip sending a DM.
         return;
       }
 
