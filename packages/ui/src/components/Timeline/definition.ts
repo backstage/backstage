@@ -26,14 +26,6 @@ export const TimelineDefinition = defineComponent<TimelineProps>()({
   styles,
   classNames: {
     root: 'bui-Timeline',
-    item: 'bui-TimelineItem',
-    itemMarker: 'bui-TimelineItemMarker',
-    itemIcon: 'bui-TimelineItemIcon',
-    itemLine: 'bui-TimelineItemLine',
-    itemContent: 'bui-TimelineItemContent',
-    itemTimestamp: 'bui-TimelineItemTimestamp',
-    itemTitle: 'bui-TimelineItemTitle',
-    itemDescription: 'bui-TimelineItemDescription',
   },
   propDefs: {
     children: {},

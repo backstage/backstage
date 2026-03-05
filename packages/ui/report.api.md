@@ -2734,6 +2734,69 @@ export interface ToggleButtonProps
     ToggleButtonOwnProps {}
 
 // @public (undocumented)
+export const Timeline: ForwardRefExoticComponent<
+  TimelineProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const TimelineDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Timeline';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export const TimelineItem: ForwardRefExoticComponent<
+  TimelineItemProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const TimelineItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-TimelineItem';
+    readonly marker: 'bui-TimelineItemMarker';
+    readonly icon: 'bui-TimelineItemIcon';
+    readonly line: 'bui-TimelineItemLine';
+    readonly content: 'bui-TimelineItemContent';
+    readonly timestamp: 'bui-TimelineItemTimestamp';
+    readonly title: 'bui-TimelineItemTitle';
+    readonly description: 'bui-TimelineItemDescription';
+  };
+  readonly propDefs: {
+    readonly title: {};
+    readonly description: {};
+    readonly timestamp: {};
+    readonly icon: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export interface TimelineItemProps {
+  className?: string;
+  description?: ReactNode;
+  icon?: ReactNode;
+  timestamp?: ReactNode;
+  title: ReactNode;
+}
+
+// @public (undocumented)
+export interface TimelineProps {
+  children: ReactNode;
+  className?: string;
+}
+
+// @public (undocumented)
 export const Tooltip: ForwardRefExoticComponent<
   TooltipProps & RefAttributes<HTMLDivElement>
 >;

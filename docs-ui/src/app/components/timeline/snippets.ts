@@ -12,7 +12,6 @@ function MyComponent() {
         title="Another event"
         description="More details"
         timestamp="Jan 2, 2024"
-        isLast
       />
     </Timeline>
   );
@@ -38,7 +37,6 @@ export const basicSnippet = `<Timeline>
     title="Released v1.0.0"
     description="First stable release with core features"
     timestamp="Feb 1, 2024"
-    isLast
   />
 </Timeline>`;
 
@@ -66,7 +64,6 @@ export const withIconsSnippet = `<Timeline>
     description="Changes merged and deployed to production"
     timestamp="Just now"
     icon="✅"
-    isLast
   />
 </Timeline>`;
 
@@ -86,7 +83,6 @@ export const withoutTimestampsSnippet = `<Timeline>
   <TimelineItem
     title="Deployment"
     description="Deploy to production environment"
-    isLast
   />
 </Timeline>`;
 
@@ -114,6 +110,5 @@ export const detailedEventsSnippet = `<Timeline>
     description="Application is live and serving traffic. Health checks passing."
     timestamp="2024-03-04 14:38:20 UTC"
     icon="🎉"
-    isLast
   />
 </Timeline>`;

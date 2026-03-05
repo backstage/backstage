@@ -18,7 +18,7 @@ import preview from '../../../../../.storybook/preview';
 import { Timeline, TimelineItem } from './Timeline';
 
 const meta = preview.meta({
-  title: 'Components/Timeline',
+  title: 'Backstage UI/Timeline',
   component: Timeline,
 });
 
