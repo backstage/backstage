@@ -303,8 +303,8 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     setEditMode(isEditMode);
 
     const updatedWidgets = widgets.map(widget => {
-      const isDraggable = isEditMode ? widget.movable : false;
-      const isResizable = isEditMode ? widget.resizable : false;
+      const isDraggable = Boolean(isEditMode && widget.movable);
+      const isResizable = Boolean(isEditMode && widget.resizable);
 
       return {
         ...widget,
