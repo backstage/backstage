@@ -56,9 +56,11 @@ export * from './ui/avatar';
 export * from './ui/badge';
 export * from './ui/breadcrumb';
 /* ui/button: Button and ButtonProps are already exported from ./LinkButton,
-   so we export the shadcn primitives under prefixed names to avoid collision. */
+   so we export the shadcn primitives under prefixed names to avoid collision.
+   buttonVariants, ButtonVariant, and ButtonSize do not conflict. */
 export {
   Button as ShadcnButton,
+  buttonVariants,
   type ButtonProps as ShadcnButtonProps,
   type ButtonVariant,
   type ButtonSize,
