@@ -31,8 +31,6 @@ import {
 } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
 
-import { publishPreflightCheck } from '../../lib/publishing';
-
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx', '.json'];
 
 /**
@@ -507,8 +505,6 @@ export async function command(opts: OptionValues): Promise<void> {
       fixPluginId,
       fixPluginPackages,
       fixPeerModules,
-      // Run the publish preflight check too, to make sure we don't uncover errors during publishing
-      publishPreflightCheck,
     );
   }
 

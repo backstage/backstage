@@ -55,6 +55,24 @@ export const Default = meta.story({
 });
 
 export const IsOpen = meta.story({
+  parameters: { layout: 'fullscreen' },
+  decorators: [
+    Story => (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundImage:
+            'radial-gradient(circle, var(--bui-border-1) 1px, transparent 1px)',
+          backgroundSize: '16px 16px',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     ...Default.input.args,
     isOpen: true,

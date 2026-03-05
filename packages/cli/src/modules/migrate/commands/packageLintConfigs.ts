@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { runOutput } from '@backstage/cli-common';
+import type { CommandContext } from '../../../wiring/types';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
 
-export async function command() {
+export default async ({ args, info }: CommandContext) => {
+  cli({ help: info }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 
   const oldConfigs = [
@@ -86,4 +89,4 @@ export async function command() {
   if (hasPrettier) {
     await runOutput(['prettier', '--write', ...configPaths]);
   }
-}
+};

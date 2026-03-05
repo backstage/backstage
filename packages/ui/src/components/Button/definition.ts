@@ -39,6 +39,5 @@ export const ButtonDefinition = defineComponent<ButtonOwnProps>()({
     iconEnd: {},
     children: {},
     className: {},
-    style: {},
   },
 });

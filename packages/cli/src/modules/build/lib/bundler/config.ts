@@ -32,7 +32,7 @@ import pickBy from 'lodash/pickBy';
 import { runOutput, targetPaths } from '@backstage/cli-common';
 
 import { transforms } from './transforms';
-import { version } from '../../../../lib/version';
+import { version } from '../../../../wiring/version';
 import yn from 'yn';
 import { hasReactDomClient } from './hasReactDomClient';
 import { createWorkspaceLinkingPlugins } from './linkWorkspaces';

@@ -67,6 +67,31 @@ describe('CliInitializer', () => {
     expect(process.exit).toHaveBeenCalledWith(0);
   });
 
+  it('should run commands using a loader', async () => {
+    expect.assertions(2);
+    process.argv = ['node', 'cli', 'test', '--verbose'];
+    const initializer = new CliInitializer();
+    initializer.add(
+      createCliPlugin({
+        pluginId: 'test',
+        init: async reg =>
+          reg.addCommand({
+            path: ['test'],
+            description: 'test',
+            execute: {
+              loader: async () => ({
+                default: async ({ args }) => {
+                  expect(args).toEqual(['--verbose']);
+                },
+              }),
+            },
+          }),
+      }),
+    );
+    await initializer.run();
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
   it('should pass positional args to the subcommand if nested', async () => {
     expect.assertions(2);
     process.argv = [

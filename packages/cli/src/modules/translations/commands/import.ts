@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import { targetPaths } from '@backstage/cli-common';
 import fs from 'fs-extra';
 import {
@@ -27,11 +28,7 @@ import {
   createMessagePathParser,
   formatMessagePath,
 } from '../lib/messageFilePath';
-
-interface ImportOptions {
-  input: string;
-  output: string;
-}
+import type { CommandContext } from '../../../wiring/types';
 
 interface ManifestRefEntry {
   package: string;
@@ -44,7 +41,31 @@ interface Manifest {
   refs: Record<string, ManifestRefEntry>;
 }
 
-export default async (options: ImportOptions) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { input, output },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        input: {
+          type: String,
+          default: 'translations',
+          description:
+            'Input directory containing the manifest and translated message files',
+        },
+        output: {
+          type: String,
+          default: 'src/translations/resources.ts',
+          description: 'Output path for the generated wiring module',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  const options = { input, output };
   await readTargetPackage(targetPaths.dir, targetPaths.rootDir);
 
   const inputDir = resolvePath(targetPaths.dir, options.input);

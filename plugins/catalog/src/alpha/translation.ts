@@ -111,6 +111,8 @@ export const catalogTranslationRef = createTranslationRef({
     },
     entityLabelsCard: {
       title: 'Labels',
+      columnKeyLabel: 'Label',
+      columnValueLabel: 'Value',
       emptyDescription:
         'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:',
       readMoreButtonTitle: 'Read more',

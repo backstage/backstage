@@ -20,7 +20,8 @@ import {
   parseEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
-import { ResponseError } from '@backstage/errors';
+import { InputError, ResponseError } from '@backstage/errors';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import {
   AddLocationRequest,
   AddLocationResponse,
@@ -46,10 +47,17 @@ import {
   StreamEntitiesRequest,
   ValidateEntityResponse,
 } from './types/api';
-import { isQueryEntitiesInitialRequest, splitRefsIntoChunks } from './utils';
+import {
+  convertFilterToPredicate,
+  isQueryEntitiesInitialRequest,
+  splitRefsIntoChunks,
+  cursorContainsQuery,
+} from './utils';
 import {
   DefaultApiClient,
+  GetEntitiesByQuery,
   GetLocationsByQueryRequest,
+  QueryEntitiesByPredicateRequest,
   TypedResponse,
 } from './schema/openapi';
 import type {
@@ -229,11 +237,36 @@ export class CatalogClient implements CatalogApi {
     request: GetEntitiesByRefsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesByRefsResponse> {
+    const { filter, query } = request;
+
+    // Only convert and merge if both filter and query are provided, or if
+    // query alone is provided. When only filter is given, preserve the old
+    // query-parameter behavior for backward compatibility.
+    let filterPredicate: FilterPredicate | undefined;
+    if (query !== undefined) {
+      if (typeof query !== 'object' || query === null || Array.isArray(query)) {
+        throw new InputError('Query must be an object');
+      }
+      filterPredicate = query;
+      if (filter !== undefined) {
+        const converted = convertFilterToPredicate(filter);
+        filterPredicate = { $all: [filterPredicate, converted] };
+      }
+    }
+
     const getOneChunk = async (refs: string[]) => {
       const response = await this.apiClient.getEntitiesByRefs(
         {
-          body: { entityRefs: refs, fields: request.fields },
-          query: { filter: this.getFilterValue(request.filter) },
+          body: {
+            entityRefs: refs,
+            fields: request.fields,
+            ...(filterPredicate && {
+              query: filterPredicate as unknown as { [key: string]: any },
+            }),
+          },
+          query: filterPredicate
+            ? {}
+            : { filter: this.getFilterValue(request.filter) },
         },
         options,
       );
@@ -266,11 +299,26 @@ export class CatalogClient implements CatalogApi {
     request: QueryEntitiesRequest = {},
     options?: CatalogRequestOptions,
   ): Promise<QueryEntitiesResponse> {
-    const params: Partial<
-      Parameters<typeof this.apiClient.getEntitiesByQuery>[0]['query']
-    > = {};
+    const isInitialRequest = isQueryEntitiesInitialRequest(request);
 
-    if (isQueryEntitiesInitialRequest(request)) {
+    // Route to POST endpoint if query predicate is provided (initial request)
+    if (isInitialRequest && request.query) {
+      return this.queryEntitiesByPredicate(request, options);
+    }
+
+    // Route to POST endpoint if cursor contains a query predicate (pagination)
+    // TODO(freben): It's costly and non-opaque to have to introspect the cursor
+    // like this. It should be refactored in the future to not need this.
+    // Suggestion: make the GET and POST endpoints understand the same cursor
+    // format, and pick which one to call ONLY based on whether the cursor size
+    // risks hitting url length limits
+    if (!isInitialRequest && cursorContainsQuery(request.cursor)) {
+      return this.queryEntitiesByPredicate(request, options);
+    }
+
+    const params: Partial<GetEntitiesByQuery['query']> = {};
+
+    if (isInitialRequest) {
       const {
         fields = [],
         filter,
@@ -318,6 +366,84 @@ export class CatalogClient implements CatalogApi {
     return this.requestRequired(
       await this.apiClient.getEntitiesByQuery({ query: params }, options),
     );
+  }
+
+  /**
+   * Query entities using predicate-based filters (POST endpoint).
+   * @internal
+   */
+  private async queryEntitiesByPredicate(
+    request: QueryEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryEntitiesResponse> {
+    const body: QueryEntitiesByPredicateRequest = {};
+
+    if (isQueryEntitiesInitialRequest(request)) {
+      const {
+        filter,
+        query,
+        limit,
+        offset,
+        orderFields,
+        fullTextFilter,
+        fields,
+      } = request;
+
+      let filterPredicate: FilterPredicate | undefined;
+      if (query !== undefined) {
+        if (
+          typeof query !== 'object' ||
+          query === null ||
+          Array.isArray(query)
+        ) {
+          throw new InputError('Query must be an object');
+        }
+        filterPredicate = query;
+      }
+      if (filter !== undefined) {
+        const converted = convertFilterToPredicate(filter);
+        filterPredicate = filterPredicate
+          ? { $all: [filterPredicate, converted] }
+          : converted;
+      }
+      if (filterPredicate !== undefined) {
+        body.query = filterPredicate as unknown as { [key: string]: any };
+      }
+
+      if (limit !== undefined) {
+        body.limit = limit;
+      }
+      if (offset !== undefined) {
+        body.offset = offset;
+      }
+      if (orderFields !== undefined) {
+        body.orderBy = [orderFields].flat();
+      }
+      if (fullTextFilter) {
+        body.fullTextFilter = fullTextFilter;
+      }
+      if (fields?.length) {
+        body.fields = fields;
+      }
+    } else {
+      body.cursor = request.cursor;
+      if (request.limit !== undefined) {
+        body.limit = request.limit;
+      }
+      if (request.fields?.length) {
+        body.fields = request.fields;
+      }
+    }
+
+    const res = await this.requestRequired(
+      await this.apiClient.queryEntitiesByPredicate({ body }, options),
+    );
+
+    return {
+      items: res.items,
+      totalItems: res.totalItems,
+      pageInfo: res.pageInfo,
+    };
   }
 
   /**
@@ -378,11 +504,56 @@ export class CatalogClient implements CatalogApi {
     request: GetEntityFacetsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse> {
-    const { filter = [], facets } = request;
+    const { filter = [], query, facets } = request;
+
+    // Route to POST endpoint if query predicate is provided
+    if (query) {
+      return this.getEntityFacetsByPredicate(request, options);
+    }
+
     return await this.requestOptional(
       await this.apiClient.getEntityFacets(
         {
           query: { facet: facets, filter: this.getFilterValue(filter) },
+        },
+        options,
+      ),
+    );
+  }
+
+  /**
+   * Get entity facets using predicate-based filters (POST endpoint).
+   * @internal
+   */
+  private async getEntityFacetsByPredicate(
+    request: GetEntityFacetsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntityFacetsResponse> {
+    const { filter, query, facets } = request;
+
+    let filterPredicate: FilterPredicate | undefined;
+    if (query !== undefined) {
+      if (typeof query !== 'object' || query === null || Array.isArray(query)) {
+        throw new InputError('Query must be an object');
+      }
+      filterPredicate = query;
+    }
+    if (filter !== undefined) {
+      const converted = convertFilterToPredicate(filter);
+      filterPredicate = filterPredicate
+        ? { $all: [filterPredicate, converted] }
+        : converted;
+    }
+
+    return await this.requestOptional(
+      await this.apiClient.queryEntityFacetsByPredicate(
+        {
+          body: {
+            facets,
+            ...(filterPredicate && {
+              query: filterPredicate as unknown as { [key: string]: any },
+            }),
+          },
         },
         options,
       ),

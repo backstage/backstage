@@ -17,6 +17,7 @@
 import preview from '../../../../../.storybook/preview';
 import { ToggleButtonGroup } from './ToggleButtonGroup';
 import { ToggleButton } from '../ToggleButton/ToggleButton';
+import { Box } from '../Box';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { useState } from 'react';
@@ -100,7 +101,7 @@ export const Backgrounds = meta.story({
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Neutral 1</Text>
-        <Flex align="center" bg="neutral-1" p="4" gap="4">
+        <Flex align="center" bg="neutral" p="4" gap="4">
           <ToggleButtonGroup
             selectionMode="single"
             defaultSelectedKeys={['option1']}
@@ -113,29 +114,35 @@ export const Backgrounds = meta.story({
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Neutral 2</Text>
-        <Flex align="center" bg="neutral-2" p="4" gap="4">
-          <ToggleButtonGroup
-            selectionMode="single"
-            defaultSelectedKeys={['option1']}
-          >
-            <ToggleButton id="option1">Option 1</ToggleButton>
-            <ToggleButton id="option2">Option 2</ToggleButton>
-            <ToggleButton id="option3">Option 3</ToggleButton>
-          </ToggleButtonGroup>
-        </Flex>
+        <Box bg="neutral">
+          <Flex align="center" bg="neutral" p="4" gap="4">
+            <ToggleButtonGroup
+              selectionMode="single"
+              defaultSelectedKeys={['option1']}
+            >
+              <ToggleButton id="option1">Option 1</ToggleButton>
+              <ToggleButton id="option2">Option 2</ToggleButton>
+              <ToggleButton id="option3">Option 3</ToggleButton>
+            </ToggleButtonGroup>
+          </Flex>
+        </Box>
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Neutral 3</Text>
-        <Flex align="center" bg="neutral-3" p="4" gap="4">
-          <ToggleButtonGroup
-            selectionMode="single"
-            defaultSelectedKeys={['option1']}
-          >
-            <ToggleButton id="option1">Option 1</ToggleButton>
-            <ToggleButton id="option2">Option 2</ToggleButton>
-            <ToggleButton id="option3">Option 3</ToggleButton>
-          </ToggleButtonGroup>
-        </Flex>
+        <Box bg="neutral">
+          <Box bg="neutral">
+            <Flex align="center" bg="neutral" p="4" gap="4">
+              <ToggleButtonGroup
+                selectionMode="single"
+                defaultSelectedKeys={['option1']}
+              >
+                <ToggleButton id="option1">Option 1</ToggleButton>
+                <ToggleButton id="option2">Option 2</ToggleButton>
+                <ToggleButton id="option3">Option 3</ToggleButton>
+              </ToggleButtonGroup>
+            </Flex>
+          </Box>
+        </Box>
       </Flex>
     </Flex>
   ),

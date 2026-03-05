@@ -14,7 +14,87 @@
  * limitations under the License.
  */
 
-import { splitRefsIntoChunks } from './utils';
+import { CATALOG_FILTER_EXISTS } from './types/api';
+import { convertFilterToPredicate, splitRefsIntoChunks } from './utils';
+
+describe('convertFilterToPredicate', () => {
+  it('converts a single string value', () => {
+    expect(convertFilterToPredicate({ kind: 'component' })).toEqual({
+      kind: 'component',
+    });
+  });
+
+  it('converts multiple keys into $all', () => {
+    expect(
+      convertFilterToPredicate({
+        kind: 'component',
+        'spec.type': 'service',
+      }),
+    ).toEqual({
+      $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
+    });
+  });
+
+  it('converts an array of string values into $in', () => {
+    expect(
+      convertFilterToPredicate({ 'spec.type': ['service', 'website'] }),
+    ).toEqual({
+      'spec.type': { $in: ['service', 'website'] },
+    });
+  });
+
+  it('converts CATALOG_FILTER_EXISTS into $exists', () => {
+    expect(
+      convertFilterToPredicate({ 'spec.owner': CATALOG_FILTER_EXISTS }),
+    ).toEqual({
+      'spec.owner': { $exists: true },
+    });
+  });
+
+  it('converts an array of records into $any (OR)', () => {
+    expect(
+      convertFilterToPredicate([{ kind: 'component' }, { kind: 'api' }]),
+    ).toEqual({
+      $any: [{ kind: 'component' }, { kind: 'api' }],
+    });
+  });
+
+  it('converts array of records with multiple keys each', () => {
+    expect(
+      convertFilterToPredicate([
+        { kind: 'component', 'spec.type': 'service' },
+        { kind: 'api' },
+      ]),
+    ).toEqual({
+      $any: [
+        { $all: [{ kind: 'component' }, { 'spec.type': 'service' }] },
+        { kind: 'api' },
+      ],
+    });
+  });
+
+  it('treats CATALOG_FILTER_EXISTS mixed with string values as just existence', () => {
+    expect(
+      convertFilterToPredicate({
+        'spec.owner': [CATALOG_FILTER_EXISTS, 'team-a'],
+      }),
+    ).toEqual({
+      'spec.owner': { $exists: true },
+    });
+  });
+
+  it('converts a single-element array filter without wrapping in $any', () => {
+    expect(convertFilterToPredicate([{ kind: 'component' }])).toEqual({
+      kind: 'component',
+    });
+  });
+
+  it('ignores entries with no valid values', () => {
+    expect(
+      convertFilterToPredicate({ kind: 'component', other: [] as string[] }),
+    ).toEqual({ kind: 'component' });
+  });
+});
 
 describe('splitRefsIntoChunks', () => {
   it('splits by count limit', () => {

@@ -345,6 +345,8 @@ export type EntityContentGroupDefinitions = Record<
   {
     title: string;
     icon?: string | ReactElement;
+    aliases?: string[];
+    contentOrder?: 'title' | 'natural';
   }
 >;
 

@@ -20,7 +20,7 @@ import { readEntryPoints } from '../entryPoints';
 import {
   createTypeDistProject,
   getEntryPointDefaultFeatureType,
-} from '../../../../lib/typeDistProject';
+} from '../typeDistProject';
 import {
   BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL,
   defaultRemoteSharedDependencies,

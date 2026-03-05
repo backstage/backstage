@@ -19,7 +19,7 @@ import npmPackList from 'npm-packlist';
 import { resolve as resolvePath, posix as posixPath } from 'node:path';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../entryPoints';
-import { getEntryPointDefaultFeatureType } from '../../../../lib/typeDistProject';
+import { getEntryPointDefaultFeatureType } from '../typeDistProject';
 import { Project } from 'ts-morph';
 
 const PKG_PATH = 'package.json';

@@ -14,22 +14,41 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import { stringify as stringifyYaml } from 'yaml';
 import { loadCliConfig } from '../lib/config';
 import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
+import type { CommandContext } from '../../../wiring/types';
 
-export default async (opts: OptionValues) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { merge, format, package: pkg },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        package: { type: String, description: 'Package to print schema for' },
+        format: { type: String, description: 'Output format (yaml or json)' },
+        merge: {
+          type: Boolean,
+          description: 'Merge all schemas into a single schema',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   const { schema } = await loadCliConfig({
     args: [],
-    fromPackage: opts.package,
+    fromPackage: pkg,
     mockEnv: true,
   });
 
   let configSchema: JsonObject | JSONSchema;
-  if (opts.merge) {
+  if (merge) {
     configSchema = mergeConfigSchemas(
       (schema.serialize().schemas as JsonObject[]).map(
         _ => _.value as JSONSchema,
@@ -42,7 +61,7 @@ export default async (opts: OptionValues) => {
     configSchema = schema.serialize();
   }
 
-  if (opts.format === 'json') {
+  if (format === 'json') {
     process.stdout.write(`${JSON.stringify(configSchema, null, 2)}\n`);
   } else {
     process.stdout.write(`${stringifyYaml(configSchema)}\n`);

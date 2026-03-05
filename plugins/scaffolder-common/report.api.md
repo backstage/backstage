@@ -58,7 +58,7 @@ export type LogEvent = {
 // @public
 export interface ScaffolderApi {
   // (undocumented)
-  autocomplete?(
+  autocomplete(
     request: {
       token: string;
       provider: string;
@@ -67,94 +67,6 @@ export interface ScaffolderApi {
     },
     options?: ScaffolderRequestOptions,
   ): Promise<{
-    results: {
-      title?: string;
-      id: string;
-    }[];
-  }>;
-  cancelTask(
-    taskId: string,
-    options?: ScaffolderRequestOptions,
-  ): Promise<{
-    status?: ScaffolderTaskStatus;
-  }>;
-  // (undocumented)
-  dryRun?(
-    request: ScaffolderDryRunOptions,
-    options?: ScaffolderRequestOptions,
-  ): Promise<ScaffolderDryRunResponse>;
-  // (undocumented)
-  getIntegrationsList(
-    options: ScaffolderGetIntegrationsListOptions,
-  ): Promise<ScaffolderGetIntegrationsListResponse>;
-  // (undocumented)
-  getTask(
-    taskId: string,
-    options?: ScaffolderRequestOptions,
-  ): Promise<ScaffolderTask>;
-  // (undocumented)
-  getTemplateParameterSchema(
-    templateRef: string,
-    options?: ScaffolderRequestOptions,
-  ): Promise<TemplateParameterSchema>;
-  listActions(options?: ScaffolderRequestOptions): Promise<ListActionsResponse>;
-  // (undocumented)
-  listTasks?(
-    request: {
-      filterByOwnership: 'owned' | 'all';
-      limit?: number;
-      offset?: number;
-    },
-    options?: ScaffolderRequestOptions,
-  ): Promise<{
-    tasks: ScaffolderTask[];
-    totalTasks?: number;
-  }>;
-  listTemplatingExtensions?(
-    options?: ScaffolderRequestOptions,
-  ): Promise<ListTemplatingExtensionsResponse>;
-  retry?(
-    taskId: string,
-    options?: ScaffolderRequestOptions,
-  ): Promise<{
-    id: string;
-  }>;
-  scaffold(
-    request: ScaffolderScaffoldOptions,
-    options?: ScaffolderRequestOptions,
-  ): Promise<ScaffolderScaffoldResponse>;
-  // (undocumented)
-  streamLogs(
-    request: ScaffolderStreamLogsOptions,
-    options?: ScaffolderRequestOptions,
-  ): Observable<LogEvent>;
-}
-
-// @public
-export class ScaffolderClient implements ScaffolderApi {
-  constructor(options: {
-    discoveryApi: {
-      getBaseUrl(pluginId: string): Promise<string>;
-    };
-    fetchApi: {
-      fetch: typeof fetch;
-    };
-    identityApi?: {
-      getBackstageIdentity(): Promise<{
-        type: 'user';
-        userEntityRef: string;
-        ownershipEntityRefs: string[];
-      }>;
-    };
-    scmIntegrationsApi: ScmIntegrationRegistry;
-    useLongPollingLogs?: boolean;
-  });
-  autocomplete(input: {
-    token: string;
-    provider: string;
-    resource: string;
-    context: Record<string, string>;
-  }): Promise<{
     results: {
       title?: string;
       id: string;
@@ -201,7 +113,98 @@ export class ScaffolderClient implements ScaffolderApi {
   listTemplatingExtensions(
     options?: ScaffolderRequestOptions,
   ): Promise<ListTemplatingExtensionsResponse>;
-  retry?(
+  retry(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    id: string;
+  }>;
+  scaffold(
+    request: ScaffolderScaffoldOptions,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
+  // (undocumented)
+  streamLogs(
+    request: ScaffolderStreamLogsOptions,
+    options?: ScaffolderRequestOptions,
+  ): Observable<LogEvent>;
+}
+
+// @public
+export class ScaffolderClient implements ScaffolderApi {
+  constructor(options: {
+    discoveryApi: {
+      getBaseUrl(pluginId: string): Promise<string>;
+    };
+    fetchApi: {
+      fetch: typeof fetch;
+    };
+    identityApi?: {
+      getBackstageIdentity(): Promise<{
+        type: 'user';
+        userEntityRef: string;
+        ownershipEntityRefs: string[];
+      }>;
+    };
+    scmIntegrationsApi: ScmIntegrationRegistry;
+    useLongPollingLogs?: boolean;
+  });
+  autocomplete(
+    input: {
+      token: string;
+      provider: string;
+      resource: string;
+      context: Record<string, string>;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    results: {
+      title?: string;
+      id: string;
+    }[];
+  }>;
+  cancelTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    status?: ScaffolderTaskStatus;
+  }>;
+  // (undocumented)
+  dryRun(
+    request: ScaffolderDryRunOptions,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
+  getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse>;
+  // (undocumented)
+  getTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<ScaffolderTask>;
+  // (undocumented)
+  getTemplateParameterSchema(
+    templateRef: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<TemplateParameterSchema>;
+  listActions(options?: ScaffolderRequestOptions): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks(
+    request: {
+      filterByOwnership: 'owned' | 'all';
+      limit?: number;
+      offset?: number;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{
+    tasks: ScaffolderTask[];
+    totalTasks?: number;
+  }>;
+  listTemplatingExtensions(
+    options?: ScaffolderRequestOptions,
+  ): Promise<ListTemplatingExtensionsResponse>;
+  retry(
     taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{

@@ -14,36 +14,67 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { stringify as stringifyYaml } from 'yaml';
 import { AppConfig, ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../lib/config';
 import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
+import type { CommandContext } from '../../../wiring/types';
 
-export default async (opts: OptionValues) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { config, lax, frontend, withSecrets, format, package: pkg },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        package: { type: String, description: 'Package to print config for' },
+        lax: {
+          type: Boolean,
+          description: 'Do not require environment variables to be set',
+        },
+        frontend: { type: Boolean, description: 'Only print frontend config' },
+        withSecrets: {
+          type: Boolean,
+          description: 'Include secrets in the output',
+        },
+        format: { type: String, description: 'Output format (yaml or json)' },
+        config: {
+          type: [String],
+          description: 'Config files to load instead of app-config.yaml',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   const { schema, appConfigs } = await loadCliConfig({
-    args: opts.config,
-    fromPackage: opts.package,
-    mockEnv: opts.lax,
-    fullVisibility: !opts.frontend,
+    args: config,
+    fromPackage: pkg,
+    mockEnv: lax,
+    fullVisibility: !frontend,
   });
-  const visibility = getVisibilityOption(opts);
+  const visibility = getVisibilityOption(frontend, withSecrets);
   const data = serializeConfigData(appConfigs, schema, visibility);
 
-  if (opts.format === 'json') {
+  if (format === 'json') {
     process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
   } else {
     process.stdout.write(`${stringifyYaml(data)}\n`);
   }
 };
 
-function getVisibilityOption(opts: OptionValues): ConfigVisibility {
-  if (opts.frontend && opts.withSecrets) {
+function getVisibilityOption(
+  frontend: boolean | undefined,
+  withSecrets: boolean | undefined,
+): ConfigVisibility {
+  if (frontend && withSecrets) {
     throw new Error('Not allowed to combine frontend and secret config');
   }
-  if (opts.frontend) {
+  if (frontend) {
     return 'frontend';
-  } else if (opts.withSecrets) {
+  } else if (withSecrets) {
     return 'secret';
   }
   return 'backend';

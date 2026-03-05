@@ -35,14 +35,14 @@ const knownErrors = new Set([
   'ServiceUnavailableError',
 ]);
 
-// Extracts the cause error, if the provided error is `ResponseError` or
-// `ForwardedError` with a cause.
+// Recursively extracts the innermost cause from ResponseError or
+// ForwardedError wrappers to surface the original error.
 function extractCause(err: ErrorLike): ErrorLike {
   if (
     (err.name === 'ResponseError' || err instanceof ForwardedError) &&
     isError(err.cause)
   ) {
-    return err.cause;
+    return extractCause(err.cause);
   }
   return err;
 }

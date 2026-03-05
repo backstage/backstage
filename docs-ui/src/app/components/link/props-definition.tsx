@@ -38,7 +38,7 @@ export const linkPropDefs: Record<string, PropDef> = {
       'body-small',
       'body-x-small',
     ],
-    default: 'body',
+    default: 'body-medium',
     responsive: true,
     description:
       'Typography style. Title variants for headings, body for paragraph text.',
@@ -56,7 +56,7 @@ export const linkPropDefs: Record<string, PropDef> = {
   },
   color: {
     type: 'enum',
-    values: ['primary', 'secondary', 'danger', 'warning', 'success'],
+    values: ['primary', 'secondary', 'danger', 'warning', 'success', 'info'],
     default: 'primary',
     responsive: true,
     description:

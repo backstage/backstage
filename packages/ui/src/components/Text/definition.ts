@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { TextOwnProps } from './types';
+import styles from './Text.module.css';
 
 /**
  * Component definition for Text
  * @public
  */
-export const TextDefinition = {
+export const TextDefinition = defineComponent<TextOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Text',
   },
-  dataAttributes: {
-    variant: ['subtitle', 'body', 'caption', 'label'] as const,
-    weight: ['regular', 'bold'] as const,
-    color: [
-      'primary',
-      'secondary',
-      'danger',
-      'warning',
-      'success',
-      'info',
-    ] as const,
-    truncate: [true, false] as const,
+  propDefs: {
+    as: { default: 'span' },
+    variant: { dataAttribute: true, default: 'body-medium' },
+    weight: { dataAttribute: true, default: 'regular' },
+    color: { dataAttribute: true, default: 'primary' },
+    truncate: { dataAttribute: true },
+    className: {},
   },
-} as const satisfies ComponentDefinition;
+});

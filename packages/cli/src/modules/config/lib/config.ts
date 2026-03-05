@@ -27,11 +27,9 @@ type Options = {
   targetDir?: string;
   fromPackage?: string;
   mockEnv?: boolean;
-  withFilteredKeys?: boolean;
   withDeprecatedKeys?: boolean;
   fullVisibility?: boolean;
   strict?: boolean;
-  watch?: (newFrontendAppConfigs: AppConfig[]) => void;
 };
 
 export async function loadCliConfig(options: Options) {
@@ -73,48 +71,29 @@ export async function loadCliConfig(options: Options) {
     substitutionFunc: options.mockEnv
       ? async name => process.env[name] || 'x'
       : undefined,
-    watch: Boolean(options.watch),
     rootDir: targetPaths.rootDir,
     argv: options.args.flatMap(t => ['--config', resolvePath(targetDir, t)]),
   });
 
   const appConfigs = await new Promise<AppConfig[]>((resolve, reject) => {
-    async function loadConfigReaderLoop() {
+    async function readConfig() {
       let loaded = false;
-
       try {
         const abortController = new AbortController();
         for await (const { configs } of source.readConfigData({
           signal: abortController.signal,
         })) {
-          if (loaded) {
-            const newFrontendAppConfigs = schema.process(configs, {
-              visibility: options.fullVisibility
-                ? ['frontend', 'backend', 'secret']
-                : ['frontend'],
-              withFilteredKeys: options.withFilteredKeys,
-              withDeprecatedKeys: options.withDeprecatedKeys,
-              ignoreSchemaErrors: !options.strict,
-            });
-            options.watch?.(newFrontendAppConfigs);
-          } else {
-            resolve(configs);
-            loaded = true;
-
-            if (!options.watch) {
-              abortController.abort();
-            }
-          }
+          resolve(configs);
+          loaded = true;
+          abortController.abort();
         }
       } catch (error) {
-        if (loaded) {
-          console.error(`Failed to reload configuration, ${error}`);
-        } else {
+        if (!loaded) {
           reject(error);
         }
       }
     }
-    loadConfigReaderLoop();
+    readConfig();
   });
 
   const configurationLoadedMessage = appConfigs.length
@@ -130,7 +109,6 @@ export async function loadCliConfig(options: Options) {
       visibility: options.fullVisibility
         ? ['frontend', 'backend', 'secret']
         : ['frontend'],
-      withFilteredKeys: options.withFilteredKeys,
       withDeprecatedKeys: options.withDeprecatedKeys,
       ignoreSchemaErrors: !options.strict,
     });

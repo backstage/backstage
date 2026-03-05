@@ -36,6 +36,5 @@ export const ButtonIconDefinition = defineComponent<ButtonIconOwnProps>()({
     loading: { dataAttribute: true },
     icon: {},
     className: {},
-    style: {},
   },
 });

@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
+
+/** @public */
+export type VisuallyHiddenOwnProps = {
+  className?: string;
+};
 
 /**
  * Properties for {@link VisuallyHidden}
  *
  * @public
  */
-export interface VisuallyHiddenProps extends ComponentProps<'div'> {
-  children?: React.ReactNode;
-}
+export interface VisuallyHiddenProps
+  extends Omit<ComponentProps<'div'>, 'className'>,
+    VisuallyHiddenOwnProps {}

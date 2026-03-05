@@ -100,6 +100,9 @@ export class GitUtils {
 }
 
 // @public
+export function hasBackstageYarnPlugin(workspaceDir?: string): Promise<boolean>;
+
+// @public
 export function isMonoRepo(): Promise<boolean>;
 
 // @public
@@ -111,6 +114,7 @@ export class Lockfile {
   keys(): IterableIterator<string>;
   static load(path: string): Promise<Lockfile>;
   static parse(content: string): Lockfile;
+  toString(): string;
 }
 
 // @public
@@ -219,6 +223,17 @@ export function runWorkerQueueThreads<TItem, TResult, TContext>(
 ): Promise<{
   results: TResult[];
 }>;
+
+// @public
+export class SuccessCache {
+  // (undocumented)
+  static create(options: { name: string; basePath?: string }): SuccessCache;
+  // (undocumented)
+  read(): Promise<Set<string>>;
+  static trimPaths(input: string): string;
+  // (undocumented)
+  write(newEntries: Iterable<string>): Promise<void>;
+}
 
 // @public
 export type WorkerQueueThreadsOptions<TItem, TResult, TContext> = {

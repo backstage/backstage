@@ -81,7 +81,12 @@ export const defaultUserTransformer = async (
 
   if (item.bio) entity.metadata.description = item.bio;
   if (item.name) entity.spec.profile!.displayName = item.name;
-  if (item.email) entity.spec.profile!.email = item.email;
+  // GitHub returns verified domain emails as plus-addressed routing aliases
+  // (e.g. user+abc123@example.com). Strip the tag to get the real address.
+  const email = item.organizationVerifiedDomainEmails?.length
+    ? item.organizationVerifiedDomainEmails[0].replace(/\+[^@]*/, '')
+    : item.email;
+  if (email) entity.spec.profile!.email = email;
   if (item.avatarUrl) entity.spec.profile!.picture = item.avatarUrl;
   return entity;
 };

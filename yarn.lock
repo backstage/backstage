@@ -3272,9 +3272,12 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@manypkg/get-packages": "npm:^1.1.3"
+    "@types/yarnpkg__lockfile": "npm:^1.1.4"
+    "@yarnpkg/lockfile": "npm:^1.1.0"
     "@yarnpkg/parsers": "npm:^3.0.0"
     fs-extra: "npm:^11.2.0"
     semver: "npm:^7.5.3"
+    yaml: "npm:^2.0.0"
     zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
@@ -3343,15 +3346,13 @@ __metadata:
     "@types/terser-webpack-plugin": "npm:^5.0.4"
     "@types/webpack-env": "npm:^1.15.2"
     "@types/webpack-sources": "npm:^3.2.3"
-    "@types/yarnpkg__lockfile": "npm:^1.1.4"
     "@typescript-eslint/eslint-plugin": "npm:^8.17.0"
     "@typescript-eslint/parser": "npm:^8.16.0"
-    "@yarnpkg/lockfile": "npm:^1.1.0"
-    "@yarnpkg/parsers": "npm:^3.0.0"
     bfj: "npm:^9.0.2"
     buffer: "npm:^6.0.3"
     chalk: "npm:^4.0.0"
     chokidar: "npm:^3.3.1"
+    cleye: "npm:^2.2.1"
     commander: "npm:^14.0.3"
     cross-fetch: "npm:^4.0.0"
     cross-spawn: "npm:^7.0.3"
@@ -6524,6 +6525,7 @@ __metadata:
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@backstage/ui": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
@@ -6708,7 +6710,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud":
+"@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud"
   dependencies:
@@ -6729,7 +6731,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:plugins/scaffolder-backend-module-bitbucket-server":
+"@backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:plugins/scaffolder-backend-module-bitbucket-server":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:plugins/scaffolder-backend-module-bitbucket-server"
   dependencies:
@@ -6739,26 +6741,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/plugin-scaffolder-node": "workspace:^"
-    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    fs-extra: "npm:^11.2.0"
-    msw: "npm:^1.0.0"
-    yaml: "npm:^2.0.0"
-  languageName: unknown
-  linkType: soft
-
-"@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket"
-  dependencies:
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
-    "@backstage/errors": "workspace:^"
-    "@backstage/integration": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^"
-    "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: "npm:^11.2.0"
@@ -6900,6 +6882,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
+    "@gitbeaker/core": "npm:^43.8.0"
     "@gitbeaker/requester-utils": "npm:^43.8.0"
     "@gitbeaker/rest": "npm:^43.8.0"
     luxon: "npm:^3.0.0"
@@ -7103,12 +7086,18 @@ __metadata:
     isomorphic-git: "npm:^1.23.0"
     jsonschema: "npm:^1.5.0"
     lodash: "npm:^4.17.21"
+    msw: "npm:^1.0.0"
     p-limit: "npm:^3.1.0"
     tar: "npm:^7.5.6"
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.7.0"
     zod: "npm:^3.25.76"
     zod-to-json-schema: "npm:^3.25.1"
+  peerDependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+  peerDependenciesMeta:
+    "@backstage/backend-test-utils":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -7170,11 +7159,14 @@ __metadata:
     zod: "npm:^3.25.76"
     zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
+    "@backstage/frontend-test-utils": "workspace:^"
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
     react-router-dom: ^6.30.2
   peerDependenciesMeta:
+    "@backstage/frontend-test-utils":
+      optional: true
     "@types/react":
       optional: true
   languageName: unknown
@@ -8111,6 +8103,7 @@ __metadata:
     "@tanstack/react-table": "npm:^8.21.3"
     "@types/react": "npm:^18.0.0"
     "@types/react-dom": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^0.0.6"
     clsx: "npm:^2.1.1"
     eslint-plugin-storybook: "npm:^10.3.0-alpha.1"
     glob: "npm:^11.0.1"
@@ -8120,6 +8113,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     storybook: "npm:^10.3.0-alpha.1"
+    use-sync-external-store: "npm:^1.4.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -10903,6 +10897,15 @@ __metadata:
     tar-fs: "npm:^3.0.9"
     ws: "npm:^8.18.2"
   checksum: 10/67237d327d44bc2b77dc68d44f03699e71ff85bc120b086565bab8446cf288a3da5132f7444bbfe971fbe1c1a544a1bc4c13bd7ffb7a745b3b810662017af8dd
+  languageName: node
+  linkType: hard
+
+"@kwsites/file-exists@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@kwsites/file-exists@npm:1.1.1"
+  dependencies:
+    debug: "npm:^4.1.1"
+  checksum: 10/4ff945de7293285133aeae759caddc71e73c4a44a12fac710fdd4f574cce2671a3f89d8165fdb03d383cfc97f3f96f677d8de3c95133da3d0e12a123a23109fe
   languageName: node
   linkType: hard
 
@@ -21491,14 +21494,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dockerode@npm:^3.3.47":
-  version: 3.3.47
-  resolution: "@types/dockerode@npm:3.3.47"
+"@types/dockerode@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@types/dockerode@npm:4.0.1"
   dependencies:
     "@types/docker-modem": "npm:*"
     "@types/node": "npm:*"
     "@types/ssh2": "npm:*"
-  checksum: 10/b840ae7872398a3b02e5789006a69d0cf5bb7ec6c0eb714c7ca04ca093add8de4cd06204ecd8f01388e347e62927cf4c599e8b7dba53e81c1350910da766d517
+  checksum: 10/d16b3a69a20fac269b2317a978442a6752dea158729a264511a3812dcb4c756e0ee079b39b61068cee182f268661e27e32aa7a28815262f0e088ffeb9f2f48c5
   languageName: node
   linkType: hard
 
@@ -26091,9 +26094,9 @@ __metadata:
   linkType: hard
 
 "basic-ftp@npm:^5.0.2":
-  version: 5.0.3
-  resolution: "basic-ftp@npm:5.0.3"
-  checksum: 10/8f69811a7f4088c5ae39025f1a662522aad517b4065365fbbe80676dc9ccf7a188463dfcb2d9573af2af859d7de70015f612c20a04a311b520efbf7c21dc1ff2
+  version: 5.2.0
+  resolution: "basic-ftp@npm:5.2.0"
+  checksum: 10/f5a15d789aa98859af4da9e976154b2aeae19052e1762dc68d259d2bce631dafa40c667aa06d7346cd630aa6f9cc9a26f515b468e0bd24243fbae2149c7d01ad
   languageName: node
   linkType: hard
 
@@ -27232,6 +27235,16 @@ __metadata:
   version: 2.2.0
   resolution: "clean-stack@npm:2.2.0"
   checksum: 10/2ac8cd2b2f5ec986a3c743935ec85b07bc174d5421a5efc8017e1f146a1cf5f781ae962618f416352103b32c9cd7e203276e8c28241bbe946160cab16149fb68
+  languageName: node
+  linkType: hard
+
+"cleye@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "cleye@npm:2.2.1"
+  dependencies:
+    terminal-columns: "npm:^2.0.0"
+    type-flag: "npm:^4.0.3"
+  checksum: 10/4d24a7e4863d38b9a40c01ca332baa7526b320c14fc488e7fb2d3f54b0ad5baa8c5defa6fc6adc079f50f629409056d9da74be6611f6394b709c9062d39b2216
   languageName: node
   linkType: hard
 
@@ -29595,12 +29608,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"docker-compose@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "docker-compose@npm:1.3.0"
+"docker-compose@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "docker-compose@npm:1.3.1"
   dependencies:
     yaml: "npm:^2.2.2"
-  checksum: 10/7c1b395fc104031eadef08cac0c028af11fd9e3084265dca9e17bc76ad27c2bfe96d8b74df258bb64b198f9e0f1792a7f2c63123cddc0d60bb776f211d54cfb2
+  checksum: 10/39e0e4b96c0dea8c88df9770a4d102a9e2437ad0af5f5f28a9f88fbf164eb4fb81fde0d8740500bd451abafab74072e5d5cfa35cc85254722bbe2b7dbc7c033a
   languageName: node
   linkType: hard
 
@@ -39425,7 +39438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:10.2.1, minimatch@npm:^10.1.1, minimatch@npm:^10.2.0, minimatch@npm:^10.2.1":
+"minimatch@npm:10.2.1":
   version: 10.2.1
   resolution: "minimatch@npm:10.2.1"
   dependencies:
@@ -39449,6 +39462,15 @@ __metadata:
   dependencies:
     brace-expansion: "npm:^2.0.1"
   checksum: 10/c81b47d28153e77521877649f4bab48348d10938df9e8147a58111fe00ef89559a2938de9f6632910c4f7bf7bb5cd81191a546167e58d357f0cfb1e18cecc1c5
+  languageName: node
+  linkType: hard
+
+"minimatch@npm:^10.1.1, minimatch@npm:^10.2.0, minimatch@npm:^10.2.1":
+  version: 10.2.3
+  resolution: "minimatch@npm:10.2.3"
+  dependencies:
+    brace-expansion: "npm:^5.0.2"
+  checksum: 10/186c6a6ce9f7a79ae7776efc799c32d1a6670ebbcc2a8756e6cb6ec4aab7439a6ca6e592e1a6aac5f21674eefae5b19821b8fa95072a4f4567da1ae40eb6075d
   languageName: node
   linkType: hard
 
@@ -39685,6 +39707,15 @@ __metadata:
   bin:
     mkdirp: bin/cmd.js
   checksum: 10/d71b8dcd4b5af2fe13ecf3bd24070263489404fe216488c5ba7e38ece1f54daf219e72a833a3a2dc404331e870e9f44963a33399589490956bff003a3404d3b2
+  languageName: node
+  linkType: hard
+
+"mkdirp@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "mkdirp@npm:3.0.1"
+  bin:
+    mkdirp: dist/cjs/src/bin.js
+  checksum: 10/16fd79c28645759505914561e249b9a1f5fe3362279ad95487a4501e4467abeb714fd35b95307326b8fd03f3c7719065ef11a6f97b7285d7888306d1bd2232ba
   languageName: node
   linkType: hard
 
@@ -40566,13 +40597,13 @@ __metadata:
   linkType: hard
 
 "nodemon@npm:^3.0.1":
-  version: 3.1.11
-  resolution: "nodemon@npm:3.1.11"
+  version: 3.1.14
+  resolution: "nodemon@npm:3.1.14"
   dependencies:
     chokidar: "npm:^3.5.2"
     debug: "npm:^4"
     ignore-by-default: "npm:^1.0.1"
-    minimatch: "npm:^3.1.2"
+    minimatch: "npm:^10.2.1"
     pstree.remy: "npm:^1.1.8"
     semver: "npm:^7.5.3"
     simple-update-notifier: "npm:^2.0.0"
@@ -40581,7 +40612,7 @@ __metadata:
     undefsafe: "npm:^2.0.5"
   bin:
     nodemon: bin/nodemon.js
-  checksum: 10/0f43d2c70abe0764e26e438dbe0c78bc429746a558dabf5dd94b13f6f3a79b4bd7d5793347acafddaee5eab594a806c2ad43efc999d342e28d185661718da8dc
+  checksum: 10/187aa93fc461bb001bac5de63df49a38a7b1cb3c60a5fd6a3b0f2b15da68fe5adfd0f91244be2fd1f57263cbd351e3113cb04c4edf4af23699dd95b2782fbf9b
   languageName: node
   linkType: hard
 
@@ -43458,12 +43489,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"properties-reader@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "properties-reader@npm:2.3.0"
+"properties-reader@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "properties-reader@npm:3.0.1"
   dependencies:
-    mkdirp: "npm:^1.0.4"
-  checksum: 10/0b41eb4136dc278ae0d97968ccce8de2d48d321655b319192e31f2424f1c6e052182204671e65aa8967216360cb3e7cbd9129830062e058fe9d6a1d74964c29a
+    "@kwsites/file-exists": "npm:^1.1.1"
+    mkdirp: "npm:^3.0.1"
+  checksum: 10/5a96c33dad9925c399bf3c3e343f3eb801fa1b4802330d1bfbf1e7d7639dafa935deb6c60be38b292544b57793b03ba1eaf5191cc3a7d018cda7bd6ead19a15c
   languageName: node
   linkType: hard
 
@@ -48325,15 +48357,15 @@ __metadata:
   linkType: hard
 
 "tar@npm:^7.4.3, tar@npm:^7.5.6":
-  version: 7.5.9
-  resolution: "tar@npm:7.5.9"
+  version: 7.5.10
+  resolution: "tar@npm:7.5.10"
   dependencies:
     "@isaacs/fs-minipass": "npm:^4.0.0"
     chownr: "npm:^3.0.0"
     minipass: "npm:^7.1.2"
     minizlib: "npm:^3.1.0"
     yallist: "npm:^5.0.0"
-  checksum: 10/1213cdde9c22d6acf8809ba5d2a025212ce3517bc99c4a4c6981b7dc0489bf3b164db9c826c9517680889194c9ba57448c8ff0da35eca9a60bb7689bf0b3897d
+  checksum: 10/98ba6421a250b233c36a54f7441647bdfee1ed0b916cd57850259a3602154d996f5b8422f67ef5c8ce77f582ed938054775c2873fc7c901e0c7530ed50febc40
   languageName: node
   linkType: hard
 
@@ -48434,6 +48466,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"terminal-columns@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "terminal-columns@npm:2.0.0"
+  checksum: 10/f958993886e09d7c0780f47833316532a0c7dd7db2fb43da9d34a88c821633408a6e7084af59f99c20b045776814748f14a8e33573886186be7a30174092964f
+  languageName: node
+  linkType: hard
+
 "terser-webpack-plugin@npm:*, terser-webpack-plugin@npm:^5.1.3, terser-webpack-plugin@npm:^5.3.16":
   version: 5.3.16
   resolution: "terser-webpack-plugin@npm:5.3.16"
@@ -48482,25 +48521,25 @@ __metadata:
   linkType: hard
 
 "testcontainers@npm:^11.9.0":
-  version: 11.11.0
-  resolution: "testcontainers@npm:11.11.0"
+  version: 11.12.0
+  resolution: "testcontainers@npm:11.12.0"
   dependencies:
     "@balena/dockerignore": "npm:^1.0.2"
-    "@types/dockerode": "npm:^3.3.47"
+    "@types/dockerode": "npm:^4.0.1"
     archiver: "npm:^7.0.1"
     async-lock: "npm:^1.4.1"
     byline: "npm:^5.0.0"
     debug: "npm:^4.4.3"
-    docker-compose: "npm:^1.3.0"
+    docker-compose: "npm:^1.3.1"
     dockerode: "npm:^4.0.9"
     get-port: "npm:^7.1.0"
     proper-lockfile: "npm:^4.1.2"
-    properties-reader: "npm:^2.3.0"
+    properties-reader: "npm:^3.0.1"
     ssh-remote-port-forward: "npm:^1.0.4"
     tar-fs: "npm:^3.1.1"
     tmp: "npm:^0.2.5"
-    undici: "npm:^7.16.0"
-  checksum: 10/6a05baf5cd9ff0eab7ecb6c31f10e1204d9b4a88698f2ecea9f4008a6ca9130302a83f0b79e303bfda577de3dd26c74689bb4636720b28d7dd3753ce50422865
+    undici: "npm:^7.22.0"
+  checksum: 10/d15ebc0be1c09192c4c26060bfec2f7ad2cf338624bed4a1ca2d548419853e54ea7deb8cd21cca21d55976552f09a00093ab7be822017e045f4c29e09b7e9ba2
   languageName: node
   linkType: hard
 
@@ -49293,6 +49332,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"type-flag@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "type-flag@npm:4.0.3"
+  checksum: 10/ffa9e56e50ed73ed802aa45b8d47eeba7677d2d66785e9153bfbc758c2613b6ba78b621d7766b713a287dbbe6758a61000f57d2ce8afc94e1876a37de914c73c
+  languageName: node
+  linkType: hard
+
 "type-is@npm:^1.6.18, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
@@ -49667,7 +49713,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^7.16.0, undici@npm:^7.2.3":
+"undici@npm:^7.2.3, undici@npm:^7.22.0":
   version: 7.22.0
   resolution: "undici@npm:7.22.0"
   checksum: 10/a7a1813ba4b74c0d46cc8dd160386202c05699ffc487c5d882cf40e6d2435c8d6faff3b8f8675d09bd1ef0386e370675c26b59b9a8c8b3f17b9f82a42236a927

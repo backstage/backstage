@@ -27,7 +27,14 @@ import { generateCliReport } from './generateCliReport';
 import { logApiReportInstructions } from '../common';
 
 function parseHelpPage(helpPageContent: string) {
-  const [, usage] = helpPageContent.match(/^\s*Usage: (.*)$/im) ?? [];
+  let usage: string | undefined;
+
+  // Commander format: "Usage: backstage-cli ..."
+  const commanderUsage = helpPageContent.match(/^\s*Usage: (.*)$/im);
+  if (commanderUsage) {
+    usage = commanderUsage[1];
+  }
+
   const lines = helpPageContent.split(/\r?\n/);
 
   let options = new Array<string>();
@@ -39,8 +46,8 @@ function parseHelpPage(helpPageContent: string) {
       lines.shift();
     }
     if (lines.length > 0) {
-      // Start of a new section, e.g. "Options:"
-      const sectionName = lines.shift();
+      // Start of a new section, e.g. "Options:" or "FLAGS:"
+      const sectionName = lines.shift()?.toLocaleLowerCase('en-US');
       // Take lines until we hit the next section or the end
       const sectionEndIndex = lines.findIndex(
         line => line && !line.match(/^\s/),
@@ -53,12 +60,18 @@ function parseHelpPage(helpPageContent: string) {
         .map(line => line.match(/^\s{1,8}(.*?)\s\s+/)?.[1])
         .filter(Boolean) as string[];
 
-      if (sectionName?.toLocaleLowerCase('en-US') === 'options:') {
+      if (sectionName === 'options:' || sectionName === 'flags:') {
         options = sectionItems;
-      } else if (sectionName?.toLocaleLowerCase('en-US') === 'commands:') {
+      } else if (sectionName === 'commands:') {
         commands = sectionItems;
-      } else if (sectionName?.toLocaleLowerCase('en-US') === 'arguments:') {
+      } else if (sectionName === 'arguments:') {
         commandArguments = sectionItems;
+      } else if (sectionName === 'usage:') {
+        // cleye format: usage line is inside the USAGE: section
+        const usageLine = sectionLines.find(l => l.trim().length > 0)?.trim();
+        if (usageLine) {
+          usage = usageLine;
+        }
       } else {
         throw new Error(`Unknown CLI section: ${sectionName}`);
       }

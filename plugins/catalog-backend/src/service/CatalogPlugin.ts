@@ -43,10 +43,12 @@ import {
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
-import { metrics } from '@opentelemetry/api';
 import { merge } from 'lodash';
 import { CatalogBuilder } from './CatalogBuilder';
-import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  actionsRegistryServiceRef,
+  metricsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 import { createCatalogActions } from '../actions';
 import type { EntityProviderEntry } from '../processing/connectEntityProviders';
 
@@ -220,6 +222,7 @@ export const catalogPlugin = createBackendPlugin({
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
         catalogScmEvents: catalogScmEventsServiceRef,
+        metrics: metricsServiceRef,
       },
       async init({
         logger,
@@ -238,6 +241,7 @@ export const catalogPlugin = createBackendPlugin({
         auditor,
         events,
         catalogScmEvents,
+        metrics,
       }) {
         const builder = await CatalogBuilder.create({
           config,
@@ -252,6 +256,7 @@ export const catalogPlugin = createBackendPlugin({
           auditor,
           events,
           catalogScmEvents,
+          metrics,
         });
 
         if (onProcessingError) {
@@ -303,9 +308,7 @@ export const catalogPlugin = createBackendPlugin({
           actionsRegistry,
         });
 
-        // Track SCM event message counts as a metric
-        const meter = metrics.getMeter('default');
-        const scmEventsMessagesCounter = meter.createCounter<{
+        const scmEventsMessagesCounter = metrics.createCounter<{
           eventType: string;
         }>('catalog.events.scm.messages', {
           description:

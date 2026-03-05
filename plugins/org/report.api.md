@@ -18,7 +18,6 @@ export type ComponentsGridClassKey =
 
 // @public (undocumented)
 export const EntityGroupProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
 }) => JSX_2.Element;
 
@@ -48,7 +47,6 @@ export type EntityRelationAggregation = 'direct' | 'aggregated';
 
 // @public (undocumented)
 export const EntityUserProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
   maxRelations?: number;
   hideIcons?: boolean;
@@ -56,7 +54,6 @@ export const EntityUserProfileCard: (props: {
 
 // @public (undocumented)
 export const GroupProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
 }) => JSX_2.Element;
 
@@ -116,7 +113,6 @@ export type OwnershipCardClassKey =
 
 // @public (undocumented)
 export const UserProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
   maxRelations?: number;
   hideIcons?: boolean;

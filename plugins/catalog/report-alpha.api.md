@@ -96,6 +96,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.moreButtonAriaLabel': 'more';
     readonly 'entityLabelsCard.title': 'Labels';
     readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
+    readonly 'entityLabelsCard.columnKeyLabel': 'Label';
+    readonly 'entityLabelsCard.columnValueLabel': 'Value';
     readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLabels.ownerLabel': 'Owner';
     readonly 'entityLabels.warningPanelTitle': 'Entity not found';
@@ -1097,9 +1099,12 @@ const _default: OverridableFrontendPlugin<
               {
                 title: string;
                 icon?: string | undefined;
+                aliases?: string[] | undefined;
+                contentOrder?: 'title' | 'natural' | undefined;
               }
             >[]
           | undefined;
+        defaultContentOrder: 'title' | 'natural';
         showNavItemIcons: boolean;
         path: string | undefined;
         title: string | undefined;
@@ -1111,9 +1116,12 @@ const _default: OverridableFrontendPlugin<
               {
                 title: string;
                 icon?: string | undefined;
+                aliases?: string[] | undefined;
+                contentOrder?: 'title' | 'natural' | undefined;
               }
             >[]
           | undefined;
+        defaultContentOrder?: 'title' | 'natural' | undefined;
         showNavItemIcons?: boolean | undefined;
         title?: string | undefined;
         path?: string | undefined;

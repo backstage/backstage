@@ -36,6 +36,5 @@ export const ButtonLinkDefinition = defineComponent<ButtonLinkOwnProps>()({
     iconEnd: {},
     children: {},
     className: {},
-    style: {},
   },
 });

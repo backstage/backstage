@@ -27,6 +27,7 @@ import { Duration } from 'luxon';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
 import { PluginTaskSchedulerJanitor } from './PluginTaskSchedulerJanitor';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * Default implementation of the task scheduler service.
@@ -37,6 +38,7 @@ export class DefaultSchedulerService {
   static create(options: {
     database: DatabaseService;
     logger: LoggerService;
+    metrics: MetricsService;
     rootLifecycle: RootLifecycleService;
     httpRouter: HttpRouterService;
     pluginMetadata: PluginMetadataService;
@@ -67,6 +69,7 @@ export class DefaultSchedulerService {
       options.pluginMetadata.getId(),
       databaseFactory,
       options.logger,
+      options.metrics,
       options.rootLifecycle,
     );
 

@@ -33,24 +33,6 @@ export type AzureIntegrationConfig = {
   host: string;
 
   /**
-   * The authorization token to use for requests.
-   *
-   * If no token is specified, anonymous access is used.
-   *
-   * @deprecated Use `credentials` instead.
-   */
-  token?: string;
-
-  /**
-   * The credential to use for requests.
-   *
-   * If no credential is specified anonymous access is used.
-   *
-   * @deprecated Use `credentials` instead.
-   */
-  credential?: AzureDevOpsCredential;
-
-  /**
    * The credentials to use for requests. If multiple credentials are specified the first one that matches the organization is used.
    * If not organization matches the first credential without an organization is used.
    *
@@ -236,9 +218,17 @@ function asAzureDevOpsCredential(
 export function readAzureIntegrationConfig(
   config: Config,
 ): AzureIntegrationConfig {
+  deprecatedConfigCheck(config);
+
   const host = config.getOptionalString('host') ?? AZURE_HOST;
 
-  let credentialConfigs = config
+  if (!isValidHost(host)) {
+    throw new Error(
+      `Invalid Azure integration config, '${host}' is not a valid host`,
+    );
+  }
+
+  const credentialConfigs = config
     .getOptionalConfigArray('credentials')
     ?.map(credential => {
       const result: Partial<AzureDevOpsCredentialLike> = {
@@ -256,54 +246,6 @@ export function readAzureIntegrationConfig(
 
       return result;
     });
-
-  const token = config.getOptionalString('token')?.trim();
-
-  if (
-    config.getOptional('credential') !== undefined &&
-    config.getOptional('credentials') !== undefined
-  ) {
-    throw new Error(
-      `Invalid Azure integration config, 'credential' and 'credentials' cannot be used together. Use 'credentials' instead.`,
-    );
-  }
-
-  if (
-    config.getOptional('token') !== undefined &&
-    config.getOptional('credentials') !== undefined
-  ) {
-    throw new Error(
-      `Invalid Azure integration config, 'token' and 'credentials' cannot be used together. Use 'credentials' instead.`,
-    );
-  }
-
-  if (token !== undefined) {
-    const mapped = [{ personalAccessToken: token }];
-    credentialConfigs = credentialConfigs?.concat(mapped) ?? mapped;
-  }
-
-  if (config.getOptional('credential') !== undefined) {
-    const mapped = [
-      {
-        organizations: config.getOptionalStringArray(
-          'credential.organizations',
-        ),
-        token: config.getOptionalString('credential.token')?.trim(),
-        tenantId: config.getOptionalString('credential.tenantId'),
-        clientId: config.getOptionalString('credential.clientId'),
-        clientSecret: config
-          .getOptionalString('credential.clientSecret')
-          ?.trim(),
-      },
-    ];
-    credentialConfigs = credentialConfigs?.concat(mapped) ?? mapped;
-  }
-
-  if (!isValidHost(host)) {
-    throw new Error(
-      `Invalid Azure integration config, '${host}' is not a valid host`,
-    );
-  }
 
   let credentials: AzureDevOpsCredential[] | undefined = undefined;
   if (credentialConfigs !== undefined) {
@@ -414,4 +356,20 @@ export function readAzureIntegrationConfigs(
   }
 
   return result;
+}
+
+/**
+ * These config sections have been removed but to ensure they
+ * don't leak sensitive tokens we have this check in place
+ * to throw an error if found
+ *
+ * @internal
+ * @deprecated To be removed at a later date
+ */
+function deprecatedConfigCheck(config: Config) {
+  if (config.getOptional('credential') || config.getOptional('token')) {
+    throw new Error(
+      `Invalid Azure integration config, 'credential' and 'token' have been removed. Use 'credentials' instead.`,
+    );
+  }
 }

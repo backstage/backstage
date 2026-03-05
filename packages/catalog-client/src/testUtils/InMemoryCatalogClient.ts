@@ -51,6 +51,10 @@ import {
   NotFoundError,
   NotImplementedError,
 } from '@backstage/errors';
+import {
+  FilterPredicate,
+  filterPredicateToFilterFunction,
+} from '@backstage/filter-predicates';
 import lodash from 'lodash';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
@@ -357,10 +361,15 @@ export class InMemoryCatalogClient implements CatalogApi {
     request: GetEntitiesByRefsRequest,
   ): Promise<GetEntitiesByRefsResponse> {
     const filter = createFilter(request.filter);
+    const queryFilter = request.query
+      ? filterPredicateToFilterFunction(request.query)
+      : undefined;
     const refMap = this.#createEntityRefMap();
     const items = request.entityRefs
       .map(ref => refMap.get(ref))
-      .map(e => (e && filter(e) ? e : undefined));
+      .map(e =>
+        e && filter(e) && (!queryFilter || queryFilter(e)) ? e : undefined,
+      );
     return {
       items: request.fields
         ? items.map(e => (e ? applyFieldsFilter(e, request.fields) : undefined))
@@ -373,6 +382,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<QueryEntitiesResponse> {
     // Decode query parameters from cursor or from the request directly
     let filter: EntityFilterQuery | undefined;
+    let query: FilterPredicate | undefined;
     let orderFields: EntityOrderQuery | undefined;
     let fullTextFilter: { term: string; fields?: string[] } | undefined;
     let offset: number;
@@ -386,12 +396,14 @@ export class InMemoryCatalogClient implements CatalogApi {
         throw new InputError('Invalid cursor');
       }
       filter = deserializeFilter(c.filter as any[]);
+      query = c.query as FilterPredicate | undefined;
       orderFields = c.orderFields as EntityOrderQuery | undefined;
       fullTextFilter = c.fullTextFilter as typeof fullTextFilter;
       offset = c.offset as number;
       limit = request.limit;
     } else {
       filter = request?.filter;
+      query = request?.query;
       orderFields = request?.orderFields;
       fullTextFilter = request?.fullTextFilter;
       offset = request?.offset ?? 0;
@@ -400,6 +412,11 @@ export class InMemoryCatalogClient implements CatalogApi {
 
     // Apply filter
     let items = this.#entities.filter(createFilter(filter));
+
+    // Apply predicate-based query filter
+    if (query) {
+      items = items.filter(filterPredicateToFilterFunction(query));
+    }
 
     // Apply full-text filter, defaulting to the sort field or metadata.uid
     if (fullTextFilter) {
@@ -432,6 +449,7 @@ export class InMemoryCatalogClient implements CatalogApi {
 
     const cursorBase = {
       filter: serializeFilter(filter),
+      query,
       orderFields,
       fullTextFilter,
       totalItems,
@@ -493,7 +511,12 @@ export class InMemoryCatalogClient implements CatalogApi {
     request: GetEntityFacetsRequest,
   ): Promise<GetEntityFacetsResponse> {
     const filter = createFilter(request.filter);
-    const filteredEntities = this.#entities.filter(filter);
+    let filteredEntities = this.#entities.filter(filter);
+    if (request.query) {
+      filteredEntities = filteredEntities.filter(
+        filterPredicateToFilterFunction(request.query),
+      );
+    }
     const facets = Object.fromEntries(
       request.facets.map(facet => {
         const facetValues = new Map<string, number>();

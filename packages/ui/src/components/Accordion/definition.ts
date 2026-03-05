@@ -34,7 +34,7 @@ export const AccordionDefinition = defineComponent<AccordionOwnProps>()({
   },
   bg: 'provider',
   propDefs: {
-    bg: { dataAttribute: true, default: 'neutral-auto' },
+    bg: { dataAttribute: true, default: 'neutral' },
     children: {},
     className: {},
   },

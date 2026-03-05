@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { buildBundle, getModuleFederationRemoteOptions } from './bundler';
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { loadCliConfig } from '../../config/lib/config';
+import { loadCliConfig } from './config';
 
 interface BuildAppOptions {
   targetDir: string;

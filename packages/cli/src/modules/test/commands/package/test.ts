@@ -87,11 +87,6 @@ export default async (_opts: OptionValues, cmd: Command) => {
     }--no-node-snapshot`;
   }
 
-  // This ensures that the process doesn't exit too early before stdout is flushed
-  if (args.includes('--help')) {
-    (process.stdout as any)._handle.setBlocking(true);
-  }
-
   // Because of the ongoing migration to v30 of jest, jest is no longer hard-depended to allow
   // opt-in migration. Users instead need to add jest as a devDependency themselves and specify
   // the version they want. This prints a helpful error message if jest is not found, i.e. they

@@ -443,7 +443,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
 // @public
 export type TestApiPair<TApi> =
   | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
-  | MockWithApiFactory<TApi>;
+  | MockWithApiFactory<NoInfer<TApi>>;
 
 // @public
 export type TestApiPairs<TApiPairs> = {

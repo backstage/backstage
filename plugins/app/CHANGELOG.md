@@ -1,5 +1,38 @@
 # @backstage/plugin-app
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.1
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/integration-react@1.2.16-next.1
+  - @backstage/theme@0.7.2
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-app-react@0.2.1-next.0
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- 909c742: Switched translation API imports (`translationApiRef`, `appLanguageApiRef`) from the alpha `@backstage/core-plugin-api/alpha` path to the stable `@backstage/frontend-plugin-api` export. This has no effect on runtime behavior.
+- Updated dependencies
+  - @backstage/ui@0.12.1-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/integration-react@1.2.16-next.0
+  - @backstage/theme@0.7.2
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-app-react@0.2.1-next.0
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
 ## 0.4.0
 
 ### Minor Changes

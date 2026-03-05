@@ -1128,6 +1128,36 @@ export interface Config {
     };
 
     /**
+     * Options for the metrics service.
+     */
+    metrics?: {
+      /**
+       * Plugin-specific metrics configuration. Each plugin can override meter metadata.
+       */
+      plugin?: {
+        [pluginId: string]: {
+          /**
+           * Meter configuration for this plugin.
+           */
+          meter?: {
+            /**
+             * Custom meter name. If not set, defaults to backstage-plugin-{pluginId}.
+             */
+            name?: string;
+            /**
+             * Version for the meter.
+             */
+            version?: string;
+            /**
+             * Schema URL for the meter.
+             */
+            schemaUrl?: string;
+          };
+        };
+      };
+    };
+
+    /**
      * Options to configure the default RootLoggerService.
      */
     logger?: {

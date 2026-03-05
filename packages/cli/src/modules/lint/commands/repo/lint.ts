@@ -24,11 +24,11 @@ import {
   BackstagePackageJson,
   Lockfile,
   runWorkerQueueThreads,
+  SuccessCache,
 } from '@backstage/cli-node';
 import { targetPaths } from '@backstage/cli-common';
 
-import { createScriptOptionsParser } from '../../../../lib/optionsParser';
-import { SuccessCache } from '../../../../lib/cache/SuccessCache';
+import { createScriptOptionsParser } from '../../lib/optionsParser';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
@@ -41,7 +41,10 @@ function depCount(pkg: BackstagePackageJson) {
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
 
-  const cache = new SuccessCache('lint', opts.successCacheDir);
+  const cache = SuccessCache.create({
+    name: 'lint',
+    basePath: opts.successCacheDir,
+  });
   const cacheContext = opts.successCache
     ? {
         entries: await cache.read(),
