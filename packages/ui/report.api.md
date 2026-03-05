@@ -618,7 +618,7 @@ export const CardDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Card';
-    readonly overlay: 'bui-CardOverlay';
+    readonly trigger: 'bui-CardTrigger';
   };
   readonly propDefs: {
     readonly children: {};
