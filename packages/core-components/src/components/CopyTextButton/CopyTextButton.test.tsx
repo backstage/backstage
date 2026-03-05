@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
 import { errorApiRef } from '@backstage/core-plugin-api';
@@ -63,11 +63,14 @@ describe('<CopyTextButton />', () => {
     );
     const button = rendered.getByRole('button', { name: 'Copy text' });
     fireEvent.click(button);
+    expect(copy).toHaveBeenCalledWith('mockText');
+    // Assert tooltip visible before timers fire the close setTimeout.
+    // Radix Tooltip renders content in both a visible element and a
+    // screen-reader-accessible <span role="tooltip">, so use getAllByText.
+    expect(screen.getAllByText('mockTooltip').length).toBeGreaterThanOrEqual(1);
     act(() => {
       jest.runAllTimers();
     });
-    expect(copy).toHaveBeenCalledWith('mockText');
-    rendered.getByText('mockTooltip');
     jest.useRealTimers();
   });
 
