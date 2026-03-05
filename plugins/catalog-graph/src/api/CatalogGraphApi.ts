@@ -15,6 +15,10 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
+import {
+  GraphQueryRequest,
+  GraphQueryResult,
+} from '@backstage/plugin-catalog-graph-common';
 
 /**
  * Utility API reference for the {@link CatalogGraphApi}.
@@ -47,6 +51,9 @@ export type DefaultRelations =
  * @public
  */
 export interface CatalogGraphApi {
+  /** The mode to use for fetching the graph */
+  readonly fetchMode: 'frontend' | 'backend';
+
   /** All known relations */
   readonly knownRelations: string[];
 
@@ -55,4 +62,10 @@ export interface CatalogGraphApi {
 
   /** The default relations to show in the graph */
   readonly defaultRelations: string[];
+
+  /** The max depth which the user cannot override */
+  readonly maxDepth: number;
+
+  /** Request a catalog entity graph */
+  fetchGraph(request: GraphQueryRequest): Promise<GraphQueryResult>;
 }

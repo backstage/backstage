@@ -19,7 +19,7 @@ import {
   RELATION_HAS_PART,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { analyticsApiRef } from '@backstage/core-plugin-api';
+import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
@@ -122,9 +122,16 @@ describe.skip('<CatalogGraphPage/>', () => {
   };
   const catalog = catalogApiMock.mock();
 
+  const config = mockApis.config();
+
   beforeEach(() => {
     wrapper = (
-      <TestApiProvider apis={[[catalogApiRef, catalog]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalog],
+          [configApiRef, config],
+        ]}
+      >
         <CatalogGraphPage
           initialState={{
             showFilters: false,

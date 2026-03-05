@@ -21,26 +21,42 @@ import {
   RELATION_OWNER_OF,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { TestApiRegistry, mockApis } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react';
-import { pick } from 'lodash';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
-import { useEntityStore as useEntityStoreMocked } from './useEntityStore';
+import { useEntityRelationGraphFromBackend as useEntityRelationGraphFromBackendMocked } from './useEntityRelationGraphFromBackend';
+import { useFetchMethod as useFetchMethodMocked } from './useFetchMethod';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
-jest.mock('./useEntityStore');
+jest.mock('./useEntityRelationGraphFromBackend');
+jest.mock('./useFetchMethod');
 
-const useEntityStore = useEntityStoreMocked as jest.Mock<
-  ReturnType<typeof useEntityStoreMocked>
->;
+const useEntityRelationGraphFromBackend =
+  useEntityRelationGraphFromBackendMocked as jest.Mock<
+    ReturnType<typeof useEntityRelationGraphFromBackendMocked>
+  >;
 
 function GraphContext(props: PropsWithChildren<{}>) {
+  const config = mockApis.config();
+  const fetchApi: typeof fetchApiRef.T = {} as any;
   return (
     <ApiProvider
-      apis={TestApiRegistry.from([
-        catalogGraphApiRef,
-        new DefaultCatalogGraphApi(),
-      ])}
+      apis={TestApiRegistry.from(
+        [
+          catalogGraphApiRef,
+          new DefaultCatalogGraphApi({
+            config,
+            discoveryApi: mockApis.discovery(),
+            fetchApi,
+          }),
+        ],
+        [catalogApiRef, catalogApiMock()],
+        [discoveryApiRef, mockApis.discovery()],
+        [fetchApiRef, fetchApi],
+      )}
     >
       {props.children}
     </ApiProvider>
@@ -48,144 +64,140 @@ function GraphContext(props: PropsWithChildren<{}>) {
 }
 
 describe('useEntityRelationGraph', () => {
-  const requestEntities = jest.fn();
+  const mockEntities = {
+    'b:d/c': {
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c',
+        namespace: 'd',
+      },
+      relations: [
+        {
+          target: {
+            kind: 'k',
+            name: 'a1',
+            namespace: 'd',
+          },
+          targetRef: 'k:d/a1',
+          type: RELATION_OWNER_OF,
+        },
+        {
+          target: {
+            kind: 'b',
+            name: 'c1',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c1',
+          type: RELATION_HAS_PART,
+        },
+      ],
+    },
+    'k:d/a1': {
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: {
+        name: 'a1',
+        namespace: 'd',
+      },
+      relations: [
+        {
+          target: {
+            kind: 'b',
+            name: 'c',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c',
+          type: RELATION_OWNED_BY,
+        },
+        {
+          target: {
+            kind: 'b',
+            name: 'c1',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c1',
+          type: RELATION_OWNED_BY,
+        },
+      ],
+    },
+    'b:d/c1': {
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c1',
+        namespace: 'd',
+      },
+      relations: [
+        {
+          target: {
+            kind: 'b',
+            name: 'c',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c',
+          type: RELATION_PART_OF,
+        },
+        {
+          target: {
+            kind: 'k',
+            name: 'a1',
+            namespace: 'd',
+          },
+          targetRef: 'k:d/a1',
+          type: RELATION_OWNER_OF,
+        },
+        {
+          target: {
+            kind: 'b',
+            name: 'c2',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c2',
+          type: RELATION_HAS_PART,
+        },
+      ],
+    },
+    'b:d/c2': {
+      apiVersion: 'a',
+      kind: 'b',
+      metadata: {
+        name: 'c2',
+        namespace: 'd',
+      },
+      relations: [
+        {
+          target: {
+            kind: 'b',
+            name: 'c1',
+            namespace: 'd',
+          },
+          targetRef: 'b:d/c1',
+          type: RELATION_PART_OF,
+        },
+      ],
+    },
+  };
 
   beforeEach(() => {
-    const entities = {
-      'b:d/c': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            target: {
-              kind: 'k',
-              name: 'a1',
-              namespace: 'd',
-            },
-            targetRef: 'k:d/a1',
-            type: RELATION_OWNER_OF,
-          },
-          {
-            target: {
-              kind: 'b',
-              name: 'c1',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c1',
-            type: RELATION_HAS_PART,
-          },
-        ],
-      },
-      'k:d/a1': {
-        apiVersion: 'a',
-        kind: 'k',
-        metadata: {
-          name: 'a1',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            target: {
-              kind: 'b',
-              name: 'c',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c',
-            type: RELATION_OWNED_BY,
-          },
-          {
-            target: {
-              kind: 'b',
-              name: 'c1',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c1',
-            type: RELATION_OWNED_BY,
-          },
-        ],
-      },
-      'b:d/c1': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c1',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            target: {
-              kind: 'b',
-              name: 'c',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c',
-            type: RELATION_PART_OF,
-          },
-          {
-            target: {
-              kind: 'k',
-              name: 'a1',
-              namespace: 'd',
-            },
-            targetRef: 'k:d/a1',
-            type: RELATION_OWNER_OF,
-          },
-          {
-            target: {
-              kind: 'b',
-              name: 'c2',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c2',
-            type: RELATION_HAS_PART,
-          },
-        ],
-      },
-      'b:d/c2': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c2',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            target: {
-              kind: 'b',
-              name: 'c1',
-              namespace: 'd',
-            },
-            targetRef: 'b:d/c1',
-            type: RELATION_PART_OF,
-          },
-        ],
-      },
-    };
-    let rootEntityRefsFilter: string[] = [];
-
-    requestEntities.mockImplementation(r => {
-      rootEntityRefsFilter = r;
-    });
-
-    useEntityStore.mockImplementation(() => ({
+    useEntityRelationGraphFromBackend.mockImplementation(() => ({
+      entities: mockEntities,
       loading: false,
-      entities: pick(entities, rootEntityRefsFilter),
-      requestEntities,
+      error: undefined,
     }));
+
+    (
+      useFetchMethodMocked as jest.Mock<ReturnType<typeof useFetchMethodMocked>>
+    ).mockReturnValue('backend');
   });
 
   afterEach(() => jest.resetAllMocks());
 
   test('should return no entities for empty root entity refs', async () => {
-    useEntityStore.mockReturnValue({
-      loading: false,
+    useEntityRelationGraphFromBackend.mockReturnValue({
       entities: {},
+      loading: false,
       error: undefined,
-      requestEntities,
     });
 
     const { result } = renderHook(
@@ -197,15 +209,22 @@ describe('useEntityRelationGraph', () => {
     expect(error).toBeUndefined();
     expect(loading).toBe(false);
     expect(entities).toEqual({});
-    expect(requestEntities).toHaveBeenNthCalledWith(1, []);
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        filter: {},
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: [],
+      },
+      { noFetch: false },
+    );
   });
 
   test('should pass through loading state', async () => {
-    useEntityStore.mockReturnValue({
-      loading: true,
+    useEntityRelationGraphFromBackend.mockReturnValue({
       entities: {},
+      loading: true,
       error: undefined,
-      requestEntities,
     });
 
     const { result } = renderHook(
@@ -217,16 +236,23 @@ describe('useEntityRelationGraph', () => {
     expect(error).toBeUndefined();
     expect(loading).toBe(true);
     expect(entities).toEqual({});
-    expect(requestEntities).toHaveBeenNthCalledWith(1, []);
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        filter: {},
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: [],
+      },
+      { noFetch: false },
+    );
   });
 
   test('should pass through error state', async () => {
     const err = new Error('Hello World');
-    useEntityStore.mockReturnValue({
-      loading: false,
+    useEntityRelationGraphFromBackend.mockReturnValue({
       entities: {},
+      loading: false,
       error: err,
-      requestEntities,
     });
 
     const { result } = renderHook(
@@ -238,19 +264,22 @@ describe('useEntityRelationGraph', () => {
     expect(error).toBe(err);
     expect(loading).toBe(false);
     expect(entities).toEqual({});
-    expect(requestEntities).toHaveBeenNthCalledWith(1, []);
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        filter: {},
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: [],
+      },
+      { noFetch: false },
+    );
   });
 
   test('should walk relation tree', async () => {
-    const { result, rerender } = renderHook(
+    const { result } = renderHook(
       () => useEntityRelationGraph({ rootEntityRefs: ['b:d/c'] }),
       { wrapper: GraphContext },
     );
-
-    // Simulate rerendering as this is triggered automatically due to the mock
-    for (let i = 0; i < 5; ++i) {
-      rerender();
-    }
 
     const { entities, loading, error } = result.current;
 
@@ -262,22 +291,55 @@ describe('useEntityRelationGraph', () => {
       'b:d/c2': expect.anything(),
       'k:d/a1': expect.anything(),
     });
-    expect(requestEntities).toHaveBeenNthCalledWith(1, ['b:d/c']);
-    expect(requestEntities).toHaveBeenNthCalledWith(2, [
-      'b:d/c',
-      'k:d/a1',
-      'b:d/c1',
-    ]);
-    expect(requestEntities).toHaveBeenNthCalledWith(3, [
-      'b:d/c',
-      'k:d/a1',
-      'b:d/c1',
-      'b:d/c2',
-    ]);
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        filter: {},
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: ['b:d/c'],
+      },
+      { noFetch: false },
+    );
+  });
+
+  test('should handle custom entitySet', async () => {
+    (
+      useFetchMethodMocked as jest.Mock<ReturnType<typeof useFetchMethodMocked>>
+    ).mockReturnValue('none');
+
+    const { result } = renderHook(
+      () =>
+        useEntityRelationGraph({
+          rootEntityRefs: ['b:d/c'],
+          entitySet: Object.entries(mockEntities)
+            .filter(([key]) => key !== 'b:d/c2')
+            .map(([_, entity]) => entity),
+        }),
+      { wrapper: GraphContext },
+    );
+
+    const { entities, loading, error } = result.current;
+
+    expect(error).toBeUndefined();
+    expect(loading).toBe(false);
+    expect(entities).toEqual({
+      'b:d/c': expect.anything(),
+      'b:d/c1': expect.anything(),
+      'k:d/a1': expect.anything(),
+    });
+    expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
+      1,
+      {
+        filter: {},
+        maxDepth: Number.POSITIVE_INFINITY,
+        rootEntityRefs: ['b:d/c'],
+      },
+      { noFetch: true },
+    );
   });
 
   test('should limit max depth', async () => {
-    const { result, rerender } = renderHook(
+    const { result } = renderHook(
       () =>
         useEntityRelationGraph({
           rootEntityRefs: ['b:d/c'],
@@ -285,11 +347,6 @@ describe('useEntityRelationGraph', () => {
         }),
       { wrapper: GraphContext },
     );
-
-    // Simulate rerendering as this is triggered automatically due to the mock
-    for (let i = 0; i < 5; ++i) {
-      rerender();
-    }
 
     expect(result.current.entities).toEqual({
       'b:d/c': expect.anything(),
