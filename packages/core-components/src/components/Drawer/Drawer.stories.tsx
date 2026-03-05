@@ -15,88 +15,63 @@
  */
 
 import { useState } from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Close from '@material-ui/icons/Close';
+import { cn } from '../../lib/utils';
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+  SheetClose,
+} from '../ui/sheet';
+import { Button } from '../ui/button';
+import { X } from 'lucide-react';
 
 export default {
   title: 'Layout/Drawer',
-  component: Drawer,
+  component: Sheet,
   tags: ['!manifest'],
 };
 
-const useDrawerStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paper: {
-      width: '50%',
-      justifyContent: 'space-between',
-      padding: theme.spacing(2.5),
-    },
-  }),
-);
-
-const useDrawerContentStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    header: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    icon: {
-      fontSize: 20,
-    },
-    content: {
-      height: '80%',
-      backgroundColor: '#EEEEEE',
-    },
-    secondaryAction: {
-      marginLeft: theme.spacing(2.5),
-    },
-  }),
-);
-
-/* Example content wrapped inside the Drawer component */
+/* Example content wrapped inside the Sheet component */
 const DrawerContent = ({
   toggleDrawer,
 }: {
   toggleDrawer: (isOpen: boolean) => void;
 }) => {
-  const classes = useDrawerContentStyles();
-
   return (
     <>
-      <div className={classes.header}>
-        <Typography variant="h5">Side Panel Title</Typography>
-        <IconButton
-          key="dismiss"
-          title="Close the drawer"
-          onClick={() => toggleDrawer(false)}
-          color="inherit"
-        >
-          <Close className={classes.icon} />
-        </IconButton>
-      </div>
-      <div className={classes.content} />
-      <div>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => toggleDrawer(false)}
-        >
+      <SheetHeader>
+        <div className={cn('flex flex-row justify-between items-center')}>
+          <SheetTitle>Side Panel Title</SheetTitle>
+          <SheetClose asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              title="Close the drawer"
+              onClick={() => toggleDrawer(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </SheetClose>
+        </div>
+        <SheetDescription>Example drawer content</SheetDescription>
+      </SheetHeader>
+      <div className="h-[80%] bg-muted" />
+      <SheetFooter>
+        <Button variant="default" onClick={() => toggleDrawer(false)}>
           Primary Action
         </Button>
         <Button
-          className={classes.secondaryAction}
-          variant="outlined"
-          color="primary"
+          variant="outline"
+          className="ml-5"
           onClick={() => toggleDrawer(false)}
         >
           Secondary Action
         </Button>
-      </div>
+      </SheetFooter>
     </>
   );
 };
@@ -107,62 +82,47 @@ const DrawerContent = ({
  */
 export const DefaultDrawer = () => {
   const [isOpen, toggleDrawer] = useState(false);
-  const classes = useDrawerStyles();
 
   return (
-    <>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => toggleDrawer(true)}
-      >
-        Open Default Drawer
-      </Button>
-      <Drawer
-        classes={{
-          paper: classes.paper,
-        }}
-        anchor="right"
-        open={isOpen}
-        onClose={() => toggleDrawer(false)}
+    <Sheet open={isOpen} onOpenChange={toggleDrawer}>
+      <SheetTrigger asChild>
+        <Button variant="default" onClick={() => toggleDrawer(true)}>
+          Open Default Drawer
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        side="right"
+        className="w-1/2 flex flex-col justify-between p-6"
       >
         <DrawerContent toggleDrawer={toggleDrawer} />
-      </Drawer>
-    </>
+      </SheetContent>
+    </Sheet>
   );
 };
 
-/* Persistent drawer works like the default one -
+/* Persistent drawer works like the default one —
  * except that the content sits on the same level
  * as the main content and you can't cancel it by
  * clicking the overlay or pressing the esc key.
  *
- * Set the Drawer variant props: 'persistent'
+ * Set the Sheet modal prop to false for persistent behavior.
  */
 export const PersistentDrawer = () => {
   const [isOpen, toggleDrawer] = useState(false);
-  const classes = useDrawerStyles();
 
   return (
-    <>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => toggleDrawer(true)}
-      >
-        Open Persistent Drawer
-      </Button>
-      <Drawer
-        classes={{
-          paper: classes.paper,
-        }}
-        variant="persistent"
-        anchor="right"
-        open={isOpen}
-        onClose={() => toggleDrawer(false)}
+    <Sheet open={isOpen} onOpenChange={toggleDrawer} modal={false}>
+      <SheetTrigger asChild>
+        <Button variant="default" onClick={() => toggleDrawer(true)}>
+          Open Persistent Drawer
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        side="right"
+        className="w-1/2 flex flex-col justify-between p-6"
       >
         <DrawerContent toggleDrawer={toggleDrawer} />
-      </Drawer>
-    </>
+      </SheetContent>
+    </Sheet>
   );
 };

@@ -79,11 +79,7 @@ describe('<ErrorBoundary/>', () => {
         'The above error occurred in the <Bomb> component:',
       ),
       expect.stringContaining('ErrorBoundary'),
-      // Note: The findDOMNode warning originates from MUI Accordion used in
-      // WarningPanel/ErrorPanel. Once ErrorPanel completes its MUI → shadcn
-      // migration, this warning (and the error count below) may need adjustment.
-      expect.stringContaining('Warning: findDOMNode'),
     ]);
-    expect(error.length).toEqual(7);
+    expect(error.length).toEqual(6);
   });
 });
