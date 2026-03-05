@@ -19,6 +19,39 @@ import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 
+/*
+ * Browser API polyfills for jsdom environment.
+ * Radix UI primitives (Popover) and cmdk rely on browser APIs
+ * that are not available in jsdom.
+ */
+
+// cmdk uses ResizeObserver for measuring list dimensions.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  (globalThis as any).ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+// Radix Popover scrolls the selected item into view when opening.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
+// Radix uses pointer capture APIs for pointer event management.
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = function () {
+    return false;
+  };
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = function () {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = function () {};
+}
+
 describe('RepoUrlPickerRepoName', () => {
   it('should call onChange with the first allowed repo if there is none set already', async () => {
     const onChange = jest.fn();
@@ -93,11 +126,11 @@ describe('RepoUrlPickerRepoName', () => {
       />,
     );
 
-    // Open the Autocomplete dropdown
-    const input = getByRole('textbox');
-    await userEvent.click(input);
+    // Open the Popover + Command combobox dropdown
+    const combobox = getByRole('combobox');
+    await userEvent.click(combobox);
 
-    // Verify that available repos are shown
+    // Verify that available repos are shown in the command list
     for (const repo of availableRepos) {
       expect(getByText(repo.name)).toBeInTheDocument();
     }

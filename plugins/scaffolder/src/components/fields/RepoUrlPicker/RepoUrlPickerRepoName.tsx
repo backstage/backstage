@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Select, SelectItem } from '@backstage/core-components';
+import {
+  Select,
+  SelectItem,
+  cn,
+  Input,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { ChevronsUpDown, Check } from 'lucide-react';
 import { scaffolderTranslationRef } from '../../../translation';
 import { AvailableRepositories } from './types';
 
@@ -40,6 +52,7 @@ export const RepoUrlPickerRepoName = (props: {
     isDisabled,
   } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     // If there is no repoName chosen currently
@@ -57,10 +70,11 @@ export const RepoUrlPickerRepoName = (props: {
 
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !repoName}
+      <div
+        className={cn(
+          'mt-4 mb-2',
+          rawErrors?.length > 0 && !repoName && 'text-destructive',
+        )}
       >
         {allowedRepos?.length ? (
           <Select
@@ -76,31 +90,81 @@ export const RepoUrlPickerRepoName = (props: {
             items={repoItems}
           />
         ) : (
-          <Autocomplete
-            value={repoName}
-            onChange={(_, newValue) => {
-              const selectedRepo = availableRepos?.find(
-                r => r.name === newValue,
-              );
-              onChange(selectedRepo || { name: newValue || '' });
-            }}
-            options={(availableRepos || []).map(r => r.name)}
-            renderInput={params => (
-              <TextField
-                {...params}
-                label={t('fields.repoUrlPicker.repository.inputTitle')}
-                required
-              />
+          <>
+            {/* Free-text input for repo name entry (preserves freeSolo behavior) */}
+            <Input
+              placeholder={t('fields.repoUrlPicker.repository.inputTitle')}
+              value={repoName || ''}
+              onChange={e => onChange({ name: e.target.value })}
+              disabled={isDisabled}
+              required
+              className="mb-1"
+            />
+            {/* Suggestion dropdown for available repos */}
+            {availableRepos && availableRepos.length > 0 && (
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between"
+                    disabled={isDisabled}
+                  >
+                    {repoName ||
+                      t('fields.repoUrlPicker.repository.inputTitle')}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput
+                      placeholder={t(
+                        'fields.repoUrlPicker.repository.inputTitle',
+                      )}
+                    />
+                    <CommandList>
+                      <CommandEmpty>No repository found.</CommandEmpty>
+                      <CommandGroup>
+                        {availableRepos.map(r => (
+                          <CommandItem
+                            key={r.name}
+                            value={r.name}
+                            onSelect={currentValue => {
+                              const selectedRepo = availableRepos.find(
+                                repo => repo.name === currentValue,
+                              );
+                              onChange(
+                                selectedRepo || {
+                                  name: currentValue || '',
+                                },
+                              );
+                              setOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                'mr-2 h-4 w-4',
+                                repoName === r.name
+                                  ? 'opacity-100'
+                                  : 'opacity-0',
+                              )}
+                            />
+                            {r.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             )}
-            freeSolo
-            autoSelect
-            disabled={isDisabled}
-          />
+          </>
         )}
-        <FormHelperText>
+        <p className="mt-1 text-sm text-muted-foreground">
           {t('fields.repoUrlPicker.repository.description')}
-        </FormHelperText>
-      </FormControl>
+        </p>
+      </div>
     </>
   );
 };
