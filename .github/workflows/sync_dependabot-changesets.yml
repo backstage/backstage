@@ -25,6 +25,15 @@ jobs:
         run: |
           git config --global user.email noreply@backstage.io
           git config --global user.name 'Github changeset workflow'
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+      - name: Dedupe lockfile
+        run: |
+          corepack enable
+          yarn dedupe
+          git add yarn.lock
       - name: Generate changeset
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
