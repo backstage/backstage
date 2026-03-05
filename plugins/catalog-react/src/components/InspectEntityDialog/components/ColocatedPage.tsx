@@ -20,26 +20,18 @@ import {
   ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import {
+  Alert,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
 import { EntityRefLink } from '../../EntityRefLink';
 import { KeyValueListItem, ListItemText } from './common';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-});
 
 function useColocated(entity: Entity): {
   loading: boolean;
@@ -83,14 +75,14 @@ function useColocated(entity: Entity): {
 
 function EntityList(props: { entities: Entity[]; header?: [string, string] }) {
   return (
-    <List dense>
+    <ul className="space-y-1">
       {props.header && <KeyValueListItem key="header" entry={props.header} />}
       {props.entities.map(entity => (
-        <ListItem key={stringifyEntityRef(entity)}>
+        <li key={stringifyEntityRef(entity)} className="px-2 py-1">
           <ListItemText primary={<EntityRefLink entityRef={entity} />} />
-        </ListItem>
+        </li>
       ))}
-    </List>
+    </ul>
   );
 }
 
@@ -108,13 +100,13 @@ function Contents(props: { entity: Entity }) {
 
   if (!location && !originLocation) {
     return (
-      <Alert severity="warning">
+      <Alert variant="warning">
         {t('inspectEntityDialog.colocatedPage.alertNoLocation')}
       </Alert>
     );
   } else if (!colocatedEntities?.length) {
     return (
-      <Alert severity="info">
+      <Alert variant="info">
         {t('inspectEntityDialog.colocatedPage.alertNoEntity')}
       </Alert>
     );
@@ -157,17 +149,16 @@ function Contents(props: { entity: Entity }) {
 }
 
 export function ColocatedPage(props: { entity: Entity }) {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <>
-      <DialogContentText variant="h2">
+      <h2 className="text-2xl font-semibold">
         {t('inspectEntityDialog.colocatedPage.title')}
-      </DialogContentText>
-      <DialogContentText>
+      </h2>
+      <p className="text-muted-foreground">
         {t('inspectEntityDialog.colocatedPage.description')}
-      </DialogContentText>
-      <div className={classes.root}>
+      </p>
+      <div className="flex flex-col">
         <Contents entity={props.entity} />
       </div>
     </>
