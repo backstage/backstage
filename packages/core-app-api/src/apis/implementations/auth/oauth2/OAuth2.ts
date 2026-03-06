@@ -84,6 +84,7 @@ export default class OAuth2
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
       popupOptions,
+      authorizationParams,
     } = options;
 
     return new DefaultAuthConnector({
@@ -121,6 +122,7 @@ export default class OAuth2
         return session;
       },
       popupOptions,
+      authorizationParams,
     });
   }
 
