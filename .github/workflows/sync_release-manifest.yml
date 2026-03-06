@@ -81,9 +81,5 @@ jobs:
               owner: 'backstage',
               repo: 'upgrade-helper-diff',
               workflow_id: 'release.yml',
-              ref: 'master',
-              inputs: {
-                version: require('./packages/create-app/package.json').version,
-                releaseVersion: require('./package.json').version
-              },
+              ref: 'master'
             });
