@@ -57,9 +57,9 @@ BUI components with navigation behavior — Link, ButtonLink, Tab, MenuItem, Tag
 
 If you're using the **new frontend system**, analytics is wired automatically via `@backstage/plugin-app` — no setup required.
 
-For the **old frontend system**, the `AnalyticsProvider` is included in the app shell from `@backstage/core-app-api` and works out of the box.
+For the **old frontend system**, the `BUIProvider` is included in the app shell from `@backstage/core-app-api` and works out of the box.
 
-If you need to set up the provider manually (e.g. in a custom app shell), wrap your app content with the `AnalyticsProvider` and pass in Backstage's `useAnalytics` hook:
+If you need to set up the provider manually (e.g. in a custom app shell), wrap your app content with the `BUIProvider` and pass in Backstage's `useAnalytics` hook:
 
 <CodeBlock lang="tsx" code={analyticsSetupSnippet} />
 

@@ -24,7 +24,7 @@ export type AnalyticsEventAttributes = {
 
 /**
  * A generic interface for capturing analytics events. Consumers provide
- * an implementation via `AnalyticsProvider` — this allows `@backstage/ui`
+ * an implementation via `BUIProvider` — this allows `@backstage/ui`
  * to fire analytics events without depending on any specific analytics
  * system. The signature intentionally matches Backstage's own
  * `AnalyticsTracker` so it can be wired through directly.
