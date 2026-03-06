@@ -40,6 +40,19 @@ function depCount(pkg: BackstagePackageJson) {
 }
 
 export default async ({ args, info }: CommandContext) => {
+  for (const flag of [
+    'outputFile',
+    'successCache',
+    'successCacheDir',
+    'maxWarnings',
+  ]) {
+    if (args.some(a => a === `--${flag}` || a.startsWith(`--${flag}=`))) {
+      process.stderr.write(
+        `DEPRECATION WARNING: --${flag} is deprecated, use the kebab-case form instead\n`,
+      );
+    }
+  }
+
   const {
     flags: {
       fix,

@@ -134,6 +134,14 @@ export function createFlagFinder(args: string[]) {
 export default async ({ args, info }: CommandContext) => {
   const testGlobal = global as TestGlobal;
 
+  for (const flag of ['successCache', 'successCacheDir', 'jestHelp']) {
+    if (args.some(a => a === `--${flag}` || a.startsWith(`--${flag}=`))) {
+      process.stderr.write(
+        `DEPRECATION WARNING: --${flag} is deprecated, use the kebab-case form instead\n`,
+      );
+    }
+  }
+
   // Parse Backstage-specific flags; unknown flags and arguments are left in
   // args so they can be forwarded to Jest.
   const { flags: opts } = cli(

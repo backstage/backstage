@@ -19,6 +19,14 @@ import { createNewPackage } from '../lib/createNewPackage';
 import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
+  for (const flag of ['skipInstall', 'npmRegistry', 'baseVersion']) {
+    if (args.some(a => a === `--${flag}` || a.startsWith(`--${flag}=`))) {
+      process.stderr.write(
+        `DEPRECATION WARNING: --${flag} is deprecated, use the kebab-case form instead\n`,
+      );
+    }
+  }
+
   const {
     flags: {
       select,
