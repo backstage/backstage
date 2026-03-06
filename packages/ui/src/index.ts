@@ -67,3 +67,12 @@ export * from './types';
 export { useBreakpoint } from './hooks/useBreakpoint';
 export { useBgProvider, useBgConsumer, BgProvider } from './hooks/useBg';
 export type { BgContextValue, BgProviderProps } from './hooks/useBg';
+
+// Analytics
+export { useAnalytics, BUIProvider, getNodeText } from './analytics';
+export type {
+  AnalyticsTracker,
+  AnalyticsEventAttributes,
+  UseAnalyticsFn,
+  BUIProviderProps,
+} from './analytics';

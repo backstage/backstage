@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import type {
-  ComponentConfig,
-  BgPropsConstraint,
-  AnalyticsPropsConstraint,
+export { useAnalytics } from './useAnalytics';
+export { BUIProvider } from './BUIProvider';
+export type { BUIProviderProps } from './BUIProvider';
+export { getNodeText } from './getNodeText';
+export type {
+  AnalyticsTracker,
+  AnalyticsEventAttributes,
+  UseAnalyticsFn,
 } from './types';
-
-export function defineComponent<P extends Record<string, any>>() {
-  return <
-    const S extends Record<string, string>,
-    const C extends ComponentConfig<P, S>,
-  >(
-    config: C &
-      BgPropsConstraint<P, C['bg']> &
-      AnalyticsPropsConstraint<P, C['analytics']>,
-  ): C => config;
-}

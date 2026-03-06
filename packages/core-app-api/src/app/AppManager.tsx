@@ -45,7 +45,9 @@ import {
   fetchApiRef,
   discoveryApiRef,
   errorApiRef,
+  useAnalytics,
 } from '@backstage/core-plugin-api';
+import { BUIProvider } from '@backstage/ui';
 import {
   AppLanguageApi,
   appLanguageApiRef,
@@ -389,26 +391,28 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
       return (
         <ApiProvider apis={apis}>
-          <AppContextProvider appContext={appContext}>
-            <ThemeProvider>
-              <RoutingProvider
-                routePaths={routing.paths}
-                routeParents={routing.parents}
-                routeObjects={routing.objects}
-                routeBindings={routeBindings}
-                basePath={getBasePath(loadedConfig.api)}
-              >
-                <InternalAppContext.Provider
-                  value={{
-                    routeObjects: routing.objects,
-                    appIdentityProxy: this.appIdentityProxy,
-                  }}
+          <BUIProvider useAnalytics={useAnalytics}>
+            <AppContextProvider appContext={appContext}>
+              <ThemeProvider>
+                <RoutingProvider
+                  routePaths={routing.paths}
+                  routeParents={routing.parents}
+                  routeObjects={routing.objects}
+                  routeBindings={routeBindings}
+                  basePath={getBasePath(loadedConfig.api)}
                 >
-                  <Suspense fallback={<Progress />}>{children}</Suspense>
-                </InternalAppContext.Provider>
-              </RoutingProvider>
-            </ThemeProvider>
-          </AppContextProvider>
+                  <InternalAppContext.Provider
+                    value={{
+                      routeObjects: routing.objects,
+                      appIdentityProxy: this.appIdentityProxy,
+                    }}
+                  >
+                    <Suspense fallback={<Progress />}>{children}</Suspense>
+                  </InternalAppContext.Provider>
+                </RoutingProvider>
+              </ThemeProvider>
+            </AppContextProvider>
+          </BUIProvider>
         </ApiProvider>
       );
     };
