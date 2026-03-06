@@ -17,26 +17,18 @@
 import { DefaultAwsCredentialsManager } from './DefaultAwsCredentialsManager';
 import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
-import {
-  STSClient,
-  GetCallerIdentityCommand,
-  AssumeRoleCommand,
-} from '@aws-sdk/client-sts';
-// this is an internal package that the sdk uses behind the scenes, and we need to mock parts of it
-// eslint-disable-next-line @backstage/no-undeclared-imports
-import {
-  STSClient as NestedSTSClient,
-  AssumeRoleCommand as NestedAssumeRoleCommand,
-} from '@aws-sdk/nested-clients/sts';
+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { Config, ConfigReader } from '@backstage/config';
-import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
+import {
+  fromNodeProviderChain,
+  fromTemporaryCredentials,
+} from '@aws-sdk/credential-providers';
 import { join } from 'node:path';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 
 const env = process.env;
 let stsMock: AwsClientStub<STSClient>;
-let nestedStsMock: AwsClientStub<NestedSTSClient>;
 let config: Config;
 let tmpDir: string;
 
@@ -45,6 +37,7 @@ jest.mock('@aws-sdk/credential-providers', () => {
   return {
     ...originalModule,
     fromNodeProviderChain: jest.fn(),
+    fromTemporaryCredentials: jest.fn(),
   };
 });
 
@@ -54,7 +47,6 @@ describe('DefaultAwsCredentialsManager', () => {
     jest.resetAllMocks();
 
     stsMock = mockClient(STSClient);
-    nestedStsMock = mockClient(NestedSTSClient);
 
     config = new ConfigReader({
       aws: {
@@ -113,59 +105,44 @@ describe('DefaultAwsCredentialsManager', () => {
           Account: '123456789012',
         };
       });
-    const assumeRoleResponses = {
+
+    // Mock fromTemporaryCredentials to return credential providers
+    // based on the RoleArn, instead of mocking internal nested STS clients.
+    const assumeRoleCredentials: Record<
+      string,
+      {
+        accessKeyId: string;
+        secretAccessKey: string;
+        sessionToken: string;
+        expiration: Date;
+      }
+    > = {
       'arn:aws:iam::111111111111:role/hello': {
-        input: {
-          RoleArn: 'arn:aws:iam::111111111111:role/hello',
-          RoleSessionName: 'backstage',
-          ExternalId: 'world',
-        },
-        output: {
-          Credentials: {
-            AccessKeyId: 'ACCESS_KEY_ID_1',
-            SecretAccessKey: 'SECRET_ACCESS_KEY_1',
-            SessionToken: 'SESSION_TOKEN_1',
-            Expiration: new Date('2022-01-01'),
-          },
-        },
+        accessKeyId: 'ACCESS_KEY_ID_1',
+        secretAccessKey: 'SECRET_ACCESS_KEY_1',
+        sessionToken: 'SESSION_TOKEN_1',
+        expiration: new Date('2022-01-01'),
       },
       'arn:aws-other:iam::222222222222:role/hi': {
-        input: {
-          RoleArn: 'arn:aws-other:iam::222222222222:role/hi',
-          RoleSessionName: 'backstage',
-        },
-        output: {
-          Credentials: {
-            AccessKeyId: 'ACCESS_KEY_ID_2',
-            SecretAccessKey: 'SECRET_ACCESS_KEY_2',
-            SessionToken: 'SESSION_TOKEN_2',
-            Expiration: new Date('2022-01-02'),
-          },
-        },
+        accessKeyId: 'ACCESS_KEY_ID_2',
+        secretAccessKey: 'SECRET_ACCESS_KEY_2',
+        sessionToken: 'SESSION_TOKEN_2',
+        expiration: new Date('2022-01-02'),
       },
       'arn:aws:iam::999999999999:role/backstage-role': {
-        input: {
-          RoleArn: 'arn:aws:iam::999999999999:role/backstage-role',
-          RoleSessionName: 'backstage',
-          ExternalId: 'my-id',
-        },
-        output: {
-          Credentials: {
-            AccessKeyId: 'ACCESS_KEY_ID_9',
-            SecretAccessKey: 'SECRET_ACCESS_KEY_9',
-            SessionToken: 'SESSION_TOKEN_9',
-            Expiration: new Date('2022-01-09'),
-          },
-        },
+        accessKeyId: 'ACCESS_KEY_ID_9',
+        secretAccessKey: 'SECRET_ACCESS_KEY_9',
+        sessionToken: 'SESSION_TOKEN_9',
+        expiration: new Date('2022-01-09'),
       },
     };
-
-    // Mock AssumeRoleCommand on both the regular and nested STS clients.
-    // fromTemporaryCredentials internally uses @aws-sdk/nested-clients/sts.
-    for (const { input, output } of Object.values(assumeRoleResponses)) {
-      stsMock.on(AssumeRoleCommand, input).resolves(output);
-      nestedStsMock.on(NestedAssumeRoleCommand, input).resolves(output);
-    }
+    (fromTemporaryCredentials as jest.Mock).mockImplementation(opts => {
+      const creds = assumeRoleCredentials[opts.params.RoleArn];
+      if (!creds) {
+        throw new Error(`Unexpected RoleArn: ${opts.params.RoleArn}`);
+      }
+      return async () => creds;
+    });
 
     const testDate = new Date('2022-01-10');
 
@@ -216,15 +193,21 @@ describe('DefaultAwsCredentialsManager', () => {
         expiration: new Date('2022-01-01'),
       });
 
+      expect(fromTemporaryCredentials).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            RoleArn: 'arn:aws:iam::111111111111:role/hello',
+            RoleSessionName: 'backstage',
+            ExternalId: 'world',
+          },
+        }),
+      );
+
       const awsCredentialProvider2 = await provider.getCredentialProvider({
         accountId: '111111111111',
       });
 
       expect(awsCredentialProvider).toBe(awsCredentialProvider2);
-      expect(nestedStsMock).toHaveReceivedCommandTimes(
-        NestedAssumeRoleCommand,
-        1,
-      );
     });
 
     it('retrieves assume-role creds in another partition for the given account ID', async () => {
@@ -242,6 +225,19 @@ describe('DefaultAwsCredentialsManager', () => {
         sessionToken: 'SESSION_TOKEN_2',
         expiration: new Date('2022-01-02'),
       });
+
+      expect(fromTemporaryCredentials).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            RoleArn: 'arn:aws-other:iam::222222222222:role/hi',
+            RoleSessionName: 'backstage',
+            ExternalId: undefined,
+          },
+          clientConfig: expect.objectContaining({
+            region: 'not-us-east-1',
+          }),
+        }),
+      );
     });
 
     it('retrieves assume-role creds for an account using the account defaults', async () => {
@@ -259,6 +255,16 @@ describe('DefaultAwsCredentialsManager', () => {
         sessionToken: 'SESSION_TOKEN_9',
         expiration: new Date('2022-01-09'),
       });
+
+      expect(fromTemporaryCredentials).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            RoleArn: 'arn:aws:iam::999999999999:role/backstage-role',
+            RoleSessionName: 'backstage',
+            ExternalId: 'my-id',
+          },
+        }),
+      );
     });
 
     it('retrieves static creds for the given account ID', async () => {
