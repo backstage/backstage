@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import '@backstage/theme/MuiClassNameSetup';
 import '@backstage/cli/asset-types';
 import ReactDOM from 'react-dom/client';
 import app from './App';
