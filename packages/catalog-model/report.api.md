@@ -56,7 +56,6 @@ export type ApiEntityV1alpha1Spec =
         type: string;
         url: string;
       }[];
-      definition?: never;
     }
   | {
       type: string;

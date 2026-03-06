@@ -38,15 +38,15 @@ export const ApiDefinitionCard = () => {
   const definitionWidget = getApiDefinitionWidget(entity);
   const entityTitle = entity.metadata.title ?? entity.metadata.name;
 
-  if (definitionWidget) {
+  if (definitionWidget && 'definition' in entity.spec) {
     return (
       <TabbedCard title={entityTitle}>
         <CardTab label={definitionWidget.title} key="widget">
-          {definitionWidget.component(entity.spec.definition ?? '')}
+          {definitionWidget.component(entity.spec.definition)}
         </CardTab>
         <CardTab label={t('apiDefinitionCard.rawButtonTitle')} key="raw">
           <PlainApiDefinitionWidget
-            definition={entity.spec.definition ?? ''}
+            definition={entity.spec.definition}
             language={definitionWidget.rawLanguage || entity.spec.type}
           />
         </CardTab>
@@ -54,18 +54,22 @@ export const ApiDefinitionCard = () => {
     );
   }
 
-  return (
-    <TabbedCard
-      title={entityTitle}
-      children={[
-        // Has to be an array, otherwise typescript doesn't like that this has only a single child
-        <CardTab label={entity.spec.type} key="raw">
-          <PlainApiDefinitionWidget
-            definition={entity.spec.definition}
-            language={entity.spec.type}
-          />
-        </CardTab>,
-      ]}
-    />
-  );
+  if ('definition' in entity.spec) {
+    return (
+      <TabbedCard
+        title={entityTitle}
+        children={[
+          // Has to be an array, otherwise typescript doesn't like that this has only a single child
+          <CardTab label={entity.spec.type} key="raw">
+            <PlainApiDefinitionWidget
+              definition={entity.spec.definition}
+              language={entity.spec.type}
+            />
+          </CardTab>,
+        ]}
+      />
+    );
+  }
+
+  return null;
 };

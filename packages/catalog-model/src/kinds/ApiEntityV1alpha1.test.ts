@@ -218,7 +218,6 @@ components:
     });
 
     it('does not require definition for mcp-server type', async () => {
-      expect(mcpEntity.spec.definition).toBeUndefined();
       await expect(validator.check(mcpEntity)).resolves.toBe(true);
     });
 

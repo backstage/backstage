@@ -158,17 +158,19 @@ export function ApiDefinitionDialog(props: {
           />
         </Tabs>
 
-        {definitionWidget ? (
+        {definitionWidget && 'definition' in entity.spec ? (
           <TabPanel value={activeTab} index={tabPanelIndex++}>
-            {definitionWidget.component(entity.spec.definition ?? '')}
+            {definitionWidget.component(entity.spec.definition)}
           </TabPanel>
         ) : null}
-        <TabPanel value={activeTab} index={tabPanelIndex++}>
-          <PlainApiDefinitionWidget
-            definition={entity.spec.definition}
-            language={definitionWidget?.rawLanguage ?? entity.spec.type}
-          />
-        </TabPanel>
+        {'definition' in entity.spec ? (
+          <TabPanel value={activeTab} index={tabPanelIndex++}>
+            <PlainApiDefinitionWidget
+              definition={entity.spec.definition}
+              language={definitionWidget?.rawLanguage ?? entity.spec.type}
+            />
+          </TabPanel>
+        ) : null}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">

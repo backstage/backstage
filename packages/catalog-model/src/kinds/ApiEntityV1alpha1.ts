@@ -27,7 +27,6 @@ export type ApiEntityV1alpha1Spec =
   | {
       type: 'mcp-server';
       remotes: { type: string; url: string }[];
-      definition?: never;
     }
   | { type: string; definition: string; remotes?: never };
 
