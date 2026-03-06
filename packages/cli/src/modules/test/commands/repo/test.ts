@@ -31,7 +31,6 @@ import {
   findOwnPaths,
   isChildPath,
 } from '@backstage/cli-common';
-import { warnDeprecatedFlags } from '../../../../lib/warnDeprecatedFlags';
 import type { CommandContext } from '../../../../wiring/types';
 
 type JestProject = {
@@ -156,7 +155,17 @@ export default async ({ args, info }: CommandContext) => {
     },
   };
 
-  warnDeprecatedFlags(args, flagDefs);
+  for (const [old, replacement] of Object.entries({
+    '--successCache': '--success-cache',
+    '--successCacheDir': '--success-cache-dir',
+    '--jestHelp': '--jest-help',
+  })) {
+    if (args.some(a => a === old || a.startsWith(`${old}=`))) {
+      process.stderr.write(
+        `DEPRECATION WARNING: ${old} has been renamed to ${replacement}\n`,
+      );
+    }
+  }
 
   const { flags: opts } = cli(
     {

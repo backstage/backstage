@@ -273,7 +273,7 @@ Options:
 ### `backstage-cli package lint`
 
 ```
-Usage: backstage-cli package lint
+Usage: backstage-cli package lint [directories...]
 
 Options:
   --fix

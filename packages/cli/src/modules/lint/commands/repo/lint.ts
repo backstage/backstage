@@ -29,7 +29,6 @@ import {
 import { targetPaths } from '@backstage/cli-common';
 
 import { createScriptOptionsParser } from '../../lib/optionsParser';
-import { warnDeprecatedFlags } from '../../../../lib/warnDeprecatedFlags';
 import type { CommandContext } from '../../../../wiring/types';
 
 function depCount(pkg: BackstagePackageJson) {
@@ -76,7 +75,18 @@ export default async ({ args, info }: CommandContext) => {
     },
   };
 
-  warnDeprecatedFlags(args, flagDefs);
+  for (const [old, replacement] of Object.entries({
+    '--outputFile': '--output-file',
+    '--successCache': '--success-cache',
+    '--successCacheDir': '--success-cache-dir',
+    '--maxWarnings': '--max-warnings',
+  })) {
+    if (args.some(a => a === old || a.startsWith(`${old}=`))) {
+      process.stderr.write(
+        `DEPRECATION WARNING: ${old} has been renamed to ${replacement}\n`,
+      );
+    }
+  }
 
   const {
     flags: {

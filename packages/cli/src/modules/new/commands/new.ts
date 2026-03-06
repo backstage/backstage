@@ -16,7 +16,6 @@
 
 import { cli } from 'cleye';
 import { createNewPackage } from '../lib/createNewPackage';
-import { warnDeprecatedFlags } from '../../../lib/warnDeprecatedFlags';
 import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
@@ -58,7 +57,17 @@ export default async ({ args, info }: CommandContext) => {
     },
   };
 
-  warnDeprecatedFlags(args, flagDefs);
+  for (const [old, replacement] of Object.entries({
+    '--skipInstall': '--skip-install',
+    '--npmRegistry': '--npm-registry',
+    '--baseVersion': '--base-version',
+  })) {
+    if (args.some(a => a === old || a.startsWith(`${old}=`))) {
+      process.stderr.write(
+        `DEPRECATION WARNING: ${old} has been renamed to ${replacement}\n`,
+      );
+    }
+  }
 
   const {
     flags: {
