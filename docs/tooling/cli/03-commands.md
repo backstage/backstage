@@ -125,6 +125,7 @@ Options:
   --successCache            Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
   --successCacheDir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
   --fix                     Attempt to automatically fix violations
+  --engine <engine>         Lint engine to use: "eslint" or "oxlint" (default: "eslint")
 ```
 
 ## repo test
@@ -220,6 +221,7 @@ Options:
   --format <format>        Lint report output format (default: "eslint-formatter-friendly")
   --fix                    Attempt to automatically fix violations
   --max-warnings <number>  Fail if more than this number of warnings. -1 allows warnings. (default: -1)
+  --engine <engine>        Lint engine to use: "eslint" or "oxlint" (default: "eslint")
 ```
 
 ## package test

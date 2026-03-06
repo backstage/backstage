@@ -30,6 +30,11 @@ import { targetPaths } from '@backstage/cli-common';
 
 import { createScriptOptionsParser } from '../../lib/optionsParser';
 import type { CommandContext } from '../../../../wiring/types';
+import {
+  resolveConfigDir,
+  VALID_ENGINES,
+  buildOxlintConfig,
+} from '../../lib/oxlintConfig';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
@@ -62,6 +67,7 @@ export default async ({ args, info }: CommandContext) => {
       successCacheDir,
       since,
       maxWarnings,
+      engine,
     },
   } = cli(
     {
@@ -100,11 +106,25 @@ export default async ({ args, info }: CommandContext) => {
           description:
             'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
         },
+        engine: {
+          type: String,
+          description: 'Lint engine to use (eslint or oxlint)',
+          default: 'eslint',
+        },
       },
     },
     undefined,
     args,
   );
+
+  if (!VALID_ENGINES.has(engine ?? '')) {
+    console.error(
+      `Unknown lint engine "${engine}". Valid engines: ${[
+        ...VALID_ENGINES,
+      ].join(', ')}`,
+    );
+    process.exit(1);
+  }
 
   let packages = await PackageGraph.listTargetPackages();
 
@@ -146,15 +166,40 @@ export default async ({ args, info }: CommandContext) => {
     format: { type: 'string' },
     'output-file': { type: 'string' },
     'max-warnings': { type: 'string' },
+    engine: { type: 'string' },
   });
+
+  const configDir = resolveConfigDir();
 
   const items = await Promise.all(
     packages.map(async pkg => {
       const lintOptions = parseLintScript(pkg.packageJson.scripts?.lint);
+      const pkgEngine = String(lintOptions?.engine ?? engine ?? 'eslint');
+
+      if (!VALID_ENGINES.has(pkgEngine)) {
+        throw new Error(
+          `Package "${
+            pkg.packageJson.name
+          }" has unknown lint engine "${pkgEngine}". Valid engines: ${[
+            ...VALID_ENGINES,
+          ].join(', ')}`,
+        );
+      }
+
+      let oxlintConfigJson: string | undefined;
+      if (pkgEngine === 'oxlint') {
+        const role = (pkg.packageJson as any).backstage?.role as
+          | string
+          | undefined;
+        oxlintConfigJson = buildOxlintConfig(configDir, role, pkg.dir);
+      }
+
       const base = {
         fullDir: pkg.dir,
         relativeDir: relativePath(targetPaths.rootDir, pkg.dir),
         lintOptions,
+        engine: pkgEngine,
+        oxlintConfigJson,
         parentHash: undefined,
       };
 
@@ -172,7 +217,9 @@ export default async ({ args, info }: CommandContext) => {
       hash.update('\0');
       hash.update(process.version); // Node.js version
       hash.update('\0');
-      hash.update('v1'); // The version of this implementation
+      hash.update(String(pkgEngine));
+      hash.update('\0');
+      hash.update('v2'); // The version of this implementation
 
       return {
         ...base,
@@ -205,22 +252,131 @@ export default async ({ args, info }: CommandContext) => {
       const { readFile } =
         require('node:fs/promises') as typeof import('fs/promises');
       const workerPath = require('node:path') as typeof import('path');
+      const { spawnSync: workerSpawnSync } =
+        require('node:child_process') as typeof import('child_process');
 
       return async ({
         fullDir,
         relativeDir,
         parentHash,
+        engine: itemEngine,
+        oxlintConfigJson,
       }): Promise<{
         relativeDir: string;
         sha?: string;
         resultText?: string;
         failed: boolean;
       }> => {
+        const start = Date.now();
+
+        if (itemEngine === 'oxlint') {
+          let sha: string | undefined = undefined;
+          if (shouldCache) {
+            const result = await globby(relativeDir, {
+              gitignore: true,
+              onlyFiles: true,
+              cwd: rootDir,
+            });
+
+            const hash = crypto.createHash('sha1');
+            hash.update(parentHash!);
+            hash.update('\0');
+            hash.update(oxlintConfigJson ?? '');
+            hash.update('\0');
+
+            for (const path of result.sort()) {
+              const absPath = workerPath.resolve(rootDir, path);
+              hash.update(path);
+              hash.update('\0');
+              hash.update(await readFile(absPath));
+              hash.update('\0');
+            }
+            sha = hash.digest('hex');
+            if (successCache?.has(sha)) {
+              console.log(`Skipped ${relativeDir} due to cache hit`);
+              return { relativeDir, sha, failed: false };
+            }
+          }
+
+          const workerFs = require('node:fs') as typeof import('fs');
+          const workerOs = require('node:os') as typeof import('os');
+          const tmpDir = workerPath.join(workerOs.tmpdir(), 'backstage-oxlint');
+          workerFs.mkdirSync(tmpDir, { recursive: true });
+          const tmpPath = workerPath.join(
+            tmpDir,
+            `oxlint-${crypto.randomBytes(6).toString('hex')}.json`,
+          );
+          workerFs.writeFileSync(tmpPath, oxlintConfigJson ?? '');
+
+          try {
+            let oxlintMain: string;
+            try {
+              oxlintMain = require.resolve('oxlint');
+            } catch {
+              throw new Error(
+                "oxlint is not installed. Install it with 'yarn add --dev oxlint oxlint-tsgolint' or remove --engine oxlint from your lint scripts.",
+              );
+            }
+            const oxlintBin = workerPath.resolve(
+              workerPath.dirname(oxlintMain),
+              '../bin/oxlint',
+            );
+
+            // Build args
+            const oxlintArgs = [oxlintBin, '--config', tmpPath];
+            try {
+              require.resolve('oxlint-tsgolint');
+              oxlintArgs.push('--type-aware', '--type-check');
+            } catch {
+              /* not available */
+            }
+            if (workerFix) {
+              oxlintArgs.push('--fix');
+            }
+            const oxlintFormat =
+              workerFormat === 'eslint-formatter-friendly'
+                ? 'default'
+                : workerFormat;
+            if (oxlintFormat) {
+              oxlintArgs.push('--format', oxlintFormat);
+            }
+            if (workerMaxWarnings && workerMaxWarnings !== '-1') {
+              oxlintArgs.push('--max-warnings', workerMaxWarnings);
+            }
+            oxlintArgs.push('.');
+
+            // Spawn and capture output
+            const result = workerSpawnSync(process.execPath, oxlintArgs, {
+              cwd: fullDir,
+              encoding: 'utf-8',
+              env: { ...process.env, FORCE_COLOR: '1' },
+            });
+
+            const time = ((Date.now() - start) / 1000).toFixed(2);
+            console.log(`Checked (oxlint) ${relativeDir} ${time}s`);
+
+            const resultText = (result.stdout || '') + (result.stderr || '');
+            const failed = result.status !== 0;
+
+            return {
+              relativeDir,
+              resultText: failed ? resultText : undefined,
+              failed,
+              sha,
+            };
+          } finally {
+            try {
+              workerFs.unlinkSync(tmpPath);
+            } catch {
+              /* ignore */
+            }
+          }
+        }
+
         // Bit of a hack to make file resolutions happen from the correct directory
         // since some lint rules don't respect the cwd of ESLint
         process.cwd = () => fullDir;
 
-        const start = Date.now();
         const eslint = new ESLint({
           cwd: fullDir,
           fix: workerFix,
@@ -278,7 +434,7 @@ export default async ({ args, info }: CommandContext) => {
 
         const ignoreWarnings = +workerMaxWarnings === -1;
 
-        const resultText = formatter.format(results) as string;
+        const resultText = (await formatter.format(results)) as string;
         const failed =
           results.some(r => r.errorCount > 0) ||
           (!ignoreWarnings &&
