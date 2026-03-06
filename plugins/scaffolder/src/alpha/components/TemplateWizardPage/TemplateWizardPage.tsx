@@ -69,6 +69,10 @@ export type TemplateWizardPageProps = {
   };
 };
 
+// Descriptions longer than this threshold are shown in a collapsible card
+// rather than inline in the page header subtitle, to avoid cluttering the header.
+const DESCRIPTION_LENGTH_THRESHOLD = 140;
+
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const rootRef = useRouteRef(rootRouteRef);
   const taskRoute = useRouteRef(scaffolderTaskRouteRef);
@@ -90,8 +94,6 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
 
   const { manifest } = useTemplateParameterSchema(templateRef);
   const decorators = useFormDecorators();
-
-  const descriptionPreviewThreshold = 140;
   const title = manifest?.title ?? templateName;
 
   const { value: editUrl } = useAsync(async () => {
@@ -140,7 +142,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     setDescription(desc);
     setShowDescription(
       manifest?.presentation?.showDescription ??
-        desc.length > descriptionPreviewThreshold,
+        desc.length > DESCRIPTION_LENGTH_THRESHOLD,
     );
   }, [manifest?.description, manifest?.presentation?.showDescription]);
 
@@ -151,7 +153,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           pageTitleOverride={title}
           title={title}
           subtitle={
-            description.length < descriptionPreviewThreshold ? description : ''
+            description.length < DESCRIPTION_LENGTH_THRESHOLD ? description : ''
           }
           {...props.headerOptions}
         >

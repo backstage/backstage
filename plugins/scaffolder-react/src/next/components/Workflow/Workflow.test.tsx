@@ -48,7 +48,124 @@ const apis = TestApiRegistry.from(
   [analyticsApiRef, analyticsMock],
 );
 
+const defaultSchema = {
+  steps: [
+    {
+      title: 'Step 1',
+      schema: {
+        properties: {
+          name: {
+            type: 'string',
+          },
+        },
+      },
+    },
+  ],
+  title: 'Test Template',
+};
+
 describe('<Workflow />', () => {
+  describe('description card', () => {
+    it('should show the description card when showDescription is true and description is provided', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
+        defaultSchema,
+      );
+
+      const { getByText } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <Workflow
+            onCreate={jest.fn()}
+            onError={jest.fn()}
+            namespace="default"
+            templateName="docs-template"
+            extensions={[]}
+            showDescription
+            description="## My description"
+            title="My Template"
+          />
+        </ApiProvider>,
+      );
+
+      expect(getByText('My Template')).toBeInTheDocument();
+      expect(getByText('My description')).toBeInTheDocument();
+    });
+
+    it('should not show the description card when showDescription is false', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
+        defaultSchema,
+      );
+
+      const { queryByText } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <Workflow
+            onCreate={jest.fn()}
+            onError={jest.fn()}
+            namespace="default"
+            templateName="docs-template"
+            extensions={[]}
+            showDescription={false}
+            description="## My description"
+            title="My Template"
+          />
+        </ApiProvider>,
+      );
+
+      expect(queryByText('My description')).not.toBeInTheDocument();
+    });
+
+    it('should not show the description card when description is not provided', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
+        defaultSchema,
+      );
+
+      const { queryByTitle } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <Workflow
+            onCreate={jest.fn()}
+            onError={jest.fn()}
+            namespace="default"
+            templateName="docs-template"
+            extensions={[]}
+            showDescription
+            title="My Template"
+          />
+        </ApiProvider>,
+      );
+
+      expect(queryByTitle('Hide description')).not.toBeInTheDocument();
+    });
+
+    it('should call onHideDescription when the hide button is clicked', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
+        defaultSchema,
+      );
+
+      const onHideDescription = jest.fn();
+
+      const { getByTitle } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <Workflow
+            onCreate={jest.fn()}
+            onError={jest.fn()}
+            namespace="default"
+            templateName="docs-template"
+            extensions={[]}
+            showDescription
+            description="## My description"
+            title="My Template"
+            onHideDescription={onHideDescription}
+          />
+        </ApiProvider>,
+      );
+
+      await act(async () => {
+        fireEvent.click(getByTitle('Hide description'));
+      });
+
+      expect(onHideDescription).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('should complete a workflow', async () => {
     const onCreate = jest.fn();
     const onError = jest.fn();
