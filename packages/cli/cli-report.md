@@ -356,6 +356,7 @@ Options:
 Usage: backstage-cli package lint [directories...]
 
 Options:
+  --engine <string>
   --fix
   --format <string>
   --max-warnings <string>
@@ -568,6 +569,7 @@ Options:
 Usage: backstage-cli repo lint
 
 Options:
+  --engine <string>
   --fix
   --format <string>
   --max-warnings <string>

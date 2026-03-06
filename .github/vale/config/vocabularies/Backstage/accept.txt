@@ -582,3 +582,4 @@ resizable
 enums
 LLMs
 cleye
+oxlint

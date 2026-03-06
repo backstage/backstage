@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { cli } from 'cleye';
-import { targetPaths } from '@backstage/cli-common';
-import { ESLint } from 'eslint';
 import type { CommandContext } from '../../../../wiring/types';
+import { VALID_ENGINES } from '../../lib/oxlintConfig';
+
+export interface PackageLintOptions {
+  fix: boolean;
+  format: string | undefined;
+  outputFile: string | undefined;
+  maxWarnings: string | undefined;
+  directories: string[];
+}
 
 export default async ({ args, info }: CommandContext) => {
   const {
-    flags: { fix, format, outputFile, maxWarnings },
+    flags: { engine, fix, format, outputFile, maxWarnings },
     _: directories,
   } = cli(
     {
@@ -30,6 +36,12 @@ export default async ({ args, info }: CommandContext) => {
       booleanFlagNegation: true,
       parameters: ['[directories...]'],
       flags: {
+        engine: {
+          type: String,
+          description:
+            'Lint engine to use: "eslint" or "oxlint" (default: "eslint")',
+          default: 'eslint',
+        },
         fix: {
           type: Boolean,
           description: 'Attempt to automatically fix violations',
@@ -37,7 +49,6 @@ export default async ({ args, info }: CommandContext) => {
         format: {
           type: String,
           description: 'Lint report output format',
-          default: 'eslint-formatter-friendly',
         },
         outputFile: {
           type: String,
@@ -54,47 +65,40 @@ export default async ({ args, info }: CommandContext) => {
     args,
   );
 
-  const eslint = new ESLint({
-    cwd: targetPaths.dir,
-    fix,
-    extensions: ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'],
-  });
-
-  const results = await eslint.lintFiles(
-    directories.length ? directories : ['.'],
-  );
-
-  const maxWarningsNum = maxWarnings ? +maxWarnings : -1;
-  const ignoreWarnings = maxWarningsNum === -1;
-
-  const failed =
-    results.some(r => r.errorCount > 0) ||
-    (!ignoreWarnings &&
-      results.reduce((current, next) => current + next.warningCount, 0) >
-        maxWarningsNum);
-
-  if (fix) {
-    await ESLint.outputFixes(results);
-  }
-
-  const formatter = await eslint.loadFormatter(format);
-
-  // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
-  if (format === 'eslint-formatter-friendly') {
-    process.chdir(targetPaths.rootDir);
-  }
-
-  const resultText = await formatter.format(results);
-
-  if (resultText) {
-    if (outputFile) {
-      await fs.writeFile(targetPaths.resolve(outputFile), resultText);
-    } else {
-      console.log(resultText);
-    }
-  }
-
-  if (failed) {
+  if (!VALID_ENGINES.has(engine)) {
+    console.error(
+      `Unknown lint engine "${engine}". Valid engines: ${[
+        ...VALID_ENGINES,
+      ].join(', ')}`,
+    );
     process.exit(1);
   }
+
+  const opts: PackageLintOptions = {
+    fix: fix ?? false,
+    format,
+    outputFile,
+    maxWarnings,
+    directories,
+  };
+
+  if (engine === 'oxlint') {
+    const mod = await import('./oxlint');
+    const runOxlint =
+      typeof mod.default === 'function'
+        ? mod.default
+        : (mod.default as any).default;
+    const passed = await runOxlint(opts);
+    if (!passed) {
+      process.exit(1);
+    }
+    return;
+  }
+
+  const eslintMod = await import('./eslint');
+  const runEslint =
+    typeof eslintMod.default === 'function'
+      ? eslintMod.default
+      : (eslintMod.default as any).default;
+  await runEslint(opts);
 };
