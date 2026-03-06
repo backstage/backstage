@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import yargs from 'yargs';
+import { cli } from 'cleye';
+import type { CommandContext } from '../../../wiring/types';
 import { startCallbackServer } from '../lib/localServer';
 import { spawn } from 'node:child_process';
 import { challengeFromVerifier, generateVerifier } from '../lib/pkce';
@@ -36,43 +37,45 @@ import inquirer from 'inquirer';
 
 const TOKEN_EXCHANGE_TIMEOUT_MS = 30_000;
 
-export async function login(argv: string[]) {
-  const parsed = await yargs(argv)
-    .option('backend-url', { type: 'string', desc: 'Backend base URL' })
-    .option('no-browser', {
-      type: 'boolean',
-      desc: 'Do not open browser automatically',
-    })
-    .option('instance', {
-      type: 'string',
-      desc: 'Name for this instance (used by other auth commands)',
-    })
-    .parse();
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { backendUrl, noBrowser, instance: instanceFlag },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        backendUrl: { type: String, description: 'Backend base URL' },
+        noBrowser: {
+          type: Boolean,
+          description: 'Do not open browser automatically',
+        },
+        instance: {
+          type: String,
+          description: 'Name for this instance (used by other auth commands)',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-  // Load existing instances to allow re-authentication
   const { instances, selected } = await getAllInstances();
 
-  // Determine which instance to authenticate
   let backendBaseUrl: string;
   let instanceName: string;
 
-  if (parsed.instance) {
-    instanceName = parsed.instance;
-    // User specified a name explicitly
-    const targetInstance = instances.find(i => i.name === parsed.instance);
+  if (instanceFlag) {
+    instanceName = instanceFlag;
+    const targetInstance = instances.find(i => i.name === instanceFlag);
     if (targetInstance) {
-      backendBaseUrl =
-        normalizeUrl(parsed.backendUrl) ?? targetInstance.baseUrl;
+      backendBaseUrl = normalizeUrl(backendUrl) ?? targetInstance.baseUrl;
     } else {
-      // New instance with specified name
-      backendBaseUrl = normalizeUrl(parsed.backendUrl) ?? (await pickBaseUrl());
+      backendBaseUrl = normalizeUrl(backendUrl) ?? (await pickBaseUrl());
     }
-  } else if (parsed.backendUrl) {
-    // User specified a URL, create or update instance
-    backendBaseUrl = normalizeUrl(parsed.backendUrl);
+  } else if (backendUrl) {
+    backendBaseUrl = normalizeUrl(backendUrl);
     instanceName = deriveInstanceName(backendBaseUrl);
   } else if (instances.length > 0) {
-    // Prompt to select existing instance or create new
     const choice = await promptForInstance(instances, selected);
     if (choice === '__new__') {
       backendBaseUrl = await pickBaseUrl();
@@ -86,7 +89,6 @@ export async function login(argv: string[]) {
       instanceName = targetInstance.name;
     }
   } else {
-    // No instances, resolve URL from config or prompt
     backendBaseUrl = await pickBaseUrl();
     instanceName = deriveInstanceName(backendBaseUrl);
   }
@@ -94,7 +96,6 @@ export async function login(argv: string[]) {
   const authBaseUrl = `${backendBaseUrl}/api/auth`;
   const clientId = `${authBaseUrl}/.well-known/oauth-client/cli.json`;
 
-  // Verify the server supports CIMD before starting the callback server
   const metadataResponse = await fetch(clientId);
   if (!metadataResponse.ok) {
     throw new Error(
@@ -114,7 +115,7 @@ export async function login(argv: string[]) {
       challenge,
     });
 
-    await openBrowserOrPrint(authorizeUrl, parsed.noBrowser);
+    await openBrowserOrPrint(authorizeUrl, noBrowser);
 
     const code = await waitForAuthorizationCode(callback, state);
 
@@ -136,7 +137,7 @@ export async function login(argv: string[]) {
   } finally {
     await callback.close();
   }
-}
+};
 
 async function promptForInstance(
   instances: StoredInstance[],

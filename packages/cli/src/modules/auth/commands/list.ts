@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
+import type { CommandContext } from '../../../wiring/types';
 import { getAllInstances } from '../lib/storage';
 
-export async function list(_argv: string[]) {
+export default async ({ args, info }: CommandContext) => {
+  cli({ help: info }, undefined, args);
+
   const { instances, selected } = await getAllInstances();
   if (!instances.length) {
     process.stderr.write('No instances found\n');
@@ -26,4 +30,4 @@ export async function list(_argv: string[]) {
     const mark = inst.name === selected?.name ? '* ' : '  ';
     process.stdout.write(`${mark}${inst.name} - ${inst.baseUrl}\n`);
   }
-}
+};

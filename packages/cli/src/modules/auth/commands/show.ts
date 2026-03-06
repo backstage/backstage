@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 
-import yargs from 'yargs';
+import { cli } from 'cleye';
+import type { CommandContext } from '../../../wiring/types';
 import { httpJson } from '../lib/http';
 import { getSelectedInstance } from '../lib/storage';
 import { accessTokenNeedsRefresh, refreshAccessToken } from '../lib/auth';
 import { getSecretStore } from '../lib/secretStore';
 
-export async function show(argv: string[]) {
-  const parsed = await yargs(argv)
-    .option('instance', {
-      type: 'string',
-      desc: 'Name of the instance to show',
-    })
-    .parse();
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { instance: instanceFlag },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        instance: {
+          type: String,
+          description: 'Name of the instance to show',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-  let instance = await getSelectedInstance(parsed.instance);
+  let instance = await getSelectedInstance(instanceFlag);
 
   if (accessTokenNeedsRefresh(instance)) {
     process.stderr.write('Refreshing access token...\n');
@@ -59,4 +69,4 @@ export async function show(argv: string[]) {
   for (const ent of userinfo.claims.ent ?? []) {
     process.stdout.write(`  - ${ent}\n`);
   }
-}
+};

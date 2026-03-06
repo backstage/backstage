@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import yargs from 'yargs';
 import { createCliPlugin } from '../../wiring/factory';
-import * as commands from './commands';
 
 export default createCliPlugin({
   pluginId: 'auth',
@@ -24,50 +22,32 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['auth', 'login'],
       description: 'Log in the CLI to a Backstage instance',
-      execute: async ({ args }) => {
-        yargs().parse(args);
-        await commands.login(args);
-      },
+      execute: { loader: () => import('./commands/login') },
     });
     reg.addCommand({
       path: ['auth', 'logout'],
       description: 'Log out the CLI and clear stored credentials',
-      execute: async ({ args }) => {
-        yargs().parse(args);
-        await commands.logout(args);
-      },
+      execute: { loader: () => import('./commands/logout') },
     });
     reg.addCommand({
       path: ['auth', 'show'],
       description: 'Show details of an authenticated instance',
-      execute: async ({ args }) => {
-        yargs().parse(args);
-        await commands.show(args);
-      },
+      execute: { loader: () => import('./commands/show') },
     });
     reg.addCommand({
       path: ['auth', 'list'],
       description: 'List authenticated instances',
-      execute: async ({ args }) => {
-        yargs().parse(args);
-        await commands.list(args);
-      },
+      execute: { loader: () => import('./commands/list') },
     });
     reg.addCommand({
       path: ['auth', 'print-token'],
       description: 'Print an access token to stdout (auto-refresh if needed)',
-      execute: async ({ args }) => {
-        yargs().parse(args);
-        await commands.printToken(args);
-      },
+      execute: { loader: () => import('./commands/printToken') },
     });
     reg.addCommand({
       path: ['auth', 'select'],
       description: 'Select the default instance',
-      execute: async ({ args }) => {
-        yargs().parse(args);
-        await commands.select(args);
-      },
+      execute: { loader: () => import('./commands/select') },
     });
   },
 });

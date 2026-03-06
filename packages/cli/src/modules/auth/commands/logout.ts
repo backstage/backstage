@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import yargs from 'yargs';
+import { cli } from 'cleye';
+import type { CommandContext } from '../../../wiring/types';
 import { getSecretStore } from '../lib/secretStore';
 import {
   removeInstance,
@@ -24,15 +25,24 @@ import {
 import { httpJson } from '../lib/http';
 import { pickInstance } from '../lib/prompt';
 
-export async function logout(argv: string[]) {
-  const parsed = await yargs(argv)
-    .option('instance', {
-      type: 'string',
-      desc: 'Name of the instance to log out',
-    })
-    .parse();
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { instance: instanceFlag },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        instance: {
+          type: String,
+          description: 'Name of the instance to log out',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-  const { name: instanceName } = await pickInstance(parsed.instance);
+  const { name: instanceName } = await pickInstance(instanceFlag);
 
   await withMetadataLock(async () => {
     const instance = await getInstanceByName(instanceName);
@@ -71,4 +81,4 @@ export async function logout(argv: string[]) {
   });
 
   process.stderr.write('Logged out\n');
-}
+};

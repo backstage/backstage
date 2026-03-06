@@ -14,20 +14,30 @@
  * limitations under the License.
  */
 
-import yargs from 'yargs';
+import { cli } from 'cleye';
+import type { CommandContext } from '../../../wiring/types';
 import { setSelectedInstance } from '../lib/storage';
 import { pickInstance } from '../lib/prompt';
 
-export async function select(argv: string[]) {
-  const parsed = await yargs(argv)
-    .option('instance', {
-      type: 'string',
-      desc: 'Name of the instance to select',
-    })
-    .parse();
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { instance: instanceFlag },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        instance: {
+          type: String,
+          description: 'Name of the instance to select',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-  const instance = await pickInstance(parsed.instance);
+  const instance = await pickInstance(instanceFlag);
 
   await setSelectedInstance(instance.name);
   process.stderr.write(`Selected instance '${instance.name}'\n`);
-}
+};
