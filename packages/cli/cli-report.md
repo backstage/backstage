@@ -237,6 +237,7 @@ Options:
 
 Commands:
   build
+  bundle
   clean
   help [command]
   lint
@@ -258,6 +259,22 @@ Options:
   --role <name>
   --skip-build-dependencies
   --stats
+  -h, --help
+```
+
+### `backstage-cli package bundle`
+
+```
+Usage: program [options]
+
+Options:
+  --clean
+  --no-build
+  --no-install
+  --output-destination <dir>
+  --output-name <name>
+  --pre-packed-dir <dir>
+  --verbose
   -h, --help
 ```
 
