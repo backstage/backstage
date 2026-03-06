@@ -838,6 +838,11 @@ export function useEntityPresentation(
 ): EntityRefPresentationSnapshot;
 
 // @public
+export function useEntityRefLink(): (
+  entityRef: Entity | CompoundEntityRef | string,
+) => string;
+
+// @public
 export function useEntityTypeFilter(): {
   loading: boolean;
   error?: Error;
