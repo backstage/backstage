@@ -44,10 +44,24 @@ Returns a taskId that can be used to track execution progress.`,
               'The template entity reference to execute, e.g. "template:default/my-template"',
             ),
           values: z
-            .record(z.unknown())
+            .record(
+              z.string(),
+              z.union([
+                z.string(),
+                z.number(),
+                z.boolean(),
+                z.null(),
+                z.array(z.unknown()),
+                z.record(z.unknown()),
+              ]),
+            )
             .describe(
-              'Input parameter values required by the template. Collect all required template parameters from the user before calling this action.',
+              'Input parameter values required by the template. Collect all required template parameters from the user before calling this action. e.g. { "repoUrl": "github.com?owner=my-org&repo=my-repo", "description": "My new service" }',
             ),
+          secrets: z
+            .record(z.string())
+            .optional()
+            .describe('Optional secrets to pass to the template execution.'),
         }),
       output: z =>
         z.object({
@@ -63,6 +77,7 @@ Returns a taskId that can be used to track execution progress.`,
         {
           templateRef: input.templateRef,
           values: input.values as Record<string, JsonValue>,
+          ...(input.secrets && { secrets: input.secrets }),
         },
         { credentials },
       );
