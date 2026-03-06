@@ -29,6 +29,7 @@ import {
   createExtension,
   createExtensionInput,
   routeResolutionApiRef,
+  useAnalytics,
 } from '@backstage/frontend-plugin-api';
 import {
   AppRootWrapperBlueprint,
@@ -36,7 +37,6 @@ import {
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
 import { BUIProvider } from '@backstage/ui';
-import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   DiscoveryApi,
   ErrorApi,
