@@ -188,5 +188,8 @@ tsconfig.typedoc.tmp.json
 # Storybook
 dist-storybook/
 
+# Git worktrees
+.worktrees/
+
 # Personal allow patterns etc
 .claude/settings.local.json

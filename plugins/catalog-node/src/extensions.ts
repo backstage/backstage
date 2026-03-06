@@ -117,11 +117,11 @@ export interface CatalogModelExtensionPoint {
   setEntityDataParser(parser: CatalogProcessorParser): void;
 
   /**
-   * Adds an extension to the catalog entity model.
+   * Sets the catalog entity model to use.
    *
-   * @param extension - The extension to add
+   * @param model - The model to use
    */
-  addModelExtension(extension: CatalogModelExtension): void;
+  setModel(extension: CatalogModel): void;
 }
 
 /**
@@ -149,8 +149,8 @@ export interface CatalogAnalysisExtensionPoint {
     analyzerOrFactory:
       | LocationAnalyzer
       | ((options: {
-        scmLocationAnalyzers: ScmLocationAnalyzer[];
-      }) => Promise<{ locationAnalyzer: LocationAnalyzer }>),
+          scmLocationAnalyzers: ScmLocationAnalyzer[];
+        }) => Promise<{ locationAnalyzer: LocationAnalyzer }>),
   ): void;
 
   /**
