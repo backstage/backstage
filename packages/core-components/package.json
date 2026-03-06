@@ -58,6 +58,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@dagrejs/dagre": "^1.1.4",
     "@date-io/core": "^1.3.13",
