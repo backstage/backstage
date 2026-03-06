@@ -73,6 +73,8 @@ export type BackstagePlugin<
 export type PluginFeatureFlagConfig = {
   /** Feature flag name */
   name: string;
+  /** Persisted feature flag */
+  persisted?: boolean;
 };
 
 /**

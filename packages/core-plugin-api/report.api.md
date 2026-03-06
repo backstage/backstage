@@ -76,6 +76,7 @@ import { StorageValueSnapshot } from '@backstage/frontend-plugin-api';
 import { TypesToApiRefs } from '@backstage/frontend-plugin-api';
 import { useApi } from '@backstage/frontend-plugin-api';
 import { useApiHolder } from '@backstage/frontend-plugin-api';
+import { useFeatureFlag } from '@backstage/frontend-plugin-api';
 import { vmwareCloudAuthApiRef } from '@backstage/frontend-plugin-api';
 import { withApis } from '@backstage/frontend-plugin-api';
 
@@ -500,6 +501,7 @@ export type PluginConfig<
 // @public
 export type PluginFeatureFlagConfig = {
   name: string;
+  persisted?: boolean;
 };
 
 export { ProfileInfo };
@@ -562,6 +564,8 @@ export function useElementFilter<T>(
   filterFn: (arg: ElementCollection) => T,
   dependencies?: any[],
 ): T;
+
+export { useFeatureFlag };
 
 // @public
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(

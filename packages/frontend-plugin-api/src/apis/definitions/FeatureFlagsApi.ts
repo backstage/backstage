@@ -16,6 +16,8 @@
 /* We want to maintain the same information as an enum, so we disable the redeclaration warning */
 /* eslint-disable @typescript-eslint/no-redeclare */
 
+import type { Observable } from '@backstage/types';
+
 import { ApiRef, createApiRef } from '../system';
 
 /**
@@ -24,8 +26,16 @@ import { ApiRef, createApiRef } from '../system';
  * @public
  */
 export type FeatureFlag = {
+  /** Unique name of the feature flag */
   name: string;
+  /**
+   * Whether the feature flag is persisted in the StorageApi or locally in the
+   * browser
+   */
+  persisted: boolean;
+  /** ID of the plugin that registered the feature flag */
   pluginId: string;
+  /** Description of the feature flag */
   description?: string;
 };
 
@@ -95,6 +105,12 @@ export type FeatureFlagsSaveOptions = {
  */
 export interface FeatureFlagsApi {
   /**
+   * Initializes the feature flags API. This is called once on app startup, and
+   * is not expected to be called by plugins.
+   */
+  initialize?(): void;
+
+  /**
    * Registers a new feature flag. Once a feature flag has been registered it
    * can be toggled by users, and read back to enable or disable features.
    */
@@ -106,12 +122,31 @@ export interface FeatureFlagsApi {
   getRegisteredFlags(): FeatureFlag[];
 
   /**
+   * Get the value of a feature flag with the given name.
+   */
+  getFlag(name: string): Promise<boolean>;
+
+  /**
+   * Save the user's choice of a feature flag.
+   */
+  setFlag(name: string, active: boolean): Promise<void>;
+
+  /**
+   * Observe the value of a feature flag with the given name.
+   */
+  observe$(name: string): Observable<boolean>;
+
+  /**
    * Whether the feature flag with the given name is currently activated for the user.
+   *
+   * @deprecated Use `useFeatureFlag` or {@link FeatureFlagsApi.getFlag | getFlag} instead.
    */
   isActive(name: string): boolean;
 
   /**
    * Save the user's choice of feature flag states.
+   *
+   * @deprecated Use {@link FeatureFlagsApi.setFlag | setFlag} instead.
    */
   save(options: FeatureFlagsSaveOptions): void;
 }
