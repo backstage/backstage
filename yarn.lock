@@ -3341,6 +3341,7 @@ __metadata:
     "@types/recursive-readdir": "npm:^2.2.0"
     "@types/rollup-plugin-peer-deps-external": "npm:^2.2.0"
     "@types/rollup-plugin-postcss": "npm:^3.1.4"
+    "@types/shell-quote": "npm:^1.7.5"
     "@types/svgo": "npm:^2.6.2"
     "@types/tar": "npm:^6.1.1"
     "@types/terser-webpack-plugin": "npm:^5.0.4"
@@ -3411,6 +3412,7 @@ __metadata:
     rollup-plugin-postcss: "npm:^4.0.0"
     rollup-pluginutils: "npm:^2.8.2"
     semver: "npm:^7.5.3"
+    shell-quote: "npm:^1.8.1"
     style-loader: "npm:^3.3.1"
     sucrase: "npm:^3.20.2"
     swc-loader: "npm:^0.2.3"
@@ -22654,6 +22656,13 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10/105cc90c7d7deeb344858f720b58bd137356586545ac00d1a448e050bfcc0f385553ff26bc9c674bd8c2e953a458149eadb1945ee3d1eee81e6c0656236ebc0a
+  languageName: node
+  linkType: hard
+
+"@types/shell-quote@npm:^1.7.5":
+  version: 1.7.5
+  resolution: "@types/shell-quote@npm:1.7.5"
+  checksum: 10/32b4d697c7d23dbadf40713692c47f1595f083a3b3deea76cb18e30a05d197aa9205d2b87f6d92edb60cda120b51e35d32bda96ed9b0a7e32921eed2deb4559e
   languageName: node
   linkType: hard
 
