@@ -156,16 +156,10 @@ export type DbStitchQueueRow = {
   /**
    * A random value that changes with every new stitch request. Used for
    * optimistic concurrency: when a stitch completes, the row is only deleted
-   * if this ticket still matches the active_ticket (meaning no new request
-   * came in while stitching was in progress).
+   * if this ticket still matches (meaning no new request came in while
+   * stitching was in progress).
    */
-  latest_ticket: string;
-  /**
-   * Set when a stitcher picks up this item for processing. The stitcher
-   * compares this against latest_ticket before writing results; if they
-   * differ, a new stitch request arrived and the current work is abandoned.
-   */
-  active_ticket?: string | null;
+  stitch_ticket: string;
   /**
    * The point in time when this entity should next be stitched.
    *
@@ -181,7 +175,7 @@ export type DbStitchQueueRow = {
    * future.
    *
    * Only when a stitch run is completed successfully, AND it's found that the
-   * latest ticket has not changed since the start (which means that no new
+   * stitch ticket has not changed since the start (which means that no new
    * request has been made behind our backs), does the row get deleted.
    */
   next_stitch_at: string | Date;

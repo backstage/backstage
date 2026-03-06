@@ -102,6 +102,12 @@ describe('deleteOrphanedEntities', () => {
       .select('entity_ref', 'result_hash');
   }
 
+  async function stitchQueue(knex: Knex) {
+    return await knex('stitch_queue')
+      .orderBy('entity_ref')
+      .select('entity_ref');
+  }
+
   async function finalEntities(knex: Knex) {
     return await knex<DbFinalEntitiesRow>('final_entities')
       .join(
@@ -188,6 +194,7 @@ describe('deleteOrphanedEntities', () => {
         { entity_ref: 'E8', result_hash: 'original' },
         { entity_ref: 'E9', result_hash: 'original' },
       ]);
+      await expect(stitchQueue(knex)).resolves.toEqual([]);
       await expect(finalEntities(knex)).resolves.toEqual([
         { entity_ref: 'E1', hash: 'original', next_stitch_at: null },
         {
@@ -277,6 +284,10 @@ describe('deleteOrphanedEntities', () => {
         { entity_ref: 'E7', result_hash: 'original' },
         { entity_ref: 'E8', result_hash: 'original' },
         { entity_ref: 'E9', result_hash: 'original' },
+      ]);
+      await expect(stitchQueue(knex)).resolves.toEqual([
+        { entity_ref: 'E2' },
+        { entity_ref: 'E7' },
       ]);
       await expect(finalEntities(knex)).resolves.toEqual([
         { entity_ref: 'E1', hash: 'original', next_stitch_at: null },

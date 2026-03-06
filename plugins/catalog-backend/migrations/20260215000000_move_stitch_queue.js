@@ -34,13 +34,9 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('The entity ref that needs stitching');
     table
-      .string('latest_ticket')
+      .string('stitch_ticket')
       .notNullable()
       .comment('Changes with every new stitch request');
-    table
-      .string('active_ticket')
-      .nullable()
-      .comment('Set when a stitcher picks up this item for processing');
     table
       .dateTime('next_stitch_at')
       .notNullable()
@@ -58,16 +54,15 @@ exports.up = async function up(knex) {
     .from('refresh_state')
     .whereNotNull('refresh_state.next_stitch_at');
 
-  for (let i = 0; i < pendingStitches.length; i += 1000) {
-    const batch = pendingStitches.slice(i, i + 1000);
-    await knex('stitch_queue').insert(
-      batch.map(row => ({
-        entity_ref: row.entity_ref,
-        latest_ticket: row.next_stitch_ticket || '',
-        next_stitch_at: row.next_stitch_at,
-      })),
-    );
-  }
+  await knex.batchInsert(
+    'stitch_queue',
+    pendingStitches.map(row => ({
+      entity_ref: row.entity_ref,
+      stitch_ticket: row.next_stitch_ticket || '',
+      next_stitch_at: row.next_stitch_at,
+    })),
+    1000,
+  );
 
   // Step 3: Remove next_stitch_at and next_stitch_ticket columns from refresh_state
   if (isSQLite) {
@@ -102,10 +97,17 @@ exports.down = async function down(knex) {
   await knex.schema.alterTable('final_entities', table => {
     table
       .text('stitch_ticket')
-      .notNullable()
-      .defaultTo('')
-      .comment('Optimistic concurrency ticket for stitching');
+      .nullable()
+      .comment('Random value representing a unique stitch attempt ticket');
   });
+  await knex('final_entities').update({ stitch_ticket: '' });
+  if (isSQLite) {
+    // SQLite doesn't support ALTER COLUMN, but the nullable column is fine
+  } else {
+    await knex.schema.alterTable('final_entities', table => {
+      table.text('stitch_ticket').notNullable().alter();
+    });
+  }
 
   // Step 2: Add back the columns to refresh_state
   await knex.schema.alterTable('refresh_state', table => {
@@ -140,7 +142,7 @@ exports.down = async function down(knex) {
       .select({
         entityRef: 'stitch_queue.entity_ref',
         nextStitchAt: 'stitch_queue.next_stitch_at',
-        latestTicket: 'stitch_queue.latest_ticket',
+        latestTicket: 'stitch_queue.stitch_ticket',
       })
       .from('stitch_queue');
 
@@ -160,7 +162,7 @@ exports.down = async function down(knex) {
           .from('stitch_queue')
           .whereRaw('stitch_queue.entity_ref = refresh_state.entity_ref'),
         next_stitch_ticket: knex
-          .select('stitch_queue.latest_ticket')
+          .select('stitch_queue.stitch_ticket')
           .from('stitch_queue')
           .whereRaw('stitch_queue.entity_ref = refresh_state.entity_ref'),
       })

@@ -103,9 +103,9 @@ describe('performStitching', () => {
         stitchTicket: (
           await knex('stitch_queue')
             .where('entity_ref', 'k:ns/n')
-            .select('latest_ticket')
+            .select('stitch_ticket')
             .first()
-        )?.latest_ticket,
+        )?.stitch_ticket,
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -200,9 +200,9 @@ describe('performStitching', () => {
         stitchTicket: (
           await knex('stitch_queue')
             .where('entity_ref', 'k:ns/n')
-            .select('latest_ticket')
+            .select('stitch_ticket')
             .first()
-        )?.latest_ticket,
+        )?.stitch_ticket,
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');
@@ -235,9 +235,9 @@ describe('performStitching', () => {
         stitchTicket: (
           await knex('stitch_queue')
             .where('entity_ref', 'k:ns/n')
-            .select('latest_ticket')
+            .select('stitch_ticket')
             .first()
-        )?.latest_ticket,
+        )?.stitch_ticket,
       });
 
       entities = await knex<DbFinalEntitiesRow>('final_entities');

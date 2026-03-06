@@ -34,7 +34,7 @@ describe('markDeferredStitchCompleted', () => {
       await knex<DbStitchQueueRow>('stitch_queue').insert([
         {
           entity_ref: 'k:ns/n',
-          latest_ticket: 'the-ticket',
+          stitch_ticket: 'the-ticket',
           next_stitch_at: '1971-01-01T00:00:00.000',
         },
       ]);
@@ -43,7 +43,7 @@ describe('markDeferredStitchCompleted', () => {
         return knex<DbStitchQueueRow>('stitch_queue').select(
           'entity_ref',
           'next_stitch_at',
-          'latest_ticket',
+          'stitch_ticket',
         );
       }
 
@@ -57,7 +57,7 @@ describe('markDeferredStitchCompleted', () => {
         {
           entity_ref: 'k:ns/n',
           next_stitch_at: expect.anything(),
-          latest_ticket: 'the-ticket',
+          stitch_ticket: 'the-ticket',
         },
       ]);
 

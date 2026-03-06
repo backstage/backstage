@@ -38,6 +38,6 @@ export async function markDeferredStitchCompleted(option: {
 
   await knex<DbStitchQueueRow>('stitch_queue')
     .where('entity_ref', '=', entityRef)
-    .andWhere('latest_ticket', '=', stitchTicket)
+    .andWhere('stitch_ticket', '=', stitchTicket)
     .delete();
 }

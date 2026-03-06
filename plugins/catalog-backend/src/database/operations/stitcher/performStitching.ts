@@ -239,12 +239,12 @@ export async function performStitching(options: {
       .where('entity_id', entityId);
 
     // In deferred mode, guard against concurrent stitchers by checking that
-    // the latest_ticket in stitch_queue still matches what we were given.
+    // the stitch_ticket in stitch_queue still matches what we were given.
     if (options.strategy.mode === 'deferred' && stitchTicket) {
       updateQuery = updateQuery.whereExists(
         knex<DbStitchQueueRow>('stitch_queue')
           .where('stitch_queue.entity_ref', entityRef)
-          .where('stitch_queue.latest_ticket', stitchTicket)
+          .where('stitch_queue.stitch_ticket', stitchTicket)
           .select(knex.raw('1')),
       );
     }

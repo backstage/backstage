@@ -1005,18 +1005,18 @@ describe('migrations', () => {
       // Verify data was migrated correctly to stitch_queue
       const stitchQueueAfterUp = await knex('stitch_queue')
         .orderBy('entity_ref')
-        .select('entity_ref', 'latest_ticket', 'next_stitch_at');
+        .select('entity_ref', 'stitch_ticket', 'next_stitch_at');
 
       // Only entities with pending stitches should be in stitch_queue (id1 and id3)
       expect(stitchQueueAfterUp).toEqual([
         {
           entity_ref: 'component:default/orphan-stitch',
-          latest_ticket: 'ticket-3',
+          stitch_ticket: 'ticket-3',
           next_stitch_at: expect.anything(),
         },
         {
           entity_ref: 'component:default/with-stitch',
-          latest_ticket: 'ticket-1',
+          stitch_ticket: 'ticket-1',
           next_stitch_at: expect.anything(),
         },
       ]);

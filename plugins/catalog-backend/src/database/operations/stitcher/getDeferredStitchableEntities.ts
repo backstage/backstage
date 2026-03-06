@@ -31,7 +31,7 @@ import { DbStitchQueueRow } from '../../tables';
  *
  * This assumes that the stitching strategy is set to deferred.
  *
- * They are expected to already have the latest_ticket set (by
+ * They are expected to already have the stitch_ticket set (by
  * markForStitching) so that their tickets can be returned with each item.
  *
  * All returned items have their next_stitch_at updated to be moved forward by
@@ -55,7 +55,7 @@ export async function getDeferredStitchableEntities(options: {
   let itemsQuery = knex<DbStitchQueueRow>('stitch_queue').select(
     'entity_ref',
     'next_stitch_at',
-    'latest_ticket',
+    'stitch_ticket',
   );
 
   // This avoids duplication of work because of race conditions and is
@@ -81,12 +81,11 @@ export async function getDeferredStitchableEntities(options: {
     )
     .update({
       next_stitch_at: nowPlus(knex, stitchTimeout),
-      active_ticket: knex.ref('latest_ticket'),
     });
 
   return items.map(i => ({
     entityRef: i.entity_ref,
-    stitchTicket: i.latest_ticket,
+    stitchTicket: i.stitch_ticket,
     stitchRequestedAt: timestampToDateTime(i.next_stitch_at),
   }));
 }
