@@ -31,53 +31,26 @@ describe('createCatalogModelKind', () => {
           owner: {
             type: 'relation',
             description: 'Owner reference.',
+            relation: 'ownedBy',
             defaultKind: 'Group',
             defaultNamespace: 'inherit',
             allowedKinds: ['Group', 'User'],
-            outgoing: {
-              type: 'ownedBy',
-              singular: 'owned by',
-              plural: 'owned by',
-            },
-            incoming: {
-              type: 'ownerOf',
-              singular: 'owner of',
-              plural: 'owners of',
-            },
           },
           system: {
             type: 'relation',
             description: 'System reference.',
+            relation: 'partOf',
             defaultKind: 'System',
             defaultNamespace: 'inherit',
-            outgoing: {
-              type: 'partOf',
-              singular: 'part of',
-              plural: 'parts of',
-            },
-            incoming: {
-              type: 'hasPart',
-              singular: 'has part',
-              plural: 'has parts',
-            },
           },
           providesApis: {
             type: 'array',
             description: 'Provided APIs.',
             items: {
               type: 'relation',
+              relation: 'providesApi',
               defaultKind: 'API',
               defaultNamespace: 'inherit',
-              outgoing: {
-                type: 'providesApi',
-                singular: 'provides API',
-                plural: 'provides APIs',
-              },
-              incoming: {
-                type: 'apiProvidedBy',
-                singular: 'API provided by',
-                plural: 'APIs provided by',
-              },
             },
           },
         },

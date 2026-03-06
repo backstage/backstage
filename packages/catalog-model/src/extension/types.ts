@@ -41,13 +41,19 @@ export namespace CatalogModelSchema {
   export interface RelationType {
     type: 'relation';
     /**
+     * The forward relation type, e.g. "ownedBy". This must match the
+     * `forward.type` of a relation created with `createCatalogModelRelation`.
+     * All other relation metadata is inferred from that definition.
+     */
+    relation: string;
+    /**
      * If the given shorthand ref did not have a kind, use this kind as the
      * default. If no default kind is specified, the ref must contain a kind.
      */
     defaultKind?: string;
     /**
      * If the given shorthand ref did not have a namespace, either inherit the
-    //  * namespace of the entity itself, or choose the default namespace.
+     * namespace of the entity itself, or choose the default namespace.
      */
     defaultNamespace?: 'default' | 'inherit';
     /**
@@ -55,66 +61,6 @@ export namespace CatalogModelSchema {
      * include the default kind, if any.
      */
     allowedKinds?: string[];
-    /**
-     * The names for the outgoing direction (from the current entity toward
-     * the one being referenced).
-     */
-    outgoing: {
-      /**
-       * The technical type of the relation, e.g. "ownedBy"
-       */
-      type: string;
-      /**
-       * The singular human readable form of the relation name, e.g. "owner".
-       *
-       * @remarks
-       *
-       * This represents the count of the other end of the relation -
-       * essentially based on how many relations of this type that are
-       * present.
-       */
-      singular: string;
-      /**
-       * The plural human readable form of the relation name, e.g. "owners".
-       *
-       * @remarks
-       *
-       * This represents the count of the other end of the relation -
-       * essentially based on how many relations of this type that are
-       * present.
-       */
-      plural: string;
-    };
-    /**
-     * The names for the incoming direction (from the one being referenced
-     * toward the current entity).
-     */
-    incoming: {
-      /**
-       * The technical type of the relation, e.g. "ownerOf"
-       */
-      type: string;
-      /**
-       * The singular human readable form of the relation name, e.g. "owns".
-       *
-       * @remarks
-       *
-       * This represents the count of the other end of the relation -
-       * essentially based on how many relations of this type that are
-       * present.
-       */
-      singular: string;
-      /**
-       * The plural human readable form of the relation name, e.g. "owns".
-       *
-       * @remarks
-       *
-       * This represents the count of the other end of the relation -
-       * essentially based on how many relations of this type that are
-       * present.
-       */
-      plural: string;
-    };
   }
 
   /**
