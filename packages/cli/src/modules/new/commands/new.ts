@@ -19,56 +19,6 @@ import { createNewPackage } from '../lib/createNewPackage';
 import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
-  const flagDefs = {
-    select: {
-      type: String,
-      description: 'Select the thing you want to be creating upfront',
-    },
-    option: {
-      type: [String] as const,
-      description: 'Pre-fill options for the creation process',
-      default: [] as string[],
-    },
-    skipInstall: {
-      type: Boolean,
-      description: `Skips running 'yarn install' and 'yarn lint --fix'`,
-    },
-    scope: {
-      type: String,
-      description: 'The scope to use for new packages',
-    },
-    npmRegistry: {
-      type: String,
-      description: 'The package registry to use for new packages',
-    },
-    baseVersion: {
-      type: String,
-      description: 'The version to use for any new packages (default: 0.1.0)',
-    },
-    license: {
-      type: String,
-      description:
-        'The license to use for any new packages (default: Apache-2.0)',
-    },
-    private: {
-      type: Boolean,
-      description: 'Mark new packages as private',
-      default: true,
-    },
-  };
-
-  for (const [old, replacement] of Object.entries({
-    '--skipInstall': '--skip-install',
-    '--npmRegistry': '--npm-registry',
-    '--baseVersion': '--base-version',
-  })) {
-    if (args.some(a => a === old || a.startsWith(`${old}=`))) {
-      process.stderr.write(
-        `DEPRECATION WARNING: ${old} has been renamed to ${replacement}\n`,
-      );
-    }
-  }
-
   const {
     flags: {
       select,
@@ -80,7 +30,51 @@ export default async ({ args, info }: CommandContext) => {
       license,
       private: isPrivate,
     },
-  } = cli({ help: info, flags: flagDefs }, undefined, args);
+  } = cli(
+    {
+      help: info,
+      flags: {
+        select: {
+          type: String,
+          description: 'Select the thing you want to be creating upfront',
+        },
+        option: {
+          type: [String] as const,
+          description: 'Pre-fill options for the creation process',
+          default: [] as string[],
+        },
+        skipInstall: {
+          type: Boolean,
+          description: `Skips running 'yarn install' and 'yarn lint --fix'`,
+        },
+        scope: {
+          type: String,
+          description: 'The scope to use for new packages',
+        },
+        npmRegistry: {
+          type: String,
+          description: 'The package registry to use for new packages',
+        },
+        baseVersion: {
+          type: String,
+          description:
+            'The version to use for any new packages (default: 0.1.0)',
+        },
+        license: {
+          type: String,
+          description:
+            'The license to use for any new packages (default: Apache-2.0)',
+        },
+        private: {
+          type: Boolean,
+          description: 'Mark new packages as private',
+          default: true,
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
   const prefilledParams = parseParams(rawArgOptions);
 

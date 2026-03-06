@@ -20,15 +20,14 @@ import { createDistWorkspace } from '../lib/packager';
 import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
-  // Support legacy --alwaysYarnPack and --alwaysPack aliases (including =value form)
+  // Normalize legacy --alwaysYarnPack alias (a genuinely different name, not
+  // just a casing variant — type-flag handles camelCase/kebab-case natively)
   const normalizedArgs = args.map(a => {
-    for (const old of ['--alwaysYarnPack', '--alwaysPack']) {
-      if (a === old || a.startsWith(`${old}=`)) {
-        process.stderr.write(
-          `DEPRECATION WARNING: ${old} has been renamed to --always-pack\n`,
-        );
-        return `--always-pack${a.substring(old.length)}`;
-      }
+    if (a === '--alwaysYarnPack') {
+      return '--always-pack';
+    }
+    if (a.startsWith('--alwaysYarnPack=')) {
+      return `--always-pack${a.substring('--alwaysYarnPack'.length)}`;
     }
     return a;
   });
