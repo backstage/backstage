@@ -18,6 +18,7 @@ import { FieldExtensionOptions as FieldExtensionOptions_2 } from '@backstage/plu
 import { FieldSchema as FieldSchema_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/utils';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
+import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { LayoutTemplate as LayoutTemplate_2 } from '@backstage/plugin-scaffolder-react';
@@ -74,9 +75,9 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -104,9 +105,9 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldSchema: FieldSchema_2<
   string,
   {
-    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -251,9 +252,9 @@ export type MyGroupsPickerUiOptions = NonNullable<
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -281,9 +282,9 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnedEntityPickerFieldSchema: FieldSchema_2<
   string,
   {
-    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
+    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -384,9 +385,9 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -407,9 +408,9 @@ export const RepoOwnerPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -444,9 +445,9 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -471,9 +472,9 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -632,6 +633,31 @@ export type TemplateParameterSchema = TemplateParameterSchema_2;
 
 // @public
 export const TemplateTypePicker: () => JSX_2.Element | null;
+
+// @public (undocumented)
+export const useFormState: <T extends JsonValue>(
+  options: UseFormStateOptions<T>,
+) => UseFormStateResult<T>;
+
+// @public (undocumented)
+export interface UseFormStateOptions<T> {
+  // (undocumented)
+  debounceTime?: number;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  onLoad: (value: T | null) => void;
+}
+
+// @public (undocumented)
+export interface UseFormStateResult<T> {
+  // (undocumented)
+  cleanupFormState: () => void;
+  // (undocumented)
+  loading: boolean;
+  // (undocumented)
+  persistFormState: (value: T) => void;
+}
 
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
