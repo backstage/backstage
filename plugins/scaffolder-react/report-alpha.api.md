@@ -125,7 +125,9 @@ export const extractSchemaFromStep: (inputStep: JsonObject) => {
 
 // @alpha
 export const Form: (
-  props: PropsWithChildren<ScaffolderRJSFFormProps>,
+  props: PropsWithChildren<
+    ScaffolderRJSFFormProps & Pick<FormProps, 'EXPERIMENTAL_theme'>
+  >,
 ) => JSX_2.Element;
 
 // @alpha
@@ -330,6 +332,9 @@ export const scaffolderReactTranslationRef: TranslationRef<
   }
 >;
 
+// @alpha (undocumented)
+export type ScaffolderTheme = 'mui' | 'bui';
+
 // @alpha
 export const SecretWidget: (
   props: Pick<
@@ -459,6 +464,9 @@ export const useFilteredSchemaProperties: (
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
+
+// @alpha (undocumented)
+export const useScaffolderTheme: () => ScaffolderTheme;
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {

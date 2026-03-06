@@ -16,11 +16,15 @@
 
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
+import MuiTextField from '@material-ui/core/TextField';
 import { BaseRepoUrlPickerProps } from './types';
-import { Select, SelectItem } from '@backstage/core-components';
+import { Select as MuiSelect, SelectItem } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { TextField as BuiTextField, Select as BuiSelect } from '@backstage/ui';
+import overrides from '../scaffolderFieldOverrides.module.css';
+import type { Key } from 'react-aria-components';
 
 export const AzureRepoPicker = (
   props: BaseRepoUrlPickerProps<{
@@ -28,6 +32,7 @@ export const AzureRepoPicker = (
     allowedProject?: string[];
   }>,
 ) => {
+  const theme = useScaffolderTheme();
   const {
     allowedOrganizations = [],
     allowedProject = [],
@@ -38,6 +43,91 @@ export const AzureRepoPicker = (
   } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
+  const { organization, project } = state;
+
+  if (theme === 'bui') {
+    const renderOrganizationPicker = () => {
+      if (allowedOrganizations?.length) {
+        const organizationItems = allowedOrganizations.map(i => ({
+          label: i,
+          value: i,
+        }));
+
+        return (
+          <BuiSelect
+            className={overrides.select}
+            label={t('fields.azureRepoPicker.organization.title')}
+            description={t('fields.azureRepoPicker.organization.description')}
+            isDisabled={isDisabled || allowedOrganizations.length === 1}
+            isInvalid={rawErrors?.length > 0 && !organization}
+            selectedKey={organization ?? null}
+            onSelectionChange={(key: Key | null) => {
+              if (key !== null) onChange({ organization: String(key) });
+            }}
+            options={organizationItems}
+            isRequired
+          />
+        );
+      }
+
+      return (
+        <BuiTextField
+          label={t('fields.azureRepoPicker.organization.title')}
+          description={t('fields.azureRepoPicker.organization.description')}
+          onChange={value => onChange({ organization: value })}
+          isDisabled={isDisabled}
+          value={organization ?? ''}
+          isInvalid={rawErrors?.length > 0 && !organization}
+          isRequired
+        />
+      );
+    };
+
+    const renderProjectPicker = () => {
+      if (allowedProject?.length) {
+        const projectItems = allowedProject.map(i => ({
+          label: i,
+          value: i,
+        }));
+
+        return (
+          <BuiSelect
+            className={overrides.select}
+            label={t('fields.azureRepoPicker.project.title')}
+            description={t('fields.azureRepoPicker.project.description')}
+            isDisabled={isDisabled || allowedProject.length === 1}
+            isInvalid={rawErrors?.length > 0 && !project}
+            selectedKey={project ?? null}
+            onSelectionChange={(key: Key | null) => {
+              if (key !== null) onChange({ project: String(key) });
+            }}
+            options={projectItems}
+            isRequired
+          />
+        );
+      }
+
+      return (
+        <BuiTextField
+          label={t('fields.azureRepoPicker.project.title')}
+          description={t('fields.azureRepoPicker.project.description')}
+          onChange={value => onChange({ project: value })}
+          value={project ?? ''}
+          isDisabled={isDisabled}
+          isInvalid={rawErrors?.length > 0 && !project}
+          isRequired
+        />
+      );
+    };
+
+    return (
+      <>
+        {renderOrganizationPicker()}
+        {renderProjectPicker()}
+      </>
+    );
+  }
+
   const organizationItems: SelectItem[] = allowedOrganizations
     ? allowedOrganizations.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
@@ -45,8 +135,6 @@ export const AzureRepoPicker = (
   const projectItems: SelectItem[] = allowedProject
     ? allowedProject.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
-
-  const { organization, project } = state;
 
   return (
     <>
@@ -57,7 +145,7 @@ export const AzureRepoPicker = (
       >
         {allowedOrganizations?.length ? (
           <>
-            <Select
+            <MuiSelect
               native
               label={t('fields.azureRepoPicker.organization.title')}
               onChange={s =>
@@ -72,7 +160,7 @@ export const AzureRepoPicker = (
             </FormHelperText>
           </>
         ) : (
-          <TextField
+          <MuiTextField
             id="orgInput"
             label={t('fields.azureRepoPicker.organization.title')}
             onChange={e => onChange({ organization: e.target.value })}
@@ -89,7 +177,7 @@ export const AzureRepoPicker = (
       >
         {allowedProject?.length ? (
           <>
-            <Select
+            <MuiSelect
               native
               label={t('fields.azureRepoPicker.project.title')}
               onChange={s =>
@@ -104,7 +192,7 @@ export const AzureRepoPicker = (
             </FormHelperText>
           </>
         ) : (
-          <TextField
+          <MuiTextField
             id="projectInput"
             label={t('fields.azureRepoPicker.project.title')}
             onChange={e => onChange({ project: e.target.value })}
