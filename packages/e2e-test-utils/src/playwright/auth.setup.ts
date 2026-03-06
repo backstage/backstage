@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-export {
-  generateProjects,
-  generateProjectsWithAuthSetup,
-} from './generateProjects';
-export type { AuthSetupOptions } from './generateProjects';
-export { failOnBrowserErrors } from './failOnBrowserErrors';
+import { test as setup } from '@playwright/test';
+import fs from 'fs-extra';
+import { dirname } from 'path';
+
+const storageStatePath = '.auth/user.json';
+
+setup('authenticate as guest', async ({ page }) => {
+  // Navigate to Backstage
+  await page.goto('/');
+
+  // Wait for the application to load
+  await page.waitForSelector('[data-testid="sidebar"]', { timeout: 60000 });
+
+  // Ensure directory exists
+  await fs.ensureDir(dirname(storageStatePath));
+
+  // Save authentication state
+  await page.context().storageState({ path: storageStatePath });
+});
