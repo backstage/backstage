@@ -32,6 +32,7 @@ export default async ({ args, info }: CommandContext) => {
   const { _: positionals } = cli(
     {
       help: { ...info, usage: `${info.usage} <github-org>` },
+      booleanFlagNegation: true,
       parameters: ['<github-org>'],
     },
     undefined,

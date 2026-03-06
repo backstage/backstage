@@ -23,7 +23,7 @@ import { createTypeDistProject } from '../../lib/typeDistProject';
 import type { CommandContext } from '../../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
-  cli({ help: info }, undefined, args);
+  cli({ help: info, booleanFlagNegation: true }, undefined, args);
 
   publishPreflightCheck({
     dir: targetPaths.dir,

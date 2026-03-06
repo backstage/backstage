@@ -24,7 +24,7 @@ const REACT_ROUTER_DEPS = ['react-router', 'react-router-dom'];
 const REACT_ROUTER_RANGE = '6.0.0-beta.0 || ^6.3.0';
 
 export default async ({ args, info }: CommandContext) => {
-  cli({ help: info }, undefined, args);
+  cli({ help: info, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 
   await Promise.all(

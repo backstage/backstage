@@ -24,7 +24,7 @@ import type { CommandContext } from '../../../wiring/types';
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
 
 export default async ({ args, info }: CommandContext) => {
-  cli({ help: info }, undefined, args);
+  cli({ help: info, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 
   const oldConfigs = [

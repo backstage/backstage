@@ -47,6 +47,7 @@ export default async ({ args, info }: CommandContext) => {
   } = cli(
     {
       help: info,
+      booleanFlagNegation: true,
       flags: {
         input: {
           type: String,

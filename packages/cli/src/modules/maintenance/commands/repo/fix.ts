@@ -501,6 +501,7 @@ export default async ({
   } = cli(
     {
       help: info,
+      booleanFlagNegation: true,
       flags: {
         publish: {
           type: Boolean,
