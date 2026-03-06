@@ -139,9 +139,6 @@ export const GitlabRepoPicker = (
               selected={owner}
               items={ownerItems}
             />
-            <FormHelperText>
-              {t('fields.gitlabRepoPicker.owner.description')}
-            </FormHelperText>
           </>
         ) : (
           <Autocomplete
@@ -163,6 +160,9 @@ export const GitlabRepoPicker = (
             autoSelect
           />
         )}
+        <FormHelperText>
+          {t('fields.gitlabRepoPicker.owner.description')}
+        </FormHelperText>
       </FormControl>
     </>
   );
