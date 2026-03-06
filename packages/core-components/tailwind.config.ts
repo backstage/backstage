@@ -301,10 +301,10 @@ const config: BackstageTailwindConfig = {
        * consistent with Radix UI defaults and the shadcn/ui design language.
        */
       animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
-        'collapsible-down': 'collapsible-down 0.2s ease-out',
-        'collapsible-up': 'collapsible-up 0.2s ease-out',
+        'accordion-down': 'accordion-down 0.2s ease-out forwards',
+        'accordion-up': 'accordion-up 0.2s ease-out forwards',
+        'collapsible-down': 'collapsible-down 0.2s ease-out forwards',
+        'collapsible-up': 'collapsible-up 0.2s ease-out forwards',
       },
 
       /*

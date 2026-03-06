@@ -20,6 +20,7 @@ import {
   ShadcnTooltip,
   TooltipTrigger,
   TooltipContent,
+  TooltipProvider,
 } from '@backstage/core-components';
 import { useEntityPresentation } from '../../apis';
 
@@ -77,10 +78,12 @@ export const EntityDisplayName = (
   // Optionally, a tooltip as the outermost layer
   if (secondaryTitle && !disableTooltip) {
     content = (
-      <ShadcnTooltip delayDuration={1500}>
-        <TooltipTrigger asChild>{content}</TooltipTrigger>
-        <TooltipContent>{secondaryTitle}</TooltipContent>
-      </ShadcnTooltip>
+      <TooltipProvider>
+        <ShadcnTooltip delayDuration={1500}>
+          <TooltipTrigger asChild>{content}</TooltipTrigger>
+          <TooltipContent>{secondaryTitle}</TooltipContent>
+        </ShadcnTooltip>
+      </TooltipProvider>
     );
   }
 

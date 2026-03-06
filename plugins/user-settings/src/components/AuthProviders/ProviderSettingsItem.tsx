@@ -20,6 +20,7 @@ import {
   ShadcnTooltip,
   TooltipTrigger,
   TooltipContent,
+  TooltipProvider,
 } from '@backstage/core-components';
 import {
   ApiRef,
@@ -85,74 +86,78 @@ export const ProviderSettingsItem = (props: {
   }, [api]);
 
   return (
-    <li className="flex items-center gap-4 px-4 py-3">
-      {/* Icon area — replaces MUI ListItemIcon */}
-      <div className="flex shrink-0 items-center text-muted-foreground">
-        <Icon />
-      </div>
+    <TooltipProvider>
+      <li className="flex items-center gap-4 px-4 py-3">
+        {/* Icon area — replaces MUI ListItemIcon */}
+        <div className="flex shrink-0 items-center text-muted-foreground">
+          <Icon />
+        </div>
 
-      {/* Content area — replaces MUI ListItemText */}
-      <div className="min-w-0 flex-1">
-        <ShadcnTooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <p className="text-sm font-medium leading-none">{title}</p>
-              <div className="mt-2 flex items-start gap-4">
-                {/* Avatar section */}
-                <ProviderSettingsAvatar size={48} picture={profile.picture} />
-                {/* Profile info section */}
-                <div className="flex flex-col gap-1">
-                  {profile.displayName && (
-                    <p className="text-sm font-medium text-foreground">
-                      {profile.displayName}
-                    </p>
-                  )}
-                  {profile.email && (
+        {/* Content area — replaces MUI ListItemText */}
+        <div className="min-w-0 flex-1">
+          <ShadcnTooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <p className="text-sm font-medium leading-none">{title}</p>
+                <div className="mt-2 flex items-start gap-4">
+                  {/* Avatar section */}
+                  <ProviderSettingsAvatar size={48} picture={profile.picture} />
+                  {/* Profile info section */}
+                  <div className="flex flex-col gap-1">
+                    {profile.displayName && (
+                      <p className="text-sm font-medium text-foreground">
+                        {profile.displayName}
+                      </p>
+                    )}
+                    {profile.email && (
+                      <p className="text-xs text-muted-foreground">
+                        {profile.email}
+                      </p>
+                    )}
                     <p className="text-xs text-muted-foreground">
-                      {profile.email}
+                      {description}
                     </p>
-                  )}
-                  <p className="text-xs text-muted-foreground">{description}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p>{description}</p>
-          </TooltipContent>
-        </ShadcnTooltip>
-      </div>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>{description}</p>
+            </TooltipContent>
+          </ShadcnTooltip>
+        </div>
 
-      {/* Action area — replaces MUI ListItemSecondaryAction */}
-      <div className="shrink-0">
-        <ShadcnTooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              title={
-                signedIn
+        {/* Action area — replaces MUI ListItemSecondaryAction */}
+        <div className="shrink-0">
+          <ShadcnTooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                title={
+                  signedIn
+                    ? t('providerSettingsItem.title.signOut', { title })
+                    : t('providerSettingsItem.title.signIn', { title })
+                }
+                onClick={() => {
+                  const action = signedIn ? api.signOut() : api.signIn();
+                  action.catch(error => errorApi.post(error));
+                }}
+              >
+                {signedIn
+                  ? t('providerSettingsItem.buttonTitle.signOut')
+                  : t('providerSettingsItem.buttonTitle.signIn')}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>
+                {signedIn
                   ? t('providerSettingsItem.title.signOut', { title })
-                  : t('providerSettingsItem.title.signIn', { title })
-              }
-              onClick={() => {
-                const action = signedIn ? api.signOut() : api.signIn();
-                action.catch(error => errorApi.post(error));
-              }}
-            >
-              {signedIn
-                ? t('providerSettingsItem.buttonTitle.signOut')
-                : t('providerSettingsItem.buttonTitle.signIn')}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p>
-              {signedIn
-                ? t('providerSettingsItem.title.signOut', { title })
-                : t('providerSettingsItem.title.signIn', { title })}
-            </p>
-          </TooltipContent>
-        </ShadcnTooltip>
-      </div>
-    </li>
+                  : t('providerSettingsItem.title.signIn', { title })}
+              </p>
+            </TooltipContent>
+          </ShadcnTooltip>
+        </div>
+      </li>
+    </TooltipProvider>
   );
 };

@@ -22,6 +22,7 @@ import {
   ShadcnTooltip as Tooltip,
   TooltipTrigger,
   TooltipContent,
+  TooltipProvider,
   cn,
 } from '@backstage/core-components';
 import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
@@ -114,80 +115,82 @@ export const UserSettingsThemeToggle = () => {
   };
 
   return (
-    <div className="flex flex-wrap w-full items-center justify-between pb-2 pr-4 sm:w-auto sm:pb-0">
-      <div className="px-0">
-        <p className="text-sm font-medium text-foreground">
-          {t('themeToggle.title')}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {t('themeToggle.description')}
-        </p>
-      </div>
-      <div className="relative pl-4 sm:pl-0">
-        <div
-          className="flex rounded-md border border-input"
-          role="group"
-          aria-label={t('themeToggle.title')}
-        >
-          {themeIds.map(theme => {
-            const themeId = theme.id;
-            const themeIcon = theme.icon;
-            const themeTitle =
-              theme.title ||
-              (themeId === 'light' || themeId === 'dark'
-                ? t(`themeToggle.names.${themeId}`)
-                : themeId);
-            return (
-              <TooltipToggleButton
-                key={themeId}
-                title={t('themeToggle.select', { theme: themeTitle })}
-                value={themeId}
-                isActive={activeThemeId === themeId}
-                onClick={() => handleSetTheme(themeId)}
-              >
-                <span className="flex items-center gap-1">
-                  {themeTitle}
-                  <ThemeIcon
-                    id={themeId}
-                    icon={themeIcon}
-                    activeId={activeThemeId}
-                  />
-                </span>
-              </TooltipToggleButton>
-            );
-          })}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant={activeThemeId === undefined ? 'secondary' : 'ghost'}
-                size="sm"
-                onClick={() => handleSetTheme(undefined)}
-                className={cn(
-                  'rounded-none last:rounded-r-md border-r-0',
-                  activeThemeId === undefined &&
-                    'bg-accent text-accent-foreground',
-                )}
-                aria-pressed={activeThemeId === undefined}
-              >
-                <span className="flex items-center gap-1">
-                  {t('themeToggle.names.auto')}
-                  <SunMoon
-                    className={cn(
-                      'h-4 w-4',
-                      activeThemeId === undefined
-                        ? 'text-primary'
-                        : 'text-muted-foreground',
-                    )}
-                  />
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top">
-              {t('themeToggle.selectAuto')}
-            </TooltipContent>
-          </Tooltip>
+    <TooltipProvider>
+      <div className="flex flex-wrap w-full items-center justify-between pb-2 pr-4 sm:w-auto sm:pb-0">
+        <div className="px-0">
+          <p className="text-sm font-medium text-foreground">
+            {t('themeToggle.title')}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {t('themeToggle.description')}
+          </p>
+        </div>
+        <div className="relative pl-4 sm:pl-0">
+          <div
+            className="flex rounded-md border border-input"
+            role="group"
+            aria-label={t('themeToggle.title')}
+          >
+            {themeIds.map(theme => {
+              const themeId = theme.id;
+              const themeIcon = theme.icon;
+              const themeTitle =
+                theme.title ||
+                (themeId === 'light' || themeId === 'dark'
+                  ? t(`themeToggle.names.${themeId}`)
+                  : themeId);
+              return (
+                <TooltipToggleButton
+                  key={themeId}
+                  title={t('themeToggle.select', { theme: themeTitle })}
+                  value={themeId}
+                  isActive={activeThemeId === themeId}
+                  onClick={() => handleSetTheme(themeId)}
+                >
+                  <span className="flex items-center gap-1">
+                    {themeTitle}
+                    <ThemeIcon
+                      id={themeId}
+                      icon={themeIcon}
+                      activeId={activeThemeId}
+                    />
+                  </span>
+                </TooltipToggleButton>
+              );
+            })}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={activeThemeId === undefined ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => handleSetTheme(undefined)}
+                  className={cn(
+                    'rounded-none last:rounded-r-md border-r-0',
+                    activeThemeId === undefined &&
+                      'bg-accent text-accent-foreground',
+                  )}
+                  aria-pressed={activeThemeId === undefined}
+                >
+                  <span className="flex items-center gap-1">
+                    {t('themeToggle.names.auto')}
+                    <SunMoon
+                      className={cn(
+                        'h-4 w-4',
+                        activeThemeId === undefined
+                          ? 'text-primary'
+                          : 'text-muted-foreground',
+                      )}
+                    />
+                  </span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                {t('themeToggle.selectAuto')}
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };
