@@ -30,11 +30,15 @@ import {
 } from '@aws-sdk/nested-clients/sts';
 import { Config, ConfigReader } from '@backstage/config';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
+import { join } from 'node:path';
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 
 const env = process.env;
 let stsMock: AwsClientStub<STSClient>;
 let nestedStsMock: AwsClientStub<NestedSTSClient>;
 let config: Config;
+let tmpDir: string;
 
 jest.mock('@aws-sdk/credential-providers', () => {
   const originalModule = jest.requireActual('@aws-sdk/credential-providers');
@@ -175,26 +179,24 @@ describe('DefaultAwsCredentialsManager', () => {
       jest.requireActual('@aws-sdk/credential-providers').fromNodeProviderChain,
     );
 
-    // Inject mock credentials file via @smithy/shared-ini-file-loader's fileIntercept
-    const mockProfile = `[my-profile]\naws_access_key_id=ACCESS_KEY_ID_9\naws_secret_access_key=SECRET_ACCESS_KEY_9\n`;
-    const sharedIniReadFile = require('@smithy/shared-ini-file-loader/dist-cjs/readFile');
-    // Clear cached file promises so re-reads pick up the intercept
-    for (const key of Object.keys(sharedIniReadFile.filePromises)) {
-      delete sharedIniReadFile.filePromises[key];
-    }
-    for (const key of Object.keys(sharedIniReadFile.fileIntercept)) {
-      delete sharedIniReadFile.fileIntercept[key];
-    }
-    // Set intercepts for both the credentials and config file paths
-    const homeDir = require('node:os').homedir();
-    const credPath = `${homeDir}/.aws/credentials`;
-    const configPath = `${homeDir}/.aws/config`;
-    sharedIniReadFile.fileIntercept[credPath] = Promise.resolve(mockProfile);
-    sharedIniReadFile.fileIntercept[configPath] = Promise.resolve('');
+    // Write a temporary AWS credentials file and point the SDK at it
+    tmpDir = mkdtempSync(join(tmpdir(), 'aws-test-'));
+    const credFilePath = join(tmpDir, 'credentials');
+    const configFilePath = join(tmpDir, 'config');
+    writeFileSync(
+      credFilePath,
+      '[my-profile]\naws_access_key_id=ACCESS_KEY_ID_9\naws_secret_access_key=SECRET_ACCESS_KEY_9\n',
+    );
+    writeFileSync(configFilePath, '');
+    process.env.AWS_SHARED_CREDENTIALS_FILE = credFilePath;
+    process.env.AWS_CONFIG_FILE = configFilePath;
   });
 
   afterEach(() => {
     process.env = env;
+    if (tmpDir) {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
   });
 
   describe('#getCredentialProvider', () => {

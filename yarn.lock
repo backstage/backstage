@@ -3580,7 +3580,6 @@ __metadata:
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@smithy/shared-ini-file-loader": "npm:^4.4.6"
     aws-sdk-client-mock: "npm:^4.0.0"
     aws-sdk-client-mock-jest: "npm:^4.0.0"
   languageName: unknown
