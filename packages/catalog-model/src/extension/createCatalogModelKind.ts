@@ -16,7 +16,11 @@
 
 import { JsonObject } from '@backstage/types';
 import { Entity } from '../entity/Entity';
-import { CatalogModelSchema } from './types';
+import type {
+  CatalogModelSchemaAnyItemType,
+  CatalogModelSchemaObjectType,
+  CatalogModelSchemaPropertyDefinition,
+} from './catalogModelSchema.types';
 
 /**
  * The definition of a catalog model kind, roughly resembling a JSON Schema.
@@ -59,7 +63,7 @@ export interface CatalogModelKindDefinition {
   /**
    * The spec schema of the kind.
    */
-  spec: CatalogModelSchema.ObjectType;
+  spec: CatalogModelSchemaObjectType;
 }
 
 export interface CatalogModelKind<
@@ -124,11 +128,11 @@ export namespace CreateCatalogModelKindInternals {
   >;
 
   /** Extracts the required property keys from an object definition. */
-  type RequiredKeysOf<TObj extends CatalogModelSchema.ObjectType> =
+  type RequiredKeysOf<TObj extends CatalogModelSchemaObjectType> =
     TObj extends { required: readonly (infer R)[] } ? R & string : never;
 
   /** Resolves an object definition into a TypeScript object type. */
-  type ResolveObject<TObj extends CatalogModelSchema.ObjectType> = Simplify<
+  type ResolveObject<TObj extends CatalogModelSchemaObjectType> = Simplify<
     {
       [K in keyof TObj['properties'] &
         RequiredKeysOf<TObj>]: ResolvePropertyType<TObj['properties'][K]>;
@@ -141,7 +145,7 @@ export namespace CreateCatalogModelKindInternals {
   >;
 
   /** Maps a scalar type definition to its TypeScript type. */
-  type ResolveScalarType<T extends CatalogModelSchema.AnyItemType> = T extends {
+  type ResolveScalarType<T extends CatalogModelSchemaAnyItemType> = T extends {
     type: 'string' | 'relation';
   }
     ? string
@@ -153,20 +157,20 @@ export namespace CreateCatalogModelKindInternals {
     ? V
     : T extends { type: 'const'; value: infer V }
     ? V
-    : T extends CatalogModelSchema.ObjectType
+    : T extends CatalogModelSchemaObjectType
     ? ResolveObject<T>
     : never;
 
   /** Maps a property definition to its TypeScript type. */
-  type ResolvePropertyType<T extends CatalogModelSchema.PropertyDefinition> =
+  type ResolvePropertyType<T extends CatalogModelSchemaPropertyDefinition> =
     T extends {
       type: 'array';
-      items: infer I extends CatalogModelSchema.AnyItemType;
+      items: infer I extends CatalogModelSchemaAnyItemType;
     }
       ? ResolveScalarType<I>[]
       : T extends { type: 'array' }
       ? string[]
-      : T extends CatalogModelSchema.AnyItemType
+      : T extends CatalogModelSchemaAnyItemType
       ? ResolveScalarType<T>
       : never;
 
@@ -177,6 +181,13 @@ export namespace CreateCatalogModelKindInternals {
       : number extends K
       ? never
       : K]: T[K];
+  };
+
+  /** Converts mutable arrays to readonly arrays in an object type. */
+  type ReadonlyArrays<T> = {
+    [K in keyof T]: T[K] extends (infer U)[] | undefined
+      ? readonly U[] | Extract<T[K], undefined>
+      : T[K];
   };
 
   /** Resolves the full output entity type from a kind definition. */
@@ -192,12 +203,16 @@ export namespace CreateCatalogModelKindInternals {
   /** Resolves the input entity type, excluding service-generated fields. */
   export type ResolvedInputEntity<TDef extends CatalogModelKindDefinition> =
     SimplifyEntity<
-      Omit<ResolvedOutputEntity<TDef>, 'relations' | 'status' | 'metadata'> & {
+      Omit<
+        ResolvedOutputEntity<TDef>,
+        'relations' | 'status' | 'metadata' | 'spec'
+      > & {
         metadata: Omit<
           RemoveIndexSignature<ResolvedOutputEntity<TDef>['metadata']>,
           'uid' | 'etag'
         > &
           JsonObject;
+        spec: ReadonlyArrays<ResolvedOutputEntity<TDef>['spec']>;
       }
     >;
 }

@@ -186,6 +186,24 @@ describe('createCatalogModelKind', () => {
       });
       expect(true).toBe(true);
     });
+
+    it('makes array spec properties readonly on TInput', () => {
+      void ((e: ComponentInput) => {
+        const apis: readonly string[] | undefined = e.spec.providesApis;
+        // @ts-expect-error - array should be readonly on input
+        const _mutable: string[] | undefined = e.spec.providesApis;
+        return [apis, _mutable];
+      });
+      expect(true).toBe(true);
+    });
+
+    it('keeps array spec properties mutable on TOutput', () => {
+      void ((e: ComponentOutput) => {
+        const apis: string[] | undefined = e.spec.providesApis;
+        return apis;
+      });
+      expect(true).toBe(true);
+    });
   });
 
   describe('property types', () => {

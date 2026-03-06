@@ -187,7 +187,7 @@ function getRelations(
 
     relations.push({
       path: fullPath,
-      relation: relation.data,
+      relation: relation.data as any, // TODO(freben): This is known to be wrong, may delete this code entirely
     });
   }
 

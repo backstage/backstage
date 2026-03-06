@@ -20,5 +20,4 @@ export type {
   EntityStatusLevel,
 } from './entity/EntityStatus';
 export type { AlphaEntity } from './entity/AlphaEntity';
-export type { CatalogModelExtension, CatalogModelBuilder } from './extension';
-export { createCatalogModelExtension } from './extension';
+export * from './extension';

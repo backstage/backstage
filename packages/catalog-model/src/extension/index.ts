@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-export { compileCatalogModel } from './compileCatalogModel';
-export { createCatalogModelExtension } from './createCatalogModelExtension';
-export type {
-  CatalogModelKind,
-  CatalogModelKindDefinition,
-  CreateCatalogModelKindInternals,
+export { compileCatalogModel, type CatalogModel } from './compileCatalogModel';
+export {
+  createCatalogModelKind,
+  type CatalogModelKindDefinition,
+  type CatalogModelKind,
 } from './createCatalogModelKind';
+export {
+  createCatalogModelRelation,
+  type CatalogModelRelation,
+  type CatalogModelRelationDefinition,
+} from './createCatalogModelRelation';
 export type {
-  CatalogModel,
-  CatalogModelBuilder,
-  CatalogModelExtension,
-  CatalogModelSchema,
-} from './types';
+  CatalogModelSchemaAnyItemType,
+  CatalogModelSchemaAnyType,
+  CatalogModelSchemaArrayType,
+  CatalogModelSchemaBooleanType,
+  CatalogModelSchemaCommonTypeMeta,
+  CatalogModelSchemaConstType,
+  CatalogModelSchemaEnumType,
+  CatalogModelSchemaNumberType,
+  CatalogModelSchemaObjectType,
+  CatalogModelSchemaPropertyDefinition,
+  CatalogModelSchemaRelationType,
+  CatalogModelSchemaStringType,
+} from './catalogModelSchema.types';
