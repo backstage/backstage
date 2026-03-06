@@ -144,8 +144,12 @@ describe('Sidebar', () => {
 
     it('Submenu item with start and end components should render them', async () => {
       await userEvent.hover(screen.getByTestId('item-with-submenu'));
-      expect(screen.getByTestId('my-start-component')).toBeInTheDocument();
-      expect(screen.getByTestId('my-end-component')).toBeInTheDocument();
+      const startEle = screen.getByTestId('my-start-component');
+      const endEle = screen.getByTestId('my-end-component');
+      expect(startEle).toBeInTheDocument();
+      expect(endEle).toBeInTheDocument();
+      expect(startEle.textContent).toEqual('[START]');
+      expect(endEle.textContent).toEqual('[END]');
     });
   });
 });
