@@ -23,7 +23,7 @@ import { targetPaths } from '@backstage/cli-common';
 import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
-  cli({ help: info }, undefined, args);
+  cli({ help: info, booleanFlagNegation: true }, undefined, args);
   const { packages } = await getPackages(targetPaths.dir);
 
   await Promise.all(
