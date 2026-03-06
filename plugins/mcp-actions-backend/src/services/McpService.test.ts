@@ -27,6 +27,9 @@ import {
   ListToolsResultSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { InputError, NotFoundError } from '@backstage/errors';
+import { McpServerConfig, ToolOverrides, parseFilterRules } from '../config';
+import { ActionsService } from '@backstage/backend-plugin-api/alpha';
+import { ConfigReader } from '@backstage/config';
 
 describe('McpService', () => {
   it('should list the available actions as tools in the mcp backend', async () => {
@@ -454,6 +457,294 @@ describe('McpService', () => {
         },
       ],
       isError: true,
+    });
+  });
+
+  describe('per-server filtering', () => {
+    const fakeActions = [
+      {
+        id: 'catalog:get-entity',
+        name: 'get-entity',
+        title: 'Get Entity',
+        description: 'Fetch an entity',
+        schema: {
+          input: { type: 'object' as const },
+          output: { type: 'object' as const },
+        },
+        attributes: { destructive: false, readOnly: true, idempotent: true },
+      },
+      {
+        id: 'catalog:delete-entity',
+        name: 'delete-entity',
+        title: 'Delete Entity',
+        description: 'Delete an entity',
+        schema: {
+          input: { type: 'object' as const },
+          output: { type: 'object' as const },
+        },
+        attributes: { destructive: true, readOnly: false, idempotent: false },
+      },
+      {
+        id: 'scaffolder:create-app',
+        name: 'create-app',
+        title: 'Create App',
+        description: 'Create an app',
+        schema: {
+          input: { type: 'object' as const },
+          output: { type: 'object' as const },
+        },
+        attributes: { destructive: false, readOnly: false, idempotent: false },
+      },
+    ];
+
+    const fakeActionsService: ActionsService = {
+      list: jest.fn(async () => ({ actions: fakeActions })),
+      invoke: jest.fn(async () => ({ output: {} })),
+    };
+
+    it('should filter actions by pluginSources prefix', async () => {
+      const mcpService = await McpService.create({
+        actions: fakeActionsService,
+        metrics: metricsServiceMock.mock(),
+      });
+
+      const serverConfig: McpServerConfig = {
+        name: 'Catalog',
+        pluginSources: ['catalog'],
+        includeRules: [],
+        excludeRules: [],
+      };
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+        serverConfig,
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const result = await client.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+
+      expect(result.tools).toHaveLength(2);
+      expect(result.tools.map(t => t.name)).toEqual([
+        'get-entity',
+        'delete-entity',
+      ]);
+    });
+
+    it('should apply exclude filter rules to remove destructive actions', async () => {
+      const mcpService = await McpService.create({
+        actions: fakeActionsService,
+        metrics: metricsServiceMock.mock(),
+      });
+
+      const serverConfig: McpServerConfig = {
+        name: 'Catalog',
+        pluginSources: ['catalog'],
+        includeRules: [],
+        excludeRules: [{ attributes: { destructive: true } }],
+      };
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+        serverConfig,
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const result = await client.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+
+      expect(result.tools).toHaveLength(1);
+      expect(result.tools[0].name).toBe('get-entity');
+    });
+
+    it('should apply include filter rules with glob patterns', async () => {
+      const mcpService = await McpService.create({
+        actions: fakeActionsService,
+        metrics: metricsServiceMock.mock(),
+      });
+
+      const serverConfig: McpServerConfig = {
+        name: 'Catalog',
+        pluginSources: ['catalog'],
+        includeRules: parseFilterRules(
+          new ConfigReader({
+            include: [{ id: 'catalog:get-*' }],
+          }).getConfigArray('include'),
+        ),
+        excludeRules: [],
+      };
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+        serverConfig,
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const result = await client.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+
+      expect(result.tools).toHaveLength(1);
+      expect(result.tools[0].name).toBe('get-entity');
+    });
+
+    it('should reject tool calls for actions outside the filtered set', async () => {
+      const mcpService = await McpService.create({
+        actions: fakeActionsService,
+        metrics: metricsServiceMock.mock(),
+      });
+
+      const serverConfig: McpServerConfig = {
+        name: 'Scaffolder',
+        pluginSources: ['scaffolder'],
+        includeRules: [],
+        excludeRules: [],
+      };
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+        serverConfig,
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const result = await client.request(
+        {
+          method: 'tools/call',
+          params: { name: 'get-entity', arguments: {} },
+        },
+        CallToolResultSchema,
+      );
+
+      expect(result).toEqual({
+        content: [
+          {
+            type: 'text',
+            text: expect.stringContaining('Action "get-entity" not found'),
+          },
+        ],
+        isError: true,
+      });
+    });
+  });
+
+  describe('tool description overrides', () => {
+    it('should apply description overrides from toolOverrides', async () => {
+      const mockActionsRegistry = actionsRegistryServiceMock();
+      mockActionsRegistry.register({
+        name: 'mock-action',
+        title: 'Test',
+        description: 'Original description',
+        schema: {
+          input: z => z.object({}),
+          output: z => z.object({}),
+        },
+        action: async () => ({ output: {} }),
+      });
+
+      const toolOverrides: ToolOverrides = new Map([
+        ['test:mock-action', { description: 'Overridden description' }],
+      ]);
+
+      const mcpService = await McpService.create({
+        actions: mockActionsRegistry,
+        metrics: metricsServiceMock.mock(),
+        toolOverrides,
+      });
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const result = await client.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+
+      expect(result.tools[0].description).toBe('Overridden description');
+    });
+
+    it('should keep the original description when no override exists', async () => {
+      const mockActionsRegistry = actionsRegistryServiceMock();
+      mockActionsRegistry.register({
+        name: 'mock-action',
+        title: 'Test',
+        description: 'Original description',
+        schema: {
+          input: z => z.object({}),
+          output: z => z.object({}),
+        },
+        action: async () => ({ output: {} }),
+      });
+
+      const toolOverrides: ToolOverrides = new Map([
+        ['some-other:action', { description: 'Not for this action' }],
+      ]);
+
+      const mcpService = await McpService.create({
+        actions: mockActionsRegistry,
+        metrics: metricsServiceMock.mock(),
+        toolOverrides,
+      });
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const result = await client.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+
+      expect(result.tools[0].description).toBe('Original description');
     });
   });
 });

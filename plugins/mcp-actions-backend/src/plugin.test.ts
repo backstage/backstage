@@ -166,6 +166,211 @@ describe('Mcp Backend', () => {
     ]);
   });
 
+  describe('multi-server routing', () => {
+    const mockCatalogPlugin = createBackendPlugin({
+      pluginId: 'catalog-actions',
+      register({ registerInit }) {
+        registerInit({
+          deps: { actionsRegistry: actionsRegistryServiceRef },
+          async init({ actionsRegistry }) {
+            actionsRegistry.register({
+              name: 'get-entity',
+              title: 'Get Entity',
+              description: 'Fetch an entity',
+              schema: {
+                input: z => z.object({ name: z.string() }),
+                output: z => z.object({ entity: z.string() }),
+              },
+              action: async ({ input }) => ({
+                output: { entity: input.name },
+              }),
+            });
+          },
+        });
+      },
+    });
+
+    const mockScaffolderPlugin = createBackendPlugin({
+      pluginId: 'scaffolder-actions',
+      register({ registerInit }) {
+        registerInit({
+          deps: { actionsRegistry: actionsRegistryServiceRef },
+          async init({ actionsRegistry }) {
+            actionsRegistry.register({
+              name: 'create-app',
+              title: 'Create App',
+              description: 'Create an app from template',
+              schema: {
+                input: z => z.object({ template: z.string() }),
+                output: z => z.object({ name: z.string() }),
+              },
+              action: async ({ input }) => ({
+                output: { name: input.template },
+              }),
+            });
+          },
+        });
+      },
+    });
+
+    it('should route to per-server endpoints when mcp.servers is configured', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockCatalogPlugin,
+          mockScaffolderPlugin,
+          metricsServiceMock.mock().factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['catalog-actions', 'scaffolder-actions'],
+                },
+              },
+              mcpActions: {
+                servers: {
+                  catalog: {
+                    name: 'Catalog Server',
+                    pluginSources: ['catalog-actions'],
+                  },
+                  scaffolder: {
+                    name: 'Scaffolder Server',
+                    pluginSources: ['scaffolder-actions'],
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const address = server.address();
+      if (typeof address !== 'object' || !('port' in address!)) {
+        throw new Error('server broke');
+      }
+      const serverAddress = `http://localhost:${address.port}`;
+
+      const catalogClient = new Client({ name: 'test', version: '1.0' });
+      const catalogTransport = new StreamableHTTPClientTransport(
+        new URL(`${serverAddress}/api/mcp-actions/v1/catalog`),
+      );
+      await catalogClient.connect(catalogTransport);
+      const catalogResult = await catalogClient.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+      expect(catalogResult.tools).toHaveLength(1);
+      expect(catalogResult.tools[0].name).toBe('get-entity');
+
+      const scaffolderClient = new Client({ name: 'test', version: '1.0' });
+      const scaffolderTransport = new StreamableHTTPClientTransport(
+        new URL(`${serverAddress}/api/mcp-actions/v1/scaffolder`),
+      );
+      await scaffolderClient.connect(scaffolderTransport);
+      const scaffolderResult = await scaffolderClient.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+      expect(scaffolderResult.tools).toHaveLength(1);
+      expect(scaffolderResult.tools[0].name).toBe('create-app');
+    });
+
+    it('should support SSE per-server routes', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockCatalogPlugin,
+          metricsServiceMock.mock().factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['catalog-actions'],
+                },
+              },
+              mcpActions: {
+                servers: {
+                  catalog: {
+                    name: 'Catalog Server',
+                    pluginSources: ['catalog-actions'],
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const address = server.address();
+      if (typeof address !== 'object' || !('port' in address!)) {
+        throw new Error('server broke');
+      }
+      const serverAddress = `http://localhost:${address.port}`;
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const transport = new SSEClientTransport(
+        new URL(`${serverAddress}/api/mcp-actions/v1/catalog/sse`),
+      );
+      await client.connect(transport);
+
+      const result = await client.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+      await client.close();
+
+      expect(result.tools).toHaveLength(1);
+      expect(result.tools[0].name).toBe('get-entity');
+    });
+
+    it('should apply tool description overrides from config', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockCatalogPlugin,
+          metricsServiceMock.mock().factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['catalog-actions'],
+                },
+              },
+              mcpActions: {
+                tools: {
+                  'catalog-actions:get-entity': {
+                    description: 'Custom description for get-entity',
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const address = server.address();
+      if (typeof address !== 'object' || !('port' in address!)) {
+        throw new Error('server broke');
+      }
+      const serverAddress = `http://localhost:${address.port}`;
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const transport = new StreamableHTTPClientTransport(
+        new URL(`${serverAddress}/api/mcp-actions/v1`),
+      );
+      await client.connect(transport);
+
+      const result = await client.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+
+      expect(result.tools[0].description).toBe(
+        'Custom description for get-entity',
+      );
+    });
+  });
+
   describe('OAuth well-known endpoints', () => {
     it('should not expose oauth endpoints when neither DCR nor CIMD is enabled', async () => {
       const { server } = await startTestBackend({

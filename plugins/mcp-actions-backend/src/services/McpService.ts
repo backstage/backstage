@@ -22,6 +22,7 @@ import {
 import { JsonObject } from '@backstage/types';
 import {
   ActionsService,
+  ActionsServiceAction,
   MetricsServiceHistogram,
   MetricsService,
 } from '@backstage/backend-plugin-api/alpha';
@@ -31,13 +32,20 @@ import { performance } from 'node:perf_hooks';
 
 import { handleErrors } from './handleErrors';
 import { bucketBoundaries, McpServerOperationAttributes } from '../metrics';
+import { FilterRule, McpServerConfig, ToolOverrides } from '../config';
 
 export class McpService {
   private readonly actions: ActionsService;
+  private readonly toolOverrides: ToolOverrides;
   private readonly operationDuration: MetricsServiceHistogram<McpServerOperationAttributes>;
 
-  constructor(actions: ActionsService, metrics: MetricsService) {
+  constructor(
+    actions: ActionsService,
+    metrics: MetricsService,
+    toolOverrides?: ToolOverrides,
+  ) {
     this.actions = actions;
+    this.toolOverrides = toolOverrides ?? new Map();
     this.operationDuration =
       metrics.createHistogram<McpServerOperationAttributes>(
         'mcp.server.operation.duration',
@@ -52,17 +60,27 @@ export class McpService {
   static async create({
     actions,
     metrics,
+    toolOverrides,
   }: {
     actions: ActionsService;
     metrics: MetricsService;
+    toolOverrides?: ToolOverrides;
   }) {
-    return new McpService(actions, metrics);
+    return new McpService(actions, metrics, toolOverrides);
   }
 
-  getServer({ credentials }: { credentials: BackstageCredentials }) {
+  getServer({
+    credentials,
+    serverConfig,
+  }: {
+    credentials: BackstageCredentials;
+    serverConfig?: McpServerConfig;
+  }) {
+    const serverName = serverConfig?.name ?? 'backstage';
+
     const server = new McpServer(
       {
-        name: 'backstage',
+        name: serverName,
         // TODO: this version will most likely change in the future.
         version,
       },
@@ -74,25 +92,32 @@ export class McpService {
       let errorType: string | undefined;
 
       try {
-        // TODO: switch this to be configuration based later
-        const { actions } = await this.actions.list({ credentials });
+        const { actions: allActions } = await this.actions.list({
+          credentials,
+        });
+        const actions = serverConfig
+          ? this.filterActions(allActions, serverConfig)
+          : allActions;
 
         return {
-          tools: actions.map(action => ({
-            inputSchema: action.schema.input,
-            // todo(blam): this is unfortunately not supported by most clients yet.
-            // When this is provided you need to provide structuredContent instead.
-            // outputSchema: action.schema.output,
-            name: action.name,
-            description: action.description,
-            annotations: {
-              title: action.title,
-              destructiveHint: action.attributes.destructive,
-              idempotentHint: action.attributes.idempotent,
-              readOnlyHint: action.attributes.readOnly,
-              openWorldHint: false,
-            },
-          })),
+          tools: actions.map(action => {
+            const override = this.toolOverrides.get(action.id);
+            return {
+              inputSchema: action.schema.input,
+              // todo(blam): this is unfortunately not supported by most clients yet.
+              // When this is provided you need to provide structuredContent instead.
+              // outputSchema: action.schema.output,
+              name: action.name,
+              description: override?.description ?? action.description,
+              annotations: {
+                title: action.title,
+                destructiveHint: action.attributes.destructive,
+                idempotentHint: action.attributes.idempotent,
+                readOnlyHint: action.attributes.readOnly,
+                openWorldHint: false,
+              },
+            };
+          }),
         };
       } catch (err) {
         errorType = err instanceof Error ? err.name : 'Error';
@@ -114,7 +139,13 @@ export class McpService {
 
       try {
         const result = await handleErrors(async () => {
-          const { actions } = await this.actions.list({ credentials });
+          const { actions: allActions } = await this.actions.list({
+            credentials,
+          });
+          const actions = serverConfig
+            ? this.filterActions(allActions, serverConfig)
+            : allActions;
+
           const action = actions.find(a => a.name === params.name);
 
           if (!action) {
@@ -168,5 +199,54 @@ export class McpService {
     });
 
     return server;
+  }
+
+  private filterActions(
+    actions: ActionsServiceAction[],
+    serverConfig: McpServerConfig,
+  ): ActionsServiceAction[] {
+    // First filter by plugin source prefix on the action ID
+    const bySource = actions.filter(action =>
+      serverConfig.pluginSources.some(source =>
+        action.id.startsWith(`${source}:`),
+      ),
+    );
+
+    const { includeRules, excludeRules } = serverConfig;
+    if (includeRules.length === 0 && excludeRules.length === 0) {
+      return bySource;
+    }
+
+    return bySource.filter(action => {
+      if (excludeRules.some(rule => this.matchesRule(action, rule))) {
+        return false;
+      }
+
+      if (includeRules.length === 0) {
+        return true;
+      }
+
+      return includeRules.some(rule => this.matchesRule(action, rule));
+    });
+  }
+
+  private matchesRule(action: ActionsServiceAction, rule: FilterRule): boolean {
+    if (rule.idMatcher && !rule.idMatcher.match(action.id)) {
+      return false;
+    }
+
+    if (rule.attributes) {
+      for (const [key, value] of Object.entries(rule.attributes)) {
+        if (
+          action.attributes[
+            key as 'destructive' | 'readOnly' | 'idempotent'
+          ] !== value
+        ) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }
