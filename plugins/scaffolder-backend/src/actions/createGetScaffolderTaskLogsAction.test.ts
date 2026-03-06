@@ -16,7 +16,7 @@
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
 import { LogEvent } from '@backstage/plugin-scaffolder-common';
-import { createGetScaffolderTaskLogsAction } from './listScaffolderTaskLogsAction';
+import { createGetScaffolderTaskLogsAction } from './createGetScaffolderTaskLogsAction';
 
 describe('createGetScaffolderTaskLogsAction', () => {
   it('should return log events for a task', async () => {
@@ -55,7 +55,7 @@ describe('createGetScaffolderTaskLogsAction', () => {
     });
 
     const result = await mockActionsRegistry.invoke({
-      id: 'test:list-scaffolder-task-logs',
+      id: 'test:get-scaffolder-task-logs',
       input: { taskId: 'task-1' },
     });
 
@@ -114,7 +114,7 @@ describe('createGetScaffolderTaskLogsAction', () => {
     });
 
     const result = await mockActionsRegistry.invoke({
-      id: 'test:list-scaffolder-task-logs',
+      id: 'test:get-scaffolder-task-logs',
       input: { taskId: 'task-2', after: 42 },
     });
 
@@ -140,7 +140,7 @@ describe('createGetScaffolderTaskLogsAction', () => {
 
     await expect(
       mockActionsRegistry.invoke({
-        id: 'test:list-scaffolder-task-logs',
+        id: 'test:get-scaffolder-task-logs',
         input: { taskId: 'task-3' },
       }),
     ).rejects.toThrow('Internal Server Error');
