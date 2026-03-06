@@ -1802,13 +1802,13 @@ export interface PageLayoutProps {
   // (undocumented)
   noHeader?: boolean;
   // (undocumented)
-  tabs?: PageTab[];
+  tabs?: PageLayoutTab[];
   // (undocumented)
   title?: string;
 }
 
 // @public
-export interface PageTab {
+export interface PageLayoutTab {
   // (undocumented)
   href: string;
   // (undocumented)
@@ -1818,6 +1818,9 @@ export interface PageTab {
   // (undocumented)
   label: string;
 }
+
+// @public @deprecated (undocumented)
+export type PageTab = PageLayoutTab;
 
 // @public
 export type PendingOAuthRequest = {
