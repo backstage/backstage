@@ -40,16 +40,26 @@ interface ApiEntityV1alpha1 extends Entity {
   kind: 'API';
   // (undocumented)
   spec: {
-    type: string;
     lifecycle: string;
     owner: string;
-    definition?: string;
     system?: string;
-    remotes?: McpServerRemote[];
-  };
+  } & ApiEntityV1alpha1Spec;
 }
 export { ApiEntityV1alpha1 as ApiEntity };
 export { ApiEntityV1alpha1 };
+
+// @public
+export type ApiEntityV1alpha1Spec =
+  | {
+      type: 'mcp-server';
+      remotes: McpServerRemote[];
+      definition?: never;
+    }
+  | {
+      type: string;
+      definition: string;
+      remotes?: never;
+    };
 
 // @public
 export const apiEntityV1alpha1Validator: KindValidator;

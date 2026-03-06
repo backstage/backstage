@@ -29,6 +29,15 @@ export type McpServerRemote = {
 };
 
 /**
+ * The specification fields that vary based on the API type.
+ *
+ * @public
+ */
+export type ApiEntityV1alpha1Spec =
+  | { type: 'mcp-server'; remotes: McpServerRemote[]; definition?: never }
+  | { type: string; definition: string; remotes?: never };
+
+/**
  * Backstage API kind Entity. APIs describe the interfaces for Components to communicate.
  *
  * @remarks
@@ -41,13 +50,10 @@ export interface ApiEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'API';
   spec: {
-    type: string;
     lifecycle: string;
     owner: string;
-    definition?: string;
     system?: string;
-    remotes?: McpServerRemote[];
-  };
+  } & ApiEntityV1alpha1Spec;
 }
 
 /**
