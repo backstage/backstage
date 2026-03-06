@@ -142,20 +142,22 @@ export async function removeInstance(name: string): Promise<void> {
 }
 
 export async function setSelectedInstance(name: string): Promise<void> {
-  const data = await readAll();
-  let found = false;
-  data.instances = data.instances.map(i => {
-    if (i.name === name) {
-      found = true;
-      return { ...i, selected: true };
+  return withMetadataLock(async () => {
+    const data = await readAll();
+    let found = false;
+    data.instances = data.instances.map(i => {
+      if (i.name === name) {
+        found = true;
+        return { ...i, selected: true };
+      }
+      const { selected, ...rest } = i;
+      return { ...rest, selected: false };
+    });
+    if (!found) {
+      throw new Error(`Unknown instance '${name}'`);
     }
-    const { selected, ...rest } = i;
-    return { ...rest, selected: false };
+    await writeAll(data);
   });
-  if (!found) {
-    throw new Error(`Unknown instance '${name}'`);
-  }
-  await writeAll(data);
 }
 
 export async function withMetadataLock<T>(fn: () => Promise<T>): Promise<T> {

@@ -15,10 +15,13 @@
  */
 
 import { z } from 'zod';
-import { StoredInstance, upsertInstance } from './storage';
+import {
+  StoredInstance,
+  upsertInstance,
+  withMetadataLock,
+  getInstanceByName,
+} from './storage';
 import { getSecretStore } from './secretStore';
-import { withMetadataLock } from './storage';
-import { getInstanceByName } from './storage';
 import { httpJson } from './http';
 
 const TokenResponseSchema = z.object({

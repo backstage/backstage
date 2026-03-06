@@ -94,6 +94,11 @@ describe('secretStore', () => {
     });
 
     it('should create files with correct permissions (0o600)', async () => {
+      // File permissions are not reliably enforced on Windows
+      if (process.platform === 'win32') {
+        return;
+      }
+
       const store = await getSecretStore();
       await store.set('test-service', 'test-account', 'test-secret');
 
