@@ -48,6 +48,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@smithy/shared-ini-file-loader": "^4.4.6",
     "aws-sdk-client-mock": "^4.0.0",
     "aws-sdk-client-mock-jest": "^4.0.0"
   },
