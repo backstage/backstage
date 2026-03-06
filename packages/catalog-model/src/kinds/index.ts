@@ -19,7 +19,6 @@ export type {
   ApiEntityV1alpha1 as ApiEntity,
   ApiEntityV1alpha1,
   ApiEntityV1alpha1Spec,
-  McpServerRemote,
 } from './ApiEntityV1alpha1';
 export { componentEntityV1alpha1Validator } from './ComponentEntityV1alpha1';
 export type {

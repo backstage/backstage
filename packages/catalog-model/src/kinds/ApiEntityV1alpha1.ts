@@ -19,22 +19,16 @@ import schema from '../schema/kinds/API.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
 /**
- * Describes a remote endpoint for an MCP server.
- *
- * @public
- */
-export type McpServerRemote = {
-  type: string;
-  url: string;
-};
-
-/**
  * The specification fields that vary based on the API type.
  *
  * @public
  */
 export type ApiEntityV1alpha1Spec =
-  | { type: 'mcp-server'; remotes: McpServerRemote[]; definition?: never }
+  | {
+      type: 'mcp-server';
+      remotes: { type: string; url: string }[];
+      definition?: never;
+    }
   | { type: string; definition: string; remotes?: never };
 
 /**

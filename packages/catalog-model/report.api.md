@@ -52,7 +52,10 @@ export { ApiEntityV1alpha1 };
 export type ApiEntityV1alpha1Spec =
   | {
       type: 'mcp-server';
-      remotes: McpServerRemote[];
+      remotes: {
+        type: string;
+        url: string;
+      }[];
       definition?: never;
     }
   | {
@@ -342,12 +345,6 @@ export const locationEntityV1alpha1Validator: KindValidator;
 
 // @public
 export function makeValidator(overrides?: Partial<Validators>): Validators;
-
-// @public
-export type McpServerRemote = {
-  type: string;
-  url: string;
-};
 
 // @public
 export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {

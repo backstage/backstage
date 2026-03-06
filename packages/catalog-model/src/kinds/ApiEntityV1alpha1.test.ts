@@ -228,27 +228,27 @@ components:
     });
 
     it('rejects mcp-server entity with empty remotes array', async () => {
-      (mcpEntity as any).spec.remotes = [];
+      mcpEntity.spec.remotes = [];
       await expect(validator.check(mcpEntity)).rejects.toThrow(/remotes/);
     });
 
     it('rejects mcp-server remote missing type', async () => {
-      (mcpEntity as any).spec.remotes = [{ url: 'http://localhost' }];
+      mcpEntity.spec.remotes = [{ url: 'http://localhost' } as any];
       await expect(validator.check(mcpEntity)).rejects.toThrow(/type/);
     });
 
     it('rejects mcp-server remote missing url', async () => {
-      (mcpEntity as any).spec.remotes = [{ type: 'streamable-http' }];
+      mcpEntity.spec.remotes = [{ type: 'streamable-http' } as any];
       await expect(validator.check(mcpEntity)).rejects.toThrow(/url/);
     });
 
     it('rejects mcp-server remote with empty type', async () => {
-      (mcpEntity as any).spec.remotes = [{ type: '', url: 'http://localhost' }];
+      mcpEntity.spec.remotes = [{ type: '', url: 'http://localhost' }];
       await expect(validator.check(mcpEntity)).rejects.toThrow(/type/);
     });
 
     it('rejects mcp-server remote with empty url', async () => {
-      (mcpEntity as any).spec.remotes = [{ type: 'streamable-http', url: '' }];
+      mcpEntity.spec.remotes = [{ type: 'streamable-http', url: '' }];
       await expect(validator.check(mcpEntity)).rejects.toThrow(/url/);
     });
   });
