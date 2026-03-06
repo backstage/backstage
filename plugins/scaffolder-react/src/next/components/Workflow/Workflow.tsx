@@ -134,6 +134,9 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     return props.onError(error);
   }
 
+  const resolvedDescription =
+    description ?? sortedManifest?.description ?? t('workflow.noDescription');
+
   return (
     <Content>
       {loading && <Progress />}
@@ -148,7 +151,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
               />
             </InfoCard>
           </Grid>
-          {showDescription && description && (
+          {showDescription && (
             <Grid item xs={4}>
               <Card>
                 <CardHeader
@@ -168,7 +171,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
                   <MarkdownContent
                     className={styles.markdown}
                     linkTarget="_blank"
-                    content={description}
+                    content={resolvedDescription}
                   />
                 </CardContent>
               </Card>

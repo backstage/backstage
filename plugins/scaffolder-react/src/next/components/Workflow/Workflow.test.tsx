@@ -113,12 +113,13 @@ describe('<Workflow />', () => {
       expect(queryByText('My description')).not.toBeInTheDocument();
     });
 
-    it('should not show the description card when description is not provided', async () => {
-      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
-        defaultSchema,
-      );
+    it('should fall back to the manifest description when no description prop is provided', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        ...defaultSchema,
+        description: 'Description from manifest',
+      });
 
-      const { queryByTitle } = await renderInTestApp(
+      const { getByText } = await renderInTestApp(
         <ApiProvider apis={apis}>
           <Workflow
             onCreate={jest.fn()}
@@ -132,7 +133,29 @@ describe('<Workflow />', () => {
         </ApiProvider>,
       );
 
-      expect(queryByTitle('Hide description')).not.toBeInTheDocument();
+      expect(getByText('Description from manifest')).toBeInTheDocument();
+    });
+
+    it('should show "No description" when neither description prop nor manifest description is provided', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
+        defaultSchema,
+      );
+
+      const { getByText } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <Workflow
+            onCreate={jest.fn()}
+            onError={jest.fn()}
+            namespace="default"
+            templateName="docs-template"
+            extensions={[]}
+            showDescription
+            title="My Template"
+          />
+        </ApiProvider>,
+      );
+
+      expect(getByText('No description')).toBeInTheDocument();
     });
 
     it('should call onHideDescription when the hide button is clicked', async () => {

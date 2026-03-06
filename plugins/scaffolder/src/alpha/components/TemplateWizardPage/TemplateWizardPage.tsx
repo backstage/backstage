@@ -153,7 +153,10 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           pageTitleOverride={title}
           title={title}
           subtitle={
-            description.length < DESCRIPTION_LENGTH_THRESHOLD ? description : ''
+            !showDescription &&
+            description.length < DESCRIPTION_LENGTH_THRESHOLD
+              ? description
+              : ''
           }
           {...props.headerOptions}
         >

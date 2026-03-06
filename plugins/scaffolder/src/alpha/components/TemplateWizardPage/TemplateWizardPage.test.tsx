@@ -162,6 +162,16 @@ describe('TemplateWizardPage', () => {
   });
 
   describe('scaffolder page context menu', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+      scaffolderDecoratorsMock.getFormDecorators.mockResolvedValue([]);
+      // Default schema without a description — individual tests override as needed
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        title: 'React JSON Schema Form Test',
+        steps: [],
+      });
+    });
+
     it('should not render the menu if editUrl and description are undefined', async () => {
       catalogApi.getEntityByRef.mockResolvedValue({
         apiVersion: 'v1',
