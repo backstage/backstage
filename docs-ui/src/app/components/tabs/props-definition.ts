@@ -71,7 +71,7 @@ export const tabPropDefs: Record<string, PropDef> = {
   noTrack: {
     type: 'boolean',
     description:
-      'Suppresses analytics event tracking for this component (if configured).',
+      'Suppresses the automatic analytics click event, e.g. if you already have custom tracking.',
   },
   ...childrenPropDefs,
   ...classNamePropDefs,
