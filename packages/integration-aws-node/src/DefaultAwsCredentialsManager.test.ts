@@ -22,7 +22,7 @@ import {
   GetCallerIdentityCommand,
   AssumeRoleCommand,
 } from '@aws-sdk/client-sts';
-// this is an internal package that ths sdk uses behind the scenes, and we need to mock parts of it
+// this is an internal package that the sdk uses behind the scenes, and we need to mock parts of it
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import {
   STSClient as NestedSTSClient,
