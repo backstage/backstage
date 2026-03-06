@@ -19,6 +19,16 @@ import schema from '../schema/kinds/API.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
 /**
+ * Describes a remote endpoint for an MCP server.
+ *
+ * @public
+ */
+export type McpServerRemote = {
+  type: string;
+  url: string;
+};
+
+/**
  * Backstage API kind Entity. APIs describe the interfaces for Components to communicate.
  *
  * @remarks
@@ -34,8 +44,9 @@ export interface ApiEntityV1alpha1 extends Entity {
     type: string;
     lifecycle: string;
     owner: string;
-    definition: string;
+    definition?: string;
     system?: string;
+    remotes?: McpServerRemote[];
   };
 }
 

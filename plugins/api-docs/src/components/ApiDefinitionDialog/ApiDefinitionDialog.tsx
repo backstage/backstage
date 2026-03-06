@@ -160,7 +160,7 @@ export function ApiDefinitionDialog(props: {
 
         {definitionWidget ? (
           <TabPanel value={activeTab} index={tabPanelIndex++}>
-            {definitionWidget.component(entity.spec.definition)}
+            {definitionWidget.component(entity.spec.definition ?? '')}
           </TabPanel>
         ) : null}
         <TabPanel value={activeTab} index={tabPanelIndex++}>

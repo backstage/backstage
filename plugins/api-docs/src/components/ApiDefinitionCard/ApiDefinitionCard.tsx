@@ -42,11 +42,11 @@ export const ApiDefinitionCard = () => {
     return (
       <TabbedCard title={entityTitle}>
         <CardTab label={definitionWidget.title} key="widget">
-          {definitionWidget.component(entity.spec.definition)}
+          {definitionWidget.component(entity.spec.definition ?? '')}
         </CardTab>
         <CardTab label={t('apiDefinitionCard.rawButtonTitle')} key="raw">
           <PlainApiDefinitionWidget
-            definition={entity.spec.definition}
+            definition={entity.spec.definition ?? ''}
             language={definitionWidget.rawLanguage || entity.spec.type}
           />
         </CardTab>

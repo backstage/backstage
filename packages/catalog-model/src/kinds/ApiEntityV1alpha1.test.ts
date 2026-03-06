@@ -180,4 +180,76 @@ components:
     (entity as any).annotations = 'Test';
     await expect(validator.check(entity)).rejects.toThrow(/annotations/);
   });
+
+  describe('mcp-server type', () => {
+    let mcpEntity: ApiEntityV1alpha1;
+
+    beforeEach(() => {
+      mcpEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'API',
+        metadata: {
+          name: 'test-mcp',
+        },
+        spec: {
+          type: 'mcp-server',
+          lifecycle: 'experimental',
+          owner: 'me',
+          remotes: [
+            {
+              type: 'streamable-http',
+              url: 'http://localhost:7007/api/mcp',
+            },
+          ],
+        },
+      };
+    });
+
+    it('accepts valid mcp-server entity', async () => {
+      await expect(validator.check(mcpEntity)).resolves.toBe(true);
+    });
+
+    it('accepts mcp-server entity with multiple remotes', async () => {
+      mcpEntity.spec.remotes = [
+        { type: 'streamable-http', url: 'http://localhost:7007/api/mcp' },
+        { type: 'sse', url: 'http://localhost:7007/api/mcp-sse' },
+      ];
+      await expect(validator.check(mcpEntity)).resolves.toBe(true);
+    });
+
+    it('does not require definition for mcp-server type', async () => {
+      expect(mcpEntity.spec.definition).toBeUndefined();
+      await expect(validator.check(mcpEntity)).resolves.toBe(true);
+    });
+
+    it('rejects mcp-server entity without remotes', async () => {
+      delete (mcpEntity as any).spec.remotes;
+      await expect(validator.check(mcpEntity)).rejects.toThrow(/remotes/);
+    });
+
+    it('rejects mcp-server entity with empty remotes array', async () => {
+      (mcpEntity as any).spec.remotes = [];
+      await expect(validator.check(mcpEntity)).rejects.toThrow(/remotes/);
+    });
+
+    it('rejects mcp-server remote missing type', async () => {
+      (mcpEntity as any).spec.remotes = [{ url: 'http://localhost' }];
+      await expect(validator.check(mcpEntity)).rejects.toThrow(/type/);
+    });
+
+    it('rejects mcp-server remote missing url', async () => {
+      (mcpEntity as any).spec.remotes = [{ type: 'streamable-http' }];
+      await expect(validator.check(mcpEntity)).rejects.toThrow(/url/);
+    });
+
+    it('rejects mcp-server remote with empty type', async () => {
+      (mcpEntity as any).spec.remotes = [{ type: '', url: 'http://localhost' }];
+      await expect(validator.check(mcpEntity)).rejects.toThrow(/type/);
+    });
+
+    it('rejects mcp-server remote with empty url', async () => {
+      (mcpEntity as any).spec.remotes = [{ type: 'streamable-http', url: '' }];
+      await expect(validator.check(mcpEntity)).rejects.toThrow(/url/);
+    });
+  });
 });

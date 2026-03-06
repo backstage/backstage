@@ -43,8 +43,9 @@ interface ApiEntityV1alpha1 extends Entity {
     type: string;
     lifecycle: string;
     owner: string;
-    definition: string;
+    definition?: string;
     system?: string;
+    remotes?: McpServerRemote[];
   };
 }
 export { ApiEntityV1alpha1 as ApiEntity };
@@ -331,6 +332,12 @@ export const locationEntityV1alpha1Validator: KindValidator;
 
 // @public
 export function makeValidator(overrides?: Partial<Validators>): Validators;
+
+// @public
+export type McpServerRemote = {
+  type: string;
+  url: string;
+};
 
 // @public
 export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
