@@ -41,32 +41,37 @@ const OuterElementType = forwardRef<HTMLDivElement, HTMLDivProps>(
   },
 );
 
-export const VirtualizedListbox = forwardRef<HTMLDivElement, HTMLDivProps>(
-  (props, ref) => {
-    const { children, ...other } = props;
-    const itemData = Children.toArray(children);
-    const itemCount = itemData.length;
+type VirtualizedListBoxProps = HTMLDivProps & {
+  listRef?: React.Ref<FixedSizeList>;
+};
+export const VirtualizedListbox = forwardRef<
+  HTMLDivElement,
+  VirtualizedListBoxProps
+>((props, ref) => {
+  const { children, listRef, ...other } = props;
+  const itemData = Children.toArray(children);
+  const itemCount = itemData.length;
 
-    const itemSize = 36;
+  const itemSize = 36;
 
-    const itemsToShow = Math.min(10, itemCount) + 0.5;
-    const height = itemsToShow * itemSize;
+  const itemsToShow = Math.min(10, itemCount) + 0.5;
+  const height = itemsToShow * itemSize;
 
-    return (
-      <div ref={ref}>
-        <OuterElementContext.Provider value={other}>
-          <FixedSizeList
-            height={height}
-            itemData={itemData}
-            itemCount={itemCount}
-            itemSize={itemSize}
-            outerElementType={OuterElementType}
-            width="100%"
-          >
-            {renderRow}
-          </FixedSizeList>
-        </OuterElementContext.Provider>
-      </div>
-    );
-  },
-);
+  return (
+    <div ref={ref}>
+      <OuterElementContext.Provider value={other}>
+        <FixedSizeList
+          ref={listRef}
+          height={height}
+          itemData={itemData}
+          itemCount={itemCount}
+          itemSize={itemSize}
+          outerElementType={OuterElementType}
+          width="100%"
+        >
+          {renderRow}
+        </FixedSizeList>
+      </OuterElementContext.Provider>
+    </div>
+  );
+});
