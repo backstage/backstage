@@ -19,6 +19,8 @@
 /** @type{import('prism-react-renderer').PrismTheme} **/
 // @ts-ignore
 import { themes } from 'prism-react-renderer';
+import { cpSync, existsSync } from 'node:fs';
+import { resolve as resolvePath } from 'node:path';
 import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
@@ -28,7 +30,9 @@ import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
-const useVersionedDocs = require('node:fs').existsSync('versions.json');
+const useVersionedDocs = existsSync('versions.json');
+const wellKnownDocsPath = resolvePath(__dirname, '../docs/.well-known');
+const wellKnownPublicPath = '/.well-known';
 
 // This patches the redirect plugin to ignore the error when it tries to override existing fields.
 // This lets us add redirects that only apply to the next docs, while the stable docs still contain the source path.
@@ -199,6 +203,40 @@ const config: Config = {
             ],
           },
         };
+      },
+    }),
+    () => ({
+      name: 'publish-well-known-docs',
+      getPathsToWatch() {
+        return [wellKnownDocsPath];
+      },
+      configureWebpack() {
+        if (!existsSync(wellKnownDocsPath)) {
+          return undefined;
+        }
+
+        return {
+          devServer: {
+            static: [
+              {
+                publicPath: wellKnownPublicPath,
+                directory: wellKnownDocsPath,
+                staticOptions: {
+                  dotfiles: 'allow',
+                },
+              },
+            ],
+          },
+        };
+      },
+      async postBuild({ outDir }: { outDir: string }) {
+        if (!existsSync(wellKnownDocsPath)) {
+          return;
+        }
+
+        cpSync(wellKnownDocsPath, resolvePath(outDir, '.well-known'), {
+          recursive: true,
+        });
       },
     }),
     ctx =>

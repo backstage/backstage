@@ -156,6 +156,7 @@ firehydrant
 Firekube
 Firestore
 Fiverr
+Flex
 flightcontrol
 Francesco
 Frontside
@@ -261,6 +262,7 @@ mailto
 maintainer's
 maintainership
 makefile
+makeStyles
 Matomo
 matchers
 md
