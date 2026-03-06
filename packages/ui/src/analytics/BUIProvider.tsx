@@ -16,43 +16,42 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { createVersionedValueMap } from '@backstage/version-bridge';
-import { AnalyticsHookContext } from './useAnalytics';
+import { BUIContext } from './useAnalytics';
 import type { UseAnalyticsFn } from './types';
 
 /** @public */
-export type AnalyticsProviderProps = {
-  useAnalytics: UseAnalyticsFn;
+export type BUIProviderProps = {
+  useAnalytics?: UseAnalyticsFn;
   children: ReactNode;
 };
 
 /**
- * Provides an analytics hook to all descendant BUI components.
+ * Provides integration capabilities to all descendant BUI components.
  *
  * @example
  * ```tsx
- * import { AnalyticsProvider } from '@backstage/ui';
+ * import { BUIProvider } from '@backstage/ui';
  * import { useAnalytics as useBackstageAnalytics } from '@backstage/core-plugin-api';
  *
  * function App() {
  *   return (
- *     <AnalyticsProvider useAnalytics={useBackstageAnalytics}>
+ *     <BUIProvider useAnalytics={useBackstageAnalytics}>
  *       <AppContent />
- *     </AnalyticsProvider>
+ *     </BUIProvider>
  *   );
  * }
  * ```
  *
  * @public
  */
-export function AnalyticsProvider(props: AnalyticsProviderProps) {
+export function BUIProvider(props: BUIProviderProps) {
   const { useAnalytics, children } = props;
   const value = useMemo(
-    () => createVersionedValueMap({ 1: useAnalytics }),
+    () =>
+      createVersionedValueMap({
+        1: { useAnalytics },
+      }),
     [useAnalytics],
   );
-  return (
-    <AnalyticsHookContext.Provider value={value}>
-      {children}
-    </AnalyticsHookContext.Provider>
-  );
+  return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
 }

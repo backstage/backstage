@@ -35,7 +35,7 @@ import {
   RouterBlueprint,
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
-import { AnalyticsProvider as BUIAnalyticsProvider } from '@backstage/ui';
+import { BUIProvider } from '@backstage/ui';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   DiscoveryApi,
@@ -117,7 +117,7 @@ export const AppRoot = createExtension({
 
     return [
       coreExtensionData.reactElement(
-        <BUIAnalyticsProvider useAnalytics={useAnalytics}>
+        <BUIProvider useAnalytics={useAnalytics}>
           <AppRouter
             SignInPageComponent={inputs.signInPage?.get(
               SignInPageBlueprint.dataRefs.component,
@@ -131,7 +131,7 @@ export const AppRoot = createExtension({
           >
             {content}
           </AppRouter>
-        </BUIAnalyticsProvider>,
+        </BUIProvider>,
       ),
     ];
   },

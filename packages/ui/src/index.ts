@@ -69,10 +69,10 @@ export { useBgProvider, useBgConsumer, BgProvider } from './hooks/useBg';
 export type { BgContextValue, BgProviderProps } from './hooks/useBg';
 
 // Analytics
-export { useAnalytics, AnalyticsProvider, getNodeText } from './analytics';
+export { useAnalytics, BUIProvider, getNodeText } from './analytics';
 export type {
   AnalyticsTracker,
   AnalyticsEventAttributes,
   UseAnalyticsFn,
-  AnalyticsProviderProps,
+  BUIProviderProps,
 } from './analytics';

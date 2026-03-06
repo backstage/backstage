@@ -47,7 +47,7 @@ import {
   errorApiRef,
   useAnalytics,
 } from '@backstage/core-plugin-api';
-import { AnalyticsProvider as BUIAnalyticsProvider } from '@backstage/ui';
+import { BUIProvider } from '@backstage/ui';
 import {
   AppLanguageApi,
   appLanguageApiRef,
@@ -391,7 +391,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
       return (
         <ApiProvider apis={apis}>
-          <BUIAnalyticsProvider useAnalytics={useAnalytics}>
+          <BUIProvider useAnalytics={useAnalytics}>
             <AppContextProvider appContext={appContext}>
               <ThemeProvider>
                 <RoutingProvider
@@ -412,7 +412,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
                 </RoutingProvider>
               </ThemeProvider>
             </AppContextProvider>
-          </BUIAnalyticsProvider>
+          </BUIProvider>
         </ApiProvider>
       );
     };

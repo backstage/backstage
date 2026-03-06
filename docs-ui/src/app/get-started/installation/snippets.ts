@@ -5,13 +5,13 @@ export const snippet = `import { Flex, Button, Text } from '@backstage/ui';
   <Button>Click me</Button>
 </Flex>;`;
 
-export const analyticsSetupSnippet = `import { AnalyticsProvider } from '@backstage/ui';
+export const analyticsSetupSnippet = `import { BUIProvider } from '@backstage/ui';
 import { useAnalytics } from '@backstage/core-plugin-api';
 
 // Wrap your app content with the provider
-<AnalyticsProvider useAnalytics={useAnalytics}>
+<BUIProvider useAnalytics={useAnalytics}>
   <AppContent />
-</AnalyticsProvider>`;
+</BUIProvider>`;
 
 export const analyticsNoTrackSnippet = `// Suppress analytics for a specific link
 <Link href="/internal" noTrack>

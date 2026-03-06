@@ -29,22 +29,26 @@ export const noopTracker: AnalyticsTracker = {
 const noopUseAnalytics: UseAnalyticsFn = () => noopTracker;
 
 /** @internal */
-export const AnalyticsHookContext = createVersionedContext<{
-  1: UseAnalyticsFn;
-}>('bui-analytics');
+export type BUIContextValue = {
+  useAnalytics?: UseAnalyticsFn;
+};
+
+/** @internal */
+export const BUIContext = createVersionedContext<{
+  1: BUIContextValue;
+}>('bui');
 
 /**
  * Returns an AnalyticsTracker for capturing analytics events.
  *
- * By default returns a noop tracker. When an `AnalyticsProvider` is present
+ * By default returns a noop tracker. When a `BUIProvider` is present
  * in the tree, returns the tracker provided by the consumer's hook.
  *
  * @public
  */
 export function useAnalytics(): AnalyticsTracker {
-  const impl =
-    useVersionedContext<{ 1: UseAnalyticsFn }>('bui-analytics')?.atVersion(1) ??
-    noopUseAnalytics;
+  const ctx = useVersionedContext<{ 1: BUIContextValue }>('bui')?.atVersion(1);
+  const impl = ctx?.useAnalytics ?? noopUseAnalytics;
 
   if (process.env.NODE_ENV !== 'production') {
     const prevImpl = useRef(impl);
@@ -54,7 +58,7 @@ export function useAnalytics(): AnalyticsTracker {
     ) {
       throw new Error(
         '@backstage/ui: The analytics hook changed between a noop and a real ' +
-          'implementation. Ensure <AnalyticsProvider> wraps all BUI components from first render.',
+          'implementation. Ensure <BUIProvider> wraps all BUI components from first render.',
       );
     }
     prevImpl.current = impl;

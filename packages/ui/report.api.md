@@ -260,15 +260,6 @@ export type AnalyticsEventAttributes = {
 };
 
 // @public
-export function AnalyticsProvider(props: AnalyticsProviderProps): JSX_2.Element;
-
-// @public (undocumented)
-export type AnalyticsProviderProps = {
-  useAnalytics: UseAnalyticsFn;
-  children: ReactNode;
-};
-
-// @public
 export type AnalyticsTracker = {
   captureEvent: (
     action: string,
@@ -437,6 +428,15 @@ export type BoxUtilityProps = {
 
 // @public (undocumented)
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+// @public
+export function BUIProvider(props: BUIProviderProps): JSX_2.Element;
+
+// @public (undocumented)
+export type BUIProviderProps = {
+  useAnalytics?: UseAnalyticsFn;
+  children: ReactNode;
+};
 
 // @public
 export const Button: ForwardRefExoticComponent<
