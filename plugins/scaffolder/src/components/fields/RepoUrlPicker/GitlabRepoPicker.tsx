@@ -150,7 +150,7 @@ export const GitlabRepoPicker = (
             renderInput={params => (
               <TextField
                 {...params}
-                label={t('fields.gitlabRepoPicker.owner.title')}
+                label={t('fields.gitlabRepoPicker.owner.inputTitle')}
                 disabled={isDisabled}
                 required
               />
