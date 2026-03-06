@@ -27,6 +27,7 @@ import {
   actionsServiceRef,
   metricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
+import { readToolOverrides, parseServerConfigs } from './config';
 
 /**
  * mcpPlugin backend plugin
@@ -59,28 +60,53 @@ export const mcpPlugin = createBackendPlugin({
         config,
         metrics,
       }) {
+        const toolOverrides = readToolOverrides(config);
+        const serverConfigs = parseServerConfigs(config);
+
         const mcpService = await McpService.create({
           actions,
           metrics,
-        });
-
-        const sseRouter = createSseRouter({
-          mcpService,
-          httpAuth,
-        });
-
-        const streamableRouter = createStreamableRouter({
-          mcpService,
-          httpAuth,
-          logger,
-          metrics,
+          toolOverrides,
         });
 
         const router = Router();
         router.use(json());
 
-        router.use('/v1/sse', sseRouter);
-        router.use('/v1', streamableRouter);
+        if (serverConfigs) {
+          for (const [key, serverConfig] of serverConfigs) {
+            const sseRouter = createSseRouter({
+              mcpService,
+              httpAuth,
+              serverConfig,
+            });
+
+            const streamableRouter = createStreamableRouter({
+              mcpService,
+              httpAuth,
+              logger,
+              metrics,
+              serverConfig,
+            });
+
+            router.use(`/v1/${key}/sse`, sseRouter);
+            router.use(`/v1/${key}`, streamableRouter);
+          }
+        } else {
+          const sseRouter = createSseRouter({
+            mcpService,
+            httpAuth,
+          });
+
+          const streamableRouter = createStreamableRouter({
+            mcpService,
+            httpAuth,
+            logger,
+            metrics,
+          });
+
+          router.use('/v1/sse', sseRouter);
+          router.use('/v1', streamableRouter);
+        }
 
         httpRouter.use(router);
 
