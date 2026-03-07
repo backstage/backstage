@@ -46,7 +46,10 @@ export class DefaultIconsApi implements IconsApi {
           return [key, value];
         }
         deprecatedKeys.push(key);
-        return [key, createElement(value as IconComponent)];
+        return [
+          key,
+          createElement(value as IconComponent, { fontSize: 'inherit' }),
+        ];
       }),
     );
 
