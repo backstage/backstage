@@ -24,6 +24,13 @@ import { Box } from '../Box';
 import { Button } from '../Button';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
+import {
+  RiSettings4Line,
+  RiBarChartBoxLine,
+  RiShieldCheckLine,
+  RiBellLine,
+  RiPaletteLine,
+} from '@remixicon/react';
 
 const Content = () => (
   <Box>
@@ -167,6 +174,72 @@ export const GroupMultipleOpen = meta.story({
             <Text as="p">
               It's understood that Hollywood sells Californication
             </Text>
+          </Box>
+        </AccordionPanel>
+      </Accordion>
+    </AccordionGroup>
+  ),
+});
+
+export const WithIcon = meta.story({
+  render: () => (
+    <Accordion>
+      <AccordionTrigger
+        title="System Settings"
+        iconStart={<RiSettings4Line />}
+      />
+      <AccordionPanel>
+        <Content />
+      </AccordionPanel>
+    </Accordion>
+  ),
+});
+
+export const WithIconEnd = meta.story({
+  render: () => (
+    <Accordion>
+      <AccordionTrigger
+        title="Analytics Dashboard"
+        iconEnd={<RiBarChartBoxLine />}
+      />
+      <AccordionPanel>
+        <Content />
+      </AccordionPanel>
+    </Accordion>
+  ),
+});
+
+export const MultipleWithIcons = meta.story({
+  render: () => (
+    <AccordionGroup>
+      <Accordion>
+        <AccordionTrigger
+          title="Security Settings"
+          iconStart={<RiShieldCheckLine />}
+        />
+        <AccordionPanel>
+          <Box>
+            <Text as="p">
+              Configure authentication, authorization, and security policies
+            </Text>
+          </Box>
+        </AccordionPanel>
+      </Accordion>
+      <Accordion>
+        <AccordionTrigger title="Notifications" iconStart={<RiBellLine />} />
+        <AccordionPanel>
+          <Box>
+            <Text as="p">
+              Manage email, push, and in-app notification preferences
+            </Text>
+          </Box>
+        </AccordionPanel>
+      </Accordion>
+      <Accordion>
+        <AccordionTrigger title="Appearance" iconStart={<RiPaletteLine />} />
+        <AccordionPanel>
+          <Box>
+            <Text as="p">Customize theme, colors, and display preferences</Text>
           </Box>
         </AccordionPanel>
       </Accordion>
