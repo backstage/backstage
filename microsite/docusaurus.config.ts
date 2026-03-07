@@ -453,7 +453,7 @@ const config: Config = {
     metadata: [
       {
         name: 'description',
-        content: 'Backstage is an open source framework for building developer portals. ',
+        content: 'Backstage is an open source developer portal framework that centralizes your software catalog, unifies infrastructure tools, and helps teams ship high-quality code faster.',
       },
     ],
     footer: {
