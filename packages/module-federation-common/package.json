@@ -39,7 +39,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@module-federation/runtime": "^0.21.6"
+    "@module-federation/runtime": "^0.24.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
