@@ -26,8 +26,8 @@ import {
   HumanDuration,
   JsonObject,
 } from '@backstage/types';
-import knexFactory, { Knex } from 'knex';
-import { merge, omit } from 'lodash';
+import defaultKnexFactory, { Knex } from 'knex';
+import { isEqual, merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Client } from 'pg';
 import { Connector } from '../types';
@@ -46,13 +46,86 @@ const ddlLimiter = limiterFactory(1);
  */
 export async function createPgDatabaseClient(
   dbConfig: Config,
-  overrides?: Knex.Config,
+  options?: {
+    overrides?: Knex.Config;
+    logger?: LoggerService;
+    testInjectedKnexFactory?: typeof defaultKnexFactory;
+    subscribe?: boolean;
+  },
 ) {
+  const overrides = options?.overrides;
+  const logger = options?.logger;
+  const knexFactory = options?.testInjectedKnexFactory ?? defaultKnexFactory;
+  const subscribe = options?.subscribe ?? false;
   const knexConfig = await buildPgDatabaseConfig(dbConfig, overrides);
+
+  // If the connection is already a function (Azure/CloudSQL), it handles
+  // its own connection lifecycle via expirationChecker, so use it as-is.
+  // For static connections, wrap in a connection factory that responds to
+  // config changes so the pool can reconnect with updated credentials.
+  if (
+    subscribe &&
+    typeof knexConfig.connection !== 'function' &&
+    dbConfig.subscribe
+  ) {
+    const current: { connection: Knex.PgConnectionConfig } = {
+      connection: knexConfig.connection,
+    };
+    const next: { connection?: Knex.PgConnectionConfig } = {
+      connection: undefined,
+    };
+
+    let configReveision = 0;
+    dbConfig.subscribe(() => {
+      configReveision += 1;
+      const startRevision = configReveision;
+      buildPgDatabaseConfig(dbConfig, overrides).then(
+        rebuilt => {
+          if (
+            startRevision === configReveision &&
+            !isEqual(rebuilt.connection, current.connection)
+          ) {
+            logger?.info(
+              'Database config changed, reconnecting connection pool',
+              { connection: rebuilt.connection },
+            );
+            next.connection = rebuilt.connection;
+          }
+        },
+        error => {
+          // Config may be in an intermediate state during hot reload;
+          // keep the previous connection until a valid one arrives
+          logger?.warn(
+            `Failed to rebuild database connection config after config change`,
+            { error },
+          );
+        },
+      );
+    });
+
+    knexConfig.connection = async () => {
+      const expirationChecker = () => {
+        // It's safe to compare by reference, because the change handler above
+        // performs a deep compare and replaces the entire object if there are
+        // differences.
+        const needsReload = next.connection !== undefined;
+        console.log('EXPIRATION CHECKER', needsReload);
+        if (needsReload) {
+          current.connection = next.connection!;
+          next.connection = undefined;
+          return true;
+        }
+        return false;
+      };
+      return typeof current.connection === 'string'
+        ? { connectionString: current.connection, expirationChecker }
+        : { ...current.connection, expirationChecker };
+    };
+  }
+
   const database = knexFactory(knexConfig);
 
   const role = dbConfig.getOptionalString('role');
-
   if (role) {
     database.client.pool.on(
       'createSuccess',
@@ -62,6 +135,7 @@ export async function createPgDatabaseClient(
       },
     );
   }
+
   return database;
 }
 
@@ -105,9 +179,9 @@ export async function buildPgDatabaseConfig(
 
   switch (config.connection.type) {
     case 'azure':
-      return buildAzurePgConfig(mergedConfigReader);
+      return await buildAzurePgConfig(mergedConfigReader);
     case 'cloudsql':
-      return buildCloudSqlConfig(mergedConfigReader);
+      return await buildCloudSqlConfig(mergedConfigReader);
     default:
       throw new Error(`Unknown connection type: ${config.connection.type}`);
   }
@@ -324,12 +398,14 @@ export async function ensurePgDatabaseExists(
   ...databases: Array<string>
 ) {
   const admin = await createPgDatabaseClient(dbConfig, {
-    connection: {
-      database: 'postgres',
-    },
-    pool: {
-      min: 0,
-      acquireTimeoutMillis: 10000,
+    overrides: {
+      connection: {
+        database: 'postgres',
+      },
+      pool: {
+        min: 0,
+        acquireTimeoutMillis: 10000,
+      },
     },
   });
 
@@ -607,7 +683,7 @@ export class PgConnector implements Connector {
 
   async getClient(
     pluginId: string,
-    _deps: {
+    deps: {
       logger: LoggerService;
       lifecycle: LifecycleService;
     },
@@ -640,13 +716,11 @@ export class PgConnector implements Connector {
       }
     }
 
-    const client = createPgDatabaseClient(
-      this.config,
-      mergeDatabaseConfig(
-        pluginDbConfig.knexConfig,
-        pluginDbConfig.databaseClientOverrides,
-      ),
-    );
+    const client = createPgDatabaseClient(this.config, {
+      overrides: pluginDbConfig.databaseClientOverrides,
+      logger: deps.logger,
+      subscribe: true,
+    });
 
     return client;
   }
