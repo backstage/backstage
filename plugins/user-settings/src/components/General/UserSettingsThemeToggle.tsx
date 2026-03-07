@@ -125,9 +125,9 @@ export const UserSettingsThemeToggle = () => {
             {t('themeToggle.description')}
           </p>
         </div>
-        <div className="relative pl-4 sm:pl-0">
+        <div className="relative pl-4 sm:pl-0 min-w-0">
           <div
-            className="flex rounded-md border border-input"
+            className="flex flex-wrap rounded-md border border-input"
             role="group"
             aria-label={t('themeToggle.title')}
           >

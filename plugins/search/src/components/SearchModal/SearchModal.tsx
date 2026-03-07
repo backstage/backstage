@@ -17,8 +17,10 @@ import {
   useContent,
   ShadcnDialog,
   ShadcnDialogContent,
+  ShadcnDialogTitle,
   ShadcnButton,
   Separator,
+  VisuallyHidden,
   cn,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -171,6 +173,22 @@ export const SearchModal = (props: SearchModalProps) => {
     resultItemComponents,
   } = props;
 
+  // Bind Ctrl+K / Cmd+K global keyboard shortcut to open the search modal.
+  // Per AAP §0.4.2 the Command dialog should be activated by Cmd/Ctrl+K,
+  // providing the Discord/Linear-style search experience.
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        toggleModal();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [toggleModal]);
+
   const content = open ? (
     <SearchContextProvider inheritParentContextIfAvailable>
       {(children &&
@@ -208,6 +226,12 @@ export const SearchModal = (props: SearchModalProps) => {
         )}
         aria-label="Search Modal"
       >
+        {/* Visually hidden DialogTitle required by Radix Dialog for screen
+            reader accessibility (Issue #5). Without this, Radix emits a
+            console warning about a missing DialogTitle. */}
+        <VisuallyHidden>
+          <ShadcnDialogTitle>Search</ShadcnDialogTitle>
+        </VisuallyHidden>
         {content}
       </ShadcnDialogContent>
     </ShadcnDialog>

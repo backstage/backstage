@@ -69,46 +69,60 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
 
   return (
     <>
-      <ShadcnTabs value={currentTabValue}>
-        <TabsList
-          className={cn(
-            'bg-transparent h-auto w-full justify-start',
-            'rounded-none border-b border-border p-0',
-            '[grid-area:pageSubheader]',
-          )}
-        >
-          {routes.map(t => {
-            const { path, title, tabProps } = t;
-            let to = path;
-            // Remove trailing /*
-            to = to.replace(/\/\*$/, '');
-            // And remove leading / for relative navigation
-            to = to.replace(/^\//, '');
-            const { className: tabClassName, ...restTabProps } = tabProps ?? {};
-            return (
-              <TabsTrigger
-                key={path}
-                {...restTabProps}
-                value={path}
-                asChild
-                className={cn(
-                  'rounded-none border-b-2 border-transparent px-3 py-3',
-                  'text-xs font-bold uppercase text-muted-foreground',
-                  'shadow-none transition-colors',
-                  'data-[state=active]:border-primary',
-                  'data-[state=active]:bg-transparent',
-                  'data-[state=active]:text-foreground',
-                  'data-[state=active]:shadow-none',
-                  'hover:text-foreground',
-                  tabClassName,
-                )}
-              >
-                <Link to={to}>{title}</Link>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
-      </ShadcnTabs>
+      {/*
+       * The outer wrapper div must carry [grid-area:pageSubheader] because it
+       * is a direct child of the Page CSS grid.  Previously the grid-area was
+       * placed on TabsList (a grandchild), which has no effect on the parent
+       * grid — causing the ShadcnTabs block to be auto-placed into the first
+       * implicit column and forcing the "auto" column to expand to the full
+       * tab-bar text width, squeezing pageContent to near-zero on narrow
+       * viewports (Issues #6 / #7).
+       *
+       * overflow-x-auto + min-w-0 allow the tab bar to scroll horizontally on
+       * small screens instead of pushing the page grid columns out of bounds.
+       */}
+      <div className="[grid-area:pageSubheader] min-w-0 overflow-x-auto">
+        <ShadcnTabs value={currentTabValue}>
+          <TabsList
+            className={cn(
+              'bg-transparent h-auto w-full justify-start',
+              'rounded-none border-b border-border p-0',
+            )}
+          >
+            {routes.map(t => {
+              const { path, title, tabProps } = t;
+              let to = path;
+              // Remove trailing /*
+              to = to.replace(/\/\*$/, '');
+              // And remove leading / for relative navigation
+              to = to.replace(/^\//, '');
+              const { className: tabClassName, ...restTabProps } =
+                tabProps ?? {};
+              return (
+                <TabsTrigger
+                  key={path}
+                  {...restTabProps}
+                  value={path}
+                  asChild
+                  className={cn(
+                    'rounded-none border-b-2 border-transparent px-3 py-3',
+                    'text-xs font-bold uppercase text-muted-foreground',
+                    'shadow-none transition-colors whitespace-nowrap',
+                    'data-[state=active]:border-primary',
+                    'data-[state=active]:bg-transparent',
+                    'data-[state=active]:text-foreground',
+                    'data-[state=active]:shadow-none',
+                    'hover:text-foreground',
+                    tabClassName,
+                  )}
+                >
+                  <Link to={to}>{title}</Link>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+        </ShadcnTabs>
+      </div>
       <Content>
         <Helmet title={route?.title} />
         {element}

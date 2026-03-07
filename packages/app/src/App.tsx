@@ -88,16 +88,22 @@ TODO:
  * TechDocs does support the new frontend system so this conversion is not
  * strictly necessary, but it's left here to provide a demo of the utilities for
  * converting legacy plugins.
+ *
+ * Both TechDocsIndexPage and TechDocsReaderPage are registered as independent
+ * page extensions.  The reader path omits the trailing wildcard because the
+ * AppRoutes extension already appends "/*" to every route path — including a
+ * duplicate wildcard would produce an invalid double-star pattern that React
+ * Router v6 cannot match correctly.
  */
 const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
   extensions: [
-    // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
     convertLegacyPageExtension(TechDocsIndexPage, {
       name: 'index',
       path: '/docs',
     }),
     convertLegacyPageExtension(TechDocsReaderPage, {
-      path: '/docs/:namespace/:kind/:name/*',
+      name: 'reader',
+      path: '/docs/:namespace/:kind/:name',
     }),
     convertLegacyEntityContentExtension(EntityTechdocsContent),
   ],
