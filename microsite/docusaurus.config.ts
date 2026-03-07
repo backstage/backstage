@@ -450,6 +450,12 @@ const config: Config = {
       ],
     },
     image: 'img/sharing-opengraph.png',
+    metadata: [
+      {
+        name: 'description',
+        content: 'Backstage is an open source framework for building developer portals. ',
+      },
+    ],
     footer: {
       links: [
         {
