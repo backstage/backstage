@@ -366,3 +366,39 @@ Now install your module.
 ```ts title="packages/backend/src/index.ts"
 backend.add(eventsModuleCatalogErrors);
 ```
+
+## OpenAPI and AsyncAPI Placeholder Support
+
+The **OpenAPI Catalog Backend Module** registers a JSON Schema placeholder resolver for the `openapi` (and `asyncapi`) placeholder keys. This enables you to use `$openapi` and `$asyncapi` references in your catalog entities, while having all underlying `$ref` pointers resolved and bundled as part of the schema processing.
+
+### Installation
+
+1. Add the package to your backend:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-openapi
+```
+
+2. Register the module in your backend:
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend-module-openapi'));
+```
+
+### Usage
+
+To trigger the `$ref` resolution, use the `$openapi` (or `$asyncapi`) placeholder in your catalog entity definition:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: example
+  description: Example API
+spec:
+  type: openapi
+  lifecycle: production
+  owner: team
+  definition:
+    $openapi: ./spec/openapi.yaml # by using $openapi Backstage will now resolve all $ref instances
+```
