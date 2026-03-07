@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { CatalogModelKind } from './createCatalogModelKind';
+import { CatalogModelRelation } from './createCatalogModelRelation';
 import { CatalogModelExtension, OpaqueCatalogModelExtension } from './types';
 
 /**
@@ -23,21 +25,21 @@ import { CatalogModelExtension, OpaqueCatalogModelExtension } from './types';
  */
 export interface CatalogModel {
   /**
-   * Prepare an entity for validation.
+   * Look up a kind by its kind name and API version.
    *
-   * @remarks
-   *
-   * This may mutate the entity. For example, array relation fields may have
-   * sorting applied to stay consistent (since their order by definition is not
-   * important; this saves down on unnecessary stitching).
-   *
-   * @param entity - The entity to prepare.
+   * @param kind - The kind name, e.g. "Component".
+   * @param apiVersion - The API version, e.g. "backstage.io/v1alpha1".
+   * @returns The kind if found, or `undefined` if no matching kind exists.
    */
-  prepareEntity(entity: unknown): void;
+  getKind(kind: string, apiVersion: string): CatalogModelKind | undefined;
   /**
-   * Validate an entity against this catalog model.
+   * Look up all relations that originate from a given kind.
+   *
+   * @param kind - The kind name, e.g. "Component".
+   * @returns The relations originating from the kind, or `undefined` if the
+   *   kind is not known.
    */
-  validateEntity(entity: unknown): void;
+  getRelations(kind: string): CatalogModelRelation[] | undefined;
 }
 
 /**
