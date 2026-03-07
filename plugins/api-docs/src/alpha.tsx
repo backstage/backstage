@@ -43,7 +43,7 @@ const apiDocsNavItem = NavItemBlueprint.make({
   params: {
     title: 'APIs',
     routeRef: rootRoute,
-    icon: () => <AppIcon id="kind:api" />,
+    icon: () => <AppIcon fontSize="inherit" id="kind:api" />,
   },
 });
 
@@ -211,7 +211,7 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'api-docs',
   title: 'APIs',
-  icon: <AppIcon id="kind:api" />,
+  icon: <AppIcon fontSize="inherit" id="kind:api" />,
   info: { packageJson: () => import('../package.json') },
   routes: {
     root: rootRoute,
