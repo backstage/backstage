@@ -61,8 +61,6 @@ describe('DefaultIconsApi', () => {
     expect(result.type).toBe(MyIcon);
     // @ts-expect-error accessing internal React element structure
     expect(result.props.fontSize).toBe('inherit');
-    // @ts-expect-error accessing internal React element structure
-    expect(result.props.size).toBe('1em');
   });
 
   it('should wrap IconElement values in a component for getIcon()', () => {

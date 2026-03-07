@@ -38,17 +38,18 @@ export type IconComponent = ComponentType<{
 }>;
 
 /**
- * The type used for icon elements throughout Backstage. It is recommended to
- * use icons from `@remixicon/react`.
+ * The type used for icon elements throughout Backstage.
  *
  * @remarks
  *
- * Icons should be exactly 24x24 pixels in size.
+ * Icon elements should behave like rendering a plain icon directly, for example
+ * from `@remixicon/react`, and are expected to be sized by the surrounding UI.
+ * Icons should be exactly 24x24 pixels in size by default.
  *
- * Using icons from `@remixicon/react` is preferred, but using icons from
+ * Using icons from `@remixicon/react` is preferred. Using icons from
  * `@material-ui/icons` or `AppIcon` and its variants from
- * `@backstage/core-components` is supported but depreceated. When using these
- * icons, you must set the `fontSize` to `'inherit'`.
+ * `@backstage/core-components` is supported while migrating, but deprecated.
+ * When using those icons, you must set `fontSize="inherit"` on the element.
  *
  * @public
  */

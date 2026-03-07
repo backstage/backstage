@@ -45,15 +45,7 @@ export const IconsApi = ApiBlueprint.makeWithOverrides({
           return new DefaultIconsApi(
             inputs.icons
               .map(i => i.get(IconBundleBlueprint.dataRefs.icons))
-              .reduce(
-                (acc, bundle) => ({ ...acc, ...bundle }),
-                Object.fromEntries(
-                  Object.entries(defaultIcons).map(([key, Icon]) => [
-                    key,
-                    <Icon />,
-                  ]),
-                ),
-              ),
+              .reduce((acc, bundle) => ({ ...acc, ...bundle }), defaultIcons),
           );
         },
       }),
