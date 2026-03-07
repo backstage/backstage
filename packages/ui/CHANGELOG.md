@@ -1,5 +1,35 @@
 # @backstage/ui
 
+## 0.13.0-next.2
+
+### Patch Changes
+
+- db92751: Added interactive support to the `Card` component. Pass `onPress` to make the entire card surface pressable, or `href` to make it navigate to a URL. A transparent overlay handles the interaction while nested buttons and links remain independently clickable.
+- 12d8afe: Added analytics capabilities to the component library. Components with navigation behavior (Link, ButtonLink, Tab, MenuItem, Tag, Row) now fire analytics events on click when a `BUIProvider` is present.
+
+  New exports: `BUIProvider`, `useAnalytics`, `getNodeText`, and associated types (`AnalyticsTracker`, `UseAnalyticsFn`, `BUIProviderProps`, `AnalyticsEventAttributes`).
+
+  Components with analytics support now accept a `noTrack` prop to suppress event firing.
+
+  **Affected components:** Link, ButtonLink, Tab, MenuItem, Tag, Row
+
+- 430d5ed: Fixed interactive cards so that CardBody can scroll when the card has a constrained height. Previously, the overlay element blocked scroll events.
+
+  **Affected components:** Card
+
+- 7960d54: Added support for native HTML div attributes on the `Flex`, `Grid`, and `Grid.Item` components.
+
+  **Affected components:** Flex, Grid, Grid.Item
+
+- 12d8afe: Fixed MenuItem `onAction` prop ordering so user-provided `onAction` handlers are chained rather than silently overwritten.
+- bb66b86: The `Select` trigger now automatically adapts its background colour based on the parent background context.
+
+  **Affected components:** Select
+
+- 934ac03: `SearchField` and `TextField` now automatically adapt their background color based on the parent bg context, stepping up one neutral level (e.g. neutral-1 → neutral-2) when placed on a neutral background. `TextField` also gains a focus ring using the `--bui-ring` token.
+
+  **Affected components:** SearchField, TextField
+
 ## 0.13.0-next.1
 
 ### Minor Changes

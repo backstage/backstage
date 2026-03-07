@@ -1,5 +1,11 @@
 # @backstage/backend-app-api
 
+## 1.6.0-next.1
+
+### Minor Changes
+
+- 545557a: Registration errors should be forwarded as BackendStartupResult
+
 ## 1.5.1-next.0
 
 ### Patch Changes

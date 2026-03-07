@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-react
 
+## 2.1.0-next.2
+
+### Minor Changes
+
+- d14b6e0: Exported `useEntityRefLink` hook that returns a function for generating entity page URLs from entity references.
+- c6080eb: Added `EntityInfoCard` component to `@backstage/plugin-catalog-react` as a BUI-based card wrapper for entity page cards.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.9-next.2
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-test-utils@0.5.1-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+
 ## 2.1.0-next.1
 
 ### Minor Changes

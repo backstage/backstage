@@ -1,5 +1,38 @@
 # @backstage/plugin-catalog
 
+## 2.0.0-next.2
+
+### Major Changes
+
+- 5fc35bb: Migrated `EntityAboutCard`, `EntityLinksCard`, `EntityLabelsCard`, `GroupProfileCard`, and `UserProfileCard` from MUI/InfoCard to use the new BUI card layout and BUI components where possible.
+
+  **BREAKING**: Removed `variant` prop from EntityAboutCard, EntityUserProfileCard, EntityGroupProfileCard, EntityLabelsCard, EntityLinksCard. Removed `gridSizes` prop from `AboutField`.
+
+  **Migration:**
+
+  Simply delete the obsolete `variant` and `gridSizes` props, e.g:
+
+  ```diff
+  -      <EntityAboutCard variant="gridItem" />
+  +      <EntityAboutCard />
+  ```
+
+  ```diff
+  -      <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }} />
+  +      <AboutField label="Owner" />
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.9-next.2
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/plugin-search-react@1.10.5-next.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.1
+
 ## 1.34.0-next.1
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.2.0-next.2
+
+### Patch Changes
+
+- 30ff981: Fixed a security vulnerability where secrets could bypass log redaction when transformed through Nunjucks filters in scaffolder templates.
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.2
+
 ## 3.2.0-next.1
 
 ### Minor Changes
