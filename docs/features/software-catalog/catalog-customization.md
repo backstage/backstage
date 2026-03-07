@@ -60,6 +60,23 @@ The tables used within Backstage are built on top of [`@material-table/core`](ht
 
 There are many options that can be set using `tableOptions`, the full list of settings can be found in the [`@material-table/core` `Options` interface](https://github.com/material-table-core/core/blob/v3.1.0/types/index.d.ts#L323) (this link goes to `v3.1.0` of `@material-table/core` as that is the version currently used by Backstage).
 
+## Text Filter Fields
+
+By default, the catalog text filter matches against `metadata.name`, `metadata.title`, and `spec.profile.displayName`. When [pagination](#pagination) is enabled, you can customize which fields are filtered using the `textFilterFields` prop:
+
+```tsx title="packages/app/src/App.tsx"
+// Same fields for all kinds
+<CatalogIndexPage textFilterFields={['metadata.name', 'spec.type']} />
+
+// Different fields per kind
+<CatalogIndexPage
+  textFilterFields={{
+    component: ['metadata.name', 'metadata.title', 'spec.type'],
+    user: ['metadata.name', 'spec.profile.displayName', 'spec.profile.email'],
+  }}
+/>
+```
+
 ## Customize Columns
 
 The columns you see in the `CatalogIndexPage` were selected to be a good starting point for most, but there may be cases where you would like to add or remove columns from existing or custom Kinds.
