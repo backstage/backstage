@@ -366,3 +366,36 @@ Now install your module.
 ```ts title="packages/backend/src/index.ts"
 backend.add(eventsModuleCatalogErrors);
 ```
+
+## Backstage OpenAPI Module
+
+As Backstage increasingly uses OpenAPI to define its core APIs (such as the Catalog and Scaffolder), discovering and interacting with these APIs is essential for integrating external tools.
+
+You can install the **Backstage OpenAPI Module** to easily expose the OpenAPI specifications for your Backstage instance plugins directly into the catalog.
+
+### Installation
+
+1. Add the package to your backend:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-backstage-openapi
+```
+
+2. Register the module in your backend:
+
+```ts title="packages/backend/src/index.ts"
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-backstage-openapi'),
+);
+```
+
+3. Add the configuration to your `app-config.yaml`:
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    backstageOpenapi:
+      plugins:
+        - catalog
+        - scaffolder
+```
