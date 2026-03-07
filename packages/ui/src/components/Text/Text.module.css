@@ -17,6 +17,15 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
+  .bui-Text--disabled {
+    color: #bdbdbd !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    pointer-events: none;
+    user-select: none;
+    font-style: italic;
+  }
   .bui-Text {
     font-family: var(--bui-font-regular);
     padding: 0;

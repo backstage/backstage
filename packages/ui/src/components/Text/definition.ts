@@ -34,5 +34,8 @@ export const TextDefinition = defineComponent<TextOwnProps>()({
     color: { dataAttribute: true, default: 'primary' },
     truncate: { dataAttribute: true },
     className: {},
+    copyable: {},
+    disabled: {},
+    children: {},
   },
 });
