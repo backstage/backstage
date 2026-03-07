@@ -1279,6 +1279,7 @@ export type FeatureFlag = {
 // @public
 export type FeatureFlagConfig = {
   name: string;
+  description?: string;
 };
 
 // @public
