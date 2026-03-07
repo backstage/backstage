@@ -286,19 +286,24 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
     readMicrosoftGraphOrgMocked.mockImplementationOnce(
       async (_client, _tenantId, options) => {
         if (options.signal?.aborted) {
-          throw new DOMException('The operation was aborted', 'AbortError');
+          const error = new Error('The operation was aborted');
+          error.name = 'AbortError';
+          throw error;
         }
         return { users: [], groups: [] };
       },
     );
 
     const taskDef = localTaskRunner.getTasks()[0];
-    // Should resolve without throwing (the error is caught and logged internally)
+    // Should resolve without throwing (abort is caught and logged at debug level)
     await (taskDef.fn as (signal: AbortSignal) => Promise<void>)(
       controller.signal,
     );
 
     expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+    expect(logger.debug).toHaveBeenCalledWith(
+      expect.stringContaining('refresh aborted due to shutdown'),
+    );
   });
 
   it('fail without schedule and scheduler', () => {

@@ -397,6 +397,12 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
           try {
             await this.read({ logger, signal: abortSignal });
           } catch (error) {
+            if (error instanceof Error && error.name === 'AbortError') {
+              logger.debug(
+                `${this.getProviderName()} refresh aborted due to shutdown`,
+              );
+              return;
+            }
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
               error,
