@@ -20,6 +20,7 @@ import {
   ShadcnTooltip,
   TooltipTrigger,
   TooltipContent,
+  TooltipProvider,
 } from '@backstage/core-components';
 import {
   entityRouteParams,
@@ -47,27 +48,29 @@ export const TemplateDetailButton = ({
   const TemplateIcon = app.getSystemIcon('kind:template') || FileText;
 
   return (
-    <ShadcnTooltip>
-      <TooltipTrigger asChild>
-        <ShadcnButton
-          variant="ghost"
-          size="icon"
-          aria-label={t('cardHeader.detailBtnTitle')}
-          id={`viewDetail-${entityRef}`}
-          className="p-0"
-          asChild
-        >
-          <Link
-            to={catalogEntityRoute(entityRouteParams(template))}
-            className="flex items-center"
+    <TooltipProvider>
+      <ShadcnTooltip>
+        <TooltipTrigger asChild>
+          <ShadcnButton
+            variant="ghost"
+            size="icon"
+            aria-label={t('cardHeader.detailBtnTitle')}
+            id={`viewDetail-${entityRef}`}
+            className="p-0"
+            asChild
           >
-            <TemplateIcon className={className} />
-          </Link>
-        </ShadcnButton>
-      </TooltipTrigger>
-      <TooltipContent id={`tooltip-${entityRef}`}>
-        {t('cardHeader.detailBtnTitle')}
-      </TooltipContent>
-    </ShadcnTooltip>
+            <Link
+              to={catalogEntityRoute(entityRouteParams(template))}
+              className="flex items-center"
+            >
+              <TemplateIcon className={className} />
+            </Link>
+          </ShadcnButton>
+        </TooltipTrigger>
+        <TooltipContent id={`tooltip-${entityRef}`}>
+          {t('cardHeader.detailBtnTitle')}
+        </TooltipContent>
+      </ShadcnTooltip>
+    </TooltipProvider>
   );
 };

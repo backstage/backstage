@@ -58,6 +58,7 @@ export const CustomFieldPlayground = ({
   const [fieldFormState, setFieldFormState] = useState({});
   const [selectedField, setSelectedField] = useState(fieldOptions[0]);
   const [open, setOpen] = useState(false);
+  const [errorText, setErrorText] = useState<string>();
   const sampleFieldTemplate = useMemo(
     () =>
       yaml.stringify({
@@ -87,6 +88,7 @@ export const CustomFieldPlayground = ({
     (selection: FieldExtensionOptions) => {
       setSelectedField(selection);
       setFieldFormState({});
+      setErrorText(undefined);
     },
     [setFieldFormState, setSelectedField],
   );
@@ -186,8 +188,17 @@ export const CustomFieldPlayground = ({
                 content={sampleFieldTemplate}
                 contentIsSpec
                 fieldExtensions={fieldExtensions}
-                setErrorText={() => null}
+                setErrorText={setErrorText}
               />
+              {errorText && (
+                <div
+                  role="alert"
+                  className="mt-2 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                >
+                  <p className="font-medium">Field preview error</p>
+                  <p className="mt-1">{errorText}</p>
+                </div>
+              )}
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="options">

@@ -531,6 +531,8 @@ export function TableToolbar(toolbarProps: {
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <Input
             type="text"
+            id="table-search-filter"
+            name="table-search-filter"
             value={localSearch}
             onChange={e => handleSearchChange(e.target.value)}
             placeholder={t('table.toolbar.search')}

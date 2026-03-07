@@ -61,6 +61,7 @@ export const CustomFieldExplorer = ({
   const [selectedField, setSelectedField] = useState(fieldOptions?.[0]);
   const [fieldFormState, setFieldFormState] = useState({});
   const [refreshKey, setRefreshKey] = useState(Date.now());
+  const [errorText, setErrorText] = useState<string>();
   const sampleFieldTemplate = useMemo(() => {
     if (!selectedField) {
       return '';
@@ -91,6 +92,7 @@ export const CustomFieldExplorer = ({
     (selection: FieldExtensionOptions) => {
       setSelectedField(selection);
       setFieldFormState({});
+      setErrorText(undefined);
     },
     [setFieldFormState, setSelectedField],
   );
@@ -214,8 +216,17 @@ export const CustomFieldExplorer = ({
           content={sampleFieldTemplate}
           contentIsSpec
           fieldExtensions={customFieldExtensions}
-          setErrorText={() => null}
+          setErrorText={setErrorText}
         />
+        {errorText && (
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
+            <p className="font-medium">Field preview error</p>
+            <p className="mt-1">{errorText}</p>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -96,51 +96,61 @@ export function Breadcrumbs(props: BackstageBreadcrumbsProps) {
     <Breadcrumb className={className}>
       <BreadcrumbList>
         {childrenArray.length > 1 && (
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <span className={cn('underline text-inherit')}>{firstPage}</span>
-            </BreadcrumbLink>
+          <>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <span className={cn('underline text-inherit')}>
+                  {firstPage}
+                </span>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
             <BreadcrumbSeparator />
-          </BreadcrumbItem>
+          </>
         )}
         {childrenArray.length > 2 && (
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <span className={cn('underline text-inherit')}>{secondPage}</span>
-            </BreadcrumbLink>
+          <>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <span className={cn('underline text-inherit')}>
+                  {secondPage}
+                </span>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
             <BreadcrumbSeparator />
-          </BreadcrumbItem>
+          </>
         )}
         {hasHiddenBreadcrumbs && (
-          <BreadcrumbItem>
-            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  className={cn(
-                    'underline cursor-pointer text-current hover:text-foreground/80',
-                  )}
-                  type="button"
-                >
-                  ...
-                </button>
-              </PopoverTrigger>
-              <PopoverContent align="start" className="w-auto p-1">
-                <div className="flex flex-col">
-                  {expandablePages.map((pageLink, index) => (
-                    <div
-                      key={index}
-                      className={cn(
-                        'px-3 py-1.5 underline text-inherit cursor-pointer hover:bg-accent rounded-sm',
-                      )}
-                    >
-                      {pageLink}
-                    </div>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
+          <>
+            <BreadcrumbItem>
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      'underline cursor-pointer text-current hover:text-foreground/80',
+                    )}
+                    type="button"
+                  >
+                    ...
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-auto p-1">
+                  <div className="flex flex-col">
+                    {expandablePages.map((pageLink, index) => (
+                      <div
+                        key={index}
+                        className={cn(
+                          'px-3 py-1.5 underline text-inherit cursor-pointer hover:bg-accent rounded-sm',
+                        )}
+                      >
+                        {pageLink}
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </BreadcrumbItem>
             <BreadcrumbSeparator />
-          </BreadcrumbItem>
+          </>
         )}
         <BreadcrumbItem>
           <span className={cn('italic')}>{currentPage}</span>

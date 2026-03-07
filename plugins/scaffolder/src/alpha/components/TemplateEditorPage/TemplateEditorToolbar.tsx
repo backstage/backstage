@@ -22,6 +22,7 @@ import {
   ShadcnTooltip,
   TooltipTrigger,
   TooltipContent,
+  TooltipProvider,
   Sheet,
   SheetContent,
   ShadcnDialog,
@@ -59,59 +60,63 @@ export function TemplateEditorToolbar(props: {
           {children}
         </div>
         <div className={cn('justify-self-end flex gap-1')}>
-          <ShadcnTooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t(
-                  'templateEditorToolbar.customFieldExplorerTooltip',
-                )}
-                onClick={() => setShowFieldsDrawer(true)}
-              >
-                <Puzzle className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t('templateEditorToolbar.customFieldExplorerTooltip')}
-            </TooltipContent>
-          </ShadcnTooltip>
-          <ShadcnTooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t(
+          <TooltipProvider>
+            <ShadcnTooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t(
+                    'templateEditorToolbar.customFieldExplorerTooltip',
+                  )}
+                  onClick={() => setShowFieldsDrawer(true)}
+                >
+                  <Puzzle className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t('templateEditorToolbar.customFieldExplorerTooltip')}
+              </TooltipContent>
+            </ShadcnTooltip>
+            <ShadcnTooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t(
+                    'templateEditorToolbar.installedActionsDocumentationTooltip',
+                  )}
+                  onClick={() => setShowActionsDrawer(true)}
+                >
+                  <FileText className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t(
                   'templateEditorToolbar.installedActionsDocumentationTooltip',
                 )}
-                onClick={() => setShowActionsDrawer(true)}
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t('templateEditorToolbar.installedActionsDocumentationTooltip')}
-            </TooltipContent>
-          </ShadcnTooltip>
-          <ShadcnTooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t(
+              </TooltipContent>
+            </ShadcnTooltip>
+            <ShadcnTooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t(
+                    'templateEditorToolbar.templatingExtensionsDocumentationTooltip',
+                  )}
+                  onClick={() => setShowExtensionsDrawer(true)}
+                >
+                  <FunctionSquare className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t(
                   'templateEditorToolbar.templatingExtensionsDocumentationTooltip',
                 )}
-                onClick={() => setShowExtensionsDrawer(true)}
-              >
-                <FunctionSquare className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t(
-                'templateEditorToolbar.templatingExtensionsDocumentationTooltip',
-              )}
-            </TooltipContent>
-          </ShadcnTooltip>
+              </TooltipContent>
+            </ShadcnTooltip>
+          </TooltipProvider>
           <Button variant="ghost" onClick={() => setShowPublishModal(true)}>
             {t('templateEditorToolbar.addToCatalogButton')}
           </Button>

@@ -92,7 +92,7 @@ function ActionCard(props: {
       <button
         type="button"
         onClick={action}
-        className="contents cursor-pointer"
+        className="col-span-2 grid grid-cols-subgrid cursor-pointer bg-transparent border-0 p-0 text-left w-full hover:opacity-80 transition-opacity focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 rounded-md"
       >
         <div className="justify-self-center pt-2">
           <Icon

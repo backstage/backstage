@@ -138,14 +138,23 @@ export const InternalRouter = (
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
 
+  const internalFormFields = (props.formFields?.map(
+    OpaqueFormField.toInternal,
+  ) ?? []) as FieldExtensionOptions[];
+
+  // Build a set of names already provided by outlets and the new frontend
+  // system's form-fields API so that the legacy DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS
+  // are only appended when no higher-priority extension with the same name exists.
+  const providedFieldNames = new Set([
+    ...customFieldExtensions.map(f => f.name),
+    ...internalFormFields.map(f => f.name),
+  ]);
+
   const fieldExtensions = [
     ...customFieldExtensions,
-    ...(props.formFields?.map(OpaqueFormField.toInternal) ?? []),
+    ...internalFormFields,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
-      ({ name }) =>
-        !customFieldExtensions.some(
-          customFieldExtension => customFieldExtension.name === name,
-        ),
+      ({ name }) => !providedFieldNames.has(name),
     ),
   ] as FieldExtensionOptions[];
 

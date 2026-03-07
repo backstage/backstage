@@ -417,7 +417,10 @@ export const RenderSchema = ({
                     const id = generateId(el, context);
                     const info = inspectSchema(el.schema);
                     const rows = [
-                      <TableRow data-testid={`${strategy}-row_${id}`}>
+                      <TableRow
+                        key={`${id}-main`}
+                        data-testid={`${strategy}-row_${id}`}
+                      >
                         {columns!.map(col => (
                           <TableCell
                             key={col.key}
@@ -471,7 +474,7 @@ export const RenderSchema = ({
                         details = isExpanded[id] ? details : null!;
                       }
                       rows.push(
-                        <TableRow>
+                        <TableRow key={`${id}-details`}>
                           <TableCell className="p-0" colSpan={columns!.length}>
                             {details}
                           </TableCell>
