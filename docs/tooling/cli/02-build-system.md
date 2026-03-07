@@ -129,12 +129,50 @@ desired.
 
 ## Linting
 
-The Backstage CLI includes a `lint` command, which is a thin wrapper around
-`eslint`. It adds a few options that can't be set through configuration, such as
-including the `.ts` and `.tsx` extensions in the set of linted files. The `lint`
-command simply provides a sane default and is not intended to be customizable.
-If you want to supply more advanced options you can invoke `eslint` directly
-instead.
+The Backstage CLI includes a `lint` command, which by default is a thin wrapper
+around `eslint`. It adds a few options that can't be set through configuration,
+such as including the `.ts` and `.tsx` extensions in the set of linted files.
+The `lint` command simply provides a sane default and is not intended to be
+customizable. If you want to supply more advanced options you can invoke
+`eslint` directly instead.
+
+### oxlint
+
+As an alternative to ESLint, packages can opt into using
+[oxlint](https://oxc.rs/docs/guide/usage/linter) by passing `--engine oxlint`
+to the lint command. This can be set in a package's `lint` script:
+
+```json
+{
+  "scripts": {
+    "lint": "backstage-cli package lint --engine oxlint"
+  }
+}
+```
+
+The oxlint engine uses a shared configuration at
+`@backstage/cli/config/oxlint.json` with custom JS plugins that port the
+Backstage-specific ESLint rules. Rule adjustments based on the package's
+`backstage.role` (e.g. allowing `console` in backend packages) are applied
+automatically. Both `oxlint` and `oxlint-tsgolint` (for type-aware linting)
+must be installed as dependencies; they are listed as optional peer
+dependencies of `@backstage/cli`.
+
+To customize rules for an individual package, create an
+[`.oxlintrc.json`](https://oxc.rs/docs/guide/usage/linter/config.html)
+file in the package root. Its `rules`, `ignorePatterns`, `overrides`, and
+`settings` fields are merged on top of the shared configuration:
+
+```json
+{
+  "rules": {
+    "jest/expect-expect": "off"
+  },
+  "ignorePatterns": ["templates/"]
+}
+```
+
+### ESLint
 
 In addition to the `lint` command, the Backstage CLI also includes a set of base
 ESLint configurations, one for frontend and one for backend packages. These lint
