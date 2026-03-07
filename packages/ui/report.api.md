@@ -2783,6 +2783,77 @@ export interface ToggleButtonProps
   extends Omit<ToggleButtonProps_2, 'children' | 'className'>,
     ToggleButtonOwnProps {}
 
+// @public
+export const Timeline: ForwardRefExoticComponent<
+  TimelineProps & RefAttributes<HTMLOListElement>
+>;
+
+// @public
+export const TimelineDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Timeline';
+    readonly item: 'bui-TimelineItem';
+    readonly itemMarker: 'bui-TimelineItemMarker';
+    readonly itemIcon: 'bui-TimelineItemIcon';
+    readonly itemLine: 'bui-TimelineItemLine';
+    readonly itemContent: 'bui-TimelineItemContent';
+    readonly itemTimestamp: 'bui-TimelineItemTimestamp';
+    readonly itemTitle: 'bui-TimelineItemTitle';
+    readonly itemDescription: 'bui-TimelineItemDescription';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export const TimelineItem: ForwardRefExoticComponent<
+  TimelineItemProps & RefAttributes<HTMLLIElement>
+>;
+
+// @public
+export const TimelineItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-TimelineItem';
+    readonly marker: 'bui-TimelineItemMarker';
+    readonly icon: 'bui-TimelineItemIcon';
+    readonly line: 'bui-TimelineItemLine';
+    readonly content: 'bui-TimelineItemContent';
+    readonly timestamp: 'bui-TimelineItemTimestamp';
+    readonly title: 'bui-TimelineItemTitle';
+    readonly description: 'bui-TimelineItemDescription';
+  };
+  readonly propDefs: {
+    readonly title: {};
+    readonly description: {};
+    readonly timestamp: {};
+    readonly icon: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export interface TimelineItemProps {
+  className?: string;
+  description?: ReactNode;
+  icon?: ReactNode;
+  timestamp?: ReactNode;
+  title: ReactNode;
+}
+
+// @public
+export interface TimelineProps {
+  children: ReactNode;
+  className?: string;
+}
+
 // @public (undocumented)
 export const Tooltip: ForwardRefExoticComponent<
   TooltipProps & RefAttributes<HTMLDivElement>
