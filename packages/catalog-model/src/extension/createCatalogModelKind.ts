@@ -97,6 +97,11 @@ export interface CatalogModelKind<
   };
 
   /**
+   * The spec schema of the kind.
+   */
+  spec: CatalogModelSchemaObjectType;
+
+  /**
    * Utility for getting the input type of the kind, using `typeof kind.TInput`.
    * This excludes service-generated fields such as `relations` and `status`.
    * Attempting to actually read this value will result in an exception.
@@ -235,10 +240,13 @@ export function createCatalogModelKind<
   const str = () =>
     `catalogModelKind{${names.kind}, apiVersions=[${apiVersions.join(',')}]}`;
 
+  const spec = options.spec;
+
   return Object.defineProperties(
     {
       apiVersions,
       names,
+      spec,
       get TInput() {
         if (process.env.NODE_ENV === 'test') {
           // Avoid throwing errors so tests asserting extensions' properties cannot be easily broken
