@@ -597,6 +597,7 @@ export default {
               },
               [
                 'frontend-system/building-apps/index',
+                'frontend-system/building-apps/installing-plugins',
                 'frontend-system/building-apps/configuring-extensions',
                 'frontend-system/building-apps/built-in-extensions',
                 'frontend-system/building-apps/plugin-conversion',

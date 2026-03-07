@@ -24,39 +24,17 @@ Before we begin, make sure
 
 Now, let's get started by installing the home plugin and creating a simple homepage for your Backstage app.
 
-## Setup Methods
+## Setup
 
-There are two ways to set up the home plugin, depending on which frontend system your Backstage app uses:
-
-1. **New Frontend System (Recommended)** - For apps using the new plugin system with extensions and blueprints
-2. **Legacy Frontend System** - For existing apps using the legacy plugin architecture
-
-### New Frontend System Setup
-
-If your Backstage app uses the [new frontend system](../frontend-system/index.md), follow these steps:
-
-#### 1. Install the plugin
+### 1. Install the plugin
 
 ```bash title="From your Backstage root directory"
 yarn --cwd packages/app add @backstage/plugin-home
 ```
 
-#### 2. Add the plugin to your app configuration
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](../frontend-system/building-apps/05-installing-plugins.md).
 
-Update your `packages/app/src/app.tsx` to include the home plugin:
-
-```tsx title="packages/app/src/app.tsx"
-import homePlugin from '@backstage/plugin-home/alpha';
-
-const app = createApp({
-  features: [
-    // ... other plugins
-    homePlugin,
-  ],
-});
-```
-
-#### 3. Configure the homepage as your root route
+### 2. Configure the homepage as your root route
 
 By default, the homepage will be available at `/home`. To make it your app's landing page at `/`, add this configuration to your `app-config.yaml`:
 
@@ -70,7 +48,7 @@ app:
 
 The plugin will automatically add a "Home" navigation item to your sidebar and provide a basic homepage layout.
 
-#### 4. Optional: Enable visit tracking
+### 3. Optional: Enable visit tracking
 
 Visit tracking is an optional feature that allows users to see their recently visited and most visited pages on the homepage. This feature is **disabled by default** to give you control over what data is collected and stored.
 
@@ -88,9 +66,9 @@ app:
     - app-root-element:home/visit-listener: true
 ```
 
-#### 5. Customizing your homepage
+### 4. Customizing your homepage
 
-The New Frontend System provides powerful customization options:
+The home plugin provides powerful customization options:
 
 **Custom Homepage Layouts**: Use the `HomePageLayoutBlueprint` from `@backstage/plugin-home-react/alpha` to create custom homepage layouts with your own design and widget arrangements. A layout receives the installed widgets and is responsible for rendering them. If no custom layout is installed, the plugin provides a built-in default.
 
@@ -98,17 +76,17 @@ The New Frontend System provides powerful customization options:
 
 For detailed instructions on creating custom layouts, registering widgets, and advanced configuration options, see the [Home plugin documentation](https://github.com/backstage/backstage/tree/master/plugins/home#readme).
 
-### Legacy Frontend System Setup
+## Old Frontend System
 
-If your Backstage app uses the legacy frontend system, follow these steps:
+This section covers how to set up the home plugin if your Backstage app still uses the old frontend system.
 
-#### 1. Install the plugin
+### 1. Install the plugin
 
 ```bash title="From your Backstage root directory"
 yarn --cwd packages/app add @backstage/plugin-home
 ```
 
-#### 2. Create a new HomePage component
+### 2. Create a new HomePage component
 
 Inside your `packages/app` directory, create a new file where our new homepage component is going to live. Create `packages/app/src/components/home/HomePage.tsx` with the following initial code
 
@@ -119,7 +97,7 @@ export const HomePage = () => (
 );
 ```
 
-#### 3. Update router for the root `/` route
+### 3. Update router for the root `/` route
 
 If you don't have a homepage already, most likely you have a redirect setup to use the Catalog homepage as a homepage.
 
@@ -156,7 +134,7 @@ const routes = (
 );
 ```
 
-#### 4. Update sidebar items
+### 4. Update sidebar items
 
 Let's update the route for "Home" in the Backstage sidebar to point to the new homepage. We'll also add a Sidebar item to quickly open Catalog.
 
@@ -206,13 +184,13 @@ That's it! You should now have _(although slightly boring)_ a homepage!
 
 In the next steps, we will make it interesting and useful!
 
-### Use the default template
+#### Use the default template
 
 There is a default homepage template ([storybook link](https://backstage.io/storybook/?path=/story/plugins-home-templates--default-template)) which we will use to set up our homepage. Checkout the [blog post announcement](https://backstage.io/blog/2022/01/25/backstage-homepage-templates) about the Backstage homepage templates for more information.
 
 <!-- TODO for later: detailed instructions for using one of these templates. -->
 
-### Composing your homepage
+#### Composing your homepage
 
 Composing a homepage is no different from creating a regular React Component,
 i.e. the App Integrator is free to include whatever content they like. However,
