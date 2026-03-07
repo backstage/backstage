@@ -1218,6 +1218,8 @@ export type SidebarSubmenuItemProps = {
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
   initialShowDropdown?: boolean;
+  startComponent?: React.ReactNode;
+  endComponent?: React.ReactNode;
 };
 
 // @public
