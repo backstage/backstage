@@ -115,6 +115,15 @@ export default {
       [
         sidebarElementWithIndex(
           {
+            label: 'AI',
+            description: 'Features in Backstage you can leverage with your AI tools',
+          },
+          [
+            'ai/index',
+          ],
+        ),
+        sidebarElementWithIndex(
+          {
             label: 'Auth and Identity',
             description: 'Authentication and identity management features.',
           },
