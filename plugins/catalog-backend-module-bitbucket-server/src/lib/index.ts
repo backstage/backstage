@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export { BitbucketServerClient, paginated } from './BitbucketServerClient';
+export {
+  BitbucketServerClient,
+  paginated,
+  convertToParamsString,
+} from './BitbucketServerClient';
 export type {
   BitbucketServerPagedResponse,
   BitbucketServerListOptions,
