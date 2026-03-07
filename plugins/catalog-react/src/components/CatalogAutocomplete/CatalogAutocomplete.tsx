@@ -477,6 +477,7 @@ export function CatalogAutocomplete<
             return (
               <li
                 key={index}
+                id={`${listboxId}-option-${index}`}
                 role="option"
                 aria-selected={selected}
                 className={cn(
@@ -603,6 +604,11 @@ export function CatalogAutocomplete<
           id={id}
           aria-expanded={open}
           aria-controls={open ? listboxId : undefined}
+          aria-activedescendant={
+            open && highlightedIndex >= 0
+              ? `${listboxId}-option-${highlightedIndex}`
+              : undefined
+          }
           aria-autocomplete="list"
           autoComplete="off"
           className={cn(
@@ -659,7 +665,6 @@ export function CatalogAutocomplete<
           {mergedTextFieldProps.helperText}
         </p>
       )}
-      {renderDropdown()}
     </div>
   );
 
@@ -681,12 +686,15 @@ export function CatalogAutocomplete<
           id,
           'aria-expanded': open,
           'aria-controls': open ? listboxId : undefined,
+          'aria-activedescendant':
+            open && highlightedIndex >= 0
+              ? `${listboxId}-option-${highlightedIndex}`
+              : undefined,
           'aria-autocomplete': 'list',
           autoComplete: 'off',
         },
         inputRef,
       })}
-      {renderDropdown()}
     </div>
   );
 
@@ -699,8 +707,9 @@ export function CatalogAutocomplete<
   /* --------------------------------------------------------------------- */
   if (!label) {
     return (
-      <div ref={containerRef} className={cn('my-2', className)}>
+      <div ref={containerRef} className={cn('my-2 relative', className)}>
         {comboboxContent}
+        {renderDropdown()}
       </div>
     );
   }
@@ -708,8 +717,14 @@ export function CatalogAutocomplete<
   /* --------------------------------------------------------------------- */
   /* Render — with label                                                    */
   /* --------------------------------------------------------------------- */
+  /*
+   * The dropdown listbox is rendered as a sibling to (not inside) the <label>
+   * so that assistive technologies correctly expose listbox option children in
+   * the accessibility tree.  Nesting a role="listbox" inside a <label> breaks
+   * the parent-child a11y relationship required by ARIA combobox pattern.
+   */
   return (
-    <div ref={containerRef} className={cn('my-2', className)}>
+    <div ref={containerRef} className={cn('my-2 relative', className)}>
       <label
         {...LabelProps}
         className={cn(
@@ -721,6 +736,7 @@ export function CatalogAutocomplete<
         <span>{label}</span>
         {comboboxContent}
       </label>
+      {renderDropdown()}
     </div>
   );
 }

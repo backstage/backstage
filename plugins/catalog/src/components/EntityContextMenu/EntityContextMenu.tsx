@@ -27,7 +27,7 @@ import {
   TooltipTrigger,
 } from '@backstage/core-components';
 import { Bug, Copy, MoreVertical } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
@@ -164,7 +164,10 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
           defaultMenuItems
         ) : (
           <EntityContextMenuProvider onMenuClose={onClose}>
-            {contextMenuItems}
+            {contextMenuItems.map((item, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <Fragment key={index}>{item}</Fragment>
+            ))}
           </EntityContextMenuProvider>
         )}
       </DropdownMenuContent>
