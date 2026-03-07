@@ -50,7 +50,7 @@ export const headerPagePropDefs: Record<string, PropDef> = {
     type: 'complex',
     description: 'Breadcrumb trail displayed above the title.',
     complexType: {
-      name: 'HeaderPageBreadcrumb[]',
+      name: 'HeaderBreadcrumb[]',
       properties: {
         label: {
           type: 'string',

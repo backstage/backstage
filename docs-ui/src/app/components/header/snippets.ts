@@ -1,8 +1,8 @@
-export const usage = `import { HeaderPage } from '@backstage/ui';
+export const usage = `import { Header } from '@backstage/ui';
 
-<HeaderPage title="Page Title" />`;
+<Header title="Page Title" />`;
 
-export const defaultSnippet = `<HeaderPage
+export const defaultSnippet = `<Header
   title="Page Title"
   breadcrumbs={[
     { label: 'Home', href: '/' },
@@ -20,7 +20,7 @@ export const defaultSnippet = `<HeaderPage
   }
 />`;
 
-export const withBreadcrumbs = `<HeaderPage
+export const withBreadcrumbs = `<Header
   title="Page Title"
   breadcrumbs={[
     { label: 'Home', href: '/' },
@@ -28,7 +28,7 @@ export const withBreadcrumbs = `<HeaderPage
   ]}
 />`;
 
-export const withTabs = `<HeaderPage
+export const withTabs = `<Header
   title="Page Title"
   tabs={[
     { id: 'overview', label: 'Overview', href: '/overview' },
@@ -37,12 +37,12 @@ export const withTabs = `<HeaderPage
   ]}
 />`;
 
-export const withCustomActions = `<HeaderPage
+export const withCustomActions = `<Header
   title="Page Title"
   customActions={<Button>Custom action</Button>}
 />`;
 
-export const withMenu = `<HeaderPage
+export const withMenu = `<Header
   title="Page Title"
   customActions={
     <MenuTrigger>
