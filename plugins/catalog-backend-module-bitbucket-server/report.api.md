@@ -16,6 +16,7 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 
 // @public
 export class BitbucketServerClient {
@@ -86,6 +87,20 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   refresh(logger: LoggerService): Promise<void>;
 }
 
+// @public
+export type BitbucketServerEntityProviderConfig = {
+  id: string;
+  host: string;
+  catalogPath: string;
+  filters?: {
+    projectKey?: RegExp;
+    repoSlug?: RegExp;
+    skipArchivedRepos?: boolean;
+  };
+  validateLocationsExist: boolean;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
+};
+
 // @public (undocumented)
 export type BitbucketServerListOptions = {
   [key: string]: number | undefined;
@@ -98,6 +113,7 @@ export type BitbucketServerLocationParser = (options: {
   client: BitbucketServerClient;
   location: LocationSpec;
   logger: LoggerService;
+  config?: BitbucketServerEntityProviderConfig;
 }) => AsyncIterable<Entity>;
 
 // @public (undocumented)

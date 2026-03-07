@@ -38,10 +38,15 @@ import {
   toDeferredEntities,
 } from './BitbucketServerEntityProvider';
 import { BitbucketServerPagedResponse } from '../lib';
-import { Entity, LocationEntity } from '@backstage/catalog-model';
+import {
+  Entity,
+  LocationEntity,
+  LocationEntityV1alpha1,
+} from '@backstage/catalog-model';
 import { BitbucketServerEvents } from '../lib/index';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import { BitbucketServerLocationParser } from './BitbucketServerLocationParser.ts';
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
@@ -487,6 +492,128 @@ describe('BitbucketServerEntityProvider', () => {
               'backstage.io/managed-by-location': `url:https://${host}/projects/other-project/repos/other-repo/browse/catalog-info.yaml`,
               'backstage.io/managed-by-origin-location': `url:https://${host}/projects/other-project/repos/other-repo/browse/catalog-info.yaml`,
               'bitbucket.org/default-branch': 'master',
+            },
+            name: 'generated-d8d4944c30c2906dfee172ddda9537f9893b2c0f',
+          },
+          spec: {
+            presence: 'optional',
+            target: `https://${host}/projects/other-project/repos/other-repo/browse/catalog-info.yaml`,
+            type: 'url',
+          },
+        },
+        locationKey: 'bitbucketServer-provider:mainProvider',
+      },
+    ];
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: expectedEntities,
+    });
+  });
+
+  it('apply full update on scheduled execution using custom parser', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        bitbucketServer: [
+          {
+            host: host,
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          bitbucketServer: {
+            mainProvider: {
+              host: host,
+            },
+          },
+        },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const parser: BitbucketServerLocationParser = async function* parser(
+      options,
+    ) {
+      const { location, config: providerConfig } = options;
+
+      const entity: LocationEntityV1alpha1 = locationSpecToLocationEntity({
+        location,
+      });
+      entity.metadata.annotations = {
+        ...entity.metadata.annotations,
+        ['test.com/entity']: 'custom-entity',
+      };
+      if (providerConfig) {
+        entity.metadata.annotations = {
+          ...entity.metadata.annotations,
+          ['test.com/provider']: providerConfig.id,
+        };
+      }
+
+      yield entity;
+    };
+    const provider = BitbucketServerEntityProvider.fromConfig(config, {
+      logger,
+      parser,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'bitbucketServer-provider:mainProvider',
+    );
+
+    setupStubs(
+      [
+        { key: 'project-test', repos: [{ name: 'repo-test' }] },
+        { key: 'other-project', repos: [{ name: 'other-repo' }] },
+      ],
+      `https://${host}`,
+      'master',
+    );
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('bitbucketServer-provider:mainProvider:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:https://${host}/projects/project-test/repos/repo-test/browse/catalog-info.yaml`,
+              'backstage.io/managed-by-origin-location': `url:https://${host}/projects/project-test/repos/repo-test/browse/catalog-info.yaml`,
+              'bitbucket.org/default-branch': 'master',
+              'test.com/entity': 'custom-entity',
+              'test.com/provider': 'mainProvider',
+            },
+            name: 'generated-77f4323822420990f8c3e3c981d38c2dec4ae3a6',
+          },
+          spec: {
+            presence: 'optional',
+            target: `https://${host}/projects/project-test/repos/repo-test/browse/catalog-info.yaml`,
+            type: 'url',
+          },
+        },
+        locationKey: 'bitbucketServer-provider:mainProvider',
+      },
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:https://${host}/projects/other-project/repos/other-repo/browse/catalog-info.yaml`,
+              'backstage.io/managed-by-origin-location': `url:https://${host}/projects/other-project/repos/other-repo/browse/catalog-info.yaml`,
+              'bitbucket.org/default-branch': 'master',
+              'test.com/entity': 'custom-entity',
+              'test.com/provider': 'mainProvider',
             },
             name: 'generated-d8d4944c30c2906dfee172ddda9537f9893b2c0f',
           },
