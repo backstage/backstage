@@ -353,8 +353,12 @@ export const StyledTable = () => {
       title: 'Column 1',
       field: 'col1',
       highlight: true,
-      cellStyle: (_, rowData: any & { tableData: { id: number } }) => {
-        return rowData.tableData.id % 2 === 0
+      cellStyle: (_: any, rowData: any) => {
+        // Use the row's position within the dataset for even/odd styling.
+        // The legacy @material-table/core provided rowData.tableData.id;
+        // @tanstack/react-table passes the original data object directly.
+        const idx = testData10.indexOf(rowData);
+        return idx % 2 === 0
           ? {
               color: '#6CD75F',
             }

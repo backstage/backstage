@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { CSSProperties } from 'react';
 import type {} from 'react-syntax-highlighter';
 import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
 import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
@@ -21,6 +22,33 @@ import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 
 import { cn } from '../../lib/utils';
 import { CopyTextButton } from '../CopyTextButton';
+
+/**
+ * WCAG 2.1 AA-compliant variant of the hljs/docco syntax highlighting theme.
+ *
+ * The upstream docco theme uses #219161 for string literals which yields only
+ * 3.97:1 contrast on white backgrounds — below the 4.5:1 AA minimum for normal
+ * text. This override darkens the affected token classes to #116932 (the
+ * --success-foreground design token value), providing ~7.8:1 contrast on white.
+ */
+const doccoAccessible: Record<string, CSSProperties> = {
+  ...(docco as Record<string, CSSProperties>),
+};
+
+/* Token classes in the docco theme that use the problematic #219161 green. */
+const WCAG_GREEN = '#116932';
+for (const key of [
+  'hljs-string',
+  'hljs-literal',
+  'hljs-template-variable',
+  'hljs-addition',
+  'hljs-regexp',
+  'hljs-variable',
+] as const) {
+  if (doccoAccessible[key]) {
+    doccoAccessible[key] = { ...doccoAccessible[key], color: WCAG_GREEN };
+  }
+}
 
 /**
  * Properties for {@link CodeSnippet}
@@ -95,7 +123,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
   const isDark =
     typeof document !== 'undefined' &&
     document.documentElement.dataset.themeMode === 'dark';
-  const mode = isDark ? dark : docco;
+  const mode = isDark ? dark : doccoAccessible;
   // Use CSS custom property tokens for line-highlight colors, with hardcoded
   // fallbacks for environments where the global token stylesheet is not loaded.
   const highlightColor = isDark

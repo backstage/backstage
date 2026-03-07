@@ -216,7 +216,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
         {...props}
         ref={ref}
         className={cn(
-          'text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+          'text-primary underline underline-offset-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
           className,
         )}
       />

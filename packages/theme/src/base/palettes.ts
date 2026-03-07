@@ -222,8 +222,16 @@ export function generatePaletteTokens(
     '--card-foreground': normalizeHex(palette.textContrast),
 
     // ── Popover ──────────────────────────────────────────────────
-    '--popover': normalizeHex(palette.background.paper),
-    '--popover-foreground': normalizeHex(palette.textContrast),
+    // Dark mode popover uses #1a1a1a (BUI: --bui-bg-popover) instead of
+    // palette.background.paper (#424242) to match the token definition in
+    // globals.css. The popover surface should be darker than cards to
+    // create visual depth hierarchy in the dark theme.
+    '--popover':
+      palette.type === 'dark'
+        ? '#1A1A1A'
+        : normalizeHex(palette.background.paper),
+    '--popover-foreground':
+      palette.type === 'dark' ? '#FFFFFF' : normalizeHex(palette.textContrast),
 
     // ── Primary ──────────────────────────────────────────────────
     '--primary': normalizeHex(palette.primary.main),
