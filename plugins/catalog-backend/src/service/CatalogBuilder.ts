@@ -40,6 +40,7 @@ import {
   PermissionsService,
   RootConfigService,
   SchedulerService,
+  SchemaService,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
@@ -130,6 +131,7 @@ export type CatalogEnvironment = {
   auth: AuthService;
   httpAuth: HttpAuthService;
   auditor: AuditorService;
+  schema: SchemaService;
   events: EventsService;
   catalogScmEvents: CatalogScmEventsService;
   metrics: MetricsService;
@@ -615,6 +617,7 @@ export class CatalogBuilder {
       httpAuth,
       permissionsService,
       auditor,
+      schema: this.env.schema,
       enableRelationsCompatibility,
     });
 
