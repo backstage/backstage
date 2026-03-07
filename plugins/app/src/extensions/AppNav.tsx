@@ -172,6 +172,7 @@ function NavContentRenderer(props: {
       // We want the priority: page (config/params) -> nav item -> plugin -> pluginId
       const resolvedTitle = node.instance.getData(coreExtensionData.title);
       const pluginTitle = node.spec.plugin.title;
+      const pluginIcon = node.spec.plugin.icon;
       const pluginId = node.spec.plugin.pluginId;
       const hasExplicitPageTitle =
         resolvedTitle !== undefined &&
@@ -194,6 +195,8 @@ function NavContentRenderer(props: {
         icon = <NavItemIcon />;
       } else if (resolvedIcon) {
         icon = resolvedIcon;
+      } else if (pluginIcon) {
+        icon = pluginIcon;
       }
 
       if (!title || !icon) {

@@ -21,6 +21,13 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { createElement, isValidElement } from 'react';
 
+const legacyFontSizeMap = {
+  inherit: 'inherit',
+  small: '1.25rem',
+  medium: '1.5rem',
+  large: '2.1875rem',
+} as const;
+
 /**
  * Implementation for the {@link IconsApi}
  *
@@ -65,7 +72,24 @@ export class DefaultIconsApi implements IconsApi {
     if (el === undefined) {
       return undefined;
     }
-    component = () => el;
+    component = ({ fontSize = 'medium' }) => {
+      if (el === null) {
+        return null;
+      }
+
+      return createElement(
+        // eslint-disable-next-line react/forbid-elements
+        'span',
+        {
+          style: {
+            display: 'inline-flex',
+            fontSize: legacyFontSizeMap[fontSize],
+            lineHeight: 0,
+          },
+        },
+        el,
+      );
+    };
     this.#components.set(key, component);
     return component;
   }

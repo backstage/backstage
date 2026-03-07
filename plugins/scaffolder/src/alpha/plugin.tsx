@@ -61,7 +61,7 @@ const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'scaffolder',
   title: 'Create',
-  icon: <CreateComponentIcon />,
+  icon: <CreateComponentIcon fontSize="inherit" />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
     root: rootRouteRef,
