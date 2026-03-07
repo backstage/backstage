@@ -68,7 +68,7 @@ The collapsible sidebar uses dedicated CSS custom property tokens for its brande
 
 | Token Name                     | Description                                           |
 | ------------------------------ | ----------------------------------------------------- |
-| `--sidebar-background`         | Sidebar background color (primary blue in light mode) |
+| `--sidebar-background`         | Sidebar background color (dark surface in light mode) |
 | `--sidebar-foreground`         | Sidebar text and icon color                           |
 | `--sidebar-primary`            | Active/selected sidebar item color                    |
 | `--sidebar-primary-foreground` | Text color on active sidebar items                    |

@@ -37,7 +37,7 @@ Dark mode is activated via the `[data-theme-mode='dark']` selector on the docume
 
 ### BUI Token Alignment
 
-The CSS custom property tokens are aligned with the existing Backstage UI (`packages/ui`) `--bui-*` token system. For example, `--background` maps from `--bui-bg-app`, `--primary` maps from `--bui-bg-solid`, and `--border` maps from `--bui-border-1`.
+The CSS custom property tokens are aligned with the existing Backstage UI (`packages/ui`) `--bui-*` token system. For example, `--background` maps from `--bui-bg-app`, `--primary` maps from `--bui-bg-solid`, and `--border` aligns with `palettes.light.border`.
 
 ### Accessibility
 
