@@ -129,13 +129,15 @@ const customHomePageModule = createFrontendModule({
                   <HeaderWorldClock clockConfigs={clockConfigs} />
                 </Header>
                 <Content>
-                  <CustomHomepageGrid>
-                    {widgets.map((widget, index) => (
-                      <Fragment key={widget.name ?? index}>
-                        {widget.component}
-                      </Fragment>
-                    ))}
-                  </CustomHomepageGrid>
+                  <div className="max-w-full overflow-x-hidden [&_pre]:overflow-x-auto [&_pre]:max-w-full">
+                    <CustomHomepageGrid>
+                      {widgets.map((widget, index) => (
+                        <Fragment key={widget.name ?? index}>
+                          {widget.component}
+                        </Fragment>
+                      ))}
+                    </CustomHomepageGrid>
+                  </div>
                 </Content>
               </Page>
             );

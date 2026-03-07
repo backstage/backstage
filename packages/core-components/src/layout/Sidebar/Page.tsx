@@ -103,6 +103,7 @@ export function SidebarPage(props: SidebarPageProps) {
         <div
           className={cn(
             'w-full transition-[padding-left] duration-100 ease-out isolate',
+            'overflow-x-hidden',
             'print:!p-0',
           )}
           style={

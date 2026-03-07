@@ -26,6 +26,11 @@ import { cn } from '../../lib/utils';
  * Root Dialog component wrapping Radix UI Dialog.Root.
  * Controls the open/closed state of the dialog.
  *
+ * Includes explicit focus restoration logic (WCAG 2.4.3 — Focus Order):
+ * when the dialog closes, focus returns to the element that was active
+ * before the dialog opened. This supplements Radix's built-in focus
+ * management which may not fire in all conditional rendering patterns.
+ *
  * @example
  * ```tsx
  * <ShadcnDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -43,7 +48,57 @@ import { cn } from '../../lib/utils';
  *
  * @public
  */
-const ShadcnDialog = DialogPrimitive.Root;
+/**
+ * Root Dialog component wrapping Radix UI Dialog.Root with explicit
+ * focus restoration for WCAG 2.4.3 compliance.
+ *
+ * Tracks the element that had focus before the dialog opened and restores
+ * it on close. This handles both declarative trigger usage and controlled
+ * `open` prop patterns (e.g., SearchModal) where Radix's built-in focus
+ * restoration may not fire.
+ *
+ * @public
+ */
+function ShadcnDialog({
+  children,
+  open,
+  onOpenChange,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Root>) {
+  const triggerRef = React.useRef<HTMLElement | null>(null);
+  const wasOpen = React.useRef(false);
+
+  // Capture the previously focused element when the dialog transitions
+  // from closed to open via the controlled `open` prop.
+  React.useEffect(() => {
+    if (open && !wasOpen.current) {
+      triggerRef.current = document.activeElement as HTMLElement | null;
+    }
+    wasOpen.current = !!open;
+  }, [open]);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen && triggerRef.current?.isConnected) {
+      // Schedule focus restoration after the dialog unmounts
+      const target = triggerRef.current;
+      requestAnimationFrame(() => {
+        target?.focus();
+      });
+      triggerRef.current = null;
+    }
+    onOpenChange?.(nextOpen);
+  };
+
+  return (
+    <DialogPrimitive.Root
+      open={open}
+      onOpenChange={handleOpenChange}
+      {...props}
+    >
+      {children}
+    </DialogPrimitive.Root>
+  );
+}
 
 /**
  * Button or element that opens the dialog when activated.
@@ -125,6 +180,7 @@ const ShadcnDialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       data-slot="dialog-content"
+      aria-modal="true"
       className={cn(
         'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 shadow-lg duration-200',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',

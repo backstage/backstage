@@ -72,7 +72,7 @@ export const UserSettingsLanguageToggle = () => {
       </div>
       <div className="relative pl-4 sm:pl-0">
         <Select
-          label=""
+          label="Select language"
           selected={currentLanguage}
           items={languages.map(language => ({
             label: getLanguageDisplayName(language),

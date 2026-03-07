@@ -90,23 +90,25 @@ export const homePage = (
       />
     </Header>
     <Content>
-      <CustomHomepageGrid config={defaultConfig}>
-        <HomePageRandomJoke />
-        <HomePageStarredEntities />
-        <HomePageCompanyLogo />
-        <WelcomeTitle />
-        <HomePageToolkit
-          tools={[
-            {
-              url: 'https://backstage.io',
-              label: 'Backstage Homepage',
-              icon: <Home />,
-            },
-          ]}
-        />
-        <HomePageTopVisited />
-        <HomePageRecentlyVisited />
-      </CustomHomepageGrid>
+      <div className="max-w-full overflow-x-hidden break-words">
+        <CustomHomepageGrid config={defaultConfig}>
+          <HomePageRandomJoke />
+          <HomePageStarredEntities />
+          <HomePageCompanyLogo />
+          <WelcomeTitle />
+          <HomePageToolkit
+            tools={[
+              {
+                url: 'https://backstage.io',
+                label: 'Backstage Homepage',
+                icon: <Home />,
+              },
+            ]}
+          />
+          <HomePageTopVisited />
+          <HomePageRecentlyVisited />
+        </CustomHomepageGrid>
+      </div>
     </Content>
   </Page>
 );

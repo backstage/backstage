@@ -188,7 +188,20 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   };
 
   return (
-    <nav style={{}} aria-label="sidebar nav">
+    <nav
+      style={
+        {
+          /* Force white focus ring on all sidebar descendants.
+             The sidebar always uses a dark surface (#171717) regardless
+             of theme mode, so white ring provides WCAG 2.4.7 / 2.4.11
+             compliant ≥3:1 contrast.  The custom property is inherited
+             by all children and consumed by Tailwind's ring-* utilities
+             via var(--tw-ring-color, currentcolor). */
+          '--tw-ring-color': '#fff',
+        } as React.CSSProperties
+      }
+      aria-label="sidebar nav"
+    >
       <A11ySkipSidebar />
       <SidebarOpenStateProvider value={{ isOpen, setOpen }}>
         <div
@@ -251,15 +264,32 @@ function A11ySkipSidebar() {
   const classes = getSidebarClasses(sidebarConfig);
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
-  if (!contentRef?.current) {
-    return null;
-  }
+  /**
+   * Always render the skip-to-content button for WCAG 2.4.1 compliance.
+   * When contentRef is available, focus it directly. Otherwise, fall back
+   * to the first <main> element in the document.
+   */
+  const handleSkip = () => {
+    if (contentRef?.current) {
+      focusContent();
+    } else {
+      const mainEl = document.querySelector('main');
+      if (mainEl) {
+        if (!mainEl.hasAttribute('tabindex')) {
+          mainEl.setAttribute('tabindex', '-1');
+        }
+        mainEl.focus();
+      }
+    }
+  };
+
   return (
     <button
-      onClick={focusContent}
+      onClick={handleSkip}
       className={cn(
         classes.visuallyHidden,
         'px-4 py-2 bg-[var(--primary,#1f5493)] text-[var(--primary-foreground,#fff)] rounded shadow-md',
+        'focus-visible:ring-2 focus-visible:ring-[var(--sidebar-primary,#fff)]',
       )}
     >
       {t('skipToContent')}

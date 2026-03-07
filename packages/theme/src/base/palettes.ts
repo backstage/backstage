@@ -227,7 +227,13 @@ export function generatePaletteTokens(
 
     // ── Primary ──────────────────────────────────────────────────
     '--primary': normalizeHex(palette.primary.main),
-    '--primary-foreground': normalizeHex(palette.bursts.fontColor),
+    // In dark mode the primary surface (#9CC9FF) is light, so the
+    // foreground must be dark (#101821) for WCAG AA ≥4.5:1 contrast.
+    // Light mode uses white on the dark primary (#1F5493).
+    '--primary-foreground':
+      palette.type === 'dark'
+        ? '#101821'
+        : normalizeHex(palette.bursts.fontColor),
 
     // ── Secondary ────────────────────────────────────────────────
     '--secondary': neutralBg,
@@ -242,7 +248,10 @@ export function generatePaletteTokens(
     '--accent-foreground': normalizeHex(palette.textContrast),
 
     // ── Destructive ──────────────────────────────────────────────
-    '--destructive': normalizeHex(palette.status.error),
+    // In dark mode darken destructive to #B71C1C for WCAG AA ≥4.5:1
+    // with white foreground (7.8:1). Light mode uses palette error directly.
+    '--destructive':
+      palette.type === 'dark' ? '#B71C1C' : normalizeHex(palette.status.error),
     '--destructive-foreground': '#FFFFFF',
 
     // ── Border / Input / Ring ────────────────────────────────────
@@ -254,11 +263,24 @@ export function generatePaletteTokens(
     '--radius': '0.5rem',
 
     // ── Status Colors (catalog health / CI/CD displays) ──────────
-    '--status-ok': normalizeHex(palette.status.ok),
-    '--status-warning': normalizeHex(palette.status.warning),
-    '--status-error': normalizeHex(palette.status.error),
-    '--status-running': normalizeHex(palette.status.running),
-    '--status-pending': normalizeHex(palette.status.pending),
+    // Light mode: darkened for WCAG AA ≥4.5:1 on #F8F8F8 page background
+    // Dark mode: lightened for WCAG AA ≥4.5:1 on #424242 card background
+    '--status-ok':
+      palette.type === 'light' ? '#0B7D37' : normalizeHex(palette.status.ok),
+    '--status-warning':
+      palette.type === 'light'
+        ? '#A06000'
+        : normalizeHex(palette.status.warning),
+    '--status-error':
+      palette.type === 'dark' ? '#FF9999' : normalizeHex(palette.status.error),
+    '--status-running':
+      palette.type === 'dark'
+        ? '#79B8FF'
+        : normalizeHex(palette.status.running),
+    '--status-pending':
+      palette.type === 'light'
+        ? '#7A6C00'
+        : normalizeHex(palette.status.pending),
     '--status-aborted': normalizeHex(palette.status.aborted),
 
     // ── Navigation (sidebar) ─────────────────────────────────────

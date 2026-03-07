@@ -16,7 +16,7 @@
 import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
 import { Content } from '../../layout/Content';
-import { ShadcnTabs, TabsList, TabsTrigger } from '../ui/tabs';
+import { ShadcnTabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 import { cn } from '../../lib/utils';
 import { SubRoute } from './types';
 import { Link } from '../Link';
@@ -121,6 +121,23 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
               );
             })}
           </TabsList>
+          {/*
+           * Hidden TabsContent elements satisfy the dangling aria-controls
+           * references that Radix auto-generates on each TabsTrigger.
+           * Without these, assistive technology follows aria-controls to a
+           * non-existent DOM id. forceMount keeps them in the DOM; the hidden
+           * attribute keeps them invisible and out of the accessibility tree
+           * so that the real (route-rendered) content below is read instead.
+           */}
+          {routes.map(t => (
+            <TabsContent
+              key={`panel-${t.path}`}
+              value={t.path}
+              forceMount
+              hidden
+              className="hidden"
+            />
+          ))}
         </ShadcnTabs>
       </div>
       <Content>

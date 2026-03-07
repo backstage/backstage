@@ -34,10 +34,10 @@ export type PageClassKey = 'root';
  * - `overflow-y-auto` → overflowY: auto
  * - `h-screen` → height: 100vh
  * - `max-[599.95px]:h-full` → height: 100% below Backstage xs breakpoint (600px)
- * - `print:block print:h-auto print:overflow-y-[inherit]` → print media overrides
+ * - `print:block print:h-auto print:overflow-y-visible` → print media overrides
  */
 const pageGridClasses =
-  'grid grid-rows-[max-content_auto_1fr] grid-cols-[auto_1fr_auto] overflow-y-auto h-screen max-[599.95px]:h-full print:block print:h-auto print:overflow-y-[inherit]';
+  'grid grid-rows-[max-content_auto_1fr] grid-cols-[auto_1fr_auto] overflow-y-auto h-screen max-[599.95px]:h-full print:block print:h-auto print:overflow-y-visible';
 
 type Props = {
   themeId: string;

@@ -15,7 +15,14 @@
  */
 
 import { cn } from '../../lib/utils';
-import { CheckCircle, AlertTriangle, XCircle, Clock, X } from 'lucide-react';
+import {
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  Clock,
+  X,
+  Play,
+} from 'lucide-react';
 import { PropsWithChildren } from 'react';
 
 /**
@@ -169,12 +176,14 @@ export function StatusPending(props: PropsWithChildren<{}>) {
 }
 
 /**
- * Displays a green check-circle icon indicating an active/running status.
+ * Displays a play-triangle icon indicating an active/running status.
  *
  * @remarks
- * Uses the CheckCircle (circle with checkmark) shape — same as StatusOK — since
- * both represent positive/active states. Distinguished from OK by context rather
- * than icon shape. Color is applied via the `--success-foreground` CSS custom property.
+ * Uses the Play (filled triangle) shape to provide a color-blind-friendly
+ * distinction from StatusOK (which uses CheckCircle). This ensures status
+ * indicators rely on shape differentiation alongside color, meeting AAP
+ * accessibility requirements. Color is applied via the `--status-running`
+ * CSS custom property.
  *
  * @public
  */
@@ -187,11 +196,11 @@ export function StatusRunning(props: PropsWithChildren<{}>) {
       aria-hidden="true"
       {...otherProps}
     >
-      <CheckCircle
+      <Play
         data-testid="status-running"
         className={cn(
           statusIconClasses,
-          'text-[var(--success-foreground,#3E8635)]',
+          'text-[var(--status-running,#1F5493)]',
         )}
       />
       {children}

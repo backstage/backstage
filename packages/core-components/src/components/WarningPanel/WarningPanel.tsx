@@ -39,10 +39,10 @@ const severityStyles = {
     message: 'text-warning-foreground bg-warning/10',
   },
   error: {
-    container: 'border-destructive bg-destructive/10 text-destructive',
+    container: 'border-destructive bg-destructive/10 text-foreground',
     icon: 'text-destructive',
-    title: 'text-destructive font-bold',
-    message: 'text-destructive bg-destructive/10',
+    title: 'text-foreground font-bold',
+    message: 'text-foreground bg-destructive/10',
   },
   info: {
     container: 'border-info bg-info/10 text-info-foreground',

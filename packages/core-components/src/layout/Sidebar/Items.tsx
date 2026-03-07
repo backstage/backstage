@@ -89,7 +89,7 @@ export type SidebarItemClassKey =
  */
 function getSidebarItemClasses(_sidebarConfig: SidebarConfig) {
   return {
-    root: 'flex flex-row flex-nowrap items-center h-12 cursor-pointer text-[var(--sidebar-nav-color,#b5b5b5)]',
+    root: 'flex flex-row flex-nowrap items-center h-12 cursor-pointer text-[var(--sidebar-nav-color,#b5b5b5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sidebar-primary,#fff)] focus-visible:ring-inset',
     buttonItem:
       'bg-transparent border-none w-full m-0 p-0 text-left font-inherit normal-case',
     closed: 'justify-center',
@@ -108,7 +108,7 @@ function getSidebarItemClasses(_sidebarConfig: SidebarConfig) {
     closedItemIcon: 'w-full justify-center',
     submenuArrow: 'flex',
     expandButton:
-      'bg-transparent border-none text-[var(--sidebar-nav-color,#b5b5b5)] w-full cursor-pointer relative h-12',
+      'bg-transparent border-none text-[var(--sidebar-nav-color,#b5b5b5)] w-full cursor-pointer relative h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sidebar-primary,#fff)] focus-visible:ring-inset',
     arrows: 'absolute right-2.5',
     /** Marker class + Tailwind color for the selected (active link) state.
      *  Border-left is applied via inline style because selectedIndicatorWidth
@@ -395,6 +395,10 @@ const SidebarItemBase = forwardRef<
     style: {
       width: rootWidth,
       ...(isButtonItem(props) ? selectedBorderStyle : {}),
+      /* Sidebar always uses a dark surface — force white focus ring for
+         WCAG 2.4.7 / 2.4.11 compliant contrast.  Tailwind's universal
+         reset prevents inheritance of --tw-ring-color from parent <nav>. */
+      '--tw-ring-color': '#fff',
     } as CSSProperties,
   };
 
@@ -733,6 +737,7 @@ export const SidebarExpandButton = () => {
     <button
       onClick={handleClick}
       className={classes.expandButton}
+      style={{ '--tw-ring-color': '#fff' } as CSSProperties}
       aria-label="Expand Sidebar"
       data-testid="sidebar-expand-button"
     >

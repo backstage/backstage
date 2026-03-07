@@ -62,8 +62,13 @@ const SidebarLogo = () => {
     >
       <Link
         to="/"
-        className="ml-6 no-underline hover:no-underline"
-        style={{ width: sidebarConfig.drawerWidthClosed }}
+        className="ml-6 no-underline hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset rounded"
+        style={
+          {
+            width: sidebarConfig.drawerWidthClosed,
+            '--tw-ring-color': '#fff',
+          } as React.CSSProperties
+        }
         aria-label="Home"
       >
         {isOpen ? (
@@ -117,7 +122,8 @@ export const appModuleNav = createFrontendModule({
               text={item.title}
             />
           ));
-          nav.take('page:home'); // Skip home
+          nav.take('page:home'); // Skip home — rendered as SidebarLogo
+          nav.take('page:devtools'); // Take DevTools to prevent duplicate in nav.rest()
           return (
             <Sidebar>
               <SidebarLogo />

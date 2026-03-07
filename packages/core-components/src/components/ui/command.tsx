@@ -59,11 +59,35 @@ function CommandDialog({
   children,
   ...props
 }: React.ComponentProps<typeof Dialog.Root>) {
+  /**
+   * Track the element that had focus when the dialog was opened so we can
+   * restore it on close (WCAG 2.4.3 — Focus Order). Radix Dialog normally
+   * handles this, but cmdk's CommandDialog does not always propagate the
+   * focus-restoration behaviour, so we manage it explicitly.
+   */
+  const triggerRef = React.useRef<HTMLElement | null>(null);
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      triggerRef.current = document.activeElement as HTMLElement | null;
+    } else {
+      // Restore focus to the element that opened the dialog
+      requestAnimationFrame(() => {
+        triggerRef.current?.focus();
+        triggerRef.current = null;
+      });
+    }
+    props.onOpenChange?.(open);
+  };
+
   return (
-    <Dialog.Root {...props}>
+    <Dialog.Root {...props} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-lg border border-border bg-popover p-0 shadow-lg">
+        <Dialog.Content
+          className="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-lg border border-border bg-popover p-0 shadow-lg"
+          aria-modal="true"
+        >
           <Dialog.Title className="sr-only">Command Palette</Dialog.Title>
           <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]]:px-2 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12">
             {children}

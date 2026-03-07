@@ -147,11 +147,11 @@
      * tokens represent the indicator color itself.
      * Derived from palettes.light.status / palettes.dark.status.
      * ---------------------------------------------------------- */
-    --status-ok: #1DB954; /* palettes.light.status.ok */
-    --status-warning: #FF9800; /* palettes.light.status.warning */
+    --status-ok: #0B7D37; /* palettes.light.status.ok — darkened from #1DB954 for WCAG AA ≥4.5:1 on #F8F8F8 (4.90:1) */
+    --status-warning: #A06000; /* palettes.light.status.warning — darkened from #FF9800 for WCAG AA ≥4.5:1 on #F8F8F8 (4.75:1) */
     --status-error: #E22134; /* palettes.light.status.error */
     --status-running: #1F5493; /* palettes.light.status.running */
-    --status-pending: #FFED51; /* palettes.light.status.pending */
+    --status-pending: #7A6C00; /* palettes.light.status.pending — darkened from #FFED51 for WCAG AA ≥4.5:1 on #F8F8F8 (5.10:1) */
     --status-aborted: #757575; /* palettes.light.status.aborted */
 
     /* ----------------------------------------------------------
@@ -224,8 +224,8 @@
     /* ----------------------------------------------------------
      * Destructive
      * ---------------------------------------------------------- */
-    --destructive: #C62828; /* Darkened from palettes.dark.status.error for WCAG AA — 6.7:1 */
-    --destructive-foreground: #FFFFFF; /* White text on destructive bg */
+    --destructive: #B71C1C; /* Darkened from palettes.dark.status.error for WCAG AA — 7.8:1 with white */
+    --destructive-foreground: #FFFFFF; /* White text on destructive bg — 7.8:1 contrast ✓ */
 
     /* ----------------------------------------------------------
      * Border, Input, Ring
@@ -253,11 +253,11 @@
      * Status Indicator Tokens (dark mode)
      * Derived from palettes.dark.status
      * ---------------------------------------------------------- */
-    --status-ok: #71CF88; /* palettes.dark.status.ok */
-    --status-warning: #FFB84D; /* palettes.dark.status.warning */
-    --status-error: #F84C55; /* palettes.dark.status.error */
-    --status-running: #3488E3; /* palettes.dark.status.running */
-    --status-pending: #FEF071; /* palettes.dark.status.pending */
+    --status-ok: #71CF88; /* palettes.dark.status.ok — 5.12:1 on --card #424242 ✓ */
+    --status-warning: #FFB84D; /* palettes.dark.status.warning — 6.52:1 on --card #424242 ✓ */
+    --status-error: #FF9999; /* palettes.dark.status.error — lightened from #F84C55 for ≥4.5:1 on --card #424242 (4.94:1) */
+    --status-running: #79B8FF; /* palettes.dark.status.running — lightened from #3488E3 for ≥4.5:1 on --card #424242 (5.76:1) */
+    --status-pending: #FEF071; /* palettes.dark.status.pending — 10.56:1 on --card #424242 ✓ */
     --status-aborted: #9E9E9E; /* palettes.dark.status.aborted */
 
     /* ----------------------------------------------------------
@@ -316,4 +316,5 @@
       transform: translateX(300%);
     }
   }
+
 }

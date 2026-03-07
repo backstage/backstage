@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useContext, useState } from 'react';
+import { type CSSProperties, useContext, useState } from 'react';
 import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { Link } from '../../components/Link';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -61,7 +61,7 @@ export type SidebarSubmenuItemClassKey =
 
 /** Base item styles applied to every submenu row (button or link). */
 const ITEM_CLASSES =
-  'flex items-center h-12 w-full cursor-pointer relative bg-transparent border-none px-2.5 py-2.5 font-[inherit] text-[var(--sidebar-nav-color,#b5b5b5)] hover:bg-[var(--sidebar-nav-hover-bg,#404040)] hover:text-[var(--sidebar-nav-selected-color,#fff)]';
+  'flex items-center h-12 w-full cursor-pointer relative bg-transparent border-none px-2.5 py-2.5 font-[inherit] text-[var(--sidebar-nav-color,#b5b5b5)] hover:bg-[var(--sidebar-nav-hover-bg,#404040)] hover:text-[var(--sidebar-nav-selected-color,#fff)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sidebar-primary,#fff)] focus-visible:ring-inset';
 
 /** Active / selected state overlay. */
 const SELECTED_CLASSES = 'bg-[#6f6f6f] text-white';
@@ -82,7 +82,7 @@ const DROPDOWN_CLASSES = 'flex flex-col items-end';
 
 /** Individual dropdown link row. */
 const DROPDOWN_ITEM_CLASSES =
-  'w-full py-2.5 hover:bg-[var(--sidebar-nav-hover-bg,#404040)] hover:text-[var(--sidebar-nav-selected-color,#fff)]';
+  'w-full py-2.5 hover:bg-[var(--sidebar-nav-hover-bg,#404040)] hover:text-[var(--sidebar-nav-selected-color,#fff)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sidebar-primary,#fff)] focus-visible:ring-inset';
 
 /** Text content inside a dropdown link row. */
 const TEXT_CONTENT_CLASSES =
@@ -167,6 +167,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                   'normal-case justify-start',
                   isActive && SELECTED_CLASSES,
                 )}
+                style={{ '--tw-ring-color': '#fff' } as CSSProperties}
               >
                 {Icon && <Icon fontSize="small" />}
                 <span className={LABEL_CLASSES}>
@@ -198,6 +199,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                         'no-underline hover:no-underline',
                         DROPDOWN_ITEM_CLASSES,
                       )}
+                      style={{ '--tw-ring-color': '#fff' } as CSSProperties}
                       onClick={closeSubmenu}
                       onTouchStart={e => e.stopPropagation()}
                     >
@@ -229,6 +231,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                 ITEM_CLASSES,
                 isActive && SELECTED_CLASSES,
               )}
+              style={{ '--tw-ring-color': '#fff' } as CSSProperties}
               onClick={closeSubmenu}
               onTouchStart={e => e.stopPropagation()}
             >

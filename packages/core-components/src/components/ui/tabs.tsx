@@ -107,9 +107,14 @@ TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
  * visual separation and focus-visible ring for keyboard accessibility.
  *
  * @remarks
- * Only the content whose `value` matches the active trigger is rendered
- * (Radix default behavior). Focus rings use `ring-offset-background` to
- * maintain consistent offset coloring with the theme.
+ * Uses `forceMount` to keep all tab panels in the DOM at all times. This
+ * prevents dangling `aria-controls` references on tab triggers — which
+ * would otherwise confuse assistive technology (WCAG 4.1.2 Name/Role/Value).
+ * Inactive panels are hidden via `data-[state=inactive]:hidden` so they
+ * are not visible or focusable, but remain in the DOM for ARIA reference.
+ *
+ * Focus rings use `ring-offset-background` to maintain consistent offset
+ * coloring with the theme.
  *
  * @public
  */
@@ -120,8 +125,10 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     data-slot="tabs-content"
+    forceMount
     className={cn(
       'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+      'data-[state=inactive]:hidden',
       className,
     )}
     {...props}
