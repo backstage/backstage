@@ -86,6 +86,10 @@ export const components: Page[] = [
     slug: 'radio-group',
   },
   {
+    title: 'RangeSlider',
+    slug: 'range-slider',
+  },
+  {
     title: 'SearchField',
     slug: 'search-field',
   },

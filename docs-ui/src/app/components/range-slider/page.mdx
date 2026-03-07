@@ -1,0 +1,101 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { rangeSliderPropDefs } from './props-definition';
+import {
+  snippetUsage,
+  defaultSnippet,
+  withCustomRangeSnippet,
+  withFormattedValuesSnippet,
+  withDescriptionSnippet,
+  requiredSnippet,
+  disabledSnippet,
+} from './snippets';
+import {
+  Default,
+  WithCustomRange,
+  WithFormattedValues,
+  WithDescription,
+  Required,
+  Disabled,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { RangeSliderDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  slider: 'https://react-spectrum.adobe.com/react-aria/Slider.html',
+};
+
+<PageTitle
+  title="RangeSlider"
+  description="A dual-thumb slider for selecting a numeric range with customizable formatting and validation."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={snippetUsage} />
+
+## API reference
+
+<PropsTable data={rangeSliderPropDefs} />
+
+<ReactAriaLink component="Slider" href={reactAriaUrls.slider} />
+
+## Examples
+
+### Custom range
+
+Define custom minimum, maximum, and step values for specific use cases.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithCustomRange />}
+  code={withCustomRangeSnippet}
+/>
+
+### Formatted values
+
+Use the `formatValue` prop to customize how values are displayed.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithFormattedValues />}
+  code={withFormattedValuesSnippet}
+/>
+
+### With description
+
+Add helpful context with a description below the label.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithDescription />}
+  code={withDescriptionSnippet}
+/>
+
+### Required
+
+Mark a field as required to show a "Required" indicator in the label.
+
+<Snippet align="center" py={4} preview={<Required />} code={requiredSnippet} />
+
+### Disabled
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Disabled />}
+  code={disabledSnippet}
+/>
+
+<Theming definition={RangeSliderDefinition} />
+
+<ChangelogComponent component="range-slider" />
