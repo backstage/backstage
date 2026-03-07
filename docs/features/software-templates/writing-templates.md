@@ -695,6 +695,63 @@ input:
 
 When `each` is used, the outputs of a repeated step are returned as an array of outputs from each iteration.
 
+### Status Check Functions - `always()` and `failure()`
+
+By default, when a step fails during a scaffolder run, all subsequent steps are skipped and the task is marked as failed. This can be problematic when your template creates external resources (repositories, cloud infrastructure, deployments) that need to be cleaned up if a later step fails.
+
+Status check functions give you control over which steps run even after a failure. You use them in the `if` field of a step.
+
+| Function    | Description                                                                  |
+| ----------- | ---------------------------------------------------------------------------- |
+| `always()`  | Always runs the step, regardless of whether previous steps passed or failed. |
+| `failure()` | Runs the step only when a previous step has failed.                          |
+
+#### Usage
+
+```yaml
+steps:
+  - id: cleanup
+    name: Cleanup Resources
+    action: my:cleanup:action
+    if: always()
+```
+
+#### Example: Cleanup on failure
+
+A common pattern is to create resources in early steps and add cleanup steps
+that only run if something goes wrong:
+
+```yaml
+steps:
+  - id: create-repo
+    name: Create Repository
+    action: publish:github
+    input:
+      repoUrl: ${{ parameters.repoUrl }}
+
+  - id: deploy
+    name: Deploy to Kubernetes
+    action: deploy:kubernetes
+    input:
+      manifest: ./k8s/deployment.yaml
+
+  # Only runs when a previous step failed — cleans up the repository
+  - id: cleanup-repo
+    name: Delete Repository
+    action: github:repo:delete
+    if: failure()
+    input:
+      repoUrl: ${{ parameters.repoUrl }}
+
+  # Always runs — post an audit event regardless of outcome
+  - id: audit
+    name: Post Audit Event
+    action: debug:log
+    if: always()
+    input:
+      message: 'Scaffolder run completed for ${{ parameters.repoUrl }}'
+```
+
 ## Outputs
 
 Each individual step can output some variables that can be used in the
