@@ -56,7 +56,7 @@ export interface Config {
       /**
        * The name of the Azure Storage Account, e.g., "mystorageaccount".
        */
-      accountName?: string;
+      accountName: string;
 
       /**
        * The primary or secondary key for the Azure Storage Account.

@@ -156,15 +156,14 @@ export function readAzureBlobStorageIntegrationConfig(
 export function readAzureBlobStorageIntegrationConfigs(
   configs: Config[],
 ): AzureBlobStorageIntegrationConfig[] {
-  // First read all the explicit integrations
-  const result = configs.map(readAzureBlobStorageIntegrationConfig);
+  const parsed = configs.map(readAzureBlobStorageIntegrationConfig);
 
-  // If no explicit blob.core.windows.net integration was added, put one in the list as
-  // a convenience
-  if (!result.some(c => c.host === AZURE_HOST)) {
-    result.push({
-      host: AZURE_HOST,
-    });
+  // Add a default integration as a catch-all for any Azure Blob Storage URL,
+  // using DefaultAzureCredential for authentication (works with managed identity,
+  // environment variables, Azure CLI, etc.)
+  if (!parsed.some(c => c.host === AZURE_HOST)) {
+    parsed.push({ host: AZURE_HOST });
   }
-  return result;
+
+  return parsed;
 }
