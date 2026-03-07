@@ -15,14 +15,14 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
-import type { HeaderPageOwnProps } from './types';
+import type { HeaderOwnProps } from './types';
 import styles from './HeaderPage.module.css';
 
 /**
- * Component definition for HeaderPage
+ * Component definition for Header
  * @public
  */
-export const HeaderPageDefinition = defineComponent<HeaderPageOwnProps>()({
+export const HeaderDefinition = defineComponent<HeaderOwnProps>()({
   styles,
   classNames: {
     root: 'bui-HeaderPage',
@@ -39,3 +39,9 @@ export const HeaderPageDefinition = defineComponent<HeaderPageOwnProps>()({
     className: {},
   },
 });
+
+/**
+ * @public
+ * @deprecated Use {@link HeaderDefinition} instead.
+ */
+export const HeaderPageDefinition = HeaderDefinition;

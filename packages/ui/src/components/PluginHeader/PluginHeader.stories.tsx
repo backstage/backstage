@@ -20,7 +20,7 @@ import { PluginHeader } from './PluginHeader';
 import type { HeaderTab } from './types';
 import {
   Button,
-  HeaderPage,
+  Header,
   Container,
   Text,
   ButtonIcon,
@@ -35,7 +35,7 @@ import {
   RiCloudy2Line,
   RiMore2Line,
 } from '@remixicon/react';
-import { HeaderPageBreadcrumb } from '../HeaderPage/types';
+import { HeaderBreadcrumb } from '../HeaderPage/types';
 
 const meta = preview.meta({
   title: 'Backstage UI/PluginHeader',
@@ -117,7 +117,7 @@ const menuItems = [
   },
 ];
 
-const breadcrumbs: HeaderPageBreadcrumb[] = [
+const breadcrumbs: HeaderBreadcrumb[] = [
   {
     label: 'Home',
     href: '/',
@@ -246,7 +246,7 @@ export const WithAllOptionsAndTabs = WithCustomActions.extend({
   },
 });
 
-export const WithHeaderPage = meta.story({
+export const WithHeader = meta.story({
   args: {
     ...WithAllOptionsAndTabs.input.args,
   },
@@ -263,7 +263,7 @@ export const WithHeaderPage = meta.story({
           </>
         }
       />
-      <HeaderPage
+      <Header
         title="Page title"
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
@@ -278,7 +278,7 @@ export const WithLayout = meta.story({
   render: args => (
     <>
       <PluginHeader {...args} tabs={tabs} />
-      <HeaderPage
+      <Header
         title="Page title"
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
@@ -293,7 +293,7 @@ export const WithLayoutNoTabs = meta.story({
   render: args => (
     <>
       <PluginHeader {...args} />
-      <HeaderPage title="Page title" tabs={tabs2} />
+      <Header title="Page title" tabs={tabs2} />
     </>
   ),
 });
@@ -316,7 +316,7 @@ export const WithEverything = meta.story({
           </>
         }
       />
-      <HeaderPage
+      <Header
         title="Page title"
         tabs={tabs2}
         customActions={

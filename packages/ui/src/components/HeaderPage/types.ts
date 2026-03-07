@@ -17,31 +17,49 @@
 import type { HeaderTab } from '../PluginHeader/types';
 
 /**
- * Own props for the HeaderPage component.
+ * Own props for the Header component.
  *
  * @public
  */
-export interface HeaderPageOwnProps {
+export interface HeaderOwnProps {
   title?: string;
   customActions?: React.ReactNode;
   tabs?: HeaderTab[];
-  breadcrumbs?: HeaderPageBreadcrumb[];
+  breadcrumbs?: HeaderBreadcrumb[];
   className?: string;
 }
 
 /**
- * Props for the main HeaderPage component.
+ * Props for the Header component.
  *
  * @public
  */
-export interface HeaderPageProps extends HeaderPageOwnProps {}
+export interface HeaderProps extends HeaderOwnProps {}
 
 /**
  * Represents a breadcrumb item in the header.
  *
  * @public
  */
-export interface HeaderPageBreadcrumb {
+export interface HeaderBreadcrumb {
   label: string;
   href: string;
 }
+
+/**
+ * @public
+ * @deprecated Use {@link HeaderOwnProps} instead.
+ */
+export type HeaderPageOwnProps = HeaderOwnProps;
+
+/**
+ * @public
+ * @deprecated Use {@link HeaderProps} instead.
+ */
+export type HeaderPageProps = HeaderProps;
+
+/**
+ * @public
+ * @deprecated Use {@link HeaderBreadcrumb} instead.
+ */
+export type HeaderPageBreadcrumb = HeaderBreadcrumb;

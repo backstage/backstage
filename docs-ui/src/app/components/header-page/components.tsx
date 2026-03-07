@@ -1,6 +1,6 @@
 'use client';
 
-import { HeaderPage } from '../../../../../packages/ui/src/components/HeaderPage/HeaderPage';
+import { Header } from '../../../../../packages/ui/src/components/HeaderPage/HeaderPage';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
 import { ButtonIcon } from '../../../../../packages/ui/src/components/ButtonIcon/ButtonIcon';
 import {
@@ -31,7 +31,7 @@ const breadcrumbs = [
 
 export const WithEverything = () => (
   <MemoryRouter>
-    <HeaderPage
+    <Header
       title="Page Title"
       tabs={tabs.slice(0, 2)}
       breadcrumbs={breadcrumbs.slice(0, 2)}
@@ -47,28 +47,25 @@ export const WithEverything = () => (
 
 export const WithLongBreadcrumbs = () => (
   <MemoryRouter>
-    <HeaderPage title="Page Title" breadcrumbs={breadcrumbs.slice(0, 2)} />
+    <Header title="Page Title" breadcrumbs={breadcrumbs.slice(0, 2)} />
   </MemoryRouter>
 );
 
 export const WithTabs = () => (
   <MemoryRouter>
-    <HeaderPage title="Page Title" tabs={tabs.slice(0, 3)} />
+    <Header title="Page Title" tabs={tabs.slice(0, 3)} />
   </MemoryRouter>
 );
 
 export const WithCustomActions = () => (
   <MemoryRouter>
-    <HeaderPage
-      title="Page Title"
-      customActions={<Button>Custom action</Button>}
-    />
+    <Header title="Page Title" customActions={<Button>Custom action</Button>} />
   </MemoryRouter>
 );
 
 export const WithMenu = () => (
   <MemoryRouter>
-    <HeaderPage
+    <Header
       title="Page Title"
       customActions={
         <MenuTrigger>
