@@ -86,7 +86,6 @@ describe('GenericScmEventRefreshProvider', () => {
       entity_id: id,
       entity_ref: `k:ns/${id}`,
       hash: 'h',
-      stitch_ticket: '',
       final_entity: '{}',
     });
   }

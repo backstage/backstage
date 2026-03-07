@@ -74,7 +74,6 @@ describe('migrations', () => {
         .insert({
           entity_id: 'i1',
           hash: 'h',
-          stitch_ticket: '',
           final_entity: '{}',
           entity_ref: 'k:ns/n1',
         })
@@ -913,6 +912,157 @@ describe('migrations', () => {
           original_value: 'service-b',
         },
       ]);
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    '20260215000000_move_stitch_queue.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      // Run migrations up to just before the target migration
+      await migrateUntilBefore(knex, '20260215000000_move_stitch_queue.js');
+
+      // Insert rows into refresh_state with stitch queue data
+      // Before migration, refresh_state has next_stitch_at and next_stitch_ticket columns
+      const stitchTime1 = new Date('2026-01-15T12:00:00.000Z');
+      const stitchTime3 = new Date('2026-01-16T12:00:00.000Z');
+
+      await knex('refresh_state').insert([
+        {
+          entity_id: 'id1',
+          entity_ref: 'component:default/with-stitch',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: stitchTime1,
+          next_stitch_ticket: 'ticket-1',
+        },
+        {
+          entity_id: 'id2',
+          entity_ref: 'component:default/no-stitch',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: null,
+          next_stitch_ticket: null,
+        },
+        {
+          entity_id: 'id3',
+          entity_ref: 'component:default/orphan-stitch',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+          next_stitch_at: stitchTime3,
+          next_stitch_ticket: 'ticket-3',
+        },
+      ]);
+
+      // Insert final_entities rows (with stitch_ticket column that will be dropped)
+      await knex('final_entities').insert([
+        {
+          entity_id: 'id1',
+          entity_ref: 'component:default/with-stitch',
+          hash: 'h1',
+          stitch_ticket: 'old-ticket-1',
+        },
+        {
+          entity_id: 'id2',
+          entity_ref: 'component:default/no-stitch',
+          hash: 'h2',
+          stitch_ticket: 'old-ticket-2',
+        },
+      ]);
+
+      // Verify initial state - stitch_queue table should NOT exist yet
+      const preTableExists = await knex.schema.hasTable('stitch_queue');
+      expect(preTableExists).toBe(false);
+
+      // Run the migration
+      await migrateUpOnce(knex);
+
+      // Verify stitch_queue table was created
+      const postTableExists = await knex.schema.hasTable('stitch_queue');
+      expect(postTableExists).toBe(true);
+
+      // Verify next_stitch_at and next_stitch_ticket columns were removed from refresh_state
+      const refreshStateColumnInfo = await knex('refresh_state').columnInfo();
+      expect(refreshStateColumnInfo.next_stitch_at).toBeUndefined();
+      expect(refreshStateColumnInfo.next_stitch_ticket).toBeUndefined();
+
+      // Verify stitch_ticket column was removed from final_entities
+      const finalEntitiesColumnInfo = await knex('final_entities').columnInfo();
+      expect(finalEntitiesColumnInfo.stitch_ticket).toBeUndefined();
+
+      // Verify data was migrated correctly to stitch_queue
+      const stitchQueueAfterUp = await knex('stitch_queue')
+        .orderBy('entity_ref')
+        .select('entity_ref', 'stitch_ticket', 'next_stitch_at');
+
+      // Only entities with pending stitches should be in stitch_queue (id1 and id3)
+      expect(stitchQueueAfterUp).toEqual([
+        {
+          entity_ref: 'component:default/orphan-stitch',
+          stitch_ticket: 'ticket-3',
+          next_stitch_at: expect.anything(),
+        },
+        {
+          entity_ref: 'component:default/with-stitch',
+          stitch_ticket: 'ticket-1',
+          next_stitch_at: expect.anything(),
+        },
+      ]);
+
+      // Run the down migration
+      await migrateDownOnce(knex);
+
+      // Verify stitch_queue table was dropped
+      const revertedTableExists = await knex.schema.hasTable('stitch_queue');
+      expect(revertedTableExists).toBe(false);
+
+      // Verify stitch_ticket column was restored to final_entities
+      const revertedFinalEntitiesColumnInfo = await knex(
+        'final_entities',
+      ).columnInfo();
+      expect(revertedFinalEntitiesColumnInfo.stitch_ticket).not.toBeUndefined();
+
+      // Verify next_stitch_at and next_stitch_ticket columns were restored to refresh_state
+      const revertedRefreshColumnInfo = await knex(
+        'refresh_state',
+      ).columnInfo();
+      expect(revertedRefreshColumnInfo.next_stitch_at).not.toBeUndefined();
+      expect(revertedRefreshColumnInfo.next_stitch_ticket).not.toBeUndefined();
+
+      // Verify data was migrated back to refresh_state
+      const refreshStateAfterDown = await knex('refresh_state')
+        .orderBy('entity_id')
+        .select(
+          'entity_id',
+          'entity_ref',
+          'next_stitch_at',
+          'next_stitch_ticket',
+        );
+
+      // id1 should have stitch data restored
+      const id1RefreshRow = refreshStateAfterDown.find(
+        r => r.entity_id === 'id1',
+      );
+      expect(id1RefreshRow?.next_stitch_at).not.toBeNull();
+      expect(id1RefreshRow?.next_stitch_ticket).toBe('ticket-1');
+
+      // id2 should have no stitch data
+      const id2RefreshRow = refreshStateAfterDown.find(
+        r => r.entity_id === 'id2',
+      );
+      expect(id2RefreshRow?.next_stitch_at).toBeNull();
 
       await knex.destroy();
     },
