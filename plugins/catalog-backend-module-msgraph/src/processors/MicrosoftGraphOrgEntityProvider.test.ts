@@ -255,6 +255,52 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
     );
   });
 
+  it('should stop processing when AbortSignal is aborted', async () => {
+    jest.spyOn(logger, 'child').mockReturnValue(logger as any);
+
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            customProviderId: {
+              target: 'target',
+              tenantId: 'tenantId',
+              clientId: 'clientId',
+              clientSecret: 'clientSecret',
+            },
+          },
+        },
+      },
+    });
+    const localTaskRunner = new PersistingTaskRunner();
+    const provider = MicrosoftGraphOrgEntityProvider.fromConfig(config, {
+      logger,
+      schedule: localTaskRunner,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    const controller = new AbortController();
+    controller.abort();
+
+    readMicrosoftGraphOrgMocked.mockImplementationOnce(
+      async (_client, _tenantId, options) => {
+        if (options.signal?.aborted) {
+          throw new DOMException('The operation was aborted', 'AbortError');
+        }
+        return { users: [], groups: [] };
+      },
+    );
+
+    const taskDef = localTaskRunner.getTasks()[0];
+    // Should resolve without throwing (the error is caught and logged internally)
+    await (taskDef.fn as (signal: AbortSignal) => Promise<void>)(
+      controller.signal,
+    );
+
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+  });
+
   it('fail without schedule and scheduler', () => {
     const config = new ConfigReader({
       catalog: {

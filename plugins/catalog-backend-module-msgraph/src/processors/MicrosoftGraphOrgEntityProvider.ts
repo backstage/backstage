@@ -326,7 +326,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
    * Runs one complete ingestion loop. Call this method regularly at some
    * appropriate cadence.
    */
-  async read(options?: { logger?: LoggerService }) {
+  async read(options?: { logger?: LoggerService; signal?: AbortSignal }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -361,6 +361,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
         userTransformer: this.options.userTransformer,
         organizationTransformer: this.options.organizationTransformer,
         logger: logger,
+        signal: options?.signal,
       },
     );
 
@@ -386,7 +387,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       const id = `${this.getProviderName()}:refresh`;
       await taskRunner.run({
         id,
-        fn: async () => {
+        fn: async (abortSignal: AbortSignal) => {
           const logger = this.options.logger.child({
             class: MicrosoftGraphOrgEntityProvider.prototype.constructor.name,
             taskId: id,
@@ -394,7 +395,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.read({ logger });
+            await this.read({ logger, signal: abortSignal });
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
