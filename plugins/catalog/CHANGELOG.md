@@ -32,6 +32,10 @@
 
 ## 1.33.1-next.0
 
+### Minor Changes
+
+- Added support for an optional `allFilterEnabled` prop on `EntityKindPicker` (and corresponding `allFilterEnabled` configuration in the kind filter blueprint), enabling an “all” entry that clears the kind filter.
+
 ### Patch Changes
 
 - Updated dependencies

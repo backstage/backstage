@@ -319,6 +319,8 @@ export interface EntityKindPickerProps {
   hidden?: boolean;
   // (undocumented)
   initialFilter?: string;
+  // (undocumented)
+  allFilterEnabled?: boolean;
 }
 
 // @public
