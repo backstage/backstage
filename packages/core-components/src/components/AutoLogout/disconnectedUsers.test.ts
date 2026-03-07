@@ -35,10 +35,27 @@ const mockTimestampStore = {
 };
 
 describe('useLogoutDisconnectedUserEffect', () => {
-  it('should not do anything if effect is not enabled', () => {
+  it('should not do anything if isLoggedIn has not yet resolved', () => {
+    const props: UseLogoutDisconnectedUserEffectProps = {
+      enableEffect: true,
+      autologoutIsEnabled: true,
+      isLoggedIn: null,
+      idleTimeoutSeconds: 300,
+      lastSeenOnlineStore: mockTimestampStore,
+      identityApi: mockIdentityApi,
+    };
+
+    renderHook(() => useLogoutDisconnectedUserEffect(props));
+
+    expect(mockTimestampStore.get).not.toHaveBeenCalled();
+    expect(mockIdentityApi.signOut).not.toHaveBeenCalled();
+  });
+
+  it('should not do anything if effect is not enabled and isLoggedIn is false', () => {
     const props: UseLogoutDisconnectedUserEffectProps = {
       enableEffect: false,
       autologoutIsEnabled: true,
+      isLoggedIn: false,
       idleTimeoutSeconds: 300,
       lastSeenOnlineStore: mockTimestampStore,
       identityApi: mockIdentityApi,
@@ -54,6 +71,7 @@ describe('useLogoutDisconnectedUserEffect', () => {
     const props: UseLogoutDisconnectedUserEffectProps = {
       enableEffect: true,
       autologoutIsEnabled: false,
+      isLoggedIn: true,
       idleTimeoutSeconds: 300,
       lastSeenOnlineStore: mockTimestampStore,
       identityApi: mockIdentityApi,
@@ -70,6 +88,7 @@ describe('useLogoutDisconnectedUserEffect', () => {
     const props: UseLogoutDisconnectedUserEffectProps = {
       enableEffect: true,
       autologoutIsEnabled: true,
+      isLoggedIn: true,
       idleTimeoutSeconds: 1,
       lastSeenOnlineStore: {
         ...mockTimestampStore,
@@ -93,6 +112,7 @@ describe('useLogoutDisconnectedUserEffect', () => {
     const props: UseLogoutDisconnectedUserEffectProps = {
       enableEffect: true,
       autologoutIsEnabled: true,
+      isLoggedIn: true,
       idleTimeoutSeconds: 300,
       lastSeenOnlineStore: mockTimestampStore,
       identityApi: mockIdentityApi,
