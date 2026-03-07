@@ -1,0 +1,47 @@
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { PageTitle } from '@/components/PageTitle';
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { Banner } from '@/components/Banner';
+import { useBreakpointReturnDefs } from './props-definition';
+import { useBreakpointExampleSnippet } from './snippets';
+import { UseBreakpointExample } from './components';
+
+<PageTitle
+  title="useBreakpoint"
+  description="A hook to detect responsive breakpoints and manage responsive layouts."
+/>
+
+## Usage
+
+<Banner
+  variant="warning"
+  text="This hook has performance issues and should be used with caution."
+/>
+
+The `useBreakpoint` hook returns the active breakpoint and two functions, `up` and `down`, to check if the viewport is above, or below a given breakpoint, letting you adjust your UI responsively.
+
+<Snippet
+  align="center"
+  py={4}
+  height={150}
+  preview={<UseBreakpointExample />}
+  code={useBreakpointExampleSnippet}
+/>
+
+## Breakpoints
+
+The default breakpoints are:
+
+- **initial**: < 640px
+- **xs**: ≥ 640px < 768px
+- **sm**: ≥ 768px < 1024px
+- **md**: ≥ 1024px < 1280px
+- **lg**: ≥ 1280px < 1536px
+- **xl**: ≥ 1536px
+
+## Return Value
+
+<PropsTable data={useBreakpointReturnDefs} isHook />
+
+<ChangelogComponent hook="use-breakpoint" />
