@@ -512,7 +512,7 @@ export function FeatureCalloutCircular(
 ): JSX_2.Element;
 
 // @public (undocumented)
-export type FiltersContainerClassKey = 'root' | 'title';
+export type FiltersContainerClassKey = 'root' | 'filterControls' | 'title';
 
 // @public
 export function Gauge(props: GaugeProps): JSX_2.Element;
