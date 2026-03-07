@@ -102,7 +102,7 @@ export const visualizerPlugin = createFrontendPlugin({
     appVisualizerTreePage,
     appVisualizerDetailedPage,
     appVisualizerTextPage,
-    appVisualizerNavItem,
+    // appVisualizerNavItem,
     copyTreeAsJson,
   ],
 });
