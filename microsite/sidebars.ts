@@ -69,8 +69,16 @@ export default {
       ]),
       sidebarElementWithIndex({ label: 'Using Backstage' }, [
         'getting-started/logging-in',
-        'getting-started/register-a-component',
-        'getting-started/create-a-component',
+        'getting-started/viewing-catalog',
+        'getting-started/view-what-you-own',
+        'getting-started/viewing-entity-relationships',
+        'getting-started/filter-catalog',
+        sidebarElementWithIndex({ label: 'Managing Components' }, [
+          'getting-started/register-a-component',
+          'getting-started/create-a-component',
+          'getting-started/update-a-component',
+          'getting-started/unregister-delete-component',
+        ]),
       ]),
       'overview/support',
       'getting-started/keeping-backstage-updated',
@@ -105,6 +113,15 @@ export default {
         description: 'Features powering the core of Backstage.',
       },
       [
+        sidebarElementWithIndex(
+          {
+            label: 'AI',
+            description: 'Features in Backstage you can leverage with your AI tools',
+          },
+          [
+            'ai/index',
+          ],
+        ),
         sidebarElementWithIndex(
           {
             label: 'Auth and Identity',
@@ -409,11 +426,6 @@ export default {
         'plugins/internationalization',
         'plugins/analytics',
         'plugins/feature-flags',
-        'plugins/mcp-actions-backend',
-<<<<<<< HEAD
-=======
-
->>>>>>> 2405e964d2c1 (docs: surface mcp-actions-backend in main docs)
         sidebarElementWithIndex(
           {
             label: 'OpenAPI',
@@ -443,7 +455,11 @@ export default {
         ),
         sidebarElementWithIndex(
           { label: 'Publishing', description: 'Publishing your plugins.' },
-          ['plugins/publish-private', 'plugins/add-to-directory'],
+          [
+            'plugins/publish-private',
+            'plugins/add-to-directory',
+            'plugins/plugin-directory-audit',
+          ],
         ),
         'plugins/observability',
       ],
@@ -522,6 +538,7 @@ export default {
                 'backend-system/core-services/identity',
                 'backend-system/core-services/lifecycle',
                 'backend-system/core-services/logger',
+                'backend-system/core-services/metrics',
                 'backend-system/core-services/permissions',
                 'backend-system/core-services/permissions-registry',
                 'backend-system/core-services/plugin-metadata',

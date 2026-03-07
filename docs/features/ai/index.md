@@ -1,24 +1,53 @@
 ---
-id: mcp-actions-backend
-title: MCP Actions Backend
-description: Expose Backstage actions as MCP (Model Context Protocol) tools for AI clients.
+id: ai
+title: AI Features
+description: Features in Backstage you can leverage with your AI tools.
 ---
 
-## Overview
+This is where you'll find all the details about AI features in Backstage that you can use along with you favorite AI tool!
+
+## MCP Actions Backend
 
 The MCP Actions Backend exposes actions registered with the **Actions Registry** as MCP tools.
 
-## Configuration
+### Installation
 
-### Configuring the Actions Registry
+This plugin is installed via the `@backstage/plugin-mcp-actions-backend` package. To install it to your backend package, run the following command:
 
-For details on registering actions, see the [Actions Registry documentation](/docs/backend-system/core-services/actions-registry).
+```bash
+# From your root directory
+yarn --cwd packages/backend add @backstage/plugin-mcp-actions-backend
+```
 
-## Authentication
+Then add the plugin to your backend in `packages/backend/src/index.ts`:
+
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-mcp-actions-backend'));
+```
+
+### Configuration
+
+#### Configuring Actions Registry
+
+The MCP Actions Backend exposes actions that are registered with the [Actions Registry](../../backend-system/core-services/actions-registry.md). You can register actions from specific plugins by configuring the `pluginSources` in your app configuration:
+
+```yaml
+backend:
+  actions:
+    pluginSources:
+      - 'catalog'
+      - 'my-custom-plugin'
+```
+
+For details on filtering actions, see the [Actions documentation](../../backend-system/core-services/actions.md).
+
+### Authentication Configuration
 
 By default, the Backstage backend requires authentication for all requests.
 
-### External Access with Static Tokens
+#### External Access with Static Tokens
 
 :::warning
 This is meant to be a temporary workaround until device authentication is completed.
@@ -52,22 +81,19 @@ Authorization: Bearer <token>
 ```
 
 For more details about external access tokens and service-to-service authentication, see the
-[Service-to-Service Auth documentation](/docs/auth/service-to-service-auth).
+[Service-to-Service Auth documentation](../../auth/service-to-service-auth.md).
 
-### Experimental: Dynamic Client Registration
+#### Experimental: Dynamic Client Registration
 
 :::warning
 This feature is highly experimental. Proceed with caution.
 :::
 
-You can configure the auth-backend and install the auth frontend plugin to enable **Dynamic Client
-Registration** with MCP clients.
+You can configure the auth-backend and install the auth frontend plugin to enable **Dynamic Client Registration** with MCP clients.
 
 This means you do not need to manually configure a token in your MCP client settings.
 
-Instead, a client can request a token on your behalf. When adding the MCP server to an MCP client
-like Cursor or Claude, a popup requiring your approval will open in your Backstage instance
-(powered by the auth plugin).
+Instead, a client can request a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup requiring your approval will open in your Backstage instance (powered by the auth plugin).
 
 #### Requirements
 
@@ -95,9 +121,7 @@ auth:
 
 > **Note:** `@backstage/plugin-auth` is currently only available in the new frontend system.
 
----
-
-## Configuring MCP Clients
+### Configuring MCP Clients
 
 The MCP server supports both **Server-Sent Events (SSE)** and **Streamable HTTP** protocols.
 
@@ -105,7 +129,7 @@ The MCP server supports both **Server-Sent Events (SSE)** and **Streamable HTTP*
 The SSE protocol is deprecated and will be removed in a future release.
 :::
 
-### Endpoints
+#### Endpoints
 
 - **Streamable HTTP:** `http://localhost:7007/api/mcp-actions/v1`
 - **SSE (deprecated):** `http://localhost:7007/api/mcp-actions/v1/sse`
@@ -122,3 +146,5 @@ The SSE protocol is deprecated and will be removed in a future release.
   }
 }
 ```
+
+The `${MCP_TOKEN}` environment variable would be an [external access static token](#external-access-with-static-tokens).
