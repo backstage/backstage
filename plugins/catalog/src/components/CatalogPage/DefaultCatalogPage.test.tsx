@@ -237,11 +237,15 @@ describe('DefaultCatalogPage', () => {
     };
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeaders = screen.getAllByRole('columnheader');
-    const columnHeaderLabels = columnHeaders.map(c =>
-      (c.textContent ?? '').trim(),
-    );
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    // The column function depends on entities being loaded asynchronously;
+    // wait for the DataTable to re-render with the resolved columns.
+    await waitFor(() => {
+      const columnHeaders = screen.getAllByRole('columnheader');
+      const columnHeaderLabels = columnHeaders.map(c =>
+        (c.textContent ?? '').trim(),
+      );
+      expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    });
   }, 20_000);
 
   it('should render the default actions of an item in the grid', async () => {
@@ -358,10 +362,10 @@ describe('DefaultCatalogPage', () => {
     mockBreakpoint({ matches: true });
     await renderWrapped(<DefaultCatalogPage />);
     const button = screen.getByRole('button', { name: 'Filters' });
-    expect(
-      screen.getByRole('presentation', { hidden: true }),
-    ).toBeInTheDocument();
+    // shadcn Sheet (Radix Dialog) does not render content when closed
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     fireEvent.click(button);
-    expect(screen.getByRole('presentation')).toBeVisible();
+    // After opening, the Sheet renders with role="dialog"
+    expect(screen.getByRole('dialog')).toBeVisible();
   }, 20_000);
 });

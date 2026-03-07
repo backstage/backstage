@@ -45,10 +45,11 @@ describe('<DefaultTemplateOutputs />', () => {
       output.text[0].title,
     );
 
-    // test link outputs
+    // test link outputs — shadcn Link renders as <a> with role="link";
+    // external links append ", Opens in a new window" to the accessible name
     for (const link of output.links ?? []) {
       expect(
-        getByRole('button', { name: link.title }).closest('a'),
+        getByRole('link', { name: new RegExp(link.title!) }),
       ).toHaveAttribute('href', link.url);
     }
 

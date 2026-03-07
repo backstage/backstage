@@ -106,7 +106,11 @@ describe('SearchModal', () => {
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
-    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    // Use getByRole('textbox') to avoid matching the Radix Dialog element
+    // which is also labeled "Search" via the visually-hidden DialogTitle.
+    const input = screen.getByRole<HTMLInputElement>('textbox', {
+      name: 'Search',
+    });
     await userEvent.type(input, 'text');
 
     await waitFor(() => {
@@ -184,7 +188,9 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(screen.getByLabelText('Search')).toHaveFocus();
+    // Use getByRole('textbox') to avoid matching the Radix Dialog element
+    // which is also labeled "Search" via the visually-hidden DialogTitle.
+    expect(screen.getByRole('textbox', { name: 'Search' })).toHaveFocus();
   });
 
   it("Don't wait query debounce time when enter is pressed", async () => {
@@ -213,7 +219,11 @@ describe('SearchModal', () => {
       { signal: expect.any(AbortSignal) },
     );
 
-    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    // Use getByRole('textbox') to avoid matching the Radix Dialog element
+    // which is also labeled "Search" via the visually-hidden DialogTitle.
+    const input = screen.getByRole<HTMLInputElement>('textbox', {
+      name: 'Search',
+    });
     await userEvent.clear(input);
     await userEvent.type(input, 'new term{enter}');
 

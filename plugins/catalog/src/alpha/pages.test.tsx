@@ -176,13 +176,14 @@ describe('Entity page', () => {
       await userEvent.click(screen.getByRole('tab', { name: /Documentation/ }));
 
       await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
+        expect(screen.getByRole('link', { name: /TechDocs/ })).toHaveAttribute(
+          'href',
+          '/techdocs',
+        ),
       );
 
       await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
+        expect(screen.getByRole('link', { name: /ApiDocs/ })).toHaveAttribute(
           'href',
           '/apidocs',
         ),
@@ -230,13 +231,14 @@ describe('Entity page', () => {
       await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
 
       await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
+        expect(screen.getByRole('link', { name: /TechDocs/ })).toHaveAttribute(
+          'href',
+          '/techdocs',
+        ),
       );
 
       await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
+        expect(screen.getByRole('link', { name: /ApiDocs/ })).toHaveAttribute(
           'href',
           '/apidocs',
         ),
@@ -340,13 +342,14 @@ describe('Entity page', () => {
       await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
 
       await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
+        expect(screen.getByRole('link', { name: /TechDocs/ })).toHaveAttribute(
+          'href',
+          '/techdocs',
+        ),
       );
 
       await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
+        expect(screen.getByRole('link', { name: /ApiDocs/ })).toHaveAttribute(
           'href',
           '/apidocs',
         ),
@@ -603,9 +606,16 @@ describe('Entity page', () => {
       await waitFor(async () => {
         expect(screen.getByText('Test Title')).toBeInTheDocument();
         expect(screen.getByText('Test Icon')).toBeInTheDocument();
-        const anchor = screen.getByText('Test Title').closest('a');
-        expect(anchor).toHaveAttribute('href', '/somewhere');
-        expect(anchor).toHaveAttribute('aria-disabled', disabled.toString());
+        // Radix DropdownMenuItem renders as a div with role="menuitem",
+        // not as an <a> element. The href prop is passed through to the item.
+        const menuItemEl = screen
+          .getByText('Test Title')
+          .closest('[role="menuitem"]');
+        expect(menuItemEl).toHaveAttribute('href', '/somewhere');
+        // When disabled, Radix sets aria-disabled="true"; when not, the attribute is absent
+        expect(menuItemEl?.getAttribute('aria-disabled')).toBe(
+          disabled ? 'true' : null,
+        );
       });
     });
 
@@ -669,8 +679,14 @@ describe('Entity page', () => {
       );
 
       expect(screen.getByText('Test Icon')).toBeInTheDocument();
-      const listItem = screen.getByText('Test Title').closest('li');
-      expect(listItem).toHaveAttribute('aria-disabled', disabled.toString());
+      // Radix DropdownMenuItem renders as a div with role="menuitem", not as an <li>
+      const menuElement = screen
+        .getByText('Test Title')
+        .closest('[role="menuitem"]');
+      // When disabled, Radix sets aria-disabled="true"; when not, the attribute is absent
+      expect(menuElement?.getAttribute('aria-disabled')).toBe(
+        disabled ? 'true' : null,
+      );
       if (!disabled) {
         await userEvent.click(screen.getByText('Test Title'));
       }

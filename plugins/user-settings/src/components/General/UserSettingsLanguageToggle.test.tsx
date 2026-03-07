@@ -71,11 +71,11 @@ describe('UserSettingsLanguageToggle', () => {
 
     expect(screen.getByText('Change the language')).toBeInTheDocument();
 
-    await renderInTestApp(<UserSettingsLanguageToggle />);
-
-    // open the select control
-    fireEvent.mouseDown(screen.getByText('English'));
-    // select the new language
+    // Open the Radix Select control by clicking the trigger (which displays
+    // the currently selected language). Radix Select responds to click, not
+    // mouseDown as MUI Select did. Options render in a portal when opened.
+    fireEvent.click(screen.getByText('English'));
+    // Select the new language (now visible in the portal)
     fireEvent.click(screen.getByText('Deutsch'));
 
     expect(mockLanguageApi.setLanguage).toHaveBeenCalledWith('de');

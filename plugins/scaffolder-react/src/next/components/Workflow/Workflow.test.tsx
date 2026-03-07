@@ -98,34 +98,33 @@ describe('<Workflow />', () => {
       title: 'React JSON Schema Form Test',
     });
 
-    const { getByRole, getAllByRole, getByText, container } =
-      await renderInTestApp(
-        <ApiProvider apis={apis}>
-          <Workflow
-            title="Different title than template"
-            description={`
+    const { getByRole, getByText, container } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Workflow
+          title="Different title than template"
+          description={`
       ## This is markdown
       - overriding the template description
             `}
-            onCreate={onCreate}
-            onError={onError}
-            namespace="default"
-            templateName="docs-template"
-            initialState={{
-              name: 'prefilled-name',
-              age: '53',
-            }}
-            components={{
-              ReviewStateComponent: () => (
-                <h1>This is a different wrapper for the review page</h1>
-              ),
-              reviewButtonText: <i>Onwards</i>,
-              createButtonText: <b>Make</b>,
-            }}
-            extensions={[]}
-          />
-        </ApiProvider>,
-      );
+          onCreate={onCreate}
+          onError={onError}
+          namespace="default"
+          templateName="docs-template"
+          initialState={{
+            name: 'prefilled-name',
+            age: '53',
+          }}
+          components={{
+            ReviewStateComponent: () => (
+              <h1>This is a different wrapper for the review page</h1>
+            ),
+            reviewButtonText: <i>Onwards</i>,
+            createButtonText: <b>Make</b>,
+          }}
+          extensions={[]}
+        />
+      </ApiProvider>,
+    );
 
     // Test template title is overridden
     expect(getByRole('heading', { level: 2 }).innerHTML).toBe(
@@ -154,8 +153,10 @@ describe('<Workflow />', () => {
       getByText('This is a different wrapper for the review page'),
     ).toBeDefined();
 
+    // Target the Create button by its accessible name instead of index —
+    // the shadcn Stepper introduces step indicator buttons that shift indices.
     await act(async () => {
-      fireEvent.click(getAllByRole('button')[1] as HTMLButtonElement);
+      fireEvent.click(getByRole('button', { name: 'Make' }));
     });
 
     expect(onCreate).toHaveBeenCalledWith({
