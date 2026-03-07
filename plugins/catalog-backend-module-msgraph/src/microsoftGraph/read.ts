@@ -53,6 +53,7 @@ export async function readMicrosoftGraphUsers(
     loadUserPhotos?: boolean;
     transformer?: UserTransformer;
     logger: LoggerService;
+    signal?: AbortSignal;
   },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
@@ -66,6 +67,7 @@ export async function readMicrosoftGraphUsers(
     },
     options.queryMode,
     options.userPath,
+    options.signal,
   );
 
   return {
@@ -93,6 +95,7 @@ export async function readMicrosoftGraphUsersInGroups(
     groupExpand?: string;
     transformer?: UserTransformer;
     logger: LoggerService;
+    signal?: AbortSignal;
   },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
@@ -112,6 +115,7 @@ export async function readMicrosoftGraphUsersInGroups(
     },
     options.queryMode,
     options.userGroupMemberPath,
+    options.signal,
   )) {
     // Process all groups in parallel, otherwise it can take quite some time
     userGroupMemberPromises.push(
@@ -126,6 +130,7 @@ export async function readMicrosoftGraphUsersInGroups(
             top: PAGE_SIZE,
           },
           options.queryMode,
+          options.signal,
         )) {
           userGroupMembers.set(user.id!, user);
           groupMemberCount++;
@@ -161,12 +166,12 @@ export async function readMicrosoftGraphUsersInGroups(
 export async function readMicrosoftGraphOrganization(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: { transformer?: OrganizationTransformer },
+  options?: { transformer?: OrganizationTransformer; signal?: AbortSignal },
 ): Promise<{
   rootGroup?: GroupEntity; // With all relations empty
 }> {
   // For now we expect a single root organization
-  const organization = await client.getOrganization(tenantId);
+  const organization = await client.getOrganization(tenantId, options?.signal);
   const transformer = options?.transformer ?? defaultOrganizationTransformer;
   const rootGroup = await transformer(organization);
 
@@ -186,6 +191,7 @@ export async function readMicrosoftGraphGroups(
     groupIncludeSubGroups?: boolean;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
+    signal?: AbortSignal;
   },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
@@ -200,6 +206,7 @@ export async function readMicrosoftGraphGroups(
 
   const { rootGroup } = await readMicrosoftGraphOrganization(client, tenantId, {
     transformer: options?.organizationTransformer,
+    signal: options?.signal,
   });
   if (rootGroup) {
     groupMember.set(rootGroup.metadata.name, new Set<string>());
@@ -219,6 +226,7 @@ export async function readMicrosoftGraphGroups(
     },
     options?.queryMode,
     options?.groupPath,
+    options?.signal,
   )) {
     // Process all groups in parallel, otherwise it can take quite some time
     promises.push(
@@ -238,9 +246,14 @@ export async function readMicrosoftGraphGroups(
           return;
         }
 
-        for await (const member of client.getGroupMembers(group.id!, {
-          top: PAGE_SIZE,
-        })) {
+        for await (const member of client.getGroupMembers(
+          group.id!,
+          {
+            top: PAGE_SIZE,
+          },
+          undefined,
+          options?.signal,
+        )) {
           if (!member.id) {
             continue;
           }
@@ -261,6 +274,8 @@ export async function readMicrosoftGraphGroups(
                 for await (const subMember of client.getGroupMembers(
                   member.id!,
                   { top: PAGE_SIZE },
+                  undefined,
+                  options?.signal,
                 )) {
                   if (!subMember.id) {
                     continue;
@@ -425,6 +440,7 @@ export async function readMicrosoftGraphOrg(
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
     logger: LoggerService;
+    signal?: AbortSignal;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   let users: UserEntity[] = [];
@@ -447,6 +463,7 @@ export async function readMicrosoftGraphOrg(
         loadUserPhotos: options.loadUserPhotos,
         transformer: options.userTransformer,
         logger: options.logger,
+        signal: options.signal,
       },
     );
     users = usersInGroups;
@@ -460,6 +477,7 @@ export async function readMicrosoftGraphOrg(
       loadUserPhotos: options.loadUserPhotos,
       transformer: options.userTransformer,
       logger: options.logger,
+      signal: options.signal,
     });
     users = usersWithFilter;
   }
@@ -474,6 +492,7 @@ export async function readMicrosoftGraphOrg(
       groupIncludeSubGroups: options.groupIncludeSubGroups,
       groupTransformer: options.groupTransformer,
       organizationTransformer: options.organizationTransformer,
+      signal: options.signal,
     });
 
   resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
