@@ -1,7 +1,7 @@
 'use client';
 
 import { PluginHeader } from '../../../../../packages/ui/src/components/PluginHeader/PluginHeader';
-import { Header } from '../../../../../packages/ui/src/components/HeaderPage/HeaderPage';
+import { Header } from '../../../../../packages/ui/src/components/Header/Header';
 import { ButtonIcon } from '../../../../../packages/ui/src/components/ButtonIcon/ButtonIcon';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
 import { MemoryRouter } from 'react-router-dom';

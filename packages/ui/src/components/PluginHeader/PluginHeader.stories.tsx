@@ -35,7 +35,7 @@ import {
   RiCloudy2Line,
   RiMore2Line,
 } from '@remixicon/react';
-import { HeaderBreadcrumb } from '../HeaderPage/types';
+import { HeaderBreadcrumb } from '../Header/types';
 
 const meta = preview.meta({
   title: 'Backstage UI/PluginHeader',

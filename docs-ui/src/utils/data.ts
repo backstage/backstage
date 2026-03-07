@@ -63,7 +63,7 @@ export const components: Page[] = [
   },
   {
     title: 'Header',
-    slug: 'header-page',
+    slug: 'header',
   },
   {
     title: 'Link',

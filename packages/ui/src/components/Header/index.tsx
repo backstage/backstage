@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { Header, HeaderPage } from './HeaderPage';
+export { Header, HeaderPage } from './Header';
 export { HeaderDefinition, HeaderPageDefinition } from './definition';
 export type {
   HeaderOwnProps,

@@ -16,7 +16,7 @@
 
 import { defineComponent } from '../../hooks/useDefinition';
 import type { HeaderOwnProps } from './types';
-import styles from './HeaderPage.module.css';
+import styles from './Header.module.css';
 
 /**
  * Component definition for Header

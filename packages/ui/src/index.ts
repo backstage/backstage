@@ -36,7 +36,7 @@ export * from './components/Card';
 export * from './components/Dialog';
 export * from './components/FieldLabel';
 export * from './components/PluginHeader';
-export * from './components/HeaderPage';
+export * from './components/Header';
 export * from './components/ButtonIcon';
 export * from './components/ButtonLink';
 export * from './components/Checkbox';

@@ -1,6 +1,6 @@
 'use client';
 
-import { Header } from '../../../../../packages/ui/src/components/HeaderPage/HeaderPage';
+import { Header } from '../../../../../packages/ui/src/components/Header/Header';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
 import { ButtonIcon } from '../../../../../packages/ui/src/components/ButtonIcon/ButtonIcon';
 import {
