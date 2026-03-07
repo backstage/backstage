@@ -1,5 +1,15 @@
 # @backstage/cli
 
+## 0.36.0-next.2
+
+### Patch Changes
+
+- a4e5902: Internal refactor of the CLI command registration
+- ff4a45a: Migrated remaining CLI command handlers from `commander` to `cleye` for argument parsing. Several camelCase CLI flags have been deprecated in favor of their kebab-case equivalents (e.g. `--successCache` → `--success-cache`). The old camelCase forms still work but will now log a deprecation warning. Please update any scripts or CI configurations to use the kebab-case versions.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.2
+  - @backstage/integration@2.0.0-next.2
+
 ## 0.36.0-next.1
 
 ### Minor Changes

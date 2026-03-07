@@ -1,5 +1,15 @@
 # @backstage/plugin-search
 
+## 1.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/plugin-search-react@1.10.5-next.1
+
 ## 1.6.2-next.1
 
 ### Patch Changes

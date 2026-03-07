@@ -1,5 +1,38 @@
 # example-app-legacy
 
+## 0.2.119-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/cli@0.36.0-next.2
+  - @backstage/core-app-api@1.19.6-next.1
+  - @backstage/plugin-techdocs@1.17.1-next.2
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/frontend-app-api@0.16.0-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/plugin-org@0.7.0-next.2
+  - @backstage/plugin-catalog-graph@0.6.0-next.2
+  - @backstage/plugin-api-docs@0.13.5-next.2
+  - @backstage/plugin-catalog@2.0.0-next.2
+  - @backstage/plugin-catalog-import@0.13.11-next.2
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.27-next.1
+  - @backstage/plugin-devtools@0.1.37-next.2
+  - @backstage/plugin-home@0.9.3-next.2
+  - @backstage/plugin-home-react@0.1.36-next.1
+  - @backstage/plugin-kubernetes@0.12.17-next.2
+  - @backstage/plugin-mui-to-bui@0.2.5-next.2
+  - @backstage/plugin-notifications@0.5.15-next.1
+  - @backstage/plugin-scaffolder@1.35.5-next.2
+  - @backstage/plugin-scaffolder-react@1.19.8-next.2
+  - @backstage/plugin-search@1.6.2-next.2
+  - @backstage/plugin-search-react@1.10.5-next.1
+  - @backstage/plugin-signals@0.0.29-next.1
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.34-next.2
+  - @backstage/plugin-techdocs-react@1.3.9-next.1
+  - @backstage/plugin-user-settings@0.9.1-next.2
+
 ## 0.2.119-next.1
 
 ### Patch Changes

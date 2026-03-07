@@ -1,5 +1,16 @@
 # @backstage/plugin-app
 
+## 0.4.1-next.2
+
+### Patch Changes
+
+- 12d8afe: Added `BUIProvider` from `@backstage/ui` to the app root, enabling BUI components to fire analytics events through the Backstage analytics system.
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-app-react@0.2.1-next.1
+
 ## 0.4.1-next.1
 
 ### Patch Changes

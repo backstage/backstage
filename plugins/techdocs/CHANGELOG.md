@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs
 
+## 1.17.1-next.2
+
+### Patch Changes
+
+- 9795d30: chore(deps): bump `dompurify` from 3.3.1 to 3.3.2
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/plugin-search-react@1.10.5-next.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.1
+
 ## 1.17.1-next.1
 
 ### Patch Changes

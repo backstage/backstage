@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 9361965: Fixed `runCheck` to ignore stdio of the spawned process, preventing unwanted output from leaking to the terminal.
+
 ## 0.2.0-next.1
 
 ### Patch Changes
