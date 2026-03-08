@@ -17,6 +17,7 @@
 import { createApiRef } from '../system';
 import { FrontendPlugin, Extension, ExtensionDataRef } from '../../wiring';
 import { ExtensionAttachTo } from '../../wiring/resolveExtensionDefinition';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * The specification for this {@link AppNode} in the {@link AppTree}.
@@ -32,6 +33,7 @@ export interface AppNodeSpec {
   readonly attachTo: ExtensionAttachTo;
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
+  readonly enabled?: FilterPredicate;
   readonly config?: unknown;
   readonly plugin: FrontendPlugin;
 }

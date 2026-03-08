@@ -30,6 +30,9 @@ export type PermissionApi = {
   authorize(
     request: EvaluatePermissionRequest,
   ): Promise<EvaluatePermissionResponse>;
+  authorize(
+    requests: EvaluatePermissionRequest[],
+  ): Promise<EvaluatePermissionResponse[]>;
 };
 
 /**

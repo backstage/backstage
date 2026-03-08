@@ -27,12 +27,18 @@ import {
   RouteFunc,
   RouteResolutionApi,
   createApiFactory,
+  createApiRef,
   routeResolutionApiRef,
   AppNode,
   ExtensionFactoryMiddleware,
   FrontendFeature,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
+import {
+  EvaluatePermissionRequest,
+  EvaluatePermissionResponse,
+} from '@backstage/plugin-permission-common';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -311,6 +317,16 @@ export type CreateSpecializedAppOptions = {
 };
 
 /**
+ * The predicate context used by extension `enabled` predicates.
+ *
+ * @public
+ */
+export type ExtensionPredicateContext = {
+  featureFlags: string[];
+  permissions: string[];
+};
+
+/**
  * Result of {@link prepareSpecializedApp}.
  *
  * @public
@@ -320,12 +336,29 @@ export type PreparedSpecializedApp = {
     element: JSX.Element;
     identity: Promise<IdentityApi>;
   };
-  finalize(): {
+  /**
+   * Evaluates the predicate context by checking active feature flags and
+   * authorized permissions. This is async because the permission check
+   * requires a network call. Pass the result to {@link PreparedSpecializedApp.finalize}.
+   */
+  buildPredicateContext(): Promise<ExtensionPredicateContext>;
+  finalize(predicateContext?: ExtensionPredicateContext): {
     apis: ApiHolder;
     tree: AppTree;
     errors?: AppError[];
   };
 };
+
+// Minimal local permission API interface to avoid a dependency on @backstage/plugin-permission-react
+type MinimalPermissionApi = {
+  authorize(
+    requests: EvaluatePermissionRequest[],
+  ): Promise<EvaluatePermissionResponse[]>;
+};
+
+const localPermissionApiRef = createApiRef<MinimalPermissionApi>({
+  id: 'plugin.permission.api',
+});
 
 // Internal options type, not exported in the public API
 export interface CreateSpecializedAppInternalOptions
@@ -446,11 +479,7 @@ export function prepareSpecializedApp(
     | undefined;
   return {
     signIn,
-    finalize() {
-      if (finalized) {
-        return finalized;
-      }
-
+    async buildPredicateContext(): Promise<ExtensionPredicateContext> {
       if (capturedIdentityApi) {
         setIdentityApiTarget({
           apis: preparedApis,
@@ -462,12 +491,64 @@ export function prepareSpecializedApp(
 
       const apis = preparedApis;
 
+      const featureFlagsApi = apis.get(featureFlagsApiRef);
+      const referencedFlagNames = new Set<string>();
+      const referencedPermissionNames = new Set<string>();
+      for (const node of tree.nodes.values()) {
+        if (node.spec.enabled !== undefined) {
+          for (const name of extractFeatureFlagNames(node.spec.enabled)) {
+            referencedFlagNames.add(name);
+          }
+          for (const name of extractPermissionNames(node.spec.enabled)) {
+            referencedPermissionNames.add(name);
+          }
+        }
+      }
+
+      // Single batched HTTP call for all permission names referenced in predicates.
+      // Synthetic BasicPermission objects are constructed from names so that no
+      // per-plugin declaration is required.
+      const permissionApi = apis.get(localPermissionApiRef);
+      let allowedPermissions: string[] = [];
+      if (permissionApi && referencedPermissionNames.size > 0) {
+        const permNames = Array.from(referencedPermissionNames);
+        const responses = await permissionApi.authorize(
+          permNames.map(name => ({
+            permission: { name, type: 'basic', attributes: {} },
+          })),
+        );
+        allowedPermissions = permNames.filter(
+          (_, i) => responses[i].result === 'ALLOW',
+        );
+      }
+
+      return {
+        featureFlags: featureFlagsApi
+          ? Array.from(referencedFlagNames).filter(name =>
+              featureFlagsApi.isActive(name),
+            )
+          : [],
+        permissions: allowedPermissions,
+      };
+    },
+    finalize(predicateContext?: ExtensionPredicateContext) {
+      if (finalized) {
+        return finalized;
+      }
+
+      const apis = preparedApis;
+      const resolvedPredicateContext = predicateContext ?? {
+        featureFlags: [],
+        permissions: [],
+      };
+
       // Now instantiate the entire tree, which will skip anything that's already been instantiated
       instantiateAppNodeTree(
         tree.root,
         apis,
         collector,
         mergedExtensionFactoryMiddleware,
+        resolvedPredicateContext,
       );
 
       const routeInfo = extractRouteInfoFromAppNode(
@@ -726,4 +807,54 @@ function mergeExtensionFactoryMiddleware(
       }, ctx);
     };
   });
+}
+
+/**
+ * Recursively walks a FilterPredicate and returns all string values referenced
+ * by `featureFlags: { $contains: '...' }` expressions. This lets us call
+ * `isActive()` only for the flags that are actually used in predicates rather
+ * than fetching the full registered-flag list.
+ */
+function extractFeatureFlagNames(predicate: FilterPredicate): string[] {
+  return extractPredicateKeyNames(predicate, 'featureFlags');
+}
+
+/**
+ * Recursively walks a FilterPredicate and returns all string values referenced
+ * by `permissions: { $contains: '...' }` expressions. This lets us issue a
+ * single batched authorize call for only the permissions actually referenced.
+ */
+function extractPermissionNames(predicate: FilterPredicate): string[] {
+  return extractPredicateKeyNames(predicate, 'permissions');
+}
+
+function extractPredicateKeyNames(
+  predicate: FilterPredicate,
+  key: string,
+): string[] {
+  if (typeof predicate !== 'object' || predicate === null) {
+    return [];
+  }
+  const obj = predicate as Record<string, unknown>;
+  if (Array.isArray(obj.$all)) {
+    return (obj.$all as FilterPredicate[]).flatMap(p =>
+      extractPredicateKeyNames(p, key),
+    );
+  }
+  if (Array.isArray(obj.$any)) {
+    return (obj.$any as FilterPredicate[]).flatMap(p =>
+      extractPredicateKeyNames(p, key),
+    );
+  }
+  if (obj.$not !== undefined) {
+    return extractPredicateKeyNames(obj.$not as FilterPredicate, key);
+  }
+  const value = obj[key];
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    const contains = (value as Record<string, unknown>).$contains;
+    if (typeof contains === 'string') {
+      return [contains];
+    }
+  }
+  return [];
 }

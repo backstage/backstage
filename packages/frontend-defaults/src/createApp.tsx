@@ -165,31 +165,34 @@ export function createApp(options?: CreateAppOptions): {
 function PreparedAppRoot(props: {
   preparedApp: PreparedSpecializedApp;
 }): JSX.Element {
-  const [finalizedApp, setFinalizedApp] = useState(() => {
-    if (!props.preparedApp.signIn) {
-      return props.preparedApp.finalize();
-    }
-    return undefined;
-  });
+  const [finalizedApp, setFinalizedApp] = useState<
+    ReturnType<PreparedSpecializedApp['finalize']> | undefined
+  >(undefined);
 
   useEffect(() => {
     let cancelled = false;
+    const runFinalize = async () => {
+      const ctx = await props.preparedApp.buildPredicateContext();
+      if (!cancelled) {
+        setFinalizedApp(props.preparedApp.finalize(ctx));
+      }
+    };
     if (props.preparedApp.signIn) {
       void props.preparedApp.signIn.identity.then(() => {
-        if (cancelled) {
-          return;
+        if (!cancelled) {
+          void runFinalize();
         }
-        setFinalizedApp(props.preparedApp.finalize());
       });
+    } else {
+      void runFinalize();
     }
-
     return () => {
       cancelled = true;
     };
   }, [props.preparedApp]);
 
   if (!finalizedApp) {
-    return props.preparedApp.signIn!.element;
+    return props.preparedApp.signIn?.element ?? <></>;
   }
 
   return renderFinalizedApp(finalizedApp);

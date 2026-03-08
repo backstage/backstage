@@ -4,19 +4,23 @@
 
 ```ts
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiHolder as ApiHolder_2 } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppTree } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
+import { ExtensionDataContainer } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ExtensionDataValue } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware as ExtensionFactoryMiddleware_2 } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JSX } from 'react';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
-import { IdentityApi } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export type AppError =
@@ -157,7 +161,7 @@ export type CreateAppRouteBinder = <
   >,
 ) => void;
 
-// @public
+// @public @deprecated
 export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   apis: ApiHolder;
   tree: AppTree;
@@ -174,29 +178,23 @@ export type CreateSpecializedAppOptions = {
     apis?: ApiHolder;
     allowUnknownExtensionConfig?: boolean;
     extensionFactoryMiddleware?:
-      | ExtensionFactoryMiddleware
-      | ExtensionFactoryMiddleware[];
+      | ExtensionFactoryMiddleware_2
+      | ExtensionFactoryMiddleware_2[];
     pluginInfoResolver?: FrontendPluginInfoResolver;
   };
 };
 
-// @public
-export function prepareSpecializedApp(
-  options?: CreateSpecializedAppOptions,
-): PreparedSpecializedApp;
-
-// @public
-export type PreparedSpecializedApp = {
-  signIn?: {
-    element: JSX.Element;
-    identity: Promise<IdentityApi>;
-  };
-  finalize(): {
-    apis: ApiHolder;
-    tree: AppTree;
-    errors?: AppError[];
-  };
-};
+// @public (undocumented)
+export type ExtensionFactoryMiddleware = (
+  originalFactory: (contextOverrides?: {
+    config?: JsonObject;
+  }) => ExtensionDataContainer<ExtensionDataRef>,
+  context: {
+    node: AppNode;
+    apis: ApiHolder_2;
+    config?: JsonObject;
+  },
+) => Iterable<ExtensionDataValue<any, any>>;
 
 // @public
 export type FrontendPluginInfoResolver = (ctx: {
@@ -211,4 +209,22 @@ export type FrontendPluginInfoResolver = (ctx: {
 }) => Promise<{
   info: FrontendPluginInfo;
 }>;
+
+// @public
+export type PreparedSpecializedApp = {
+  signIn?: {
+    element: JSX_2.Element;
+    identity: Promise<IdentityApi>;
+  };
+  finalize(): {
+    apis: ApiHolder;
+    tree: AppTree;
+    errors?: AppError[];
+  };
+};
+
+// @public
+export function prepareSpecializedApp(
+  options?: CreateSpecializedAppOptions,
+): PreparedSpecializedApp;
 ```

@@ -27,6 +27,7 @@ import {
   ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
 import { OpaqueType } from '@internal/opaque';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 export const OpaqueExtensionDefinition = OpaqueType.create<{
   public: OverridableExtensionDefinition<ExtensionDefinitionParameters>;
@@ -69,6 +70,7 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
         readonly name?: string;
         readonly attachTo: ExtensionDefinitionAttachTo;
         readonly disabled: boolean;
+        readonly enabled?: FilterPredicate;
         readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;
