@@ -248,28 +248,30 @@ export function AppRouter(props: AppRouterProps) {
 
   // If the app hasn't configured a sign-in page, we just continue as guest.
   if (!SignInPageComponent) {
-    appIdentityProxy.setTarget(
-      {
-        getUserId: () => 'guest',
-        getIdToken: async () => undefined,
-        getProfile: () => ({
-          email: 'guest@example.com',
-          displayName: 'Guest',
-        }),
-        getProfileInfo: async () => ({
-          email: 'guest@example.com',
-          displayName: 'Guest',
-        }),
-        getBackstageIdentity: async () => ({
-          type: 'user',
-          userEntityRef: 'user:default/guest',
-          ownershipEntityRefs: ['user:default/guest'],
-        }),
-        getCredentials: async () => ({}),
-        signOut: async () => {},
-      },
-      { signOutTargetUrl: basePath || '/' },
-    );
+    if (!isProtectedApp()) {
+      appIdentityProxy.setTarget(
+        {
+          getUserId: () => 'guest',
+          getIdToken: async () => undefined,
+          getProfile: () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getProfileInfo: async () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getBackstageIdentity: async () => ({
+            type: 'user',
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: ['user:default/guest'],
+          }),
+          getCredentials: async () => ({}),
+          signOut: async () => {},
+        },
+        { signOutTargetUrl: basePath || '/' },
+      );
+    }
 
     return (
       <RouterComponent>
