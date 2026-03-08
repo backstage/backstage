@@ -1,1 +1,0 @@
-import{ap as o}from"./iframe-CSFr66Yj.js";const r={"bui-Popover":"_bui-Popover_yzy91_20","bui-PopoverArrow":"_bui-PopoverArrow_yzy91_44","bui-PopoverContent":"_bui-PopoverContent_yzy91_74"},i=o()({styles:r,classNames:{root:"bui-Popover",arrow:"bui-PopoverArrow",content:"bui-PopoverContent"},propDefs:{children:{},hideArrow:{},className:{}}});export{i as P};
