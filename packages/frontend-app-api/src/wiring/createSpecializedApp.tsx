@@ -383,23 +383,18 @@ export function prepareSpecializedApp(
 
   const appIdentityProxy = new AppIdentityProxy();
   const providedApis = options?.apis ?? options?.advanced?.apis;
-  const createPreparedApis = (identityApi?: IdentityApi) => {
-    const maybeIdentityApi =
-      identityApi ?? (appIdentityProxy as unknown as IdentityApi);
-    return (
-      providedApis ??
-      createApiHolder({
-        factories,
-        staticFactories: [
-          createApiFactory(appTreeApiRef, appTreeApi),
-          createApiFactory(configApiRef, config),
-          createApiFactory(routeResolutionApiRef, routeResolutionApi),
-          createApiFactory(identityApiRef, maybeIdentityApi),
-          ...(internalOptions?.__internal?.apiFactoryOverrides ?? []),
-        ],
-      })
-    );
-  };
+  const createPreparedApis = () =>
+    providedApis ??
+    createApiHolder({
+      factories,
+      staticFactories: [
+        createApiFactory(appTreeApiRef, appTreeApi),
+        createApiFactory(configApiRef, config),
+        createApiFactory(routeResolutionApiRef, routeResolutionApi),
+        createApiFactory(identityApiRef, appIdentityProxy),
+        ...(internalOptions?.__internal?.apiFactoryOverrides ?? []),
+      ],
+    });
 
   const mergedExtensionFactoryMiddleware = mergeExtensionFactoryMiddleware(
     options?.advanced?.extensionFactoryMiddleware,
@@ -457,17 +452,15 @@ export function prepareSpecializedApp(
       }
 
       if (capturedIdentityApi) {
+        setIdentityApiTarget({
+          apis: preparedApis,
+          identityApi: capturedIdentityApi,
+          signOutTargetUrl: appBasePath || '/',
+        });
         removeSignInPageAttachment(tree);
       }
 
-      const apis =
-        !providedApis && capturedIdentityApi
-          ? createPreparedApis(capturedIdentityApi)
-          : preparedApis;
-
-      if (apis !== preparedApis) {
-        registerFeatureFlags(apis, features);
-      }
+      const apis = preparedApis;
 
       // Now instantiate the entire tree, which will skip anything that's already been instantiated
       instantiateAppNodeTree(
@@ -554,6 +547,36 @@ function extractSignInPageComponent(options: {
   );
 
   return signInPageNode.instance?.getData(signInPageComponentDataRef);
+}
+
+function setIdentityApiTarget(options: {
+  apis: ApiHolder;
+  identityApi: IdentityApi;
+  signOutTargetUrl: string;
+}) {
+  const existingIdentityApi = options.apis.get(identityApiRef);
+  if (!existingIdentityApi || !('setTarget' in existingIdentityApi)) {
+    return;
+  }
+
+  (
+    existingIdentityApi as IdentityApi & {
+      setTarget(
+        impl: IdentityApi & {
+          getUserId?(): string;
+          getIdToken?(): Promise<string | undefined>;
+          getProfile?(): {
+            displayName?: string;
+            email?: string;
+            picture?: string;
+          };
+        },
+        targetOptions: { signOutTargetUrl: string },
+      ): void;
+    }
+  ).setTarget(options.identityApi, {
+    signOutTargetUrl: options.signOutTargetUrl,
+  });
 }
 
 function removeSignInPageAttachment(tree: AppTree) {
