@@ -191,7 +191,7 @@ function PreparedAppRoot(props: {
           setFinalizeError(error);
         });
     } else {
-      void runFinalize();
+      setFinalizedApp(props.preparedApp.finalize());
     }
     return () => {
       cancelled = true;
