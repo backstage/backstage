@@ -203,9 +203,11 @@ export function createPublishGitlabAction(options: {
     skipExisting?: boolean | undefined;
     token?: string | undefined;
     setUserAsOwner?: boolean | undefined;
+    ownerUsername?: string | undefined;
     topics?: string[] | undefined;
     settings?:
       | {
+          name?: string | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
           path?: string | undefined;
           description?: string | undefined;
