@@ -184,7 +184,7 @@ function PreparedAppRoot(props: {
         }
       });
     } else {
-      void runFinalize();
+      setFinalizedApp(props.preparedApp.finalize());
     }
     return () => {
       cancelled = true;
