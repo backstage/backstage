@@ -38,12 +38,88 @@ We recognize that maintaining two separate theming systems is not ideal. Because
 
 ## Creating custom themes
 
-During the transition to Backstage UI, you will need to maintain themes in two places: some components and plugins still rely on MUI, while others use Backstage UI. We are working on a plugin that will make help you convert your existing MUI theme into a Backstage UI CSS file you can add to your application. We'll update this page when the plugin is available but for now you can follow progress on this PR [#31140](https://github.com/backstage/backstage/pull/31140).
+During the transition to Backstage UI, you will need to maintain themes in two places: some components and plugins still rely on MUI, while others use Backstage UI. The `mui-to-bui` plugin makes this easier by automatically converting your existing MUI v5 theme into Backstage UI CSS variables.
+
+### Using the mui-to-bui plugin
+
+The `mui-to-bui` plugin provides a visual theme converter tool that helps you generate BUI CSS variables from your current MUI theme. This eliminates the need to manually create and maintain both theme systems.
+
+#### What the plugin does
+
+- **Detects installed themes**: Automatically discovers all MUI themes registered in your Backstage app
+- **Extracts theme values**: Converts MUI theme colors, typography, and spacing into BUI CSS variables
+- **Generates both variants**: Creates CSS for both light and dark theme modes
+- **Provides live preview**: Shows how common BUI components look with your theme colors
+- **Exports CSS**: Allows you to copy the generated CSS to clipboard or download as a `.css` file
+- **No backend required**: Works entirely on the frontend, compatible with both old and new Backstage frontend systems
+
+#### Installation
+
+1. Add the plugin to your app:
+
+```bash
+yarn --cwd packages/app add @backstage/plugin-mui-to-bui
+```
+
+2. Wire it up based on your frontend system:
+
+**Old frontend system** (with `<FlatRoutes>`):
+
+```tsx title="packages/app/src/App.tsx"
+import React from 'react';
+import { Route } from 'react-router-dom';
+import { FlatRoutes } from '@backstage/core-app-api';
+import { BuiThemerPage } from '@backstage/plugin-mui-to-bui';
+
+export const App = () => (
+  <FlatRoutes>
+    {/* ...your other routes */}
+    <Route path="/mui-to-bui" element={<BuiThemerPage />} />
+  </FlatRoutes>
+);
+```
+
+**New frontend system**:
+
+If package discovery is enabled, the plugin is picked up automatically after installation. Otherwise, register it as a feature:
+
+```tsx title="packages/app/src/App.tsx"
+import { createApp } from '@backstage/frontend-defaults';
+import buiThemerPlugin from '@backstage/plugin-mui-to-bui';
+
+const app = createApp({
+  features: [
+    // ...other features
+    buiThemerPlugin,
+  ],
+});
+
+export default app.createRoot();
+```
+
+#### Using the converter
+
+1. Navigate to `/mui-to-bui` in your Backstage app (e.g., http://localhost:3000/mui-to-bui)
+2. The converter displays all installed themes from your app
+3. For each theme, you'll see:
+   - A preview of how common BUI components look with your theme's colors and typography
+   - Generated CSS variables that match your MUI theme
+4. Copy the generated CSS to your clipboard or download it as a file
+5. Add the CSS to your app's stylesheet directory
+
+:::tip
+We recommend keeping a separate CSS file for each theme variant (light and dark). This makes it easier to maintain and update them independently if needed.
+:::
+
+#### Integrating the generated CSS
+
+Once you have the generated CSS from the converter, add it to your app:
 
 ```tsx title="packages/app/src/App.tsx"
 /* highlight-add-start */
 import { lightTheme, darkTheme } from './themes'; // MUI themes
-import './styles.css'; // Backstage UI (BUI) theme
+import './bui-themes/light-theme.css'; // Generated BUI light theme
+import './bui-themes/dark-theme.css'; // Generated BUI dark theme
 /* highlight-add-end */
 
 const app = createApp({
@@ -73,6 +149,8 @@ const app = createApp({
   /* highlight-add-end */
 });
 ```
+
+The generated CSS is applied to BUI components based on the active theme mode (`variant`): light-mode styles are scoped to `:root` and dark-mode styles to `[data-theme-mode="dark"]`, so they automatically follow the user’s light/dark preference. If you define multiple themes that share the same variant (for example, two light themes), you’ll need additional CSS scoping if you want their BUI styles to differ.
 
 | Name       | Description                                                                                                                                                                                                                              |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
