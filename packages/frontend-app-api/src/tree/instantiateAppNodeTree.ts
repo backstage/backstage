@@ -28,6 +28,7 @@ import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createExtensionDataContainer } from '@internal/frontend';
 import { ErrorCollector } from '../wiring/createErrorCollector';
+import { evaluateFilterPredicate } from '@backstage/filter-predicates';
 
 const INSTANTIATION_FAILED = new Error('Instantiation failed');
 
@@ -508,15 +509,37 @@ export function instantiateAppNodeTree(
   apis: ApiHolder,
   collector: ErrorCollector,
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware,
-  options?: {
-    stopAtAttachment?(ctx: { node: AppNode; input: string }): boolean;
-  },
+  optionsOrPredicateContext?:
+    | {
+        stopAtAttachment?(ctx: { node: AppNode; input: string }): boolean;
+        predicateContext?: Record<string, unknown>;
+      }
+    | Record<string, unknown>,
 ): boolean {
+  const options: {
+    stopAtAttachment?(ctx: { node: AppNode; input: string }): boolean;
+    predicateContext?: Record<string, unknown>;
+  } =
+    optionsOrPredicateContext &&
+    ('stopAtAttachment' in optionsOrPredicateContext ||
+      'predicateContext' in optionsOrPredicateContext)
+      ? optionsOrPredicateContext
+      : {
+          predicateContext: optionsOrPredicateContext,
+        };
+
   function createInstance(node: AppNode): AppNodeInstance | undefined {
     if (node.instance) {
       return node.instance;
     }
     if (node.spec.disabled) {
+      return undefined;
+    }
+    if (
+      options?.predicateContext !== undefined &&
+      node.spec.enabled !== undefined &&
+      !evaluateFilterPredicate(node.spec.enabled, options.predicateContext)
+    ) {
       return undefined;
     }
 

@@ -156,22 +156,33 @@ function PreparedAppRoot(props: {
 }): JSX.Element {
   const signIn = props.preparedApp.getSignIn();
   const [finalizeError, setFinalizeError] = useState<Error>();
-  const [finalizedApp, setFinalizedApp] = useState(() => {
-    if (!signIn) {
-      return props.preparedApp.finalize();
-    }
-    return undefined;
-  });
+  const [finalizedApp, setFinalizedApp] = useState<
+    ReturnType<PreparedSpecializedApp['finalize']> | undefined
+  >(undefined);
 
   useEffect(() => {
     let cancelled = false;
+    const runFinalize = async () => {
+      try {
+        const predicateContext = await props.preparedApp.buildPredicateContext();
+        if (cancelled) {
+          return;
+        }
+        setFinalizedApp(props.preparedApp.finalize(predicateContext));
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+        setFinalizeError(error as Error);
+      }
+    };
     if (signIn) {
       void signIn.complete
-        .then(async () => {
+        .then(() => {
           if (cancelled) {
             return;
           }
-          setFinalizedApp(props.preparedApp.finalize());
+          void runFinalize();
         })
         .catch(error => {
           if (cancelled) {
@@ -179,8 +190,9 @@ function PreparedAppRoot(props: {
           }
           setFinalizeError(error);
         });
+    } else {
+      void runFinalize();
     }
-
     return () => {
       cancelled = true;
     };
@@ -191,7 +203,7 @@ function PreparedAppRoot(props: {
   }
 
   if (!finalizedApp) {
-    return signIn!.element;
+    return signIn?.element ?? <></>;
   }
 
   return renderFinalizedApp(finalizedApp);

@@ -52,11 +52,18 @@ export class IdentityPermissionApi implements PermissionApi {
 
   async authorize(
     request: AuthorizePermissionRequest,
-  ): Promise<AuthorizePermissionResponse> {
-    const response = await this.permissionClient.authorize(
-      [request],
+  ): Promise<AuthorizePermissionResponse>;
+  async authorize(
+    requests: AuthorizePermissionRequest[],
+  ): Promise<AuthorizePermissionResponse[]>;
+  async authorize(
+    request: AuthorizePermissionRequest | AuthorizePermissionRequest[],
+  ): Promise<AuthorizePermissionResponse | AuthorizePermissionResponse[]> {
+    const requests = Array.isArray(request) ? request : [request];
+    const responses = await this.permissionClient.authorize(
+      requests,
       await this.identityApi.getCredentials(),
     );
-    return response[0];
+    return Array.isArray(request) ? responses : responses[0];
   }
 }

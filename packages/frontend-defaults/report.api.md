@@ -23,6 +23,7 @@ export function createApp(options?: CreateAppOptions): {
 // @public
 export interface CreateAppOptions {
   advanced?: {
+    allowUnknownExtensionConfig?: boolean;
     configLoader?: () => Promise<{
       config: ConfigApi;
     }>;

@@ -36,6 +36,7 @@ import {
 } from './createExtensionBlueprint';
 import { FrontendPlugin } from './createFrontendPlugin';
 import { FrontendModule } from './createFrontendModule';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
@@ -176,6 +177,7 @@ export type CreateExtensionOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  enabled?: FilterPredicate;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -257,6 +259,7 @@ export interface OverridableExtensionDefinition<
             UParentInputs
           >;
         disabled?: boolean;
+        enabled?: FilterPredicate;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
             string}' is already defined in parent definition`;
@@ -476,6 +479,7 @@ export function createExtension<
     name: options.name,
     attachTo: options.attachTo,
     disabled: options.disabled ?? false,
+    enabled: options.enabled,
     inputs: bindInputs(options.inputs, options.kind, options.name),
     output: options.output,
     configSchema,
@@ -553,6 +557,7 @@ export function createExtension<
         attachTo: (overrideOptions.attachTo ??
           options.attachTo) as ExtensionDefinitionAttachTo,
         disabled: overrideOptions.disabled ?? options.disabled,
+        enabled: overrideOptions.enabled ?? options.enabled,
         inputs: bindInputs(
           {
             ...(options.inputs ?? {}),

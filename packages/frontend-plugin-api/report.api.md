@@ -14,6 +14,7 @@ import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-
 import { ExtensionBlueprintParams as ExtensionBlueprintParams_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionInput as ExtensionInput_2 } from '@backstage/frontend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
@@ -246,6 +247,8 @@ export interface AppNodeSpec {
   readonly config?: unknown;
   // (undocumented)
   readonly disabled: boolean;
+  // (undocumented)
+  readonly enabled?: FilterPredicate;
   // (undocumented)
   readonly extension: Extension<unknown, unknown>;
   // (undocumented)
@@ -541,6 +544,7 @@ export type CreateExtensionBlueprintOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  enabled?: FilterPredicate;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -627,6 +631,7 @@ export type CreateExtensionOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  enabled?: FilterPredicate;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -952,6 +957,7 @@ export interface ExtensionBlueprint<
     attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
       VerifyExtensionAttachTo<NonNullable<T['output']>, UParentInputs>;
     disabled?: boolean;
+    enabled?: FilterPredicate;
     params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
       : T['params'] extends ExtensionBlueprintDefineParams
@@ -987,6 +993,7 @@ export interface ExtensionBlueprint<
         UParentInputs
       >;
     disabled?: boolean;
+    enabled?: FilterPredicate;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
         string}' is already defined in parent definition`;
@@ -1597,6 +1604,7 @@ export interface OverridableExtensionDefinition<
             UParentInputs
           >;
         disabled?: boolean;
+        enabled?: FilterPredicate;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
             string}' is already defined in parent definition`;
