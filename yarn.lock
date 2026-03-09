@@ -40336,8 +40336,8 @@ __metadata:
   linkType: hard
 
 "mysql2@npm:^3.0.0":
-  version: 3.17.3
-  resolution: "mysql2@npm:3.17.3"
+  version: 3.19.0
+  resolution: "mysql2@npm:3.19.0"
   dependencies:
     aws-ssl-profiles: "npm:^1.1.2"
     denque: "npm:^2.1.0"
@@ -40347,7 +40347,9 @@ __metadata:
     lru.min: "npm:^1.1.4"
     named-placeholders: "npm:^1.1.6"
     sql-escaper: "npm:^1.3.3"
-  checksum: 10/8fdb862f4bb30124f72d88650e110be7a4261d2ff4989c1ec6d42a3cb6981992d8192b6c1069e183464a1cf6f6963f487d70c67733fd09e1f7d347d5e4a6ed45
+  peerDependencies:
+    "@types/node": ">= 8"
+  checksum: 10/62d0ac029ed152647d48bebfeceb009acc493544e6358e9c3a0595bce03de764ca0902e3c94b4222d7d02ab40761c12856ff6e2a29c4f1ddc8865e8fbd49652c
   languageName: node
   linkType: hard
 
